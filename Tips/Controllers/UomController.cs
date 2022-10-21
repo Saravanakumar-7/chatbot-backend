@@ -17,7 +17,7 @@ namespace Tips.Controllers
         public async Task<IActionResult> GetAllUom()
         {
             var uomDetails = await _uomService.GetAllUomDetails();
-            return null; //Ok(uomDetails);   
+            return null;   
         }
     }
 }
