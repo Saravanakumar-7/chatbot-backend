@@ -1,20 +1,14 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
-namespace Tips.Model
+namespace Tips.ViewModel
 {
-    public class Uom
+    public class UomViewModel
     {
-        [Key]
         public int Id { get; set; }
-        
-        [Required]
         public string UomName { get; set; }
-        
         public string? Description { get; set; }
         public string? Remarks { get; set; }
-
-        [DefaultValue(true)]
         public bool IsActive { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
