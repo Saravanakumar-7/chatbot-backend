@@ -4,22 +4,23 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>e0152b2b-b322-4672-aad0-e372491a2ca2</UserSecretsId>
+    <UserSecretsId>8e41ec5f-508e-4bae-9d2e-c51b6c89e107</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.10" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Auth\" />
+    <ProjectReference Include="..\CommonModels\CommonModels.csproj" />
+    <ProjectReference Include="..\LoggerService\LoggerService.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CommonModels\CommonModels.csproj" />
-    <ProjectReference Include="..\LoggerService\LoggerService.csproj" />
+    <Folder Include="DTO\" />
   </ItemGroup>
 
 </Project>
