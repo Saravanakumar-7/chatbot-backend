@@ -1,5 +1,7 @@
-﻿using Contracts;
+﻿using AutoMapper;
+using Contracts;
 using Entities;
+using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -10,13 +12,15 @@ namespace Tips.Master.Api.Controllers
     [ApiController]
     public class CustomerTypeController : ControllerBase
     {
-        private readonly IRepositoryWrapperForMaster _repository;
-        private readonly ILogger _logger;
+        private  IRepositoryWrapperForMaster _repository;
+        private  ILogger _logger;
+        private  IMapper _mapper;
 
-        public CustomerTypeController(IRepositoryWrapperForMaster repository, ILogger logger)
+        public CustomerTypeController(IRepositoryWrapperForMaster repository, ILogger logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
+            _mapper = mapper;
         }
 
         // GET: api/<CustomerTypeController>
@@ -45,8 +49,31 @@ namespace Tips.Master.Api.Controllers
 
         // POST api/<CustomerTypeController>
         [HttpPost]
-        public void CreateCustomerType([FromBody] string value)
+        public IActionResult CreateCustomerType([FromBody] CustomerTypeDtoPost customerType)
         {
+            try
+            {
+                if (customerType is null)
+                {
+                    _logger.LogError("CustomerType object sent from client is null.");
+                    return BadRequest("CustomerType object is null");
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid CustomerType object sent from client.");
+                    return BadRequest("Invalid model object");
+                }
+                var customerTypeEntity = _mapper.Map<CustomerType>(customerType);
+                var id = _repository.CustomerTypeRepository.CreateCustomerType(customerTypeEntity);
+                _repository.Save();
+                
+                return CreatedAtRoute("GetCustomerTypeById", new { id = id });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         // PUT api/<CustomerTypeController>/5

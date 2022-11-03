@@ -13,16 +13,16 @@ namespace Repository
         {
             TipsMasterDbContext = repositoryContext;
         }
-        public async Task<IEnumerable<T>> FindAll()
+        public  IQueryable<T> FindAll()
         {
-            
-            var result = await TipsMasterDbContext.Set<T>().AsNoTracking().ToListAsync();
+
+            var result =  TipsMasterDbContext.Set<T>().AsNoTracking();
             return result;
         }
-        public async Task<IEnumerable<T>> FindByCondition(Expression<Func<T, bool>> expression)
+        public  IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression)
         {
             
-            var result = await TipsMasterDbContext.Set<T>().Where(expression).AsNoTracking().ToListAsync();
+            var result =  TipsMasterDbContext.Set<T>().Where(expression).AsNoTracking();
             return result;
         }
         public async Task<T> Create(T entity) {

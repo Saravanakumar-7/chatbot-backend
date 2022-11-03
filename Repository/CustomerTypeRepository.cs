@@ -12,17 +12,17 @@ namespace Repository
 {
     public class CustomerTypeRepository : RepositoryBase<CustomerType>, ICustomerTypeRepository
     {
-        protected TipsMasterDbContext TipsMasterDbContext { get; set; }
+        
         public CustomerTypeRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
         {
-            TipsMasterDbContext = repositoryContext;
+            
 
         }
 
         public async Task<string> ActivateCustomerType(int id)
         {
-            
-            var customerType = await TipsMasterDbContext.CustomerTypes.FindAsync(id);
+
+            var customerType = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();  
             if (customerType != null)
             {
                 customerType.IsActive = true;
@@ -40,10 +40,16 @@ namespace Repository
             
         }
 
+        public async Task<int?> CreateCustomerType(CustomerType customerType)
+        {
+            var result= await Create(customerType);
+            return result.Id;
+        }
+
         public async Task<string> DeactivateCustomerType(int id)
         {
             
-            var customerType = await TipsMasterDbContext.CustomerTypes.FindAsync(id);
+            var customerType = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
             if (customerType != null)
             {
                 customerType.IsActive = false;
@@ -61,10 +67,20 @@ namespace Repository
 
         public async Task<IEnumerable<CustomerType>> GetAllActiveCustomerTypes()
         {
-            
-            var customerTypeList = await TipsMasterDbContext.CustomerTypes.Where(x=>x.IsActive== true).ToListAsync();
-            
+
+            var customerTypeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
+
             return customerTypeList;
+        }
+
+        public Task<IEnumerable<CustomerType>> GetAllCustomerTypes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<CustomerType> GetCustomerTypeById(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
