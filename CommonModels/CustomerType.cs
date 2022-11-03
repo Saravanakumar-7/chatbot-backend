@@ -1,7 +1,10 @@
-﻿namespace CommonModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Entities
 {
     public class CustomerType
     {
+        [Key]
         public int? Id { get; set; }
         public string? CustomerTypeName { get; set; }
         public string? Description { get; set; }
