@@ -11,42 +11,53 @@ namespace Tips.Master.Api.Controllers
     public class CustomerTypeController : ControllerBase
     {
         private readonly IRepositoryWrapperForMaster _repository;
+        private readonly ILogger _logger;
 
-        public CustomerTypeController(IRepositoryWrapperForMaster repository)
+        public CustomerTypeController(IRepositoryWrapperForMaster repository, ILogger logger)
         {
             _repository = repository;
+            _logger = logger;
         }
 
         // GET: api/<CustomerTypeController>
         [HttpGet]
         public IActionResult GetAllCustomerTypes()
         {
-            var customerTypeList = _repository.CustomerTypeRepository.FindAll();
-            return Ok(customerTypeList);
+            try
+            {
+                var customerTypeList = _repository.CustomerTypeRepository.FindAll();
+                _logger.LogInformation("Returned all customerTypes");
+                return Ok(customerTypeList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
         }
 
         // GET api/<CustomerTypeController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public string GetCustomerTypeById(int id)
         {
             return "value";
         }
 
         // POST api/<CustomerTypeController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void CreateCustomerType([FromBody] string value)
         {
         }
 
         // PUT api/<CustomerTypeController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public void UpdateCustomerType(int id, [FromBody] string value)
         {
         }
 
         // DELETE api/<CustomerTypeController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void DeleteCustomerType(int id)
         {
         }
     }
