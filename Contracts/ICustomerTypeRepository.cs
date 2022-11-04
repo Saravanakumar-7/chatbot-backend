@@ -13,7 +13,7 @@ namespace Contracts
         Task<CustomerType> GetCustomerTypeById(int id);
         Task<IEnumerable<CustomerType>> GetAllActiveCustomerTypes();
         Task<int?> CreateCustomerType(CustomerType customerType);
-        Task<string> ActivateCustomerType(int id);
-        Task<string> DeactivateCustomerType(int id);
+        Task<string> UpdateCustomerType(CustomerType customerType);
+        Task<string> DeleteCustomerType(CustomerType customerType);
     }
 }

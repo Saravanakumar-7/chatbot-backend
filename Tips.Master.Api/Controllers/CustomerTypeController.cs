@@ -13,10 +13,10 @@ namespace Tips.Master.Api.Controllers
     public class CustomerTypeController : ControllerBase
     {
         private  IRepositoryWrapperForMaster _repository;
-        private  ILogger _logger;
+        private ILoggerManager _logger;
         private  IMapper _mapper;
 
-        public CustomerTypeController(IRepositoryWrapperForMaster repository, ILogger logger, IMapper mapper)
+        public CustomerTypeController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
@@ -25,26 +25,46 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<CustomerTypeController>
         [HttpGet]
-        public IActionResult GetAllCustomerTypes()
+        public async Task<IActionResult> GetAllCustomerTypes()
         {
             try
             {
-                var customerTypeList = _repository.CustomerTypeRepository.FindAll();
-                _logger.LogInformation("Returned all customerTypes");
-                return Ok(customerTypeList);
+                var customerTypeList = await _repository.CustomerTypeRepository.GetAllActiveCustomerTypes();
+                _logger.LogInfo("Returned all customerTypes");
+                var result = _mapper.Map<IEnumerable<CustomerTypeDto>>(customerTypeList);
+                return Ok(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return BadRequest();
+                return StatusCode(500, "Internal server error");
             }
         }
 
         // GET api/<CustomerTypeController>/5
         [HttpGet("{id}")]
-        public string GetCustomerTypeById(int id)
+        public async Task<IActionResult> GetCustomerTypeById(int id)
         {
-            return "value";
+            try
+            {
+                var customerType = await _repository.CustomerTypeRepository.GetCustomerTypeById(id);
+                if (customerType == null)
+                {
+                    _logger.LogError($"CustomerType with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {id}");
+                    var result = _mapper.Map<CustomerTypeDto>(customerType);
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetCustomerTypeById action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         // POST api/<CustomerTypeController>
@@ -65,7 +85,7 @@ namespace Tips.Master.Api.Controllers
                 }
                 var customerTypeEntity = _mapper.Map<CustomerType>(customerType);
                 var id = _repository.CustomerTypeRepository.CreateCustomerType(customerTypeEntity);
-                _repository.Save();
+                _repository.SaveAsync();
                 
                 return CreatedAtRoute("GetCustomerTypeById", new { id = id });
             }
@@ -78,14 +98,109 @@ namespace Tips.Master.Api.Controllers
 
         // PUT api/<CustomerTypeController>/5
         [HttpPut("{id}")]
-        public void UpdateCustomerType(int id, [FromBody] string value)
+        public async Task<IActionResult> UpdateCustomerType(int id, [FromBody] CustomerTypeDto customerType)
         {
+            try
+            {
+                if (customerType is null)
+                {
+                    _logger.LogError("CustomerType object sent from client is null.");
+                    return BadRequest("CustomerType object is null");
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid CustomerType object sent from client.");
+                    return BadRequest("Invalid model object");
+                }
+                var customerTypeEntity = await _repository.CustomerTypeRepository.GetCustomerTypeById(id);
+                if (customerTypeEntity is null)
+                {
+                    _logger.LogError($"CustomerType with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }
+                _mapper.Map(customerType, customerTypeEntity);
+                string result =  await _repository.CustomerTypeRepository.UpdateCustomerType(customerTypeEntity);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateCustomerType action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         // DELETE api/<CustomerTypeController>/5
         [HttpDelete("{id}")]
-        public void DeleteCustomerType(int id)
+        public async Task<IActionResult> DeleteCustomerType(int id)
         {
+            try
+            {
+                var customerType = await _repository.CustomerTypeRepository.GetCustomerTypeById(id);
+                if (customerType == null)
+                {
+                    _logger.LogError($"CustomerType with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }
+                string result = await _repository.CustomerTypeRepository.DeleteCustomerType(customerType);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> ActivateCustomerType(int id)
+        {
+            try
+            {
+                var customerType = await _repository.CustomerTypeRepository.GetCustomerTypeById(id);
+                if (customerType is null)
+                {
+                    _logger.LogError($"CustomerType with id: {id}, hasn't been found in db.");
+                    return BadRequest("CustomerType object is null");
+                }
+                customerType.IsActive = true;
+                string result = await _repository.CustomerTypeRepository.UpdateCustomerType(customerType);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ActivateCustomerType action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> DeactivateCustomerType(int id)
+        {
+            try
+            {
+                var customerType = await _repository.CustomerTypeRepository.GetCustomerTypeById(id);
+                if (customerType is null)
+                {
+                    _logger.LogError($"CustomerType with id: {id}, hasn't been found in db.");
+                    return BadRequest("CustomerType object is null");
+                }
+                customerType.IsActive = false;
+                string result = await _repository.CustomerTypeRepository.UpdateCustomerType(customerType);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeactivateCustomerType action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }

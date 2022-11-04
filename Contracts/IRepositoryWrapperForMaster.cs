@@ -10,6 +10,6 @@ namespace Contracts
     {
         ILeadTimeRepository leadTimeRepository { get; }
         ICustomerTypeRepository CustomerTypeRepository { get; }
-        void Save();
+        void SaveAsync();
     }
 }

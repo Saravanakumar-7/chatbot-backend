@@ -42,9 +42,11 @@ namespace Repository
 
         public ILeadTimeRepository leadTimeRepository => throw new NotImplementedException();
 
-        public void Save()
+        public void SaveAsync()
         {
             _tipsMasterDbContext.SaveChanges();
         }
+
+        
     }
 }
