@@ -13,6 +13,7 @@ namespace Repository
         private  TipsMasterDbContext _tipsMasterDbContext;
         //private ILeadTimeRepository _leadTimeRepo;
         private  ICustomerTypeRepository? _customerTypeRepo;
+        private IDeliveryTermRepository? _deliveryTermRepo;
 
         public RepositoryWrapperForMaster(TipsMasterDbContext? tipsMasterDbContext)
         {
@@ -38,6 +39,18 @@ namespace Repository
                     _customerTypeRepo = new CustomerTypeRepository(_tipsMasterDbContext);
                 }
                 return _customerTypeRepo; }
+        }
+
+        public IDeliveryTermRepository DeliveryTermRepo
+        {
+            get
+            {
+                if (_deliveryTermRepo == null)
+                {
+                    _deliveryTermRepo = new DeliveryTermRepository(_tipsMasterDbContext);
+                }
+                return _deliveryTermRepo;
+            }
         }
 
         public ILeadTimeRepository leadTimeRepository => throw new NotImplementedException();

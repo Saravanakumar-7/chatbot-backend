@@ -10,6 +10,7 @@ namespace Contracts
     {
         ILeadTimeRepository leadTimeRepository { get; }
         ICustomerTypeRepository CustomerTypeRepository { get; }
+        IDeliveryTermRepository DeliveryTermRepo { get; }
         void SaveAsync();
     }
 }
