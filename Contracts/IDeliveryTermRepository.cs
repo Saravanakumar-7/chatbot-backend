@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Contracts
 {
-    public interface IDeliveryTermRepository
-    {
+    public interface IDeliveryTermRepository : IRepositoryBase<DeliveryTerm>
+    { 
         Task<IEnumerable<DeliveryTerm>> GetAllDeliveryTerms();
         Task<DeliveryTerm> GetDeliveryTermById(int id);
         Task<IEnumerable<DeliveryTerm>> GetAllActiveDeliveryTerms();

@@ -10,6 +10,22 @@ namespace Contracts
     {
         ILeadTimeRepository leadTimeRepository { get; }
         ICustomerTypeRepository CustomerTypeRepository { get; }
+        IVolumeUomRepository VolumeUomRepo { get; }
+        IWeightUomRepository WeightUomRepository { get; }
+
+
+        IBankRepository BankRepository { get; }
+        IDepartmentRepository DepartmentRepository { get; }
+        ICurrencyRepository CurrencyRepository { get; }
+        IIncoTermRepository IncoTermRepository { get; }
+
+        IBasicOfApprovalRepository BasicOfApprovalRepository { get; }
+        IVendorCategoryRepository VendorCategoryRepository { get; }
+        IVendorDepartmentRepository VendorDepartmentRepository { get; }
+        IScopeOfSupplyRepository ScopeOfSupplyRepository { get; }
+
+
+
         IDeliveryTermRepository DeliveryTermRepo { get; }
         void SaveAsync();
     }

@@ -3,6 +3,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -84,10 +85,11 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest("Invalid model object");
                 }
                 var customerTypeEntity = _mapper.Map<CustomerType>(customerType);
-                var id = _repository.CustomerTypeRepository.CreateCustomerType(customerTypeEntity);
+                _repository.CustomerTypeRepository.CreateCustomerType(customerTypeEntity);
                 _repository.SaveAsync();
+
                 
-                return CreatedAtRoute("GetCustomerTypeById", new { id = id });
+                return Created("GetCustomerTypeById", "Successfully Created");
             }
             catch (Exception ex)
             {

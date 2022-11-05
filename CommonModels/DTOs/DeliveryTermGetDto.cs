@@ -44,6 +44,6 @@ namespace Entities.DTOs
         public string? Description { get; set; }
         [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")] 
         public string? Remarks { get; set; }
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; } = true; 
     }
 }

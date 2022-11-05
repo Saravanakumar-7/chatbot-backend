@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,40 +9,62 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public class DeliveryTermRepository : RepositoryBase<CustomerType>, IDeliveryTermRepository
+    public class DeliveryTermRepository : RepositoryBase<DeliveryTerm>, IDeliveryTermRepository
     {
         public DeliveryTermRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
         {
         }
 
-        public Task<int?> CreateDeliveryTerm(DeliveryTerm deliveryTerm)
+        public async Task<int?> CreateDeliveryTerm(DeliveryTerm deliveryTerm)
         {
-            throw new NotImplementedException();
+            deliveryTerm.CreatedBy = "Admin";
+            deliveryTerm.CreatedOn = DateTime.Now;
+            var result = await Create(deliveryTerm);
+            return result.Id;
+
+            //throw new NotImplementedException();
         }
 
-        public Task<string> DeleteDeliveryTerm(DeliveryTerm deliveryTerm)
+        public async Task<string> DeleteDeliveryTerm(DeliveryTerm deliveryTerm)
         {
-            throw new NotImplementedException();
+            Delete(deliveryTerm);
+            string result = $"Delivery Terms details of {deliveryTerm.Id} is deleted successfully!";
+            return result;
+            //throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<DeliveryTerm>> GetAllActiveDeliveryTerms()
+        public async Task<IEnumerable<DeliveryTerm>> GetAllActiveDeliveryTerms()
         {
-            throw new NotImplementedException();
+            var DeliveryTermList = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return DeliveryTermList;
+            //throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<DeliveryTerm>> GetAllDeliveryTerms()
+        public async Task<IEnumerable<DeliveryTerm>> GetAllDeliveryTerms()
         {
-            throw new NotImplementedException();
+
+            var DeliveryTermList = await FindAll().ToListAsync();
+
+            return DeliveryTermList;
+            //throw new NotImplementedException();
         }
 
-        public Task<DeliveryTerm> GetDeliveryTermById(int id)
+        public async Task<DeliveryTerm> GetDeliveryTermById(int id)
         {
-            throw new NotImplementedException();
+            var deliveryTerm = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+
+            return deliveryTerm;
+            // throw new NotImplementedException();
         }
 
-        public Task<string> UpdateDeliveryTerm(DeliveryTerm deliveryTerm)
+        public async Task<string> UpdateDeliveryTerm(DeliveryTerm deliveryTerm)
         {
-            throw new NotImplementedException();
+            deliveryTerm.LastModifiedBy = "Admin";
+            deliveryTerm.LastModifiedOn = DateTime.Now;
+            Update(deliveryTerm);
+            string result = $"Delivery Term of Detail {deliveryTerm.Id} is updated successfully!";
+            return result;
+            //throw new NotImplementedException();
         }
     }
 }

@@ -14,6 +14,18 @@ namespace Repository
         //private ILeadTimeRepository _leadTimeRepo;
         private  ICustomerTypeRepository? _customerTypeRepo;
         private IDeliveryTermRepository? _deliveryTermRepo;
+        private IVolumeUomRepository? _volumeUomRepo;
+        private IWeightUomRepository? _weightUomRepo;
+
+        private IIncoTermRepository? _incoTermRepo;
+        private IDepartmentRepository? _departmentRepo;
+        private IBankRepository? _bankRepo;
+        private ICurrencyRepository? _currency;
+
+        private IBasicOfApprovalRepository? _basicOfApproval;
+        private IScopeOfSupplyRepository? _scopeOfSupply;
+        private IVendorCategoryRepository? _vendorCategory;
+        private IVendorDepartmentRepository? _vendorDepartment;
 
         public RepositoryWrapperForMaster(TipsMasterDbContext? tipsMasterDbContext)
         {
@@ -53,8 +65,134 @@ namespace Repository
             }
         }
 
+        public IVolumeUomRepository VolumeUomRepo
+        {
+            get
+            {
+                if (_volumeUomRepo == null)
+                {
+                    _volumeUomRepo = new VolumeUomRepository(_tipsMasterDbContext);
+                }
+                return _volumeUomRepo;
+            }
+        }
+
+        public IWeightUomRepository WeightUomRepository
+        {
+            get
+            {
+                if (_weightUomRepo == null)
+                {
+                    _weightUomRepo = new WeightUomRepository(_tipsMasterDbContext);
+                }
+                return _weightUomRepo;
+            }
+        }
+
+        public IBankRepository BankRepository
+        {
+            get
+            { 
+                if (_bankRepo == null)
+                {
+                    _bankRepo = new BankTermRepository(_tipsMasterDbContext);
+                }
+                return _bankRepo;
+            }
+        }
+
+        public IDepartmentRepository DepartmentRepository
+        {
+            get
+            {
+                if (_departmentRepo == null)
+                {
+                    _departmentRepo = new DepartmentRepository(_tipsMasterDbContext);
+                }
+                return _departmentRepo;
+            }
+        }
+
+        public IIncoTermRepository IncoTermRepository
+        {
+            get
+            {
+                if (_incoTermRepo == null)
+                {
+                    _incoTermRepo = new IncoTermRepository(_tipsMasterDbContext);
+                }
+                return _incoTermRepo;
+            }
+        }
+
+        public ICurrencyRepository CurrencyRepository
+        {
+            get
+            {
+                if (_currency == null)
+                {
+                    _currency = new CurrencyRepository(_tipsMasterDbContext);
+                }
+                return _currency;
+            }
+        } 
+        public IBasicOfApprovalRepository BasicOfApprovalRepository
+        {
+            get
+            {
+                if (_basicOfApproval == null)
+                {
+                    _basicOfApproval = new BasicOfApprovalRepository(_tipsMasterDbContext);
+                }
+                return _basicOfApproval;
+            }
+        }
+
+        public IVendorCategoryRepository VendorCategoryRepository
+        {
+            get
+            {
+                if (_vendorCategory == null)
+                {
+                    _vendorCategory = new VendorCategoryRepository(_tipsMasterDbContext);
+                }
+                return _vendorCategory;
+            }
+        }
+
+        public IVendorDepartmentRepository VendorDepartmentRepository
+        {
+            get
+            {
+                if (_vendorDepartment == null)
+                {
+                    _vendorDepartment = new VendorDepartmentRepository(_tipsMasterDbContext);
+                }
+                return _vendorDepartment;
+            }
+        }
+
+        public IScopeOfSupplyRepository ScopeOfSupplyRepository
+        {
+            get
+            {
+                if (_scopeOfSupply == null)
+                {
+                    _scopeOfSupply = new ScopeOfSupplyRepository(_tipsMasterDbContext);
+                }
+                return _scopeOfSupply;
+            }
+        }
+
+
         public ILeadTimeRepository leadTimeRepository => throw new NotImplementedException();
 
+        public IVolumeUomRepository VolumeUomRepository => throw new NotImplementedException();
+
+        public IWeightUomRepository weightUomRepository => throw new NotImplementedException();
+
+        public IVolumeUomRepository volumeUomRepository => throw new NotImplementedException();
+         
         public void SaveAsync()
         {
             _tipsMasterDbContext.SaveChanges();
