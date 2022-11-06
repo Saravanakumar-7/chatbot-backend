@@ -11,18 +11,55 @@ namespace Repository
     public class RepositoryWrapperForMaster : IRepositoryWrapperForMaster
     {
         private  TipsMasterDbContext _tipsMasterDbContext;
-        //private ILeadTimeRepository _leadTimeRepo;
-        private  ICustomerTypeRepository? _customerTypeRepo;
+        private ILeadTimeRepository _leadTimeRepo;
+        private  ICustomerTypeRepository _customerTypeRepo;
+        private IMaterialTypeRepository _materialTypeRepo;
+        private IProcurementTypeRepository _procurementTypeRepo;
+        private IDeliveryTermRepository? _deliveryTermRepo;
+        private IVolumeUomRepository? _volumeUomRepo;
+        private IWeightUomRepository? _weightUomRepo;
 
-        public RepositoryWrapperForMaster(TipsMasterDbContext? tipsMasterDbContext)
+        private IIncoTermRepository? _incoTermRepo;
+        private IDepartmentRepository? _departmentRepo;
+        private IBankRepository? _bankRepo;
+        private ICurrencyRepository? _currency;
+
+        private IBasicOfApprovalRepository? _basicOfApproval;
+        private IScopeOfSupplyRepository? _scopeOfSupply;
+        private IVendorCategoryRepository? _vendorCategory;
+        private IVendorDepartmentRepository? _vendorDepartment;
+       
+        public RepositoryWrapperForMaster(TipsMasterDbContext? tipsMasterDbContext,
+            ILeadTimeRepository leadTimeRepo,
+            ICustomerTypeRepository customerTypeRepository,
+            IMaterialTypeRepository materialTypeRepo,
+            IProcurementTypeRepository procurementTypeRepo,IDeliveryTermRepository deliveryTermRepo,
+            ICurrencyRepository currency,
+            IBasicOfApprovalRepository = basicOfApproval,
+            IVendorCategoryRepository vendorCategory,
+            IVendorDepartmentRepository vendorDepartment,
+            IScopeOfSupplyRepository scopeOfSupply,
+            IIncoTermRepository incoTermRepo,
+            IDepartmentRepository departmentRepo,
+            IBankRepository bankRepo)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
             _leadTimeRepo = leadTimeRepo;
             _customerTypeRepo = customerTypeRepository;
             _materialTypeRepo = materialTypeRepo;
             _procurementTypeRepo = procurementTypeRepo;
+            _deliveryTermRepo = deliveryTermRepo;
+            _volumeUomRepo = volumeUomRepo; 
+            _weightUomRepo = weightUomRepo; 
+            _bankRepo = bankRepo;
+            _departmentRepo = departmentRepo; 
+            _incoTermRepo = incoTermRepo; 
+            _currency  = currency;
+            _basicOfApproval = basicOfApproval;
+            _vendorCategory = vendorCategory; 
+            _vendorDepartment = vendorDepartment; 
+            _scopeOfSupply = scopeOfSupply;
         }
-
         public ILeadTimeRepository leadTimeRepository
         {
             get
@@ -34,7 +71,6 @@ namespace Repository
                 return _leadTimeRepo;
             }
         }
-
         public ICustomerTypeRepository CustomerTypeRepository
         {
             get 
@@ -43,16 +79,169 @@ namespace Repository
                 {
                     _customerTypeRepo = new CustomerTypeRepository(_tipsMasterDbContext);
                 }
-                return _customerTypeRepo; }
+                return _customerTypeRepo; 
+            }
         }
 
-        public ILeadTimeRepository leadTimeRepository => throw new NotImplementedException();
+        public IMaterialTypeRepository MaterialTypeRepository
+        {
+            get
+            {
+                if (_materialTypeRepo == null)
+                {
+                    _materialTypeRepo = new MaterialTypeRepository(_tipsMasterDbContext);
+                }
+                return _materialTypeRepo;
+            }
+        }
+       
 
+        public IProcurementTypeRepository ProcurementTypeRepository
+        {
+            get
+            {
+                if (_procurementTypeRepo == null)
+                {
+                    _procurementTypeRepo = new ProcurementTypeRepository(_tipsMasterDbContext);
+                }
+                return _procurementTypeRepo;
+            }
+        }
+        
+         public IDeliveryTermRepository DeliveryTermRepo
+        {
+            get
+            {
+                if (_deliveryTermRepo == null)
+                {
+                    _deliveryTermRepo = new DeliveryTermRepository(_tipsMasterDbContext);
+                }
+                return _deliveryTermRepo;
+            }
+        }
+
+        public IVolumeUomRepository VolumeUomRepo
+        {
+            get
+            {
+                if (_volumeUomRepo == null)
+                {
+                    _volumeUomRepo = new VolumeUomRepository(_tipsMasterDbContext);
+                }
+                return _volumeUomRepo;
+            }
+        }
+
+        public IWeightUomRepository WeightUomRepository
+        {
+            get
+            {
+                if (_weightUomRepo == null)
+                {
+                    _weightUomRepo = new WeightUomRepository(_tipsMasterDbContext);
+                }
+                return _weightUomRepo;
+            }
+        }
+
+        public IBankRepository BankRepository
+        {
+            get
+            { 
+                if (_bankRepo == null)
+                {
+                    _bankRepo = new BankTermRepository(_tipsMasterDbContext);
+                }
+                return _bankRepo;
+            }
+        }
+
+        public IDepartmentRepository DepartmentRepository
+        {
+            get
+            {
+                if (_departmentRepo == null)
+                {
+                    _departmentRepo = new DepartmentRepository(_tipsMasterDbContext);
+                }
+                return _departmentRepo;
+            }
+        }
+
+        public IIncoTermRepository IncoTermRepository
+        {
+            get
+            {
+                if (_incoTermRepo == null)
+                {
+                    _incoTermRepo = new IncoTermRepository(_tipsMasterDbContext);
+                }
+                return _incoTermRepo;
+            }
+        }
+
+        public ICurrencyRepository CurrencyRepository
+        {
+            get
+            {
+                if (_currency == null)
+                {
+                    _currency = new CurrencyRepository(_tipsMasterDbContext);
+                }
+                return _currency;
+            }
+        } 
+        public IBasicOfApprovalRepository BasicOfApprovalRepository
+        {
+            get
+            {
+                if (_basicOfApproval == null)
+                {
+                    _basicOfApproval = new BasicOfApprovalRepository(_tipsMasterDbContext);
+                }
+                return _basicOfApproval;
+            }
+        }
+
+        public IVendorCategoryRepository VendorCategoryRepository
+        {
+            get
+            {
+                if (_vendorCategory == null)
+                {
+                    _vendorCategory = new VendorCategoryRepository(_tipsMasterDbContext);
+                }
+                return _vendorCategory;
+            }
+        }
+
+        public IVendorDepartmentRepository VendorDepartmentRepository
+        {
+            get
+            {
+                if (_vendorDepartment == null)
+                {
+                    _vendorDepartment = new VendorDepartmentRepository(_tipsMasterDbContext);
+                }
+                return _vendorDepartment;
+            }
+        }
+
+        public IScopeOfSupplyRepository ScopeOfSupplyRepository
+        {
+            get
+            {
+                if (_scopeOfSupply == null)
+                {
+                    _scopeOfSupply = new ScopeOfSupplyRepository(_tipsMasterDbContext);
+                }
+                return _scopeOfSupply;
+            }
+        }
         public void SaveAsync()
         {
             _tipsMasterDbContext.SaveChanges();
         }
-
         
-    }
+}
 }
