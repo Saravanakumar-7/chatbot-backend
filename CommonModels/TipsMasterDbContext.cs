@@ -11,8 +11,23 @@ namespace Entities
         }
 
         public DbSet<CustomerType> CustomerTypes { get; set; }
+        public DbSet<DeliveryTerm> DeliveryTerms { get; set; }  
         public DbSet<LeadTime> LeadTimes { get; set; }
         public DbSet<MaterialType>? MaterialTypes { get; set; }
+
+        public DbSet<Bank>? Banks { get; set; }
+        public DbSet<IncoTerm>? IncoTerms { get; set; } 
+        public DbSet<Currency>? Currencies { get; set; }
+        public DbSet<Department>? Departments { get; set; }
+
+        public DbSet<ScopeOfSupply>? ScopeOfSupplies { get; set; }
+        public DbSet<VendorDepartment>? VendorDepartments { get; set; }
+        public DbSet<BasicOfApproval>? BasicOfApprovals { get; set; }
+        public DbSet<VendorCategory>? VendorCategories { get; set; }
+
+        public DbSet<VolumeUom>? VolumeUoms { get; set; }
+        public DbSet<WeightUom>? WeightUoms { get; set; }
+        
         public DbSet<ProcurementType>? ProcurementTypes { get; set; }
 
     }

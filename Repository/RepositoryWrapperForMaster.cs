@@ -11,16 +11,10 @@ namespace Repository
     public class RepositoryWrapperForMaster : IRepositoryWrapperForMaster
     {
         private  TipsMasterDbContext _tipsMasterDbContext;
-        private ILeadTimeRepository _leadTimeRepo;
-        private  ICustomerTypeRepository _customerTypeRepo;
-        private IMaterialTypeRepository _materialTypeRepo;
-        private IProcurementTypeRepository _procurementTypeRepo;
+        //private ILeadTimeRepository _leadTimeRepo;
+        private  ICustomerTypeRepository? _customerTypeRepo;
 
-        public RepositoryWrapperForMaster(TipsMasterDbContext? tipsMasterDbContext,
-            ILeadTimeRepository leadTimeRepo,
-            ICustomerTypeRepository customerTypeRepository,
-            IMaterialTypeRepository materialTypeRepo,
-            IProcurementTypeRepository procurementTypeRepo)
+        public RepositoryWrapperForMaster(TipsMasterDbContext? tipsMasterDbContext)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
             _leadTimeRepo = leadTimeRepo;
@@ -49,33 +43,11 @@ namespace Repository
                 {
                     _customerTypeRepo = new CustomerTypeRepository(_tipsMasterDbContext);
                 }
-                return _customerTypeRepo; 
-            }
+                return _customerTypeRepo; }
         }
 
-        public IMaterialTypeRepository MaterialTypeRepository
-        {
-            get
-            {
-                if (_materialTypeRepo == null)
-                {
-                    _materialTypeRepo = new MaterialTypeRepository(_tipsMasterDbContext);
-                }
-                return _materialTypeRepo;
-            }
-        }
+        public ILeadTimeRepository leadTimeRepository => throw new NotImplementedException();
 
-        public IProcurementTypeRepository ProcurementTypeRepository
-        {
-            get
-            {
-                if (_procurementTypeRepo == null)
-                {
-                    _procurementTypeRepo = new ProcurementTypeRepository(_tipsMasterDbContext);
-                }
-                return _procurementTypeRepo;
-            }
-        }
         public void SaveAsync()
         {
             _tipsMasterDbContext.SaveChanges();

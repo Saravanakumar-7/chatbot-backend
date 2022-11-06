@@ -10,8 +10,6 @@ namespace Contracts
     {
         ILeadTimeRepository leadTimeRepository { get; }
         ICustomerTypeRepository CustomerTypeRepository { get; }
-        IMaterialTypeRepository MaterialTypeRepository { get; }
-        IProcurementTypeRepository ProcurementTypeRepository { get; }
         void SaveAsync();
     }
 }
