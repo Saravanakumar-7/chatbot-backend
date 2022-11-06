@@ -10,9 +10,9 @@ namespace Repository
 {
     public class RepositoryWrapperForMaster : IRepositoryWrapperForMaster
     {
-        private  TipsMasterDbContext _tipsMasterDbContext;
+        private TipsMasterDbContext _tipsMasterDbContext;
         private ILeadTimeRepository _leadTimeRepo;
-        private  ICustomerTypeRepository _customerTypeRepo;
+        private ICustomerTypeRepository _customerTypeRepo;
         private IMaterialTypeRepository _materialTypeRepo;
         private IProcurementTypeRepository _procurementTypeRepo;
         private IDeliveryTermRepository? _deliveryTermRepo;
@@ -28,38 +28,12 @@ namespace Repository
         private IScopeOfSupplyRepository? _scopeOfSupply;
         private IVendorCategoryRepository? _vendorCategory;
         private IVendorDepartmentRepository? _vendorDepartment;
-       
-        public RepositoryWrapperForMaster(TipsMasterDbContext? tipsMasterDbContext,
-            ILeadTimeRepository leadTimeRepo,
-            ICustomerTypeRepository customerTypeRepository,
-            IMaterialTypeRepository materialTypeRepo,
-            IProcurementTypeRepository procurementTypeRepo,IDeliveryTermRepository deliveryTermRepo,
-            ICurrencyRepository currency,
-            IBasicOfApprovalRepository = basicOfApproval,
-            IVendorCategoryRepository vendorCategory,
-            IVendorDepartmentRepository vendorDepartment,
-            IScopeOfSupplyRepository scopeOfSupply,
-            IIncoTermRepository incoTermRepo,
-            IDepartmentRepository departmentRepo,
-            IBankRepository bankRepo)
+
+        public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
-            _leadTimeRepo = leadTimeRepo;
-            _customerTypeRepo = customerTypeRepository;
-            _materialTypeRepo = materialTypeRepo;
-            _procurementTypeRepo = procurementTypeRepo;
-            _deliveryTermRepo = deliveryTermRepo;
-            _volumeUomRepo = volumeUomRepo; 
-            _weightUomRepo = weightUomRepo; 
-            _bankRepo = bankRepo;
-            _departmentRepo = departmentRepo; 
-            _incoTermRepo = incoTermRepo; 
-            _currency  = currency;
-            _basicOfApproval = basicOfApproval;
-            _vendorCategory = vendorCategory; 
-            _vendorDepartment = vendorDepartment; 
-            _scopeOfSupply = scopeOfSupply;
         }
+
         public ILeadTimeRepository leadTimeRepository
         {
             get
@@ -73,13 +47,13 @@ namespace Repository
         }
         public ICustomerTypeRepository CustomerTypeRepository
         {
-            get 
+            get
             {
                 if (_customerTypeRepo == null)
                 {
                     _customerTypeRepo = new CustomerTypeRepository(_tipsMasterDbContext);
                 }
-                return _customerTypeRepo; 
+                return _customerTypeRepo;
             }
         }
 
@@ -94,7 +68,7 @@ namespace Repository
                 return _materialTypeRepo;
             }
         }
-       
+
 
         public IProcurementTypeRepository ProcurementTypeRepository
         {
@@ -107,8 +81,8 @@ namespace Repository
                 return _procurementTypeRepo;
             }
         }
-        
-         public IDeliveryTermRepository DeliveryTermRepo
+
+        public IDeliveryTermRepository DeliveryTermRepo
         {
             get
             {
@@ -147,7 +121,7 @@ namespace Repository
         public IBankRepository BankRepository
         {
             get
-            { 
+            {
                 if (_bankRepo == null)
                 {
                     _bankRepo = new BankTermRepository(_tipsMasterDbContext);
@@ -190,7 +164,7 @@ namespace Repository
                 }
                 return _currency;
             }
-        } 
+        }
         public IBasicOfApprovalRepository BasicOfApprovalRepository
         {
             get
@@ -242,6 +216,6 @@ namespace Repository
         {
             _tipsMasterDbContext.SaveChanges();
         }
-        
-}
+
+    }
 }
