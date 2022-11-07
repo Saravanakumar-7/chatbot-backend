@@ -25,6 +25,11 @@ namespace Entities
         public DbSet<BasicOfApproval>? BasicOfApprovals { get; set; }
         public DbSet<VendorCategory>? VendorCategories { get; set; }
 
+        public DbSet<VendorContacts>? Contact { get; set; }
+        public DbSet<VendorMaster>? VendorMasters { get; set; }
+        public DbSet<VendorAddress>? Addresses { get; set; }
+        public DbSet<VendorBanking>? VendorBankings { get; set; }
+
         public DbSet<VolumeUom>? VolumeUoms { get; set; }
         public DbSet<WeightUom>? WeightUoms { get; set; }
         

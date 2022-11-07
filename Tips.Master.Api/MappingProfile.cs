@@ -68,6 +68,22 @@ namespace Tips.Master.Api
             CreateMap<BasicOfApproval, BasicOfApprovalDto>().ReverseMap();
             CreateMap<BasicOfApproval, BasicOfApprovalPostDto>().ReverseMap();
             CreateMap<BasicOfApproval, BasicOfApprovalUpdateDto>().ReverseMap();
+            //test
+            CreateMap<VendorContacts, ContactsDto>().ReverseMap();
+            CreateMap<VendorContacts, ContactPostDto>().ReverseMap();
+            CreateMap<VendorContacts, ContactPostDto>().ReverseMap();
+
+            CreateMap<VendorMasterBanking, VendorMasterBankingDto>().ReverseMap();
+            CreateMap<VendorMasterBanking, VendorMasterBankingPostDto>().ReverseMap();
+            CreateMap<VendorMasterBanking, VendorMasterBankingUpdateDto>().ReverseMap();
+
+            CreateMap<VendorAddress, AddressDto>().ReverseMap();
+            CreateMap<VendorAddress, AddressPostDto>().ReverseMap();
+            CreateMap<VendorAddress, AddressUpdateDto>().ReverseMap();
+
+            CreateMap<VendorMaster, VendorMasterDto>().ReverseMap();
+            CreateMap<VendorMaster, VendorMasterPostDto>().ReverseMap();
+            CreateMap<VendorMaster, VendorMasterPostDto>().ReverseMap();
 
 
 
