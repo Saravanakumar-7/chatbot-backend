@@ -70,11 +70,11 @@ namespace Tips.Master.Api.Controllers
 
         // POST api/<CustomerTypeController>
         [HttpPost]
-        public IActionResult CreateCustomerType([FromBody] CustomerTypeDtoPost customerType)
+        public IActionResult CreateCustomerType([FromBody] CustomerTypeDtoPost customerTypeDtoPost)
         {
             try
             {
-                if (customerType is null)
+                if (customerTypeDtoPost is null)
                 {
                     _logger.LogError("CustomerType object sent from client is null.");
                     return BadRequest("CustomerType object is null");
@@ -84,7 +84,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid CustomerType object sent from client.");
                     return BadRequest("Invalid model object");
                 }
-                var customerTypeEntity = _mapper.Map<CustomerType>(customerType);
+                var customerTypeEntity = _mapper.Map<CustomerType>(customerTypeDtoPost);
                 _repository.CustomerTypeRepository.CreateCustomerType(customerTypeEntity);
                 _repository.SaveAsync();
 
@@ -100,11 +100,11 @@ namespace Tips.Master.Api.Controllers
 
         // PUT api/<CustomerTypeController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCustomerType(int id, [FromBody] CustomerTypeDto customerType)
+        public async Task<IActionResult> UpdateCustomerType(int id, [FromBody] CustomerTypeDtoUpdate customerTypeDtoUpdate)
         {
             try
             {
-                if (customerType is null)
+                if (customerTypeDtoUpdate is null)
                 {
                     _logger.LogError("CustomerType object sent from client is null.");
                     return BadRequest("CustomerType object is null");
@@ -120,7 +120,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"CustomerType with id: {id}, hasn't been found in db.");
                     return NotFound();
                 }
-                _mapper.Map(customerType, customerTypeEntity);
+                _mapper.Map(customerTypeDtoUpdate, customerTypeEntity);
                 string result =  await _repository.CustomerTypeRepository.UpdateCustomerType(customerTypeEntity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();

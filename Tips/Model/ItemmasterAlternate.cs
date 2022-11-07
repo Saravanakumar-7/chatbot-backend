@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tips.Model
 {
@@ -6,8 +8,13 @@ namespace Tips.Model
     {
         [Key]
         public int Id { get; set; }
-        public string manufacturerPartNo { get; set; }
-        public string manufacturer { get; set; }
-        public bool default_manufacturer { get; set; }
+        public string? ManufacturerPartNo { get; set; }
+        public string? Manufacturer { get; set; }
+        [DefaultValue(false)]
+        public bool IsDefault { get; set; }
+
+        [ForeignKey(nameof(ItemMaster))]
+        public long ItemMasterId { get; set; }
+        public ItemMaster? ItemMaster { get; set; }
     }
 }

@@ -10,7 +10,20 @@ namespace Tips.Master.Api
         {
             CreateMap<CustomerType , CustomerTypeDto>().ReverseMap();
             CreateMap<CustomerType, CustomerTypeDtoPost>().ReverseMap();
+            CreateMap<CustomerType, CustomerTypeDtoUpdate>().ReverseMap();
 
+
+            CreateMap<LeadTime, LeadTimeDto>().ReverseMap();
+            CreateMap<LeadTime, LeadTimeDtoPost>().ReverseMap();
+            CreateMap<LeadTime, LeadTimeDtoUpdate>().ReverseMap();
+
+            CreateMap<MaterialType, MaterialTypeDto>().ReverseMap();
+            CreateMap<MaterialType, MaterialTypeDtoPost>().ReverseMap();
+            CreateMap<MaterialType, MaterialTypeDtoUpdate>().ReverseMap();
+
+            CreateMap<ProcurementType, ProcurementTypeDto>().ReverseMap();
+            CreateMap<ProcurementType, ProcurementTypeDtoPost>().ReverseMap();
+            CreateMap<ProcurementType, ProcurementTypeDtoUpdate>().ReverseMap();
 
             CreateMap<DeliveryTerm, DeliveryTermGetDto>().ReverseMap();
             CreateMap<DeliveryTerm, DeliveryTermPostDto>().ReverseMap();

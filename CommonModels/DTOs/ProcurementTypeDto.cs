@@ -26,7 +26,22 @@ namespace Entities.DTOs
         [Required(ErrorMessage = "ProcurementType is required")]
         [StringLength(100, ErrorMessage = "ProcurementType can't be longer than 100 characters")]
         public string? ProcurementName { get; set; }
+        [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
+        [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]
+        public string? Remarks { get; set; }
+        public bool IsActive { get; set; }
+    }
+
+    public class ProcurementTypeDtoUpdate
+    {
+        public int Id { get; set; }
+        [Required(ErrorMessage = "ProcurementType is required")]
+        [StringLength(100, ErrorMessage = "ProcurementType can't be longer than 100 characters")]
+        public string? CustomerTypeName { get; set; }
+        [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
+        public string? Description { get; set; }
+        [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]
         public string? Remarks { get; set; }
         public bool IsActive { get; set; }
     }
