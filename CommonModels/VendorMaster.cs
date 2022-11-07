@@ -132,7 +132,7 @@ namespace Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<VendorMasterBanking>? Banking { get; set; }
+        public List<VendorBanking>? Banking { get; set; }
         public List<VendorContacts>? Contacts { get; set; }
         public List<VendorAddress>? Addresses { get; set; } 
 

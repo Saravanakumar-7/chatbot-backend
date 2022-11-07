@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Entities.DTOs
 {
-    public class VendorMasterBankingDto
+    public class VendorBankingDto
     {
         public int Id { get; set; }
 
@@ -25,7 +25,8 @@ namespace Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
     }
-    public class VendorMasterBankingPostDto
+
+    public class VendorBankingPostDto
     {
         [StringLength(100, ErrorMessage = "BankName can't be longer than 100 characters")]
         public string? BankName { get; set; }
@@ -40,7 +41,7 @@ namespace Entities.DTOs
 
     }
 
-    public class VendorMasterBankingUpdateDto
+    public class VendorBankingUpdateDto
     {
         public int Id { get; set; }
         [StringLength(100, ErrorMessage = "BankName can't be longer than 100 characters")]

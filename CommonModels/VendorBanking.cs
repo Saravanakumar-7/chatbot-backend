@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Entities
 {
-    public class VendorMasterBanking
+    public class VendorBanking
     {
         public int Id { get; set; }
 

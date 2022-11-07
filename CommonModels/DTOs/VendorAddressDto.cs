@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Entities.DTOs
 {
-    public class AddressDto
+    public class VendorAddressDto
     {
         public int Id { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entities.DTOs
     }
 
 
-    public class AddressPostDto
+    public class VendorAddressPostDto
     {
         [StringLength(500, ErrorMessage = "PoAddress can't be longer than 500 characters")]
         public string? PoAddress { get; set; }
@@ -41,7 +41,7 @@ namespace Entities.DTOs
 
     }
 
-    public class AddressUpdateDto
+    public class VendorAddressUpdateDto
     {
         public int Id { get; set; }
         [StringLength(500, ErrorMessage = "PoAddress can't be longer than 500 characters")]

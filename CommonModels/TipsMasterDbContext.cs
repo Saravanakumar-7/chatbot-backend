@@ -28,7 +28,7 @@ namespace Entities
         public DbSet<VendorContacts>? Contact { get; set; }
         public DbSet<VendorMaster>? VendorMasters { get; set; }
         public DbSet<VendorAddress>? Addresses { get; set; }
-        public DbSet<VendorMasterBanking>? VendorMasterBankings { get; set; }
+        public DbSet<VendorBanking>? VendorBankings { get; set; }
 
         public DbSet<VolumeUom>? VolumeUoms { get; set; }
         public DbSet<WeightUom>? WeightUoms { get; set; }

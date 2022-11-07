@@ -100,8 +100,8 @@ namespace Entities.DTOs
 
         public bool ERP { get; set; } = true;
 
-        public string ESDSetup { get; set; }
-        public string HazmatSetup { get; set; }
+        public string? ESDSetup { get; set; }
+        public string? HazmatSetup { get; set; }
 
         public string? OSPvalue { get; set; }
         public bool OSP { get; set; } = true;
@@ -130,24 +130,28 @@ namespace Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public List<VendorAddressDto>? Addresses { get; set; }
+        public List<VendorContactsDto> Contacts { get; set; }
+        public List<VendorBankingDto> BankingDetails { get; set; }
     }
+
+
     public class VendorMasterPostDto
     {
         public int Id { get; set; }
+
         [Required(ErrorMessage = "VendorId is required")]
         [StringLength(100, ErrorMessage = "VendorId can't be longer than 100 characters")]
-
         public string VendorId { get; set; }
 
         [Required(ErrorMessage = "VendorName is required")]
         [StringLength(100, ErrorMessage = "VendorName can't be longer than 100 characters")]
-
         public string VendorName { get; set; }
 
         public string? VendorAliasName { get; set; }
+        
         [Required(ErrorMessage = "VendorType is required")]
         [StringLength(500, ErrorMessage = "VendorType can't be longer than 500 characters")]
-
         public string VendorType { get; set; }
 
         public string? Address { get; set; }
@@ -163,6 +167,7 @@ namespace Entities.DTOs
         public string? PurchaseGroup { get; set; }
         public string? BoardNumber { get; set; }
         public string? Website { get; set; }
+
         public string? GeneralEmail { get; set; }
         public string? Currency { get; set; }
         public string? GooglePinLocation { get; set; }
@@ -260,6 +265,10 @@ namespace Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+
+        public List<VendorAddressPostDto>? Addresses { get; set; }
+        public List<VendorContactsPostDto>? Contacts { get; set; }
+        public List<VendorBankingPostDto>? BankingDetails { get; set; }
 
     }
     public class VendorMasterUpdateDto
@@ -380,17 +389,15 @@ namespace Entities.DTOs
 
         public DateTime? ApprovalDate { get; set; }
         public string? ApprovalBy { get; set; }
-
         public string? Upload { get; set; }
-
         public bool ReAudit { get; set; } = true;
-
         public string? AuditFrequency { get; set; }
-
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+        public List<VendorAddressUpdateDto>? Addresses { get; set; }
+        public List<VendorContactsUpdateDto>? Contacts { get; set; }
+        public List<VendorBankingUpdateDto>? BankingDetails { get; set; }
     }
 }

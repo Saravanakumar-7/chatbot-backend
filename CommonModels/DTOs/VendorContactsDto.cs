@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Entities.DTOs
 {
-    public class ContactsDto
+    public class VendorContactsDto
     {
         public int Id { get; set; }
 
@@ -33,7 +33,7 @@ namespace Entities.DTOs
 
         public string? AlternameMobileNumber { get; set; }
 
-        public bool Active { get; set; } = true;
+        public bool IsActive { get; set; } = true;
 
         public string? Email { get; set; }
 
@@ -46,7 +46,8 @@ namespace Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
-    public class ContactPostDto
+
+    public class VendorContactsPostDto
     {
         [StringLength(100, ErrorMessage = "IncoTerm can't be longer than 100 characters")]
         public string? Salutation { get; set; }
@@ -71,7 +72,7 @@ namespace Entities.DTOs
 
         public string? AlternameMobileNumber { get; set; }
 
-        public bool Active { get; set; } = true;
+        public bool IsActive { get; set; } = true;
 
         public string? Email { get; set; }
 
@@ -79,7 +80,8 @@ namespace Entities.DTOs
 
         public string? Language { get; set; }
     }
-    public class ContactUpdateDto
+
+    public class VendorContactsUpdateDto
     {
         public int Id { get; set; }
 
@@ -106,7 +108,7 @@ namespace Entities.DTOs
 
         public string? AlternameMobileNumber { get; set; }
 
-        public bool Active { get; set; } = true;
+        public bool IsActive { get; set; } = true;
 
         public string? Email { get; set; }
 
@@ -114,4 +116,4 @@ namespace Entities.DTOs
 
         public string? Language { get; set; }
     }
-    }
+}

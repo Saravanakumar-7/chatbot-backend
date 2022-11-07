@@ -28,6 +28,7 @@ namespace Repository
         private IScopeOfSupplyRepository? _scopeOfSupply;
         private IVendorCategoryRepository? _vendorCategory;
         private IVendorDepartmentRepository? _vendorDepartment;
+        private IVendorRepository? _vendorRepository;
 
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
@@ -212,6 +213,19 @@ namespace Repository
                 return _scopeOfSupply;
             }
         }
+
+        public IVendorRepository VendorRepository
+        {
+            get
+            {
+                if (_vendorRepository == null)
+                {
+                    _vendorRepository = new VendorRepository(_tipsMasterDbContext);
+                }
+                return _vendorRepository;
+            }
+        }
+
         public void SaveAsync()
         {
             _tipsMasterDbContext.SaveChanges();
