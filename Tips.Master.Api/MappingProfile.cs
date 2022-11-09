@@ -25,6 +25,32 @@ namespace Tips.Master.Api
             CreateMap<ProcurementType, ProcurementTypeDtoPost>().ReverseMap();
             CreateMap<ProcurementType, ProcurementTypeDtoUpdate>().ReverseMap();
 
+            CreateMap<ItemMaster, ItemMasterDto>().ReverseMap();
+            CreateMap<ItemMaster, ItemMasterDtoPost>().ReverseMap();
+            CreateMap<ItemMaster, ItemMasterDtoUpdate>().ReverseMap();
+
+            CreateMap<ItemmasterAlternate, ItemmasterAlternateDto>().ReverseMap();
+            CreateMap<ItemmasterAlternate, ItemmasterAlternateDtoPost>().ReverseMap();
+            CreateMap<ItemmasterAlternate, ItemmasterAlternateDtoUpdate>().ReverseMap();
+
+            CreateMap<ItemMasterApprovedVendor, ItemMasterApprovedVendorDto>().ReverseMap();
+            CreateMap<ItemMasterApprovedVendor, ItemMasterApprovedVendorDtoPost>().ReverseMap();
+            CreateMap<ItemMasterApprovedVendor, ItemMasterApprovedVendorDtoUpdate>().ReverseMap();
+
+            CreateMap<ItemMasterFileUpload, ItemMasterFileUploadDto>().ReverseMap();
+            CreateMap<ItemMasterFileUpload, ItemMasterFileUploadDtoPost>().ReverseMap();
+            CreateMap<ItemMasterFileUpload, ItemMasterFileUploadDtoUpdate>().ReverseMap();
+
+            CreateMap<ItemMasterRouting, ItemMasterRoutingDto>().ReverseMap();
+            CreateMap<ItemMasterRouting, ItemMasterRoutingDtoPost>().ReverseMap();
+            CreateMap<ItemMasterRouting, ItemMasterRoutingDtoUpdate>().ReverseMap();
+
+            CreateMap<ItemMasterWarehouse, ItemMasterWarehouseDto>().ReverseMap();
+            CreateMap<ItemMasterWarehouse, ItemMasterWarehouseDtoPost>().ReverseMap();
+            CreateMap<ItemMasterWarehouse, ItemMasterWarehouseDtoUpdate>().ReverseMap();
+
+
+
             CreateMap<DeliveryTerm, DeliveryTermGetDto>().ReverseMap();
             CreateMap<DeliveryTerm, DeliveryTermPostDto>().ReverseMap();
             CreateMap<DeliveryTerm, DeliveryTermUpdateDto>().ReverseMap();

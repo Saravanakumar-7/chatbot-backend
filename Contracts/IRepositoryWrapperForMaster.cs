@@ -12,6 +12,7 @@ namespace Contracts
         ICustomerTypeRepository CustomerTypeRepository { get; }
         IMaterialTypeRepository MaterialTypeRepository { get; }
         IProcurementTypeRepository ProcurementTypeRepository { get; }
+        IItemMasterRepository ItemMasterRepository { get; }
         IVolumeUomRepository VolumeUomRepo { get; }
         IWeightUomRepository WeightUomRepository { get; }
         IBankRepository BankRepository { get; }
