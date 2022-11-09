@@ -64,9 +64,9 @@ namespace Tips.Master.Api
             CreateMap<VendorBanking, VendorBankingPostDto>().ReverseMap();
             CreateMap<VendorBanking, VendorBankingUpdateDto>().ReverseMap();
 
-            CreateMap<VendorAddress, AddressDto>().ReverseMap();
-            CreateMap<VendorAddress, AddressPostDto>().ReverseMap();
-            CreateMap<VendorAddress, AddressUpdateDto>().ReverseMap();
+            CreateMap<VendorAddress, VendorAddressDto>().ReverseMap();
+            CreateMap<VendorAddress, VendorAddressPostDto>().ReverseMap();
+            CreateMap<VendorAddress, VendorAddressPostDto>().ReverseMap();
 
             CreateMap<VendorMaster, VendorMasterDto>().ReverseMap();
             CreateMap<VendorMaster, VendorMasterPostDto>().ReverseMap();
