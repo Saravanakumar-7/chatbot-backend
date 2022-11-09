@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
-using Tips.Master.Api.Extensions;
+using Tips.SalesService.Api.Controllers;
+using Tips.SalesService.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +12,6 @@ builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureMSSqlContext(builder.Configuration);
-builder.Services.ConfigureRepositoryWrapper();
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers();
@@ -38,6 +38,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 });
 
 app.UseCors("CorsPolicy");
+
 
 app.UseAuthorization();
 

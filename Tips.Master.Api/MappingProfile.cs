@@ -58,15 +58,15 @@ namespace Tips.Master.Api
             //test
             CreateMap<VendorContacts, VendorContactsDto>().ReverseMap();
             CreateMap<VendorContacts, VendorContactsPostDto>().ReverseMap();
-            CreateMap<VendorContacts, VendorContactsUpdateDto>().ReverseMap();
+            CreateMap<VendorContacts, VendorContactsPostDto>().ReverseMap();
 
             CreateMap<VendorBanking, VendorBankingDto>().ReverseMap();
             CreateMap<VendorBanking, VendorBankingPostDto>().ReverseMap();
             CreateMap<VendorBanking, VendorBankingUpdateDto>().ReverseMap();
 
-            CreateMap<VendorAddress, VendorAddressDto>().ReverseMap();
-            CreateMap<VendorAddress, VendorAddressPostDto>().ReverseMap();
-            CreateMap<VendorAddress, VendorBankingUpdateDto>().ReverseMap();
+            CreateMap<VendorAddress, AddressDto>().ReverseMap();
+            CreateMap<VendorAddress, AddressPostDto>().ReverseMap();
+            CreateMap<VendorAddress, AddressUpdateDto>().ReverseMap();
 
             CreateMap<VendorMaster, VendorMasterDto>().ReverseMap();
             CreateMap<VendorMaster, VendorMasterPostDto>().ReverseMap();
