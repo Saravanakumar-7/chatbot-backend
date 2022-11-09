@@ -1,5 +1,7 @@
 ﻿using Contracts;
+using Entities;
 using LoggerService;
+using Microsoft.EntityFrameworkCore;
 
 namespace TransmonAdvaita.Extensions
 {
@@ -22,6 +24,12 @@ namespace TransmonAdvaita.Extensions
             {
 
             });
+        }
+
+        public static void ConfigureMSSqlContext(this IServiceCollection services, IConfiguration config)
+        {
+            var connectionString = config["MSSqlconnection:connectionString"];
+            services.AddDbContext<TipsMasterDbContext>(o => o.UseSqlServer(connectionString));
         }
 
         public static void ConfigureLoggerService(this IServiceCollection services)

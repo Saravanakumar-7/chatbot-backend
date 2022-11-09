@@ -15,6 +15,8 @@ namespace Repository
         private ICustomerTypeRepository _customerTypeRepo;
         private IMaterialTypeRepository _materialTypeRepo;
         private IProcurementTypeRepository _procurementTypeRepo;
+        private IItemMasterRepository _itemMasterRepo;
+
         private IDeliveryTermRepository? _deliveryTermRepo;
         private IVolumeUomRepository? _volumeUomRepo;
         private IWeightUomRepository? _weightUomRepo;
@@ -84,6 +86,18 @@ namespace Repository
                     _procurementTypeRepo = new ProcurementTypeRepository(_tipsMasterDbContext);
                 }
                 return _procurementTypeRepo;
+            }
+        }
+
+        public IItemMasterRepository ItemMasterRepository
+        {
+            get
+            {
+                if (_itemMasterRepo == null)
+                {
+                    _itemMasterRepo = new ItemMasterRepository(_tipsMasterDbContext);
+                }
+                return _itemMasterRepo;
             }
         }
 

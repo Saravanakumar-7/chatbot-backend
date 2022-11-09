@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Tips.Model
+namespace Entities
 {
     public class ItemMaster
     {
@@ -107,5 +107,5 @@ namespace Tips.Model
         public ICollection<ItemMasterRouting> ItemMasterRouting { get; set; }
     }
 
-
 }
+

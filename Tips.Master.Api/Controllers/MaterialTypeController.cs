@@ -67,11 +67,11 @@ namespace Tips.Master.Api.Controllers
 
         // POST api/<LeadTimeController>
         [HttpPost]
-        public IActionResult CreateMaterialType([FromBody] MaterialTypeDtoPost materialType)
+        public IActionResult CreateMaterialType([FromBody] MaterialTypeDtoPost materialTypeDtoPost)
         {
             try
             {
-                if (materialType is null)
+                if (materialTypeDtoPost is null)
                 {
                     _logger.LogError("MaterialType object sent from client is null.");
                     return BadRequest("MaterialType object is null");
@@ -81,11 +81,11 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid MaterialType object sent from client.");
                     return BadRequest("Invalid model object");
                 }
-                var materialTypeEntity = _mapper.Map<MaterialType>(materialType);
-                var id = _repository.MaterialTypeRepository.CreateMaterialType(materialTypeEntity);
+                var materialTypeEntity = _mapper.Map<MaterialType>(materialTypeDtoPost);
+                _repository.MaterialTypeRepository.CreateMaterialType(materialTypeEntity);
                 _repository.SaveAsync();
 
-                return CreatedAtRoute("GetMaterialTypeById", new { id = id });
+                return Created("GetMaterialTypeById", "Successfully Created");
             }
             catch (Exception ex)
             {
@@ -97,11 +97,11 @@ namespace Tips.Master.Api.Controllers
 
         // PUT api/<LeadTimeController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMaterialType(int id, [FromBody] MaterialTypeDto materialType)
+        public async Task<IActionResult> UpdateMaterialType(int id, [FromBody] MaterialTypeDtoUpdate materialTypeDtoUpdate)
         {
             try
             {
-                if (materialType is null)
+                if (materialTypeDtoUpdate is null)
                 {
                     _logger.LogError("MaterialType object sent from client is null.");
                     return BadRequest("MaterialType object is null");
@@ -117,7 +117,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"MaterialType with id: {id}, hasn't been found in db.");
                     return NotFound();
                 }
-                _mapper.Map(materialType, materialTypeEntity);
+                _mapper.Map(materialTypeDtoUpdate, materialTypeEntity);
                 string result = await _repository.MaterialTypeRepository.UpdateMaterialType(materialTypeEntity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();

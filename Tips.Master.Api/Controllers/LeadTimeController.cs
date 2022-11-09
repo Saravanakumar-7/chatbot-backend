@@ -67,11 +67,11 @@ namespace Tips.Master.Api.Controllers
 
         // POST api/<LeadTimeController>
         [HttpPost]
-        public IActionResult CreateLeadTime([FromBody] LeadTimeDtoPost leadTime)
+        public IActionResult CreateLeadTime([FromBody] LeadTimeDtoPost leadTimeDtoPost)
         {
             try
             {
-                if (leadTime is null)
+                if (leadTimeDtoPost is null)
                 {
                     _logger.LogError("LeadTime object sent from client is null.");
                     return BadRequest("LeadTime object is null");
@@ -81,11 +81,11 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid LeadTime object sent from client.");
                     return BadRequest("Invalid model object");
                 }
-                var leadTimeEntity = _mapper.Map<LeadTime>(leadTime);
-                var id = _repository.leadTimeRepository.CreateLeadTime(leadTimeEntity);
+                var leadTimeEntity = _mapper.Map<LeadTime>(leadTimeDtoPost);
+                _repository.leadTimeRepository.CreateLeadTime(leadTimeEntity);
                 _repository.SaveAsync();
 
-                return CreatedAtRoute("GetLeadTimeById", new { id = id });
+                return Created("GetLeadTimeById", "Successfully Created");
             }
             catch (Exception ex)
             {
@@ -96,11 +96,11 @@ namespace Tips.Master.Api.Controllers
 
         // PUT api/<LeadTimeController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateLeadTime(int id, [FromBody] LeadTimeDto leadTime)
+        public async Task<IActionResult> UpdateLeadTime(int id, [FromBody] LeadTimeDtoUpdate leadTimeDtoUpdate)
         {
             try
             {
-                if (leadTime is null)
+                if (leadTimeDtoUpdate is null)
                 {
                     _logger.LogError("LeadTime object sent from client is null.");
                     return BadRequest("LeadTime object is null");
@@ -116,7 +116,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"LeadTime with id: {id}, hasn't been found in db.");
                     return NotFound();
                 }
-                _mapper.Map(leadTime, leadTimeEntity);
+                _mapper.Map(leadTimeDtoUpdate, leadTimeEntity);
                 string result = await _repository.leadTimeRepository.UpdateLeadTime(leadTimeEntity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
@@ -178,6 +178,7 @@ namespace Tips.Master.Api.Controllers
         }
         [HttpPut("{id}")]
 
+        [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateLeadTime(int id)
         {
             try

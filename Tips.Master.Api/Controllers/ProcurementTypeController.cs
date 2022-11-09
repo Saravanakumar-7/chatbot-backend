@@ -67,11 +67,11 @@ namespace Tips.Master.Api.Controllers
 
         // POST api/<ProcurementTypeController>
         [HttpPost]
-        public IActionResult CreateProcurementType([FromBody] ProcurementTypeDtoPost procurementType)
+        public IActionResult CreateProcurementType([FromBody] ProcurementTypeDtoPost procurementTypeDtoPost)
         {
             try
             {
-                if (procurementType is null)
+                if (procurementTypeDtoPost is null)
                 {
                     _logger.LogError("ProcurementType object sent from client is null.");
                     return BadRequest("ProcurementType object is null");
@@ -81,11 +81,11 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid ProcurementType object sent from client.");
                     return BadRequest("Invalid model object");
                 }
-                var procurementTypeEntity = _mapper.Map<ProcurementType>(procurementType);
-                var id = _repository.ProcurementTypeRepository.CreateProcurementType(procurementTypeEntity);
+                var procurementTypeEntity = _mapper.Map<ProcurementType>(procurementTypeDtoPost);
+                _repository.ProcurementTypeRepository.CreateProcurementType(procurementTypeEntity);
                 _repository.SaveAsync();
 
-                return CreatedAtRoute("GetProcurementTypeById", new { id = id });
+                return Created("GetProcurementTypeById", "Successfully Created");
             }
             catch (Exception ex)
             {
@@ -96,11 +96,11 @@ namespace Tips.Master.Api.Controllers
 
         // PUT api/<ProcurementTypeController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProcurementType(int id, [FromBody] ProcurementTypeDto procurementType)
+        public async Task<IActionResult> UpdateProcurementType(int id, [FromBody] ProcurementTypeDtoUpdate procurementTypeDtoUpdate)
         {
             try
             {
-                if (procurementType is null)
+                if (procurementTypeDtoUpdate is null)
                 {
                     _logger.LogError("ProcurementType object sent from client is null.");
                     return BadRequest("ProcurementType object is null");
@@ -116,7 +116,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"ProcurementType with id: {id}, hasn't been found in db.");
                     return NotFound();
                 }
-                _mapper.Map(procurementType, procurementTypeEntity);
+                _mapper.Map(procurementTypeDtoUpdate, procurementTypeEntity);
                 string result = await _repository.ProcurementTypeRepository.UpdateProcurementType(procurementTypeEntity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();

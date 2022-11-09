@@ -14,6 +14,7 @@ namespace Entities
         public DbSet<DeliveryTerm> DeliveryTerms { get; set; }  
         public DbSet<LeadTime> LeadTimes { get; set; }
         public DbSet<MaterialType>? MaterialTypes { get; set; }
+        public DbSet<ItemMaster> ItemMasters { get; set; }
 
         public DbSet<Bank>? Banks { get; set; }
         public DbSet<IncoTerm>? IncoTerms { get; set; } 
