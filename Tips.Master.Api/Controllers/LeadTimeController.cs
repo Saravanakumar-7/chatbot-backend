@@ -176,6 +176,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        [HttpPut("{id}")]
 
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateLeadTime(int id)

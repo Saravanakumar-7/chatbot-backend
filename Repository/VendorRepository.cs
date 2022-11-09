@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities;
+using Entities.DTOs;
 using Entities.Migrations;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,49 +19,73 @@ namespace Repository
 
         public async Task<int?> CreateVendor(VendorMaster vendorMaster)
         {
-            vendorMaster.CreatedBy = "Admin";
-            vendorMaster.CreatedOn = DateTime.Now;
-            var result = await Create(vendorMaster);
-            return result.Id;
-        }
+                vendorMaster.CreatedBy = "Admin";
+                vendorMaster.CreatedOn = DateTime.Now;
+                var result = await Create(vendorMaster);
+                return result.Id; 
 
-        public Task<string> DeleteVendor(VendorMaster vendorMaster)
-        {
-            throw new NotImplementedException();
         }
+         
+
+        //public async Task<string> DeleteVendor(VendorMasterDto vendorMasterDto)
+        //{
+        //    //Delete(vendorMasterDto.Address);
+        //    //string result = $"Delete Vendor details of {vendorMasterDto.Id} is deleted successfully!";
+        //    //return result;
+        //    throw new NotImplementedException();
+
+        //}
 
         public async Task<IEnumerable<VendorMaster>> GetAllActiveVendors()
         {
             var vendorDetails = await FindAll().ToListAsync();
-
             return vendorDetails;
+            //throw new NotImplementedException();
+
         }
 
         public async Task<IEnumerable<VendorMaster>> GetAllVendors()
         {
             var vendorDetails = await TipsMasterDbContext.VendorMasters
-                                .Include(x=> x.Banking)
+                                .Include(t=> t.VendorBankings)
                                 .Include(x=> x.Addresses)
                                 .Include(m=> m.Contacts)
                                 .ToListAsync();
 
             return vendorDetails;
+            //throw new NotImplementedException();
+
+
         }
 
         public async Task<VendorMaster> GetVendorById(int id)
         {
-            var vendorDetails = await TipsMasterDbContext.VendorMasters.Where(x=> x.Id == id)
-                                .Include(x => x.Banking)
-                                .Include(x => x.Addresses)
-                                .Include(m => m.Contacts)
-                                .FirstOrDefaultAsync();
+          var vendorDetails = await TipsMasterDbContext.VendorMasters.Where(x=> x.Id == id)
+                              .Include(x => x.VendorBankings)
+                              .Include(x => x.Addresses)
+                              .Include(m => m.Contacts)
+                              .FirstOrDefaultAsync();
 
-            return vendorDetails;
+          return vendorDetails;
+          //  throw new NotImplementedException();
         }
+         
 
-        public Task<string> UpdateVendor(VendorMaster vendorMaster)
+        public async Task<string> UpdateVendor(VendorMaster DataUpdate)             
         {
-            throw new NotImplementedException();
+            DataUpdate.LastModifiedBy = "Admin";
+            DataUpdate.LastModifiedOn = DateTime.Now; 
+            Update(DataUpdate);
+            string result = $"Vendor of Detail {DataUpdate.Id} is updated successfully!";
+            return result; 
         }
+
+        public async Task<string> DeleteVendor(VendorMaster vendormaster)
+        {
+            Delete(vendormaster);
+            string result = $"Vendor details of {vendormaster.Id} is deleted successfully!";
+            return result;
+        }
+
     }
 }
