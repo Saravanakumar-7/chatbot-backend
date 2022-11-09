@@ -4,6 +4,7 @@ using Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Entities.Migrations
 {
     [DbContext(typeof(TipsMasterDbContext))]
-    partial class TipsMasterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221108055944_testr")]
+    partial class testr
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -494,12 +496,6 @@ namespace Entities.Migrations
                     b.Property<string>("Branch")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("IBANCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -508,12 +504,6 @@ namespace Entities.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("Primary")
                         .HasColumnType("bit");
@@ -992,7 +982,7 @@ namespace Entities.Migrations
             modelBuilder.Entity("Entities.VendorBanking", b =>
                 {
                     b.HasOne("Entities.VendorMaster", "VendorMaster")
-                        .WithMany("VendorBankings")
+                        .WithMany("Banking")
                         .HasForeignKey("VendorMasterId");
 
                     b.Navigation("VendorMaster");
@@ -1011,9 +1001,9 @@ namespace Entities.Migrations
                 {
                     b.Navigation("Addresses");
 
-                    b.Navigation("Contacts");
+                    b.Navigation("Banking");
 
-                    b.Navigation("VendorBankings");
+                    b.Navigation("Contacts");
                 });
 #pragma warning restore 612, 618
         }

@@ -29,6 +29,10 @@ namespace Repository
         private IVendorCategoryRepository? _vendorCategory;
         private IVendorDepartmentRepository? _vendorDepartment;
         private IVendorRepository? _vendorRepository;
+        //private IVendorContactRepository? _vendorContactRepository;
+        //private IVendorBankingRepository? _vendorBankingRepository;
+        //private IVendorAddressRepository? _vendorAddressRepository;
+
 
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
@@ -225,6 +229,12 @@ namespace Repository
                 return _vendorRepository;
             }
         }
+
+        public IVendorContactRepository VendorContactRepository => throw new NotImplementedException();
+
+        public IVendorAddressRepository VendorAddressRepository => throw new NotImplementedException();
+
+        public IVendorBankingRepository VendorBankingRepository => throw new NotImplementedException();
 
         public void SaveAsync()
         {

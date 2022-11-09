@@ -24,6 +24,12 @@ namespace Contracts
         IScopeOfSupplyRepository ScopeOfSupplyRepository { get; }
         IDeliveryTermRepository DeliveryTermRepo { get; }
         IVendorRepository VendorRepository { get; }
+
+        IVendorContactRepository VendorContactRepository { get; }
+
+        IVendorAddressRepository VendorAddressRepository { get; }   
+
+        IVendorBankingRepository VendorBankingRepository { get; }
         void SaveAsync();
     }
 }

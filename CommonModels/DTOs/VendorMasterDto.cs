@@ -132,7 +132,7 @@ namespace Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
         public List<VendorAddressDto>? Addresses { get; set; }
         public List<VendorContactsDto> Contacts { get; set; }
-        public List<VendorBankingDto> BankingDetails { get; set; }
+        public List<VendorBankingDto> VendorBankings { get; set; }
     }
 
 
@@ -268,7 +268,7 @@ namespace Entities.DTOs
 
         public List<VendorAddressPostDto>? Addresses { get; set; }
         public List<VendorContactsPostDto>? Contacts { get; set; }
-        public List<VendorBankingPostDto>? BankingDetails { get; set; }
+        public List<VendorBankingPostDto>? VendorBankings { get; set; }
 
     }
     public class VendorMasterUpdateDto
@@ -398,6 +398,6 @@ namespace Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
         public List<VendorAddressUpdateDto>? Addresses { get; set; }
         public List<VendorContactsUpdateDto>? Contacts { get; set; }
-        public List<VendorBankingUpdateDto>? BankingDetails { get; set; }
+        public List<VendorBankingUpdateDto>? VendorBankings { get; set; }
     }
 }

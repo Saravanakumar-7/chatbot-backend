@@ -14,6 +14,6 @@ namespace Contracts
         Task<IEnumerable<VendorMaster>> GetAllActiveVendors();
         Task<int?> CreateVendor(VendorMaster vendorMaster);
         Task<string> UpdateVendor(VendorMaster vendorMaster);
-        Task<string> DeleteVendor(VendorMaster vendorMaster);
+        Task<string> DeleteVendor(VendorMaster vendorMaster); 
     }
 }

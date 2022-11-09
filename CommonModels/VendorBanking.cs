@@ -21,6 +21,10 @@ namespace Entities
         public bool Primary { get; set; } = true;
         public bool IsActive { get; set; } = true;
 
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
         public int VendorId { get; set; }
 
         public VendorMaster? VendorMaster { get; set; }
