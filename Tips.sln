@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "internal_logs", "internal_l
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "logs", "logs", "{56FE6334-38C5-435D-8A6D-6C5DF44ADFF9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tips.SalesService.Api", "Tips.SalesService.Api\Tips.SalesService.Api.csproj", "{74CB0719-C88A-470F-9A8D-CE3312567C1C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{32BFF2C8-596A-484B-89C8-EF69BA966A48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32BFF2C8-596A-484B-89C8-EF69BA966A48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32BFF2C8-596A-484B-89C8-EF69BA966A48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74CB0719-C88A-470F-9A8D-CE3312567C1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74CB0719-C88A-470F-9A8D-CE3312567C1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74CB0719-C88A-470F-9A8D-CE3312567C1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74CB0719-C88A-470F-9A8D-CE3312567C1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
