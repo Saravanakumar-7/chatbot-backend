@@ -1,10 +1,9 @@
-﻿using Contracts;
-using Entities;
-using LoggerService;
+﻿using LoggerService;
 using Microsoft.EntityFrameworkCore;
-using Repository;
+using Contracts;
+using Tips.SalesService.Api.Entities;
 
-namespace Tips.Master.Api.Extensions
+namespace Tips.SalesService.Api.Extensions
 {
     public static class ServiceExtensions
     {
@@ -35,12 +34,12 @@ namespace Tips.Master.Api.Extensions
         public static void ConfigureMSSqlContext(this IServiceCollection services, IConfiguration config)
         {
             var connectionString = config["MSSqlconnection:connectionString"];
-            services.AddDbContext<TipsMasterDbContext>(o => o.UseSqlServer(connectionString));
+            services.AddDbContext<TipsSalesServiceDbContext>(o => o.UseSqlServer(connectionString));
         }
 
-        public static void ConfigureRepositoryWrapper(this IServiceCollection services)
-        {
-            services.AddScoped<IRepositoryWrapperForMaster, RepositoryWrapperForMaster>();
-        }
+        //public static void ConfigureRepositoryWrapper(this IServiceCollection services)
+        //{
+        //    services.AddScoped<IRepositoryWrapperForMaster, RepositoryWrapperForMaster>();
+        //}
     }
 }
