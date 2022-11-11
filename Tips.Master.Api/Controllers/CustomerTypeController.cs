@@ -3,6 +3,8 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using MySqlX.XDevAPI.Common;
+using NuGet.Protocol;
 using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -28,16 +30,24 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllCustomerTypes()
         {
+            ServiceResponse<IEnumerable<CustomerTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerTypeDto>>();
             try
             {
+                
                 var customerTypeList = await _repository.CustomerTypeRepository.GetAllCustomerTypes();
                 _logger.LogInfo("Returned all customerTypes");
                 var result = _mapper.Map<IEnumerable<CustomerTypeDto>>(customerTypeList);
-                return Ok(result);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -64,24 +74,38 @@ namespace Tips.Master.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomerTypeById(int id)
         {
+            ServiceResponse<CustomerTypeDto> serviceResponse = new ServiceResponse<CustomerTypeDto>();
             try
             {
                 var customerType = await _repository.CustomerTypeRepository.GetCustomerTypeById(id);
                 if (customerType == null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CustomerType with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"CustomerType with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
+
                     _logger.LogInfo($"Returned owner with id: {id}");
                     var result = _mapper.Map<CustomerTypeDto>(customerType);
-                    return Ok(result);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetCustomerTypeById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");
             }
         }
