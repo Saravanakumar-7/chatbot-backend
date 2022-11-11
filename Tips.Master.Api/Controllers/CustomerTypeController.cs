@@ -30,6 +30,24 @@ namespace Tips.Master.Api.Controllers
         {
             try
             {
+                var customerTypeList = await _repository.CustomerTypeRepository.GetAllCustomerTypes();
+                _logger.LogInfo("Returned all customerTypes");
+                var result = _mapper.Map<IEnumerable<CustomerTypeDto>>(customerTypeList);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        // GET: api/<CustomerTypeController>
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveCustomerTypes()
+        {
+            try
+            {
                 var customerTypeList = await _repository.CustomerTypeRepository.GetAllActiveCustomerTypes();
                 _logger.LogInfo("Returned all customerTypes");
                 var result = _mapper.Map<IEnumerable<CustomerTypeDto>>(customerTypeList);
