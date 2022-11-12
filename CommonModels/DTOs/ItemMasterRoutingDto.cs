@@ -21,9 +21,9 @@ namespace Entities.DTOs
         [DefaultValue(false)]
         public bool IsRoutingActive { get; set; }
 
-        [ForeignKey(nameof(ItemMaster))]
-        public long ItemMasterId { get; set; }
-        public ItemMaster? ItemMaster { get; set; }
+        //[ForeignKey(nameof(ItemMaster))]
+        //public long ItemMasterId { get; set; }
+        //public ItemMaster? ItemMaster { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -40,9 +40,9 @@ namespace Entities.DTOs
         [DefaultValue(false)]
         public bool IsRoutingActive { get; set; }
 
-        [ForeignKey(nameof(ItemMaster))]
-        public long ItemMasterId { get; set; }
-        public ItemMaster? ItemMaster { get; set; }
+        //[ForeignKey(nameof(ItemMaster))]
+        //public long ItemMasterId { get; set; }
+        //public ItemMaster? ItemMaster { get; set; }
 
     }
 
@@ -58,9 +58,9 @@ namespace Entities.DTOs
         [DefaultValue(false)]
         public bool IsRoutingActive { get; set; }
 
-        [ForeignKey(nameof(ItemMaster))]
-        public long ItemMasterId { get; set; }
-        public ItemMaster? ItemMaster { get; set; }
+        //[ForeignKey(nameof(ItemMaster))]
+        //public long ItemMasterId { get; set; }
+        //public ItemMaster? ItemMaster { get; set; }
     }
 
 }

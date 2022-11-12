@@ -23,4 +23,4 @@ namespace Tips.Model
 
     }
 }
-}
+

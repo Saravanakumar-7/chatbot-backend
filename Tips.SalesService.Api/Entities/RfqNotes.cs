@@ -5,28 +5,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Tips.SalesService.Api.Entities
 {
-    public class VendorAddress
+    public class RfqNotes
     {
         public int Id { get; set; }
+        public string? FromCSCategory { get; set; }
 
-        public string? PoAddress { get; set; }
+        public string? FromEnggCategory { get; set; }
 
-        public string? GSTNNumber { get; set; }
-
-        public string? PANNumber { get; set; }
-
-        public bool SameasAddress { get; set; } = false;
-
-        public bool IsActive { get; set; } = true;
-
+        public string? FromEnggNotes { get; set; }
+        public string? FromCSNotes { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
-        public int VendorMasterId { get; set; }
-        public VendorMaster? VendorMaster { get; set; }
+        public int RfqId { get; set; }
+        public Rfq? Rfq { get; set; }
     }
 }

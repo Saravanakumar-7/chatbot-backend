@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Contracts
 {
-    public interface IBankRepository : IRepositoryBase<Bank>
+    public interface IBankRepository
     {
         Task<IEnumerable<Bank>> GetAllBank();
         Task<Bank> GetBankById(int id);

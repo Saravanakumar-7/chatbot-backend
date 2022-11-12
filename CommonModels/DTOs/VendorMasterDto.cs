@@ -131,15 +131,14 @@ namespace Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public List<VendorAddressDto>? Addresses { get; set; }
-        public List<VendorContactsDto> Contacts { get; set; }
-        public List<VendorBankingDto> VendorBankings { get; set; }
+        public List<VendorContactsDto>? Contacts { get; set; }
+        public List<VendorBankingDto>? VendorBankings { get; set; }
     }
 
 
     public class VendorMasterPostDto
     {
-        public int Id { get; set; }
-
+ 
         [Required(ErrorMessage = "VendorId is required")]
         [StringLength(100, ErrorMessage = "VendorId can't be longer than 100 characters")]
         public string VendorId { get; set; }
