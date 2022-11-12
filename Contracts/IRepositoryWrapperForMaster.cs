@@ -10,6 +10,17 @@ namespace Contracts
     {
         ILeadTimeRepository leadTimeRepository { get; }
         ICustomerTypeRepository CustomerTypeRepository { get; }
+        IPurchaseGroupRepository PurchaseGroupRepository { get; }
+        ICostCenterRepository CostCenterRepository { get; }
+        ICostingMethodRepository CostingMethodRepository { get; }
+        IAuditFrequencyRepository AuditFrequencyRepository { get; }
+        INatureOfRelationshipRepository NatureOfRelationshipRepository { get; }
+        ILanguageRepository LanguageRepository { get; }
+        ISalutationsRepository SalutationsRepository { get; }
+        IExportUnitTypeRepository ExportUnitTypeRepository { get; }
+        ITypeOfCompanyRepository TypeOfCompanyRepository { get; }
+        IPaymentTermRepository PaymentTermRepository { get; }
+        IPackingInstructionRepository PackingInstructionRepository { get; }
         IMaterialTypeRepository MaterialTypeRepository { get; }
         IProcurementTypeRepository ProcurementTypeRepository { get; }
         IItemMasterRepository ItemMasterRepository { get; }

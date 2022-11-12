@@ -13,6 +13,53 @@ namespace Tips.Master.Api
             CreateMap<CustomerType, CustomerTypeDtoUpdate>().ReverseMap();
 
 
+            CreateMap<PurchaseGroup, PurchaseGroupDto>().ReverseMap();
+            CreateMap<PurchaseGroup, PurchaseGroupDtoPost>().ReverseMap();
+            CreateMap<PurchaseGroup, PurchaseGroupDtoUpdate>().ReverseMap();
+
+
+            CreateMap<CostCenter, CostCenterDto>().ReverseMap();
+            CreateMap<CostCenter, CostCenterDtoPost>().ReverseMap();
+            CreateMap<CostCenter, CostCenterDtoUpdate>().ReverseMap();
+
+            CreateMap<CostingMethod, CostingMethodDto>().ReverseMap();
+            CreateMap<CostingMethod, CostingMethodDtoPost>().ReverseMap();
+            CreateMap<CostingMethod, CostingMethodDtoUpdate>().ReverseMap();
+
+            CreateMap<AuditFrequency, AuditFrequencyDto>().ReverseMap();
+            CreateMap<AuditFrequency, AuditFrequencyDtoPost>().ReverseMap();
+            CreateMap<AuditFrequency, AuditFrequencyDtoUpdate>().ReverseMap();
+
+            CreateMap<NatureOfRelationship, NatureOfRelationshipDto>().ReverseMap();
+            CreateMap<NatureOfRelationship, NatureOfRelationshipDtoPost>().ReverseMap();
+            CreateMap<NatureOfRelationship, NatureOfRelationshipDtoUpdate>().ReverseMap();
+
+            CreateMap<Language, LanguageDto>().ReverseMap();
+            CreateMap<Language, LanguageDtoPost>().ReverseMap();
+            CreateMap<Language, LanguageDtoUpdate>().ReverseMap();
+
+            CreateMap<Salutations, SalutationsDto>().ReverseMap();
+            CreateMap<Salutations, SalutationsDtoPost>().ReverseMap();
+            CreateMap<Salutations, SalutationsDtoUpdate>().ReverseMap();
+
+            CreateMap<ExportUnitType, ExportUnitTypeDto>().ReverseMap();
+            CreateMap<ExportUnitType, ExportUnitTypeDtoPost>().ReverseMap();
+            CreateMap<ExportUnitType, ExportUnitTypeDtoUpdate>().ReverseMap();
+
+
+            CreateMap<TypeOfCompany, TypeOfCompanyDto>().ReverseMap();
+            CreateMap<TypeOfCompany, TypeOfCompanyDtoPost>().ReverseMap();
+            CreateMap<TypeOfCompany, TypeOfCompanyDtoUpdate>().ReverseMap();
+
+            CreateMap<PaymentTerm, PaymentTermDto>().ReverseMap();
+            CreateMap<PaymentTerm, PaymentTermDtoPost>().ReverseMap();
+            CreateMap<PaymentTerm, PaymentTermDtoUpdate>().ReverseMap();
+
+
+            CreateMap<PackingInstruction, PackingInstructionDto>().ReverseMap();
+            CreateMap<PackingInstruction, PackingInstructionDtoPost>().ReverseMap();
+            CreateMap<PackingInstruction, PackingInstructionDtoUpdate>().ReverseMap();
+
             CreateMap<LeadTime, LeadTimeDto>().ReverseMap();
             CreateMap<LeadTime, LeadTimeDtoPost>().ReverseMap();
             CreateMap<LeadTime, LeadTimeDtoUpdate>().ReverseMap();

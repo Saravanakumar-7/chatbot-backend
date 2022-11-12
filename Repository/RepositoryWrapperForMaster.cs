@@ -31,6 +31,18 @@ namespace Repository
         private IVendorCategoryRepository? _vendorCategory;
         private IVendorDepartmentRepository? _vendorDepartment;
         private IVendorRepository? _vendorRepository;
+
+        private IPurchaseGroupRepository? _purchaseGroupRepo;   
+        private ICostCenterRepository? _costCenterRepo; 
+        private ICostingMethodRepository? _costingMethodRepo;   
+        private IAuditFrequencyRepository? _auditFrequencyRepo; 
+        private INatureOfRelationshipRepository? _abilityOfRelationshipRepo;    
+        private ILanguageRepository? _languageRepo; 
+        private ISalutationsRepository? _salutationsRepo;   
+        private IExportUnitTypeRepository? _exportUnitTypeRepo; 
+        private ITypeOfCompanyRepository? _typeOfCompanyRepo;   
+        private IPaymentTermRepository? _paymentTermRepo;   
+        private IPackingInstructionRepository? _packingInstructionRepo; 
         //private IVendorContactRepository? _vendorContactRepository;
         //private IVendorBankingRepository? _vendorBankingRepository;
         //private IVendorAddressRepository? _vendorAddressRepository;
@@ -243,12 +255,120 @@ namespace Repository
                 return _vendorRepository;
             }
         }
+        public IPurchaseGroupRepository PurchaseGroupRepository
+        {
+            get
+            {
+                if (_purchaseGroupRepo == null)
+                {
+                    _purchaseGroupRepo = new PurchaseGroupRepository(_tipsMasterDbContext);
+                }
+                return _purchaseGroupRepo;
+            }
+        }
+        public ICostCenterRepository CostCenterRepository
+        {
+            get
+            {
+                if (_costCenterRepo == null)
+                {
+                    _costCenterRepo = new CostCenterRepository(_tipsMasterDbContext);
+                }
+                return _costCenterRepo;
+            }
+        }
+        public ICostingMethodRepository costingMethodRepository
+        {
+            get
+            {
+                if (_costingMethodRepo == null)
+                {
+                    _costingMethodRepo = new CostingMethodRepository(_tipsMasterDbContext);
+                }
+                return _costingMethodRepo;
+            }
+        }
+
+        public ICostingMethodRepository CostingMethodRepository => throw new NotImplementedException();
+
+        public IExportUnitTypeRepository exportUnitTypeRepository
+        {
+            get
+            {
+                if (_exportUnitTypeRepo == null)
+                {
+                    _exportUnitTypeRepo = new ExportUnitTypeRepository(_tipsMasterDbContext);
+                }
+                return _exportUnitTypeRepo;
+            }
+        }
+
+        public IExportUnitTypeRepository ExportUnitTypeRepository => throw new NotImplementedException();
+
+        public ISalutationsRepository salutationsRepository
+        {
+            get
+            {
+                if (_salutationsRepo == null)
+                {
+                    _salutationsRepo = new SalutationsRepository(_tipsMasterDbContext);
+                }
+                return _salutationsRepo;
+            }
+        }
+
+        public ISalutationsRepository SalutationsRepository => throw new NotImplementedException();
+
+        public ILanguageRepository LanguageRepository
+        {
+            get
+            {
+                if (_languageRepo == null)
+                {
+                    _languageRepo = new LanguageRepository(_tipsMasterDbContext);
+                }
+                return _languageRepo;
+            }
+        }
+
+        public INatureOfRelationshipRepository natureOfRelationshipRepository
+        {
+            get
+            {
+                if (_abilityOfRelationshipRepo == null)
+                {
+                    _abilityOfRelationshipRepo = new NatureOfRelationshipRepository(_tipsMasterDbContext);
+                }
+                return _abilityOfRelationshipRepo;
+            }
+        }
+
+        public INatureOfRelationshipRepository NatureOfRelationshipRepository => throw new NotImplementedException();
+
+        public IAuditFrequencyRepository AuditFrequencyRepository
+        {
+            get
+            {
+                if (_auditFrequencyRepo == null)
+                {
+                    _auditFrequencyRepo = new AuditFrequencyRepository(_tipsMasterDbContext);
+                }
+                return _auditFrequencyRepo;
+            }
+        }
+
 
         public IVendorContactRepository VendorContactRepository => throw new NotImplementedException();
 
         public IVendorAddressRepository VendorAddressRepository => throw new NotImplementedException();
 
         public IVendorBankingRepository VendorBankingRepository => throw new NotImplementedException();
+
+        public ITypeOfCompanyRepository TypeOfCompanyRepository => throw new NotImplementedException();
+
+        public IPaymentTermRepository PaymentTermRepository => throw new NotImplementedException();
+
+        public IPackingInstructionRepository PackingInstructionRepository => throw new NotImplementedException();
 
         public void SaveAsync()
         {

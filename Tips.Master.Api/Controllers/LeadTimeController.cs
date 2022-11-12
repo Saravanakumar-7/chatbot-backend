@@ -177,6 +177,8 @@ namespace Tips.Master.Api.Controllers
             }
         } 
         [HttpPut("{id}")]
+
+        [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateLeadTime(int id)
         {
             try
