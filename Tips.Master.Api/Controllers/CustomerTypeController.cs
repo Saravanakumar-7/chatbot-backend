@@ -3,7 +3,6 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using MySqlX.XDevAPI.Common;
 using NuGet.Protocol;
 using System.Net;
 
