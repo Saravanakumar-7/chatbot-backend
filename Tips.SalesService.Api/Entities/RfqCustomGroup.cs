@@ -5,28 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Tips.SalesService.Api.Entities
 {
-    public class VendorAddress
+    public class RfqCustomGroup
     {
         public int Id { get; set; }
-
-        public string? PoAddress { get; set; }
-
-        public string? GSTNNumber { get; set; }
-
-        public string? PANNumber { get; set; }
-
-        public bool SameasAddress { get; set; } = false;
-
-        public bool IsActive { get; set; } = true;
-
+        public string CustomGroupName { get; set; }
+        public string? Remark { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public int VendorMasterId { get; set; }
-        public VendorMaster? VendorMaster { get; set; }
+
     }
 }

@@ -175,9 +175,10 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogError($"Something went wrong inside ActivateLeadTime action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
-        }
+        } 
         [HttpPut("{id}")]
-         
+
+        [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateLeadTime(int id)
         {
             try

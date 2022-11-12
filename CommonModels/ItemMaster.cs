@@ -1,6 +1,11 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Entities
 {
@@ -100,11 +105,11 @@ namespace Entities
         [DisplayFormat(DataFormatString = "{dd-MM-yyyy HH:mm:ss}")]
         public DateTime LastModifiedOn { get; set; }
 
-        public ICollection<ItemmasterAlternate> ItemmasterAlternate { get; set; }
-        public ICollection<ItemMasterWarehouse> ItemMasterWarehouse { get; set; }
-        public ICollection<ItemMasterApprovedVendor> ItemMasterApprovedVendor { get; set; }
-        public ICollection<ItemMasterFileUpload> ItemMasterFileUpload { get; set; }
-        public ICollection<ItemMasterRouting> ItemMasterRouting { get; set; }
+        public List<ItemmasterAlternate>? ItemmasterAlternate { get; set; }
+        public List<ItemMasterWarehouse>? ItemMasterWarehouse { get; set; }
+        public List<ItemMasterApprovedVendor>? ItemMasterApprovedVendor { get; set; }
+        public List<ItemMasterFileUpload>? ItemMasterFileUpload { get; set; }
+        public List<ItemMasterRouting>? ItemMasterRouting { get; set; }
     }
 
 }

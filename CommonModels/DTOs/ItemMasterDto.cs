@@ -104,11 +104,11 @@ namespace Entities.DTOs
         public string? LastModifiedBy { get; set; }
         [DisplayFormat(DataFormatString = "{dd-MM-yyyy HH:mm:ss}")]
         public DateTime LastModifiedOn { get; set; }
-        public ICollection<ItemmasterAlternate> ItemmasterAlternate { get; set; }
-        public ICollection<ItemMasterWarehouse> ItemMasterWarehouse { get; set; }
-        public ICollection<ItemMasterApprovedVendor> ItemMasterApprovedVendor { get; set; }
-        public ICollection<ItemMasterFileUpload> ItemMasterFileUpload { get; set; }
-        public ICollection<ItemMasterRouting> ItemMasterRouting { get; set; }
+        public List<ItemmasterAlternateDto>? ItemmasterAlternate { get; set; }
+        public List<ItemMasterWarehouseDto>? ItemMasterWarehouse { get; set; }
+        public List<ItemMasterApprovedVendorDto>? ItemMasterApprovedVendor { get; set; }
+        public List<ItemMasterFileUploadDto>? ItemMasterFileUpload { get; set; }
+        public List<ItemMasterRoutingDto>? ItemMasterRouting { get; set; }
     }
 
     public class ItemMasterDtoPost
@@ -131,9 +131,9 @@ namespace Entities.DTOs
         public string? Hsn { get; set; }
         [MaxLength(100)]
         public string? MaterialGroup { get; set; }
-        [DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
+        //[DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
         public DateTime ValidFrom { get; set; }
-        [DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
+        //[DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
         public DateTime ValidTo { get; set; }
         [MaxLength(50)]
         public string? PurchaseGroup { get; set; }
@@ -197,11 +197,11 @@ namespace Entities.DTOs
         public bool Valuation { get; set; }
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
-        public ICollection<ItemmasterAlternate> ItemmasterAlternate { get; set; }
-        public ICollection<ItemMasterWarehouse> ItemMasterWarehouse { get; set; }
-        public ICollection<ItemMasterApprovedVendor> ItemMasterApprovedVendor { get; set; }
-        public ICollection<ItemMasterFileUpload> ItemMasterFileUpload { get; set; }
-        public ICollection<ItemMasterRouting> ItemMasterRouting { get; set; }
+        public List<ItemmasterAlternateDtoPost>? ItemmasterAlternate { get; set; }
+        public List<ItemMasterWarehouseDtoPost>? ItemMasterWarehouse { get; set; }
+        public List<ItemMasterApprovedVendorDtoPost>? ItemMasterApprovedVendor { get; set; }
+        public List<ItemMasterFileUploadDtoPost>? ItemMasterFileUpload { get; set; }
+        public List<ItemMasterRoutingDtoPost>? ItemMasterRouting { get; set; }
     }
 
     public class ItemMasterDtoUpdate
@@ -293,11 +293,11 @@ namespace Entities.DTOs
         public bool Valuation { get; set; }
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
-        public ICollection<ItemmasterAlternate> ItemmasterAlternate { get; set; }
-        public ICollection<ItemMasterWarehouse> ItemMasterWarehouse { get; set; }
-        public ICollection<ItemMasterApprovedVendor> ItemMasterApprovedVendor { get; set; }
-        public ICollection<ItemMasterFileUpload> ItemMasterFileUpload { get; set; }
-        public ICollection<ItemMasterRouting> ItemMasterRouting { get; set; }
+        public List<ItemmasterAlternateDtoUpdate>? ItemmasterAlternate { get; set; }
+        public List<ItemMasterWarehouseDtoUpdate>? ItemMasterWarehouse { get; set; }
+        public List<ItemMasterApprovedVendorDtoUpdate>? ItemMasterApprovedVendor { get; set; }
+        public List<ItemMasterFileUploadDtoUpdate>? ItemMasterFileUpload { get; set; }
+        public List<ItemMasterRoutingDtoUpdate>? ItemMasterRouting { get; set; }
 
     }
 
