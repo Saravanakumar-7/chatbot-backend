@@ -12,7 +12,29 @@ namespace Contracts
         ICustomerTypeRepository CustomerTypeRepository { get; }
         IMaterialTypeRepository MaterialTypeRepository { get; }
         IProcurementTypeRepository ProcurementTypeRepository { get; }
+
+        IUOMRepository UOMRepository { get; }
+        IUOCRepository UOCRepository { get; }
+        ICommodityRepository CommodityRepository{ get; }
+        ILocationsRepository LocationsRepository { get; }
+
+        ICompanyMasterRepository CompanyMasterRepository { get; }
+        ICompanyAddressesRepository CompanyAddressesRepository { get; }
+        ICompanyContactsRepository CompanyContactsRepository { get; }
+        ICompanyBankingRepository CompanyBankingRepository { get; }
+
+        ICustomerMasterRepository Customermasterrepository { get; }
+        ICustomerBankingsRepository CustomerBankingsRepository { get; }
+        ICustomerAddressesRepository CustomerAddressesRepository { get; }
+        ICustomerShippingAddressesRepository CustomerShippingAddressesRepository { get; }
+        ICustomerContactsRepository CustomerContactsRepository { get; }
+
         IItemMasterRepository ItemMasterRepository { get; }
+        IItemmasterAlternate ItemmasterAlternateRepository { get; }
+        IItemMasterApprovedVendor ItemMasterApprovedVendorRepository { get; }
+        IItemMasterFileUpload ItemMasterFileUploadRepository { get; }
+        IItemMasterRouting ItemMasterRoutingRepository { get; }
+        IItemMasterWarehouse ItemMasterWarehouseRepository { get; }
         IVolumeUomRepository VolumeUomRepo { get; }
         IWeightUomRepository WeightUomRepository { get; }
         IBankRepository BankRepository { get; }
@@ -24,6 +46,7 @@ namespace Contracts
         IVendorDepartmentRepository VendorDepartmentRepository { get; }
         IScopeOfSupplyRepository ScopeOfSupplyRepository { get; }
         IDeliveryTermRepository DeliveryTermRepo { get; }
+
         IVendorRepository VendorRepository { get; }
 
         IVendorContactRepository VendorContactRepository { get; }

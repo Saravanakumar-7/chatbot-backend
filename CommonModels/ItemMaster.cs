@@ -6,8 +6,6 @@ namespace Entities
 {
     public class ItemMaster
     {
-        [Key]
-        [Column("ItemMasterId")]
         public long Id { get; set; }
         [MaxLength(100)]
         public string? ItemNumber { get; set; }
@@ -77,12 +75,14 @@ namespace Entities
         public bool IsLifo { get; set; }
         [DefaultValue(false)]
         public bool IsCycleCount { get; set; }
+
         [DefaultValue(false)]
         public bool IsHazardousMaterial { get; set; }
         public string? Expiry { get; set; }
         public string? InspectionInterval { get; set; }
         public string? SpecialInstructions { get; set; }
         public string? ShippingInstruction { get; set; }
+
         [DefaultValue(false)]
         public bool IsIQCRequired { get; set; }
         public int GrProcessing { get; set; }
@@ -94,17 +94,19 @@ namespace Entities
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
         public string? CreatedBy { get; set; }
+
         [DisplayFormat(DataFormatString = "{dd-MM-yyyy HH:mm:ss}")]
         public DateTime CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
+
         [DisplayFormat(DataFormatString = "{dd-MM-yyyy HH:mm:ss}")]
         public DateTime LastModifiedOn { get; set; }
 
-        public ICollection<ItemmasterAlternate> ItemmasterAlternate { get; set; }
-        public ICollection<ItemMasterWarehouse> ItemMasterWarehouse { get; set; }
-        public ICollection<ItemMasterApprovedVendor> ItemMasterApprovedVendor { get; set; }
-        public ICollection<ItemMasterFileUpload> ItemMasterFileUpload { get; set; }
-        public ICollection<ItemMasterRouting> ItemMasterRouting { get; set; }
+        public List<ItemmasterAlternate> ItemmasterAlternate { get; set; }
+        public List<ItemMasterWarehouse> ItemMasterWarehouse { get; set; }
+        public List<ItemMasterApprovedVendor> ItemMasterApprovedVendor { get; set; }
+        public List<ItemMasterFileUpload> ItemMasterFileUpload { get; set; }
+        public List<ItemMasterRouting> ItemMasterRouting { get; set; }
     }
 
 }

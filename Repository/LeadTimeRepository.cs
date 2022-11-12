@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
-    internal class LeadTimeRepository:RepositoryBase<LeadTime>,ILeadTimeRepository
+    public class LeadTimeRepository:RepositoryBase<LeadTime>,ILeadTimeRepository
     {
         public LeadTimeRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
         {
