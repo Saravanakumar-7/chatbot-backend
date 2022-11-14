@@ -12,6 +12,106 @@ namespace Tips.Master.Api
             CreateMap<CustomerType, CustomerTypeDtoPost>().ReverseMap();
             CreateMap<CustomerType, CustomerTypeDtoUpdate>().ReverseMap();
 
+            CreateMap<UOM, UOMDto>().ReverseMap();
+            CreateMap<UOM, UOMDtoPost>().ReverseMap();
+            CreateMap<UOM, UOMDtoUpdate>().ReverseMap();
+
+            CreateMap<UOC, UOCDto>().ReverseMap();
+            CreateMap<UOC, UOCDtoPost>().ReverseMap();
+            CreateMap<UOC, UOCDtoUpdate>().ReverseMap();
+
+            CreateMap<Commodity, CommodityDto>().ReverseMap();
+            CreateMap<Commodity, CommodityDtoPost>().ReverseMap();
+            CreateMap<Commodity, CommodityDtoUpdate>().ReverseMap();
+
+            CreateMap<Locations, LocationsDto>().ReverseMap();
+            CreateMap<Locations, LocationsDtoPost>().ReverseMap();
+            CreateMap<Locations, LocationsDtoUpdate>().ReverseMap();
+
+
+            CreateMap<CustomerMaster, CustomerMasterDto>().ReverseMap();
+            CreateMap<CustomerMaster, CustomerMasterDtoPost>().ReverseMap();
+            CreateMap<CustomerMaster, CustomerMasterDtoUpdate>().ReverseMap();
+
+            CreateMap<CustomerShippingAddresses, CustomerShippingAddressesDto>().ReverseMap();
+            CreateMap<CustomerShippingAddresses, CustomerShippingAddressesDtoPost>().ReverseMap();
+            CreateMap<CustomerShippingAddresses, CustomerShippingAddressesDtoUpdate>().ReverseMap();
+
+            CreateMap<CustomerAddresses, CustomerAddressesDto>().ReverseMap();
+            CreateMap<CustomerAddresses, CustomerAddressesDtoPost>().ReverseMap();
+            CreateMap<CustomerAddresses, CustomerAddressesDtoUpdate>().ReverseMap();
+
+            CreateMap<CustomerContacts, CustomerContactsDto>().ReverseMap();
+            CreateMap<CustomerContacts, CustomerContactsDtoPost>().ReverseMap();
+            CreateMap<CustomerContacts, CustomerContactsDtoUpdate>().ReverseMap();
+
+            CreateMap<CustomerBanking, CustomerBankingDto>().ReverseMap();
+            CreateMap<CustomerBanking, CustomerBankingDtoPost>().ReverseMap();
+            CreateMap<CustomerBanking, CustomerContactsDtoUpdate>().ReverseMap();
+
+
+            CreateMap<CompanyMaster, CompanyMasterDto>().ReverseMap();
+            CreateMap<CompanyMaster, CompanyMasterDtoPost>().ReverseMap();
+            CreateMap<CompanyMaster, CompanyMasterDtoUpdate>().ReverseMap();
+
+            CreateMap<CompanyAddresses, CompanyAddressesDto>().ReverseMap();
+            CreateMap<CompanyAddresses, CompanyAddressesDtoPost>().ReverseMap();
+            CreateMap<CompanyAddresses, CompanyAddressesDtoUpdate>().ReverseMap();
+
+            CreateMap<CompanyContacts, CompanyContactsDto>().ReverseMap();
+            CreateMap<CompanyContacts, CompanyContactsDtoPost>().ReverseMap();
+            CreateMap<CompanyContacts, CompanyContactsDtoUpdate>().ReverseMap();
+
+            CreateMap<CompanyBanking, CompanyBankingDto>().ReverseMap();
+            CreateMap<CompanyBanking, CompanyBankingDtoPost>().ReverseMap();
+            CreateMap<CompanyBanking, CompanyBankingDtoUpdate>().ReverseMap();
+
+            CreateMap<PurchaseGroup, PurchaseGroupDto>().ReverseMap();
+            CreateMap<PurchaseGroup, PurchaseGroupDtoPost>().ReverseMap();
+            CreateMap<PurchaseGroup, PurchaseGroupDtoUpdate>().ReverseMap();
+
+
+            CreateMap<CostCenter, CostCenterDto>().ReverseMap();
+            CreateMap<CostCenter, CostCenterDtoPost>().ReverseMap();
+            CreateMap<CostCenter, CostCenterDtoUpdate>().ReverseMap();
+
+            CreateMap<CostingMethod, CostingMethodDto>().ReverseMap();
+            CreateMap<CostingMethod, CostingMethodDtoPost>().ReverseMap();
+            CreateMap<CostingMethod, CostingMethodDtoUpdate>().ReverseMap();
+
+            CreateMap<AuditFrequency, AuditFrequencyDto>().ReverseMap();
+            CreateMap<AuditFrequency, AuditFrequencyDtoPost>().ReverseMap();
+            CreateMap<AuditFrequency, AuditFrequencyDtoUpdate>().ReverseMap();
+
+            CreateMap<NatureOfRelationship, NatureOfRelationshipDto>().ReverseMap();
+            CreateMap<NatureOfRelationship, NatureOfRelationshipDtoPost>().ReverseMap();
+            CreateMap<NatureOfRelationship, NatureOfRelationshipDtoUpdate>().ReverseMap();
+
+            CreateMap<Language, LanguageDto>().ReverseMap();
+            CreateMap<Language, LanguageDtoPost>().ReverseMap();
+            CreateMap<Language, LanguageDtoUpdate>().ReverseMap();
+
+            CreateMap<Salutations, SalutationsDto>().ReverseMap();
+            CreateMap<Salutations, SalutationsDtoPost>().ReverseMap();
+            CreateMap<Salutations, SalutationsDtoUpdate>().ReverseMap();
+
+            CreateMap<ExportUnitType, ExportUnitTypeDto>().ReverseMap();
+            CreateMap<ExportUnitType, ExportUnitTypeDtoPost>().ReverseMap();
+            CreateMap<ExportUnitType, ExportUnitTypeDtoUpdate>().ReverseMap();
+
+
+            CreateMap<TypeOfCompany, TypeOfCompanyDto>().ReverseMap();
+            CreateMap<TypeOfCompany, TypeOfCompanyDtoPost>().ReverseMap();
+            CreateMap<TypeOfCompany, TypeOfCompanyDtoUpdate>().ReverseMap();
+
+            CreateMap<PaymentTerm, PaymentTermDto>().ReverseMap();
+            CreateMap<PaymentTerm, PaymentTermDtoPost>().ReverseMap();
+            CreateMap<PaymentTerm, PaymentTermDtoUpdate>().ReverseMap();
+
+
+            CreateMap<PackingInstruction, PackingInstructionDto>().ReverseMap();
+            CreateMap<PackingInstruction, PackingInstructionDtoPost>().ReverseMap();
+            CreateMap<PackingInstruction, PackingInstructionDtoUpdate>().ReverseMap();
 
             CreateMap<LeadTime, LeadTimeDto>().ReverseMap();
             CreateMap<LeadTime, LeadTimeDtoPost>().ReverseMap();

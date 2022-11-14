@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Contracts
 {
-    public interface ICustomerTypeRepository : IRepositoryBase<CustomerType>
+    public interface ICustomerTypeRepository
     {
         Task<IEnumerable<CustomerType>> GetAllCustomerTypes();
         Task<CustomerType> GetCustomerTypeById(int id);

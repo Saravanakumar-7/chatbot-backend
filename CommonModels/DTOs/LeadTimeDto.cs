@@ -10,7 +10,8 @@ namespace Entities.DTOs
     public class LeadTimeDto
     {
         public int? Id { get; set; }
-        public string? LeadTimeValue { get; set; }
+        public string? Days { get; set; }
+        public string? Weeks { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool IsActive { get; set; }
@@ -22,9 +23,12 @@ namespace Entities.DTOs
 
     public class LeadTimeDtoPost
     {
-        [Required(ErrorMessage = "LeadTime is required")]
-        [StringLength(100, ErrorMessage = "LeadTime can't be longer than 100 characters")]
-        public string? LeadTimeValue { get; set; }
+        [Required(ErrorMessage = "Days is required")]
+        [StringLength(100, ErrorMessage = "Days can't be longer than 100 characters")]
+        public string? Days { get; set; }
+        [Required(ErrorMessage = "Weeks is required")]
+        [StringLength(100, ErrorMessage = "Weeks can't be longer than 100 characters")]
+        public string? Weeks { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
         [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]
@@ -35,9 +39,12 @@ namespace Entities.DTOs
     public class LeadTimeDtoUpdate
     {
         public int Id { get; set; }
-        [Required(ErrorMessage = "LeadTime is required")]
-        [StringLength(100, ErrorMessage = "LeadTime can't be longer than 100 characters")]
-        public string? CustomerTypeName { get; set; }
+        [Required(ErrorMessage = "Days is required")]
+        [StringLength(100, ErrorMessage = "Days can't be longer than 100 characters")]
+        public string? Days { get; set; }
+        [Required(ErrorMessage = "Weeks is required")]
+        [StringLength(100, ErrorMessage = "Weeks can't be longer than 100 characters")]
+        public string? Weeks { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
         [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]

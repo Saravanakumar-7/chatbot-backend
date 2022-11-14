@@ -11,10 +11,27 @@ namespace Entities
         }
 
         public DbSet<CustomerType> CustomerTypes { get; set; }
-        public DbSet<DeliveryTerm> DeliveryTerms { get; set; }  
         public DbSet<LeadTime> LeadTimes { get; set; }
         public DbSet<MaterialType>? MaterialTypes { get; set; }
+        public DbSet<ProcurementType>? ProcurementTypes { get; set; }
+
+        public DbSet<UOM>Uom { get; set; }
+        public DbSet<UOC> Uoc { get; set; }
+        public DbSet<Commodity> Commodity { get; set; }
+        public DbSet<Locations> Locations { get; set; }
+
+        public DbSet<CompanyMaster> CompanyMasters { get; set; }
+        public DbSet<CompanyAddresses> CompanyAddresses { get; set; }
+        public DbSet<CompanyContacts> CompanyContacts { get; set; }
+        public DbSet<CompanyBanking> CompanyBankings { get; set; }
+
         public DbSet<ItemMaster> ItemMasters { get; set; }
+
+        public DbSet<CustomerMaster> CustomerMasters { get; set; }
+        public DbSet<CustomerContacts> CustomerContacts { get; set; }
+        public DbSet<CustomerAddresses> CustomerAddresses{ get; set; }
+        public DbSet<CustomerShippingAddresses> CustomerShippingAddresses{ get; set; }
+        public DbSet<CustomerBanking> CustomerBankings{ get; set; }
 
         public DbSet<Bank>? Banks { get; set; }
         public DbSet<IncoTerm>? IncoTerms { get; set; } 
@@ -33,8 +50,7 @@ namespace Entities
 
         public DbSet<VolumeUom>? VolumeUoms { get; set; }
         public DbSet<WeightUom>? WeightUoms { get; set; }
-        
-        public DbSet<ProcurementType>? ProcurementTypes { get; set; }
+        public DbSet<DeliveryTerm> DeliveryTerms { get; set; }
 
     }
 }

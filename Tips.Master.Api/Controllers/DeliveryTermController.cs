@@ -25,8 +25,7 @@ namespace Tips.Master.Api.Controllers
 
         }
 
-        // GET: api/<DeliveryTermController>
-        [HttpGet]
+         [HttpGet]
         public async Task<IActionResult> GetAllDeliveryTerms()
         {
             try
@@ -43,8 +42,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // GET api/<CustomerTypeController>/5
-        [HttpGet("{id}")]
+         [HttpGet("{id}")]
         public async Task<IActionResult> GetDeliveryTermsById(int id)
         {
             try
@@ -69,8 +67,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // POST api/<DeliveryTermController> 
-        [HttpPost]
+         [HttpPost]
         public IActionResult CreateDeliveryTerm([FromBody] DeliveryTermPostDto deliveryTerm)
         {
             try
@@ -104,8 +101,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<DeliveryTermController>/5
-        [HttpPut("{id}")]
+         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateDeliveryTerm(int id, [FromBody] DeliveryTermUpdateDto deliveryTerm)
         {
             try
@@ -139,8 +135,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // DELETE api/<DeliveryTermController>/5
-        [HttpDelete("{id}")]
+         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDeliveryTerm(int id)
         {
             try
@@ -162,6 +157,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateDeliveryTerm(int id)
         {

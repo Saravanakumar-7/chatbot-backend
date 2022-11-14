@@ -12,7 +12,7 @@ namespace Entities
         [DefaultValue(true)]
         public bool IsActive { get; set; }
 
-        [ForeignKey(nameof(ItemMaster))]
+        
         public long ItemMasterId { get; set; }
         public ItemMaster? ItemMaster { get; set; }
     }

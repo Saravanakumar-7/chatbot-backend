@@ -281,6 +281,358 @@ namespace Entities.Migrations
                     b.ToTable("IncoTerms");
                 });
 
+            modelBuilder.Entity("Entities.ItemMaster", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("ItemMasterId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<string>("BatchSize")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Commodity")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("CostCenter")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CostingMethod")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerPartReference")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Department")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("Depreciation")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("DocRet")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DrawingNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Expiry")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FootPrint")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("GrProcessing")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GrossUom")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("GrossWeight")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Hsn")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("InspectionInterval")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCocRequired")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCustomerSuppliedItem")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCycleCount")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEsd")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFifo")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsHazardousMaterial")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsIQCRequired")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsLifo")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsObsolete")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPRRequired")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsReachItem")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRohsItem")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsShelfLife")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ItemNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ItemType")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Kanban")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Leadtime")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MaterialGroup")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Max")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Min")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("NetUom")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("NetWeight")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("OpenGrin")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Pfo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PoMaterialType")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PurchaseGroup")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Reorder")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RevNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShippingInstruction")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Size")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("SpecialInstructions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("StdCost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("TwoBin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Uom")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("ValidFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ValidTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Valuation")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Volume")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("VolumeUom")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ItemMasters");
+                });
+
+            modelBuilder.Entity("Entities.ItemmasterAlternate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("ItemMasterId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Manufacturer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ManufacturerPartNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemMasterId");
+
+                    b.ToTable("ItemmasterAlternate");
+                });
+
+            modelBuilder.Entity("Entities.ItemMasterApprovedVendor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<long>("ItemMasterId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ShareOfBusiness")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VendorCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VendorName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemMasterId");
+
+                    b.ToTable("ItemMasterApprovedVendor");
+                });
+
+            modelBuilder.Entity("Entities.ItemMasterFileUpload", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("ItemMasterId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UploadedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UploadedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemMasterId");
+
+                    b.ToTable("ItemMasterFileUpload");
+                });
+
+            modelBuilder.Entity("Entities.ItemMasterRouting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("IsRoutingActive")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("ItemMasterId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("LaborHours")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MachineHours")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Process")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProcessStep")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoutingDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemMasterId");
+
+                    b.ToTable("ItemMasterRouting");
+                });
+
+            modelBuilder.Entity("Entities.ItemMasterWarehouse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("ItemMasterId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("WareHouse")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemMasterId");
+
+                    b.ToTable("ItemMasterWarehouse");
+                });
+
             modelBuilder.Entity("Entities.LeadTime", b =>
                 {
                     b.Property<int?>("Id")
@@ -464,10 +816,7 @@ namespace Entities.Migrations
                     b.Property<bool>("SameasAddress")
                         .HasColumnType("bit");
 
-                    b.Property<int>("VendorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("VendorMasterId")
+                    b.Property<int>("VendorMasterId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -521,10 +870,7 @@ namespace Entities.Migrations
                     b.Property<string>("SwiftCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VendorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("VendorMasterId")
+                    b.Property<int>("VendorMasterId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -636,10 +982,7 @@ namespace Entities.Migrations
                     b.Property<string>("TimeToCall")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VendorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("VendorMasterId")
+                    b.Property<int>("VendorMasterId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -980,11 +1323,68 @@ namespace Entities.Migrations
                     b.ToTable("WeightUoms");
                 });
 
+            modelBuilder.Entity("Entities.ItemmasterAlternate", b =>
+                {
+                    b.HasOne("Entities.ItemMaster", "ItemMaster")
+                        .WithMany("ItemmasterAlternate")
+                        .HasForeignKey("ItemMasterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ItemMaster");
+                });
+
+            modelBuilder.Entity("Entities.ItemMasterApprovedVendor", b =>
+                {
+                    b.HasOne("Entities.ItemMaster", "ItemMaster")
+                        .WithMany("ItemMasterApprovedVendor")
+                        .HasForeignKey("ItemMasterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ItemMaster");
+                });
+
+            modelBuilder.Entity("Entities.ItemMasterFileUpload", b =>
+                {
+                    b.HasOne("Entities.ItemMaster", "ItemMaster")
+                        .WithMany("ItemMasterFileUpload")
+                        .HasForeignKey("ItemMasterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ItemMaster");
+                });
+
+            modelBuilder.Entity("Entities.ItemMasterRouting", b =>
+                {
+                    b.HasOne("Entities.ItemMaster", "ItemMaster")
+                        .WithMany("ItemMasterRouting")
+                        .HasForeignKey("ItemMasterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ItemMaster");
+                });
+
+            modelBuilder.Entity("Entities.ItemMasterWarehouse", b =>
+                {
+                    b.HasOne("Entities.ItemMaster", "ItemMaster")
+                        .WithMany("ItemMasterWarehouse")
+                        .HasForeignKey("ItemMasterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ItemMaster");
+                });
+
             modelBuilder.Entity("Entities.VendorAddress", b =>
                 {
                     b.HasOne("Entities.VendorMaster", "VendorMaster")
                         .WithMany("Addresses")
-                        .HasForeignKey("VendorMasterId");
+                        .HasForeignKey("VendorMasterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("VendorMaster");
                 });
@@ -993,7 +1393,9 @@ namespace Entities.Migrations
                 {
                     b.HasOne("Entities.VendorMaster", "VendorMaster")
                         .WithMany("VendorBankings")
-                        .HasForeignKey("VendorMasterId");
+                        .HasForeignKey("VendorMasterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("VendorMaster");
                 });
@@ -1002,9 +1404,24 @@ namespace Entities.Migrations
                 {
                     b.HasOne("Entities.VendorMaster", "VendorMaster")
                         .WithMany("Contacts")
-                        .HasForeignKey("VendorMasterId");
+                        .HasForeignKey("VendorMasterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("VendorMaster");
+                });
+
+            modelBuilder.Entity("Entities.ItemMaster", b =>
+                {
+                    b.Navigation("ItemMasterApprovedVendor");
+
+                    b.Navigation("ItemMasterFileUpload");
+
+                    b.Navigation("ItemMasterRouting");
+
+                    b.Navigation("ItemMasterWarehouse");
+
+                    b.Navigation("ItemmasterAlternate");
                 });
 
             modelBuilder.Entity("Entities.VendorMaster", b =>

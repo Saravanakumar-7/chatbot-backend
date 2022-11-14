@@ -12,7 +12,6 @@ namespace Entities
         public DateTime UploadedOn { get; set; }
         public string? UploadedBy { get; set; }
 
-        [ForeignKey(nameof(ItemMaster))]
         public long ItemMasterId { get; set; }
         public ItemMaster? ItemMaster { get; set; }
     }

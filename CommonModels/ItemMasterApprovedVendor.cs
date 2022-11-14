@@ -11,7 +11,7 @@ namespace Entities
         public string? VendorName { get; set; }
         public string? ShareOfBusiness { get; set; }
 
-        [ForeignKey(nameof(ItemMaster))]
+       
         public long ItemMasterId { get; set; }
         public ItemMaster? ItemMaster { get; set; }
     }

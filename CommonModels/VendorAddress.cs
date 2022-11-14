@@ -26,8 +26,7 @@ namespace Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public int VendorId { get; set; }
-
+        public int VendorMasterId { get; set; }
         public VendorMaster? VendorMaster { get; set; }
     }
 }
