@@ -247,5 +247,31 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveCompanyIdNameList()
+        {
+            ServiceResponse<IEnumerable<CompanyIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<CompanyIdNameListDto>>();
+            try
+            {
+                var listOfCompanyMaster = await _repository.CompanyMasterRepository.GetAllActiveCompanyIdNameList();
+                //_logger.LogInfo("Returned all CustomerMaster");
+                var result = _mapper.Map<IEnumerable<CompanyIdNameListDto>>(listOfCompanyMaster);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveCompanyIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
     }
 }
