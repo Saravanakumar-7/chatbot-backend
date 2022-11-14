@@ -2,6 +2,8 @@
 using Entities;
 using LoggerService;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using MySql.EntityFrameworkCore.Extensions;
 using Repository;
 
 namespace Tips.Master.Api.Extensions
@@ -36,6 +38,24 @@ namespace Tips.Master.Api.Extensions
         {
             var connectionString = config["MSSqlconnection:connectionString"];
             services.AddDbContext<TipsMasterDbContext>(o => o.UseSqlServer(connectionString));
+
+        }
+
+        public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
+        {
+            
+            var connectionString = config["MySqlconnection:connectionString"];
+            services.AddDbContext<TipsMasterDbContext>(o => o.UseMySQL(connectionString));
+        }
+
+        public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices
+        {
+            public void ConfigureDesignTimeServices(IServiceCollection serviceCollection)
+            {
+                serviceCollection.AddEntityFrameworkMySQL();
+                new EntityFrameworkRelationalDesignServicesBuilder(serviceCollection)
+                    .TryAddCoreServices();
+            }
         }
 
         public static void ConfigureRepositoryWrapper(this IServiceCollection services)
