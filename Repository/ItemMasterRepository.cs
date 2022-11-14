@@ -37,27 +37,46 @@ namespace Repository
             return LeadTimeList;
         }
 
-        public async Task<List<ItemMaster>> GetAllItems()
+        public async Task<IEnumerable<ItemMaster>> GetAllItems()
         {
-            var LeadTimeList = await FindAll().ToListAsync();
-
-            return LeadTimeList;
+            var itemmasterList = await TipsMasterDbContext.ItemMasters
+                                .Include(t => t.ItemmasterAlternate)
+                                .Include(x => x.ItemMasterApprovedVendor)
+                                .Include(m => m.ItemMasterFileUpload)
+                                .Include(s => s.ItemMasterRouting)
+                                .Include(f => f.ItemMasterWarehouse)
+                                .ToListAsync();
+             
+            return itemmasterList;
         }
 
         public async Task<ItemMaster> GetItemById(int id)
         {
-            var ItemMasterList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var ItemMasterList = await TipsMasterDbContext.ItemMasters
+                            .Where(x => x.Id == id)
+                             .Include(t => t.ItemmasterAlternate)
+                                .Include(x => x.ItemMasterApprovedVendor)
+                                .Include(m => m.ItemMasterFileUpload)
+                                .Include(s => s.ItemMasterRouting)
+                                .Include(p => p.ItemMasterWarehouse)
+                             .FirstOrDefaultAsync();
+            //var ItemMasterList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
             return ItemMasterList;
         }
 
         public async Task<string> UpdateItem(ItemMaster itemMaster)
-        {
+     {
             itemMaster.LastModifiedBy = "Admin";
             itemMaster.LastModifiedOn = DateTime.Now;
             Update(itemMaster);
             string result = $"LeadTime details of {itemMaster.Id} is updated successfully!";
             return result;
+        }
+
+        Task<IEnumerable<ItemMaster>> IItemMasterRepository.GetAllActiveItems()
+        {
+            throw new NotImplementedException();
         }
     }
 }

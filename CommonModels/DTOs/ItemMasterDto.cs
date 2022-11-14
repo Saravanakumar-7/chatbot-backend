@@ -11,14 +11,16 @@ namespace Entities.DTOs
 {
     public class ItemMasterDto
     {
+        [Key]
+        [Column("ItemMasterId")]
         public long Id { get; set; }
         [MaxLength(100)]
         public string? ItemNumber { get; set; }
         [MaxLength(500)]
         public string? Description { get; set; }
-        
+        [DefaultValue(true)]
         public bool IsActive { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsObsolete { get; set; }
         [MaxLength(50)]
         public string? ItemType { get; set; }
@@ -40,23 +42,23 @@ namespace Entities.DTOs
         public string? Department { get; set; }
         [MaxLength(100)]
         public string? CustomerPartReference { get; set; }
-        
+        [DefaultValue(true)]
         public bool IsPRRequired { get; set; }
         [MaxLength(50)]
         public string? PoMaterialType { get; set; }
-        
+        [DefaultValue(false)]
         public bool OpenGrin { get; set; }
         public bool IsCustomerSuppliedItem { get; set; }
         public string? DrawingNo { get; set; }
         public string? DocRet { get; set; }
         public string? RevNo { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsCocRequired { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsRohsItem { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsShelfLife { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsReachItem { get; set; }
         public decimal NetWeight { get; set; }
         public string? NetUom { get; set; }
@@ -72,21 +74,21 @@ namespace Entities.DTOs
         public string? Reorder { get; set; }
         public string? TwoBin { get; set; }
         public string? Kanban { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsEsd { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsFifo { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsLifo { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsCycleCount { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsHazardousMaterial { get; set; }
         public string? Expiry { get; set; }
         public string? InspectionInterval { get; set; }
         public string? SpecialInstructions { get; set; }
         public string? ShippingInstruction { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsIQCRequired { get; set; }
         public int GrProcessing { get; set; }
         public string? BatchSize { get; set; }
@@ -102,11 +104,11 @@ namespace Entities.DTOs
         public string? LastModifiedBy { get; set; }
         [DisplayFormat(DataFormatString = "{dd-MM-yyyy HH:mm:ss}")]
         public DateTime LastModifiedOn { get; set; }
-        public List<ItemmasterAlternateDto> ItemmasterAlternate { get; set; }
-        public List<ItemMasterWarehouseDto> ItemMasterWarehouse { get; set; }
-        public List<ItemMasterApprovedVendorDto> ItemMasterApprovedVendor { get; set; }
-        public List<ItemMasterFileUploadDto> ItemMasterFileUpload { get; set; }
-        public List<ItemMasterRoutingDto> ItemMasterRouting { get; set; }
+        public List<ItemmasterAlternateDto>? ItemmasterAlternate { get; set; }
+        public List<ItemMasterWarehouseDto>? ItemMasterWarehouse { get; set; }
+        public List<ItemMasterApprovedVendorDto>? ItemMasterApprovedVendor { get; set; }
+        public List<ItemMasterFileUploadDto>? ItemMasterFileUpload { get; set; }
+        public List<ItemMasterRoutingDto>? ItemMasterRouting { get; set; }
     }
 
     public class ItemMasterDtoPost
@@ -115,9 +117,9 @@ namespace Entities.DTOs
         public string? ItemNumber { get; set; }
         [MaxLength(500)]
         public string? Description { get; set; }
-        
+        [DefaultValue(true)]
         public bool IsActive { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsObsolete { get; set; }
         [MaxLength(50)]
         public string? ItemType { get; set; }
@@ -129,9 +131,9 @@ namespace Entities.DTOs
         public string? Hsn { get; set; }
         [MaxLength(100)]
         public string? MaterialGroup { get; set; }
-        [DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
+        //[DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
         public DateTime ValidFrom { get; set; }
-        [DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
+        //[DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
         public DateTime ValidTo { get; set; }
         [MaxLength(50)]
         public string? PurchaseGroup { get; set; }
@@ -139,23 +141,23 @@ namespace Entities.DTOs
         public string? Department { get; set; }
         [MaxLength(100)]
         public string? CustomerPartReference { get; set; }
-        
+        [DefaultValue(true)]
         public bool IsPRRequired { get; set; }
         [MaxLength(50)]
         public string? PoMaterialType { get; set; }
-        
+        [DefaultValue(false)]
         public bool OpenGrin { get; set; }
         public bool IsCustomerSuppliedItem { get; set; }
         public string? DrawingNo { get; set; }
         public string? DocRet { get; set; }
         public string? RevNo { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsCocRequired { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsRohsItem { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsShelfLife { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsReachItem { get; set; }
         public decimal NetWeight { get; set; }
         public string? NetUom { get; set; }
@@ -171,21 +173,21 @@ namespace Entities.DTOs
         public string? Reorder { get; set; }
         public string? TwoBin { get; set; }
         public string? Kanban { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsEsd { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsFifo { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsLifo { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsCycleCount { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsHazardousMaterial { get; set; }
         public string? Expiry { get; set; }
         public string? InspectionInterval { get; set; }
         public string? SpecialInstructions { get; set; }
         public string? ShippingInstruction { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsIQCRequired { get; set; }
         public int GrProcessing { get; set; }
         public string? BatchSize { get; set; }
@@ -195,24 +197,25 @@ namespace Entities.DTOs
         public bool Valuation { get; set; }
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
-        public List<ItemmasterAlternateDtoPost> ItemmasterAlternate { get; set; }
-        public List<ItemMasterWarehouseDtoPost> ItemMasterWarehouse { get; set; }
-        public List<ItemMasterApprovedVendorDtoPost> ItemMasterApprovedVendor { get; set; }
-        public List<ItemMasterFileUploadDtoPost> ItemMasterFileUpload { get; set; }
-        public List<ItemMasterRoutingDtoPost> ItemMasterRouting { get; set; }
+        public List<ItemmasterAlternateDtoPost>? ItemmasterAlternate { get; set; }
+        public List<ItemMasterWarehouseDtoPost>? ItemMasterWarehouse { get; set; }
+        public List<ItemMasterApprovedVendorDtoPost>? ItemMasterApprovedVendor { get; set; }
+        public List<ItemMasterFileUploadDtoPost>? ItemMasterFileUpload { get; set; }
+        public List<ItemMasterRoutingDtoPost>? ItemMasterRouting { get; set; }
     }
 
     public class ItemMasterDtoUpdate
     {
-      
-         public long Id { get; set; }
+        [Key]
+        [Column("ItemMasterId")]
+        public long Id { get; set; }
         [MaxLength(100)]
         public string? ItemNumber { get; set; }
         [MaxLength(500)]
         public string? Description { get; set; }
-        
+        [DefaultValue(true)]
         public bool IsActive { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsObsolete { get; set; }
         [MaxLength(50)]
         public string? ItemType { get; set; }
@@ -234,23 +237,23 @@ namespace Entities.DTOs
         public string? Department { get; set; }
         [MaxLength(100)]
         public string? CustomerPartReference { get; set; }
-        
+        [DefaultValue(true)]
         public bool IsPRRequired { get; set; }
         [MaxLength(50)]
         public string? PoMaterialType { get; set; }
-        
+        [DefaultValue(false)]
         public bool OpenGrin { get; set; }
         public bool IsCustomerSuppliedItem { get; set; }
         public string? DrawingNo { get; set; }
         public string? DocRet { get; set; }
         public string? RevNo { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsCocRequired { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsRohsItem { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsShelfLife { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsReachItem { get; set; }
         public decimal NetWeight { get; set; }
         public string? NetUom { get; set; }
@@ -266,21 +269,21 @@ namespace Entities.DTOs
         public string? Reorder { get; set; }
         public string? TwoBin { get; set; }
         public string? Kanban { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsEsd { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsFifo { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsLifo { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsCycleCount { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsHazardousMaterial { get; set; }
         public string? Expiry { get; set; }
         public string? InspectionInterval { get; set; }
         public string? SpecialInstructions { get; set; }
         public string? ShippingInstruction { get; set; }
-        
+        [DefaultValue(false)]
         public bool IsIQCRequired { get; set; }
         public int GrProcessing { get; set; }
         public string? BatchSize { get; set; }
@@ -290,11 +293,11 @@ namespace Entities.DTOs
         public bool Valuation { get; set; }
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
-        public List<ItemmasterAlternateDtoUpdate> ItemmasterAlternate { get; set; }
-        public List<ItemMasterWarehouseDtoUpdate> ItemMasterWarehouse { get; set; }
-        public List<ItemMasterApprovedVendorDtoUpdate> ItemMasterApprovedVendor { get; set; }
-        public List<ItemMasterFileUploadDtoUpdate> ItemMasterFileUpload { get; set; }
-        public List<ItemMasterRoutingDtoUpdate> ItemMasterRouting { get; set; }
+        public List<ItemmasterAlternateDtoUpdate>? ItemmasterAlternate { get; set; }
+        public List<ItemMasterWarehouseDtoUpdate>? ItemMasterWarehouse { get; set; }
+        public List<ItemMasterApprovedVendorDtoUpdate>? ItemMasterApprovedVendor { get; set; }
+        public List<ItemMasterFileUploadDtoUpdate>? ItemMasterFileUpload { get; set; }
+        public List<ItemMasterRoutingDtoUpdate>? ItemMasterRouting { get; set; }
 
     }
 

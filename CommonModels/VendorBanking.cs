@@ -5,13 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace Entities
 {
     public class VendorBanking
     {
         public int Id { get; set; }
-
         public string? BankName { get; set; }
         public string? Branch { get; set; }
         public string? AccountNumber { get; set; }
@@ -20,14 +18,11 @@ namespace Entities
         public string? IBANCode { get; set; }
         public bool Primary { get; set; } = true;
         public bool IsActive { get; set; } = true;
-
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public int VendorId { get; set; }
-
+        public int VendorMasterId { get; set; }
         public VendorMaster? VendorMaster { get; set; }
-
     }
 }
