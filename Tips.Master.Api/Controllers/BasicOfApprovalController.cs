@@ -161,6 +161,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateBasicOfApproval(int id)
         {

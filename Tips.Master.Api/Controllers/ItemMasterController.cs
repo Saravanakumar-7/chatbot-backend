@@ -143,7 +143,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<ItemMasterController>/5
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateItemMaster(int id, [FromBody] ItemMasterDto itemMasterDtoUpdate)
         {

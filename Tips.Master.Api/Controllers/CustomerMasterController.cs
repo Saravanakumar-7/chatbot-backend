@@ -22,7 +22,7 @@ namespace Tips.Master.Api.Controllers
                 _logger = logger;
                 _mapper = mapper;
             }
-        // GET: api/<CustomerMasterController>
+ 
         [HttpGet]
         public async Task<IActionResult> GetAllCustomerMaster()
         {
@@ -49,8 +49,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // GET api/<CustomerMasterController>/5
-        [HttpGet("{id}")]
+         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomerMasterById(int id)
         {
             ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();
@@ -89,8 +88,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // POST api/<CustomerMasterController>
-        [HttpPost]
+         [HttpPost]
         public async Task<IActionResult> CreateCustomerMaster([FromBody] CustomerMasterDtoPost customerMasterDtoPost)
         {
             ServiceResponse<CustomerMasterDtoPost> serviceResponse = new ServiceResponse<CustomerMasterDtoPost>();
@@ -148,8 +146,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<CustomerMasterController>/5
-        [HttpPut("{id}")]
+         [HttpPut("{id}")]
 
         public async Task<IActionResult> UpdateCustomerMaster(int id, [FromBody] CustomerMasterDtoUpdate CustomerMasterDtoUpdate)
         {
@@ -218,8 +215,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // DELETE api/<CustomerMasterController>/5
-        [HttpDelete("{id}")]
+         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomerMaster(int id)
         {
             ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();

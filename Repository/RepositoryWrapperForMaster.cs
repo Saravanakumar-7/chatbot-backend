@@ -370,6 +370,42 @@ namespace Repository
 
         public IPackingInstructionRepository PackingInstructionRepository => throw new NotImplementedException();
 
+        public IUOMRepository UOMRepository => throw new NotImplementedException();
+
+        public IUOCRepository UOCRepository => throw new NotImplementedException();
+
+        public ICommodityRepository CommodityRepository => throw new NotImplementedException();
+
+        public ILocationsRepository LocationsRepository => throw new NotImplementedException();
+
+        public ICompanyMasterRepository CompanyMasterRepository => throw new NotImplementedException();
+
+        public ICompanyAddressesRepository CompanyAddressesRepository => throw new NotImplementedException();
+
+        public ICompanyContactsRepository CompanyContactsRepository => throw new NotImplementedException();
+
+        public ICompanyBankingRepository CompanyBankingRepository => throw new NotImplementedException();
+
+        public ICustomerMasterRepository Customermasterrepository => throw new NotImplementedException();
+
+        public ICustomerBankingsRepository CustomerBankingsRepository => throw new NotImplementedException();
+
+        public ICustomerAddressesRepository CustomerAddressesRepository => throw new NotImplementedException();
+
+        public ICustomerShippingAddressesRepository CustomerShippingAddressesRepository => throw new NotImplementedException();
+
+        public ICustomerContactsRepository CustomerContactsRepository => throw new NotImplementedException();
+
+        public IItemmasterAlternate ItemmasterAlternateRepository => throw new NotImplementedException();
+
+        public IItemMasterApprovedVendor ItemMasterApprovedVendorRepository => throw new NotImplementedException();
+
+        public IItemMasterFileUpload ItemMasterFileUploadRepository => throw new NotImplementedException();
+
+        public IItemMasterRouting ItemMasterRoutingRepository => throw new NotImplementedException();
+
+        public IItemMasterWarehouse ItemMasterWarehouseRepository => throw new NotImplementedException();
+
         public void SaveAsync()
         {
             _tipsMasterDbContext.SaveChanges();

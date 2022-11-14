@@ -24,8 +24,7 @@ namespace Tips.Master.Api.Controllers
 
         }
 
-        // GET: api/<DepartmentController>
-        [HttpGet]
+         [HttpGet]
         public async Task<IActionResult> GetAllDepartment()
         {
             try
@@ -42,8 +41,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // GET api/<DepartmentController>/5
-        [HttpGet("{id}")]
+         [HttpGet("{id}")]
         public async Task<IActionResult> GetDepartmentById(int id)
         {
             try
@@ -68,8 +66,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // POST api/<DepartmentController>
-        [HttpPost]
+         [HttpPost]
         public IActionResult CreateDepartment([FromBody] DepartmentPostDto department)
         {
             try
@@ -99,8 +96,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<DepartmentController>/5
-        [HttpPut("{id}")]
+         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateDepartment(int id, [FromBody] DepartmentUpdateDto department)
         {
             try
@@ -134,8 +130,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // DELETE api/<DepartmentController>/5
-        [HttpDelete("{id}")]
+         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDepartment(int id)
         {
             try

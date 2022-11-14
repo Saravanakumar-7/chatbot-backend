@@ -48,6 +48,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllActivePurchaseGroups()
         {
@@ -289,6 +290,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivatePurchaseGroup(int id)
         {

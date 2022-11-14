@@ -126,7 +126,8 @@ namespace Tips.Master.Api.Controllers
                 var vendor = _mapper.Map<VendorMaster>(vendorMasterPost);
                 var address = _mapper.Map<IEnumerable<VendorAddress>>(vendorMasterPost.Addresses);
                 var contact = _mapper.Map<IEnumerable<VendorContacts>>(vendorMasterPost.Contacts);
-                var banking = _mapper.Map<IEnumerable<VendorBanking>>(vendorMasterPost.VendorBankings);                 
+                var banking = _mapper.Map<IEnumerable<VendorBanking>>(vendorMasterPost.VendorBankings);               
+
 
                 _repository.VendorRepository.CreateVendor(vendor); 
 
