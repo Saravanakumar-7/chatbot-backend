@@ -7,6 +7,7 @@ using Contracts;
 using Microsoft.EntityFrameworkCore;
 using Entities.Migrations;
 using System.Net;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -29,20 +30,33 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<VendorController>
         [HttpGet]
-        public async Task<IActionResult> GetAllVendors()
+        public async Task<IActionResult> GetAllVendors([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<VendorMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<VendorMasterDto>>();
 
             try
             {
-                var listOfVendors = await _repository.VendorRepository.GetAllVendors();
+                var listOfVendors = await _repository.VendorRepository.GetAllVendors(pagingParameter);
+
+                var metadata = new
+                {
+                    listOfVendors.TotalCount,
+                    listOfVendors.PageSize,
+                    listOfVendors.CurrentPage,
+                    listOfVendors.HasNext,
+                    listOfVendors.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
                 _logger.LogInfo("Returned all Vendors");
                 var result = _mapper.Map<IEnumerable<VendorMasterDto>>(listOfVendors);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Success";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(result);
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
@@ -111,7 +125,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "VendorDetails object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest();
+                    return BadRequest(serviceResponse);
                 }
                if (!ModelState.IsValid)
                {
@@ -123,11 +137,14 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var vendor = _mapper.Map<VendorMaster>(vendorMasterPost);
                 var address = _mapper.Map<IEnumerable<VendorAddress>>(vendorMasterPost.Addresses);
                 var contact = _mapper.Map<IEnumerable<VendorContacts>>(vendorMasterPost.Contacts);
-                var banking = _mapper.Map<IEnumerable<VendorBanking>>(vendorMasterPost.VendorBankings);               
+                var banking = _mapper.Map<IEnumerable<VendorBanking>>(vendorMasterPost.VendorBankings);
+                var vendor = _mapper.Map<VendorMaster>(vendorMasterPost);
 
+                vendor.Addresses = address.ToList();
+                vendor.Contacts = contact.ToList();
+                vendor.VendorBankings = banking.ToList();
 
                 _repository.VendorRepository.CreateVendor(vendor); 
 
@@ -136,12 +153,12 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetVendorCategoryById", "Successfully Created");
+                return Created("GetVendorById", serviceResponse);
 
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateVendor action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -153,7 +170,7 @@ namespace Tips.Master.Api.Controllers
         // PUT api/<VendorController>/5
         [HttpPut("{id}")]
       
-        public async Task<IActionResult> UpdateVolumeUom(int id, [FromBody] VendorMasterDto vendorMasterUpdateDto)
+        public async Task<IActionResult> UpdateVendorUom(int id, [FromBody] VendorMasterDto vendorMasterUpdateDto)
         {
             ServiceResponse<VendorMasterDto> serviceResponse = new ServiceResponse<VendorMasterDto>();
 
