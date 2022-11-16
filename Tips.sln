@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TipsMaster.Api.Test", "Tips
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tips.Purchase.Api", "Tips.Purchase.Api\Tips.Purchase.Api.csproj", "{4E78BBBC-7E74-4C15-8F5A-87D595E3D584}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tips.Grin.Api", "Tips.Grin.Api\Tips.Grin.Api.csproj", "{038B3495-FF1A-4934-AE75-BA0EA886EC59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{4E78BBBC-7E74-4C15-8F5A-87D595E3D584}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E78BBBC-7E74-4C15-8F5A-87D595E3D584}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E78BBBC-7E74-4C15-8F5A-87D595E3D584}.Release|Any CPU.Build.0 = Release|Any CPU
+		{038B3495-FF1A-4934-AE75-BA0EA886EC59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{038B3495-FF1A-4934-AE75-BA0EA886EC59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{038B3495-FF1A-4934-AE75-BA0EA886EC59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{038B3495-FF1A-4934-AE75-BA0EA886EC59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

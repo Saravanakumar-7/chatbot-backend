@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
-using Tips.Purchase.Api.Extensions;
+using Tips.Grin.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
 // Add services to the container.
