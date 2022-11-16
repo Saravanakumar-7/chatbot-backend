@@ -1,4 +1,6 @@
 ﻿using Entities;
+using Entities.DTOs;
+using Entities.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +11,13 @@ namespace Contracts
 {
     public interface IVendorRepository : IRepositoryBase<VendorMaster>
     {
-        Task<IEnumerable<VendorMaster>> GetAllVendors();
+        Task<PagedList<VendorMaster>> GetAllVendors(PagingParameter pagingParameter);
         Task<VendorMaster> GetVendorById(int id);
         Task<IEnumerable<VendorMaster>> GetAllActiveVendors();
         Task<int?> CreateVendor(VendorMaster vendorMaster);
         Task<string> UpdateVendor(VendorMaster vendorMaster);
-        Task<string> DeleteVendor(VendorMaster vendorMaster); 
+        Task<string> DeleteVendor(VendorMaster vendorMaster);
+        Task<IEnumerable<VendorIdNameListDto>> GetAllActiveVendorNameList();
+
     }
 }

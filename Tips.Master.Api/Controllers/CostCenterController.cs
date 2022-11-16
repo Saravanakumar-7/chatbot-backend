@@ -23,9 +23,8 @@ namespace Tips.Master.Api.Controllers
             _logger = logger;
             _mapper = mapper;
         }
-        // GET: api/<CostCenterController>
-        [HttpGet]
 
+         [HttpGet]
         public async Task<IActionResult> GetAllCostCenters()
         {
             ServiceResponse<IEnumerable<CostCenterDto>> serviceResponse = new ServiceResponse<IEnumerable<CostCenterDto>>();
@@ -51,6 +50,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllActiveCostCenters()
         {
@@ -80,8 +80,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // GET api/<CostCenterController>/5
-        [HttpGet("{id}")]
+         [HttpGet("{id}")]
             public async Task<IActionResult> GetCostCenterById(int id)
         {
             ServiceResponse<CostCenterDto> serviceResponse = new ServiceResponse<CostCenterDto>();
@@ -121,8 +120,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // POST api/<CostCenterController>
-        [HttpPost]
+         [HttpPost]
         public IActionResult CreateCostCenter([FromBody] CostCenterDtoPost costCenterDtoPost)
         {
             ServiceResponse<CostCenterDto> serviceResponse = new ServiceResponse<CostCenterDto>();
@@ -169,8 +167,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<CostCenterController>/5
-        [HttpPut("{id}")]
+         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCostCenter(int id, [FromBody] CostCenterDtoUpdate costCenterDtoUpdate)
         {
             ServiceResponse<CostCenterDto> serviceResponse = new ServiceResponse<CostCenterDto>();
@@ -227,8 +224,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // DELETE api/<CostCenterController>/5
-        [HttpDelete("{id}")]
+         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCostCenter(int id)
         {
             ServiceResponse<CostCenterDto> serviceResponse = new ServiceResponse<CostCenterDto>();

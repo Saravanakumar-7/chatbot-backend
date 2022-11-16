@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Helper;
 using Entities.Migrations;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,17 +53,18 @@ namespace Repository
             return customerDetails;
         }
 
-        public async Task<IEnumerable<CustomerMaster>> GetAllCustomerMaster()
+        public async Task<PagedList<CustomerMaster>> GetAllCustomerMaster(PagingParameter pagingParameter)
         {
-            var customerDetails = await TipsMasterDbContext.CustomerMasters
+            var customerDetails = PagedList<CustomerMaster>.ToPagedList(FindAll()
                                 .Include(t => t.CustomerAddresses)
                                 .Include(x => x.CustomerShippingAddresses)
                                 .Include(m => m.CustomerContacts)
                                 .Include(s => s.CustomerBanking)
-                                .ToListAsync();
+                                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+
 
             return customerDetails;
-        }
+        }         
 
         public async Task<CustomerMaster> GetCustomerMasterById(int id)
         {

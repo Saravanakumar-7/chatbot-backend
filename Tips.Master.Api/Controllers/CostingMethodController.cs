@@ -23,7 +23,7 @@ namespace Tips.Master.Api.Controllers
             _logger = logger;
             _mapper = mapper;
         }
-        // GET: api/<CostingMethodController>
+ 
         [HttpGet]
          public async Task<IActionResult> GetAllCostingMethods()
         {
@@ -50,6 +50,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllActiveCostingMethods()
         {
@@ -79,10 +80,8 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // GET api/<CostingMethodController>/5
         [HttpGet("{id}")]
-
-        public async Task<IActionResult> GetCostingMethodById(int id)
+       public async Task<IActionResult> GetCostingMethodById(int id)
         {
             ServiceResponse<CostingMethodDto> serviceResponse = new ServiceResponse<CostingMethodDto>();
 
@@ -121,7 +120,6 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // POST api/<CostingMethodController>
         [HttpPost]
         public IActionResult CreateCostingMethod([FromBody] CostingMethodDtoPost costingMethodDtoPost)
         {
@@ -169,7 +167,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<CostingMethodController>/5
+ 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCostingMethod(int id, [FromBody] CostingMethodDtoUpdate costingMethodDtoUpdate)
         {
@@ -227,8 +225,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // DELETE api/<CostingMethodController>/5
-        [HttpDelete("{id}")]
+         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCostingMethod(int id)
         {
             ServiceResponse<CostingMethodDto> serviceResponse = new ServiceResponse<CostingMethodDto>();
@@ -264,6 +261,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateCostingMethod(int id)
         {
@@ -300,6 +298,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateCostingMethod(int id)
         {

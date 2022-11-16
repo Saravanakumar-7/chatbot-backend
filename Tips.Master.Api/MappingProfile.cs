@@ -12,6 +12,31 @@ namespace Tips.Master.Api
             CreateMap<CustomerType, CustomerTypeDtoPost>().ReverseMap();
             CreateMap<CustomerType, CustomerTypeDtoUpdate>().ReverseMap();
 
+            CreateMap<ShipmentInstructions, ShipmentInstructionsDto>().ReverseMap();
+            CreateMap<ShipmentInstructions, ShipmentInstructionsDtoPost>().ReverseMap();
+            CreateMap<ShipmentInstructions, ShipmentInstructionsDtoUpdate>().ReverseMap();
+
+            CreateMap<Category, CategoryDto>().ReverseMap();
+            CreateMap<Category, CategoryDtoPost>().ReverseMap();
+            CreateMap<Category, CategoryDtoUpdate>().ReverseMap();
+
+            CreateMap<RiskCategory, RiskCategoryDto>().ReverseMap();
+            CreateMap<RiskCategory, RiskCategoryDtoPost>().ReverseMap();
+            CreateMap<RiskCategory, RiskCategoryDtoUpdate>().ReverseMap();
+
+            CreateMap<QuoteTerms, QuoteTermsDto>().ReverseMap();
+            CreateMap<QuoteTerms, QuoteTermsDtoPost>().ReverseMap();
+            CreateMap<QuoteTerms, QuoteTermsDtoUpdate>().ReverseMap();
+
+            CreateMap<Segment, SegmentDto>().ReverseMap();
+            CreateMap<Segment, SegmentDtoPost>().ReverseMap();
+            CreateMap<Segment, SegmentDtoUpdate>().ReverseMap();
+
+            CreateMap<Warehouse, WarehouseDto>().ReverseMap();
+            CreateMap<Warehouse, WarehouseDtoPost>().ReverseMap();
+            CreateMap<Warehouse, WarehouseDtoUpdate>().ReverseMap();
+
+
             CreateMap<UOM, UOMDto>().ReverseMap();
             CreateMap<UOM, UOMDtoPost>().ReverseMap();
             CreateMap<UOM, UOMDtoUpdate>().ReverseMap();
@@ -210,6 +235,10 @@ namespace Tips.Master.Api
             CreateMap<VendorMaster, VendorMasterDto>().ReverseMap();
             CreateMap<VendorMaster, VendorMasterPostDto>().ReverseMap();
             CreateMap<VendorMaster, VendorMasterPostDto>().ReverseMap();
+
+            CreateMap<HeadCounting, HeadCountingDto>().ReverseMap();
+            CreateMap<HeadCounting, HeadCountingPostDto>().ReverseMap();
+            CreateMap<HeadCounting, HeadCountingUpdateDto>().ReverseMap();
 
 
 

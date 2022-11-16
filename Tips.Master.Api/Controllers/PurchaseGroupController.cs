@@ -50,6 +50,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllActivePurchaseGroups()
         {
@@ -299,6 +300,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivatePurchaseGroup(int id)
         {

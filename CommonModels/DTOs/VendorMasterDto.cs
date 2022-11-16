@@ -133,6 +133,7 @@ namespace Entities.DTOs
         public List<VendorAddressDto>? Addresses { get; set; }
         public List<VendorContactsDto>? Contacts { get; set; }
         public List<VendorBankingDto>? VendorBankings { get; set; }
+        public List<HeadCountingDto>? HeadCountings { get; set; }
     }
 
 
@@ -269,6 +270,8 @@ namespace Entities.DTOs
         public List<VendorContactsPostDto>? Contacts { get; set; }
         public List<VendorBankingPostDto>? VendorBankings { get; set; }
 
+        public List<HeadCountingPostDto>? HeadCountings { get; set; }
+
     }
     public class VendorMasterUpdateDto
     {
@@ -398,5 +401,13 @@ namespace Entities.DTOs
         public List<VendorAddressUpdateDto>? Addresses { get; set; }
         public List<VendorContactsUpdateDto>? Contacts { get; set; }
         public List<VendorBankingUpdateDto>? VendorBankings { get; set; }
+
+        public List<HeadCountingUpdateDto>? HeadCountings { get; set; }
+    }
+    public class VendorIdNameListDto
+    {
+        public int Id { get; set; }
+        public string? VendorName { get; set; }
+        public string? VednorAliasName { get; set; }
     }
 }

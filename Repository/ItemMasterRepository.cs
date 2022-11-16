@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
+using Entities.Helper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -37,18 +38,19 @@ namespace Repository
             return LeadTimeList;
         }
 
-        public async Task<IEnumerable<ItemMaster>> GetAllItems()
+        public async Task<PagedList<ItemMaster>> GetAllItems(PagingParameter pagingParameter)
         {
-            var itemmasterList = await TipsMasterDbContext.ItemMasters
+            var itemmasterList = PagedList<ItemMaster>.ToPagedList(FindAll()
                                 .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(m => m.ItemMasterFileUpload)
                                 .Include(s => s.ItemMasterRouting)
                                 .Include(f => f.ItemMasterWarehouse)
-                                .ToListAsync();
-             
+                                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+
             return itemmasterList;
         }
+         
 
         public async Task<ItemMaster> GetItemById(int id)
         {

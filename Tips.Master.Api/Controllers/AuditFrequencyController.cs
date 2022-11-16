@@ -122,6 +122,7 @@ namespace Tips.Master.Api.Controllers
         }
         [HttpPost]
         // POST api/<AuditFrequencyController>
+        [HttpPost]
         public IActionResult CreateAuditFrequeny([FromBody] AuditFrequencyDtoPost auditFrequencyDtoPost)
         {
             ServiceResponse<AuditFrequencyDto> serviceResponse = new ServiceResponse<AuditFrequencyDto>();

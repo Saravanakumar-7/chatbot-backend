@@ -28,8 +28,7 @@ namespace Tips.Master.Api.Controllers
 
         }
 
-        // GET: api/<CurrencyController>
-        [HttpGet]
+         [HttpGet]
         public async Task<IActionResult> GetAllCurrency()
         {
             ServiceResponse<IEnumerable<CurrencyDto>> serviceResponse = new ServiceResponse<IEnumerable<CurrencyDto>>();
@@ -84,7 +83,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // GET api/<CurrencyController>/5
+ 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCurrencyById(int id)
         {
@@ -124,7 +123,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // POST api/<CurrencyController>
+ 
         [HttpPost]
         public IActionResult CreateCurrency([FromBody] CurrencyPostDto currencyPostDto)
         {
@@ -171,7 +170,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<CurrencyController>/5
+ 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCurrency(int id, [FromBody] CurrencyUpdateDto currencyUpdateDto)
         {
@@ -228,7 +227,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // DELETE api/<CurrencyController>/5
+ 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCurrency(int id)
         {

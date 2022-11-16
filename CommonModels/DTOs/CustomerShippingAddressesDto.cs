@@ -39,10 +39,7 @@ namespace Entities.DTOs
 
         public bool IsActive { get; set; } = true;
 
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+       
         
     }
     public class CustomerShippingAddressesDtoUpdate
@@ -59,10 +56,7 @@ namespace Entities.DTOs
 
         public bool IsActive { get; set; } = true;
 
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+       
        
     }
 }

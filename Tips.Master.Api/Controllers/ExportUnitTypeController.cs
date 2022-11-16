@@ -23,7 +23,7 @@ namespace Tips.Master.Api.Controllers
             _logger = logger;
             _mapper = mapper;
         }
-        // GET: api/<ExportUnitTypeController>
+ 
         [HttpGet]
         public async Task<IActionResult> GetAllExportUnitTypes()
         {
@@ -50,6 +50,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllActiveExportUnitTypes()
         {
@@ -78,7 +79,7 @@ namespace Tips.Master.Api.Controllers
 
             }
         }
-        // GET api/<ExportUnitTypeController>/5
+ 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetExportUnitTypeById(int id)
         {
@@ -119,7 +120,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // POST api/<ExportUnitTypeController>
+ 
         [HttpPost]
         public IActionResult CreateExportUnitType([FromBody] ExportUnitTypeDtoPost exportUnitTypeDtoPost)
         {
@@ -167,7 +168,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<ExportUnitTypeController>/5
+ 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateExportUnitType(int id, [FromBody] ExportUnitTypeDtoUpdate exportUnitTypeDtoUpdate)
         {
@@ -226,7 +227,7 @@ namespace Tips.Master.Api.Controllers
         }
 
 
-        // DELETE api/<ExportUnitTypeController>/5
+ 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteExportUnitType(int id)
         {
@@ -262,6 +263,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateExportUnitType(int id)
         {
@@ -298,6 +300,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> DeActivateExportUnitType(int id)
         {

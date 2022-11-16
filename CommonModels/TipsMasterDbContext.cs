@@ -14,17 +14,7 @@ namespace Entities
         public DbSet<LeadTime> LeadTimes { get; set; }
         public DbSet<MaterialType>? MaterialTypes { get; set; }
         public DbSet<ProcurementType>? ProcurementTypes { get; set; }
-        public DbSet<PurchaseGroup>? purchaseGroups { get; set; }
-        public DbSet<CostCenter>? costCenters { get; set; }
-        public DbSet<CostingMethod>? costingMethods { get; set; }
-        public DbSet<AuditFrequency>? auditFrequencies { get; set; }
-        public DbSet<NatureOfRelationship>? natureOfRelationships { get; set; }
-        public DbSet<Language>? languages { get; set; }
-        public DbSet<Salutations>? salutations { get; set; }
-        public DbSet<ExportUnitType>? exportUnitTypes { get; set; }
-        public DbSet<TypeOfCompany>? typeOfCompanies { get; set; }
-        public DbSet<PaymentTerm>? paymentTerms { get; set; }
-        public DbSet<PackingInstruction>? packingInstructions { get; set; }
+
         public DbSet<UOM>Uom { get; set; }
         public DbSet<UOC> Uoc { get; set; }
         public DbSet<Commodity> Commodity { get; set; }
@@ -57,6 +47,8 @@ namespace Entities
         public DbSet<VendorMaster>? VendorMasters { get; set; }
         public DbSet<VendorAddress>? Addresses { get; set; }
         public DbSet<VendorBanking>? VendorBankings { get; set; }
+        public DbSet<HeadCounting>? HeadCountings { get; set; }
+
 
         public DbSet<VolumeUom>? VolumeUoms { get; set; }
         public DbSet<WeightUom>? WeightUoms { get; set; }
