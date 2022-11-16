@@ -3,6 +3,8 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
+using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,62 +27,126 @@ namespace Tips.Master.Api.Controllers
 
         }
 
-         [HttpGet]
+        // GET: api/<DeliveryTermController>
+        [HttpGet]
         public async Task<IActionResult> GetAllDeliveryTerms()
         {
+            ServiceResponse<IEnumerable<DeliveryTermGetDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryTermGetDto>>();
+
             try
             {
-                var deliveryTermsList = await _repository.DeliveryTermRepo.GetAllActiveDeliveryTerms();
+                var deliveryTermsList = await _repository.DeliveryTermRepo.GetAllDeliveryTerms();
                 _logger.LogInfo("Returned all DeliveryTerms");
                 var result = _mapper.Map<IEnumerable<DeliveryTermGetDto>>(deliveryTermsList);
-                return Ok(result);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all DeliveryTerms Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveDeliveryTerms()
+        {
+            ServiceResponse<IEnumerable<DeliveryTermGetDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryTermGetDto>>();
 
-         [HttpGet("{id}")]
+            try
+            {
+                var deliveryTerms = await _repository.DeliveryTermRepo.GetAllActiveDeliveryTerms();
+                _logger.LogInfo("Returned all DeliveryTerms");
+                var result = _mapper.Map<IEnumerable<DeliveryTermGetDto>>(deliveryTerms);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active DeliveryTerms Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+
+            }
+        }
+        // GET api/<CustomerTypeController>/5
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetDeliveryTermsById(int id)
         {
+            ServiceResponse<DeliveryTermGetDto> serviceResponse = new ServiceResponse<DeliveryTermGetDto>();
+
             try
             {
                 var deliveryTerm = await _repository.DeliveryTermRepo.GetDeliveryTermById(id);
                 if (deliveryTerm == null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"deliveryTerm with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"deliveryTerm with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned owner with id: {id}");
+                    _logger.LogInfo($"Returned deliveryTerm with id: {id}");
                     var result = _mapper.Map<DeliveryTermGetDto>(deliveryTerm);
-                    return Ok(result);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned deliveryTerm with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside GetDeliveryTermsById action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
-         [HttpPost]
+        // POST api/<DeliveryTermController> 
+        [HttpPost]
         public IActionResult CreateDeliveryTerm([FromBody] DeliveryTermPostDto deliveryTerm)
         {
+            ServiceResponse<DeliveryTermGetDto> serviceResponse = new ServiceResponse<DeliveryTermGetDto>();
+
             try
             {
                 if (deliveryTerm is null)
                 {
                     _logger.LogError("DeliverTerm object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "DeliverTerm object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest("DeliverTerm object is null");
                 }
                 if (!ModelState.IsValid)
                 {
                     _logger.LogError("Invalid DeliverTerm object sent from client.");
-                    return BadRequest("Invalid model object");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Costcenter object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
                 }
                 //var deliverTermEntity = _mapper.Map<DeliveryTerm>(deliveryTerm);
                 //var id = _repository.DeliveryTermRepo.CreateDeliveryTerm(deliverTermEntity);
@@ -89,107 +155,167 @@ namespace Tips.Master.Api.Controllers
                 var deliverTermEntity = _mapper.Map<DeliveryTerm>(deliveryTerm);
                 _repository.DeliveryTermRepo.CreateDeliveryTerm(deliverTermEntity);
                 _repository.SaveAsync();
-
-
-                return Created("GetDeliveryTermById", "Successfully Created");
-                 
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Successfylly Created";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("GetDeliveryTermById", serviceResponse);                 
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside DeliveryTerm action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
             }
         }
 
-         [HttpPut("{id}")]
+        // PUT api/<DeliveryTermController>/5
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateDeliveryTerm(int id, [FromBody] DeliveryTermUpdateDto deliveryTerm)
         {
+            ServiceResponse<DeliveryTermGetDto> serviceResponse = new ServiceResponse<DeliveryTermGetDto>();
+
             try
             {
                 if (deliveryTerm is null)
                 {
-                    _logger.LogError("DeliveryTerm object sent from client is null.");
-                    return BadRequest("DeliveryTerm object is null");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update DeliveryTerm object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update DeliveryTerm object sent from client is null.");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid DeliveryTerm object sent from client.");
-                    return BadRequest("Invalid model object");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update DeliveryTerm object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Update DeliveryTerm object sent from client.");
+                    return BadRequest(serviceResponse);
                 }
                 var deliveryTermEntity = await _repository.DeliveryTermRepo.GetDeliveryTermById(id);
                 if (deliveryTermEntity is null)
                 {
-                    _logger.LogError($"DeliveryTerm with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Update DeliveryTerm with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Update DeliveryTerm with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(deliveryTerm, deliveryTermEntity);
                 string result = await _repository.DeliveryTermRepo.UpdateDeliveryTerm(deliveryTermEntity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside UpdateDeliveryTerm action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500,serviceResponse);
             }
         }
 
-         [HttpDelete("{id}")]
+        // DELETE api/<DeliveryTermController>/5
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDeliveryTerm(int id)
         {
+            ServiceResponse<DeliveryTermGetDto> serviceResponse = new ServiceResponse<DeliveryTermGetDto>();
+
             try
             {
                 var deliveryTerm = await _repository.DeliveryTermRepo.GetDeliveryTermById(id);
                 if (deliveryTerm == null)
                 {
-                    _logger.LogError($"DeliveryTerm with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Delete DeliveryTerm object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Delete DeliveryTerm with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
                 }
                 string result = await _repository.DeliveryTermRepo.DeleteDeliveryTerm(deliveryTerm);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateDeliveryTerm(int id)
         {
+            ServiceResponse<DeliveryTermGetDto> serviceResponse = new ServiceResponse<DeliveryTermGetDto>();
+
             try
             {
                 var deliveryTerm = await _repository.DeliveryTermRepo.GetDeliveryTermById(id);
                 if (deliveryTerm is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "DeliveryTerm object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"DeliveryTerm with id: {id}, hasn't been found in db.");
-                    return BadRequest("DeliveryTerm object is null");
+                    return BadRequest(serviceResponse);
                 }
                 deliveryTerm.IsActive = true;
                 string result = await _repository.DeliveryTermRepo.UpdateDeliveryTerm(deliveryTerm);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside ActivateDeliveryTerm action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateDeliveryTerm(int id)
         {
+            ServiceResponse<DeliveryTermGetDto> serviceResponse = new ServiceResponse<DeliveryTermGetDto>();
+
             try
             {
                 var deliveryTerm = await _repository.DeliveryTermRepo.GetDeliveryTermById(id);
                 if (deliveryTerm is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "DeliveryTerm object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"DeliveryTerm with id: {id}, hasn't been found in db.");
                     return BadRequest("DeliveryTerm object is null");
                 }
@@ -197,12 +323,19 @@ namespace Tips.Master.Api.Controllers
                 string result = await _repository.DeliveryTermRepo.UpdateDeliveryTerm(deliveryTerm);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deactivated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeactivateDeliveryTerm action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
     }

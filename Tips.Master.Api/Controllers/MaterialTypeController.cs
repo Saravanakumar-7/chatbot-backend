@@ -3,6 +3,8 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
+using System.Net;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -25,17 +27,55 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllMaterialType()
         {
+            ServiceResponse<IEnumerable<MaterialTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialTypeDto>>();
+
             try
             {
-                var MaterialTypeList = await _repository.MaterialTypeRepository.GetAllActiveMaterialType();
+                var MaterialTypeList = await _repository.MaterialTypeRepository.GetAllMaterialType();
                 _logger.LogInfo("Returned all MaterialTypes");
                 var result = _mapper.Map<IEnumerable<MaterialTypeDto>>(MaterialTypeList);
-                return Ok(result);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all MaterialTypes Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveMaterialTypes()
+        {
+            ServiceResponse<IEnumerable<MaterialTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialTypeDto>>();
+
+            try
+            {
+                var MaterialTypes = await _repository.MaterialTypeRepository.GetAllActiveMaterialType();
+                _logger.LogInfo("Returned all MaterialTypes");
+                var result = _mapper.Map<IEnumerable<MaterialTypeDto>>(MaterialTypes);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active Languages Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+
             }
         }
 
@@ -43,25 +83,39 @@ namespace Tips.Master.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMaterialTypeById(int id)
         {
+            ServiceResponse<MaterialTypeDto> serviceResponse = new ServiceResponse<MaterialTypeDto>();
+
             try
             {
                 var materialType = await _repository.MaterialTypeRepository.GetMaterialTypeById(id);
                 if (materialType == null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"MaterialType with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"MaterialType with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned owner with id: {id}");
+                    _logger.LogInfo($"Returned MaterialType with id: {id}");
                     var result = _mapper.Map<MaterialTypeDto>(materialType);
-                    return Ok(result);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned MaterialType with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetMaterialTypeById action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -69,28 +123,44 @@ namespace Tips.Master.Api.Controllers
         [HttpPost]
         public IActionResult CreateMaterialType([FromBody] MaterialTypeDtoPost materialTypeDtoPost)
         {
+            ServiceResponse<MaterialTypeDto> serviceResponse = new ServiceResponse<MaterialTypeDto>();
+
             try
             {
                 if (materialTypeDtoPost is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "MaterialType object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("MaterialType object sent from client is null.");
-                    return BadRequest("MaterialType object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid MaterialType object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid MaterialType object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return BadRequest(serviceResponse);
                 }
                 var materialTypeEntity = _mapper.Map<MaterialType>(materialTypeDtoPost);
                 _repository.MaterialTypeRepository.CreateMaterialType(materialTypeEntity);
                 _repository.SaveAsync();
-
-                return Created("GetMaterialTypeById", "Successfully Created");
+                serviceResponse.Message = "Successfylly Created";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("GetMaterialTypeById", serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -99,34 +169,55 @@ namespace Tips.Master.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateMaterialType(int id, [FromBody] MaterialTypeDtoUpdate materialTypeDtoUpdate)
         {
+            ServiceResponse<MaterialTypeDto> serviceResponse = new ServiceResponse<MaterialTypeDto>();
+
             try
             {
                 if (materialTypeDtoUpdate is null)
                 {
-                    _logger.LogError("MaterialType object sent from client is null.");
-                    return BadRequest("MaterialType object is null");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update MaterialType object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update MaterialType object sent from client is null.");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid MaterialType object sent from client.");
-                    return BadRequest("Invalid model object");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update MaterialType object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Update MaterialType object sent from client.");
+                    return BadRequest(serviceResponse);
                 }
                 var materialTypeEntity = await _repository.MaterialTypeRepository.GetMaterialTypeById(id);
                 if (materialTypeEntity is null)
                 {
-                    _logger.LogError($"MaterialType with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Update MaterialType with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update MaterialType with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(materialTypeDtoUpdate, materialTypeEntity);
                 string result = await _repository.MaterialTypeRepository.UpdateMaterialType(materialTypeEntity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside UpdateMaterialType action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -134,71 +225,110 @@ namespace Tips.Master.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMaterialType(int id)
         {
+            ServiceResponse<MaterialTypeDto> serviceResponse = new ServiceResponse<MaterialTypeDto>();
+
             try
             {
                 var materialType = await _repository.MaterialTypeRepository.GetMaterialTypeById(id);
                 if (materialType == null)
                 {
-                    _logger.LogError($"MaterialType with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Delete MaterialType object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Delete MaterialType with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
                 }
                 string result = await _repository.MaterialTypeRepository.DeleteMaterialType(materialType);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateMaterialType(int id)
         {
+            ServiceResponse<MaterialTypeDto> serviceResponse = new ServiceResponse<MaterialTypeDto>();
+
             try
             {
                 var materialType = await _repository.MaterialTypeRepository.GetMaterialTypeById(id);
                 if (materialType is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "v object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"MaterialType with id: {id}, hasn't been found in db.");
-                    return BadRequest("MaterialType object is null");
+                    return BadRequest(serviceResponse);
                 }
                 materialType.IsActive = true;
                 string result = await _repository.MaterialTypeRepository.UpdateMaterialType(materialType);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside ActivateMaterialType action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateMaterialType(int id)
         {
+            ServiceResponse<MaterialTypeDto> serviceResponse = new ServiceResponse<MaterialTypeDto>();
+
             try
             {
                 var materialType = await _repository.MaterialTypeRepository.GetMaterialTypeById(id);
                 if (materialType is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "MaterialType object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"MaterialType with id: {id}, hasn't been found in db.");
-                    return BadRequest("MaterialType object is null");
+                    return BadRequest(serviceResponse);
                 }
                 materialType.IsActive = false;
                 string result = await _repository.MaterialTypeRepository.UpdateMaterialType(materialType);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deactivated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeactivateMaterialType action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 

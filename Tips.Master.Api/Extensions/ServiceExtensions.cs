@@ -3,7 +3,7 @@ using Entities;
 using LoggerService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using MySql.EntityFrameworkCore.Extensions;
+//using MySql.EntityFrameworkCore.Extensions;
 using Repository;
 
 namespace Tips.Master.Api.Extensions
@@ -41,22 +41,22 @@ namespace Tips.Master.Api.Extensions
 
         }
 
-        public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
-        {
+        //public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
+        //{
             
-            var connectionString = config["MySqlconnection:connectionString"];
-            services.AddDbContext<TipsMasterDbContext>(o => o.UseMySQL(connectionString));
-        }
+        //    var connectionString = config["MySqlconnection:connectionString"];
+        //    services.AddDbContext<TipsMasterDbContext>(o => o.UseMySQL(connectionString));
+        //}
 
-        public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices
-        {
-            public void ConfigureDesignTimeServices(IServiceCollection serviceCollection)
-            {
-                serviceCollection.AddEntityFrameworkMySQL();
-                new EntityFrameworkRelationalDesignServicesBuilder(serviceCollection)
-                    .TryAddCoreServices();
-            }
-        }
+        //public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices
+        //{
+        //    public void ConfigureDesignTimeServices(IServiceCollection serviceCollection)
+        //    {
+        //        serviceCollection.AddEntityFrameworkMySQL();
+        //        new EntityFrameworkRelationalDesignServicesBuilder(serviceCollection)
+        //            .TryAddCoreServices();
+        //    }
+        //}
 
         public static void ConfigureRepositoryWrapper(this IServiceCollection services)
         {

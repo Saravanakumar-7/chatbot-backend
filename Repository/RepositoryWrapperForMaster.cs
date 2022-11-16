@@ -68,8 +68,62 @@ namespace Repository
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
-        } 
-          
+        }
+        public ILocationsRepository LocationsRepository
+        {
+            get
+            {
+                if (_locationsRepo == null)
+                {
+                    _locationsRepo = new LocationsRepository(_tipsMasterDbContext);
+                }
+                return _locationsRepo;
+            }
+        }
+        public ICommodityRepository CommodityRepository
+        {
+            get
+            {
+                if (_commodityRepo == null)
+                {
+                    _commodityRepo = new CommodityRepository(_tipsMasterDbContext);
+                }
+                return _commodityRepo;
+            }
+        }
+        public IUOCRepository UOCRepository
+        {
+            get
+            {
+                if (_uOCRepo == null)
+                {
+                    _uOCRepo = new UOCRepository(_tipsMasterDbContext);
+                }
+                return _uOCRepo;
+            }
+        }
+        public IUOMRepository UOMRepository
+        {
+            get
+            {
+                if (_uOMRepo == null)
+                {
+                    _uOMRepo = new UOMRepository(_tipsMasterDbContext);
+                }
+                return _uOMRepo;
+            }
+        }
+        public IPaymentTermRepository paymentTermRepository
+        {
+            get
+            {
+                if (_paymentTermRepo == null)
+                {
+                    _paymentTermRepo = new PaymentTermRepository(_tipsMasterDbContext);
+                }
+                return _paymentTermRepo;
+            }
+        }
 
         public ISegmentRepository SegmentRepository
         {
@@ -164,8 +218,9 @@ namespace Repository
                 }
                 return _customerMasterRepo;
             }
-        } 
+        }
 
+        public ICustomerMasterRepository Customermasterrepository => throw new NotImplementedException();
 
         public ILeadTimeRepository leadTimeRepository
         {
@@ -176,50 +231,6 @@ namespace Repository
                     _leadTimeRepo = new LeadTimeRepository(_tipsMasterDbContext);
                 }
                 return _leadTimeRepo;
-            }
-        }
-        public ILocationsRepository LocationsRepository
-        {
-            get
-            {
-                if (_locationsRepo == null)
-                {
-                    _locationsRepo = new LocationsRepository(_tipsMasterDbContext);
-                }
-                return _locationsRepo;
-            }
-        }
-        public ICommodityRepository CommodityRepository
-        {
-            get
-            {
-                if (_commodityRepo == null)
-                {
-                    _commodityRepo = new CommodityRepository(_tipsMasterDbContext);
-                }
-                return _commodityRepo;
-            }
-        }
-        public IUOCRepository UOCRepository
-        {
-            get
-            {
-                if (_uOCRepo == null)
-                {
-                    _uOCRepo = new UOCRepository(_tipsMasterDbContext);
-                }
-                return _uOCRepo;
-            }
-        }
-        public IUOMRepository UOMRepository
-        {
-            get
-            {
-                if (_uOMRepo == null)
-                {
-                    _uOMRepo = new UOMRepository(_tipsMasterDbContext);
-                }
-                return _uOMRepo;
             }
         }
         public ICustomerTypeRepository CustomerTypeRepository
@@ -233,7 +244,17 @@ namespace Repository
                 return _customerTypeRepo;
             }
         }
-
+        public IPackingInstructionRepository packingInstructionRepository
+        {
+            get
+            {
+                if (_packingInstructionRepo == null)
+                {
+                    _packingInstructionRepo = new PackingInstructionRepository(_tipsMasterDbContext);
+                }
+                return _packingInstructionRepo;
+            }
+        }
         public IMaterialTypeRepository MaterialTypeRepository
         {
             get
@@ -488,7 +509,17 @@ namespace Repository
                 return _languageRepo;
             }
         }
-
+        public ITypeOfCompanyRepository TypeOfCompanyRepository
+        {
+            get
+            {
+                if (_typeOfCompanyRepo == null)
+                {
+                    _typeOfCompanyRepo = new TypeOfCompanyRepository(_tipsMasterDbContext);
+                }
+                return _typeOfCompanyRepo;
+            }
+        }
         public INatureOfRelationshipRepository natureOfRelationshipRepository
         {
             get
@@ -521,23 +552,19 @@ namespace Repository
         public IVendorAddressRepository VendorAddressRepository => throw new NotImplementedException();
 
         public IVendorBankingRepository VendorBankingRepository => throw new NotImplementedException();
-
-        public ITypeOfCompanyRepository TypeOfCompanyRepository => throw new NotImplementedException();
+        
+        public ITypeOfCompanyRepository typeOfCompanyRepository=> throw new NotImplementedException();
 
         public IPaymentTermRepository PaymentTermRepository => throw new NotImplementedException();
 
         public IPackingInstructionRepository PackingInstructionRepository => throw new NotImplementedException();
 
-        
         public ICompanyAddressesRepository CompanyAddressesRepository => throw new NotImplementedException();
 
         public ICompanyContactsRepository CompanyContactsRepository => throw new NotImplementedException();
 
         public ICompanyBankingRepository CompanyBankingRepository => throw new NotImplementedException();
 
-        public ICustomerMasterRepository Customermasterrepository => throw new NotImplementedException();
-
- 
         public ICustomerBankingsRepository CustomerBankingsRepository => throw new NotImplementedException();
 
         public ICustomerAddressesRepository CustomerAddressesRepository => throw new NotImplementedException();
@@ -556,9 +583,6 @@ namespace Repository
 
         public IItemMasterWarehouse ItemMasterWarehouseRepository => throw new NotImplementedException();
 
-        public IHeadCountingRepository HeadCountingRepository => throw new NotImplementedException();
-
-        
         public void SaveAsync()
         {
             _tipsMasterDbContext.SaveChanges();

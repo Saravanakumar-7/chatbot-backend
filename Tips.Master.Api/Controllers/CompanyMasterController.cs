@@ -116,7 +116,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("CompanyMaster object sent from client is null.");
-                    return BadRequest("CompanyMaster object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
@@ -125,7 +125,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid CompanyMaster object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return BadRequest(serviceResponse);
                 }
 
                 var CompanyMaster = _mapper.Map<CompanyMaster>(companyMasterDtoPost);

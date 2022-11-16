@@ -3,6 +3,8 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
+using System.Net;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -25,43 +27,94 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllLeadTimes()
         {
+            ServiceResponse<IEnumerable<LeadTimeDto>> serviceResponse = new ServiceResponse<IEnumerable<LeadTimeDto>>();
+
             try
             {
-                var LeadTimeList = await _repository.leadTimeRepository.GetAllActiveLeadTime();
+                var LeadTimeList = await _repository.leadTimeRepository.GetAllLeadTime();
                 _logger.LogInfo("Returned all LeadTimes");
                 var result = _mapper.Map<IEnumerable<LeadTimeDto>>(LeadTimeList);
-                return Ok(result);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all LeadTimes Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveLeadTimes()
+        {
+            ServiceResponse<IEnumerable<LeadTimeDto>> serviceResponse = new ServiceResponse<IEnumerable<LeadTimeDto>>();
 
+            try
+            {
+                var LeadTimes = await _repository.leadTimeRepository.GetAllActiveLeadTime();
+                _logger.LogInfo("Returned all LeadTimes");
+                var result = _mapper.Map<IEnumerable<LeadTimeDto>>(LeadTimes);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active LeadTimes Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+
+            }
+        }
         // GET api/<LeadTimeController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetLeadTimeById(int id)
         {
+            ServiceResponse<LeadTimeDto> serviceResponse = new ServiceResponse<LeadTimeDto>();
+
             try
             {
                 var leadTime = await _repository.leadTimeRepository.GetLeadTimeById(id);
                 if (leadTime == null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Department with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"LeadTime with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned owner with id: {id}");
+                    _logger.LogInfo($"Returned Department with id: {id}");
                     var result = _mapper.Map<LeadTimeDto>(leadTime);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned Department with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetLeadTimeById action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -69,28 +122,44 @@ namespace Tips.Master.Api.Controllers
         [HttpPost]
         public IActionResult CreateLeadTime([FromBody] LeadTimeDtoPost leadTimeDtoPost)
         {
+            ServiceResponse<LeadTimeDto> serviceResponse = new ServiceResponse<LeadTimeDto>();
+
             try
             {
                 if (leadTimeDtoPost is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "LeadTime object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("LeadTime object sent from client is null.");
-                    return BadRequest("LeadTime object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid LeadTime object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid LeadTime object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return BadRequest(serviceResponse);
                 }
                 var leadTimeEntity = _mapper.Map<LeadTime>(leadTimeDtoPost);
                 _repository.leadTimeRepository.CreateLeadTime(leadTimeEntity);
                 _repository.SaveAsync();
-
-                return Created("GetLeadTimeById", "Successfully Created");
+                serviceResponse.Message = "Successfylly Created";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("GetLeadTimeById", serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -98,34 +167,56 @@ namespace Tips.Master.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateLeadTime(int id, [FromBody] LeadTimeDtoUpdate leadTimeDtoUpdate)
         {
+            ServiceResponse<LeadTimeDto> serviceResponse = new ServiceResponse<LeadTimeDto>();
+
             try
             {
                 if (leadTimeDtoUpdate is null)
                 {
-                    _logger.LogError("LeadTime object sent from client is null.");
-                    return BadRequest("LeadTime object is null");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update LeadTime object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Update LeadTime object sent from client is null.");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid LeadTime object sent from client.");
-                    return BadRequest("Invalid model object");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update Department object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Update LeadTime object sent from client.");
+                    return BadRequest(serviceResponse);
                 }
                 var leadTimeEntity = await _repository.leadTimeRepository.GetLeadTimeById(id);
                 if (leadTimeEntity is null)
                 {
-                    _logger.LogError($"LeadTime with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Update LeadTime with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update LeadTime with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(leadTimeDtoUpdate, leadTimeEntity);
                 string result = await _repository.leadTimeRepository.UpdateLeadTime(leadTimeEntity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside UpdateLeadTime action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -133,47 +224,73 @@ namespace Tips.Master.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLeadTime(int id)
         {
+            ServiceResponse<LeadTimeDto> serviceResponse = new ServiceResponse<LeadTimeDto>();
+
             try
             {
                 var leadTime = await _repository.leadTimeRepository.GetLeadTimeById(id);
                 if (leadTime == null)
                 {
-                    _logger.LogError($"LeadTime with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Delete LeadTime object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Delete LeadTime with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
                 }
                 string result = await _repository.leadTimeRepository.DeleteLeadTime(leadTime);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateLeadTime(int id)
         {
+            ServiceResponse<LeadTimeDto> serviceResponse = new ServiceResponse<LeadTimeDto>();
+
             try
             {
                 var leadTime = await _repository.leadTimeRepository.GetLeadTimeById(id);
                 if (leadTime is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "LeadTime object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"LeadTime with id: {id}, hasn't been found in db.");
-                    return BadRequest("LeadTime object is null");
+                    return BadRequest(serviceResponse);
                 }
                 leadTime.IsActive = true;
                 string result = await _repository.leadTimeRepository.UpdateLeadTime(leadTime);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside ActivateLeadTime action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500,serviceResponse);
             }
         }
         
@@ -181,24 +298,37 @@ namespace Tips.Master.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateLeadTime(int id)
         {
+            ServiceResponse<LeadTimeDto> serviceResponse = new ServiceResponse<LeadTimeDto>();
+
             try
             {
                 var leadTime = await _repository.leadTimeRepository.GetLeadTimeById(id);
                 if (leadTime is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "LeadTime object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"LeadTime with id: {id}, hasn't been found in db.");
-                    return BadRequest("LeadTime object is null");
+                    return BadRequest(serviceResponse);
                 }
                 leadTime.IsActive = false;
                 string result = await _repository.leadTimeRepository.UpdateLeadTime(leadTime);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deactivated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeactivateLeadTime action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 

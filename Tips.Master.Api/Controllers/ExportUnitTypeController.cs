@@ -35,8 +35,9 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all ExportUnitTypeList");
                 var result = _mapper.Map<IEnumerable<ExportUnitTypeDto>>(ExportUnitTypeList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all ExportUnitTypes Successfully";
                 serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
@@ -45,7 +46,8 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                return StatusCode(500, "Internal server error");
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -60,8 +62,9 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all ExportUnitTypes");
                 var result = _mapper.Map<IEnumerable<ExportUnitTypeDto>>(ExportUnitTypes);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all ExportUnitTypes Successfully";
                 serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
 
             }
@@ -69,9 +72,10 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
-                return StatusCode(500, "Internal server error");
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
 
             }
         }
@@ -96,10 +100,10 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
 
-                    _logger.LogInfo($"Returned owner with id: {id}");
+                    _logger.LogInfo($"Returned ExportUnitTypes with id: {id}");
                     var result = _mapper.Map<ExportUnitTypeDto>(ExportUnitTypes);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Returned ExportUnitTypes with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -112,7 +116,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -151,18 +155,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Successfylly Created";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-
-
-                return Created("GetExportUnitTypeById", "Successfully Created");
+                return Created("GetExportUnitTypeById", serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -177,10 +179,10 @@ namespace Tips.Master.Api.Controllers
                 if (exportUnitTypeDtoUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ExportUnitType object sent from client is null";
+                    serviceResponse.Message = "Update ExportUnitType object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("ExportUnitType object sent from client is null.");
+                    _logger.LogError("Update ExportUnitType object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
@@ -190,14 +192,18 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "Invalid ExportUnitType object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid ExportUnitType object sent from client.");
+                    _logger.LogError("Invalid Update ExportUnitType object sent from client.");
                     return BadRequest(serviceResponse);
                 }
                 var ExportUnitType = await _repository.ExportUnitTypeRepository.GetExportUnitTypeById(id);
                 if (ExportUnitType is null)
                 {
-                    _logger.LogError($"ExportUnitType with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Update ExportUnitType with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update ExportUnitType with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(exportUnitTypeDtoUpdate, ExportUnitType);
                 string result = await _repository.ExportUnitTypeRepository.UpdateExportUnitType(ExportUnitType);
@@ -207,16 +213,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside UpdateExportUnitType action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -233,11 +239,11 @@ namespace Tips.Master.Api.Controllers
                 if (ExportUnitType == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ExportUnitType object sent from client is null";
+                    serviceResponse.Message = "Delete ExportUnitType object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"ExportUnitType with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Delete ExportUnitType with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
                 }
                 string result = await _repository.ExportUnitTypeRepository.DeleteExportUnitType(ExportUnitType);
                 _logger.LogInfo(result);
@@ -245,12 +251,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -269,7 +279,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"ExportUnitType with id: {id}, hasn't been found in db.");
-                    return BadRequest("ExportUnitType object is null");
+                    return BadRequest(serviceResponse);
                 }
                 ExportUnitType.IsActive = true;
                 string result = await _repository.ExportUnitTypeRepository.UpdateExportUnitType(ExportUnitType);
@@ -278,16 +288,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside ActivateExportUnitType action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -306,7 +316,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"ExportUnitType with id: {id}, hasn't been found in db.");
-                    return BadRequest("ExportUnitType object is null");
+                    return BadRequest(serviceResponse);
                 }
                 ExportUnitType.IsActive = false;
                 string result = await _repository.ExportUnitTypeRepository.UpdateExportUnitType(ExportUnitType);
@@ -315,16 +325,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Deactivated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeactivateExportUnitType action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
 
         }

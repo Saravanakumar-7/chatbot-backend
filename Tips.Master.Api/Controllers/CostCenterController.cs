@@ -35,8 +35,9 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all CostCenters");
                 var result = _mapper.Map<IEnumerable<CostCenterDto>>(CostCenterList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all CostCenters Successfully";
                 serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
@@ -45,7 +46,8 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                return StatusCode(500, "Internal server error");
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -60,8 +62,9 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all CostCenters");
                 var result = _mapper.Map<IEnumerable<CostCenterDto>>(CostCenters);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all Active CostCenters Successfully";
                 serviceResponse.Success = true;
+                serviceResponse.StatusCode=HttpStatusCode.OK;
                 return Ok(serviceResponse);
 
             }
@@ -71,7 +74,8 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                return StatusCode(500, "Internal server error");
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
 
             }
         }
@@ -96,10 +100,10 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
 
-                    _logger.LogInfo($"Returned owner with id: {id}");
+                    _logger.LogInfo($"Returned CostCenter with id: {id}");
                     var result = _mapper.Map<CostCenterDto>(CostCenter);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Returned CostCenter with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -112,7 +116,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -150,17 +154,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Successfylly Created";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-
-                return Created("GetCostCenterById", "Successfully Created");
+                return Created("GetCostCenterById", serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside Costcenter action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -174,27 +177,31 @@ namespace Tips.Master.Api.Controllers
                 if (costCenterDtoUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Costcenter object sent from client is null";
+                    serviceResponse.Message = "Update Costcenter object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Costcenter object sent from client is null.");
+                    _logger.LogError("Update Costcenter object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
 
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Costcenter object sent from client";
+                    serviceResponse.Message = "Invalid Update Costcenter object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid Costcenter object sent from client.");
+                    _logger.LogError("Invalid Update Costcenter object sent from client.");
                     return BadRequest(serviceResponse);
                 }
                 var costcenter = await _repository.CostCenterRepository.GetCostCenterById(id);
                 if (costcenter is null)
                 {
-                    _logger.LogError($"costcenter with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Update costcenter with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Update costcenter with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(costCenterDtoUpdate, costcenter);
                 string result = await _repository.CostCenterRepository.UpdateCostCenter(costcenter);
@@ -204,16 +211,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside UpdateCostcenter action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -228,11 +235,11 @@ namespace Tips.Master.Api.Controllers
                 if (costcenter == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Costcenter object sent from client is null";
+                    serviceResponse.Message = "Delete Costcenter object sent from client is null";
                     serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"Costcenter with id: {id}, hasn't been found in db.");
-                    return BadRequest(serviceResponse);
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Delete Costcenter with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
                 }
                 string result = await _repository.CostCenterRepository.DeleteCostCenter(costcenter);
                 _logger.LogInfo(result);
@@ -240,17 +247,17 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
                
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -278,16 +285,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside ActivateCostcenter action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
         [HttpPut("{id}")]
@@ -314,16 +321,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Deactivated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeactivateCostcenter action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
 
         }

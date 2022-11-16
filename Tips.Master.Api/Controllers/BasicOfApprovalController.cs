@@ -3,6 +3,8 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
+using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,17 +30,54 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllBasicOfApproval()
         {
+            ServiceResponse<IEnumerable<BasicOfApprovalDto>> serviceResponse = new ServiceResponse<IEnumerable<BasicOfApprovalDto>>();
+
             try
             {
-                var basicOfApprovals = await _repository.BasicOfApprovalRepository.GetAllActiveBasicOfApproval();
+                var basicOfApprovals = await _repository.BasicOfApprovalRepository.GetAlBasicOfApproval();
                 _logger.LogInfo("Returned all BasicOfApproval");
-                var result = _mapper.Map<IEnumerable<BasicOfApproval>>(basicOfApprovals);
-                return Ok(result);
+                var result = _mapper.Map<IEnumerable<BasicOfApprovalDto>>(basicOfApprovals);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all BasicOfApproval Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveBasicOfApprovals()
+        {
+            ServiceResponse<IEnumerable<BasicOfApprovalDto>> serviceResponse = new ServiceResponse<IEnumerable<BasicOfApprovalDto>>();
+
+            try
+            {
+                var basicOfApprovals = await _repository.BasicOfApprovalRepository.GetAllActiveBasicOfApproval();
+                _logger.LogInfo("Returned all BasicOfApproval");
+                var result = _mapper.Map<IEnumerable<BasicOfApprovalDto>>(basicOfApprovals);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active BasicOfApproval Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -46,25 +85,39 @@ namespace Tips.Master.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBasicOfApprovalById(int id)
         {
+            ServiceResponse<BasicOfApprovalDto> serviceResponse = new ServiceResponse<BasicOfApprovalDto>();
+
             try
             {
                 var basicOfApproval = await _repository.BasicOfApprovalRepository.GetBasicOfApprovalById(id);
                 if (basicOfApproval == null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"BasicOfApproval with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"BasicOfApproval with id: {id}, hasn't been found in db.");
                     return NotFound();
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned owner with id: {id}");
+                    _logger.LogInfo($"BasicOfApproval owner with id: {id}");
                     var result = _mapper.Map<BasicOfApprovalDto>(basicOfApproval);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned BasicOfApproval with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetBasicOfApprovalById action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -72,17 +125,27 @@ namespace Tips.Master.Api.Controllers
         [HttpPost]
         public IActionResult CreateBasicOfApproval([FromBody] BasicOfApprovalPostDto basicOfApprovalPostDto)
         {
+            ServiceResponse<BasicOfApprovalDto> serviceResponse = new ServiceResponse<BasicOfApprovalDto>();
+
             try
             {
                 if (basicOfApprovalPostDto is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "BasicOfApproval object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("BasicOfApproval object sent from client is null.");
-                    return BadRequest("BasicOfApproval object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid BasicOfApproval object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid BasicOfApproval object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return BadRequest(serviceResponse);
                 }
                 //var deliverTermEntity = _mapper.Map<DeliveryTerm>(deliveryTerm);
                 //var id = _repository.DeliveryTermRepo.CreateDeliveryTerm(deliverTermEntity);
@@ -91,15 +154,20 @@ namespace Tips.Master.Api.Controllers
                 var basicOfApproval = _mapper.Map<BasicOfApproval>(basicOfApprovalPostDto);
                 _repository.BasicOfApprovalRepository.CreateBasicOfApproval(basicOfApproval);
                 _repository.SaveAsync();
-
-
-                return Created("GetBasicOfApprovalById", "Successfully Created");
-
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Successfylly Created";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("GetBasicOfApprovalById", serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -107,34 +175,56 @@ namespace Tips.Master.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBasicOfApproval(int id, [FromBody] BasicOfApprovalUpdateDto basicOfApprovalUpdateDto)
         {
+            ServiceResponse<BasicOfApprovalDto> serviceResponse = new ServiceResponse<BasicOfApprovalDto>();
+
             try
             {
                 if (basicOfApprovalUpdateDto is null)
                 {
-                    _logger.LogError("BasicOfApproval object sent from client is null.");
-                    return BadRequest("BasicOfApproval object is null");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update BasicOfApproval object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update BasicOfApproval object sent from client is null.");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid BasicOfApproval object sent from client.");
-                    return BadRequest("Invalid model object");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update BasicOfApproval object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update Invalid BasicOfApproval object sent from client.");
+                    return BadRequest(serviceResponse);
                 }
                 var basicOfApproval = await _repository.BasicOfApprovalRepository.GetBasicOfApprovalById(id);
                 if (basicOfApproval is null)
                 {
-                    _logger.LogError($"BasicOfApproval with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Update BasicOfApproval with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update BasicOfApproval with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(basicOfApprovalUpdateDto, basicOfApproval);
                 string result = await _repository.BasicOfApprovalRepository.UpdateBasicOfApproval(basicOfApproval);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside UpdateBasicOfApproval action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -142,71 +232,110 @@ namespace Tips.Master.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBasicOfApproval(int id)
         {
+            ServiceResponse<BasicOfApprovalDto> serviceResponse = new ServiceResponse<BasicOfApprovalDto>();
+
             try
             {
                 var basicOfApproval = await _repository.BasicOfApprovalRepository.GetBasicOfApprovalById(id);
                 if (basicOfApproval == null)
                 {
-                    _logger.LogError($"BasicOfApproval with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Delete BasicOfApproval object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Delete BasicOfApproval with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
                 }
                 string result = await _repository.BasicOfApprovalRepository.DeleteBasicOfApproval(basicOfApproval);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateBasicOfApproval(int id)
         {
+            ServiceResponse<BasicOfApprovalDto> serviceResponse = new ServiceResponse<BasicOfApprovalDto>();
+
             try
             {
                 var basicOfApproval = await _repository.BasicOfApprovalRepository.GetBasicOfApprovalById(id);
                 if (basicOfApproval is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "BasicOfApproval object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"BasicOfApproval with id: {id}, hasn't been found in db.");
-                    return BadRequest("BasicOfApproval object is null");
+                    return BadRequest(serviceResponse);
                 }
                 basicOfApproval.IsActive = true;
                 string result = await _repository.BasicOfApprovalRepository.UpdateBasicOfApproval(basicOfApproval);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside ActivateBasicOfApproval action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateBasicOfApproval(int id)
         {
+            ServiceResponse<BasicOfApprovalDto> serviceResponse = new ServiceResponse<BasicOfApprovalDto>();
+
             try
             {
                 var basicOfApproval = await _repository.BasicOfApprovalRepository.GetBasicOfApprovalById(id);
                 if (basicOfApproval is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "BasicOfApproval object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"BasicOfApproval with id: {id}, hasn't been found in db.");
-                    return BadRequest("BasicOfApproval object is null");
+                    return BadRequest(serviceResponse);
                 }
                 basicOfApproval.IsActive = false;
                 string result = await _repository.BasicOfApprovalRepository.UpdateBasicOfApproval(basicOfApproval);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deactivated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside DeactivateBasicOfApproval action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
     }

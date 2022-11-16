@@ -3,6 +3,8 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
+using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,60 +30,120 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllScopeOfSupply()
         {
+            ServiceResponse<IEnumerable<ScopeOfSupplyDto>> serviceResponse = new ServiceResponse<IEnumerable<ScopeOfSupplyDto>>();
+
+            try
+            {
+                var scopeOfSupplies = await _repository.ScopeOfSupplyRepository.GetAllScopeOfSupply();
+                _logger.LogInfo("Returned all ScopeOfSupply");
+                var result = _mapper.Map<IEnumerable<ScopeOfSupplyDto>>(scopeOfSupplies);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ScopeOfSupply Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message); 
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveScopeOfSupply()
+        {
+            ServiceResponse<IEnumerable<ScopeOfSupplyDto>> serviceResponse = new ServiceResponse<IEnumerable<ScopeOfSupplyDto>>();
+
             try
             {
                 var scopeOfSupplies = await _repository.ScopeOfSupplyRepository.GetAllActiveScopeOfSupply();
                 _logger.LogInfo("Returned all ScopeOfSupply");
-                var result = _mapper.Map<IEnumerable<ScopeOfSupply>>(scopeOfSupplies);
-                return Ok(result);
+                var result = _mapper.Map<IEnumerable<ScopeOfSupplyDto>>(scopeOfSupplies);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active ScopeOfSupply Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
-
         // GET api/<ScopeOfSupplyController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetScopeOfSupplyById(int id)
         {
+            ServiceResponse<ScopeOfSupplyDto> serviceResponse = new ServiceResponse<ScopeOfSupplyDto>();
+
             try
             {
                 var scopeOfSupply = await _repository.ScopeOfSupplyRepository.GetScopeOfSupplyById(id);
                 if (scopeOfSupply == null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ScopeOfSupply with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"ScopeOfSupply with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
                     var result = _mapper.Map<ScopeOfSupplyDto>(scopeOfSupply);
-                    return Ok(result);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned owner with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetScopeOfSupplyById action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
         // POST api/<ScopeOfSupplyController>
         [HttpPost]
         public IActionResult CreateScopeOfSupply([FromBody] ScopeOfSupplyPostDto scopeOfSupplyPostDto)
         {
+            ServiceResponse<ScopeOfSupplyDto> serviceResponse = new ServiceResponse<ScopeOfSupplyDto>();
+
             try
             {
                 if (scopeOfSupplyPostDto is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ScopeOfSupply object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("ScopeOfSupply object sent from client is null.");
-                    return BadRequest("ScopeOfSupply object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid ScopeOfSupply object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid ScopeOfSupply object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return BadRequest(serviceResponse);
                 }
                 //var deliverTermEntity = _mapper.Map<DeliveryTerm>(deliveryTerm);
                 //var id = _repository.DeliveryTermRepo.CreateDeliveryTerm(deliverTermEntity);
@@ -90,15 +152,20 @@ namespace Tips.Master.Api.Controllers
                 var scopeOfSupply = _mapper.Map<ScopeOfSupply>(scopeOfSupplyPostDto);
                 _repository.ScopeOfSupplyRepository.CreateScopeOfSupply(scopeOfSupply);
                 _repository.SaveAsync();
+                serviceResponse.Message = "Successfylly Created";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
 
-
-                return Created("GetScopeOfSupplyById", "Successfully Created");
-
+                return Created("GetScopeOfSupplyById", serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -106,32 +173,54 @@ namespace Tips.Master.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateScopeOfSupply(int id, [FromBody] ScopeOfSupplyUpdateDto scopeOfSupplyUpdateDto)
         {
+            ServiceResponse<ScopeOfSupplyDto> serviceResponse = new ServiceResponse<ScopeOfSupplyDto>();
+
             try
             {
                 if (scopeOfSupplyUpdateDto is null)
                 {
-                    _logger.LogError("ScopeOfSupply object sent from client is null.");
-                    return BadRequest("ScopeOfSupply object is null");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update ScopeOfSupply object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update ScopeOfSupply object sent from client is null.");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid ScopeOfSupply object sent from client.");
-                    return BadRequest("Invalid model object");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update ScopeOfSupply object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid update ScopeOfSupply object sent from client.");
+                    return BadRequest(serviceResponse);
                 }
                 var scopeOfSupply = await _repository.ScopeOfSupplyRepository.GetScopeOfSupplyById(id);
                 if (scopeOfSupply is null)
                 {
-                    _logger.LogError($"ScopeOfSupply with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Update ScopeOfSupply with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update ScopeOfSupply with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(scopeOfSupplyUpdateDto, scopeOfSupply);
                 string result = await _repository.ScopeOfSupplyRepository.UpdateScopeOfSupply(scopeOfSupply);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside UpdateScopeOfSupply action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
@@ -141,70 +230,109 @@ namespace Tips.Master.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteScopeOfSupply(int id)
         {
+            ServiceResponse<ScopeOfSupplyDto> serviceResponse = new ServiceResponse<ScopeOfSupplyDto>();
+
             try
             {
                 var scopeOfSupply = await _repository.ScopeOfSupplyRepository.GetScopeOfSupplyById(id);
                 if (scopeOfSupply == null)
                 {
-                    _logger.LogError($"ScopeOfSupply with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Delete ScopeOfSupply object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Delete ScopeOfSupply with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
                 }
                 string result = await _repository.ScopeOfSupplyRepository.DeleteScopeOfSupply(scopeOfSupply);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateScopeOfSupply(int id)
         {
+            ServiceResponse<ScopeOfSupplyDto> serviceResponse = new ServiceResponse<ScopeOfSupplyDto>();
+
             try
             {
                 var scopeOfSupply = await _repository.ScopeOfSupplyRepository.GetScopeOfSupplyById(id);
                 if (scopeOfSupply is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ScopeOfSupply object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"ScopeOfSupply with id: {id}, hasn't been found in db.");
-                    return BadRequest("ScopeOfSupply object is null");
+                    return BadRequest(serviceResponse);
                 }
                 scopeOfSupply.IsActive = true;
                 string result = await _repository.ScopeOfSupplyRepository.UpdateScopeOfSupply(scopeOfSupply);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside ActivateScopeOfSupply action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateScopeOfSupply(int id)
         {
+            ServiceResponse<ScopeOfSupplyDto> serviceResponse = new ServiceResponse<ScopeOfSupplyDto>();
+
             try
             {
                 var scopeOfSupply = await _repository.ScopeOfSupplyRepository.GetScopeOfSupplyById(id);
                 if (scopeOfSupply is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ScopeOfSupply object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"ScopeOfSupply with id: {id}, hasn't been found in db.");
-                    return BadRequest("ScopeOfSupply object is null");
+                    return BadRequest(serviceResponse);
                 }
                 scopeOfSupply.IsActive = false;
                 string result = await _repository.ScopeOfSupplyRepository.UpdateScopeOfSupply(scopeOfSupply);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deactivated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeactivateScopeOfSupply action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
     }

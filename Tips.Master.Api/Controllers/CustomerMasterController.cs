@@ -45,7 +45,7 @@ namespace Tips.Master.Api.Controllers
 
                 var result = _mapper.Map<IEnumerable<CustomerMasterDto>>(listOfCustomerMaster);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all Customers Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -57,7 +57,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = $"Something went wrong inside GetAllCustomerMaster action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -80,10 +80,10 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned owner with id: {id}");
+                    _logger.LogInfo($"Returned CustomerMaster with id: {id}");
                     var result = _mapper.Map<CustomerMasterDto>(CustomerMasterDetails);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Returned CustomerMaster with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -96,7 +96,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = $"Something went wrong inside GetCustomerMasterById action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -113,7 +113,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("CustomerMaster object sent from client is null.");
-                    return BadRequest("CustomerMaster object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
@@ -144,17 +144,17 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = " CustomerMaster Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.Created;
-                return Created("GetCustomerMasterById", "Successfully Created");
+                return Created("GetCustomerMasterById", serviceResponse);
 
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -172,7 +172,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "Update CustomerMaster object sent from client is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest("Update CustomerMaster object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
@@ -220,10 +220,10 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside UpdateCustomerMaster action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside UpdateCustomerMaster action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -256,10 +256,10 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside DeleteOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -285,7 +285,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = $"Something went wrong inside GetAllActiveCustomerIdNameList action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 

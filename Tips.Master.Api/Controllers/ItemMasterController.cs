@@ -48,7 +48,7 @@ namespace Tips.Master.Api.Controllers
 
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(ItemMasterList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all ItemMasters Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -60,7 +60,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -77,17 +77,17 @@ namespace Tips.Master.Api.Controllers
                 {
                     _logger.LogError($"ItemMaster with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Vendor with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"ItemMaster with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned owner with id: {id}");
+                    _logger.LogInfo($"Returned ItemMaster with id: {id}");
                     var result = _mapper.Map<ItemMasterDto>(itemMaster);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Returned ItemMaster with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);
@@ -100,7 +100,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
              }
         }
 
@@ -119,7 +119,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "ItemMaster object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest();
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
@@ -142,7 +142,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetItemById", "Successfully Created");
+                return Created("GetItemById", serviceResponse);
             }
             catch (Exception ex)
             {
@@ -151,7 +151,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -220,7 +220,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -258,7 +258,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -287,7 +287,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Activate Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
@@ -296,7 +296,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -325,7 +325,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "DeActivate Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
@@ -334,7 +334,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 

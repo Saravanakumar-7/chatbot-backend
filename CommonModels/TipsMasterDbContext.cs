@@ -15,13 +15,6 @@ namespace Entities
         public DbSet<MaterialType>? MaterialTypes { get; set; }
         public DbSet<ProcurementType>? ProcurementTypes { get; set; }
 
-        public DbSet<ShipmentInstructions> ShipmentInstructions { get; set; }
-        public DbSet<Warehouse> Warehouse { get; set; }
-        public DbSet<Category> Category { get; set; }
-        public DbSet<RiskCategory> RiskCategory { get; set; }
-        public DbSet<QuoteTerms> QuoteTerms { get; set; }
-        public DbSet<Segment> Segment { get; set; }
-
         public DbSet<UOM>Uom { get; set; }
         public DbSet<UOC> Uoc { get; set; }
         public DbSet<Commodity> Commodity { get; set; }

@@ -5,10 +5,11 @@ using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol.Core.Types;
+using System.Net;
 
 namespace Tips.Master.Api.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class UOCController : ControllerBase
     {
@@ -26,108 +27,197 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUOC()
         {
+            ServiceResponse<IEnumerable<UOCDto>> serviceResponse = new ServiceResponse<IEnumerable<UOCDto>>();
+
             try
             {
-                var uocList = await _repository.UOCRepository.GetAllUOC();
+                var UOCList = await _repository.UOCRepository.GetAllUOC();
                 _logger.LogInfo("Returned all UOC");
-                var result = _mapper.Map<IEnumerable<UOCDto>>(uocList);
-                return Ok(result);
+                var result = _mapper.Map<IEnumerable<UOCDto>>(UOCList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all UOC Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveUocs()
+        {
+            ServiceResponse<IEnumerable<UOCDto>> serviceResponse = new ServiceResponse<IEnumerable<UOCDto>>();
 
+            try
+            {
+                var UOCList = await _repository.UOCRepository.GetAllActiveUOC();
+                _logger.LogInfo("Returned all UOC");
+                var result = _mapper.Map<IEnumerable<UOCDto>>(UOCList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active UOC Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+
+            }
+        }
 
         // GET api/<UOCController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUOCById(int id)
         {
+            ServiceResponse<UOCDto> serviceResponse = new ServiceResponse<UOCDto>();
+
             try
             {
-                var uoc = await _repository.UOCRepository.GetUOCById(id);
-                if (uoc == null)
+                var UOC = await _repository.UOCRepository.GetUOCById(id);
+                if (UOC == null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Department with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"UOC with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    var result = _mapper.Map<UOCDto>(uoc);
-                    return Ok(result);
+                    var result = _mapper.Map<UOCDto>(UOC);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned owner with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetUOCById action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 
         // POST api/<UOMController>
         [HttpPost]
-        public IActionResult CreateUOC([FromBody] UOCDtoPost uocDtoPost)
+        public IActionResult CreateUOC([FromBody] UOCDtoPost UocDtoPost)
         {
+            ServiceResponse<UOCDto> serviceResponse = new ServiceResponse<UOCDto>();
+
             try
             {
-                if (uocDtoPost is null)
+                if (UocDtoPost is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "UOC object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("UOC object sent from client is null.");
-                    return BadRequest("UOC object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid UOC object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid UOC object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return BadRequest(serviceResponse);
                 }
-                var uocEntity = _mapper.Map<UOC>(uocDtoPost);
-                _repository.UOCRepository.CreateUOC(uocEntity);
+                var UOCEntity = _mapper.Map<UOC>(UocDtoPost);
+                _repository.UOCRepository.CreateUOC(UOCEntity);
                 _repository.SaveAsync();
-
-                return Created("GetUOCById", "Successfully Created");
+                serviceResponse.Message = "Successfylly Created";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("GetUOCById", serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
-        // PUT api/<UOCController>/5
+        // PUT api/<UOMController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUOC(int id, [FromBody] UOCDtoUpdate uocDtoUpdate)
+        public async Task<IActionResult> UpdateUOC(int id, [FromBody] UOCDtoUpdate UocDtoUpdate)
         {
+            ServiceResponse<UOCDto> serviceResponse = new ServiceResponse<UOCDto>();
+
             try
             {
-                if (uocDtoUpdate is null)
+                if (UocDtoUpdate is null)
                 {
-                    _logger.LogError("UOC object sent from client is null.");
-                    return BadRequest("UOC object is null");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update UOC object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update UOC object sent from client is null.");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid UOC object sent from client.");
-                    return BadRequest("Invalid model object");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update UOC object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Update UOC object sent from client.");
+                    return BadRequest(serviceResponse);
                 }
-                var uocEntity = await _repository.UOCRepository.GetUOCById(id);
-                if (uocEntity is null)
+                var UOCEntity = await _repository.UOCRepository.GetUOCById(id);
+                if (UOCEntity is null)
                 {
-                    _logger.LogError($"UOC with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Update UOC with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update UOC with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
-                _mapper.Map(uocDtoUpdate, uocEntity);
-                string result = await _repository.UOCRepository.UpdateUOC(uocEntity);
+                _mapper.Map(UocDtoUpdate, UOCEntity);
+                string result = await _repository.UOCRepository.UpdateUOC(UOCEntity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside UpdateUOC action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -135,71 +225,110 @@ namespace Tips.Master.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUOC(int id)
         {
+            ServiceResponse<UOCDto> serviceResponse = new ServiceResponse<UOCDto>();
+
             try
             {
-                var uoc = await _repository.UOCRepository.GetUOCById(id);
-                if (uoc == null)
+                var UOC = await _repository.UOCRepository.GetUOCById(id);
+                if (UOC == null)
                 {
-                    _logger.LogError($"UOC with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Delete Uoc object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Delete UOC with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
                 }
-                string result = await _repository.UOCRepository.DeleteUOC(uoc);
+                string result = await _repository.UOCRepository.DeleteUOC(UOC);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateUOC(int id)
         {
+            ServiceResponse<UOCDto> serviceResponse = new ServiceResponse<UOCDto>();
+
             try
             {
-                var uoc = await _repository.UOCRepository.GetUOCById(id);
-                if (uoc is null)
+                var UOC = await _repository.UOCRepository.GetUOCById(id);
+                if (UOC is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "UOC object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"UOC with id: {id}, hasn't been found in db.");
-                    return BadRequest("UOC object is null");
+                    return BadRequest(serviceResponse);
                 }
-                uoc.ActiveStatus = true;
-                string result = await _repository.UOCRepository.UpdateUOC(uoc);
+                UOC.ActiveStatus = true;
+                string result = await _repository.UOCRepository.UpdateUOC(UOC);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
+                serviceResponse.Message = "Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
                 return NoContent();
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside ActivateUOC action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateUOC(int id)
         {
+            ServiceResponse<UOCDto> serviceResponse = new ServiceResponse<UOCDto>();
+
             try
             {
-                var uoc = await _repository.UOCRepository.GetUOCById(id);
-                if (uoc is null)
+                var UOC = await _repository.UOCRepository.GetUOCById(id);
+                if (UOC is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "UOC object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"UOC with id: {id}, hasn't been found in db.");
-                    return BadRequest("UOC object is null");
+                    return BadRequest(serviceResponse);
                 }
-                uoc.ActiveStatus = false;
-                string result = await _repository.UOCRepository.UpdateUOC(uoc);
+                UOC.ActiveStatus = false;
+                string result = await _repository.UOCRepository.UpdateUOC(UOC);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deactivated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside DeactivateUOC action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 

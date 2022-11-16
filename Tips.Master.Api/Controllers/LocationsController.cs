@@ -4,6 +4,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -26,17 +27,55 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllLocations()
         {
+            ServiceResponse<IEnumerable<LocationsDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationsDto>>();
+
             try
             {
                 var LocationsList = await _repository.LocationsRepository.GetAllLocations();
                 _logger.LogInfo("Returned all Locations");
                 var result = _mapper.Map<IEnumerable<LocationsDto>>(LocationsList);
-                return Ok(result);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Locations Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveDepartments()
+        {
+            ServiceResponse<IEnumerable<LocationsDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationsDto>>();
+
+            try
+            {
+                var locations = await _repository.LocationsRepository.GetAllActiveLocations();
+                _logger.LogInfo("Returned all departments");
+                var result = _mapper.Map<IEnumerable<LocationsDto>>(locations);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active departments Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");
+
             }
         }
 
@@ -44,25 +83,41 @@ namespace Tips.Master.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetLocationsById(int id)
         {
+            ServiceResponse<LocationsDto> serviceResponse = new ServiceResponse<LocationsDto>();
+
             try
             {
+                
+
                 var Locations = await _repository.LocationsRepository.GetLocationsById(id);
                 if (Locations == null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Locations with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"Locations with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
                     var result = _mapper.Map<LocationsDto>(Locations);
-                    return Ok(result);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
-            {
+            { 
                 _logger.LogError($"Something went wrong inside GetLocationsById action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
 
         }
@@ -71,28 +126,45 @@ namespace Tips.Master.Api.Controllers
         [HttpPost]
         public IActionResult CreateLocations([FromBody] LocationsDtoPost LocationsDtoPost)
         {
+            ServiceResponse<LocationsDto> serviceResponse = new ServiceResponse<LocationsDto>();
+
             try
             {
                 if (LocationsDtoPost is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Locations object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Locations object sent from client is null.");
-                    return BadRequest("Locations object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Locations object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid Locations object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return BadRequest(serviceResponse);
                 }
                 var LocationsEntity = _mapper.Map<Locations>(LocationsDtoPost);
                 _repository.LocationsRepository.CreateLocations(LocationsEntity);
                 _repository.SaveAsync();
-
-                return Created("GetLocationsById", "Successfully Created");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Successfylly Created";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("GetLocationsById", serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside Locations action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -100,34 +172,56 @@ namespace Tips.Master.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateLocations(int id, [FromBody] LocationsDtoUpdate locationsDtoUpdate)
         {
+            ServiceResponse<LocationsDto> serviceResponse = new ServiceResponse<LocationsDto>();
+
             try
             {
                 if (locationsDtoUpdate is null)
                 {
-                    _logger.LogError("Locations object sent from client is null.");
-                    return BadRequest("Locations object is null");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Update Locations object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Update Locations object sent from client is null.");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid Locations object sent from client.");
-                    return BadRequest("Invalid model object");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update Locations object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Update Invalid Locations object sent from client.");
+                    return BadRequest(serviceResponse);
                 }
                 var LocationsEntity = await _repository.LocationsRepository.GetLocationsById(id);
                 if (LocationsEntity is null)
                 {
-                    _logger.LogError($"Locations with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Update Locations with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update Locations with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(locationsDtoUpdate, LocationsEntity);
                 string result = await _repository.LocationsRepository.UpdateLocations(LocationsEntity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateLocations action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside UpdateLocation action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -135,23 +229,36 @@ namespace Tips.Master.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLocations(int id)
         {
+            ServiceResponse<LocationsDto> serviceResponse = new ServiceResponse<LocationsDto>();
+
             try
             {
                 var Locations = await _repository.LocationsRepository.GetLocationsById(id);
                 if (Locations == null)
                 {
-                    _logger.LogError($"Locations with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Delete Locations object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Delete Locations with id: {id}, hasn't been found in db.");
                     return NotFound();
                 }
                 string result = await _repository.LocationsRepository.DeleteLocations(Locations);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside DeleteLocations action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -159,11 +266,17 @@ namespace Tips.Master.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateLocations(int id)
         {
+            ServiceResponse<LocationsDto> serviceResponse = new ServiceResponse<LocationsDto>();
+
             try
             {
                 var Locations = await _repository.LocationsRepository.GetLocationsById(id);
                 if (Locations is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Locations object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"Locations with id: {id}, hasn't been found in db.");
                     return BadRequest("Locations object is null");
                 }
@@ -171,36 +284,56 @@ namespace Tips.Master.Api.Controllers
                 string result = await _repository.LocationsRepository.UpdateLocations(Locations);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside ActivateLocations action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateLocations(int id)
         {
+            ServiceResponse<LocationsDto> serviceResponse = new ServiceResponse<LocationsDto>();
+
             try
             {
                 var Locations = await _repository.LocationsRepository.GetLocationsById(id);
                 if (Locations is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Language object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"Locations with id: {id}, hasn't been found in db.");
-                    return BadRequest("Locations object is null");
+                    return BadRequest(serviceResponse);
                 }
                 Locations.ActiveStatus = false;
                 string result = await _repository.LocationsRepository.UpdateLocations(Locations);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deactivated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeactivateLocations action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 

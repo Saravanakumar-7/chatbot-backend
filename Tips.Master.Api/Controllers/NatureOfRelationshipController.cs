@@ -35,7 +35,7 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all NatureOfRelationships");
                 var result = _mapper.Map<IEnumerable<NatureOfRelationshipDto>>(NatureOfRelationshiplist);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all NatureOfRelationships Successfully";
                 serviceResponse.Success = true;
                 return Ok(serviceResponse);
             }
@@ -45,7 +45,8 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                return StatusCode(500, "Internal server error");
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
         [HttpGet]
@@ -59,8 +60,9 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all NatureOfRelationships");
                 var result = _mapper.Map<IEnumerable<NatureOfRelationshipDto>>(NatureOfRelationships);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all NatureOfRelationships Successfully";
                 serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
 
             }
@@ -70,7 +72,8 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                return StatusCode(500, "Internal server error");
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
 
             }
         }
@@ -111,7 +114,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -150,18 +153,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Successfylly Created";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-
-
-                return Created("GetNatureOfRelationshipById", "Successfully Created");
+                return Created("GetNatureOfRelationshipById", serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -176,27 +177,31 @@ namespace Tips.Master.Api.Controllers
                 if (natureOfRelationshipDtoUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "NatureOfRelationship object sent from client is null";
+                    serviceResponse.Message = "Update NatureOfRelationship object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("NatureOfRelationship object sent from client is null.");
+                    _logger.LogError("Update NatureOfRelationship object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
 
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid NatureOfRelationship object sent from client";
+                    serviceResponse.Message = "Invalid Update NatureOfRelationship object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid NatureOfRelationship object sent from client.");
+                    _logger.LogError("Invalid Update NatureOfRelationship object sent from client.");
                     return BadRequest(serviceResponse);
                 }
                 var NatureOfRelationship = await _repository.NatureOfRelationshipRepository.GetNatureOfRelationshipById(id);
                 if (NatureOfRelationship is null)
                 {
-                    _logger.LogError($"NatureOfRelationship with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Update NatureOfRelationship with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update PurchaseGroup with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(natureOfRelationshipDtoUpdate, NatureOfRelationship);
                 string result = await _repository.NatureOfRelationshipRepository.UpdateNatureOfRelationship(NatureOfRelationship);
@@ -206,16 +211,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside UpdateNatureOfRelationship action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -231,11 +236,11 @@ namespace Tips.Master.Api.Controllers
                 if (NatureOfRelationship == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "NatureOfRelationship object sent from client is null";
+                    serviceResponse.Message = "Delete NatureOfRelationship object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"NatureOfRelationship with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Delete NatureOfRelationship with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
                 }
                 string result = await _repository.NatureOfRelationshipRepository.DeleteNatureOfRelationship(NatureOfRelationship);
                 _logger.LogInfo(result);
@@ -243,12 +248,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
         [HttpPut("{id}")]
@@ -266,7 +275,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"NatureOfRelationship with id: {id}, hasn't been found in db.");
-                    return BadRequest("NatureOfRelationship object is null");
+                    return BadRequest(serviceResponse);
                 }
                 NatureOfRelationship.IsActive = true;
                 string result = await _repository.NatureOfRelationshipRepository.UpdateNatureOfRelationship(NatureOfRelationship);
@@ -275,16 +284,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside ActivateNatureOfRelationship action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
         [HttpPut("{id}")]
@@ -302,7 +311,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"NatureOfRelationship with id: {id}, hasn't been found in db.");
-                    return BadRequest("NatureOfRelationship object is null");
+                    return BadRequest(serviceResponse);
                 }
                 NatureOfRelationship.IsActive = false;
                 string result = await _repository.NatureOfRelationshipRepository.UpdateNatureOfRelationship(NatureOfRelationship);
@@ -311,16 +320,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Deactivated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside DeactivateNatureOfRelationship action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
     }

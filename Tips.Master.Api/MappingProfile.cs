@@ -77,7 +77,7 @@ namespace Tips.Master.Api
 
             CreateMap<CompanyMaster, CompanyMasterDto>().ReverseMap();
             CreateMap<CompanyMaster, CompanyMasterDtoPost>().ReverseMap();
-            CreateMap<CompanyMaster, CompanyMasterDtoUpdate>().ReverseMap();
+            CreateMap<CompanyMaster, CompanyMasterDtoUpdate>().ReverseMap();       
 
             CreateMap<CompanyAddresses, CompanyAddressesDto>().ReverseMap();
             CreateMap<CompanyAddresses, CompanyAddressesDtoPost>().ReverseMap();

@@ -35,8 +35,9 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all SalutationsList");
                 var result = _mapper.Map<IEnumerable<SalutationsDto>>(SalutationsList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all Salutations Successfully";
                 serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
@@ -45,7 +46,8 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                return StatusCode(500, "Internal server error");
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
         [HttpGet]
@@ -59,8 +61,9 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all Salutations");
                 var result = _mapper.Map<IEnumerable<SalutationsDto>>(Salutations);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all Active Salutations Successfully";
                 serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
 
             }
@@ -70,7 +73,8 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                return StatusCode(500, "Internal server error");
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
 
             }
         }
@@ -98,7 +102,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogInfo($"Returned owner with id: {id}");
                     var result = _mapper.Map<SalutationsDto>(Salutations);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Returned owner with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -111,7 +115,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -150,18 +154,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Successfylly Created";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-
-
-                return Created("GetSalutationsById", "Successfully Created");
+                return Created("GetSalutationsById", serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -176,27 +178,31 @@ namespace Tips.Master.Api.Controllers
                 if (salutationsDtoUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Salutation object sent from client is null";
+                    serviceResponse.Message = "Update Salutation object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Salutation object sent from client is null.");
+                    _logger.LogError("Update Salutation object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
 
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Salutations object sent from client";
+                    serviceResponse.Message = "Invalid Update Salutations object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid Salutations object sent from client.");
+                    _logger.LogError("Invalid Update Salutations object sent from client.");
                     return BadRequest(serviceResponse);
                 }
                 var Salutations = await _repository.SalutationsRepository.GetSalutationsById(id);
                 if (Salutations is null)
                 {
-                    _logger.LogError($"Salutations with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Update Salutations with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update Salutations with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(salutationsDtoUpdate, Salutations);
                 string result = await _repository.SalutationsRepository.UpdateSalutations(Salutations);
@@ -206,16 +212,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside UpdateSalutations action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -231,11 +237,11 @@ namespace Tips.Master.Api.Controllers
                 if (Salutations == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Salutations object sent from client is null";
+                    serviceResponse.Message = "Delete Salutations object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"Salutations with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Delete Salutations with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
                 }
                 string result = await _repository.SalutationsRepository.DeleteSalutations(Salutations);
                 _logger.LogInfo(result);
@@ -243,12 +249,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -267,7 +277,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"Salutations with id: {id}, hasn't been found in db.");
-                    return BadRequest("Salutations object is null");
+                    return BadRequest(serviceResponse);
                 }
                 Salutations.IsActive = true;
                 string result = await _repository.SalutationsRepository.UpdateSalutations(Salutations);
@@ -276,16 +286,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside ActivateSalutations action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
         [HttpPut("{id}")]
@@ -303,7 +313,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"Salutations with id: {id}, hasn't been found in db.");
-                    return BadRequest("Salutations object is null");
+                    return BadRequest(serviceResponse);
                 }
                 Salutations.IsActive = false;
                 string result = await _repository.SalutationsRepository.UpdateSalutations(Salutations);
@@ -312,16 +322,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Deactivated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside DeactivateSalutations action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
 
         }

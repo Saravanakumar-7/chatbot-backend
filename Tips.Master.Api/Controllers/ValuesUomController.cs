@@ -2,7 +2,9 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
-using Microsoft.AspNetCore.Mvc; 
+using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
+using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,44 +30,94 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllVolumeUom()
         {
+            ServiceResponse<IEnumerable<VolumeUomDto>> serviceResponse = new ServiceResponse<IEnumerable<VolumeUomDto>>();
+
+            try
+            {
+                var volumeUomList = await _repository.VolumeUomRepo.GetAllVolumeUom();
+                _logger.LogInfo("Returned all VolumeUom");
+                var result = _mapper.Map<IEnumerable<VolumeUomDto>>(volumeUomList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all VolumeUom Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveVolumeUoms()
+        {
+            ServiceResponse<IEnumerable<VolumeUomDto>> serviceResponse = new ServiceResponse<IEnumerable<VolumeUomDto>>();
+
             try
             {
                 var volumeUomList = await _repository.VolumeUomRepo.GetAllActiveVolumeUom();
                 _logger.LogInfo("Returned all VolumeUom");
                 var result = _mapper.Map<IEnumerable<VolumeUomDto>>(volumeUomList);
-                return Ok(result);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active VolumeUom Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+
             }
         }
-
-
-        // GET api/<ValuesUomController>/5
+         // GET api/<ValuesUomController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetVolumeUomById(int id)
         {
+            ServiceResponse<VolumeUomDto> serviceResponse = new ServiceResponse<VolumeUomDto>();
+
             try
             {
                 var volumeUom = await _repository.VolumeUomRepo.GetVolumeUomById(id);
                 if (volumeUom == null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"volumeUom with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"volumeUom with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
                     var result = _mapper.Map<VolumeUomDto>(volumeUom);
-                    return Ok(result);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned owner with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetvolumeUomById action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -73,29 +125,45 @@ namespace Tips.Master.Api.Controllers
         [HttpPost]
         public IActionResult CreateVolumeUoms([FromBody] VolumeUomPostDto volumeUom)
         {
+            ServiceResponse<VolumeUomDto> serviceResponse = new ServiceResponse<VolumeUomDto>();
+
             try
             {
                 if (volumeUom is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "volumeUom object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("volumeUom object sent from client is null.");
-                    return BadRequest("volumeUom object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid volumeUom object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid volumeUom object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return BadRequest(serviceResponse);
                 }
                 var volumeUoms = _mapper.Map<VolumeUom>(volumeUom);
                 _repository.VolumeUomRepo.CreateVolumeUom(volumeUoms);
                 _repository.SaveAsync();
-
-
-                return Created("GetvolumeUomById", "Successfully Created");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Successfylly Created";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("GetvolumeUomById", serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -103,34 +171,56 @@ namespace Tips.Master.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateVolumeUom(int id, [FromBody] VolumeUomUpdateDto uomUpdateDto)
         {
+            ServiceResponse<VolumeUomDto> serviceResponse = new ServiceResponse<VolumeUomDto>();
+
             try
             {
                 if (uomUpdateDto is null)
                 {
-                    _logger.LogError("VolumeUom object sent from client is null.");
-                    return BadRequest("VolumeUom object is null");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update VolumeUom object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update VolumeUom object sent from client is null.");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid VolumeUom object sent from client.");
-                    return BadRequest("Invalid model object");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update VolumeUom object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update Invalid VolumeUom object sent from client.");
+                    return BadRequest(serviceResponse);
                 }
                 var volumeUom = await _repository.VolumeUomRepo.GetVolumeUomById(id);
                 if (volumeUom is null)
                 {
-                    _logger.LogError($"volumeUom with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"update volumeUom with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update volumeUom with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(uomUpdateDto, volumeUom);
                 string result = await _repository.VolumeUomRepo.UpdateVolumeUom(volumeUom);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside UpdateVolumeUom action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -138,71 +228,110 @@ namespace Tips.Master.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVolumeUom(int id)
         {
+            ServiceResponse<VolumeUomDto> serviceResponse = new ServiceResponse<VolumeUomDto>();
+
             try
             {
                 var volumeUom = await _repository.VolumeUomRepo.GetVolumeUomById(id);
                 if (volumeUom == null)
                 {
-                    _logger.LogError($"VolumeUom with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Delete VolumeUom object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Delete VolumeUom with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
                 }
                 string result = await _repository.VolumeUomRepo.DeleteVolumeUom(volumeUom);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateVolumeUom(int id)
         {
+            ServiceResponse<VolumeUomDto> serviceResponse = new ServiceResponse<VolumeUomDto>();
+
             try
             {
                 var volumeUom = await _repository.VolumeUomRepo.GetVolumeUomById(id);
                 if (volumeUom is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "volumeUom object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"volumeUom with id: {id}, hasn't been found in db.");
-                    return BadRequest("volumeUom object is null");
+                    return BadRequest(serviceResponse);
                 }
                 volumeUom.IsActive = true;
                 string result = await _repository.VolumeUomRepo.UpdateVolumeUom(volumeUom);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside ActivateVolumeUom action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateVolumeUom(int id)
         {
+            ServiceResponse<VolumeUomDto> serviceResponse = new ServiceResponse<VolumeUomDto>();
+
             try
             {
                 var volumeUom = await _repository.VolumeUomRepo.GetVolumeUomById(id);
                 if (volumeUom is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "volumeUom object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"volumeUom with id: {id}, hasn't been found in db.");
-                    return BadRequest("volumeUom object is null");
+                    return BadRequest(serviceResponse);
                 }
                 volumeUom.IsActive = false;
                 string result = await _repository.VolumeUomRepo.UpdateVolumeUom(volumeUom);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deactivated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeactivatevolumeUom action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 

@@ -35,8 +35,9 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all CostingMethods");
                 var result = _mapper.Map<IEnumerable<CostingMethodDto>>(CostingMethodList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all CostingMethods Successfully";
                 serviceResponse.Success = true;
+                serviceResponse.StatusCode=HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
@@ -45,7 +46,8 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                return StatusCode(500, "Internal server error");
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -60,8 +62,9 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all CostingMethods");
                 var result = _mapper.Map<IEnumerable<CostingMethodDto>>(CostingMethods);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all CostingMethods Successfully";
                 serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
 
             }
@@ -71,7 +74,8 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                return StatusCode(500, "Internal server error");
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
 
             }
         }
@@ -149,19 +153,17 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfylly Created";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-
-
-                return Created("GetCostingMethodById", "Successfully Created");
+                serviceResponse.StatusCode = HttpStatusCode.OK;               
+                return Created("GetCostingMethodById", serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside CostingMethod action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -176,27 +178,31 @@ namespace Tips.Master.Api.Controllers
                 if (costingMethodDtoUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "CostingMethod object sent from client is null";
+                    serviceResponse.Message = "Update CostingMethod object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("CostingMethod object sent from client is null.");
+                    _logger.LogError("Update CostingMethod object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
 
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid CostingMethod object sent from client";
+                    serviceResponse.Message = "Invalid Update CostingMethod object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid CostingMethod object sent from client.");
+                    _logger.LogError("Invalid Update CostingMethod object sent from client.");
                     return BadRequest(serviceResponse);
                 }
                 var CostingMethods = await _repository.CostingMethodRepository.GetCostingMethodById(id);
                 if (CostingMethods is null)
                 {
-                    _logger.LogError($"CostingMethod with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Update CostingMethod with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Update CostingMethod with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(costingMethodDtoUpdate, CostingMethods);
                 string result = await _repository.CostingMethodRepository.UpdateCostingMethod(CostingMethods);
@@ -206,16 +212,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside UpdateCostingMethod action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -230,10 +236,10 @@ namespace Tips.Master.Api.Controllers
                 if (CostingMethod == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "CostingMethod object sent from client is null";
+                    serviceResponse.Message = "Delete CostingMethod object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"CostingMethod with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Delete CostingMethod with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
                 string result = await _repository.CostingMethodRepository.DeleteCostingMethod(CostingMethod);
@@ -242,17 +248,17 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
 
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                _logger.LogError($"Something went wrong inside DeleteCostingMethod action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -271,7 +277,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"CostingMethod with id: {id}, hasn't been found in db.");
-                    return BadRequest("CostingMethod object is null");
+                    return BadRequest(serviceResponse);
                 }
                 CostingMethod.IsActive = true;
                 string result = await _repository.CostingMethodRepository.UpdateCostingMethod(CostingMethod);
@@ -280,16 +286,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside ActivateCostingMethod action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -308,7 +314,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"CostingMethod with id: {id}, hasn't been found in db.");
-                    return BadRequest("CostingMethod object is null");
+                    return BadRequest(serviceResponse);
                 }
                 CostingMethod.IsActive = false;
                 string result = await _repository.CostingMethodRepository.UpdateCostingMethod(CostingMethod);
@@ -317,16 +323,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Deactivated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside DeactivateCostingMethod action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
 
         }
