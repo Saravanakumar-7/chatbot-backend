@@ -72,6 +72,7 @@ namespace Contracts
         IRiskCategoryRepository RiskCategoryRepository { get; }
         IWarehouseRepository WarehouseRepository { get; }
         ICategoryRepository CategoryRepository { get; }
+        IPreferredFreightForwarderRepository preferredFreightForwarderRepository { get; }
 
         void SaveAsync();
     }

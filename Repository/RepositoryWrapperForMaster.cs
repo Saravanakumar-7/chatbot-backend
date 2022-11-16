@@ -583,6 +583,8 @@ namespace Repository
 
         public IItemMasterWarehouse ItemMasterWarehouseRepository => throw new NotImplementedException();
 
+        public IPreferredFreightForwarderRepository preferredFreightForwarderRepository => throw new NotImplementedException();
+
         public void SaveAsync()
         {
             _tipsMasterDbContext.SaveChanges();

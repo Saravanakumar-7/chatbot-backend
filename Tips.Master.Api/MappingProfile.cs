@@ -240,6 +240,9 @@ namespace Tips.Master.Api
             CreateMap<HeadCounting, HeadCountingPostDto>().ReverseMap();
             CreateMap<HeadCounting, HeadCountingUpdateDto>().ReverseMap();
 
+            CreateMap<PreferredFreightForwarder, PreferredFreightForwarderDto>().ReverseMap();
+            CreateMap<PreferredFreightForwarder, PreferredFreightForwarderDtoPost>().ReverseMap();
+            CreateMap<PreferredFreightForwarder, PreferredFreightForwarderDtoUpdate>().ReverseMap();
 
 
         }
