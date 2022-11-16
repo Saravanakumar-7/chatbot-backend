@@ -8,6 +8,10 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["Tips.Master.Api/Tips.Master.Api.csproj", "Tips.Master.Api/"]
+COPY ["LoggerService/LoggerService.csproj", "LoggerService/"]
+COPY ["Contracts/Contracts.csproj", "Contracts/"]
+COPY ["CommonModels/Entities.csproj", "CommonModels/"]
+COPY ["Repository/Repository.csproj", "Repository/"]
 RUN dotnet restore "Tips.Master.Api/Tips.Master.Api.csproj"
 COPY . .
 WORKDIR "/src/Tips.Master.Api"

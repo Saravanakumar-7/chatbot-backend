@@ -5,6 +5,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -25,12 +26,23 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<CompanyMasterController>
         [HttpGet]
-        public async Task<IActionResult> GetAllCompanyMaster()
+        public async Task<IActionResult> GetAllCompanyMaster([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<CompanyMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<CompanyMasterDto>>();
             try
             {
-                var listOfCompanyMaster = await _repository.CompanyMasterRepository.GetAllCompanyMaster();
+                var listOfCompanyMaster = await _repository.CompanyMasterRepository.GetAllCompanyMaster(pagingParameter);
+                var metadata = new
+                {
+                    listOfCompanyMaster.TotalCount,
+                    listOfCompanyMaster.PageSize,
+                    listOfCompanyMaster.CurrentPage,
+                    listOfCompanyMaster.HasNext,
+                    listOfCompanyMaster.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
                 _logger.LogInfo("Returned all CompanyMaster");
                 var result = _mapper.Map<IEnumerable<CompanyMasterDto>>(listOfCompanyMaster);
                 serviceResponse.Data = result;

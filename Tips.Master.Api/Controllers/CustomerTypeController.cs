@@ -3,6 +3,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 //using MySqlX.XDevAPI.Common;
 using NuGet.Protocol;
 using System.Net;
@@ -26,8 +27,7 @@ namespace Tips.Master.Api.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/<CustomerTypeController>
-        [HttpGet]
+         [HttpGet]
         public async Task<IActionResult> GetAllCustomerTypes()
         {
             ServiceResponse<IEnumerable<CustomerTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerTypeDto>>();
@@ -35,12 +35,16 @@ namespace Tips.Master.Api.Controllers
             {
                 
                 var customerTypeList = await _repository.CustomerTypeRepository.GetAllCustomerTypes();
-                _logger.LogInfo("Returned all customerTypes");
-                var result = _mapper.Map<IEnumerable<CustomerTypeDto>>(customerTypeList);
+                
+                var result = _mapper.Map<IEnumerable<CustomerTypeDto>>(customerTypeList);             
+
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Success";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
+
+                _logger.LogInfo($"Returned customerTypes");
+
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
@@ -54,8 +58,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // GET: api/<CustomerTypeController>
-        [HttpGet]
+         [HttpGet]
         public async Task<IActionResult> GetAllActiveCustomerTypes()
         {
             ServiceResponse<IEnumerable<CustomerTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerTypeDto>>();
@@ -82,8 +85,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // GET api/<CustomerTypeController>/5
-        [HttpGet("{id}")]
+         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomerTypeById(int id)
         {
             ServiceResponse<CustomerTypeDto> serviceResponse = new ServiceResponse<CustomerTypeDto>();
@@ -122,8 +124,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // POST api/<CustomerTypeController>
-        [HttpPost]
+         [HttpPost]
         public IActionResult CreateCustomerType([FromBody] CustomerTypeDtoPost customerTypeDtoPost)
         {
             ServiceResponse<CustomerTypeDto> serviceResponse = new ServiceResponse<CustomerTypeDto>();
@@ -155,7 +156,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetCustomerTypeById", "Successfully Created");
+                return Created("GetCustomerTypeById", serviceResponse);
             }
             catch (Exception ex)
             {
@@ -168,8 +169,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<CustomerTypeController>/5
-        [HttpPut("{id}")]
+         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCustomerType(int id, [FromBody] CustomerTypeDtoUpdate customerTypeDtoUpdate)
         {
             ServiceResponse<CustomerTypeDto> serviceResponse = new ServiceResponse<CustomerTypeDto>();
@@ -183,16 +183,16 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "CustomerType object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest();
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
                     _logger.LogError("Invalid CustomerType object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Something went wrong. Please try again!";
+                    serviceResponse.Message = "Invalid CustomerType object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest();
+                    return BadRequest(serviceResponse);
                 }
                 var customerTypeEntity = await _repository.CustomerTypeRepository.GetCustomerTypeById(id);
                 if (customerTypeEntity is null)
@@ -202,7 +202,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "CustomerType with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(customerTypeDtoUpdate, customerTypeEntity);
                 string result =  await _repository.CustomerTypeRepository.UpdateCustomerType(customerTypeEntity);
@@ -225,8 +225,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // DELETE api/<CustomerTypeController>/5
-        [HttpDelete("{id}")]
+         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomerType(int id)
         {
             ServiceResponse<CustomerTypeDto> serviceResponse = new ServiceResponse<CustomerTypeDto>();
@@ -238,7 +237,7 @@ namespace Tips.Master.Api.Controllers
                 {
                     _logger.LogError($"CustomerType with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Error";
+                    serviceResponse.Message = $"CustomerType with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
@@ -275,7 +274,7 @@ namespace Tips.Master.Api.Controllers
                 {
                     _logger.LogError($"CustomerType with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "CustomerType object is null";
+                    serviceResponse.Message = $"CustomerType with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -313,7 +312,7 @@ namespace Tips.Master.Api.Controllers
                 {
                     _logger.LogError($"CustomerType with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "CustomerType object is null";
+                    serviceResponse.Message = $"CustomerType with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);

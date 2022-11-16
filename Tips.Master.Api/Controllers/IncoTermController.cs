@@ -24,7 +24,7 @@ namespace Tips.Master.Api.Controllers
             _mapper = mapper;
 
         }
-        // GET: api/<IncoTermController>
+ 
         [HttpGet]
         public async Task<IActionResult> GetAllIncoTerms()
         {
@@ -42,7 +42,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // GET api/<IncoTermController>/5
+ 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetIncoTermById(int id)
         {
@@ -68,7 +68,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // POST api/<IncoTermController>
+ 
         [HttpPost]
         public IActionResult CreateIncoTerm([FromBody] IncoTermPostDto incoTerm)
         {
@@ -100,7 +100,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<IncoTermController>/5
+ 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateIncoTerm(int id, [FromBody] IncoTermUpdateDto incoTerm)
         {
@@ -135,7 +135,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // DELETE api/<IncoTermController>/5
+ 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteIncoTerm(int id)
         {
@@ -158,7 +158,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        //start
+ 
 
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateIncoTerm(int id)

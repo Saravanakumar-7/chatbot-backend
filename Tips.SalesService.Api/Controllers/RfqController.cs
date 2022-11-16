@@ -29,8 +29,7 @@ namespace Tips.SalesService.Api.Controllers
 
         }
 
-        // GET: api/<RfqController>
-        [HttpGet]
+         [HttpGet]
         public async Task<IActionResult> GetAllRfqs()
         {
             try
@@ -45,23 +44,10 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
-
-            //try
-            //{
-            //    var rfqs = await _repository.GetAllRfq();
-            //    _logger.LogInfo("Returned all Rfqs");
-            //    var result = _mapper.Map<IEnumerable<Rfq>>(rfqs);
-            //    return Ok(result);
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logger.LogError(ex.Message);
-            //    return StatusCode(500, "Internal server error");
-            //}
+             
         }
 
-        // GET api/<RfqController>/5
-        [HttpGet("{id}")]
+         [HttpGet("{id}")]
         public async Task<IActionResult> GetRfqById(int id)
         {
             try
@@ -86,30 +72,10 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError($"Something went wrong inside GetrfqById action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
-            //try
-            //{
-            //    var rfq = await _repository.GetRfqById(id);
-            //    if (rfq == null)
-            //    {
-            //        _logger.LogError($"Rfq with id: {id}, hasn't been found in db.");
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        _logger.LogInfo($"Returned owner with id: {id}");
-            //        var result = _mapper.Map<RfqDto>(rfq);
-            //        return Ok(result);
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logger.LogError($"Something went wrong inside GetRfqById action: {ex.Message}");
-            //    return StatusCode(500, "Internal server error");
-            //}
+             
         }
 
-        // POST api/<RfqController>
-        [HttpPost]
+         [HttpPost]
         public IActionResult CreateRfq([FromBody] RfqPostDto rfq)
         {
             try
@@ -142,8 +108,7 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        // PUT api/<RfqController>/5
-        [HttpPut("{id}")]
+         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRfq(int id, [FromBody] RfqUpdateDto rfqUpdateDto)
         {
             try
@@ -183,8 +148,7 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        // DELETE api/<RfqController>/5
-        [HttpDelete("{id}")]
+         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRfq(int id)
         {
             try

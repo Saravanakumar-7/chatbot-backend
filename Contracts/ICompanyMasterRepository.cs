@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Entities;
 using Entities.DTOs;
+using Entities.Helper;
 
 namespace Contracts
 {
     public interface ICompanyMasterRepository : IRepositoryBase<CompanyMaster>
-    {
-        Task<IEnumerable<CompanyMaster>> GetAllCompanyMaster();
+    { 
+        Task<PagedList<CompanyMaster>> GetAllCompanyMaster(PagingParameter pagingParameter);
         Task<CompanyMaster> GetCompanyMasterById(int id);
         Task<IEnumerable<CompanyMaster>> GetAllActiveCompanyMaster();
         Task<int?> CreateCompanyMaster(CompanyMaster companyMaster);

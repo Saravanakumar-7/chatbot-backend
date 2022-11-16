@@ -5,6 +5,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -22,15 +23,26 @@ namespace Tips.Master.Api.Controllers
                 _logger = logger;
                 _mapper = mapper;
             }
-        // GET: api/<CustomerMasterController>
+ 
         [HttpGet]
-        public async Task<IActionResult> GetAllCustomerMaster()
+        public async Task<IActionResult> GetAllCustomerMaster([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<CustomerMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerMasterDto>>();
             try
             {
-                var listOfCustomerMaster = await _repository.CustomerMasterRepository.GetAllCustomerMaster();
+                var listOfCustomerMaster = await _repository.Customermasterrepository.GetAllCustomerMaster(pagingParameter);
                 //_logger.LogInfo("Returned all CustomerMaster");
+                var metadata = new
+                {
+                    listOfCustomerMaster.TotalCount,
+                    listOfCustomerMaster.PageSize,
+                    listOfCustomerMaster.CurrentPage,
+                    listOfCustomerMaster.HasNext,
+                    listOfCustomerMaster.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
                 var result = _mapper.Map<IEnumerable<CustomerMasterDto>>(listOfCustomerMaster);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Success";
@@ -49,14 +61,13 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // GET api/<CustomerMasterController>/5
-        [HttpGet("{id}")]
+         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomerMasterById(int id)
         {
             ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();
             try
             {
-                var CustomerMasterDetails = await _repository.CustomerMasterRepository.GetCustomerMasterById(id);
+                var CustomerMasterDetails = await _repository.Customermasterrepository.GetCustomerMasterById(id);
 
                 if (CustomerMasterDetails == null)
                 {
@@ -89,8 +100,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // POST api/<CustomerMasterController>
-        [HttpPost]
+         [HttpPost]
         public async Task<IActionResult> CreateCustomerMaster([FromBody] CustomerMasterDtoPost customerMasterDtoPost)
         {
             ServiceResponse<CustomerMasterDtoPost> serviceResponse = new ServiceResponse<CustomerMasterDtoPost>();
@@ -127,7 +137,7 @@ namespace Tips.Master.Api.Controllers
                 customerMaster.CustomerShippingAddresses = shippingAddresses.ToList();
                 customerMaster.CustomerBanking = banking.ToList();
 
-                await _repository.CustomerMasterRepository.CreateCustomerMaster(customerMaster);
+                await _repository.Customermasterrepository.CreateCustomerMaster(customerMaster);
                 _repository.SaveAsync();
 
                 serviceResponse.Data = null;
@@ -148,22 +158,21 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<CustomerMasterController>/5
-        [HttpPut("{id}")]
+         [HttpPut("{id}")]
 
-        public async Task<IActionResult> UpdateCustomerMaster(int id, [FromBody] CustomerMasterDto customerMasterDtoUpdate)
+        public async Task<IActionResult> UpdateCustomerMaster(int id, [FromBody] CustomerMasterDtoUpdate CustomerMasterDtoUpdate)
         {
-            ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();
+            ServiceResponse<CustomerMasterDtoUpdate> serviceResponse = new ServiceResponse<CustomerMasterDtoUpdate>();
             try
             {
-                if (customerMasterDtoUpdate is null)
+                if (CustomerMasterDtoUpdate is null)
                 {
                     _logger.LogError("Update CustomerMaster object sent from client is null.");
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Update CustomerMaster object sent from client is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(serviceResponse);
+                    return BadRequest("Update CustomerMaster object is null");
                 }
                 if (!ModelState.IsValid)
                 {
@@ -172,9 +181,9 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "Invalid Update CustomerMaster object sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(serviceResponse);
+                    return BadRequest("Invalid model object");
                 }
-                var updateCustomerMaster = await _repository.CustomerMasterRepository.GetCustomerMasterById(id);
+                var updateCustomerMaster = await _repository.Customermasterrepository.GetCustomerMasterById(id);
                 if (updateCustomerMaster is null)
                 {
                     _logger.LogError($"Update CustomerMaster with id: {id}, hasn't been found in db.");
@@ -186,25 +195,26 @@ namespace Tips.Master.Api.Controllers
                 }
 
                
-                var addresses = _mapper.Map<IEnumerable<CustomerAddresses>>(customerMasterDtoUpdate.CustomerAddresses);
-                var contacts = _mapper.Map<IEnumerable<CustomerContacts>>(customerMasterDtoUpdate.CustomerContacts);
-                var shippingAddresses = _mapper.Map<IEnumerable<CustomerShippingAddresses>>(customerMasterDtoUpdate.CustomerShippingAddresses);
-                var banking = _mapper.Map<IEnumerable<CustomerBanking>>(customerMasterDtoUpdate.CustomerBankings);
-                var customerDetials = _mapper.Map(customerMasterDtoUpdate, updateCustomerMaster);
+                var addresses = _mapper.Map<IEnumerable<CustomerAddresses>>(CustomerMasterDtoUpdate.CustomerAddresses);
+                var contacts = _mapper.Map<IEnumerable<CustomerContacts>>(CustomerMasterDtoUpdate.CustomerContacts);
+                var shippingAddresses = _mapper.Map<IEnumerable<CustomerShippingAddresses>>(CustomerMasterDtoUpdate.CustomerShippingAddresses);
+                var banking = _mapper.Map<IEnumerable<CustomerBanking>>(CustomerMasterDtoUpdate.CustomerBankings);
+                var customerDetials = _mapper.Map(CustomerMasterDtoUpdate, updateCustomerMaster);
 
                 customerDetials.CustomerAddresses= addresses.ToList();
                 customerDetials.CustomerContacts= contacts.ToList();
                 customerDetials.CustomerShippingAddresses= shippingAddresses.ToList();
                 customerDetials.CustomerBanking= banking.ToList();
 
-                string result = await _repository.CustomerMasterRepository.UpdateCustomerMaster(customerDetials);
+                string result = await _repository.Customermasterrepository.UpdateCustomerMaster(customerDetials);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
+
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = result;
                 serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
+                serviceResponse.StatusCode = HttpStatusCode.NoContent;
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -217,14 +227,13 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // DELETE api/<CustomerMasterController>/5
-        [HttpDelete("{id}")]
+         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomerMaster(int id)
         {
             ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();
             try
             {
-                var deleteCustomer = await _repository.CustomerMasterRepository.GetCustomerMasterById(id);
+                var deleteCustomer = await _repository.Customermasterrepository.GetCustomerMasterById(id);
                 if (deleteCustomer == null)
                 {
                     _logger.LogError($"Delete Customer with id: {id}, hasn't been found in db.");
@@ -234,14 +243,14 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.CustomerMasterRepository.DeleteCustomerMaster(deleteCustomer);
+                string result = await _repository.Customermasterrepository.DeleteCustomerMaster(deleteCustomer);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = result;
                 serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
+                serviceResponse.StatusCode = HttpStatusCode.NoContent;
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -260,7 +269,7 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<IEnumerable<CustomerIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerIdNameListDto>>();
             try
             {
-                var listOfCustomerMaster = await _repository.CustomerMasterRepository.GetAllActiveCustomerIdNameList();
+                var listOfCustomerMaster = await _repository.Customermasterrepository.GetAllActiveCustomerIdNameList();
                 //_logger.LogInfo("Returned all CustomerMaster");
                 var result = _mapper.Map<IEnumerable<CustomerIdNameListDto>>(listOfCustomerMaster);
                 serviceResponse.Data = result;

@@ -116,7 +116,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
+        [HttpPost]
         // POST api/<AuditFrequencyController>
         [HttpPost]
         public IActionResult CreateAuditFrequeny([FromBody] AuditFrequencyDtoPost auditFrequencyDtoPost)

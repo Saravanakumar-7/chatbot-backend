@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Helper;
 using Entities.Migrations;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -47,13 +48,21 @@ namespace Repository
 
         }
 
-        public async Task<IEnumerable<VendorMaster>> GetAllVendors()
+        public async Task<PagedList<VendorMaster>> GetAllVendors(PagingParameter pagingParameter)
         {
-            var vendorDetails = await TipsMasterDbContext.VendorMasters
-                                .Include(t=> t.VendorBankings)
-                                .Include(x=> x.Addresses)
-                                .Include(m=> m.Contacts)
-                                .ToListAsync();
+
+            var vendorDetails = PagedList<VendorMaster>.ToPagedList(FindAll()
+                                .Include(t => t.VendorBankings)
+                                .Include(x => x.Addresses)
+                                .Include(m => m.Contacts)
+                                .Include(v => v.HeadCountings)
+               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+
+            //var vendorDetails = await TipsMasterDbContext.VendorMasters
+            //                    .Include(t=> t.VendorBankings)
+            //                    .Include(x=> x.Addresses)
+            //                    .Include(m=> m.Contacts)
+            //                    .ToListAsync();
 
             return vendorDetails;
             //throw new NotImplementedException();
@@ -67,6 +76,7 @@ namespace Repository
                               .Include(x => x.VendorBankings)
                               .Include(x => x.Addresses)
                               .Include(m => m.Contacts)
+                              .Include(v => v.HeadCountings)
                               .FirstOrDefaultAsync();
 
           return vendorDetails;
@@ -90,5 +100,19 @@ namespace Repository
             return result;
         }
 
+        public async Task<IEnumerable<VendorIdNameListDto>> GetAllActiveVendorNameList()
+        {
+            IEnumerable<VendorIdNameListDto> vendorDetails = await TipsMasterDbContext.VendorMasters
+                                .Select(x => new VendorIdNameListDto()
+                                {
+                                    Id = x.Id,
+                                    VednorAliasName = x.VendorAliasName,
+                                    VendorName = x.VendorName
+                                })
+                              .ToListAsync();
+
+            return vendorDetails;
+        }
+         
     }
 }

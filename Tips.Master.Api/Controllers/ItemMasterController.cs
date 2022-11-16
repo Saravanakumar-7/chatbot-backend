@@ -6,6 +6,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -26,14 +27,25 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<ItemMasterController>
         [HttpGet]
-        public async Task<IActionResult> GetAllItems()
+        public async Task<IActionResult> GetAllItems([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var ItemMasterList = await _repository.ItemMasterRepository.GetAllItems();
+                var ItemMasterList = await _repository.ItemMasterRepository.GetAllItems(pagingParameter);
                 _logger.LogInfo("Returned all ItemMasters");
+                var metadata = new
+                {
+                    ItemMasterList.TotalCount,
+                    ItemMasterList.PageSize,
+                    ItemMasterList.CurrentPage,
+                    ItemMasterList.HasNext,
+                    ItemMasterList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(ItemMasterList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Success";
@@ -143,7 +155,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<ItemMasterController>/5
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateItemMaster(int id, [FromBody] ItemMasterDto itemMasterDtoUpdate)
         {

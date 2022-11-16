@@ -54,6 +54,8 @@ namespace Entities
         public DbSet<VendorMaster>? VendorMasters { get; set; }
         public DbSet<VendorAddress>? Addresses { get; set; }
         public DbSet<VendorBanking>? VendorBankings { get; set; }
+        public DbSet<HeadCounting>? HeadCountings { get; set; }
+
 
         public DbSet<VolumeUom>? VolumeUoms { get; set; }
         public DbSet<WeightUom>? WeightUoms { get; set; }
