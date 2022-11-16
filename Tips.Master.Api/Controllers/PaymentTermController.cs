@@ -6,36 +6,36 @@ using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using System.Net;
 
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
 namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class ProcurementTypeController : ControllerBase
+    public class PaymentTermController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-
-        public ProcurementTypeController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        public PaymentTermController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
         }
-
-        // GET: api/<ProcurementTypeController>
+        // GET: api/<PaymentTermController>
         [HttpGet]
-        public async Task<IActionResult> GetAllProcurementType()
+        public async Task<IActionResult> GetAllPaymentTerms()
         {
-            ServiceResponse<IEnumerable<ProcurementTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<ProcurementTypeDto>>();
-
+            ServiceResponse<IEnumerable<PaymentTermDto>> serviceResponse = new ServiceResponse<IEnumerable<PaymentTermDto>>();
             try
             {
-                var procurementTypeList = await _repository.ProcurementTypeRepository.GetAllProcurementType();
-                _logger.LogInfo("Returned all ProcurementTypes");
-                var result = _mapper.Map<IEnumerable<ProcurementTypeDto>>(procurementTypeList);
+
+                var PaymentTermList = await _repository.PaymentTermRepository.GetAllpaymentTerms();
+                _logger.LogInfo("Returned all PaymentTermList");
+                var result = _mapper.Map<IEnumerable<PaymentTermDto>>(PaymentTermList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all ProcurementTypes Successfully";
+                serviceResponse.Message = "Returned all PaymentTermList Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -50,18 +50,20 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveProcurementTypes()
+
+        public async Task<IActionResult> GetAllActivePaymentTerms()
         {
-            ServiceResponse<IEnumerable<ProcurementTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<ProcurementTypeDto>>();
+            ServiceResponse<IEnumerable<PaymentTermDto>> serviceResponse = new ServiceResponse<IEnumerable<PaymentTermDto>>();
 
             try
             {
-                var ProcurementType = await _repository.ProcurementTypeRepository.GetAllActiveProcurementType();
-                _logger.LogInfo("Returned all ProcurementTypes");
-                var result = _mapper.Map<IEnumerable<ProcurementTypeDto>>(ProcurementType);
+                var Patmentterms = await _repository.PaymentTermRepository.GetAllActivepaymentTerms();
+                _logger.LogInfo("Returned all Patmentterms");
+                var result = _mapper.Map<IEnumerable<PaymentTermDto>>(Patmentterms);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all Active ProcurementTypes Successfully";
+                serviceResponse.Message = "Returned all Active Patmentterms Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -78,30 +80,32 @@ namespace Tips.Master.Api.Controllers
 
             }
         }
-        // GET api/<ProcurementTypeController>/5
+
+        // GET api/<PaymentTermController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProcurementTypeById(int id)
+        public async Task<IActionResult> GetPaymentTermById(int id)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<PaymentTermDto> serviceResponse = new ServiceResponse<PaymentTermDto>();
 
             try
             {
-                var procurementType = await _repository.ProcurementTypeRepository.GetProcurementTypeById(id);
-                if (procurementType == null)
+                var PaymentTerm = await _repository.PaymentTermRepository.GetpaymentTermById(id);
+                if (PaymentTerm == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ProcurementType object sent from client is null";
+                    serviceResponse.Message = $"PaymentTerm with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"ProcurementType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"PaymentTerm with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
                 else
                 {
+
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    var result = _mapper.Map<ProcurementTypeDto>(procurementType);
+                    var result = _mapper.Map<PaymentTermDto>(PaymentTerm);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned owner with id Successfully";
+                    serviceResponse.Message = "Success";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -109,7 +113,7 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetProcurementTypeById action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetPaymentTermById action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
@@ -118,39 +122,42 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // POST api/<ProcurementTypeController>
+        // POST api/<PaymentTermController>
         [HttpPost]
-        public IActionResult CreateProcurementType([FromBody] ProcurementTypeDtoPost procurementTypeDtoPost)
+        public IActionResult CreatePaymentTerm([FromBody] PaymentTermDtoPost paymentTermDtoPost)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<AuditFrequencyDto> serviceResponse = new ServiceResponse<AuditFrequencyDto>();
 
             try
             {
-                if (procurementTypeDtoPost is null)
+                if (paymentTermDtoPost is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ProcurementType object sent from client is null";
+                    serviceResponse.Message = "PaymentTerm object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("ProcurementType object sent from client is null.");
+                    _logger.LogError("PaymentTerm object sent from client is null.");
+                    //return BadRequest("PurchaseGroup object is null");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid ProcurementType object sent from client";
+                    serviceResponse.Message = "Invalid PaymentTerm object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid ProcurementType object sent from client.");
+                    _logger.LogError("Invalid PaymentTerm object sent from client.");
+                    //return BadRequest("Invalid model object");
                     return BadRequest(serviceResponse);
                 }
-                var procurementTypeEntity = _mapper.Map<ProcurementType>(procurementTypeDtoPost);
-                _repository.ProcurementTypeRepository.CreateProcurementType(procurementTypeEntity);
+                var PaymentTerm = _mapper.Map<PaymentTerm>(paymentTermDtoPost);
+                _repository.PaymentTermRepository.CreatePaymentTerm(PaymentTerm);
                 _repository.SaveAsync();
+                serviceResponse.Data = null;
                 serviceResponse.Message = "Successfylly Created";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetProcurementTypeById", serviceResponse);
+                return Created("GetPaymentTermById", serviceResponse);
             }
             catch (Exception ex)
             {
@@ -163,44 +170,45 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<ProcurementTypeController>/5
+        // PUT api/<PaymentTermController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProcurementType(int id, [FromBody] ProcurementTypeDtoUpdate procurementTypeDtoUpdate)
+        public async Task<IActionResult> UpdatePaymentTerm(int id, [FromBody] PaymentTermDtoUpdate paymentTermDtoUpdate)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<PaymentTermDto> serviceResponse = new ServiceResponse<PaymentTermDto>();
 
             try
             {
-                if (procurementTypeDtoUpdate is null)
+                if (paymentTermDtoUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "update ProcurementType object sent from client is null";
+                    serviceResponse.Message = "update PaymentTerm object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("ProcurementType object sent from client is null.");
+                    _logger.LogError("updare PaymentTerm object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "update ProcurementType object sent from client is null";
+                    serviceResponse.Message = "Invalid update PaymentTerm object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid update ProcurementType object sent from client.");
+                    _logger.LogError("Invalid Update PaymentTerm object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var procurementTypeEntity = await _repository.ProcurementTypeRepository.GetProcurementTypeById(id);
-                if (procurementTypeEntity is null)
+                var PaymentTerm = await _repository.PaymentTermRepository.GetpaymentTermById(id);
+                if (PaymentTerm is null)
                 {
-                    _logger.LogError($"Update ProcurementType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Update PaymentTerm with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = " Update ProcurementType with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = " Update PaymentTerm with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(procurementTypeDtoUpdate, procurementTypeEntity);
-                string result = await _repository.ProcurementTypeRepository.UpdateProcurementType(procurementTypeEntity);
+                _mapper.Map(paymentTermDtoUpdate, PaymentTerm);
+                string result = await _repository.PaymentTermRepository.UpdatePaymentTerm(PaymentTerm);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -212,33 +220,34 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside UpdateProcurementType action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside UpdatePaymentTerms action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
-        // DELETE api/<ProcurementTypeController>/5
+        // DELETE api/<PaymentTermController>/5
+        
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProcurementType(int id)
+        public async Task<IActionResult> DeletePaymentTerm(int id)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<PaymentTermDto> serviceResponse = new ServiceResponse<PaymentTermDto>();
 
             try
             {
-                var procurementType = await _repository.ProcurementTypeRepository.GetProcurementTypeById(id);
-                if (procurementType == null)
+                var PaymentTerm = await _repository.PaymentTermRepository.GetpaymentTermById(id);
+                if (PaymentTerm == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Delete ProcurementType object sent from client is null";
+                    serviceResponse.Message = "PaymentTerm object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"Delete ProcurementType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"PaymentTerm with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                string result = await _repository.ProcurementTypeRepository.DeleteProcurementType(procurementType);
+                string result = await _repository.PaymentTermRepository.DeletePaymentTerm(PaymentTerm);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deleted Successfully";
@@ -249,33 +258,32 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> ActivateProcurementType(int id)
+        public async Task<IActionResult> ActivatePaymentTerm(int id)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<PaymentTermDto> serviceResponse = new ServiceResponse<PaymentTermDto>();
 
             try
             {
-                var procurementType = await _repository.ProcurementTypeRepository.GetProcurementTypeById(id);
-                if (procurementType is null)
+                var PaymentTerm = await _repository.PaymentTermRepository.GetpaymentTermById(id);
+                if (PaymentTerm is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ProcurementType object sent from client is null";
+                    serviceResponse.Message = "PaymentTerm object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"ProcurementType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"PaymentTerm with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                procurementType.IsActive = true;
-                string result = await _repository.ProcurementTypeRepository.UpdateProcurementType(procurementType);
+                PaymentTerm.IsActive = true;
+                string result = await _repository.PaymentTermRepository.UpdatePaymentTerm(PaymentTerm);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -286,33 +294,32 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside ActivateProcurementType action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside ActivatedPaymentTerm action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> DeactivateProcurementType(int id)
+        public async Task<IActionResult> DeactivateAuditFrequency(int id)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<PaymentTermDto> serviceResponse = new ServiceResponse<PaymentTermDto>();
 
             try
             {
-                var procurementType = await _repository.ProcurementTypeRepository.GetProcurementTypeById(id);
-                if (procurementType is null)
+                var PaymentTerm = await _repository.PaymentTermRepository.GetpaymentTermById(id);
+                if (PaymentTerm is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ProcurementType object sent from client is null";
+                    serviceResponse.Message = "PaymentTerm object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"ProcurementType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"PaymentTerm with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                procurementType.IsActive = false;
-                string result = await _repository.ProcurementTypeRepository.UpdateProcurementType(procurementType);
+                PaymentTerm.IsActive = false;
+                string result = await _repository.PaymentTermRepository.UpdatePaymentTerm(PaymentTerm);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deactivated Successfully";
@@ -323,13 +330,12 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeactivateProcurementType action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeactivatePaymentTerm action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
-
     }
 }

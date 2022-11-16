@@ -35,8 +35,9 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all PurchaseGroups");
                 var result = _mapper.Map<IEnumerable<PurchaseGroupDto>>(PurchaseGroupList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all PurchaseGroups Successfully";
                 serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
@@ -45,7 +46,8 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                return StatusCode(500, "Internal server error");
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
         [HttpGet]
@@ -59,8 +61,9 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all PurchaseGroups");
                 var result = _mapper.Map<IEnumerable<PurchaseGroupDto>>(PurchaseGroups);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all Active  PurchaseGroups Successfully";
                 serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
 
             }
@@ -70,7 +73,8 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
-                return StatusCode(500, "Internal server error");
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
 
             }
         }
@@ -95,10 +99,10 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
 
-                    _logger.LogInfo($"Returned owner with id: {id}");
+                    _logger.LogInfo($"Returned PurchaseGroup with id: {id}");
                     var result = _mapper.Map<PurchaseGroupDto>(PurchaseGroup);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Returned PurchaseGroup Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -111,7 +115,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -150,18 +154,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Successfylly Created";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-
-
-                return Created("GetPurchaseGroupById", "Successfully Created");
+                return Created("GetPurchaseGroupById",serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside PurchaseGroup action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -176,27 +178,31 @@ namespace Tips.Master.Api.Controllers
                 if (purchaseGroupDtoUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "PurchaseGroup object sent from client is null";
+                    serviceResponse.Message = "update PurchaseGroup object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("PurchaseGroup object sent from client is null.");
+                    _logger.LogError("update PurchaseGroup object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
 
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid PurchaseGroup object sent from client";
+                    serviceResponse.Message = "Invalid Update PurchaseGroup object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid PurchaseGroup object sent from client.");
+                    _logger.LogError("Invalid update PurchaseGroup object sent from client.");
                     return BadRequest(serviceResponse);
                 }
                 var PurchaseGroup = await _repository.PurchaseGroupRepository.GetPurchaseGroupById(id);
                 if (PurchaseGroup is null)
                 {
-                    _logger.LogError($"PurchaseGroup with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"update PurchaseGroup with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update PurchaseGroup with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(purchaseGroupDtoUpdate, PurchaseGroup);
                 string result = await _repository.PurchaseGroupRepository.UpdatePurchaseGroup(PurchaseGroup);
@@ -206,16 +212,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside UpdatePurchaseGroup action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -232,11 +238,11 @@ namespace Tips.Master.Api.Controllers
                 if (purchasegroup == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Purchasegroup object sent from client is null";
+                    serviceResponse.Message = "Delete Purchasegroup object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"PurchaseGroup with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Delete PurchaseGroup with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
                 }
                 string result = await _repository.PurchaseGroupRepository.DeletePurchaseGroup(purchasegroup);
                 _logger.LogInfo(result);
@@ -244,12 +250,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -268,7 +278,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"purchasegroup with id: {id}, hasn't been found in db.");
-                    return BadRequest("purchasegroup object is null");
+                    return BadRequest(serviceResponse);
                 }
                 purchasegroup.IsActive = true;
                 string result = await _repository.PurchaseGroupRepository.UpdatePurchaseGroup(purchasegroup);
@@ -277,16 +287,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside Activatepurchasegroup action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
         [HttpPut("{id}")]
@@ -304,7 +314,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"purchasegroup with id: {id}, hasn't been found in db.");
-                    return BadRequest("purchasegroup object is null");
+                    return BadRequest(serviceResponse);
                 }
                 purchasegroup.IsActive = false;
                 string result = await _repository.PurchaseGroupRepository.UpdatePurchaseGroup(purchasegroup);
@@ -313,16 +323,16 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Deactivated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside Deactivatepurchasegroup action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
 
         }

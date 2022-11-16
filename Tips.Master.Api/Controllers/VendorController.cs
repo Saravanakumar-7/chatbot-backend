@@ -39,7 +39,7 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all Vendors");
                 var result = _mapper.Map<IEnumerable<VendorMasterDto>>(listOfVendors);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all Vendors Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(result);
@@ -51,7 +51,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -79,7 +79,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogInfo($"Returned owner with id: {id}");
                     var result = _mapper.Map<VendorMasterDto>(vendorDetails);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Returned owner with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse); 
@@ -92,7 +92,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -111,7 +111,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "VendorDetails object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest();
+                    return BadRequest(serviceResponse);
                 }
                if (!ModelState.IsValid)
                {
@@ -145,7 +145,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -218,7 +218,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -256,7 +256,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
            

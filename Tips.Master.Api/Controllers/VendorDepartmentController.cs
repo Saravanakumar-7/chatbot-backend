@@ -3,6 +3,8 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
+using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,44 +30,92 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllVendorDepartment()
         {
+            ServiceResponse<IEnumerable<VendorDepartmentDto>> serviceResponse = new ServiceResponse<IEnumerable<VendorDepartmentDto>>();
+
             try
             {
-                var vendorDepartments = await _repository.VendorDepartmentRepository.GetAllActiveVendorDepartment();
+                var vendorDepartments = await _repository.VendorDepartmentRepository.GetAllVendorDepartment();
                 _logger.LogInfo("Returned all Vendor Department");
-                var result = _mapper.Map<IEnumerable<VendorDepartment>>(vendorDepartments);
-                return Ok(result);
+                var result = _mapper.Map<IEnumerable<VendorDepartmentDto>>(vendorDepartments);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Vendor Department Successfully";
+                serviceResponse.Success = true;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveVendorDepartments()
+        {
+            ServiceResponse<IEnumerable<VendorDepartmentDto>> serviceResponse = new ServiceResponse<IEnumerable<VendorDepartmentDto>>();
 
+            try
+            {
+                var vendorDepartments = await _repository.VendorDepartmentRepository.GetAllActiveVendorDepartment();
+                _logger.LogInfo("Returned all Vendor Department");
+                var result = _mapper.Map<IEnumerable<VendorDepartmentDto>>(vendorDepartments);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active Vendor Departments Successfully";
+                serviceResponse.Success = true;
+                return Ok(serviceResponse);
 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+
+            }
+        }
         // GET api/<VendorDepartmentController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetVendorDepartmentById(int id)
         {
+            ServiceResponse<VendorDepartmentDto> serviceResponse = new ServiceResponse<VendorDepartmentDto>();
+
             try
             {
                 var vendorDepartment = await _repository.VendorDepartmentRepository.GetVendorDepartmentById(id);
                 if (vendorDepartment == null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Vendor Department with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"Vendor Department with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
                     var result = _mapper.Map<VendorDepartmentDto>(vendorDepartment);
-                    return Ok(result);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetVendorDepartmentById action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -73,17 +123,27 @@ namespace Tips.Master.Api.Controllers
         [HttpPost]
         public IActionResult CreateVendorDepartment([FromBody] VendorDepartmentPostDto vendorDepartmentPostDto)
         {
+            ServiceResponse<VendorDepartmentDto> serviceResponse = new ServiceResponse<VendorDepartmentDto>();
+
             try
             {
                 if (vendorDepartmentPostDto is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "VendorDepartment object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("VendorDepartment object sent from client is null.");
-                    return BadRequest("VendorDepartment object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid VendorDepartment object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid VendorDepartment object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return BadRequest(serviceResponse);
                 }
                 //var deliverTermEntity = _mapper.Map<DeliveryTerm>(deliveryTerm);
                 //var id = _repository.DeliveryTermRepo.CreateDeliveryTerm(deliverTermEntity);
@@ -92,15 +152,20 @@ namespace Tips.Master.Api.Controllers
                 var vendorDepartment = _mapper.Map<VendorDepartment>(vendorDepartmentPostDto);
                 _repository.VendorDepartmentRepository.CreateVendorDepartment(vendorDepartment);
                 _repository.SaveAsync();
-
-
-                return Created("GetVendorDepartmentById", "Successfully Created");
-
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Successfylly Created";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("GetVendorDepartmentById", serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -108,34 +173,56 @@ namespace Tips.Master.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateVendorDepartment(int id, [FromBody] VendorDepartmentUpdateDto vendorDepartmentUpdateDto)
         {
+            ServiceResponse<VendorDepartmentDto> serviceResponse = new ServiceResponse<VendorDepartmentDto>();
+
             try
             {
                 if (vendorDepartmentUpdateDto is null)
                 {
-                    _logger.LogError("VendorDepartment object sent from client is null.");
-                    return BadRequest("VendorDepartment object is null");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update VendorDepartment object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update VendorDepartment object sent from client is null.");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid VendorDepartment object sent from client.");
-                    return BadRequest("Invalid model object");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update VendorDepartment object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update Invalid VendorDepartment object sent from client.");
+                    return BadRequest(serviceResponse);
                 }
                 var vendorDepartment = await _repository.VendorDepartmentRepository.GetVendorDepartmentById(id);
                 if (vendorDepartment is null)
                 {
-                    _logger.LogError($"VendorDepartment with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"update VendorDepartment with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update VendorDepartment with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(vendorDepartmentUpdateDto, vendorDepartment);
                 string result = await _repository.VendorDepartmentRepository.UpdateVendorDepartment(vendorDepartment);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside UpdateVendorDepartment action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -143,70 +230,109 @@ namespace Tips.Master.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVendorDepartment(int id)
         {
+            ServiceResponse<VendorDepartmentDto> serviceResponse = new ServiceResponse<VendorDepartmentDto>();
+
             try
             {
                 var vendorDepartment = await _repository.VendorDepartmentRepository.GetVendorDepartmentById(id);
                 if (vendorDepartment == null)
                 {
-                    _logger.LogError($"VendorDepartment with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "c VendorDepartment object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"VendorDepartment VendorDepartment with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
                 }
                 string result = await _repository.VendorDepartmentRepository.DeleteVendorDepartment(vendorDepartment);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateVendorDepartment(int id)
         {
+            ServiceResponse<VendorDepartmentDto> serviceResponse = new ServiceResponse<VendorDepartmentDto>();
+
             try
             {
                 var vendorDepartment = await _repository.VendorDepartmentRepository.GetVendorDepartmentById(id);
                 if (vendorDepartment is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "VendorDepartment object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"VendorDepartment with id: {id}, hasn't been found in db.");
-                    return BadRequest("VendorDepartment object is null");
+                    return BadRequest(serviceResponse);
                 }
                 vendorDepartment.IsActive = true;
                 string result = await _repository.VendorDepartmentRepository.UpdateVendorDepartment(vendorDepartment);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside ActivateVendorDepartment action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateVendorDepartment(int id)
         {
+            ServiceResponse<VendorDepartmentDto> serviceResponse = new ServiceResponse<VendorDepartmentDto>();
+
             try
             {
                 var vendorDepartment = await _repository.VendorDepartmentRepository.GetVendorDepartmentById(id);
                 if (vendorDepartment is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "VendorDepartment object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"VendorDepartment with id: {id}, hasn't been found in db.");
-                    return BadRequest("VendorDepartment object is null");
+                    return BadRequest(serviceResponse);
                 }
                 vendorDepartment.IsActive = false;
                 string result = await _repository.VendorDepartmentRepository.UpdateVendorDepartment(vendorDepartment);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deactivated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeactivateVendorDepartment action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 

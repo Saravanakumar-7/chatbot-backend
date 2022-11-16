@@ -104,7 +104,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("CompanyMaster object sent from client is null.");
-                    return BadRequest("CompanyMaster object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
@@ -113,7 +113,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid CompanyMaster object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return BadRequest(serviceResponse);
                 }
 
                 var CompanyMaster = _mapper.Map<CompanyMaster>(companyMasterDtoPost);
@@ -157,7 +157,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "Update CompanyMaster object sent from client is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest("Update CompanyMaster object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
@@ -166,7 +166,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "Invalid Update CompanyMaster object sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest("Invalid model object");
+                    return BadRequest(serviceResponse);
                 }
                 var updateCompanyMaster = await _repository.CompanyMasterRepository.GetCompanyMasterById(id);
                 if (updateCompanyMaster is null)

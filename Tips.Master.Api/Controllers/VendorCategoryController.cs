@@ -3,6 +3,8 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
+using System.Net;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Tips.Master.Api.Controllers
@@ -27,62 +29,122 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllVendorCategory()
         {
+            ServiceResponse<IEnumerable<VendorCategory>> serviceResponse = new ServiceResponse<IEnumerable<VendorCategory>>();
+
             try
             {
-                var vendorCategories = await _repository.VendorCategoryRepository.GetAllActiveVendorCategory();
+                var vendorCategories = await _repository.VendorCategoryRepository.GetAllVendorCategory();
                 _logger.LogInfo("Returned all VendorCategory");
                 var result = _mapper.Map<IEnumerable<VendorCategory>>(vendorCategories);
-                return Ok(result);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all VendorCategory Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
+        public async Task<IActionResult> GetAllActiveVendorCatefories()
+        {
+            ServiceResponse<IEnumerable<VendorCategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<VendorCategoryDto>>();
 
+            try
+            {
+                var vendorCategories = await _repository.VendorCategoryRepository.GetAllActiveVendorCategory();
+                _logger.LogInfo("Returned all VendorCategory");
+                var result = _mapper.Map<IEnumerable<VendorCategoryDto>>(vendorCategories);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active VendorCategory Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+
+            }
+        }
         // GET api/<VendorCategoryController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetVendorCategoryById(int id)
         {
+            ServiceResponse<VendorCategoryDto> serviceResponse = new ServiceResponse<VendorCategoryDto>();
+
             try
             {
                 var vendorCategory = await _repository.VendorCategoryRepository.GetVendorCategoryById(id);
                 if (vendorCategory == null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Department with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"VendorCategory with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
                     var result = _mapper.Map<VendorCategoryDto>(vendorCategory);
-                    return Ok(result);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned owner with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetVendorCategoryById action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
+
 
         // POST api/<VendorCategoryController>
         [HttpPost]
         public IActionResult CreateVendorCategory([FromBody] VendorCategoryPostDto vendorCategoryPostDto)
         {
+            ServiceResponse<VendorCategory> serviceResponse = new ServiceResponse<VendorCategory>();
+
             try
             {
                 if (vendorCategoryPostDto is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Department object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("VendorCategory object sent from client is null.");
-                    return BadRequest("VendorCategory object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid VendorCategory object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid VendorCategory object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return BadRequest(serviceResponse);
                 }
                 //var deliverTermEntity = _mapper.Map<DeliveryTerm>(deliveryTerm);
                 //var id = _repository.DeliveryTermRepo.CreateDeliveryTerm(deliverTermEntity);
@@ -91,15 +153,19 @@ namespace Tips.Master.Api.Controllers
                 var vendorCategory = _mapper.Map<VendorCategory>(vendorCategoryPostDto);
                 _repository.VendorCategoryRepository.CreateVendorCategory(vendorCategory);
                 _repository.SaveAsync();
-
-
-                return Created("GetVendorCategoryById", "Successfully Created");
-
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Successfylly Created";
+                serviceResponse.Success = false;
+                return Created("GetVendorCategoryById",serviceResponse);                 
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -107,34 +173,56 @@ namespace Tips.Master.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateVendorCategory(int id, [FromBody] VendorCategoryUpdateDto vendorCategoryUpdateDto)
         {
+            ServiceResponse<VendorCategory> serviceResponse = new ServiceResponse<VendorCategory>();
+
             try
             {
                 if (vendorCategoryUpdateDto is null)
                 {
-                    _logger.LogError("VendorCategory object sent from client is null.");
-                    return BadRequest("VendorCategory object is null");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update VendorCategory object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Update VendorCategory object sent from client is null.");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid VendorCategory object sent from client.");
-                    return BadRequest("Invalid model object");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update VendorCategory object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Update Invalid VendorCategory object sent from client.");
+                    return BadRequest(serviceResponse);
                 }
                 var vendorCategory = await _repository.VendorCategoryRepository.GetVendorCategoryById(id);
                 if (vendorCategory is null)
                 {
-                    _logger.LogError($"VendorCategory with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Update VendorCategory with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update VendorCategory with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(vendorCategoryUpdateDto, vendorCategory);
                 string result = await _repository.VendorCategoryRepository.UpdateVendorCategory(vendorCategory);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside UpdateVendorCategory action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500,serviceResponse);
             }
         }
 
@@ -142,71 +230,110 @@ namespace Tips.Master.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVendorCategory(int id)
         {
+            ServiceResponse<VendorCategory> serviceResponse = new ServiceResponse<VendorCategory>();
+
             try
             {
                 var vendorCategory = await _repository.VendorCategoryRepository.GetVendorCategoryById(id);
                 if (vendorCategory == null)
                 {
-                    _logger.LogError($"VendorCategory with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Delete VendorCategory object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Delete VendorCategory with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
                 }
                 string result = await _repository.VendorCategoryRepository.DeleteVendorCategory(vendorCategory);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateVendorCategory(int id)
         {
+            ServiceResponse<VendorCategory> serviceResponse = new ServiceResponse<VendorCategory>();
+
             try
             {
                 var vendorCategory = await _repository.VendorCategoryRepository.GetVendorCategoryById(id);
                 if (vendorCategory is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "VendorCategory object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"VendorCategory with id: {id}, hasn't been found in db.");
-                    return BadRequest("VendorCategory object is null");
+                    return BadRequest(serviceResponse);
                 }
                 vendorCategory.IsActive = true;
                 string result = await _repository.VendorCategoryRepository.UpdateVendorCategory(vendorCategory);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside ActivateVendorCategory action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateVendorCategory(int id)
         {
+            ServiceResponse<VendorCategory> serviceResponse = new ServiceResponse<VendorCategory>();
+
             try
             {
                 var vendorCategory = await _repository.VendorCategoryRepository.GetVendorCategoryById(id);
                 if (vendorCategory is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Department object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"VendorCategory with id: {id}, hasn't been found in db.");
-                    return BadRequest("VendorCategory object is null");
+                    return BadRequest(serviceResponse);
                 }
                 vendorCategory.IsActive = false;
                 string result = await _repository.VendorCategoryRepository.UpdateVendorCategory(vendorCategory);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deactivated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
-            {
-                _logger.LogError($"Something went wrong inside DeactivateVendorCategory action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+            { 
+                  serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                  serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                   _logger.LogError($"Something went wrong inside DeactivateVendorCategory action: {ex.Message}");
+                   return StatusCode(500, serviceResponse);
             }
         }
     }

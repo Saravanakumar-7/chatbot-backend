@@ -6,36 +6,36 @@ using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using System.Net;
 
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
 namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class ProcurementTypeController : ControllerBase
+    public class PackingInstructionController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-
-        public ProcurementTypeController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        public PackingInstructionController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
         }
-
-        // GET: api/<ProcurementTypeController>
+        // GET: api/<PackingInstructionController>
         [HttpGet]
-        public async Task<IActionResult> GetAllProcurementType()
+        public async Task<IActionResult> GetAllPackingInstructions()
         {
-            ServiceResponse<IEnumerable<ProcurementTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<ProcurementTypeDto>>();
-
+            ServiceResponse<IEnumerable<PackingInstructionDto>> serviceResponse = new ServiceResponse<IEnumerable<PackingInstructionDto>>();
             try
             {
-                var procurementTypeList = await _repository.ProcurementTypeRepository.GetAllProcurementType();
-                _logger.LogInfo("Returned all ProcurementTypes");
-                var result = _mapper.Map<IEnumerable<ProcurementTypeDto>>(procurementTypeList);
+
+                var PackingInstructionList = await _repository.PackingInstructionRepository.GetAllPackingInstruction();
+                _logger.LogInfo("Returned all PackingInstructions");
+                var result = _mapper.Map<IEnumerable<PackingInstructionDto>>(PackingInstructionList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all ProcurementTypes Successfully";
+                serviceResponse.Message = "Returned all PackingInstructions Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -51,17 +51,18 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveProcurementTypes()
+
+        public async Task<IActionResult> GetAllActivePackingInstructions()
         {
-            ServiceResponse<IEnumerable<ProcurementTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<ProcurementTypeDto>>();
+            ServiceResponse<IEnumerable<PackingInstructionDto>> serviceResponse = new ServiceResponse<IEnumerable<PackingInstructionDto>>();
 
             try
             {
-                var ProcurementType = await _repository.ProcurementTypeRepository.GetAllActiveProcurementType();
-                _logger.LogInfo("Returned all ProcurementTypes");
-                var result = _mapper.Map<IEnumerable<ProcurementTypeDto>>(ProcurementType);
+                var PackingInstructionList = await _repository.PackingInstructionRepository.GetAllActivePackingInstruction();
+                _logger.LogInfo("Returned all PackingInstructions");
+                var result = _mapper.Map<IEnumerable<PackingInstructionDto>>(PackingInstructionList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all Active ProcurementTypes Successfully";
+                serviceResponse.Message = "Returned all Active PackingInstructions Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -78,30 +79,31 @@ namespace Tips.Master.Api.Controllers
 
             }
         }
-        // GET api/<ProcurementTypeController>/5
+        // GET api/<PackingInstructionController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProcurementTypeById(int id)
+        public async Task<IActionResult> GetPackingInstructionById(int id)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<PackingInstructionDto> serviceResponse = new ServiceResponse<PackingInstructionDto>();
 
             try
             {
-                var procurementType = await _repository.ProcurementTypeRepository.GetProcurementTypeById(id);
-                if (procurementType == null)
+                var PackingInstructions = await _repository.PackingInstructionRepository.GetPackingInstructionById(id);
+                if (PackingInstructions == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ProcurementType object sent from client is null";
+                    serviceResponse.Message = $"PackingInstruction with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"ProcurementType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"PackingInstruction with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
                 else
                 {
+
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    var result = _mapper.Map<ProcurementTypeDto>(procurementType);
+                    var result = _mapper.Map<PackingInstructionDto>(PackingInstructions);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned owner with id Successfully";
+                    serviceResponse.Message = "Success";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -109,7 +111,7 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetProcurementTypeById action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetPackingInstructionById action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
@@ -118,39 +120,42 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // POST api/<ProcurementTypeController>
+        // POST api/<PackingInstructionController>
         [HttpPost]
-        public IActionResult CreateProcurementType([FromBody] ProcurementTypeDtoPost procurementTypeDtoPost)
+        public IActionResult CreatePackingInstruction([FromBody] PackingInstructionDtoPost packingInstructionDtoPost)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<PackingInstructionDto> serviceResponse = new ServiceResponse<PackingInstructionDto>();
 
             try
             {
-                if (procurementTypeDtoPost is null)
+                if (packingInstructionDtoPost is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ProcurementType object sent from client is null";
+                    serviceResponse.Message = "PackingInstruction object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("ProcurementType object sent from client is null.");
+                    _logger.LogError("PackingInstruction object sent from client is null.");
+                    //return BadRequest("PurchaseGroup object is null");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid ProcurementType object sent from client";
+                    serviceResponse.Message = "Invalid PackingInstruction object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid ProcurementType object sent from client.");
+                    _logger.LogError("Invalid PackingInstruction object sent from client.");
+                    //return BadRequest("Invalid model object");
                     return BadRequest(serviceResponse);
                 }
-                var procurementTypeEntity = _mapper.Map<ProcurementType>(procurementTypeDtoPost);
-                _repository.ProcurementTypeRepository.CreateProcurementType(procurementTypeEntity);
+                var PackingInstructions = _mapper.Map<PackingInstruction>(packingInstructionDtoPost);
+                _repository.PackingInstructionRepository.CreatePackingInstruction(PackingInstructions);
                 _repository.SaveAsync();
+                serviceResponse.Data = null;
                 serviceResponse.Message = "Successfylly Created";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetProcurementTypeById", serviceResponse);
+                return Created("GetPackingInstructionById", serviceResponse);
             }
             catch (Exception ex)
             {
@@ -163,44 +168,45 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<ProcurementTypeController>/5
+        // PUT api/<PackingInstructionController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProcurementType(int id, [FromBody] ProcurementTypeDtoUpdate procurementTypeDtoUpdate)
+        public async Task<IActionResult> UpdatePackingInstruction(int id, [FromBody] PackingInstructionDtoUpdate packingInstructionDtoUpdate)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<PackingInstructionDto> serviceResponse = new ServiceResponse<PackingInstructionDto>();
 
             try
             {
-                if (procurementTypeDtoUpdate is null)
+                if (packingInstructionDtoUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "update ProcurementType object sent from client is null";
+                    serviceResponse.Message = "update PackingInstruction object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("ProcurementType object sent from client is null.");
+                    _logger.LogError("updare PackingInstruction object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "update ProcurementType object sent from client is null";
+                    serviceResponse.Message = "Invalid update PackingInstruction object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid update ProcurementType object sent from client.");
+                    _logger.LogError("Invalid Update PackingInstruction object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var procurementTypeEntity = await _repository.ProcurementTypeRepository.GetProcurementTypeById(id);
-                if (procurementTypeEntity is null)
+                var PackingInstruction = await _repository.PackingInstructionRepository.GetPackingInstructionById(id);
+                if (PackingInstruction is null)
                 {
-                    _logger.LogError($"Update ProcurementType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Update PackingInstruction with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = " Update ProcurementType with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = " Update PackingInstruction with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(procurementTypeDtoUpdate, procurementTypeEntity);
-                string result = await _repository.ProcurementTypeRepository.UpdateProcurementType(procurementTypeEntity);
+                _mapper.Map(packingInstructionDtoUpdate, PackingInstruction);
+                string result = await _repository.PackingInstructionRepository.UpdatePackingInstruction(PackingInstruction);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -215,30 +221,30 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside UpdateProcurementType action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside UpdatePackingInstruction action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
-        // DELETE api/<ProcurementTypeController>/5
+        // DELETE api/<PackingInstructionController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProcurementType(int id)
+        public async Task<IActionResult> DeletePackingInstruction(int id)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<PackingInstructionDto> serviceResponse = new ServiceResponse<PackingInstructionDto>();
 
             try
             {
-                var procurementType = await _repository.ProcurementTypeRepository.GetProcurementTypeById(id);
-                if (procurementType == null)
+                var PackingInstruction = await _repository.PackingInstructionRepository.GetPackingInstructionById(id);
+                if (PackingInstruction == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Delete ProcurementType object sent from client is null";
+                    serviceResponse.Message = "PackingInstruction object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"Delete ProcurementType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"PackingInstruction with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                string result = await _repository.ProcurementTypeRepository.DeleteProcurementType(procurementType);
+                string result = await _repository.PackingInstructionRepository.DeletePackingInstruction(PackingInstruction);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deleted Successfully";
@@ -256,26 +262,25 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> ActivateProcurementType(int id)
+        public async Task<IActionResult> ActivatePackingInstruction(int id)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<PackingInstructionDto> serviceResponse = new ServiceResponse<PackingInstructionDto>();
 
             try
             {
-                var procurementType = await _repository.ProcurementTypeRepository.GetProcurementTypeById(id);
-                if (procurementType is null)
+                var PackingInstruction = await _repository.PackingInstructionRepository.GetPackingInstructionById(id);
+                if (PackingInstruction is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ProcurementType object sent from client is null";
+                    serviceResponse.Message = "PackingInstruction object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"ProcurementType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"PackingInstruction with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                procurementType.IsActive = true;
-                string result = await _repository.ProcurementTypeRepository.UpdateProcurementType(procurementType);
+                PackingInstruction.IsActive = true;
+                string result = await _repository.PackingInstructionRepository.UpdatePackingInstruction(PackingInstruction);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -289,30 +294,29 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside ActivateProcurementType action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside ActivatedauditFrequency action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> DeactivateProcurementType(int id)
+        public async Task<IActionResult> DeactivatePackingInstruction(int id)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<PackingInstructionDto> serviceResponse = new ServiceResponse<PackingInstructionDto>();
 
             try
             {
-                var procurementType = await _repository.ProcurementTypeRepository.GetProcurementTypeById(id);
-                if (procurementType is null)
+                var PackingInstruction = await _repository.PackingInstructionRepository.GetPackingInstructionById(id);
+                if (PackingInstruction is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ProcurementType object sent from client is null";
+                    serviceResponse.Message = "PackingInstruction object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"ProcurementType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"PackingInstruction with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                procurementType.IsActive = false;
-                string result = await _repository.ProcurementTypeRepository.UpdateProcurementType(procurementType);
+                PackingInstruction.IsActive = false;
+                string result = await _repository.PackingInstructionRepository.UpdatePackingInstruction(PackingInstruction);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deactivated Successfully";
@@ -323,13 +327,12 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeactivateProcurementType action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeactivatedauditFrequency action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
-
     }
 }

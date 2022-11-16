@@ -3,7 +3,8 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
-
+using NuGet.Protocol;
+using System.Net;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Tips.Master.Api.Controllers
@@ -28,43 +29,94 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllDepartment()
         {
+            ServiceResponse<IEnumerable<DepartmentDto>> serviceResponse = new ServiceResponse<IEnumerable<DepartmentDto>>();
+
             try
             {
-                var departments = await _repository.DepartmentRepository.GetAllActiveDepartment();
+                var departments = await _repository.DepartmentRepository.GetAllDepartment();
                 _logger.LogInfo("Returned all Department");
                 var result = _mapper.Map<IEnumerable<DepartmentDto>>(departments);
-                return Ok(result);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Departments Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveDepartments()
+        {
+            ServiceResponse<IEnumerable<DepartmentDto>> serviceResponse = new ServiceResponse<IEnumerable<DepartmentDto>>();
 
+            try
+            {
+                var departments = await _repository.DepartmentRepository.GetAllActiveDepartment();
+                _logger.LogInfo("Returned all departments");
+                var result = _mapper.Map<IEnumerable<DepartmentDto>>(departments);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active departments Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+
+            }
+        }
         // GET api/<DepartmentController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDepartmentById(int id)
         {
+            ServiceResponse<DepartmentDto> serviceResponse = new ServiceResponse<DepartmentDto>();
+
             try
             {
                 var department = await _repository.DepartmentRepository.GetDepartmentById(id);
                 if (department == null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Department with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"Department with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned owner with id: {id}");
+                    _logger.LogInfo($"Returned Department with id: {id}");
                     var result = _mapper.Map<DepartmentDto>(department);
-                    return Ok(result);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned Department with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetDepartmentById action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -72,30 +124,45 @@ namespace Tips.Master.Api.Controllers
         [HttpPost]
         public IActionResult CreateDepartment([FromBody] DepartmentPostDto department)
         {
+            ServiceResponse<DepartmentDto> serviceResponse = new ServiceResponse<DepartmentDto>();
+
             try
             {
                 if (department is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Department object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Department object sent from client is null.");
-                    return BadRequest("Department object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Department object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid Department object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return BadRequest(serviceResponse);
                 } 
                 var departments = _mapper.Map<Department>(department);
                 _repository.DepartmentRepository.CreateDepartment(departments);
-                _repository.SaveAsync();
-
-
-                return Created("GetDepartmentById", "Successfully Created");
-
+                _repository.SaveAsync(); 
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Successfylly Created";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("GetDepartmentById", serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -103,34 +170,56 @@ namespace Tips.Master.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateDepartment(int id, [FromBody] DepartmentUpdateDto department)
         {
+            ServiceResponse<DepartmentDto> serviceResponse = new ServiceResponse<DepartmentDto>();
+
             try
             {
                 if (department is null)
                 {
-                    _logger.LogError("Department object sent from client is null.");
-                    return BadRequest("Department object is null");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update Department object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update Department object sent from client is null.");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid Department object sent from client.");
-                    return BadRequest("Invalid model object");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update Department object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Update Department object sent from client.");
+                    return BadRequest(serviceResponse);
                 }
                 var departments = await _repository.DepartmentRepository.GetDepartmentById(id);
                 if (departments is null)
                 {
-                    _logger.LogError($"DeliveryTerm with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"Update DeliveryTerm with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update DeliveryTerm with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(department, departments);
                 string result = await _repository.DepartmentRepository.UpdateDepartment(departments);
                 _logger.LogInfo(result);
-                _repository.SaveAsync();
-                return NoContent();
+                _repository.SaveAsync(); 
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside UpdateDepartment action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -138,71 +227,110 @@ namespace Tips.Master.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDepartment(int id)
         {
+            ServiceResponse<DepartmentDto> serviceResponse = new ServiceResponse<DepartmentDto>();
+
             try
             {
                 var department = await _repository.DepartmentRepository.GetDepartmentById(id);
                 if (department == null)
                 {
-                    _logger.LogError($"Department with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Delete Department object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Delete Department with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
                 }
                 string result = await _repository.DepartmentRepository.DeleteDepartment(department);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateDepartment(int id)
         {
+            ServiceResponse<DepartmentDto> serviceResponse = new ServiceResponse<DepartmentDto>();
+
             try
             {
                 var department = await _repository.DepartmentRepository.GetDepartmentById(id);
                 if (department is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Department object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"Department with id: {id}, hasn't been found in db.");
-                    return BadRequest("Department object is null");
+                    return BadRequest(serviceResponse);
                 }
                 department.IsActive = true;
                 string result = await _repository.DepartmentRepository.UpdateDepartment(department);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside ActivateDepartment action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateDepartment(int id)
         {
+            ServiceResponse<DepartmentDto> serviceResponse = new ServiceResponse<DepartmentDto>();
+
             try
             {
                 var department = await _repository.DepartmentRepository.GetDepartmentById(id);
                 if (department is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Department object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     _logger.LogError($"Department  with id: {id}, hasn't been found in db.");
-                    return BadRequest("Department object is null");
+                    return BadRequest(serviceResponse);
                 }
                 department.IsActive = false;
                 string result = await _repository.DepartmentRepository.UpdateDepartment(department);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deactivated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeactivateDeliveryTerm action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 

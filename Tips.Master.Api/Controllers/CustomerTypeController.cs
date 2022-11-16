@@ -38,7 +38,7 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all customerTypes");
                 var result = _mapper.Map<IEnumerable<CustomerTypeDto>>(customerTypeList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all customerTypes Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -50,7 +50,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -66,7 +66,7 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all customerTypes");
                 var result = _mapper.Map<IEnumerable<CustomerTypeDto>>(customerTypeList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all Active customerTypes Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -78,7 +78,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -118,7 +118,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -137,7 +137,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "CustomerType object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest();
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
@@ -146,7 +146,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "Something went wrong. Please try again!";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest();
+                    return BadRequest(serviceResponse);
                 }
                 var customerTypeEntity = _mapper.Map<CustomerType>(customerTypeDtoPost);
                 _repository.CustomerTypeRepository.CreateCustomerType(customerTypeEntity);
@@ -155,7 +155,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetCustomerTypeById", "Successfully Created");
+                return Created("GetCustomerTypeById", serviceResponse);
             }
             catch (Exception ex)
             {
@@ -164,7 +164,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -178,38 +178,38 @@ namespace Tips.Master.Api.Controllers
             {
                 if (customerTypeDtoUpdate is null)
                 {
-                    _logger.LogError("CustomerType object sent from client is null.");
+                    _logger.LogError("update CustomerType object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "CustomerType object is null";
+                    serviceResponse.Message = "update CustomerType object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest();
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid CustomerType object sent from client.");
+                    _logger.LogError("Invalid update CustomerType object sent from client.");
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Something went wrong. Please try again!";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest();
+                    return BadRequest(serviceResponse);
                 }
                 var customerTypeEntity = await _repository.CustomerTypeRepository.GetCustomerTypeById(id);
                 if (customerTypeEntity is null)
                 {
-                    _logger.LogError($"CustomerType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"update CustomerType with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "CustomerType with id hasn't been found in db.";
+                    serviceResponse.Message = "update CustomerType with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 _mapper.Map(customerTypeDtoUpdate, customerTypeEntity);
                 string result =  await _repository.CustomerTypeRepository.UpdateCustomerType(customerTypeEntity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "Update Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -221,7 +221,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -236,9 +236,9 @@ namespace Tips.Master.Api.Controllers
                 var customerType = await _repository.CustomerTypeRepository.GetCustomerTypeById(id);
                 if (customerType == null)
                 {
-                    _logger.LogError($"CustomerType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Delete CustomerType with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Error";
+                    serviceResponse.Message = "Delete Purchasegroup object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
@@ -250,7 +250,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Delete Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
@@ -259,7 +259,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -288,7 +288,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Activate Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
@@ -297,7 +297,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -326,7 +326,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "DeActivate Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
@@ -335,7 +335,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
     }

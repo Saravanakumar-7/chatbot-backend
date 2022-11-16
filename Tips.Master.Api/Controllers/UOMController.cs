@@ -4,6 +4,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -26,43 +27,94 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUOM()
         {
+            ServiceResponse<IEnumerable<UOMDto>> serviceResponse = new ServiceResponse<IEnumerable<UOMDto>>();
+
             try
             {
                 var UOMList = await _repository.UOMRepository.GetAllUOM();
                 _logger.LogInfo("Returned all UOM");
                 var result = _mapper.Map<IEnumerable<UOMDto>>(UOMList);
-                return Ok(result);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all UOM Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveUOMs()
+        {
+            ServiceResponse<IEnumerable<UOMDto>> serviceResponse = new ServiceResponse<IEnumerable<UOMDto>>();
 
+            try
+            {
+                var UOMList = await _repository.UOMRepository.GetAllActiveUOM();
+                _logger.LogInfo("Returned all UOM");
+                var result = _mapper.Map<IEnumerable<UOMDto>>(UOMList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active UOM Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+
+            }
+        }
         // GET api/<UOMController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUOMById(int id)
         {
+            ServiceResponse<UOMDto> serviceResponse = new ServiceResponse<UOMDto>();
+
             try
             {
                 var UOM = await _repository.UOMRepository.GetUOMById(id);
                 if (UOM == null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"UOM with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"UOM with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
                     var result = _mapper.Map<UOMDto>(UOM);
-                    return Ok(result);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned owner with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetUOMById action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -70,28 +122,45 @@ namespace Tips.Master.Api.Controllers
         [HttpPost]
         public IActionResult CreateUOM([FromBody] UOMDtoPost UomDtoPost)
         {
+            ServiceResponse<UOMDto> serviceResponse = new ServiceResponse<UOMDto>();
+
             try
             {
                 if (UomDtoPost is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "UOM object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("UOM object sent from client is null.");
-                    return BadRequest("UOM object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid UOM object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid UOM object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return BadRequest(serviceResponse);
                 }
                 var UOMEntity = _mapper.Map<UOM>(UomDtoPost);
                 _repository.UOMRepository.CreateUOM(UOMEntity);
                 _repository.SaveAsync();
-
-                return Created("GetUOMById", "Successfully Created");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Successfylly Created";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("GetUOMById", serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside UOM action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -99,17 +168,27 @@ namespace Tips.Master.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUOM(int id, [FromBody] UOMDtoUpdate UomDtoUpdate)
         {
+            ServiceResponse<UOMDto> serviceResponse = new ServiceResponse<UOMDto>();
+
             try
             {
                 if (UomDtoUpdate is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update Department object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("UOM object sent from client is null.");
-                    return BadRequest("UOM object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid UOM object sent from client.");
-                    return BadRequest("Invalid model object");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update Department object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Update UOM object sent from client.");
+                    return BadRequest(serviceResponse);
                 }
                 var UOMEntity = await _repository.UOMRepository.GetUOMById(id);
                 if (UOMEntity is null)
@@ -121,12 +200,20 @@ namespace Tips.Master.Api.Controllers
                 string result = await _repository.UOMRepository.UpdateUOM(UOMEntity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside UpdateUOM action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -134,71 +221,110 @@ namespace Tips.Master.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUOM(int id)
         {
+            ServiceResponse<UOMDto> serviceResponse = new ServiceResponse<UOMDto>();
+
             try
             {
                 var UOM = await _repository.UOMRepository.GetUOMById(id);
                 if (UOM == null)
                 {
-                    _logger.LogError($"UOM with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "c UOM object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"UOM UOM with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
                 }
                 string result = await _repository.UOMRepository.DeleteUOM(UOM);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateUOM(int id)
         {
+            ServiceResponse<UOMDto> serviceResponse = new ServiceResponse<UOMDto>();
+
             try
             {
                 var UOM = await _repository.UOMRepository.GetUOMById(id);
                 if (UOM is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "UOM object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"UOM with id: {id}, hasn't been found in db.");
-                    return BadRequest("UOM object is null");
+                    return BadRequest(serviceResponse);
                 }
                 UOM.ActiveStatus = true;
                 string result = await _repository.UOMRepository.UpdateUOM(UOM);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside ActivateUOM action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateUOM(int id)
         {
+            ServiceResponse<UOMDto> serviceResponse = new ServiceResponse<UOMDto>();
+
             try
             {
                 var UOM = await _repository.UOMRepository.GetUOMById(id);
                 if (UOM is null)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "UOM object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"UOM with id: {id}, hasn't been found in db.");
-                    return BadRequest("UOM object is null");
+                    return BadRequest(serviceResponse);
                 }
                 UOM.ActiveStatus = false;
                 string result = await _repository.UOMRepository.UpdateUOM(UOM);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                return NoContent();
+                serviceResponse.Message = "Deactivated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside DeactivateUOM action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 

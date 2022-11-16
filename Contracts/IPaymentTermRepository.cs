@@ -12,8 +12,8 @@ namespace Contracts
         Task<IEnumerable<PaymentTerm>> GetAllpaymentTerms();
         Task<PaymentTerm> GetpaymentTermById(int id);
         Task<IEnumerable<PaymentTerm>> GetAllActivepaymentTerms();
-        Task<int?> CreateCustomerType(PaymentTerm paymentTerm);
-        Task<string> UpdateCustomerType(PaymentTerm paymentTerm);
-        Task<string> DeleteCustomerType(PaymentTerm paymentTerm);
+        Task<int?> CreatePaymentTerm(PaymentTerm paymentTerm);
+        Task<string> UpdatePaymentTerm(PaymentTerm paymentTerm);
+        Task<string> DeletePaymentTerm(PaymentTerm paymentTerm);
     }
 }

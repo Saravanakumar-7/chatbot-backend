@@ -3,39 +3,41 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+//using MySqlX.XDevAPI.Common;
 using NuGet.Protocol;
 using System.Net;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class ProcurementTypeController : ControllerBase
+    public class TypeOfCompanyController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
 
-        public ProcurementTypeController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        public TypeOfCompanyController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
         }
-
-        // GET: api/<ProcurementTypeController>
+        // GET: api/<TypeOfCompanyController>
         [HttpGet]
-        public async Task<IActionResult> GetAllProcurementType()
+        public async Task<IActionResult> GetAllTypeOfCompanies()
         {
-            ServiceResponse<IEnumerable<ProcurementTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<ProcurementTypeDto>>();
-
+            ServiceResponse<IEnumerable<TypeOfCompanyDto>> serviceResponse = new ServiceResponse<IEnumerable<TypeOfCompanyDto>>();
             try
             {
-                var procurementTypeList = await _repository.ProcurementTypeRepository.GetAllProcurementType();
-                _logger.LogInfo("Returned all ProcurementTypes");
-                var result = _mapper.Map<IEnumerable<ProcurementTypeDto>>(procurementTypeList);
+
+                var TypeOfCompanyList = await _repository.TypeOfCompanyRepository.GetAllTypeOfCompanies();
+                _logger.LogInfo("Returned all TypeofCompanies");
+                var result = _mapper.Map<IEnumerable<TypeOfCompanyDto>>(TypeOfCompanyList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all ProcurementTypes Successfully";
+                serviceResponse.Message = "Returned all TypeofCompanies Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -44,24 +46,25 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveProcurementTypes()
+        public async Task<IActionResult> GetAllActiveTypeofCompanies()
         {
-            ServiceResponse<IEnumerable<ProcurementTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<ProcurementTypeDto>>();
+            ServiceResponse<IEnumerable<TypeOfCompanyDto>> serviceResponse = new ServiceResponse<IEnumerable<TypeOfCompanyDto>>();
 
             try
             {
-                var ProcurementType = await _repository.ProcurementTypeRepository.GetAllActiveProcurementType();
-                _logger.LogInfo("Returned all ProcurementTypes");
-                var result = _mapper.Map<IEnumerable<ProcurementTypeDto>>(ProcurementType);
+                var TypeOfCompanyList = await _repository.TypeOfCompanyRepository.GetAllActiveTypeofCompanies();
+                _logger.LogInfo("Returned all TypeofCompanies");
+                var result = _mapper.Map<IEnumerable<TypeOfCompanyDto>>(TypeOfCompanyList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all Active ProcurementTypes Successfully";
+                serviceResponse.Message = "Returned all Active TypeofCompanies Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -71,37 +74,37 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
 
             }
         }
-        // GET api/<ProcurementTypeController>/5
+        // GET api/<TypeOfCompanyController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProcurementTypeById(int id)
+        public async Task<IActionResult> GetTypeOfCompanyById(int id)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<TypeOfCompanyDto> serviceResponse = new ServiceResponse<TypeOfCompanyDto>();
 
             try
             {
-                var procurementType = await _repository.ProcurementTypeRepository.GetProcurementTypeById(id);
-                if (procurementType == null)
+                var typeofcompany = await _repository.TypeOfCompanyRepository.GetTypeOfCompanyById(id);
+                if (typeofcompany == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ProcurementType object sent from client is null";
+                    serviceResponse.Message = $"typeofcompany with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"ProcurementType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"typeofcompany with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned owner with id: {id}");
-                    var result = _mapper.Map<ProcurementTypeDto>(procurementType);
+                    _logger.LogInfo($"Returned typeofcompany with id: {id}");
+                    var result = _mapper.Map<TypeOfCompanyDto>(typeofcompany);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned owner with id Successfully";
+                    serviceResponse.Message = "Returned typeofcompany with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -109,53 +112,57 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetProcurementTypeById action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetTypeOfCompanyById action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
+
             }
         }
 
-        // POST api/<ProcurementTypeController>
+        // POST api/<TypeOfCompanyController>
         [HttpPost]
-        public IActionResult CreateProcurementType([FromBody] ProcurementTypeDtoPost procurementTypeDtoPost)
+        public IActionResult CreateTypeOfCompany([FromBody] TypeOfCompanyDtoPost typeOfCompanyDtoPost)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<TypeOfCompanyDto> serviceResponse = new ServiceResponse<TypeOfCompanyDto>();
 
             try
             {
-                if (procurementTypeDtoPost is null)
+                if (typeOfCompanyDtoPost is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ProcurementType object sent from client is null";
+                    serviceResponse.Message = "typeofcompany object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("ProcurementType object sent from client is null.");
+                    _logger.LogError("typeofcompany object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid ProcurementType object sent from client";
+                    serviceResponse.Message = "Invalid typeOfCompany object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid ProcurementType object sent from client.");
+                    _logger.LogError("Invalid Bank object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var procurementTypeEntity = _mapper.Map<ProcurementType>(procurementTypeDtoPost);
-                _repository.ProcurementTypeRepository.CreateProcurementType(procurementTypeEntity);
+
+                var TypeofCompany = _mapper.Map<TypeOfCompany>(typeOfCompanyDtoPost);
+                _repository.TypeOfCompanyRepository.CreateTypeOfCompany(TypeofCompany);
                 _repository.SaveAsync();
+                serviceResponse.Data = null;
                 serviceResponse.Message = "Successfylly Created";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetProcurementTypeById", serviceResponse);
+                return Created("GetTypeOfCompanyById", serviceResponse);
+
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
@@ -163,44 +170,45 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<ProcurementTypeController>/5
+        // PUT api/<TypeOfCompanyController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProcurementType(int id, [FromBody] ProcurementTypeDtoUpdate procurementTypeDtoUpdate)
+        public async Task<IActionResult> UpdateTypeofCompany(int id, [FromBody] TypeOfCompanyDtoUpdate typeOfCompanyDtoUpdate)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<TypeOfCompanyDto> serviceResponse = new ServiceResponse<TypeOfCompanyDto>();
 
             try
             {
-                if (procurementTypeDtoUpdate is null)
+                if (typeOfCompanyDtoUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "update ProcurementType object sent from client is null";
+                    serviceResponse.Message = "update typeofcompany object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("ProcurementType object sent from client is null.");
+                    _logger.LogError("update typeofcompany object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "update ProcurementType object sent from client is null";
+                    serviceResponse.Message = "Invalid update typeofcompany object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid update ProcurementType object sent from client.");
+                    _logger.LogError("Invalid update typeofcompany object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var procurementTypeEntity = await _repository.ProcurementTypeRepository.GetProcurementTypeById(id);
-                if (procurementTypeEntity is null)
+                var TypeofCompany = await _repository.TypeOfCompanyRepository.GetTypeOfCompanyById(id);
+                if (TypeofCompany is null)
                 {
-                    _logger.LogError($"Update ProcurementType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Update TypeofCompany with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = " Update ProcurementType with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = " Update TypeofCompany with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(procurementTypeDtoUpdate, procurementTypeEntity);
-                string result = await _repository.ProcurementTypeRepository.UpdateProcurementType(procurementTypeEntity);
+                _mapper.Map(typeOfCompanyDtoUpdate, TypeofCompany);
+                string result = await _repository.TypeOfCompanyRepository.UpdateTypeOfCompany(TypeofCompany);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -212,33 +220,33 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside UpdateProcurementType action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside UpdateTypeofCompany action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
-        // DELETE api/<ProcurementTypeController>/5
+        // DELETE api/<TypeOfCompanyController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProcurementType(int id)
+        public async Task<IActionResult> DeleteTypeofCompany(int id)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<TypeOfCompanyDto> serviceResponse = new ServiceResponse<TypeOfCompanyDto>();
 
             try
             {
-                var procurementType = await _repository.ProcurementTypeRepository.GetProcurementTypeById(id);
-                if (procurementType == null)
+                var TypeofCompany = await _repository.TypeOfCompanyRepository.GetTypeOfCompanyById(id);
+                if (TypeofCompany == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Delete ProcurementType object sent from client is null";
+                    serviceResponse.Message = "Delete TypeofCompany object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"Delete ProcurementType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"delete TypeofCompany with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                string result = await _repository.ProcurementTypeRepository.DeleteProcurementType(procurementType);
+                string result = await _repository.TypeOfCompanyRepository.DeleteTypeOfCompany(TypeofCompany);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deleted Successfully";
@@ -249,33 +257,32 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> ActivateProcurementType(int id)
+        public async Task<IActionResult> ActivateTypeOfCompany(int id)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<TypeOfCompanyDto> serviceResponse = new ServiceResponse<TypeOfCompanyDto>();
 
             try
             {
-                var procurementType = await _repository.ProcurementTypeRepository.GetProcurementTypeById(id);
-                if (procurementType is null)
+                var TypeofCompany = await _repository.TypeOfCompanyRepository.GetTypeOfCompanyById(id);
+                if (TypeofCompany is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ProcurementType object sent from client is null";
+                    serviceResponse.Message = " TypeofCompany object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"ProcurementType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"TypeofCompany with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                procurementType.IsActive = true;
-                string result = await _repository.ProcurementTypeRepository.UpdateProcurementType(procurementType);
+                TypeofCompany.IsActive = true;
+                string result = await _repository.TypeOfCompanyRepository.UpdateTypeOfCompany(TypeofCompany);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -286,33 +293,32 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside ActivateProcurementType action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside ActivatedTypeofCompany action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> DeactivateProcurementType(int id)
+        public async Task<IActionResult> DeactivateTypeOfCompany(int id)
         {
-            ServiceResponse<ProcurementTypeDto> serviceResponse = new ServiceResponse<ProcurementTypeDto>();
+            ServiceResponse<TypeOfCompanyDto> serviceResponse = new ServiceResponse<TypeOfCompanyDto>();
 
             try
             {
-                var procurementType = await _repository.ProcurementTypeRepository.GetProcurementTypeById(id);
-                if (procurementType is null)
+                var TypeofCompany = await _repository.TypeOfCompanyRepository.GetTypeOfCompanyById(id);
+                if (TypeofCompany is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ProcurementType object sent from client is null";
+                    serviceResponse.Message = "TypeofCompany object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"ProcurementType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"TypeofCompany with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                procurementType.IsActive = false;
-                string result = await _repository.ProcurementTypeRepository.UpdateProcurementType(procurementType);
+                TypeofCompany.IsActive = false;
+                string result = await _repository.TypeOfCompanyRepository.UpdateTypeOfCompany(TypeofCompany);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deactivated Successfully";
@@ -323,13 +329,12 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeactivateProcurementType action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeactivatedTypeofCompany action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
-
     }
 }

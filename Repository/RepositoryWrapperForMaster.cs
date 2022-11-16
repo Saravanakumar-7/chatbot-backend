@@ -64,6 +64,17 @@ namespace Repository
                 return _leadTimeRepo;
             }
         }
+        public IPaymentTermRepository paymentTermRepository
+        {
+            get
+            {
+                if (_paymentTermRepo == null)
+                {
+                    _paymentTermRepo = new PaymentTermRepository(_tipsMasterDbContext);
+                }
+                return _paymentTermRepo;
+            }
+        }
         public ICustomerTypeRepository CustomerTypeRepository
         {
             get
@@ -75,7 +86,17 @@ namespace Repository
                 return _customerTypeRepo;
             }
         }
-
+        public IPackingInstructionRepository packingInstructionRepository
+        {
+            get
+            {
+                if (_packingInstructionRepo == null)
+                {
+                    _packingInstructionRepo = new PackingInstructionRepository(_tipsMasterDbContext);
+                }
+                return _packingInstructionRepo;
+            }
+        }
         public IMaterialTypeRepository MaterialTypeRepository
         {
             get
@@ -330,7 +351,17 @@ namespace Repository
                 return _languageRepo;
             }
         }
-
+        public ITypeOfCompanyRepository TypeOfCompanyRepository
+        {
+            get
+            {
+                if (_typeOfCompanyRepo == null)
+                {
+                    _typeOfCompanyRepo = new TypeOfCompanyRepository(_tipsMasterDbContext);
+                }
+                return _typeOfCompanyRepo;
+            }
+        }
         public INatureOfRelationshipRepository natureOfRelationshipRepository
         {
             get
@@ -363,12 +394,48 @@ namespace Repository
         public IVendorAddressRepository VendorAddressRepository => throw new NotImplementedException();
 
         public IVendorBankingRepository VendorBankingRepository => throw new NotImplementedException();
-
-        public ITypeOfCompanyRepository TypeOfCompanyRepository => throw new NotImplementedException();
+        
+        public ITypeOfCompanyRepository typeOfCompanyRepository=> throw new NotImplementedException();
 
         public IPaymentTermRepository PaymentTermRepository => throw new NotImplementedException();
 
         public IPackingInstructionRepository PackingInstructionRepository => throw new NotImplementedException();
+
+        public IUOMRepository UOMRepository => throw new NotImplementedException();
+
+        public IUOCRepository UOCRepository => throw new NotImplementedException();
+
+        public ICommodityRepository CommodityRepository => throw new NotImplementedException();
+
+        public ILocationsRepository LocationsRepository => throw new NotImplementedException();
+
+        public ICompanyMasterRepository CompanyMasterRepository => throw new NotImplementedException();
+
+        public ICompanyAddressesRepository CompanyAddressesRepository => throw new NotImplementedException();
+
+        public ICompanyContactsRepository CompanyContactsRepository => throw new NotImplementedException();
+
+        public ICompanyBankingRepository CompanyBankingRepository => throw new NotImplementedException();
+
+        public ICustomerMasterRepository Customermasterrepository => throw new NotImplementedException();
+
+        public ICustomerBankingsRepository CustomerBankingsRepository => throw new NotImplementedException();
+
+        public ICustomerAddressesRepository CustomerAddressesRepository => throw new NotImplementedException();
+
+        public ICustomerShippingAddressesRepository CustomerShippingAddressesRepository => throw new NotImplementedException();
+
+        public ICustomerContactsRepository CustomerContactsRepository => throw new NotImplementedException();
+
+        public IItemmasterAlternate ItemmasterAlternateRepository => throw new NotImplementedException();
+
+        public IItemMasterApprovedVendor ItemMasterApprovedVendorRepository => throw new NotImplementedException();
+
+        public IItemMasterFileUpload ItemMasterFileUploadRepository => throw new NotImplementedException();
+
+        public IItemMasterRouting ItemMasterRoutingRepository => throw new NotImplementedException();
+
+        public IItemMasterWarehouse ItemMasterWarehouseRepository => throw new NotImplementedException();
 
         public void SaveAsync()
         {
