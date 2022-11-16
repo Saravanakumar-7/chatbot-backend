@@ -65,6 +65,14 @@ namespace Contracts
         IVendorAddressRepository VendorAddressRepository { get; }   
 
         IVendorBankingRepository VendorBankingRepository { get; }
+
+        IShipmentInstructionsRepository ShipmentInstructionsRepository { get; }
+        ISegmentRepository SegmentRepository { get; }
+        IQuoteTermsRepository QuoteTermsRepository { get; }
+        IRiskCategoryRepository RiskCategoryRepository { get; }
+        IWarehouseRepository WarehouseRepository { get; }
+        ICategoryRepository CategoryRepository { get; }
+
         void SaveAsync();
     }
 }
