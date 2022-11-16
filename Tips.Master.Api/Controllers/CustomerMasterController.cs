@@ -5,6 +5,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -24,13 +25,24 @@ namespace Tips.Master.Api.Controllers
             }
  
         [HttpGet]
-        public async Task<IActionResult> GetAllCustomerMaster()
+        public async Task<IActionResult> GetAllCustomerMaster([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<CustomerMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerMasterDto>>();
             try
             {
-                var listOfCustomerMaster = await _repository.Customermasterrepository.GetAllCustomerMaster();
+                var listOfCustomerMaster = await _repository.Customermasterrepository.GetAllCustomerMaster(pagingParameter);
                 //_logger.LogInfo("Returned all CustomerMaster");
+                var metadata = new
+                {
+                    listOfCustomerMaster.TotalCount,
+                    listOfCustomerMaster.PageSize,
+                    listOfCustomerMaster.CurrentPage,
+                    listOfCustomerMaster.HasNext,
+                    listOfCustomerMaster.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
                 var result = _mapper.Map<IEnumerable<CustomerMasterDto>>(listOfCustomerMaster);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Success";

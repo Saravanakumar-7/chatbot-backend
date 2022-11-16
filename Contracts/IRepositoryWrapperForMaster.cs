@@ -24,6 +24,8 @@ namespace Contracts
         IMaterialTypeRepository MaterialTypeRepository { get; }
         IProcurementTypeRepository ProcurementTypeRepository { get; }
 
+        IHeadCountingRepository HeadCountingRepository { get; }
+
         IUOMRepository UOMRepository { get; }
         IUOCRepository UOCRepository { get; }
         ICommodityRepository CommodityRepository{ get; }

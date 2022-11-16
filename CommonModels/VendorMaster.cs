@@ -136,5 +136,7 @@ namespace Entities
         public List<VendorContacts>? Contacts { get; set; }
         public List<VendorAddress>? Addresses { get; set; } 
 
+        public List<HeadCounting>? HeadCountings { get; set; }
+
     }
 }

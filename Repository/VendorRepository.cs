@@ -55,6 +55,7 @@ namespace Repository
                                 .Include(t => t.VendorBankings)
                                 .Include(x => x.Addresses)
                                 .Include(m => m.Contacts)
+                                .Include(v => v.HeadCountings)
                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             //var vendorDetails = await TipsMasterDbContext.VendorMasters
@@ -75,6 +76,7 @@ namespace Repository
                               .Include(x => x.VendorBankings)
                               .Include(x => x.Addresses)
                               .Include(m => m.Contacts)
+                              .Include(v => v.HeadCountings)
                               .FirstOrDefaultAsync();
 
           return vendorDetails;
@@ -98,5 +100,19 @@ namespace Repository
             return result;
         }
 
+        public async Task<IEnumerable<VendorIdNameListDto>> GetAllActiveVendorNameList()
+        {
+            IEnumerable<VendorIdNameListDto> vendorDetails = await TipsMasterDbContext.VendorMasters
+                                .Select(x => new VendorIdNameListDto()
+                                {
+                                    Id = x.Id,
+                                    VednorAliasName = x.VendorAliasName,
+                                    VendorName = x.VendorName
+                                })
+                              .ToListAsync();
+
+            return vendorDetails;
+        }
+         
     }
 }

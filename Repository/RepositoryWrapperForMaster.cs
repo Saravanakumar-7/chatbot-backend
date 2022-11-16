@@ -32,6 +32,8 @@ namespace Repository
         private IVendorDepartmentRepository? _vendorDepartment;
         private IVendorRepository? _vendorRepository;
 
+
+
         private IPurchaseGroupRepository? _purchaseGroupRepo;   
         private ICostCenterRepository? _costCenterRepo; 
         private ICostingMethodRepository? _costingMethodRepo;   
@@ -405,6 +407,8 @@ namespace Repository
         public IItemMasterRouting ItemMasterRoutingRepository => throw new NotImplementedException();
 
         public IItemMasterWarehouse ItemMasterWarehouseRepository => throw new NotImplementedException();
+
+        public IHeadCountingRepository HeadCountingRepository => throw new NotImplementedException();
 
         public void SaveAsync()
         {

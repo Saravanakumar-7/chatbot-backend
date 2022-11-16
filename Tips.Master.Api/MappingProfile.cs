@@ -211,6 +211,10 @@ namespace Tips.Master.Api
             CreateMap<VendorMaster, VendorMasterPostDto>().ReverseMap();
             CreateMap<VendorMaster, VendorMasterPostDto>().ReverseMap();
 
+            CreateMap<HeadCounting, HeadCountingDto>().ReverseMap();
+            CreateMap<HeadCounting, HeadCountingPostDto>().ReverseMap();
+            CreateMap<HeadCounting, HeadCountingUpdateDto>().ReverseMap();
+
 
 
         }
