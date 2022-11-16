@@ -264,6 +264,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivateTypeOfCompany(int id)
         {
@@ -300,6 +301,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateTypeOfCompany(int id)
         {

@@ -171,7 +171,6 @@ namespace Tips.Master.Api.Controllers
 
         // PUT api/<VendorController>/5
         [HttpPut("{id}")]
-      
         public async Task<IActionResult> UpdateVendor(int id, [FromBody] VendorMasterDto vendorMasterUpdateDto)
         {
             ServiceResponse<VendorMasterDto> serviceResponse = new ServiceResponse<VendorMasterDto>();

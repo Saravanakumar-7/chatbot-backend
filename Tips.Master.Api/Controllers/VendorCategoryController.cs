@@ -52,6 +52,8 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
         public async Task<IActionResult> GetAllActiveVendorCatefories()
         {
             ServiceResponse<IEnumerable<VendorCategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<VendorCategoryDto>>();
