@@ -145,9 +145,9 @@ namespace Tips.Master.Api.Controllers
         // PUT api/<CompanyMasterController>/5
         [HttpPut("{id}")]
 
-        public async Task<IActionResult> UpdateCompanyMaster(int id, [FromBody] CompanyMasterDtoUpdate companyMasterDtoUpdate)
+        public async Task<IActionResult> UpdateCompanyMaster(int id, [FromBody] CompanyMasterDto companyMasterDtoUpdate)
         {
-            ServiceResponse<CompanyMasterDtoUpdate> serviceResponse = new ServiceResponse<CompanyMasterDtoUpdate>();
+            ServiceResponse<CompanyMasterDto> serviceResponse = new ServiceResponse<CompanyMasterDto>();
             try
             {
                 if (companyMasterDtoUpdate is null)
@@ -157,7 +157,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "Update CompanyMaster object sent from client is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest("Update CompanyMaster object is null");
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
@@ -166,7 +166,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "Invalid Update CompanyMaster object sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest("Invalid model object");
+                    return BadRequest(serviceResponse);
                 }
                 var updateCompanyMaster = await _repository.CompanyMasterRepository.GetCompanyMasterById(id);
                 if (updateCompanyMaster is null)
@@ -233,8 +233,8 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = " CompanyMaster Successfully Deleted";
                 serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.NoContent;
-                return NoContent();
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {

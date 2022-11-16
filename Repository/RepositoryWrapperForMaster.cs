@@ -11,11 +11,27 @@ namespace Repository
     public class RepositoryWrapperForMaster : IRepositoryWrapperForMaster
     {
         private TipsMasterDbContext _tipsMasterDbContext;
+
         private ILeadTimeRepository _leadTimeRepo;
         private ICustomerTypeRepository _customerTypeRepo;
         private IMaterialTypeRepository _materialTypeRepo;
         private IProcurementTypeRepository _procurementTypeRepo;
+
         private IItemMasterRepository _itemMasterRepo;
+        private ICustomerMasterRepository _customerMasterRepo;
+        private ICompanyMasterRepository _companyMasterRepo;
+
+        private IUOMRepository _uomRepo;
+        private IUOCRepository _uocRepo;
+        private ICommodityRepository _commodityRepo;
+        private ILocationsRepository _locationsRepo;
+
+        private IShipmentInstructionsRepository _shipmentInstructionsRepo;
+        private ISegmentRepository _segmentRepo;
+        private IQuoteTermsRepository _quoteTermsRepo;
+        private IRiskCategoryRepository _riskCategoryRepo;
+        private IWarehouseRepository _warehouseRepo;
+        private ICategoryRepository _categoryRepo;
 
         private IDeliveryTermRepository? _deliveryTermRepo;
         private IVolumeUomRepository? _volumeUomRepo;
@@ -53,6 +69,126 @@ namespace Repository
             _tipsMasterDbContext = tipsMasterDbContext;
         }
 
+        public IShipmentInstructionsRepository ShipmentInstructionsRepository
+        {
+            get
+            {
+                if (_shipmentInstructionsRepo == null)
+                {
+                    _shipmentInstructionsRepo = new ShipmentInstructionsRepository(_tipsMasterDbContext);
+                }
+                return _shipmentInstructionsRepo;
+            }
+        }
+
+        public ISegmentRepository SegmentRepository
+        {
+            get
+            {
+                if (_segmentRepo == null)
+                {
+                    _segmentRepo = new SegmentRepository(_tipsMasterDbContext);
+                }
+                return _segmentRepo;
+            }
+        }
+
+        public IQuoteTermsRepository QuoteTermsRepository
+        {
+            get
+            {
+                if (_quoteTermsRepo == null)
+                {
+                    _quoteTermsRepo = new QuoteTermsRepository(_tipsMasterDbContext);
+                }
+                return _quoteTermsRepo;
+            }
+        }
+
+        public IRiskCategoryRepository RiskCategoryRepository
+        {
+            get
+            {
+                if (_riskCategoryRepo == null)
+                {
+                    _riskCategoryRepo = new RiskCategoryRepository(_tipsMasterDbContext);
+                }
+                return _riskCategoryRepo;
+            }
+        }
+
+        public IWarehouseRepository WarehouseRepository
+        {
+            get
+            {
+                if (_warehouseRepo == null)
+                {
+                    _warehouseRepo = new WarehouseRepository(_tipsMasterDbContext);
+                }
+                return _warehouseRepo;
+            }
+        }
+
+        public ICategoryRepository CategoryRepository
+        {
+            get
+            {
+                if (_categoryRepo == null)
+                {
+                    _categoryRepo = new CategoryRepository(_tipsMasterDbContext);
+                }
+                return _categoryRepo;
+            }
+        }
+
+        public IUOMRepository UOMRepository
+        {
+            get
+            {
+                if (_uomRepo == null)
+                {
+                    _uomRepo = new UOMRepository(_tipsMasterDbContext);
+                }
+                return _uomRepo;
+            }
+        }
+
+        public IUOCRepository UOCRepository
+        {
+            get
+            {
+                if (_uocRepo == null)
+                {
+                    _uocRepo = new UOCRepository(_tipsMasterDbContext);
+                }
+                return _uocRepo;
+            }
+        }
+
+        public ICommodityRepository CommodityRepository
+        {
+            get
+            {
+                if (_commodityRepo == null)
+                {
+                    _commodityRepo = new CommodityRepository(_tipsMasterDbContext);
+                }
+                return _commodityRepo;
+            }
+        }
+
+        public ILocationsRepository LocationsRepository
+        {
+            get
+            {
+                if (_locationsRepo == null)
+                {
+                    _locationsRepo = new LocationsRepository(_tipsMasterDbContext);
+                }
+                return _locationsRepo;
+            }
+        }
+
         public ILeadTimeRepository leadTimeRepository
         {
             get
@@ -88,7 +224,6 @@ namespace Repository
             }
         }
 
-
         public IProcurementTypeRepository ProcurementTypeRepository
         {
             get
@@ -98,6 +233,31 @@ namespace Repository
                     _procurementTypeRepo = new ProcurementTypeRepository(_tipsMasterDbContext);
                 }
                 return _procurementTypeRepo;
+            }
+        }
+
+        public ICustomerMasterRepository CustomerMasterRepository
+        {
+            get
+            {
+                if (_customerMasterRepo == null)
+                {
+                    _customerMasterRepo = new CustomerMasterRepository(_tipsMasterDbContext);
+                }
+                return _customerMasterRepo;
+            }
+        }
+
+
+        public ICompanyMasterRepository CompanyMasterRepository
+        {
+            get
+            {
+                if (_companyMasterRepo == null)
+                {
+                    _companyMasterRepo = new CompanyMasterRepository(_tipsMasterDbContext);
+                }
+                return _companyMasterRepo;
             }
         }
 
@@ -369,6 +529,30 @@ namespace Repository
         public IPaymentTermRepository PaymentTermRepository => throw new NotImplementedException();
 
         public IPackingInstructionRepository PackingInstructionRepository => throw new NotImplementedException();
+
+        public ICompanyAddressesRepository CompanyAddressesRepository => throw new NotImplementedException();
+
+        public ICompanyContactsRepository CompanyContactsRepository => throw new NotImplementedException();
+
+        public ICompanyBankingRepository CompanyBankingRepository => throw new NotImplementedException();
+
+        public ICustomerBankingsRepository CustomerBankingsRepository => throw new NotImplementedException();
+
+        public ICustomerAddressesRepository CustomerAddressesRepository => throw new NotImplementedException();
+
+        public ICustomerShippingAddressesRepository CustomerShippingAddressesRepository => throw new NotImplementedException();
+
+        public ICustomerContactsRepository CustomerContactsRepository => throw new NotImplementedException();
+
+        public IItemmasterAlternate ItemmasterAlternateRepository => throw new NotImplementedException();
+
+        public IItemMasterApprovedVendor ItemMasterApprovedVendorRepository => throw new NotImplementedException();
+
+        public IItemMasterFileUpload ItemMasterFileUploadRepository => throw new NotImplementedException();
+
+        public IItemMasterRouting ItemMasterRoutingRepository => throw new NotImplementedException();
+
+        public IItemMasterWarehouse ItemMasterWarehouseRepository => throw new NotImplementedException();
 
         public void SaveAsync()
         {

@@ -33,20 +33,19 @@ namespace Repository
 
         public async Task<IEnumerable<UOM>> GetAllActiveUOM()
         {
-            var UOMList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return UOMList;
+            var uomList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            return uomList;
         }
         public async Task<IEnumerable<UOM>> GetAllUOM()
         {
-            var UOMList = await FindAll().ToListAsync();
-            return UOMList;
+            var uomList = await FindAll().ToListAsync();
+            return uomList;
         }
 
         public async Task<UOM> GetUOMById(int id)
         {
-            var UOMList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-
-            return UOMList;
+            var uomList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return uomList;
         }
 
         public async Task<string> UpdateUOM(UOM uom)

@@ -33,21 +33,21 @@ namespace Repository
 
         public async Task<IEnumerable<Locations>> GetAllActiveLocations()
         {
-            var LocationsList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return LocationsList;
+            var locationsList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            return locationsList;
         }
 
         public async Task<IEnumerable<Locations>> GetAllLocations()
         {
 
-            var LocationsList = await FindAll().ToListAsync();
-            return LocationsList;
+            var locationsList = await FindAll().ToListAsync();
+            return locationsList;
         }
 
         public async Task<Locations> GetLocationsById(int id)
         {
-            var LocationsList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-            return LocationsList;
+            var locationsList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return locationsList;
         }
 
         public async Task<string> UpdateLocations(Locations locations)

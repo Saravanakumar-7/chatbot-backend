@@ -24,6 +24,13 @@ namespace Contracts
         IMaterialTypeRepository MaterialTypeRepository { get; }
         IProcurementTypeRepository ProcurementTypeRepository { get; }
 
+        IShipmentInstructionsRepository ShipmentInstructionsRepository { get; }
+        ISegmentRepository SegmentRepository { get; }
+        ICategoryRepository CategoryRepository { get; }
+        IQuoteTermsRepository QuoteTermsRepository { get; }
+        IRiskCategoryRepository RiskCategoryRepository { get; }
+        IWarehouseRepository WarehouseRepository { get; }
+
         IUOMRepository UOMRepository { get; }
         IUOCRepository UOCRepository { get; }
         ICommodityRepository CommodityRepository{ get; }
@@ -34,7 +41,7 @@ namespace Contracts
         ICompanyContactsRepository CompanyContactsRepository { get; }
         ICompanyBankingRepository CompanyBankingRepository { get; }
 
-        ICustomerMasterRepository Customermasterrepository { get; }
+        ICustomerMasterRepository CustomerMasterRepository { get; }
         ICustomerBankingsRepository CustomerBankingsRepository { get; }
         ICustomerAddressesRepository CustomerAddressesRepository { get; }
         ICustomerShippingAddressesRepository CustomerShippingAddressesRepository { get; }

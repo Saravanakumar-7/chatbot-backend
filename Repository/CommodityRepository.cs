@@ -33,20 +33,20 @@ namespace Repository
 
         public async Task<IEnumerable<Commodity>> GetAllActiveCommodity()
         {
-            var CommodityList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return CommodityList;
+            var commodityList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            return commodityList;
         }
 
         public async Task<IEnumerable<Commodity>> GetAllCommodity()
         {
-            var CommodityList = await FindAll().ToListAsync();
-            return CommodityList;
+            var commodityList = await FindAll().ToListAsync();
+            return commodityList;
         }
 
         public async Task<Commodity> GetCommodityById(int id)
         {
-            var CommodityList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-            return CommodityList;
+            var commodityList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return commodityList;
         }
 
         public async Task<string> UpdateCommodity(Commodity commodity)

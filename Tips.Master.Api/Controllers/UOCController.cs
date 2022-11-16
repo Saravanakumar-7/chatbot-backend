@@ -8,7 +8,7 @@ using NuGet.Protocol.Core.Types;
 
 namespace Tips.Master.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class UOCController : ControllerBase
     {
@@ -28,9 +28,9 @@ namespace Tips.Master.Api.Controllers
         {
             try
             {
-                var UOCList = await _repository.UOCRepository.GetAllUOC();
+                var uocList = await _repository.UOCRepository.GetAllUOC();
                 _logger.LogInfo("Returned all UOC");
-                var result = _mapper.Map<IEnumerable<UOCDto>>(UOCList);
+                var result = _mapper.Map<IEnumerable<UOCDto>>(uocList);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -47,8 +47,8 @@ namespace Tips.Master.Api.Controllers
         {
             try
             {
-                var UOC = await _repository.UOCRepository.GetUOCById(id);
-                if (UOC == null)
+                var uoc = await _repository.UOCRepository.GetUOCById(id);
+                if (uoc == null)
                 {
                     _logger.LogError($"UOC with id: {id}, hasn't been found in db.");
                     return NotFound();
@@ -56,7 +56,7 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    var result = _mapper.Map<UOCDto>(UOC);
+                    var result = _mapper.Map<UOCDto>(uoc);
                     return Ok(result);
                 }
             }
@@ -69,11 +69,11 @@ namespace Tips.Master.Api.Controllers
 
         // POST api/<UOMController>
         [HttpPost]
-        public IActionResult CreateUOC([FromBody] UOCDtoPost UocDtoPost)
+        public IActionResult CreateUOC([FromBody] UOCDtoPost uocDtoPost)
         {
             try
             {
-                if (UocDtoPost is null)
+                if (uocDtoPost is null)
                 {
                     _logger.LogError("UOC object sent from client is null.");
                     return BadRequest("UOC object is null");
@@ -83,8 +83,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid UOC object sent from client.");
                     return BadRequest("Invalid model object");
                 }
-                var UOCEntity = _mapper.Map<UOC>(UocDtoPost);
-                _repository.UOCRepository.CreateUOC(UOCEntity);
+                var uocEntity = _mapper.Map<UOC>(uocDtoPost);
+                _repository.UOCRepository.CreateUOC(uocEntity);
                 _repository.SaveAsync();
 
                 return Created("GetUOCById", "Successfully Created");
@@ -96,13 +96,13 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<UOMController>/5
+        // PUT api/<UOCController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUOC(int id, [FromBody] UOCDtoUpdate UocDtoUpdate)
+        public async Task<IActionResult> UpdateUOC(int id, [FromBody] UOCDtoUpdate uocDtoUpdate)
         {
             try
             {
-                if (UocDtoUpdate is null)
+                if (uocDtoUpdate is null)
                 {
                     _logger.LogError("UOC object sent from client is null.");
                     return BadRequest("UOC object is null");
@@ -112,14 +112,14 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid UOC object sent from client.");
                     return BadRequest("Invalid model object");
                 }
-                var UOCEntity = await _repository.UOCRepository.GetUOCById(id);
-                if (UOCEntity is null)
+                var uocEntity = await _repository.UOCRepository.GetUOCById(id);
+                if (uocEntity is null)
                 {
                     _logger.LogError($"UOC with id: {id}, hasn't been found in db.");
                     return NotFound();
                 }
-                _mapper.Map(UocDtoUpdate, UOCEntity);
-                string result = await _repository.UOCRepository.UpdateUOC(UOCEntity);
+                _mapper.Map(uocDtoUpdate, uocEntity);
+                string result = await _repository.UOCRepository.UpdateUOC(uocEntity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 return NoContent();
@@ -137,13 +137,13 @@ namespace Tips.Master.Api.Controllers
         {
             try
             {
-                var UOC = await _repository.UOCRepository.GetUOCById(id);
-                if (UOC == null)
+                var uoc = await _repository.UOCRepository.GetUOCById(id);
+                if (uoc == null)
                 {
                     _logger.LogError($"UOC with id: {id}, hasn't been found in db.");
                     return NotFound();
                 }
-                string result = await _repository.UOCRepository.DeleteUOC(UOC);
+                string result = await _repository.UOCRepository.DeleteUOC(uoc);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 return NoContent();
@@ -160,14 +160,14 @@ namespace Tips.Master.Api.Controllers
         {
             try
             {
-                var UOC = await _repository.UOCRepository.GetUOCById(id);
-                if (UOC is null)
+                var uoc = await _repository.UOCRepository.GetUOCById(id);
+                if (uoc is null)
                 {
                     _logger.LogError($"UOC with id: {id}, hasn't been found in db.");
                     return BadRequest("UOC object is null");
                 }
-                UOC.ActiveStatus = true;
-                string result = await _repository.UOCRepository.UpdateUOC(UOC);
+                uoc.ActiveStatus = true;
+                string result = await _repository.UOCRepository.UpdateUOC(uoc);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 return NoContent();
@@ -184,14 +184,14 @@ namespace Tips.Master.Api.Controllers
         {
             try
             {
-                var UOC = await _repository.UOCRepository.GetUOCById(id);
-                if (UOC is null)
+                var uoc = await _repository.UOCRepository.GetUOCById(id);
+                if (uoc is null)
                 {
                     _logger.LogError($"UOC with id: {id}, hasn't been found in db.");
                     return BadRequest("UOC object is null");
                 }
-                UOC.ActiveStatus = false;
-                string result = await _repository.UOCRepository.UpdateUOC(UOC);
+                uoc.ActiveStatus = false;
+                string result = await _repository.UOCRepository.UpdateUOC(uoc);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 return NoContent();
