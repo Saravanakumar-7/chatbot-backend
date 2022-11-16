@@ -17,6 +17,7 @@ namespace Tips.Master.Api.Extensions
                 options.AddPolicy("CorsPolicy",
                     builder => builder.AllowAnyOrigin()
                     .AllowAnyMethod()
+                    .WithExposedHeaders("X-Pagination")
                     .AllowAnyHeader());
             });
         }
