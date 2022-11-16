@@ -9,7 +9,7 @@ using System.Net;
 
 namespace Tips.Master.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class UOCController : ControllerBase
     {
@@ -50,6 +50,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllActiveUocs()
         {
