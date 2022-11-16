@@ -23,6 +23,7 @@ namespace Tips.Master.Api.Controllers
             _logger = logger;
             _mapper = mapper;
         }
+
         // GET: api/<PackingInstructionController>
         [HttpGet]
         public async Task<IActionResult> GetAllPackingInstructions()
@@ -50,8 +51,8 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpGet]
 
+        [HttpGet]
         public async Task<IActionResult> GetAllActivePackingInstructions()
         {
             ServiceResponse<IEnumerable<PackingInstructionDto>> serviceResponse = new ServiceResponse<IEnumerable<PackingInstructionDto>>();
@@ -262,6 +263,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivatePackingInstruction(int id)
         {
@@ -298,6 +300,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivatePackingInstruction(int id)
         {

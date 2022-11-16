@@ -23,6 +23,7 @@ namespace Tips.Master.Api.Controllers
             _logger = logger;
             _mapper = mapper;
         }
+
         // GET: api/<PaymentTermController>
         [HttpGet]
         public async Task<IActionResult> GetAllPaymentTerms()
@@ -52,7 +53,6 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-
         public async Task<IActionResult> GetAllActivePaymentTerms()
         {
             ServiceResponse<IEnumerable<PaymentTermDto>> serviceResponse = new ServiceResponse<IEnumerable<PaymentTermDto>>();
@@ -265,6 +265,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> ActivatePaymentTerm(int id)
         {
@@ -301,6 +302,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> DeactivateAuditFrequency(int id)
         {

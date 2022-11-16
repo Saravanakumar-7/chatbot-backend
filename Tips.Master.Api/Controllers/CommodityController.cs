@@ -50,8 +50,8 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        [HttpGet]
 
+        [HttpGet]
         public async Task<IActionResult> GetAllActiveCommoditys()
         {
             ServiceResponse<IEnumerable<CommodityDto>> serviceResponse = new ServiceResponse<IEnumerable<CommodityDto>>();
