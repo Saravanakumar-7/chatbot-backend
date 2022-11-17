@@ -22,6 +22,10 @@ namespace Entities
         public DbSet<QuoteTerms> QuoteTerms { get; set; }
         public DbSet<Segment> Segment { get; set; }
         public DbSet<PreferredFreightForwarder> preferredFreightForwarders { get; set; }
+        public DbSet<GST_Percentage> gst_Percentages { get; set; }
+        public DbSet<PriceList> priceLists { get; set; }
+        public DbSet<ShipmentMode> shipmentModes { get; set; }
+
 
         public DbSet<HeadCounting>? HeadCountings { get; set; }
 

@@ -3,6 +3,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
 using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,36 +12,30 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class BankController : ControllerBase
+    public class ShipmentModeController : ControllerBase
     {
-
         private IRepositoryWrapperForMaster _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-
-
-        public BankController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        public ShipmentModeController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
-
         }
-
-
-        // GET: api/<BankController>
+        // GET: api/<ShipmentModeController>
         [HttpGet]
-        public async Task<IActionResult> GetAllBankDetails()
+        public async Task<IActionResult> GetAllShipmentModes()
         {
-            ServiceResponse<IEnumerable<BankDto>> serviceResponse = new ServiceResponse<IEnumerable<BankDto>>();
-
+            ServiceResponse<IEnumerable<ShipmentModeDto>> serviceResponse = new ServiceResponse<IEnumerable<ShipmentModeDto>>();
             try
             {
-                var banks = await _repository.BankRepository.GetAllActiveBank();
-                _logger.LogInfo("Returned all Bank");
-                var result = _mapper.Map<IEnumerable<BankDto>>(banks);
+
+                var ShipmentMode = await _repository.ShipmentModeRepository.GetAllShipmentModes();
+                _logger.LogInfo("Returned all ShipmentModes");
+                var result = _mapper.Map<IEnumerable<ShipmentModeDto>>(ShipmentMode);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all Banks Successfully";
+                serviceResponse.Message = "Returned all ShipmentModes Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -51,23 +46,23 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveBankDetails()
+
+        public async Task<IActionResult> GetAllActiveShipmentMode()
         {
-            ServiceResponse<IEnumerable<BankDto>> serviceResponse = new ServiceResponse<IEnumerable<BankDto>>();
+            ServiceResponse<IEnumerable<ShipmentModeDto>> serviceResponse = new ServiceResponse<IEnumerable<ShipmentModeDto>>();
 
             try
             {
-                var banks = await _repository.BankRepository.GetAllActiveBank();
-                _logger.LogInfo("Returned all Banks");
-                var result = _mapper.Map<IEnumerable<BankDto>>(banks);
+                var ShipmentMode = await _repository.ShipmentModeRepository.GetAllActiveShipmentModes();
+                _logger.LogInfo("Returned all AuditFrequencies");
+                var result = _mapper.Map<IEnumerable<ShipmentModeDto>>(ShipmentMode);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all Active Banks Successfully";
+                serviceResponse.Message = "Returned all Active ShipmentModes Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -84,30 +79,32 @@ namespace Tips.Master.Api.Controllers
 
             }
         }
-        // GET api/<BankController>/5
+
+        // GET api/<ShipmentModeController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBankById(int id)
+        public async Task<IActionResult> GetShipmentModeById(int id)
         {
-            ServiceResponse<BankDto> serviceResponse = new ServiceResponse<BankDto>();
+            ServiceResponse<ShipmentModeDto> serviceResponse = new ServiceResponse<ShipmentModeDto>();
 
             try
             {
-                var bank = await _repository.BankRepository.GetBankById(id);
-                if (bank == null)
+                var ShipmentModes = await _repository.ShipmentModeRepository.GetShipmentModeById(id);
+                if (ShipmentModes == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Bank with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShipmentModes with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"Bank with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"ShipmentModes with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned Bank with id: {id}");
-                    var result = _mapper.Map<BankDto>(bank);
+
+                    _logger.LogInfo($"Returned ShipmentModes with id: {id}");
+                    var result = _mapper.Map<ShipmentModeDto>(ShipmentModes);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned Bank with id Successfully";
+                    serviceResponse.Message = "Returned ShipmentModes with id successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -115,101 +112,102 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetBankById action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetShipmentModesById action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
-              
             }
         }
 
-        // POST api/<BankController>
+        // POST api/<ShipmentModeController>
         [HttpPost]
-        public IActionResult CreateBank([FromBody] BankPostDto bank)
+        public IActionResult CreateShipmentMode([FromBody] ShipmentModeDtoPost shipmentModeDtoPost)
         {
-            ServiceResponse<BankDto> serviceResponse = new ServiceResponse<BankDto>();
+            ServiceResponse<ShipmentModeDto> serviceResponse = new ServiceResponse<ShipmentModeDto>();
 
             try
             {
-                if (bank is null)
+                if (shipmentModeDtoPost is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Bank object sent from client is null";
+                    serviceResponse.Message = "ShipmentMode object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Bank object sent from client is null.");
+                    _logger.LogError("ShipmentMode object sent from client is null.");
+                    //return BadRequest("PurchaseGroup object is null");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Bank object sent from client";
+                    serviceResponse.Message = "Invalid ShipmentMode object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid Bank object sent from client.");
+                    _logger.LogError("Invalid ShipmentMode object sent from client.");
+                    //return BadRequest("Invalid model object");
                     return BadRequest(serviceResponse);
-                } 
-
-                var banks = _mapper.Map<Bank>(bank);
-                _repository.BankRepository.CreateBank(banks);
+                }
+                var ShipmentMode = _mapper.Map<ShipmentMode>(shipmentModeDtoPost);
+                _repository.ShipmentModeRepository.CreateShipmentMode(ShipmentMode);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "Successfylly Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetBankById", serviceResponse);
+                return Created("GetShipmentModeById", serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside CreateShipmentMode action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
-        // PUT api/<BankController>/5
+        // PUT api/<ShipmentModeController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBank(int id, [FromBody] BankUpdateDto bankUpdateDto)
+        public async Task<IActionResult> UpdateShipmentMode(int id, [FromBody] ShipmentModeDtoUpdate shipmentModeDtoUpdate)
         {
-            ServiceResponse<BankDto> serviceResponse = new ServiceResponse<BankDto>();
+            ServiceResponse<ShipmentModeDto> serviceResponse = new ServiceResponse<ShipmentModeDto>();
 
             try
             {
-                if (bankUpdateDto is null)
+                if (shipmentModeDtoUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Bank object sent from client is null";
+                    serviceResponse.Message = "update ShipmentMode object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Bank object sent from client is null.");
+                    _logger.LogError("update ShipmentMode object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Bank object sent from client";
+                    serviceResponse.Message = "Invalid update ShipmentMode object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid Bank object sent from client.");
+                    _logger.LogError("Invalid Update ShipmentMode object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var bank = await _repository.BankRepository.GetBankById(id);
-                if (bank is null)
+                var ShipmentMode = await _repository.ShipmentModeRepository.GetShipmentModeById(id);
+                if (ShipmentMode is null)
                 {
-                    _logger.LogError($"Update Bank with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Update ShipmentMode with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = " Update Bank with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = " Update ShipmentMode with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(bankUpdateDto, bank);
-                string result = await _repository.BankRepository.UpdateBank(bank);
+                _mapper.Map(shipmentModeDtoUpdate, ShipmentMode);
+                string result = await _repository.ShipmentModeRepository.UpdateShipmentMode(ShipmentMode);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -221,33 +219,34 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside UpdateBank action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside UpdateShipmentMode action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
-        // DELETE api/<BankController>/5
+
+        // DELETE api/<ShipmentModeController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBank(int id)
+        public async Task<IActionResult> DeleteAuditShipmentMode(int id)
         {
-            ServiceResponse<BankDto> serviceResponse = new ServiceResponse<BankDto>();
+            ServiceResponse<ShipmentModeDto> serviceResponse = new ServiceResponse<ShipmentModeDto>();
 
             try
             {
-                var bank = await _repository.BankRepository.GetBankById(id);
-                if (bank == null)
+                var ShipmentMode = await _repository.ShipmentModeRepository.GetShipmentModeById(id);
+                if (ShipmentMode == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Bank object sent from client is null";
+                    serviceResponse.Message = "Delete ShipmentMode object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"Bank with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Delete ShipmentMode with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                string result = await _repository.BankRepository.DeleteBank(bank);
+                string result = await _repository.ShipmentModeRepository.DeleteShipmentMode(ShipmentMode);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deleted Successfully";
@@ -258,33 +257,32 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside ShipmentMode action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> ActivateBank(int id)
+        public async Task<IActionResult> ActivateShipmentMode(int id)
         {
-            ServiceResponse<BankDto> serviceResponse = new ServiceResponse<BankDto>();
+            ServiceResponse<ShipmentModeDto> serviceResponse = new ServiceResponse<ShipmentModeDto>();
 
             try
             {
-                var bank = await _repository.BankRepository.GetBankById(id);
-                if (bank is null)
-                {                   
+                var ShipmentMode = await _repository.ShipmentModeRepository.GetShipmentModeById(id);
+                if (ShipmentMode is null)
+                {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Bank object sent from client is null";
+                    serviceResponse.Message = "ShipmentMode object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"bank with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"ShipmentMode with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                bank.IsActive = true;
-                string result = await _repository.BankRepository.UpdateBank(bank);
+                ShipmentMode.IsActive = true;
+                string result = await _repository.ShipmentModeRepository.UpdateShipmentMode(ShipmentMode);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -295,33 +293,32 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside ActivateBank action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside ActivatedShipmentMode action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> DeactivateBank(int id)
+        public async Task<IActionResult> DeactivateShipmentMode(int id)
         {
-            ServiceResponse<BankDto> serviceResponse = new ServiceResponse<BankDto>();
+            ServiceResponse<ShipmentModeDto> serviceResponse = new ServiceResponse<ShipmentModeDto>();
 
             try
             {
-                var bank = await _repository.BankRepository.GetBankById(id);
-                if (bank is null)
+                var ShipmentMode = await _repository.ShipmentModeRepository.GetShipmentModeById(id);
+                if (ShipmentMode is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Bank object sent from client is null";
+                    serviceResponse.Message = "ShipmentMode object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"bank with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"ShipmentMode with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                bank.IsActive = false;
-                string result = await _repository.BankRepository.UpdateBank(bank);
+                ShipmentMode.IsActive = false;
+                string result = await _repository.ShipmentModeRepository.UpdateShipmentMode(ShipmentMode);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deactivated Successfully";
@@ -332,13 +329,12 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside Deactivate Bank action: {ex.Message}");
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside DeactivatedShipmentMode action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
-
     }
 }

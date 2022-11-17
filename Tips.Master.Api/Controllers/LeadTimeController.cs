@@ -105,7 +105,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "Returned Department with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)

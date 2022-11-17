@@ -45,7 +45,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -63,7 +63,7 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all AuditFrequencies");
                 var result = _mapper.Map<IEnumerable<AuditFrequencyDto>>(AuditFrequencies);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all AuditFrequencies Successfully";
+                serviceResponse.Message = "Returned all Active AuditFrequencies Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode= HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -73,7 +73,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -120,7 +120,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpPost]
+        
         // POST api/<AuditFrequencyController>
         [HttpPost]
         public IActionResult CreateAuditFrequeny([FromBody] AuditFrequencyDtoPost auditFrequencyDtoPost)
@@ -164,7 +164,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateAuditFrequeny action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -183,7 +183,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "update AuditFrequeny object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("updare AuditFrequeny object sent from client is null.");
+                    _logger.LogError("update AuditFrequeny object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)

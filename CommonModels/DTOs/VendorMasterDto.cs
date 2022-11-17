@@ -29,6 +29,7 @@ namespace Entities.DTOs
         public string? Country { get; set; }
 
         public string? PinZipCode { get; set; }
+        public string? ShippingMode { get; set; }
 
         public string? PurchaseGroup { get; set; }
         public string? BoardNumber { get; set; }
@@ -61,6 +62,8 @@ namespace Entities.DTOs
         public string? SpecialTerms { get; set; }
 
         public string? PreferredFreightForwader { get; set; }
+
+        public string? Others { get; set; }
 
         //saturation
 
@@ -111,8 +114,8 @@ namespace Entities.DTOs
 
         public string? VendorCategory { get; set; }
 
-        public string? BankOfApproval { get; set; }
-
+        public string? BasisOfApproval { get; set; }
+        public string? CustomerApprove { get; set; }
         public bool InventoryItem { get; set; } = true;
 
         public string? ApprovalStatus { get; set; }
@@ -163,6 +166,7 @@ namespace Entities.DTOs
         public string? Country { get; set; }
 
         public string? PinZipCode { get; set; }
+        public string? ShippingMode { get; set; }
 
         public string? PurchaseGroup { get; set; }
         public string? BoardNumber { get; set; }
@@ -196,6 +200,7 @@ namespace Entities.DTOs
         public string? SpecialTerms { get; set; }
 
         public string? PreferredFreightForwader { get; set; }
+        public string? Others { get; set; }
 
         //saturation
 
@@ -246,8 +251,8 @@ namespace Entities.DTOs
 
         public string? VendorCategory { get; set; }
 
-        public string? BankOfApproval { get; set; }
-
+        public string? BasisOfApproval { get; set; }
+        public string? CustomerApprove { get; set; }
         public bool InventoryItem { get; set; } = true;
 
         public string? ApprovalStatus { get; set; }
@@ -301,6 +306,7 @@ namespace Entities.DTOs
         public string? Country { get; set; }
 
         public string? PinZipCode { get; set; }
+        public string? ShippingMode { get; set; }
 
         public string? PurchaseGroup { get; set; }
         public string? BoardNumber { get; set; }
@@ -333,6 +339,7 @@ namespace Entities.DTOs
         public string? SpecialTerms { get; set; }
 
         public string? PreferredFreightForwader { get; set; }
+        public string? Others { get; set; }
 
         //saturation
 
@@ -383,8 +390,8 @@ namespace Entities.DTOs
 
         public string? VendorCategory { get; set; }
 
-        public string? BankOfApproval { get; set; }
-
+        public string? BasisOfApproval { get; set; }
+        public string? CustomerApprove { get; set; }
         public bool InventoryItem { get; set; } = true;
 
         public string? ApprovalStatus { get; set; }

@@ -44,7 +44,11 @@ namespace Repository
         private IExportUnitTypeRepository? _exportUnitTypeRepo; 
         private ITypeOfCompanyRepository? _typeOfCompanyRepo;   
         private IPaymentTermRepository? _paymentTermRepo;   
-        private IPackingInstructionRepository? _packingInstructionRepo; 
+        private IPackingInstructionRepository? _packingInstructionRepo;
+        private IPreferredFreightForwarderRepository? _preferredFreightForwarderRepo;
+        private IGST_PercentageRepository? _gstpercentageRepo;
+        private IPriceListRepository? _pricelistRepo;
+        private IShipmentModeRepository? _shipmentmodeRepo;
 
         private IShipmentInstructionsRepository? _shipmentInstructionsRepo;
         private ICategoryRepository? _categoryRepo;
@@ -68,6 +72,50 @@ namespace Repository
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
+        }
+        public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository
+        {
+            get
+            {
+                if (_preferredFreightForwarderRepo == null)
+                {
+                    _preferredFreightForwarderRepo = new PreferredFreightForwarderRepository(_tipsMasterDbContext);
+                }
+                return _preferredFreightForwarderRepo;
+            }
+        }
+        public IPriceListRepository PriceListRepository
+        {
+            get
+            {
+                if (_pricelistRepo == null)
+                {
+                    _pricelistRepo = new PriceListRepository(_tipsMasterDbContext);
+                }
+                return _pricelistRepo;
+            }
+        }
+        public IShipmentModeRepository ShipmentModeRepository
+        {
+            get
+            {
+                if (_shipmentmodeRepo == null)
+                {
+                    _shipmentmodeRepo = new ShipmentModeRepository(_tipsMasterDbContext);
+                }
+                return _shipmentmodeRepo;
+            }
+        }
+        public IGST_PercentageRepository GST_PercentageRepository
+        {
+            get
+            {
+                if (_gstpercentageRepo == null)
+                {
+                    _gstpercentageRepo = new GST_PercentageRepository(_tipsMasterDbContext);
+                }
+                return _gstpercentageRepo;
+            }
         }
         public ILocationsRepository LocationsRepository
         {
@@ -584,6 +632,8 @@ namespace Repository
         public IItemMasterWarehouse ItemMasterWarehouseRepository => throw new NotImplementedException();
 
         public IPreferredFreightForwarderRepository preferredFreightForwarderRepository => throw new NotImplementedException();
+
+
 
         public void SaveAsync()
         {

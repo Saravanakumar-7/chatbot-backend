@@ -33,9 +33,9 @@ namespace Entities
         [MaxLength(100)]
         public string? MaterialGroup { get; set; }
         [DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
-        public DateTime ValidFrom { get; set; }
+        public DateTime? ValidFrom { get; set; }
         [DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
-        public DateTime ValidTo { get; set; }
+        public DateTime? ValidTo { get; set; }
         [MaxLength(50)]
         public string? PurchaseGroup { get; set; }
         [MaxLength(50)]
@@ -73,7 +73,7 @@ namespace Entities
         public string? Leadtime { get; set; }
         public string? Reorder { get; set; }
         public string? TwoBin { get; set; }
-        public string? Kanban { get; set; }
+        public bool Kanban { get; set; }
         [DefaultValue(false)]
         public bool IsEsd { get; set; }
         [DefaultValue(false)]

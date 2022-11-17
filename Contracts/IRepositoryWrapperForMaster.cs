@@ -73,6 +73,9 @@ namespace Contracts
         IWarehouseRepository WarehouseRepository { get; }
         ICategoryRepository CategoryRepository { get; }
         IPreferredFreightForwarderRepository preferredFreightForwarderRepository { get; }
+        IGST_PercentageRepository GST_PercentageRepository { get; }
+        IShipmentModeRepository ShipmentModeRepository { get; }
+        IPriceListRepository PriceListRepository { get; }
 
         void SaveAsync();
     }

@@ -3,6 +3,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
 using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,36 +12,30 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class BankController : ControllerBase
+    public class PreferredFreightForwarderController : ControllerBase
     {
-
         private IRepositoryWrapperForMaster _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-
-
-        public BankController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        public PreferredFreightForwarderController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
-
         }
-
-
-        // GET: api/<BankController>
+        // GET: api/<PreferredFreightForwarderController>
         [HttpGet]
-        public async Task<IActionResult> GetAllBankDetails()
+        public async Task<IActionResult> GetAllPreferredFreightForwarders()
         {
-            ServiceResponse<IEnumerable<BankDto>> serviceResponse = new ServiceResponse<IEnumerable<BankDto>>();
-
+            ServiceResponse<IEnumerable<PreferredFreightForwarderDto>> serviceResponse = new ServiceResponse<IEnumerable<PreferredFreightForwarderDto>>();
             try
             {
-                var banks = await _repository.BankRepository.GetAllActiveBank();
-                _logger.LogInfo("Returned all Bank");
-                var result = _mapper.Map<IEnumerable<BankDto>>(banks);
+
+                var PreferredFreightForwarderList = await _repository.preferredFreightForwarderRepository.GetAllPreferredFreightForwarders();
+                _logger.LogInfo("Returned all PaymentTermList");
+                var result = _mapper.Map<IEnumerable<PreferredFreightForwarderDto>>(PreferredFreightForwarderList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all Banks Successfully";
+                serviceResponse.Message = "Returned all PreferredFreightForwarderList Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -57,17 +52,17 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveBankDetails()
+        public async Task<IActionResult> GetAllActivePreferredFreightForwarders()
         {
-            ServiceResponse<IEnumerable<BankDto>> serviceResponse = new ServiceResponse<IEnumerable<BankDto>>();
+            ServiceResponse<IEnumerable<PreferredFreightForwarderDto>> serviceResponse = new ServiceResponse<IEnumerable<PreferredFreightForwarderDto>>();
 
             try
             {
-                var banks = await _repository.BankRepository.GetAllActiveBank();
-                _logger.LogInfo("Returned all Banks");
-                var result = _mapper.Map<IEnumerable<BankDto>>(banks);
+                var PreferredFreightForwarders = await _repository.preferredFreightForwarderRepository.GetAllPreferredFreightForwarders();
+                _logger.LogInfo("Returned all PreferredFreightForwarders");
+                var result = _mapper.Map<IEnumerable<PreferredFreightForwarderDto>>(PreferredFreightForwarders);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all Active Banks Successfully";
+                serviceResponse.Message = "Returned all Active PreferredFreightForwarders Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -84,30 +79,31 @@ namespace Tips.Master.Api.Controllers
 
             }
         }
-        // GET api/<BankController>/5
+        // GET api/<PreferredFreightForwarderController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBankById(int id)
+        public async Task<IActionResult> GetPreferredFreightForwarderById(int id)
         {
-            ServiceResponse<BankDto> serviceResponse = new ServiceResponse<BankDto>();
+            ServiceResponse<PreferredFreightForwarderDto> serviceResponse = new ServiceResponse<PreferredFreightForwarderDto>();
 
             try
             {
-                var bank = await _repository.BankRepository.GetBankById(id);
-                if (bank == null)
+                var PreferredFreightForwarder = await _repository.preferredFreightForwarderRepository.GetPreferredFreightForwarderById(id);
+                if (PreferredFreightForwarder == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Bank with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"PreferredFreightForwarder with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"Bank with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"PreferredFreightForwarder with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned Bank with id: {id}");
-                    var result = _mapper.Map<BankDto>(bank);
+
+                    _logger.LogInfo($"Returned PreferredFreightForwarder with id: {id}");
+                    var result = _mapper.Map<PreferredFreightForwarderDto>(PreferredFreightForwarder);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned Bank with id Successfully";
+                    serviceResponse.Message = "Success";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -115,51 +111,51 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetBankById action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetPaymentTermById action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
-              
             }
         }
 
-        // POST api/<BankController>
+        // POST api/<PreferredFreightForwarderController>
         [HttpPost]
-        public IActionResult CreateBank([FromBody] BankPostDto bank)
+        public IActionResult CreatePreferredFreightForwarder([FromBody] PreferredFreightForwarderDtoPost prefferedfreightForwarderDtoPost)
         {
-            ServiceResponse<BankDto> serviceResponse = new ServiceResponse<BankDto>();
+            ServiceResponse<PreferredFreightForwarderDto> serviceResponse = new ServiceResponse<PreferredFreightForwarderDto>();
 
             try
             {
-                if (bank is null)
+                if (prefferedfreightForwarderDtoPost is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Bank object sent from client is null";
+                    serviceResponse.Message = "PreferredFreightForwarder object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Bank object sent from client is null.");
+                    _logger.LogError("PreferredFreightForwarder object sent from client is null.");
+                    //return BadRequest("PurchaseGroup object is null");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Bank object sent from client";
+                    serviceResponse.Message = "Invalid PreferredFreightForwarder object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid Bank object sent from client.");
+                    _logger.LogError("Invalid PreferredFreightForwarder object sent from client.");
+                    //return BadRequest("Invalid model object");
                     return BadRequest(serviceResponse);
-                } 
-
-                var banks = _mapper.Map<Bank>(bank);
-                _repository.BankRepository.CreateBank(banks);
+                }
+                var PreferredFreightForwarder = _mapper.Map<PreferredFreightForwarder>(prefferedfreightForwarderDtoPost);
+                _repository.preferredFreightForwarderRepository.CreatePreferredFreightForwarder(PreferredFreightForwarder);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "Successfylly Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetBankById", serviceResponse);
+                return Created("GetPreferredFreightForwarderById", serviceResponse);
             }
             catch (Exception ex)
             {
@@ -172,44 +168,45 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // PUT api/<BankController>/5
+        // PUT api/<PreferredFreightForwarderController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBank(int id, [FromBody] BankUpdateDto bankUpdateDto)
+        public async Task<IActionResult> UpdatePreferredFreightForwarder(int id, [FromBody] PreferredFreightForwarderDtoUpdate preferredFreightForwarderDtoUpdate)
         {
-            ServiceResponse<BankDto> serviceResponse = new ServiceResponse<BankDto>();
+            ServiceResponse<PreferredFreightForwarderDto> serviceResponse = new ServiceResponse<PreferredFreightForwarderDto>();
 
             try
             {
-                if (bankUpdateDto is null)
+                if (preferredFreightForwarderDtoUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Bank object sent from client is null";
+                    serviceResponse.Message = "update PreferredFreightForwarder object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Bank object sent from client is null.");
+                    _logger.LogError("update PreferredFreightForwarder object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
+
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Bank object sent from client";
+                    serviceResponse.Message = "Invalid update PreferredFreightForwarder object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid Bank object sent from client.");
+                    _logger.LogError("Invalid Update PreferredFreightForwarder object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var bank = await _repository.BankRepository.GetBankById(id);
-                if (bank is null)
+                var PreferredFreightForwarder = await _repository.preferredFreightForwarderRepository.GetPreferredFreightForwarderById(id);
+                if (PreferredFreightForwarder is null)
                 {
-                    _logger.LogError($"Update Bank with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Update PreferredFreightForwarder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = " Update Bank with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = " Update PreferredFreightForwarder with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(bankUpdateDto, bank);
-                string result = await _repository.BankRepository.UpdateBank(bank);
+                _mapper.Map(preferredFreightForwarderDtoUpdate, PreferredFreightForwarder);
+                string result = await _repository.preferredFreightForwarderRepository.UpdatePreferredFreightForwarder(PreferredFreightForwarder);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -224,30 +221,30 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside UpdateBank action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside UpdatePreferredFreightForwarder action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
-        // DELETE api/<BankController>/5
+        // DELETE api/<PreferredFreightForwarderController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBank(int id)
+        public async Task<IActionResult> DeletePreferredFreightForwarder(int id)
         {
-            ServiceResponse<BankDto> serviceResponse = new ServiceResponse<BankDto>();
+            ServiceResponse<PreferredFreightForwarderDto> serviceResponse = new ServiceResponse<PreferredFreightForwarderDto>();
 
             try
             {
-                var bank = await _repository.BankRepository.GetBankById(id);
-                if (bank == null)
+                var PreferredFreightForwarder = await _repository.preferredFreightForwarderRepository.GetPreferredFreightForwarderById(id);
+                if (PreferredFreightForwarder == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Bank object sent from client is null";
+                    serviceResponse.Message = "PreferredFreightForwarder object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"Bank with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"PreferredFreightForwarder with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                string result = await _repository.BankRepository.DeleteBank(bank);
+                string result = await _repository.preferredFreightForwarderRepository.DeletePreferredFreightForwarder(PreferredFreightForwarder);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deleted Successfully";
@@ -261,30 +258,29 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeletePreferredFreightForwarder action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> ActivateBank(int id)
+        public async Task<IActionResult> ActivatePreferredFreightForwarder(int id)
         {
-            ServiceResponse<BankDto> serviceResponse = new ServiceResponse<BankDto>();
+            ServiceResponse<PreferredFreightForwarderDto> serviceResponse = new ServiceResponse<PreferredFreightForwarderDto>();
 
             try
             {
-                var bank = await _repository.BankRepository.GetBankById(id);
-                if (bank is null)
-                {                   
+                var PreferredFreightForwarder = await _repository.preferredFreightForwarderRepository.GetPreferredFreightForwarderById(id);
+                if (PreferredFreightForwarder is null)
+                {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Bank object sent from client is null";
+                    serviceResponse.Message = "PreferredFreightForwarder object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"bank with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"PreferredFreightForwarder with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                bank.IsActive = true;
-                string result = await _repository.BankRepository.UpdateBank(bank);
+                PreferredFreightForwarder.IsActive = true;
+                string result = await _repository.preferredFreightForwarderRepository.UpdatePreferredFreightForwarder(PreferredFreightForwarder);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -298,30 +294,30 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside ActivateBank action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside ActivatePreferredFreightForwarder action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> DeactivateBank(int id)
+        public async Task<IActionResult> DeactivatePreferredFreightForwarder(int id)
         {
-            ServiceResponse<BankDto> serviceResponse = new ServiceResponse<BankDto>();
+            ServiceResponse<PreferredFreightForwarderDto> serviceResponse = new ServiceResponse<PreferredFreightForwarderDto>();
 
             try
             {
-                var bank = await _repository.BankRepository.GetBankById(id);
-                if (bank is null)
+                var PreferredFreightForwarder = await _repository.preferredFreightForwarderRepository.GetPreferredFreightForwarderById(id);
+                if (PreferredFreightForwarder is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Bank object sent from client is null";
+                    serviceResponse.Message = "PreferredFreightForwarder object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"bank with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"PreferredFreightForwarder with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                bank.IsActive = false;
-                string result = await _repository.BankRepository.UpdateBank(bank);
+                PreferredFreightForwarder.IsActive = false;
+                string result = await _repository.preferredFreightForwarderRepository.UpdatePreferredFreightForwarder(PreferredFreightForwarder);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deactivated Successfully";
@@ -335,10 +331,9 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside Deactivate Bank action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeactivatePreferredFreightForwarder action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
-
     }
 }

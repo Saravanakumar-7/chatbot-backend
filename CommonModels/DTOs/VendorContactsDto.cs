@@ -58,7 +58,8 @@ namespace Entities.DTOs
         public string? CallName { get; set; }
 
         public string? MobileNumber { get; set; }
-
+        public string? MobileCountryCode { get; set; }
+        
         public string? LandLine { get; set; }
 
         public string? TimeToCall { get; set; }
@@ -74,7 +75,7 @@ namespace Entities.DTOs
         public string? Department { get; set; }
 
         public string? AlternameMobileNumber { get; set; }
-
+        public string? AlternateMobileCountryCode { get; set; }
         public bool IsActive { get; set; } = true;
 
         public string? Email { get; set; }
@@ -94,7 +95,7 @@ namespace Entities.DTOs
         public string? CallName { get; set; }
 
         public string? MobileNumber { get; set; }
-
+        public string? MobileCountryCode { get; set; }
         public string? LandLine { get; set; }
 
         public string? TimeToCall { get; set; }
@@ -110,7 +111,7 @@ namespace Entities.DTOs
         public string? Department { get; set; }
 
         public string? AlternameMobileNumber { get; set; }
-
+        public string? AlternateMobileCountryCode { get; set; }
         public bool IsActive { get; set; } = true;
 
         public string? Email { get; set; }

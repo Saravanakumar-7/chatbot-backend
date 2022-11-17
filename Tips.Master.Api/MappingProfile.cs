@@ -245,6 +245,17 @@ namespace Tips.Master.Api
             CreateMap<PreferredFreightForwarder, PreferredFreightForwarderDtoUpdate>().ReverseMap();
 
 
+            CreateMap<GST_Percentage, GST_PercentageDto>().ReverseMap();
+            CreateMap<GST_Percentage, GST_PercentageDtoPost>().ReverseMap();
+            CreateMap<GST_Percentage, GST_PercentageDtoUpdate>().ReverseMap();
+
+            CreateMap<PriceList, PriceListDto>().ReverseMap();
+            CreateMap<PriceList, PriceListDtoPost>().ReverseMap();
+            CreateMap<PriceList, PriceListDtoUpdate>().ReverseMap();
+
+            CreateMap<ShipmentMode, ShipmentModeDto>().ReverseMap();
+            CreateMap<ShipmentMode, ShipmentModeDtoPost>().ReverseMap();
+            CreateMap<ShipmentMode, ShipmentModeDtoUpdate>().ReverseMap();
         }
     }
 }

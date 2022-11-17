@@ -26,30 +26,39 @@ namespace Repository
 
         public async Task<string> DeletePreferredFreightForwarder(PreferredFreightForwarder preferredFreightForwarder)
         {
-
             Delete(preferredFreightForwarder);
-            string result = $"AuditFrequency details of {preferredFreightForwarder.Id} is deleted successfully!";
+            string result = $"preferredFreightForwarder details of {preferredFreightForwarder.Id} is deleted successfully!";
             return result;
         }
 
-        public Task<IEnumerable<PreferredFreightForwarder>> GetAllActivePreferredFreightForwarders()
+        public async Task<IEnumerable<PreferredFreightForwarder>> GetAllActivePreferredFreightForwarders()
         {
-            throw new NotImplementedException();
+
+            var preferredFreightForwarderlist = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return preferredFreightForwarderlist;
         }
 
-        public Task<PreferredFreightForwarder> GetPreferredFreightForwarderById(int id)
+        public async Task<IEnumerable<PreferredFreightForwarder>> GetAllPreferredFreightForwarders()
         {
-            throw new NotImplementedException();
+            var preferredFreightForwarderlist = await FindAll().ToListAsync();
+
+            return preferredFreightForwarderlist;
         }
 
-        public Task<IEnumerable<PreferredFreightForwarder>> GetPreferredFreightForwarders()
+        public async Task<PreferredFreightForwarder> GetPreferredFreightForwarderById(int id)
         {
-            throw new NotImplementedException();
+            var preferredFreightForwarder = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+
+            return preferredFreightForwarder;
         }
 
-        public Task<string> UpdatePreferredFreightForwarder(PreferredFreightForwarder preferredFreightForwarder)
+        public async Task<string> UpdatePreferredFreightForwarder(PreferredFreightForwarder preferredFreightForwarder)
         {
-            throw new NotImplementedException();
+            preferredFreightForwarder.LastModifiedBy = "Admin";
+            preferredFreightForwarder.LastModifiedOn = DateTime.Now;
+            Update(preferredFreightForwarder);
+            string result = $"AuditFrequency details of {preferredFreightForwarder.Id} is updated successfully!";
+            return result;
         }
     }
 }

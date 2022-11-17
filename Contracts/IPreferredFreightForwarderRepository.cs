@@ -9,7 +9,7 @@ namespace Contracts
 {
     public interface IPreferredFreightForwarderRepository : IRepositoryBase<PreferredFreightForwarder>
     {
-        Task<IEnumerable<PreferredFreightForwarder>> GetPreferredFreightForwarders();
+        Task<IEnumerable<PreferredFreightForwarder>> GetAllPreferredFreightForwarders();
         Task<PreferredFreightForwarder> GetPreferredFreightForwarderById(int id);
         Task<IEnumerable<PreferredFreightForwarder>> GetAllActivePreferredFreightForwarders();
         Task<int?> CreatePreferredFreightForwarder(PreferredFreightForwarder preferredFreightForwarder);
