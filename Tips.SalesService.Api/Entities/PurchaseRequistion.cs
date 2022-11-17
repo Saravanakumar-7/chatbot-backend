@@ -54,6 +54,9 @@ namespace Tips.SalesService.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
+        public List<PRAddProject>? PRAddProjects { get; set; }
+
+
 
     }
 }

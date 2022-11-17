@@ -1,9 +1,9 @@
 ﻿using LoggerService;
 using Microsoft.EntityFrameworkCore;
 using Contracts;
-using Tips.SalesService.Api.Entities;
+using Tips.Purchase.Api.Entities;
 
-namespace Tips.SalesService.Api.Extensions
+namespace Tips.Purchase.Api.Extensions
 {
     public static class ServiceExtensions
     {
@@ -35,7 +35,7 @@ namespace Tips.SalesService.Api.Extensions
         public static void ConfigureMSSqlContext(this IServiceCollection services, IConfiguration config)
         {
             var connectionString = config["MSSqlconnection:connectionString"];
-            services.AddDbContext<TipsSalesServiceDbContext>(o => o.UseSqlServer(connectionString));
+            services.AddDbContext<TipsPurchaseDbContext>(o => o.UseSqlServer(connectionString));
         }
 
         //public static void ConfigureRepositoryWrapper(this IServiceCollection services)
