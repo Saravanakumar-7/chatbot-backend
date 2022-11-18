@@ -21,6 +21,7 @@ namespace Repository
             commodity.CreatedBy = "Admin";
             commodity.CreatedOn = DateTime.Now;
             var result = await Create(commodity);
+            commodity.Unit = "Bangalore";
             return result.Id;
         }
 

@@ -72,7 +72,7 @@ namespace Contracts
         IRiskCategoryRepository RiskCategoryRepository { get; }
         IWarehouseRepository WarehouseRepository { get; }
         ICategoryRepository CategoryRepository { get; }
-        IPreferredFreightForwarderRepository preferredFreightForwarderRepository { get; }
+        IPreferredFreightForwarderRepository PreferredFreightForwarderRepository { get; }
         IGST_PercentageRepository GST_PercentageRepository { get; }
         IShipmentModeRepository ShipmentModeRepository { get; }
         IPriceListRepository PriceListRepository { get; }

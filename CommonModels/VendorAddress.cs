@@ -20,6 +20,8 @@ namespace Entities
         public bool SameasAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
+        public string Unit { get; set; }
+
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

@@ -128,7 +128,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -185,7 +185,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside UpdateCategory action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -222,7 +222,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -259,7 +259,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside ActivateCategory action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -296,7 +296,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside DectivateCategory action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);

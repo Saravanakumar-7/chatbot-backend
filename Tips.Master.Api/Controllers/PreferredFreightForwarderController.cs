@@ -31,7 +31,7 @@ namespace Tips.Master.Api.Controllers
             try
             {
 
-                var PreferredFreightForwarderList = await _repository.preferredFreightForwarderRepository.GetAllPreferredFreightForwarders();
+                var PreferredFreightForwarderList = await _repository.PreferredFreightForwarderRepository.GetAllPreferredFreightForwarders();
                 _logger.LogInfo("Returned all PaymentTermList");
                 var result = _mapper.Map<IEnumerable<PreferredFreightForwarderDto>>(PreferredFreightForwarderList);
                 serviceResponse.Data = result;
@@ -58,7 +58,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var PreferredFreightForwarders = await _repository.preferredFreightForwarderRepository.GetAllPreferredFreightForwarders();
+                var PreferredFreightForwarders = await _repository.PreferredFreightForwarderRepository.GetAllPreferredFreightForwarders();
                 _logger.LogInfo("Returned all PreferredFreightForwarders");
                 var result = _mapper.Map<IEnumerable<PreferredFreightForwarderDto>>(PreferredFreightForwarders);
                 serviceResponse.Data = result;
@@ -87,7 +87,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var PreferredFreightForwarder = await _repository.preferredFreightForwarderRepository.GetPreferredFreightForwarderById(id);
+                var PreferredFreightForwarder = await _repository.PreferredFreightForwarderRepository.GetPreferredFreightForwarderById(id);
                 if (PreferredFreightForwarder == null)
                 {
                     serviceResponse.Data = null;
@@ -149,10 +149,10 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var PreferredFreightForwarder = _mapper.Map<PreferredFreightForwarder>(prefferedfreightForwarderDtoPost);
-                _repository.preferredFreightForwarderRepository.CreatePreferredFreightForwarder(PreferredFreightForwarder);
+                _repository.PreferredFreightForwarderRepository.CreatePreferredFreightForwarder(PreferredFreightForwarder);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfylly Created";
+                serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetPreferredFreightForwarderById", serviceResponse);
@@ -195,7 +195,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid Update PreferredFreightForwarder object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var PreferredFreightForwarder = await _repository.preferredFreightForwarderRepository.GetPreferredFreightForwarderById(id);
+                var PreferredFreightForwarder = await _repository.PreferredFreightForwarderRepository.GetPreferredFreightForwarderById(id);
                 if (PreferredFreightForwarder is null)
                 {
                     _logger.LogError($"Update PreferredFreightForwarder with id: {id}, hasn't been found in db.");
@@ -206,7 +206,7 @@ namespace Tips.Master.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                 _mapper.Map(preferredFreightForwarderDtoUpdate, PreferredFreightForwarder);
-                string result = await _repository.preferredFreightForwarderRepository.UpdatePreferredFreightForwarder(PreferredFreightForwarder);
+                string result = await _repository.PreferredFreightForwarderRepository.UpdatePreferredFreightForwarder(PreferredFreightForwarder);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -234,7 +234,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var PreferredFreightForwarder = await _repository.preferredFreightForwarderRepository.GetPreferredFreightForwarderById(id);
+                var PreferredFreightForwarder = await _repository.PreferredFreightForwarderRepository.GetPreferredFreightForwarderById(id);
                 if (PreferredFreightForwarder == null)
                 {
                     serviceResponse.Data = null;
@@ -244,7 +244,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"PreferredFreightForwarder with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                string result = await _repository.preferredFreightForwarderRepository.DeletePreferredFreightForwarder(PreferredFreightForwarder);
+                string result = await _repository.PreferredFreightForwarderRepository.DeletePreferredFreightForwarder(PreferredFreightForwarder);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deleted Successfully";
@@ -269,7 +269,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var PreferredFreightForwarder = await _repository.preferredFreightForwarderRepository.GetPreferredFreightForwarderById(id);
+                var PreferredFreightForwarder = await _repository.PreferredFreightForwarderRepository.GetPreferredFreightForwarderById(id);
                 if (PreferredFreightForwarder is null)
                 {
                     serviceResponse.Data = null;
@@ -280,7 +280,7 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 PreferredFreightForwarder.IsActive = true;
-                string result = await _repository.preferredFreightForwarderRepository.UpdatePreferredFreightForwarder(PreferredFreightForwarder);
+                string result = await _repository.PreferredFreightForwarderRepository.UpdatePreferredFreightForwarder(PreferredFreightForwarder);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -306,7 +306,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var PreferredFreightForwarder = await _repository.preferredFreightForwarderRepository.GetPreferredFreightForwarderById(id);
+                var PreferredFreightForwarder = await _repository.PreferredFreightForwarderRepository.GetPreferredFreightForwarderById(id);
                 if (PreferredFreightForwarder is null)
                 {
                     serviceResponse.Data = null;
@@ -317,7 +317,7 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 PreferredFreightForwarder.IsActive = false;
-                string result = await _repository.preferredFreightForwarderRepository.UpdatePreferredFreightForwarder(PreferredFreightForwarder);
+                string result = await _repository.PreferredFreightForwarderRepository.UpdatePreferredFreightForwarder(PreferredFreightForwarder);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deactivated Successfully";

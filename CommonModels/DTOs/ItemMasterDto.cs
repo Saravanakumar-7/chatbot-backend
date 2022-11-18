@@ -98,6 +98,7 @@ namespace Entities.DTOs
         public bool Valuation { get; set; }
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         [DisplayFormat(DataFormatString = "{dd-MM-yyyy HH:mm:ss}")]
         public DateTime CreatedOn { get; set; }
@@ -197,6 +198,9 @@ namespace Entities.DTOs
         public bool Valuation { get; set; }
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
+        [Required(ErrorMessage = "Unit is required")]
+        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
+        public string Unit { get; set; }
         public List<ItemmasterAlternateDtoPost>? ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouseDtoPost>? ItemMasterWarehouse { get; set; }
         public List<ItemMasterApprovedVendorDtoPost>? ItemMasterApprovedVendor { get; set; }
@@ -293,6 +297,9 @@ namespace Entities.DTOs
         public bool Valuation { get; set; }
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
+        [Required(ErrorMessage = "Unit is required")]
+        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
+        public string Unit { get; set; }
         public List<ItemmasterAlternateDtoUpdate>? ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouseDtoUpdate>? ItemMasterWarehouse { get; set; }
         public List<ItemMasterApprovedVendorDtoUpdate>? ItemMasterApprovedVendor { get; set; }

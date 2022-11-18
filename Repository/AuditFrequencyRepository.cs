@@ -21,7 +21,9 @@ namespace Repository
             auditFrequency.CreatedBy = "Admin";
             auditFrequency.CreatedOn = DateTime.Now;
             var result = await Create(auditFrequency);
+            auditFrequency.Unit = "Bangalore";
             return result.Id;
+            
         }
 
         public async Task<string> DeleteAuditFrequency(AuditFrequency auditFrequency)

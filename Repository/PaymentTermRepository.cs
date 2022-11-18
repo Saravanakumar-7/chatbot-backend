@@ -21,6 +21,7 @@ namespace Repository
             paymentTerm.CreatedBy = "Admin";
             paymentTerm.CreatedOn = DateTime.Now;
             var result = await Create(paymentTerm);
+            paymentTerm.Unit = "Bangalore";
             return result.Id;
         }
 

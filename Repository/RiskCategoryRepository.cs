@@ -21,6 +21,7 @@ namespace Repository
             riskCategory.CreatedBy = "Admin";
             riskCategory.CreatedOn = DateTime.Now;
             var result = await Create(riskCategory);
+            riskCategory.Unit = "Bangalore";
             return result.Id;
         }
 

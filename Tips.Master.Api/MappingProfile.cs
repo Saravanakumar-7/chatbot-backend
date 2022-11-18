@@ -255,7 +255,8 @@ namespace Tips.Master.Api
 
             CreateMap<ShipmentMode, ShipmentModeDto>().ReverseMap();
             CreateMap<ShipmentMode, ShipmentModeDtoPost>().ReverseMap();
-            CreateMap<ShipmentMode, ShipmentModeDtoUpdate>().ReverseMap();
+            CreateMap<ShipmentMode, ShipmentModeDtoUpdate>().ReverseMap();           
+
         }
     }
 }

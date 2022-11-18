@@ -98,6 +98,8 @@ namespace Entities
         public bool Valuation { get; set; }
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
+        public string Unit { get; set; }
+
         public string? CreatedBy { get; set; }
         [DisplayFormat(DataFormatString = "{dd-MM-yyyy HH:mm:ss}")]
         public DateTime CreatedOn { get; set; }

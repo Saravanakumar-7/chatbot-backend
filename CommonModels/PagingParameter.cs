@@ -10,6 +10,8 @@ namespace Entities
     {
         const int maxPageSize = 50;
         public int PageNumber { get; set; } = 1;
+        public string Unit { get; set; }
+
 
         private int _pagesize = 10;
 

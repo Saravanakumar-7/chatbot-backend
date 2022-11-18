@@ -21,6 +21,7 @@ namespace Repository
             ProcurementType.CreatedBy = "Admin";
             ProcurementType.CreatedOn = DateTime.Now;
             var result = await Create(ProcurementType);
+            ProcurementType.Unit = "Bangalore";
             return result.Id;
         }
 

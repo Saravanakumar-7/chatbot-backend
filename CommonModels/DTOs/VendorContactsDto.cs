@@ -37,6 +37,7 @@ namespace Entities.DTOs
         public string? AlternateMobileCountryCode { get; set; }
 
         public bool IsActive { get; set; } = true;
+        public string Unit { get; set; }
 
         public string? Email { get; set; }
 
@@ -83,6 +84,9 @@ namespace Entities.DTOs
         public string? Extension { get; set; }
 
         public string? Language { get; set; }
+        [Required(ErrorMessage = "Unit is required")]
+        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
+        public string Unit { get; set; }
     }
 
     public class VendorContactsUpdateDto
@@ -119,5 +123,8 @@ namespace Entities.DTOs
         public string? Extension { get; set; }
 
         public string? Language { get; set; }
+        [Required(ErrorMessage = "Unit is required")]
+        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
+        public string Unit { get; set; }
     }
 }

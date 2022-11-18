@@ -22,6 +22,7 @@ namespace Repository
             basicOfApproval.CreatedBy = "Admin";
             basicOfApproval.CreatedOn = DateTime.Now;
             var result = await Create(basicOfApproval);
+            basicOfApproval.Unit = "Bangalore";
             return result.Id;
         }
 

@@ -155,8 +155,8 @@ namespace Tips.Master.Api.Controllers
                 _repository.BasicOfApprovalRepository.CreateBasicOfApproval(basicOfApproval);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfylly Created";
-                serviceResponse.Success = false;
+                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetBasicOfApprovalById", serviceResponse);
             }

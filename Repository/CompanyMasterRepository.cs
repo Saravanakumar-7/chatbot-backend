@@ -23,6 +23,7 @@ namespace Repository
             companyMaster.CreatedBy = "Admin";
             companyMaster.CreatedOn = DateTime.Now;
             var result = await Create(companyMaster);
+            companyMaster.Unit = "Bangalore";
             return result.Id;
         }
 

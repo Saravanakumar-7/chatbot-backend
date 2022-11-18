@@ -21,6 +21,7 @@ namespace Repository
             gst_Percentage.CreatedBy = "Admin";
             gst_Percentage.CreatedOn = DateTime.Now;
             var result = await Create(gst_Percentage);
+            gst_Percentage.Unit = "Bangalore";
             return result.Id;
         }
 

@@ -46,7 +46,7 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all CompanyMaster");
                 var result = _mapper.Map<IEnumerable<CompanyMasterDto>>(listOfCompanyMaster);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all CompanyMasters Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -55,10 +55,10 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllCompanyMaster action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -82,10 +82,10 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned owner with id: {id}");
+                    _logger.LogInfo($"Returned CompanyMaster with id: {id}");
                     var result = _mapper.Map<CompanyMasterDto>(CompanyMasterDetails);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Returned CompanyMaster with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -95,10 +95,10 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside GetCompanyMasterById action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetCompanyMasterById action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -140,17 +140,17 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = " CompanyMaster Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.Created;
-                return Created("GetCompanyMasterById", "Successfully Created");
+                return Created("GetCompanyMasterById", serviceResponse);
 
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -213,10 +213,10 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside UpdateCompanyMaster action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside UpdateCompanyMaster action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -251,10 +251,10 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside DeleteOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -277,10 +277,10 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllActiveCompanyIdNameList action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 

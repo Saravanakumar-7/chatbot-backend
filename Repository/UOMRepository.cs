@@ -21,6 +21,7 @@ namespace Repository
             uom.CreatedBy = "Admin";
             uom.CreatedOn = DateTime.Now;
             var result = await Create(uom);
+            uom.Unit = "Bangalore";
             return result.Id;
         }
 

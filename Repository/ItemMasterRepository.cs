@@ -22,6 +22,7 @@ namespace Repository
             itemMaster.CreatedBy = "Admin";
             itemMaster.CreatedOn = DateTime.Now;
             var result = await Create(itemMaster);
+            itemMaster.Unit = "Bangalore";
             return result.Id;
         }
 

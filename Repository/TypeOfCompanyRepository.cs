@@ -22,6 +22,7 @@ namespace Repository
             typeOfCompany.CreatedBy = "Admin";
             typeOfCompany.CreatedOn = DateTime.Now;
             var result = await Create(typeOfCompany);
+            typeOfCompany.Unit = "Bangalore";
             return result.Id;
         }
 

@@ -21,6 +21,7 @@ namespace Entities.DTOs
         //[ForeignKey(nameof(ItemMaster))]
         //public long ItemMasterId { get; set; }
         //public ItemMaster? ItemMaster { get; set; }
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -34,6 +35,9 @@ namespace Entities.DTOs
         public string? Manufacturer { get; set; }
         [DefaultValue(false)]
         public bool IsDefault { get; set; }
+        [Required(ErrorMessage = "Unit is required")]
+        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
+        public string Unit { get; set; }
 
         //[ForeignKey(nameof(ItemMaster))]
         //public long ItemMasterId { get; set; }
@@ -48,6 +52,9 @@ namespace Entities.DTOs
         public string? Manufacturer { get; set; }
         [DefaultValue(false)]
         public bool IsDefault { get; set; }
+        [Required(ErrorMessage = "Unit is required")]
+        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
+        public string Unit { get; set; }
 
         //[ForeignKey(nameof(ItemMaster))]
         //public long ItemMasterId { get; set; }

@@ -154,7 +154,7 @@ namespace Tips.Master.Api.Controllers
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfylly Created";
-                serviceResponse.Success = false;
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetVendorDepartmentById", serviceResponse);
             }

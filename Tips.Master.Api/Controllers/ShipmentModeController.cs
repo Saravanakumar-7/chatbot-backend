@@ -153,7 +153,7 @@ namespace Tips.Master.Api.Controllers
                 _repository.ShipmentModeRepository.CreateShipmentMode(ShipmentMode);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfylly Created";
+                serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetShipmentModeById", serviceResponse);

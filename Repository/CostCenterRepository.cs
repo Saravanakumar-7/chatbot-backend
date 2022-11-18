@@ -21,6 +21,7 @@ namespace Repository
             costCenter.CreatedBy = "Admin";
             costCenter.CreatedOn = DateTime.Now;
             var result = await Create(costCenter);
+            costCenter.Unit = "Bangalore";
             return result.Id;
         }
 

@@ -10,10 +10,10 @@ namespace Entities
     public class HeadCounting
     {
         public int Id { get; set; }
-
         public string? DepartmentSkill { get; set; }
 
         public string? NumberOfPeople { get; set; }
+        public string Unit { get; set; }
 
         public int VendorMasterId { get; set; }
 

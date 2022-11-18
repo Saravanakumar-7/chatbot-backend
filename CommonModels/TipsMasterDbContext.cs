@@ -25,8 +25,18 @@ namespace Entities
         public DbSet<GST_Percentage> gst_Percentages { get; set; }
         public DbSet<PriceList> priceLists { get; set; }
         public DbSet<ShipmentMode> shipmentModes { get; set; }
-
-
+        // pavan
+        public DbSet<CostCenter> costCenters { get; set; }
+        public DbSet<PurchaseGroup> purchaseGroups { get; set; }
+        public DbSet<CostingMethod> CostingMethods { get; set; }
+        public DbSet<AuditFrequency> auditFrequencies { get; set; }
+        public DbSet<NatureOfRelationship> natureOfRelationships { get; set; }
+        public DbSet<Language> Languages { get; set; }
+        public DbSet<Salutations> salutations { get; set; }
+        public DbSet<ExportUnitType> exportUnitTypes { get; set; }
+        public DbSet<TypeOfCompany> typeOfCompanies { get; set; }
+        public DbSet<PaymentTerm> paymentTerms { get; set; }
+        public DbSet<PackingInstruction> packingInstructions { get; set; }
         public DbSet<HeadCounting>? HeadCountings { get; set; }
 
         public DbSet<UOM>Uom { get; set; }

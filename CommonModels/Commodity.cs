@@ -15,6 +15,7 @@ namespace Entities
         public string Description { get; set; }
         public string Remarks { get; set; }
         public bool ActiveStatus { get; set; } = true;
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

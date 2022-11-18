@@ -84,6 +84,9 @@ namespace Repository
                 return _preferredFreightForwarderRepo;
             }
         }
+
+        public IPreferredFreightForwarderRepository preferredFreightForwarderRepository => throw new NotImplementedException();
+
         public IPriceListRepository PriceListRepository
         {
             get
@@ -161,7 +164,7 @@ namespace Repository
                 return _uOMRepo;
             }
         }
-        public IPaymentTermRepository paymentTermRepository
+        public IPaymentTermRepository PaymentTermRepository
         {
             get
             {
@@ -172,6 +175,8 @@ namespace Repository
                 return _paymentTermRepo;
             }
         }
+
+        //public IPaymentTermRepository PaymentTermRepository => throw new NotImplementedException();
 
         public ISegmentRepository SegmentRepository
         {
@@ -292,7 +297,7 @@ namespace Repository
                 return _customerTypeRepo;
             }
         }
-        public IPackingInstructionRepository packingInstructionRepository
+        public IPackingInstructionRepository PackingInstructionRepository
         {
             get
             {
@@ -504,7 +509,7 @@ namespace Repository
                 return _costCenterRepo;
             }
         }
-        public ICostingMethodRepository costingMethodRepository
+        public ICostingMethodRepository CostingMethodRepository
         {
             get
             {
@@ -516,9 +521,9 @@ namespace Repository
             }
         }
 
-        public ICostingMethodRepository CostingMethodRepository => throw new NotImplementedException();
+      //  public ICostingMethodRepository CostingMethodRepository => throw new NotImplementedException();
 
-        public IExportUnitTypeRepository exportUnitTypeRepository
+        public IExportUnitTypeRepository ExportUnitTypeRepository
         {
             get
             {
@@ -530,9 +535,9 @@ namespace Repository
             }
         }
 
-        public IExportUnitTypeRepository ExportUnitTypeRepository => throw new NotImplementedException();
+        //public IExportUnitTypeRepository ExportUnitTypeRepository => throw new NotImplementedException();
 
-        public ISalutationsRepository salutationsRepository
+        public ISalutationsRepository SalutationsRepository
         {
             get
             {
@@ -544,7 +549,7 @@ namespace Repository
             }
         }
 
-        public ISalutationsRepository SalutationsRepository => throw new NotImplementedException();
+        //public ISalutationsRepository SalutationsRepository => throw new NotImplementedException();
 
         public ILanguageRepository LanguageRepository
         {
@@ -568,7 +573,7 @@ namespace Repository
                 return _typeOfCompanyRepo;
             }
         }
-        public INatureOfRelationshipRepository natureOfRelationshipRepository
+        public INatureOfRelationshipRepository NatureOfRelationshipRepository
         {
             get
             {
@@ -580,7 +585,7 @@ namespace Repository
             }
         }
 
-        public INatureOfRelationshipRepository NatureOfRelationshipRepository => throw new NotImplementedException();
+        // INatureOfRelationshipRepository NatureOfRelationshipRepository => throw new NotImplementedException();
 
         public IAuditFrequencyRepository AuditFrequencyRepository
         {
@@ -601,11 +606,11 @@ namespace Repository
 
         public IVendorBankingRepository VendorBankingRepository => throw new NotImplementedException();
         
-        public ITypeOfCompanyRepository typeOfCompanyRepository=> throw new NotImplementedException();
+        //public ITypeOfCompanyRepository TypeOfCompanyRepository => throw new NotImplementedException();
 
-        public IPaymentTermRepository PaymentTermRepository => throw new NotImplementedException();
+        //public IPaymentTermRepository PaymentTermRepository => throw new NotImplementedException();
 
-        public IPackingInstructionRepository PackingInstructionRepository => throw new NotImplementedException();
+        //public IPackingInstructionRepository PackingInstructionRepository => throw new NotImplementedException();
 
         public ICompanyAddressesRepository CompanyAddressesRepository => throw new NotImplementedException();
 
@@ -631,7 +636,7 @@ namespace Repository
 
         public IItemMasterWarehouse ItemMasterWarehouseRepository => throw new NotImplementedException();
 
-        public IPreferredFreightForwarderRepository preferredFreightForwarderRepository => throw new NotImplementedException();
+        //public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository => throw new NotImplementedException();
 
 
 

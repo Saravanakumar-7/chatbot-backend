@@ -21,6 +21,7 @@ namespace Repository
             preferredFreightForwarder.CreatedBy = "Admin";
             preferredFreightForwarder.CreatedOn = DateTime.Now;
             var result = await Create(preferredFreightForwarder);
+            preferredFreightForwarder.Unit = "Bangalore";
             return result.Id;
         }
 

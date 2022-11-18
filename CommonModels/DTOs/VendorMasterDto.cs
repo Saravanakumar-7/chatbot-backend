@@ -128,7 +128,7 @@ namespace Entities.DTOs
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -265,6 +265,9 @@ namespace Entities.DTOs
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
+        [Required(ErrorMessage = "Unit is required")]
+        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
+        public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -401,6 +404,9 @@ namespace Entities.DTOs
         public string? Upload { get; set; }
         public bool ReAudit { get; set; } = true;
         public string? AuditFrequency { get; set; }
+        [Required(ErrorMessage = "Unit is required")]
+        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

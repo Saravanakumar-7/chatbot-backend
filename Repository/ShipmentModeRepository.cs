@@ -21,6 +21,7 @@ namespace Repository
             shipmentMode.CreatedBy = "Admin";
             shipmentMode.CreatedOn = DateTime.Now;
             var result = await Create(shipmentMode);
+            shipmentMode.Unit = "Bangalore";
             return result.Id;
         }
 

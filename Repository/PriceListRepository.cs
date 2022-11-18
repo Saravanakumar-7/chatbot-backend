@@ -21,6 +21,7 @@ namespace Repository
             priceList.CreatedBy = "Admin";
             priceList.CreatedOn = DateTime.Now;
             var result = await Create(priceList);
+            priceList.Unit = "Bangalore";
             return result.Id;
         }
 
