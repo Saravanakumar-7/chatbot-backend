@@ -1,4 +1,8 @@
 ﻿using AutoMapper;
+using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Entities;
+using Entities.DTOs;
+using Entities;
 
 namespace Tips.Production.Api
 {
@@ -6,7 +10,10 @@ namespace Tips.Production.Api
     {
         public MappingProfile()
         {
-            
+            CreateMap<ShopOrder, ShopOrderDto>().ReverseMap();
+            CreateMap<ShopOrder, ShopOrderDtoPost>().ReverseMap();
+            CreateMap<ShopOrder, ShopOrderDtoUpdate>().ReverseMap();
+
         }
     }
 }

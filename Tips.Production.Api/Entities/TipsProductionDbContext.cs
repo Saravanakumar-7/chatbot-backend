@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Production.Api.Entities
 {
@@ -9,6 +10,8 @@ namespace Tips.Production.Api.Entities
         {
 
         }
+
+        public DbSet<ShopOrder> shopOrders { get; set; }
 
     }
 }
