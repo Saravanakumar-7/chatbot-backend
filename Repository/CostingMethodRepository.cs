@@ -21,6 +21,7 @@ namespace Repository
             costingMethod.CreatedBy = "Admin";
             costingMethod.CreatedOn = DateTime.Now;
             var result = await Create(costingMethod);
+            costingMethod.Unit = "Bangalore";
             return result.Id;
         }
 

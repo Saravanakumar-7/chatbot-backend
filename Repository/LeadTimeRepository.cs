@@ -21,6 +21,7 @@ namespace Repository
             leadTime.CreatedBy = "Admin";
             leadTime.CreatedOn = DateTime.Now;
             var result = await Create(leadTime);
+            leadTime.Unit = "Bangalore";
             return result.Id;
         }
 

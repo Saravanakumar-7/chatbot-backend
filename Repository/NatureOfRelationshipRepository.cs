@@ -21,6 +21,7 @@ namespace Repository
             natureOfRelationship.CreatedBy = "Admin";
             natureOfRelationship.CreatedOn = DateTime.Now;
             var result = await Create(natureOfRelationship);
+            natureOfRelationship.Unit = "Bangalore";
             return result.Id;
         }
 

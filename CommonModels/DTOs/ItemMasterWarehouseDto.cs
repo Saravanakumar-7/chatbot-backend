@@ -16,6 +16,7 @@ namespace Entities.DTOs
         public string? WareHouse { get; set; }
         [DefaultValue(true)]
         public bool IsActive { get; set; }
+        public string Unit { get; set; }
 
         //[ForeignKey(nameof(ItemMaster))]
         //public long ItemMasterId { get; set; }
@@ -34,6 +35,9 @@ namespace Entities.DTOs
         //[ForeignKey(nameof(ItemMaster))]
         //public long ItemMasterId { get; set; }
         //public ItemMaster? ItemMaster { get; set; }
+        [Required(ErrorMessage = "Unit is required")]
+        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
+        public string Unit { get; set; }
     }
     public class ItemMasterWarehouseDtoUpdate
     {
@@ -46,5 +50,8 @@ namespace Entities.DTOs
         //[ForeignKey(nameof(ItemMaster))]
         //public long ItemMasterId { get; set; }
         //public ItemMaster? ItemMaster { get; set; }
+        [Required(ErrorMessage = "Unit is required")]
+        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
+        public string Unit { get; set; }
     }
 }

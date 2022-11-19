@@ -31,8 +31,8 @@ namespace Repository
         private IVendorCategoryRepository? _vendorCategory;
         private IVendorDepartmentRepository? _vendorDepartment;
         private IVendorRepository? _vendorRepository;
-         
-        private IEnggBomRepository? _enggBomRepository; 
+
+
 
         private IPurchaseGroupRepository? _purchaseGroupRepo;   
         private ICostCenterRepository? _costCenterRepo; 
@@ -44,7 +44,11 @@ namespace Repository
         private IExportUnitTypeRepository? _exportUnitTypeRepo; 
         private ITypeOfCompanyRepository? _typeOfCompanyRepo;   
         private IPaymentTermRepository? _paymentTermRepo;   
-        private IPackingInstructionRepository? _packingInstructionRepo; 
+        private IPackingInstructionRepository? _packingInstructionRepo;
+        private IPreferredFreightForwarderRepository? _preferredFreightForwarderRepo;
+        private IGST_PercentageRepository? _gstpercentageRepo;
+        private IPriceListRepository? _pricelistRepo;
+        private IShipmentModeRepository? _shipmentmodeRepo;
 
         private IShipmentInstructionsRepository? _shipmentInstructionsRepo;
         private ICategoryRepository? _categoryRepo;
@@ -69,18 +73,53 @@ namespace Repository
         {
             _tipsMasterDbContext = tipsMasterDbContext;
         }
-        public IEnggBomRepository EnggBomRepository
+        public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository
         {
             get
             {
-                if (_enggBomRepository == null)
+                if (_preferredFreightForwarderRepo == null)
                 {
-                    _enggBomRepository = new EngineeringBomRepository(_tipsMasterDbContext);
+                    _preferredFreightForwarderRepo = new PreferredFreightForwarderRepository(_tipsMasterDbContext);
                 }
-                return _enggBomRepository;
+                return _preferredFreightForwarderRepo;
             }
-        }  
+        }
 
+        public IPreferredFreightForwarderRepository preferredFreightForwarderRepository => throw new NotImplementedException();
+
+        public IPriceListRepository PriceListRepository
+        {
+            get
+            {
+                if (_pricelistRepo == null)
+                {
+                    _pricelistRepo = new PriceListRepository(_tipsMasterDbContext);
+                }
+                return _pricelistRepo;
+            }
+        }
+        public IShipmentModeRepository ShipmentModeRepository
+        {
+            get
+            {
+                if (_shipmentmodeRepo == null)
+                {
+                    _shipmentmodeRepo = new ShipmentModeRepository(_tipsMasterDbContext);
+                }
+                return _shipmentmodeRepo;
+            }
+        }
+        public IGST_PercentageRepository GST_PercentageRepository
+        {
+            get
+            {
+                if (_gstpercentageRepo == null)
+                {
+                    _gstpercentageRepo = new GST_PercentageRepository(_tipsMasterDbContext);
+                }
+                return _gstpercentageRepo;
+            }
+        }
         public ILocationsRepository LocationsRepository
         {
             get
@@ -125,7 +164,7 @@ namespace Repository
                 return _uOMRepo;
             }
         }
-        public IPaymentTermRepository paymentTermRepository
+        public IPaymentTermRepository PaymentTermRepository
         {
             get
             {
@@ -136,6 +175,8 @@ namespace Repository
                 return _paymentTermRepo;
             }
         }
+
+        //public IPaymentTermRepository PaymentTermRepository => throw new NotImplementedException();
 
         public ISegmentRepository SegmentRepository
         {
@@ -256,7 +297,7 @@ namespace Repository
                 return _customerTypeRepo;
             }
         }
-        public IPackingInstructionRepository packingInstructionRepository
+        public IPackingInstructionRepository PackingInstructionRepository
         {
             get
             {
@@ -468,7 +509,7 @@ namespace Repository
                 return _costCenterRepo;
             }
         }
-        public ICostingMethodRepository costingMethodRepository
+        public ICostingMethodRepository CostingMethodRepository
         {
             get
             {
@@ -480,9 +521,9 @@ namespace Repository
             }
         }
 
-        public ICostingMethodRepository CostingMethodRepository => throw new NotImplementedException();
+      //  public ICostingMethodRepository CostingMethodRepository => throw new NotImplementedException();
 
-        public IExportUnitTypeRepository exportUnitTypeRepository
+        public IExportUnitTypeRepository ExportUnitTypeRepository
         {
             get
             {
@@ -494,9 +535,9 @@ namespace Repository
             }
         }
 
-        public IExportUnitTypeRepository ExportUnitTypeRepository => throw new NotImplementedException();
+        //public IExportUnitTypeRepository ExportUnitTypeRepository => throw new NotImplementedException();
 
-        public ISalutationsRepository salutationsRepository
+        public ISalutationsRepository SalutationsRepository
         {
             get
             {
@@ -508,7 +549,7 @@ namespace Repository
             }
         }
 
-        public ISalutationsRepository SalutationsRepository => throw new NotImplementedException();
+        //public ISalutationsRepository SalutationsRepository => throw new NotImplementedException();
 
         public ILanguageRepository LanguageRepository
         {
@@ -532,7 +573,7 @@ namespace Repository
                 return _typeOfCompanyRepo;
             }
         }
-        public INatureOfRelationshipRepository natureOfRelationshipRepository
+        public INatureOfRelationshipRepository NatureOfRelationshipRepository
         {
             get
             {
@@ -544,7 +585,7 @@ namespace Repository
             }
         }
 
-        public INatureOfRelationshipRepository NatureOfRelationshipRepository => throw new NotImplementedException();
+        // INatureOfRelationshipRepository NatureOfRelationshipRepository => throw new NotImplementedException();
 
         public IAuditFrequencyRepository AuditFrequencyRepository
         {
@@ -565,11 +606,11 @@ namespace Repository
 
         public IVendorBankingRepository VendorBankingRepository => throw new NotImplementedException();
         
-        public ITypeOfCompanyRepository typeOfCompanyRepository=> throw new NotImplementedException();
+        //public ITypeOfCompanyRepository TypeOfCompanyRepository => throw new NotImplementedException();
 
-        public IPaymentTermRepository PaymentTermRepository => throw new NotImplementedException();
+        //public IPaymentTermRepository PaymentTermRepository => throw new NotImplementedException();
 
-        public IPackingInstructionRepository PackingInstructionRepository => throw new NotImplementedException();
+        //public IPackingInstructionRepository PackingInstructionRepository => throw new NotImplementedException();
 
         public ICompanyAddressesRepository CompanyAddressesRepository => throw new NotImplementedException();
 
@@ -595,12 +636,9 @@ namespace Repository
 
         public IItemMasterWarehouse ItemMasterWarehouseRepository => throw new NotImplementedException();
 
-        public IEnggBomAlternatesRepository EnggBomAlternatesRepository => throw new NotImplementedException();
+        //public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository => throw new NotImplementedException();
 
-        public IEnggBomChildItemRepository EnggBomChildItemRepository => throw new NotImplementedException();
 
-        public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
-         
 
         public void SaveAsync()
         {

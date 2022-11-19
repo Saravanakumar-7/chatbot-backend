@@ -80,7 +80,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = $"ItemMaster with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
@@ -90,7 +90,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "Returned ItemMaster with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)

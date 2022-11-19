@@ -20,6 +20,7 @@ namespace Repository
             deliveryTerm.CreatedBy = "Admin";
             deliveryTerm.CreatedOn = DateTime.Now;
             var result = await Create(deliveryTerm);
+            deliveryTerm.Unit = "Bangalore";
             return result.Id;
 
             //throw new NotImplementedException();

@@ -124,7 +124,7 @@ namespace Entities
 
         public string? AuditFrequency { get; set; }
         public bool IsActive { get; set; } = true;
-
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

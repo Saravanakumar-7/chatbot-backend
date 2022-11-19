@@ -18,7 +18,7 @@ namespace Entities
         public string? MobileNumber { get; set; }
 
         public string? MobileCountryCode { get; set; }
-
+        
         public string? LandLine { get; set; }
 
         public string? TimeToCall { get; set; }
@@ -44,6 +44,8 @@ namespace Entities
         public string? Extension { get; set; }
 
         public string? Language{ get; set; }
+        public string Unit { get; set; }
+
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

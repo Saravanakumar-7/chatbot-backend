@@ -22,6 +22,7 @@ namespace Repository
             purchaseGroup.CreatedBy = "Admin";
             purchaseGroup.CreatedOn = DateTime.Now;
             var result = await Create(purchaseGroup);
+            purchaseGroup.Unit = "Bangalore";
             return result.Id;
         }
 
