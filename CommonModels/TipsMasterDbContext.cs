@@ -54,5 +54,12 @@ namespace Entities
         public DbSet<WeightUom>? WeightUoms { get; set; }
         public DbSet<DeliveryTerm> DeliveryTerms { get; set; }
 
+
+        public DbSet<NREConsumable> BomNREConsumables { get; set; }
+        public DbSet<EnggBom> EnggBoms { get; set; }
+        public DbSet<EnggChildItem> EnggChildItems { get; set; }
+        public DbSet<EnggAlternates> EnggAlternates { get; set; }
+
+
     }
 }

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tips.SalesService.Api.Entities
+namespace Tips.Grin.Api.Entities
 {
     public class GrinParts
     {
@@ -21,14 +21,19 @@ namespace Tips.SalesService.Api.Entities
 
         public string ManufactureBatchNumber { get; set; }
 
+        [Precision(18,3)]
         public decimal UnitPrice { get; set; }
 
-        public int POOrderQuantity { get; set; }
+        [Precision(13,3)]
+        public decimal POOrderQuantity { get; set; }
 
-        public int POBalancedQuantity { get; set; }
+        [Precision(13, 3)]
+        public decimal POBalancedQuantity { get; set; }
 
+        [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
 
+        [Precision(13, 3)]
         public decimal Quantity { get; set; }
 
         public string UOM { get; set; }
@@ -37,13 +42,19 @@ namespace Tips.SalesService.Api.Entities
         public DateTime? ManufactureDate { get; set; }
 
         public string? COCUpload { get; set; }
+
+        [Precision(13, 3)]
         public decimal? SGST { get; set; }
 
+        [Precision(13, 3)]
         public decimal? IGST { get; set; }
-
+        
+        [Precision(13, 3)]
         public decimal? CGST { get; set; }
 
+        [Precision(13, 3)]
         public decimal? UTGST { get; set; }
+        public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -52,6 +63,6 @@ namespace Tips.SalesService.Api.Entities
 
         public int GrinId { get; set; }
 
-        public Grin? Grin { get; set; }
+        public Grins? Grin { get; set; }
     }
 }

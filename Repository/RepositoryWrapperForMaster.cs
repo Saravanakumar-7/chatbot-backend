@@ -31,8 +31,8 @@ namespace Repository
         private IVendorCategoryRepository? _vendorCategory;
         private IVendorDepartmentRepository? _vendorDepartment;
         private IVendorRepository? _vendorRepository;
-
-
+         
+        private IEnggBomRepository? _enggBomRepository; 
 
         private IPurchaseGroupRepository? _purchaseGroupRepo;   
         private ICostCenterRepository? _costCenterRepo; 
@@ -69,6 +69,18 @@ namespace Repository
         {
             _tipsMasterDbContext = tipsMasterDbContext;
         }
+        public IEnggBomRepository EnggBomRepository
+        {
+            get
+            {
+                if (_enggBomRepository == null)
+                {
+                    _enggBomRepository = new EngineeringBomRepository(_tipsMasterDbContext);
+                }
+                return _enggBomRepository;
+            }
+        }  
+
         public ILocationsRepository LocationsRepository
         {
             get
@@ -582,6 +594,13 @@ namespace Repository
         public IItemMasterRouting ItemMasterRoutingRepository => throw new NotImplementedException();
 
         public IItemMasterWarehouse ItemMasterWarehouseRepository => throw new NotImplementedException();
+
+        public IEnggBomAlternatesRepository EnggBomAlternatesRepository => throw new NotImplementedException();
+
+        public IEnggBomChildItemRepository EnggBomChildItemRepository => throw new NotImplementedException();
+
+        public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
+         
 
         public void SaveAsync()
         {

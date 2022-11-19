@@ -9,5 +9,10 @@ namespace Tips.Grin.Api.Entities
         {
 
         }
+        public DbSet<Grins> Grins { get; set; }
+
+        public DbSet<GrinParts> GrinParts { get; set; }
+
+
     }
 }

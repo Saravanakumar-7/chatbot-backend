@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using Tips.Grin.Api.Entities.DTOs;
+using Tips.Grin.Api.Entities;
+
 
 namespace Tips.Grin.Api
 {
@@ -6,7 +9,15 @@ namespace Tips.Grin.Api
     {
         public MappingProfile()
         {
-            
+            CreateMap<Grins, GrinDto>().ReverseMap();
+            CreateMap<Grins, GrinPostDto>().ReverseMap();
+            CreateMap<Grins, GrinUpdateDto>().ReverseMap();
+
+            CreateMap<GrinParts, GrinPartsDto>().ReverseMap();
+            CreateMap<GrinParts, GrinPartsPostDto>().ReverseMap();
+            CreateMap<GrinParts, GrinPartsUpdateDto>().ReverseMap();
+             
+
         }
     }
 }
