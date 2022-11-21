@@ -83,6 +83,8 @@ namespace Entities
         public DbSet<EnggChildItem> EnggChildItems { get; set; }
         public DbSet<EnggAlternates> EnggAlternates { get; set; }
 
+        public DbSet<Inventory> Inventories { get; set; }
+
 
     }
 }

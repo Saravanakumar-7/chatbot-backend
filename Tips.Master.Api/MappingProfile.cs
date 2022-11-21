@@ -255,7 +255,28 @@ namespace Tips.Master.Api
 
             CreateMap<ShipmentMode, ShipmentModeDto>().ReverseMap();
             CreateMap<ShipmentMode, ShipmentModeDtoPost>().ReverseMap();
-            CreateMap<ShipmentMode, ShipmentModeDtoUpdate>().ReverseMap();           
+            CreateMap<ShipmentMode, ShipmentModeDtoUpdate>().ReverseMap();
+
+            CreateMap<NREConsumable, BomNREConsumableDto>().ReverseMap();
+            CreateMap<NREConsumable, BomNREConsumablePostDto>().ReverseMap();
+            CreateMap<NREConsumable, BomNREConsumableUpdateDto>().ReverseMap();
+
+            CreateMap<EnggBom, EnggBomDto>().ReverseMap();
+            CreateMap<EnggBom, EnggBomPostDto>().ReverseMap();
+
+            CreateMap<EnggBom, EnggBomUpdateDto>().ReverseMap();
+
+
+            CreateMap<EnggChildItem, EnggChildItemDto>().ReverseMap();
+            CreateMap<EnggChildItem, EnggChildItemPostDto>().ReverseMap();
+            CreateMap<EnggChildItem, EnggChildItemUpdateDto>().ReverseMap();
+
+            CreateMap<EnggAlternates, EnggAlternatesDto>().ReverseMap();
+            CreateMap<EnggAlternates, EnggAlternatesPostDto>().ReverseMap();
+            CreateMap<EnggAlternates, EnggAlternatesUpdateDto>().ReverseMap();
+
+            CreateMap<Inventory, InventoyDto>().ReverseMap();
+
 
         }
     }

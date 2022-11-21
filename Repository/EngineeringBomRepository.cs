@@ -47,11 +47,9 @@ namespace Repository
 
         public async Task<PagedList<EnggBom>> GetAllEnggBOM(PagingParameter pagingParameter)
         {
+             
+
             var bomDetails = PagedList<EnggBom>.ToPagedList(FindAll()
-                                .Include(t => t.EnggChildItems)
-                                .ThenInclude(s => s.EnggAlternates)
-                                .Include(m => m.EnggChildItems)
-                                .ThenInclude(i => i.NREConsumable)
                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 

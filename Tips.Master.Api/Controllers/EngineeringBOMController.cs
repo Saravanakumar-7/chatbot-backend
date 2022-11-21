@@ -47,23 +47,30 @@ namespace Tips.Master.Api.Controllers
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                 
 
-                //var enggChildItemDto = EnggBomDto.EnggChildItemPosts;
 
-                //var enggChildItemList = new List<EnggChildItem>();
-                //for (int i = 0; i < enggChildItemDto.Count; i++)
+                _logger.LogInfo("Returned all Boms");
+                var bomDtoDetails = _mapper.Map<IEnumerable<EnggBomDto>>(listOfBoms);
+
+                //var bomDtoDetails = new List<EnggBomDto>();
+
+                //foreach (var bom in listOfBoms)
                 //{
-                //    EnggChildItem enggChildItemDetail = _mapper.Map<EnggChildItem>(enggChildItemDto[i]);
-                //    enggChildItemDetail.EnggAlternates = _mapper.Map<List<EnggAlternates>>(enggChildItemDto[i].EnggAlternatesPostDtos);
-                //    enggChildItemDetail.NREConsumable = _mapper.Map<NREConsumable>(enggChildItemDto[i].BomNREConsumablePostDto);
-                //    enggChildItemList.Add(enggChildItemDetail);
-
+                //    EnggBomDto enggBomDto = _mapper.Map<EnggBomDto>(bom);
+                //    List<EnggChildItemDto> childItemsDtos = new List<EnggChildItemDto>();   
+                //    foreach (var itemDetails in bom.EnggChildItems)
+                //    {
+                //        EnggChildItemDto enggChildItemDto = _mapper.Map<EnggChildItemDto>(itemDetails);
+                //        enggChildItemDto.EnggAlternatesDtos = _mapper.Map<List<EnggAlternatesDto>>(itemDetails.EnggAlternates);
+                //        enggChildItemDto.BomNREConsumableDto = _mapper.Map<BomNREConsumableDto>(itemDetails.NREConsumable);
+                //        childItemsDtos.Add(enggChildItemDto);
+                //    }
+                //    enggBomDto.EnggChildItemDtos = childItemsDtos;
+                //    bomDtoDetails.Add(enggBomDto);
                 //}
-                //enggBomList.EnggChildItems = enggChildItemList;
 
-                _logger.LogInfo("Returned all Vendors");
-                var result = _mapper.Map<IEnumerable<EnggBomDto>>(listOfBoms);
-                serviceResponse.Data = result;
+                serviceResponse.Data = bomDtoDetails;
                 serviceResponse.Message = "Returned all Engineering Boms Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -88,9 +95,11 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var vendorBoms = await _repository.EnggBomRepository.GetEnggBomById(id);
+                var bom = await _repository.EnggBomRepository.GetEnggBomById(id);
 
-                if (vendorBoms == null)
+               
+
+                if (bom == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"Engineering Bom with id: {id}, hasn't been found in db.";
@@ -102,13 +111,23 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Engineering Bom with id: {id}");
-                    var result = _mapper.Map<EnggBomDto>(vendorBoms);
-                    serviceResponse.Data = result;
+                     EnggBomDto enggBomDto = _mapper.Map<EnggBomDto>(bom);
+                    List<EnggChildItemDto> childItemsDtos = new List<EnggChildItemDto>();
+                    foreach (var itemDetails in bom.EnggChildItems)
+                    {
+                        EnggChildItemDto enggChildItemDto = _mapper.Map<EnggChildItemDto>(itemDetails);
+                        enggChildItemDto.EnggAlternatesDtos = _mapper.Map<List<EnggAlternatesDto>>(itemDetails.EnggAlternates);
+                        enggChildItemDto.BomNREConsumableDto = _mapper.Map<BomNREConsumableDto>(itemDetails.NREConsumable);
+                        childItemsDtos.Add(enggChildItemDto);
+                    }
+                    enggBomDto.EnggChildItemDtos = childItemsDtos;
+                    serviceResponse.Data = enggBomDto;
                     serviceResponse.Message = $"Returned Engineering Bom with id: {id}";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
+               
             }
             catch (Exception ex)
             {

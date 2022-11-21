@@ -16,6 +16,7 @@ namespace Repository
         private IMaterialTypeRepository _materialTypeRepo;
         private IProcurementTypeRepository _procurementTypeRepo;
         private IItemMasterRepository _itemMasterRepo;
+        private IEnggBomRepository? _enggBomRepository;
 
         private IDeliveryTermRepository? _deliveryTermRepo;
         private IVolumeUomRepository? _volumeUomRepo;
@@ -72,6 +73,17 @@ namespace Repository
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
+        }
+        public IEnggBomRepository EnggBomRepository
+        {
+            get
+            {
+                if (_enggBomRepository == null)
+                {
+                    _enggBomRepository = new EngineeringBomRepository(_tipsMasterDbContext);
+                }
+                return _enggBomRepository;
+            }
         }
         public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository
         {
@@ -635,6 +647,12 @@ namespace Repository
         public IItemMasterRouting ItemMasterRoutingRepository => throw new NotImplementedException();
 
         public IItemMasterWarehouse ItemMasterWarehouseRepository => throw new NotImplementedException();
+
+        public IEnggBomAlternatesRepository EnggBomAlternatesRepository => throw new NotImplementedException();
+
+        public IEnggBomChildItemRepository EnggBomChildItemRepository => throw new NotImplementedException();
+
+        public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
 
         //public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository => throw new NotImplementedException();
 
