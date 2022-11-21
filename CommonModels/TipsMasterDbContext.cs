@@ -85,6 +85,8 @@ namespace Entities
 
         public DbSet<Inventory> Inventories { get; set; }
 
+        public DbSet<Inventory_Transaction> Inventory_Transactions { get; set; }
+
 
     }
 }

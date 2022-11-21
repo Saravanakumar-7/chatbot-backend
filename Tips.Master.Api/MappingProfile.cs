@@ -277,6 +277,9 @@ namespace Tips.Master.Api
 
             CreateMap<Inventory, InventoyDto>().ReverseMap();
 
+            CreateMap<Inventory_Transaction, Inventory_TransactionDto>().ReverseMap();
+
+
 
         }
     }
