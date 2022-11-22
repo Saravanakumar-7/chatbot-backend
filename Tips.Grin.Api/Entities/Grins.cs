@@ -47,5 +47,6 @@ namespace Tips.Grin.Api.Entities
 
 
         public List<GrinParts>? GrinParts { get; set; }
+         
     }
 }

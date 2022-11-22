@@ -13,6 +13,7 @@ namespace Tips.Grin.Api.Entities
 
         public DbSet<GrinParts> GrinParts { get; set; }
 
+ 
 
     }
 }

@@ -2,7 +2,7 @@
 using Tips.Grin.Api.Entities.DTOs;
 using Tips.Grin.Api.Entities;  
 using AutoMapper;
-using Tips.Grin.Api.Contracts;
+using Tips.Grin.Api.Contracts; 
 using Microsoft.EntityFrameworkCore;
 using System.Net; 
 using Entities;
@@ -19,12 +19,12 @@ namespace Tips.Grin.Api.Controllers
     [ApiController]
     public class GrinController : ControllerBase
     {
-        private GrinRepository _repository;
+        private IGrinRepository _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
 
 
-        public GrinController(GrinRepository repository, ILoggerManager logger, IMapper mapper)
+        public GrinController(IGrinRepository repository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;

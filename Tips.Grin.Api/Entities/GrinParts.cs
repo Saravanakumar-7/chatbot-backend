@@ -62,7 +62,7 @@ namespace Tips.Grin.Api.Entities
         public DateTime? LastModifiedOn { get; set; }
 
         public int GrinId { get; set; }
+        public IQCConfirmation? Grin { get; set; }
 
-        public Grins? Grin { get; set; }
     }
 }

@@ -1,0 +1,45 @@
+﻿using Entities;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Tips.Grin.Api.Entities
+{
+    public class IQCConfirmation
+    {
+        public int Id { get; set; }
+
+        public string? GrinNumber { get; set; }
+
+        public string? ItemNumber { get; set; }
+
+         public int ItemId { get; set; }
+
+        public string? ProjectNumber { get; set; }
+
+        [Precision(13,3)]
+        public decimal? AcceptedQunatity { get; set; }
+
+        [Precision(13,3)]
+        public decimal? RejectedQunatity { get; set; }
+
+        public bool IsBinningDone { get; set; } = false;
+
+        public bool IsDeleted { get; set; } = false;
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+
+        public string Unit { get; set; }
+
+        public List<GrinParts>? GrinParts { get; set; }
+
+
+    }
+}

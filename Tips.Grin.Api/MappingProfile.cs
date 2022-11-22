@@ -9,14 +9,18 @@ namespace Tips.Grin.Api
     {
         public MappingProfile()
         {
-            CreateMap<Grins, GrinDto>().ReverseMap();
-            CreateMap<Grins, GrinPostDto>().ReverseMap();
-            CreateMap<Grins, GrinUpdateDto>().ReverseMap();
+            CreateMap<IQCConfirmation, GrinDto>().ReverseMap();
+            CreateMap<IQCConfirmation, GrinPostDto>().ReverseMap();
+            CreateMap<IQCConfirmation, GrinUpdateDto>().ReverseMap();
 
             CreateMap<GrinParts, GrinPartsDto>().ReverseMap();
             CreateMap<GrinParts, GrinPartsPostDto>().ReverseMap();
             CreateMap<GrinParts, GrinPartsUpdateDto>().ReverseMap();
-             
+
+            CreateMap<IQCConfirmation, IQCConfirmationDto>().ReverseMap();
+            CreateMap<IQCConfirmation, IQCConfirmationPostDto>().ReverseMap();
+            CreateMap<IQCConfirmation, IQCConfirmationUpdateDto>().ReverseMap();
+
 
         }
     }
