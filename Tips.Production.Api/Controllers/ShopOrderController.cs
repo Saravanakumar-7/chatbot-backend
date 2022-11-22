@@ -136,7 +136,7 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateShopOrder(int id, [FromBody] ShopOrderDto ShopOrderDtoUpdate)
         {
@@ -209,8 +209,8 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                
-                 shopOrders.IsDeleted = true;
+
+                shopOrders.IsDeleted = true;
                 string result = await _shopOrderRepository.UpdateShopOrder(shopOrders);
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Delete Successfully";
@@ -237,7 +237,7 @@ namespace Tips.Production.Api.Controllers
         [HttpGet("salesOrderNo")]
         public async Task<IActionResult> GetShopOrderBySalesOrderNo(string salesOrderNo)
         {
-            ServiceResponse <ShopOrderDto> serviceResponse = new ServiceResponse<ShopOrderDto>();
+            ServiceResponse<ShopOrderDto> serviceResponse = new ServiceResponse<ShopOrderDto>();
 
             try
             {
@@ -272,7 +272,7 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-       
+
         [HttpGet("shopOrderNo")]
         public async Task<IActionResult> GetShopOrderByShopOrderNo(string shopOrderNo)
         {
@@ -340,8 +340,8 @@ namespace Tips.Production.Api.Controllers
             }
 
         }
-        
-         [HttpGet("{id}")]
+
+        [HttpGet("{id}")]
         public async Task<IActionResult> ShortCloseShopOrder(int id)
         {
             ServiceResponse<ShopOrderDto> serviceResponse = new ServiceResponse<ShopOrderDto>();
@@ -361,7 +361,7 @@ namespace Tips.Production.Api.Controllers
 
                 shopOrders.IsShortClosed = true;
                 shopOrders.ShorClosedBy = "Admin";
-                shopOrders.ShortClosedOn =  DateTime.Now;
+                shopOrders.ShortClosedOn = DateTime.Now;
                 string result = await _shopOrderRepository.UpdateShopOrder(shopOrders);
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ShopOrder have been closed";
@@ -379,6 +379,5 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
     }
 }

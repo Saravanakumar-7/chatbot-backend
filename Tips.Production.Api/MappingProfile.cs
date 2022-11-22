@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿
+
+using AutoMapper;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities;
 using Entities.DTOs;
@@ -13,6 +15,10 @@ namespace Tips.Production.Api
             CreateMap<ShopOrder, ShopOrderDto>().ReverseMap();
             CreateMap<ShopOrder, ShopOrderDtoPost>().ReverseMap();
             CreateMap<ShopOrder, ShopOrderDtoUpdate>().ReverseMap();
+
+            CreateMap<ShopOrderConfirmation, ShopOrderConfirmationDto>().ReverseMap();
+            CreateMap<ShopOrderConfirmation, ShopOrderConfirmationDtoPost>().ReverseMap();
+            CreateMap<ShopOrderConfirmation, ShopOrderConfirmationDtoUpdate>().ReverseMap();
 
         }
     }

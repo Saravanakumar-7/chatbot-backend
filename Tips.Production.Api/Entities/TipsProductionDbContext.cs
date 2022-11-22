@@ -13,5 +13,7 @@ namespace Tips.Production.Api.Entities
 
         public DbSet<ShopOrder> shopOrders { get; set; }
 
+        public DbSet<ShopOrderConfirmation> shopOrderConfirmations { get; set; }
+
     }
 }
