@@ -240,14 +240,6 @@ namespace Tips.Master.Api
             CreateMap<HeadCounting, HeadCountingPostDto>().ReverseMap();
             CreateMap<HeadCounting, HeadCountingUpdateDto>().ReverseMap();
 
-            CreateMap<CompanyMasterHeadCounting, CompanyMasterHeadCountingDto>().ReverseMap();
-            CreateMap<CompanyMasterHeadCounting, CompanyMasterHeadCountingDtoPost>().ReverseMap();
-            CreateMap<CompanyMasterHeadCounting, CompanyMasterHeadCountingDtoUpdate>().ReverseMap();
-
-            CreateMap<CustomerMasterHeadCounting, CustomerMasterHeadCountingDto>().ReverseMap();
-            CreateMap<CustomerMasterHeadCounting, CustomerMasterHeadCountingDtoPost>().ReverseMap();
-            CreateMap<CustomerMasterHeadCounting, CustomerMasterHeadCountingDtoUpdate>().ReverseMap();
-
             CreateMap<PreferredFreightForwarder, PreferredFreightForwarderDto>().ReverseMap();
             CreateMap<PreferredFreightForwarder, PreferredFreightForwarderDtoPost>().ReverseMap();
             CreateMap<PreferredFreightForwarder, PreferredFreightForwarderDtoUpdate>().ReverseMap();
@@ -265,9 +257,30 @@ namespace Tips.Master.Api
             CreateMap<ShipmentMode, ShipmentModeDtoPost>().ReverseMap();
             CreateMap<ShipmentMode, ShipmentModeDtoUpdate>().ReverseMap();
 
-            CreateMap<Process, ProcessDto>().ReverseMap();
-            CreateMap<Process, ProcessDtoPost>().ReverseMap();
-            CreateMap<Process, PackingInstructionDtoUpdate>().ReverseMap();
+            CreateMap<NREConsumable, BomNREConsumableDto>().ReverseMap();
+            CreateMap<NREConsumable, BomNREConsumablePostDto>().ReverseMap();
+            CreateMap<NREConsumable, BomNREConsumableUpdateDto>().ReverseMap();
+
+            CreateMap<EnggBom, EnggBomDto>().ReverseMap();
+            CreateMap<EnggBom, EnggBomPostDto>().ReverseMap();
+
+            CreateMap<EnggBom, EnggBomUpdateDto>().ReverseMap();
+
+
+            CreateMap<EnggChildItem, EnggChildItemDto>().ReverseMap();
+            CreateMap<EnggChildItem, EnggChildItemPostDto>().ReverseMap();
+            CreateMap<EnggChildItem, EnggChildItemUpdateDto>().ReverseMap();
+
+            CreateMap<EnggAlternates, EnggAlternatesDto>().ReverseMap();
+            CreateMap<EnggAlternates, EnggAlternatesPostDto>().ReverseMap();
+            CreateMap<EnggAlternates, EnggAlternatesUpdateDto>().ReverseMap();
+
+            CreateMap<Inventory, InventoyDto>().ReverseMap();
+
+            CreateMap<Inventory_Transaction, Inventory_TransactionDto>().ReverseMap();
+
+
+
         }
     }
 }

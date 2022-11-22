@@ -77,8 +77,13 @@ namespace Contracts
         IShipmentModeRepository ShipmentModeRepository { get; }
         IPriceListRepository PriceListRepository { get; }
 
-        IProcessRepository ProcessRepository { get; }
+        IEnggBomAlternatesRepository EnggBomAlternatesRepository { get; }
 
+        IEnggBomChildItemRepository EnggBomChildItemRepository { get; }
+
+        IEnggBomNREConsumableRepository EnggBomNREConsumableRepository { get; } 
+
+        IEnggBomRepository EnggBomRepository { get; }   
 
         void SaveAsync();
     }

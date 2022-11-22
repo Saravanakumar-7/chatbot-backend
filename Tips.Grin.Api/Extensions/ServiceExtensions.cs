@@ -1,7 +1,9 @@
 ﻿using LoggerService;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Contracts;
 using Tips.Grin.Api.Entities;
+using Tips.Grin.Api.Repository;
 
 namespace Tips.Grin.Api.Extensions
 {

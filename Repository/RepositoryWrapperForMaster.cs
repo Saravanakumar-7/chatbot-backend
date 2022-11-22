@@ -16,6 +16,7 @@ namespace Repository
         private IMaterialTypeRepository _materialTypeRepo;
         private IProcurementTypeRepository _procurementTypeRepo;
         private IItemMasterRepository _itemMasterRepo;
+        private IEnggBomRepository? _enggBomRepository;
 
         private IDeliveryTermRepository? _deliveryTermRepo;
         private IVolumeUomRepository? _volumeUomRepo;
@@ -67,22 +68,21 @@ namespace Repository
         private IUOMRepository? _uOMRepo;
         private ICommodityRepository? _commodityRepo;
         private ILocationsRepository? _locationsRepo;
-        private IProcessRepository? _processRepo;
 
 
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
         }
-        public IProcessRepository ProcessRepository
+        public IEnggBomRepository EnggBomRepository
         {
             get
             {
-                if (_processRepo == null)
+                if (_enggBomRepository == null)
                 {
-                    _processRepo = new ProcessRepository(_tipsMasterDbContext);
+                    _enggBomRepository = new EngineeringBomRepository(_tipsMasterDbContext);
                 }
-                return _processRepo;
+                return _enggBomRepository;
             }
         }
         public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository
@@ -647,6 +647,12 @@ namespace Repository
         public IItemMasterRouting ItemMasterRoutingRepository => throw new NotImplementedException();
 
         public IItemMasterWarehouse ItemMasterWarehouseRepository => throw new NotImplementedException();
+
+        public IEnggBomAlternatesRepository EnggBomAlternatesRepository => throw new NotImplementedException();
+
+        public IEnggBomChildItemRepository EnggBomChildItemRepository => throw new NotImplementedException();
+
+        public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
 
         //public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository => throw new NotImplementedException();
 
