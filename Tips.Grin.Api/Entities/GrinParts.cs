@@ -13,7 +13,9 @@ namespace Tips.Grin.Api.Entities
     {
         public int Id { get; set; }
 
-        public string ItemNODescription { get; set; }
+        public string ItemNumber { get; set; } 
+            
+            public string ItemDescription { get; set; }
 
         public string MftrItemNumber { get; set; }
 
@@ -62,7 +64,7 @@ namespace Tips.Grin.Api.Entities
         public DateTime? LastModifiedOn { get; set; }
 
         public int GrinId { get; set; }
-        public IQCConfirmation? Grin { get; set; }
+        public Grins? Grins { get; set; }
 
     }
 }

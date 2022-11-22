@@ -2,7 +2,8 @@
 using Tips.Grin.Api.Entities.DTOs;
 using Tips.Grin.Api.Entities;  
 using AutoMapper;
-using Tips.Grin.Api.Contracts; 
+using Tips.Grin.Api.Contracts;
+using Contracts;
 using Microsoft.EntityFrameworkCore;
 using System.Net; 
 using Entities;

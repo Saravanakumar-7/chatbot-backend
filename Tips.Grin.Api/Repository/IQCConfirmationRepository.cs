@@ -29,7 +29,7 @@ namespace Tips.Grin.Api.Repository
             iQCConfirmation.CreatedOn = DateTime.Now;
             iQCConfirmation.LastModifiedBy = "Admin";
             iQCConfirmation.LastModifiedOn = DateTime.Now;
-            iQCConfirmation.Unit = "Bangalore";
+            //iQCConfirmation.Unit = "Bangalore";
 
             var result = await Create(iQCConfirmation);
             return result.Id;

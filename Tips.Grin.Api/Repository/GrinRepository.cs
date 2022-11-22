@@ -26,6 +26,7 @@ namespace Tips.Grin.Api.Repository
             grins.CreatedOn = DateTime.Now;
             grins.LastModifiedBy = "Admin";
             grins.LastModifiedOn = DateTime.Now;
+            //grins.Unit = "Bangalore";
 
             var result = await Create(grins);
             return result.Id;

@@ -12,7 +12,9 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public int Id { get; set; }
 
-        public string ItemNODescription { get; set; }
+        public string ItemNumber { get; set; }
+            
+        public string ItemDescription { get; set; }
 
         public string MftrItemNumber { get; set; }
 
@@ -56,9 +58,14 @@ namespace Tips.Grin.Api.Entities.DTOs
     }
     public class GrinPartsPostDto
     {
-        [Required(ErrorMessage = "ItemNODescription is required")]
-        [StringLength(100, ErrorMessage = "ItemNODescription can't be longer than 100 characters")]
-        public string ItemNODescription { get; set; }
+        [Required(ErrorMessage = "ItemNumber is required")]
+        [StringLength(100, ErrorMessage = "ItemNumber can't be longer than 100 characters")]
+        public string ItemNumber { get; set; }
+
+        [Required(ErrorMessage = "ItemDescription is required")]
+        [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
+        public string ItemDescription { get; set; }
+
 
         [Required(ErrorMessage = "MftrItemNumber is required")]
         public string MftrItemNumber { get; set; }
@@ -115,9 +122,13 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "ItemNODescription is required")]
-        [StringLength(100, ErrorMessage = "ItemNODescription can't be longer than 100 characters")]
-        public string ItemNODescription { get; set; }
+        [Required(ErrorMessage = "ItemNumber is required")]
+        [StringLength(100, ErrorMessage = "ItemNumber can't be longer than 100 characters")]
+        public string ItemNumber { get; set; }
+
+        [Required(ErrorMessage = "ItemDescription is required")]
+        [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
+        public string ItemDescription { get; set; }
 
         [Required(ErrorMessage = "MftrItemNumber is required")]
         public string MftrItemNumber { get; set; }
