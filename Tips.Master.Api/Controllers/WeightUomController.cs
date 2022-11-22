@@ -149,8 +149,8 @@ namespace Tips.Master.Api.Controllers
                 var weightUoms = _mapper.Map<WeightUom>(weightUom);
                 _repository.WeightUomRepository.CreateWeightUom(weightUoms);
                 _repository.SaveAsync();
-                serviceResponse.Message = "Successfylly Created";
-                serviceResponse.Success = false;
+                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetWeightUomById", serviceResponse);
             }

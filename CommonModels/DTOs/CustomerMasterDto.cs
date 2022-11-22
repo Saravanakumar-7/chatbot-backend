@@ -10,13 +10,18 @@ namespace Entities.DTOs
     public class CustomerMasterDto
     {
         public int Id { get; set; }
+
         [Required]
         public string? CustomerId { get; set; }
+        
         [Required]
         public string? CustomerName { get; set; }
+        
         public string? CustomerAliasName { get; set; }
+        
         [Required]
         public string? CustomerType { get; set; }
+        
         public string? Address { get; set; }
         public string? City { get; set; }
         public string? State { get; set; }
@@ -125,10 +130,12 @@ namespace Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<CustomerAddressesDto>? CustomerAddresses { get; set; }
+        public List<CustomerAddressesDto>? CustomerAddress { get; set; }
         public List<CustomerShippingAddressesDto>? CustomerShippingAddresses { get; set; }
         public List<CustomerContactsDto>? CustomerContacts { get; set; }
         public List<CustomerBankingDto>? CustomerBankings { get; set; }
+
+        public List<CustomerMasterHeadCountingDto>? CustomerMasterHeadCountings { get; set; }
     }
     public class CustomerMasterDtoPost
     {
@@ -214,10 +221,12 @@ namespace Entities.DTOs
         public string? HazmatSetup { get; set; }
         public string? UOM { get; set; }
         public string? Sqft { get; set; }
+        public string? MachineDetails { get; set; }
+
         public string? ToolsandEquipDetails { get; set; }
-        //public string? MachineDetails { get; set; }
+
         //public string? ToolsDetials { get; set; }
-        public string? EquipDetials { get; set; }
+        //public string? EquipDetials { get; set; }
         public bool ERPDetails { get; set; }
         public string? ESDSetupDetails { get; set; }
         public string? HazmatSetupDetails { get; set; }
@@ -249,13 +258,15 @@ namespace Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<CustomerAddressesDtoPost>? CustomerAddresses { get; set; }
+        public List<CustomerAddressesDtoPost>? CustomerAddress { get; set; }
         public List<CustomerShippingAddressesDtoPost>? CustomerShippingAddresses { get; set; }
         public List<CustomerContactsDtoPost>? CustomerContacts { get; set; }
         public List<CustomerBankingDtoPost>? CustomerBankings { get; set; }
+        public List<CustomerMasterHeadCountingDtoPost>? CustomerMasterHeadCountings { get; set; }
     }
     public class CustomerMasterDtoUpdate
     {
+
     public int Id { get; set; }
         [Required]
         public string? CustomerId { get; set; }
@@ -374,11 +385,13 @@ namespace Entities.DTOs
     public string? LastModifiedBy { get; set; }
     public DateTime? LastModifiedOn { get; set; }
 
-    public List<CustomerAddressesDtoUpdate>? CustomerAddresses { get; set; }
+    public List<CustomerAddressesDtoUpdate>? CustomerAddress { get; set; }
     public List<CustomerShippingAddressesDtoUpdate>? CustomerShippingAddresses { get; set; }
     public List<CustomerContactsDtoUpdate>? CustomerContacts { get; set; }
     public List<CustomerBankingDtoUpdate>? CustomerBankings { get; set; }
-}
+    public List<CustomerMasterHeadCountingDtoUpdate>? CustomerMasterHeadCountings { get; set; }
+
+    }
     public class CustomerIdNameListDto
     {
         public int Id { get; set; }

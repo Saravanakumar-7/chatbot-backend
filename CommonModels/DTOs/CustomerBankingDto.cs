@@ -23,7 +23,9 @@ namespace Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-      
+
+         
+
     }
     public class CustomerBankingDtoPost
     {
@@ -38,7 +40,7 @@ namespace Entities.DTOs
         [Required(ErrorMessage = "Unit is required")]
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
         public string Unit { get; set; }
-
+         
 
 
     }
@@ -53,6 +55,7 @@ namespace Entities.DTOs
         public string? IBANCode { get; set; }
         public bool Primary { get; set; } = true;
         public bool IsActive { get; set; } = true;
+
         [Required(ErrorMessage = "Unit is required")]
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
         public string Unit { get; set; }

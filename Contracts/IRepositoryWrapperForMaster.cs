@@ -77,6 +77,9 @@ namespace Contracts
         IShipmentModeRepository ShipmentModeRepository { get; }
         IPriceListRepository PriceListRepository { get; }
 
+        IProcessRepository ProcessRepository { get; }
+
+
         void SaveAsync();
     }
 }

@@ -67,11 +67,23 @@ namespace Repository
         private IUOMRepository? _uOMRepo;
         private ICommodityRepository? _commodityRepo;
         private ILocationsRepository? _locationsRepo;
+        private IProcessRepository? _processRepo;
 
 
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
+        }
+        public IProcessRepository ProcessRepository
+        {
+            get
+            {
+                if (_processRepo == null)
+                {
+                    _processRepo = new ProcessRepository(_tipsMasterDbContext);
+                }
+                return _processRepo;
+            }
         }
         public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository
         {

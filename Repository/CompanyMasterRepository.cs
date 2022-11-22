@@ -60,6 +60,7 @@ namespace Repository
                                 .Include(t => t.CompanyAddresses)
                                 .Include(x => x.CompanyContacts)
                                 .Include(m => m.CompanyBankings)
+                                .Include(v => v.CompanyMasterHeadCountings)
                                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
@@ -73,6 +74,7 @@ namespace Repository
                                 .Include(t => t.CompanyAddresses)
                                 .Include(x => x.CompanyContacts)
                                 .Include(m => m.CompanyBankings)
+                                .Include(v => v.CompanyMasterHeadCountings)
                                 .FirstOrDefaultAsync();
 
             return companyMasterDetails;

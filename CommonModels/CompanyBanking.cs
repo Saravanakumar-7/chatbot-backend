@@ -24,7 +24,7 @@ namespace Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public int CompanyId { get; set; }
+        public int CompanyMasterId { get; set; }
 
         public CompanyMaster? CompanyMaster { get; set; }
     }

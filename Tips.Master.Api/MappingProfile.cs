@@ -240,6 +240,14 @@ namespace Tips.Master.Api
             CreateMap<HeadCounting, HeadCountingPostDto>().ReverseMap();
             CreateMap<HeadCounting, HeadCountingUpdateDto>().ReverseMap();
 
+            CreateMap<CompanyMasterHeadCounting, CompanyMasterHeadCountingDto>().ReverseMap();
+            CreateMap<CompanyMasterHeadCounting, CompanyMasterHeadCountingDtoPost>().ReverseMap();
+            CreateMap<CompanyMasterHeadCounting, CompanyMasterHeadCountingDtoUpdate>().ReverseMap();
+
+            CreateMap<CustomerMasterHeadCounting, CustomerMasterHeadCountingDto>().ReverseMap();
+            CreateMap<CustomerMasterHeadCounting, CustomerMasterHeadCountingDtoPost>().ReverseMap();
+            CreateMap<CustomerMasterHeadCounting, CustomerMasterHeadCountingDtoUpdate>().ReverseMap();
+
             CreateMap<PreferredFreightForwarder, PreferredFreightForwarderDto>().ReverseMap();
             CreateMap<PreferredFreightForwarder, PreferredFreightForwarderDtoPost>().ReverseMap();
             CreateMap<PreferredFreightForwarder, PreferredFreightForwarderDtoUpdate>().ReverseMap();
@@ -255,8 +263,11 @@ namespace Tips.Master.Api
 
             CreateMap<ShipmentMode, ShipmentModeDto>().ReverseMap();
             CreateMap<ShipmentMode, ShipmentModeDtoPost>().ReverseMap();
-            CreateMap<ShipmentMode, ShipmentModeDtoUpdate>().ReverseMap();           
+            CreateMap<ShipmentMode, ShipmentModeDtoUpdate>().ReverseMap();
 
+            CreateMap<Process, ProcessDto>().ReverseMap();
+            CreateMap<Process, ProcessDtoPost>().ReverseMap();
+            CreateMap<Process, PackingInstructionDtoUpdate>().ReverseMap();
         }
     }
 }

@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Entities
 {
-    public class CompanyAddresses
+    public class Process
     {
-        public int Id { get; set; }
-
-        public string? PoAddress { get; set; }
-
-        public string? GSTNNumber { get; set; }
-
-        public string? PANNumber { get; set; }
-
-        public bool SameasAddress { get; set; } = false;
-
+        [Key]
+        public int? Id { get; set; }
+        public string ProcessName { get; set; }
+        public string? Description { get; set; }
+        public string? Remarks { get; set; }
         public bool IsActive { get; set; } = true;
         public string Unit { get; set; }
 
@@ -25,9 +21,5 @@ namespace Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
-        public int CompanyMasterId { get; set; }
-
-        public CompanyMaster? CompanyMaster { get; set; }
     }
 }
