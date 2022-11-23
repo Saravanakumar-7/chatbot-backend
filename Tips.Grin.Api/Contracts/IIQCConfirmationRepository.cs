@@ -14,9 +14,9 @@ namespace Tips.Grin.Api.Contracts
     public interface IIQCConfirmationRepository : IRepositoryBase<IQCConfirmation>
     {
         Task<IEnumerable<IQCConfirmation>> GetAllIqcDetails();
-        Task<IEnumerable<IQCConfirmation>> GetIqcDetailsbyGrinNo(string grinNo);
+        Task<IEnumerable<IQCConfirmation>> GetIqcDetailsbyGrinNo(string grinNumber);
         Task<string> UpdateIqc(IQCConfirmation iQCConfirmation);
-        //Task<string> DeleteIqc(IQCConfirmation iQCConfirmation);
+        
         Task<IQCConfirmation> GetIqcDetailsbyId(int id);
         
         

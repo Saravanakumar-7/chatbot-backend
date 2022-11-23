@@ -61,10 +61,10 @@ namespace Tips.Grin.Api.Entities.DTOs
         public bool IsBinningDone { get; set; } = false;
 
         public bool IsDeleted { get; set; } = false;
-        
 
-        
-        
+
+        public string Unit { get; set; }
+
 
     }
     public class IQCConfirmationUpdateDto
@@ -88,8 +88,8 @@ namespace Tips.Grin.Api.Entities.DTOs
     public bool IsBinningDone { get; set; } = false;
 
     public bool IsDeleted { get; set; } = false;
-    
-     
+
+        public string Unit { get; set; }
 
     }
 

@@ -38,9 +38,9 @@ namespace Tips.Grin.Api.Repository
             return (IQCList);
 
         }
-        public async Task<IEnumerable<IQCConfirmation>> GetIqcDetailsbyGrinNo(string grinNo)
+        public async Task<IEnumerable<IQCConfirmation>> GetIqcDetailsbyGrinNo(string grinNumber)
     {
-            var IQCList = await FindByCondition(x => x.GrinNumber == grinNo).ToListAsync();
+            var IQCList = await FindByCondition(x => x.GrinNumber == grinNumber).ToListAsync();
             return IQCList;
         }
 
@@ -52,20 +52,13 @@ namespace Tips.Grin.Api.Repository
             string result = $"LeadTime details of {iQCConfirmation.Id} is updated successfully!";
             return result;
         }
-/*
-        public async Task<string> DeleteIqc(IQCConfirmation iQCConfirmation)
-        {
-            Delete(iQCConfirmation);
-            string result = $"Grin details of {iQCConfirmation.Id} is deleted successfully!";
-            return result;
-         }
-*/
+
 
         public async Task<IQCConfirmation> GetIqcDetailsbyId(int id)
         {
-            var customerType = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var IQCList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return customerType;
+            return IQCList;
         }
 
     }

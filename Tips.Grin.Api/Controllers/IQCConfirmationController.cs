@@ -10,7 +10,7 @@ using Tips.Grin.Api.Entities.DTOs;
 
 namespace Tips.Grin.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class IQCConfirmationController : ControllerBase
     {
@@ -28,7 +28,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllIqcDetails()
         {
-            ServiceResponse<IEnumerable<IQCConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationDto>>();
+                ServiceResponse<IEnumerable<IQCConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationDto>>();
 
             try
             {
@@ -52,26 +52,26 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-            [HttpGet("{GrinNo}")]
-            public async Task<IActionResult> GetIqcDetailsbyGrinNo(string grinNo)
+            [HttpGet("{grinNumber}")]
+            public async Task<IActionResult> GetIqcDetailsbyGrinNo(string grinNumber) 
             {
                 ServiceResponse<IEnumerable<IQCConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationDto>>();
 
                 try
                 {
-                    var IQCList = await _iQCConfirmationRepository.GetIqcDetailsbyGrinNo(grinNo);
+                    var IQCList = await _iQCConfirmationRepository.GetIqcDetailsbyGrinNo(grinNumber);
                     if (IQCList == null)
                     {
-                        _logger.LogError($"IQCConfirmation Details with id: {grinNo}, hasn't been found in db.");
+                        _logger.LogError($"IQCConfirmation Details with GrinNumber: {grinNumber}, hasn't been found in db.");
                         serviceResponse.Data = null;
-                        serviceResponse.Message = $"IQCConfirmation Details with id: {grinNo}, hasn't been found in db.";
+                        serviceResponse.Message = $"IQCConfirmation Details with GrinNumber: {grinNumber}, hasn't been found in db.";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.NotFound;
                         return NotFound();
                     }
                     else
                     {
-                        _logger.LogInfo($"Returned IQCConfirmation Details with id: {grinNo}");
+                        _logger.LogInfo($"Returned IQCConfirmation Details with id: {grinNumber}");
                         var result = _mapper.Map<IEnumerable<IQCConfirmationDto>>(IQCList);
                         serviceResponse.Data = result;
                         serviceResponse.Message = "Success";
@@ -273,43 +273,6 @@ namespace Tips.Grin.Api.Controllers
         }
 
 
-        /*
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteIqc(int id)
-        {
-            ServiceResponse<IQCConfirmationDto> serviceResponse = new ServiceResponse<IQCConfirmationDto>();
-
-            try
-            {
-                var IQCType = await _iQCConfirmationRepository.GetIqcDetailsbyId(id);
-                if (IQCType == null)
-                {
-                    _logger.LogError($"CustomerType with id: {id}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Error";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
-                }
-                string result = await _iQCConfirmationRepository.DeleteIqc(IQCType);
-                _logger.LogInfo(result);
-                _iQCConfirmationRepository.SaveAsync();
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Delete Successfully";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
-            }
-        }
-        */
+      
     }
 }
