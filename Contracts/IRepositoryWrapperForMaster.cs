@@ -83,7 +83,9 @@ namespace Contracts
 
         IEnggBomNREConsumableRepository EnggBomNREConsumableRepository { get; } 
 
-        IEnggBomRepository EnggBomRepository { get; }   
+        IEnggBomRepository EnggBomRepository { get; }
+        IProcessRepository ProcessRepository { get; }
+        IPartTypesRepository partTypesRepository { get; }
 
         void SaveAsync();
     }

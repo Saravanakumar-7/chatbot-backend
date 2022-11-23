@@ -68,6 +68,8 @@ namespace Repository
         private IUOMRepository? _uOMRepo;
         private ICommodityRepository? _commodityRepo;
         private ILocationsRepository? _locationsRepo;
+        private IProcessRepository? _processRepo;
+        private IPartTypesRepository? _parttypesRepo;
 
 
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
@@ -83,6 +85,28 @@ namespace Repository
                     _enggBomRepository = new EngineeringBomRepository(_tipsMasterDbContext);
                 }
                 return _enggBomRepository;
+            }
+        }
+        public IPartTypesRepository partTypesRepository
+        {
+            get
+            {
+                if (_parttypesRepo == null)
+                {
+                    _parttypesRepo = new PartTypesRepository(_tipsMasterDbContext);
+                }
+                return _parttypesRepo;
+            }
+        }
+        public IProcessRepository ProcessRepository
+        {
+            get
+            {
+                if (_processRepo == null)
+                {
+                    _processRepo = new ProcessRepository(_tipsMasterDbContext);
+                }
+                return _processRepo;
             }
         }
         public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository
