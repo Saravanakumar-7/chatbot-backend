@@ -63,7 +63,7 @@ namespace Tips.Grin.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public int GrinId { get; set; }
+        public int GrinsId { get; set; }
         public Grins? Grins { get; set; }
 
     }
