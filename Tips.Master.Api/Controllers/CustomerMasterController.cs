@@ -1,10 +1,12 @@
-﻿using System.Net;
+﻿using Entities.DTOs;
+using Entities;
+using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol.Core.Types;
 using AutoMapper;
 using Contracts;
-using Entities;
-using Entities.DTOs;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Entities.Migrations;
+using System.Net;
 using Newtonsoft.Json;
 
 namespace Tips.Master.Api.Controllers
@@ -128,14 +130,17 @@ namespace Tips.Master.Api.Controllers
                 
                 var contacts = _mapper.Map<IEnumerable<CustomerContacts>>(customerMasterDtoPost.CustomerContacts);
                 var shippingAddresses = _mapper.Map<IEnumerable<CustomerShippingAddresses>>(customerMasterDtoPost.CustomerShippingAddresses);
-                var addresses = _mapper.Map<IEnumerable<CustomerAddresses>>(customerMasterDtoPost.CustomerAddresses);
+                var addresses = _mapper.Map<IEnumerable<CustomerAddresses>>(customerMasterDtoPost.CustomerAddress);
                 var banking = _mapper.Map<IEnumerable<CustomerBanking>>(customerMasterDtoPost.CustomerBankings);
+                var headcount = _mapper.Map<IEnumerable<CustomerMasterHeadCounting>>(customerMasterDtoPost.CustomerMasterHeadCountings);
+
                 var customerMaster = _mapper.Map<CustomerMaster>(customerMasterDtoPost);
 
                 customerMaster.CustomerAddresses = addresses.ToList();
                 customerMaster.CustomerContacts = contacts.ToList();
                 customerMaster.CustomerShippingAddresses = shippingAddresses.ToList();
                 customerMaster.CustomerBanking = banking.ToList();
+                customerMaster.CustomerMasterHeadCountings= headcount.ToList();
 
                 await _repository.CustomerMasterRepository.CreateCustomerMaster(customerMaster);
                 _repository.SaveAsync();
@@ -160,12 +165,12 @@ namespace Tips.Master.Api.Controllers
 
          [HttpPut("{id}")]
 
-        public async Task<IActionResult> UpdateCustomerMaster(int id, [FromBody] CustomerMasterDtoUpdate CustomerMasterDtoUpdate)
+        public async Task<IActionResult> UpdateCustomerMaster(int id, [FromBody] CustomerMasterDtoPost customerMasterDto)
         {
-            ServiceResponse<CustomerMasterDtoUpdate> serviceResponse = new ServiceResponse<CustomerMasterDtoUpdate>();
+            ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();
             try
             {
-                if (CustomerMasterDtoUpdate is null)
+                if (customerMasterDto is null)
                 {
                     _logger.LogError("Update CustomerMaster object sent from client is null.");
                     serviceResponse.Data = null;
@@ -195,26 +200,28 @@ namespace Tips.Master.Api.Controllers
                 }
 
                
-                var addresses = _mapper.Map<IEnumerable<CustomerAddresses>>(CustomerMasterDtoUpdate.CustomerAddresses);
-                var contacts = _mapper.Map<IEnumerable<CustomerContacts>>(CustomerMasterDtoUpdate.CustomerContacts);
-                var shippingAddresses = _mapper.Map<IEnumerable<CustomerShippingAddresses>>(CustomerMasterDtoUpdate.CustomerShippingAddresses);
-                var banking = _mapper.Map<IEnumerable<CustomerBanking>>(CustomerMasterDtoUpdate.CustomerBankings);
-                var customerDetials = _mapper.Map(CustomerMasterDtoUpdate, updateCustomerMaster);
+                var addresses = _mapper.Map<IEnumerable<CustomerAddresses>>(customerMasterDto.CustomerAddress);
+                var contacts = _mapper.Map<IEnumerable<CustomerContacts>>(customerMasterDto.CustomerContacts);
+                var shippingAddresses = _mapper.Map<IEnumerable<CustomerShippingAddresses>>(customerMasterDto.CustomerShippingAddresses);
+                var banking = _mapper.Map<IEnumerable<CustomerBanking>>(customerMasterDto.CustomerBankings);
+                var HeadcountDetails = _mapper.Map<IEnumerable<CustomerMasterHeadCounting>>(customerMasterDto.CustomerMasterHeadCountings);
+
+                var customerDetials = _mapper.Map(customerMasterDto, updateCustomerMaster);
+                //var customerDetials = _mapper.Map<CustomerMaster>(customerMasterDto);
 
                 customerDetials.CustomerAddresses= addresses.ToList();
                 customerDetials.CustomerContacts= contacts.ToList();
                 customerDetials.CustomerShippingAddresses= shippingAddresses.ToList();
                 customerDetials.CustomerBanking= banking.ToList();
-
+                customerDetials.CustomerMasterHeadCountings = HeadcountDetails.ToList();
                 string result = await _repository.CustomerMasterRepository.UpdateCustomerMaster(customerDetials);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-
                 serviceResponse.Data = null;
                 serviceResponse.Message = result;
                 serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.NoContent;
-                return NoContent();
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
@@ -249,8 +256,8 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = result;
                 serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.NoContent;
-                return NoContent();
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {

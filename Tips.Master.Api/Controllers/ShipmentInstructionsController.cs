@@ -221,7 +221,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again";
+                serviceResponse.Message = "Internal Serever Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);

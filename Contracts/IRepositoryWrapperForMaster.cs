@@ -66,6 +66,8 @@ namespace Contracts
 
         IVendorBankingRepository VendorBankingRepository { get; }
 
+        IProcessRepository ProcessRepository { get; }
+
         IShipmentInstructionsRepository ShipmentInstructionsRepository { get; }
         ISegmentRepository SegmentRepository { get; }
         IQuoteTermsRepository QuoteTermsRepository { get; }
@@ -83,7 +85,8 @@ namespace Contracts
 
         IEnggBomNREConsumableRepository EnggBomNREConsumableRepository { get; } 
 
-        IEnggBomRepository EnggBomRepository { get; }   
+        IEnggBomRepository EnggBomRepository { get; } 
+        IPartTypesRepository partTypesRepository { get; }
 
         void SaveAsync();
     }

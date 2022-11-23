@@ -44,7 +44,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -72,7 +72,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -148,8 +148,8 @@ namespace Tips.Master.Api.Controllers
                 var leadTimeEntity = _mapper.Map<LeadTime>(leadTimeDtoPost);
                 _repository.leadTimeRepository.CreateLeadTime(leadTimeEntity);
                 _repository.SaveAsync();
-                serviceResponse.Message = "Successfylly Created";
-                serviceResponse.Success = false;
+                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetLeadTimeById", serviceResponse);
             }

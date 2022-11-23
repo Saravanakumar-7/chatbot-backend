@@ -3,7 +3,6 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
-//using MySqlX.XDevAPI.Common;
 using NuGet.Protocol;
 using System.Net;
 
@@ -13,31 +12,30 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class TypeOfCompanyController : ControllerBase
+    public class ProcessController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-
-        public TypeOfCompanyController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        public ProcessController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
         }
-        // GET: api/<TypeOfCompanyController>
+        // GET: api/<ProcessController>
         [HttpGet]
-        public async Task<IActionResult> GetAllTypeOfCompanies()
+        public async Task<IActionResult> GetAllProcesses()
         {
-            ServiceResponse<IEnumerable<TypeOfCompanyDto>> serviceResponse = new ServiceResponse<IEnumerable<TypeOfCompanyDto>>();
+            ServiceResponse<IEnumerable<ProcessDto>> serviceResponse = new ServiceResponse<IEnumerable<ProcessDto>>();
             try
             {
 
-                var TypeOfCompanyList = await _repository.TypeOfCompanyRepository.GetAllTypeOfCompanies();
-                _logger.LogInfo("Returned all TypeofCompanies");
-                var result = _mapper.Map<IEnumerable<TypeOfCompanyDto>>(TypeOfCompanyList);
+                var processlist = await _repository.ProcessRepository.GetAllProcesses();
+                _logger.LogInfo("Returned all processlist");
+                var result = _mapper.Map<IEnumerable<ProcessDto>>(processlist);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all TypeofCompanies Successfully";
+                serviceResponse.Message = "Returned all processlist Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -48,23 +46,23 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveTypeofCompanies()
+
+        public async Task<IActionResult> GetAllActiveProcesses()
         {
-            ServiceResponse<IEnumerable<TypeOfCompanyDto>> serviceResponse = new ServiceResponse<IEnumerable<TypeOfCompanyDto>>();
+            ServiceResponse<IEnumerable<ProcessDto>> serviceResponse = new ServiceResponse<IEnumerable<ProcessDto>>();
 
             try
             {
-                var TypeOfCompanyList = await _repository.TypeOfCompanyRepository.GetAllActiveTypeofCompanies();
-                _logger.LogInfo("Returned all TypeofCompanies");
-                var result = _mapper.Map<IEnumerable<TypeOfCompanyDto>>(TypeOfCompanyList);
+                var processlist = await _repository.ProcessRepository.GetAllActiveProcesses();
+                _logger.LogInfo("Returned all processlist");
+                var result = _mapper.Map<IEnumerable<ProcessDto>>(processlist);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all Active TypeofCompanies Successfully";
+                serviceResponse.Message = "Returned all Active processlist Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -81,30 +79,32 @@ namespace Tips.Master.Api.Controllers
 
             }
         }
-        // GET api/<TypeOfCompanyController>/5
+
+        // GET api/<ProcessController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetTypeOfCompanyById(int id)
+        public async Task<IActionResult> GetProcessById(int id)
         {
-            ServiceResponse<TypeOfCompanyDto> serviceResponse = new ServiceResponse<TypeOfCompanyDto>();
+            ServiceResponse<ProcessDto> serviceResponse = new ServiceResponse<ProcessDto>();
 
             try
             {
-                var typeofcompany = await _repository.TypeOfCompanyRepository.GetTypeOfCompanyById(id);
-                if (typeofcompany == null)
+                var Process = await _repository.ProcessRepository.GetProcessById(id);
+                if (Process == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"typeofcompany with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Process with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"typeofcompany with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Process with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned typeofcompany with id: {id}");
-                    var result = _mapper.Map<TypeOfCompanyDto>(typeofcompany);
+
+                    _logger.LogInfo($"Returned Process with id: {id}");
+                    var result = _mapper.Map<ProcessDto>(Process);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned typeofcompany with id Successfully";
+                    serviceResponse.Message = "Returned Process with id successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -112,103 +112,102 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetTypeOfCompanyById action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetProcessById action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
-
             }
         }
 
-        // POST api/<TypeOfCompanyController>
+        // POST api/<ProcessController>
         [HttpPost]
-        public IActionResult CreateTypeOfCompany([FromBody] TypeOfCompanyDtoPost typeOfCompanyDtoPost)
+        public IActionResult CreateProcess([FromBody] ProcessDtoPost processDtoPost)
         {
-            ServiceResponse<TypeOfCompanyDto> serviceResponse = new ServiceResponse<TypeOfCompanyDto>();
+            ServiceResponse<ProcessDto> serviceResponse = new ServiceResponse<ProcessDto>();
 
             try
             {
-                if (typeOfCompanyDtoPost is null)
+                if (processDtoPost is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "typeofcompany object sent from client is null";
+                    serviceResponse.Message = "Process object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("typeofcompany object sent from client is null.");
+                    _logger.LogError("Process object sent from client is null.");
+                    //return BadRequest("PurchaseGroup object is null");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid typeOfCompany object sent from client";
+                    serviceResponse.Message = "Invalid Process object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid typeOfCompany object sent from client.");
+                    _logger.LogError("Invalid Process object sent from client.");
+                    //return BadRequest("Invalid model object");
                     return BadRequest(serviceResponse);
                 }
-
-                var TypeofCompany = _mapper.Map<TypeOfCompany>(typeOfCompanyDtoPost);
-                _repository.TypeOfCompanyRepository.CreateTypeOfCompany(TypeofCompany);
+                var Process = _mapper.Map<Process>(processDtoPost);
+                _repository.ProcessRepository.CreateProcess(Process);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "Process Created Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetTypeOfCompanyById", serviceResponse);
-
+                return Created("GetProcessById", serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside CreateProcess action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
-        // PUT api/<TypeOfCompanyController>/5
+        // PUT api/<ProcessController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTypeofCompany(int id, [FromBody] TypeOfCompanyDtoUpdate typeOfCompanyDtoUpdate)
+        public async Task<IActionResult> UpdateProcess(int id, [FromBody] ProcessDtoUpdate processDtoUpdate)
         {
-            ServiceResponse<TypeOfCompanyDto> serviceResponse = new ServiceResponse<TypeOfCompanyDto>();
+            ServiceResponse<ProcessDto> serviceResponse = new ServiceResponse<ProcessDto>();
 
             try
             {
-                if (typeOfCompanyDtoUpdate is null)
+                if (processDtoUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "update typeofcompany object sent from client is null";
+                    serviceResponse.Message = "update Process object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("update typeofcompany object sent from client is null.");
+                    _logger.LogError("update Process object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
 
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid update typeofcompany object sent from client";
+                    serviceResponse.Message = "Invalid update Process object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid update typeofcompany object sent from client.");
+                    _logger.LogError("Invalid Update Process object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var TypeofCompany = await _repository.TypeOfCompanyRepository.GetTypeOfCompanyById(id);
-                if (TypeofCompany is null)
+                var process = await _repository.ProcessRepository.GetProcessById(id);
+                if (process is null)
                 {
-                    _logger.LogError($"Update TypeofCompany with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Update Process with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = " Update TypeofCompany with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = " Update Process with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(typeOfCompanyDtoUpdate, TypeofCompany);
-                string result = await _repository.TypeOfCompanyRepository.UpdateTypeOfCompany(TypeofCompany);
+                _mapper.Map(processDtoUpdate, process);
+                string result = await _repository.ProcessRepository.UpdateProcess(process);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -220,33 +219,33 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside UpdateTypeofCompany action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside UpdateProcess action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
-        // DELETE api/<TypeOfCompanyController>/5
+        // DELETE api/<ProcessController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTypeofCompany(int id)
+        public async Task<IActionResult> DeleteProcess(int id)
         {
-            ServiceResponse<TypeOfCompanyDto> serviceResponse = new ServiceResponse<TypeOfCompanyDto>();
+            ServiceResponse<ProcessDto> serviceResponse = new ServiceResponse<ProcessDto>();
 
             try
             {
-                var TypeofCompany = await _repository.TypeOfCompanyRepository.GetTypeOfCompanyById(id);
-                if (TypeofCompany == null)
+                var process = await _repository.ProcessRepository.GetProcessById(id);
+                if (process == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Delete TypeofCompany object sent from client is null";
+                    serviceResponse.Message = "Delete process object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"delete TypeofCompany with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Delete process with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                string result = await _repository.TypeOfCompanyRepository.DeleteTypeOfCompany(TypeofCompany);
+                string result = await _repository.ProcessRepository.DeleteProcess(process);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deleted Successfully";
@@ -257,33 +256,32 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside Deleteprocess action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
-        }
-
+        }       
         [HttpPut("{id}")]
-        public async Task<IActionResult> ActivateTypeOfCompany(int id)
+        public async Task<IActionResult> ActivateProcess(int id)
         {
-            ServiceResponse<TypeOfCompanyDto> serviceResponse = new ServiceResponse<TypeOfCompanyDto>();
+            ServiceResponse<ProcessDto> serviceResponse = new ServiceResponse<ProcessDto>();
 
             try
             {
-                var TypeofCompany = await _repository.TypeOfCompanyRepository.GetTypeOfCompanyById(id);
-                if (TypeofCompany is null)
+                var process = await _repository.ProcessRepository.GetProcessById(id);
+                if (process is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = " TypeofCompany object sent from client is null";
+                    serviceResponse.Message = "Process object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"TypeofCompany with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Process with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                TypeofCompany.IsActive = true;
-                string result = await _repository.TypeOfCompanyRepository.UpdateTypeOfCompany(TypeofCompany);
+                process.IsActive = true;
+                string result = await _repository.ProcessRepository.UpdateProcess(process);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -294,33 +292,32 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside ActivatedTypeofCompany action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside ActivatedProcess action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> DeactivateTypeOfCompany(int id)
+        public async Task<IActionResult> DeactivateProcess(int id)
         {
-            ServiceResponse<TypeOfCompanyDto> serviceResponse = new ServiceResponse<TypeOfCompanyDto>();
+            ServiceResponse<ProcessDto> serviceResponse = new ServiceResponse<ProcessDto>();
 
             try
             {
-                var TypeofCompany = await _repository.TypeOfCompanyRepository.GetTypeOfCompanyById(id);
-                if (TypeofCompany is null)
+                var Process = await _repository.ProcessRepository.GetProcessById(id);
+                if (Process is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "TypeofCompany object sent from client is null";
+                    serviceResponse.Message = "Process object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"TypeofCompany with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Process with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                TypeofCompany.IsActive = false;
-                string result = await _repository.TypeOfCompanyRepository.UpdateTypeOfCompany(TypeofCompany);
+                Process.IsActive = false;
+                string result = await _repository.ProcessRepository.UpdateProcess(Process);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deactivated Successfully";
@@ -331,10 +328,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeactivatedTypeofCompany action: {ex.Message}");
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside DeactivatedProcesses action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }

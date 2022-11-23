@@ -275,6 +275,22 @@ namespace Tips.Master.Api
             CreateMap<EnggAlternates, EnggAlternatesPostDto>().ReverseMap();
             CreateMap<EnggAlternates, EnggAlternatesUpdateDto>().ReverseMap();
 
+            CreateMap<CompanyMasterHeadCounting, CompanyMasterHeadCountingDto>().ReverseMap();
+            CreateMap<CompanyMasterHeadCounting, CompanyMasterHeadCountingDtoPost>().ReverseMap();
+            CreateMap<CompanyMasterHeadCounting, CompanyMasterHeadCountingDtoUpdate>().ReverseMap();
+
+            CreateMap<CustomerMasterHeadCounting, CustomerMasterHeadCountingDto>().ReverseMap();
+            CreateMap<CustomerMasterHeadCounting, CustomerMasterHeadCountingDtoPost>().ReverseMap();
+            CreateMap<CustomerMasterHeadCounting, CustomerMasterHeadCountingDtoUpdate>().ReverseMap();
+
+            CreateMap<Process, ProcessDto>().ReverseMap();
+            CreateMap<Process, ProcessDtoPost>().ReverseMap();
+            CreateMap<Process, PackingInstructionDtoUpdate>().ReverseMap();
+
+            CreateMap<PartTypes, PartTypesDto>().ReverseMap();
+            CreateMap<PartTypes, PartTypesDtoPost>().ReverseMap();
+            CreateMap<PartTypes, PartTypesDtoUpdate>().ReverseMap();
+
             CreateMap<Inventory, InventoyDto>().ReverseMap();
 
             CreateMap<Inventory_Transaction, Inventory_TransactionDto>().ReverseMap();

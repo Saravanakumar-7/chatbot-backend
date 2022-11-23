@@ -6,18 +6,12 @@ using System.Threading.Tasks;
 
 namespace Entities
 {
-    public class CompanyAddresses
+    public class PartTypes
     {
-        public int Id { get; set; }
-
-        public string? PoAddress { get; set; }
-
-        public string? GSTNNumber { get; set; }
-
-        public string? PANNumber { get; set; }
-
-        public bool SameasAddress { get; set; } = false;
-
+        public int? Id { get; set; }
+        public string PartTypeName { get; set; }
+        public string? Description { get; set; }
+        public string? Remarks { get; set; }
         public bool IsActive { get; set; } = true;
         public string Unit { get; set; }
 
@@ -25,9 +19,5 @@ namespace Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
-        public int CompanyMasterId { get; set; }
-
-        public CompanyMaster? CompanyMaster { get; set; }
     }
 }

@@ -36,7 +36,8 @@ namespace Entities
         public string? Currency { get; set; }
         public string? GooglePinLocation { get; set; }
         public string? TypeOfCompany { get; set; }
-        public string? ExportUnitType { get; set; }
+        public string? ExportUnitType { get; set; }       
+       
         public bool GeneralMSME { get; set; } = true;
 
         //Related Company
@@ -58,6 +59,7 @@ namespace Entities
         public string? SpecialTerms { get; set; }
 
         public string? PreferredFreightForwader { get; set; }
+        public string? Others { get; set; }
 
 
         //saturation
@@ -112,6 +114,7 @@ namespace Entities
         public string? BasisOfApproval { get; set; }
 
         public bool InventoryItem { get; set; } = true;
+        public string? CustomerApprove { get; set; }
 
         public string? ApprovalStatus { get; set; }
 
@@ -123,7 +126,7 @@ namespace Entities
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-        public bool IsActive { get; set; } = true;
+        //public bool IsActive { get; set; } = true;
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -133,5 +136,8 @@ namespace Entities
         public List<CompanyAddresses>? CompanyAddresses { get; set; }
         public List<CompanyContacts>? CompanyContacts { get; set; }
         public List<CompanyBanking>? CompanyBankings { get; set; }
+        public List<CompanyMasterHeadCounting>? CompanyMasterHeadCountings { get; set; }
+
+
     }
 }

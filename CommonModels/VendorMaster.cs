@@ -40,6 +40,7 @@ namespace Entities
         public string? TypeOfCompany { get; set; }
         public string? ExportUnitType { get; set; }
 
+
         public bool GeneralMSME { get; set; } = true;
 
         //Related Vendor

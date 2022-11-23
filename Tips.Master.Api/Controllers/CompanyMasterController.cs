@@ -1,10 +1,12 @@
-﻿using System.Net;
+﻿using Entities.DTOs;
+using Entities;
+using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol.Core.Types;
 using AutoMapper;
 using Contracts;
-using Entities;
-using Entities.DTOs;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Entities.Migrations;
+using System.Net;
 using Newtonsoft.Json;
 
 namespace Tips.Master.Api.Controllers
@@ -132,7 +134,9 @@ namespace Tips.Master.Api.Controllers
                 var Contacts = _mapper.Map<IEnumerable<CompanyContacts>>(companyMasterDtoPost.CompanyContacts);
                 var Bankings = _mapper.Map<IEnumerable<CompanyBanking>>(companyMasterDtoPost.CompanyBankings);
                 var Addresses = _mapper.Map<IEnumerable<CompanyAddresses>>(companyMasterDtoPost.CompanyAddresses);
-                
+                var CompanymasterHeadCount = _mapper.Map<IEnumerable<CompanyMasterHeadCounting>>(companyMasterDtoPost.CompanyMasterHeadCountings);
+
+              
 
                 await _repository.CompanyMasterRepository.CreateCompanyMaster(CompanyMaster);
                 _repository.SaveAsync();
@@ -186,7 +190,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"Update CompanyMaster with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound; 
                     return NotFound(serviceResponse);
                 }
 
@@ -194,11 +198,15 @@ namespace Tips.Master.Api.Controllers
                 var Addresses = _mapper.Map<IEnumerable<CompanyAddresses>>(companyMasterDtoUpdate.CompanyAddresses);
                 var Contacts = _mapper.Map<IEnumerable<CompanyContacts>>(companyMasterDtoUpdate.CompanyContacts);
                 var Banking = _mapper.Map<IEnumerable<CompanyBanking>>(companyMasterDtoUpdate.CompanyBankings);
+                var CompanymasterHeadCounting = _mapper.Map<IEnumerable<CompanyMasterHeadCounting>>(companyMasterDtoUpdate.CompanyMasterHeadCountings);
+
                 var data = _mapper.Map(companyMasterDtoUpdate, updateCompanyMaster);
+
 
                 data.CompanyAddresses = Addresses.ToList();
                 data.CompanyContacts = Contacts.ToList();
                 data.CompanyBankings = Banking.ToList();
+                data.CompanyMasterHeadCountings = CompanymasterHeadCounting.ToList();
 
                 string result = await _repository.CompanyMasterRepository.UpdateCompanyMaster(data);
                 _logger.LogInfo(result);
@@ -206,8 +214,8 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = " CompanyMaster Successfully Updated";
                 serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.NoContent;
-                return NoContent();
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
