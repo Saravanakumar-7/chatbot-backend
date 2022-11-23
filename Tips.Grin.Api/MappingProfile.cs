@@ -21,7 +21,6 @@ namespace Tips.Grin.Api
             CreateMap<IQCConfirmation, IQCConfirmationPostDto>().ReverseMap();
             CreateMap<IQCConfirmation, IQCConfirmationUpdateDto>().ReverseMap();
 
-
         }
     }
 }

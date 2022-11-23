@@ -25,39 +25,55 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<int?> CreateIqc(IQCConfirmation iQCConfirmation)
         {
-            iQCConfirmation.CreatedBy = "Admin";
-            iQCConfirmation.CreatedOn = DateTime.Now;
             iQCConfirmation.LastModifiedBy = "Admin";
             iQCConfirmation.LastModifiedOn = DateTime.Now;
-            //iQCConfirmation.Unit = "Bangalore";
-
+            iQCConfirmation.CreatedBy = "Admin";
+            iQCConfirmation.CreatedOn = DateTime.Now;
             var result = await Create(iQCConfirmation);
             return result.Id;
         }
-
-        public Task<int?> CreateIqcById(IQCConfirmation iQCConfirmation)
+        public async Task<IEnumerable<IQCConfirmation>> GetAllIqcDetails()
         {
-            throw new NotImplementedException();
+            var IQCList = await FindAll().ToListAsync();
+            return (IQCList);
+
+        }
+        public async Task<IEnumerable<IQCConfirmation>> GetIqcDetailsbyGrinNo(string grinNo)
+    {
+            var IQCList = await FindByCondition(x => x.GrinNumber == grinNo).ToListAsync();
+            return IQCList;
         }
 
-        public Task<string> DeleteIqc(IQCConfirmation iQCConfirmation)
+        public async Task<string> UpdateIqc(IQCConfirmation iQCConfirmation)
         {
-            throw new NotImplementedException();
+            iQCConfirmation.LastModifiedBy = "Admin";
+            iQCConfirmation.LastModifiedOn = DateTime.Now;
+            Update(iQCConfirmation);
+            string result = $"LeadTime details of {iQCConfirmation.Id} is updated successfully!";
+            return result;
+        }
+/*
+        public async Task<string> DeleteIqc(IQCConfirmation iQCConfirmation)
+        {
+            Delete(iQCConfirmation);
+            string result = $"Grin details of {iQCConfirmation.Id} is deleted successfully!";
+            return result;
+         }
+*/
+
+        public async Task<IQCConfirmation> GetIqcDetailsbyId(int id)
+        {
+            var customerType = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+
+            return customerType;
         }
 
-        public Task<IEnumerable<IQCConfirmation>> GetAllIqcDetails()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IQCConfirmation> GetIqcDetailByGrinNo(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<string> UpdateIqc(IQCConfirmation iQCConfirmation)
-        {
-            throw new NotImplementedException();
-        }
     }
+
 }
+
+
+
+
+
+
