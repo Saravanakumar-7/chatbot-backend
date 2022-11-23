@@ -58,6 +58,8 @@ namespace Repository
         private IWarehouseRepository? _warehouseRepository;
         private ISegmentRepository _segmentRepository;
 
+        private IProcessRepository _processRepository;
+
         private ICustomerMasterRepository? _customerMasterRepo;
          
 
@@ -83,6 +85,18 @@ namespace Repository
                     _enggBomRepository = new EngineeringBomRepository(_tipsMasterDbContext);
                 }
                 return _enggBomRepository;
+            }
+        }
+
+        public IProcessRepository ProcessRepository
+        {
+            get
+            {
+                if (_processRepository == null)
+                {
+                    _processRepository = new ProcessRepository(_tipsMasterDbContext);
+                }
+                return _processRepository;
             }
         }
         public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository
@@ -654,6 +668,7 @@ namespace Repository
 
         public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
 
+ 
         //public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository => throw new NotImplementedException();
 
 

@@ -66,6 +66,8 @@ namespace Contracts
 
         IVendorBankingRepository VendorBankingRepository { get; }
 
+        IProcessRepository ProcessRepository { get; }
+
         IShipmentInstructionsRepository ShipmentInstructionsRepository { get; }
         ISegmentRepository SegmentRepository { get; }
         IQuoteTermsRepository QuoteTermsRepository { get; }
