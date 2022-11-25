@@ -36,7 +36,9 @@ namespace Entities
         public string? ExportUnitType { get; set; }
         public bool GeneralMSME { get; set; } = true;
         public string? SalesManager { get; set; }
+        public string? SalesManagerCode { get; set; }
         public string? Region { get; set; }
+       
 
         //RelatedLink
 

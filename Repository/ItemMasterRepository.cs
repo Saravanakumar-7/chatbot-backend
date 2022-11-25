@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
+using Entities.DTOs;
 using Entities.Helper;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,7 +34,7 @@ namespace Repository
             return result;
         }
 
-        public async Task<List<ItemMaster>> GetAllActiveItems()
+        public async Task<IEnumerable<ItemMaster>> GetAllActiveItems()
         {
             var LeadTimeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
             return LeadTimeList;
@@ -76,10 +77,28 @@ namespace Repository
             string result = $"LeadTime details of {itemMaster.Id} is updated successfully!";
             return result;
         }
-
-        Task<IEnumerable<ItemMaster>> IItemMasterRepository.GetAllActiveItems()
+        public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllActiveItemMasterIdNoList()
         {
-            throw new NotImplementedException();
+            IEnumerable<ItemMasterIdNoListDto> ItemMasterDetails = await TipsMasterDbContext.ItemMasters
+                                .Select(c => new ItemMasterIdNoListDto()
+                                {
+                                    id = c.Id,
+                                    ItemNumber = c.ItemNumber,
+                                    Description= c.Description,
+                                    
+                                   
+                                })
+                              .ToListAsync();
+
+            return ItemMasterDetails;
         }
+        public async Task<ItemMaster> GetItemByItemNumber(string ItemNumber)
+        {
+            var ItemNumberList = await FindByCondition(x => x.ItemNumber == ItemNumber)
+
+                             .FirstOrDefaultAsync();
+            return ItemNumberList;
+        }       
+         
     }
 }

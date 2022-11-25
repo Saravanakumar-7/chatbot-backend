@@ -285,7 +285,7 @@ namespace Tips.Master.Api
 
             CreateMap<Process, ProcessDto>().ReverseMap();
             CreateMap<Process, ProcessDtoPost>().ReverseMap();
-            CreateMap<Process, PackingInstructionDtoUpdate>().ReverseMap();
+            CreateMap<Process, ProcessDtoUpdate>().ReverseMap();
 
             CreateMap<PartTypes, PartTypesDto>().ReverseMap();
             CreateMap<PartTypes, PartTypesDtoPost>().ReverseMap();

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
+using Entities.DTOs;
 using Entities.Helper;
 
 namespace Contracts
@@ -16,6 +17,9 @@ namespace Contracts
         Task<long> CreateItem(ItemMaster itemMaster);
         Task<string> UpdateItem(ItemMaster itemMaster);
         Task<string> DeleteItem(ItemMaster itemMaster);
-         
+        Task<IEnumerable<ItemMasterIdNoListDto>> GetAllActiveItemMasterIdNoList();
+        Task<ItemMaster> GetItemByItemNumber(string shopOrderNo);
+
+
     }
 }

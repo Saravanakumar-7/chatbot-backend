@@ -12,7 +12,7 @@ namespace Entities
 
         public string? ShippingAddress { get; set; }
 
-        public string? GSTNNumber { get; set; }
+        //public string? GSTNNumber { get; set; }
 
         public string? GooglePinLocation { get; set; }
 

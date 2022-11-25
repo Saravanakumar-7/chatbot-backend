@@ -16,6 +16,7 @@ namespace Entities.DTOs
         public string? GSTNNumber { get; set; }
 
         public string? PANNumber { get; set; }
+        public bool SameasAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
         public string Unit { get; set; }
@@ -34,6 +35,7 @@ namespace Entities.DTOs
 
         public string? PANNumber { get; set; }
 
+        public bool SameasAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
         [Required(ErrorMessage = "Unit is required")]
@@ -52,6 +54,7 @@ namespace Entities.DTOs
         public string? GSTNNumber { get; set; }
 
         public string? PANNumber { get; set; }
+        public bool SameasAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
         [Required(ErrorMessage = "Unit is required")]

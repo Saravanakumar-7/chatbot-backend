@@ -17,6 +17,7 @@ namespace Entities
         public string? GSTNNumber { get; set; }
 
         public string? PANNumber { get; set; }
+        public bool SameasAddress { get; set; } = false;
         public bool IsActive { get; set; } = true;
         public string Unit { get; set; }
 

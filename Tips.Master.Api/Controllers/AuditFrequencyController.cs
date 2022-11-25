@@ -82,7 +82,7 @@ namespace Tips.Master.Api.Controllers
         }
         // GET api/<AuditFrequencyController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAuditFrequenyById(int id)
+        public async Task<IActionResult> GetAuditFrequencyById(int id)
         {
             ServiceResponse<AuditFrequencyDto> serviceResponse = new ServiceResponse<AuditFrequencyDto>();
 
