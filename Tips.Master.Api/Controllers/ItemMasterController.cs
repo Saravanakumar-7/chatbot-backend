@@ -337,6 +337,69 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveItemMasterIdNoList()
+        {
+            ServiceResponse<IEnumerable<ItemMasterIdNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterIdNoListDto>>();
+            try
+            {
+                var listOfItemno = await _repository.ItemMasterRepository.GetAllActiveItemMasterIdNoList();
+                //_logger.LogInfo("Returned all CustomerMaster");
+                var result = _mapper.Map<IEnumerable<ItemMasterIdNoListDto>>(listOfItemno);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ItemMasterIdNoList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
 
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveItemMasterIdNoList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("ItemNumber")]
+        public async Task<IActionResult> GetItemByItemNumber(string ItemNumber)
+        {
+            ServiceResponse<ItemMasterDto> serviceResponse = new ServiceResponse<ItemMasterDto>();
+
+            try
+            {
+                var Itemmasters = await _repository.ItemMasterRepository.GetItemByItemNumber(ItemNumber);
+                if (Itemmasters == null)
+                {
+                    _logger.LogError($"Itemmasters with id: {ItemNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Itemmasters with id: {ItemNumber}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Itemmasters with id: {ItemNumber}");
+                    var result = _mapper.Map<ItemMasterDto>(Itemmasters);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetItemByItemNumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

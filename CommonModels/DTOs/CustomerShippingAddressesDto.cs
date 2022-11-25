@@ -13,7 +13,7 @@ namespace Entities.DTOs
 
         public string? ShippingAddress { get; set; }
 
-        public string? GSTNNumber { get; set; }
+        //public string? GSTNNumber { get; set; }
 
         public string? GooglePinLocation { get; set; }
 
@@ -32,7 +32,7 @@ namespace Entities.DTOs
 
         public string? ShippingAddress { get; set; }
 
-        public string? GSTNNumber { get; set; }
+        //public string? GSTNNumber { get; set; }
 
         public string? GooglePinLocation { get; set; }
 
@@ -51,7 +51,7 @@ namespace Entities.DTOs
 
         public string? ShippingAddress { get; set; }
 
-        public string? GSTNNumber { get; set; }
+        //public string? GSTNNumber { get; set; }
 
         public string? GooglePinLocation { get; set; }
 

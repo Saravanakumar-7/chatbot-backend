@@ -100,10 +100,10 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
 
-                    _logger.LogInfo($"Returned owner with id: {id}");
+                    _logger.LogInfo($"Returned Salutations with id: {id}");
                     var result = _mapper.Map<SalutationsDto>(Salutations);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned owner with id Successfully";
+                    serviceResponse.Message = "Returned Salutations with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -163,7 +163,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateSalutations action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }

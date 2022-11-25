@@ -37,7 +37,7 @@ namespace Tips.Grin.Api.Controllers
 
         public async Task<IActionResult> GetAllGrin([FromQuery] PagingParameter pagingParameter)
 
-         {
+        {
             ServiceResponse<IEnumerable<GrinDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinDto>>();
 
             try
@@ -115,7 +115,7 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-    
+
 
         // POST api/<GrinController>
         [HttpPost]
@@ -208,11 +208,11 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 var grinparts = _mapper.Map<IEnumerable<GrinParts>>(grinDto.GrinParts);
-         
+
                 var data = _mapper.Map(grinDto, updategrin);
 
 
-                data.GrinParts = grinparts.ToList(); 
+                data.GrinParts = grinparts.ToList();
 
                 string result = await _repository.UpdateGrin(data);
                 _logger.LogInfo(result);
@@ -235,7 +235,7 @@ namespace Tips.Grin.Api.Controllers
         }
 
         // DELETE api/<GrinController>/5
-        [HttpDelete("{id}")] 
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGrin(int id)
         {
             ServiceResponse<GrinDto> serviceResponse = new ServiceResponse<GrinDto>();
@@ -266,6 +266,32 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogError($"Something went wrong inside DeleteGrin action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveGrinNoList()
+        {
+            ServiceResponse<IEnumerable<GrinNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinNoListDto>>();
+            try
+            {
+                var listOfgrinno = await _repository.GetAllActiveGrinNoList();
+                //_logger.LogInfo("Returned all CustomerMaster");
+                var result = _mapper.Map<IEnumerable<GrinNoListDto>>(listOfgrinno);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all GrinNoList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveGrinNoList action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
