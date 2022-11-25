@@ -277,7 +277,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"Commodity with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                Commodity.ActiveStatus = true;
+                Commodity.IsActive = true;
                 string result = await _repository.CommodityRepository.UpdateCommodity(Commodity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
@@ -315,7 +315,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"Commodity with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                Commodity.ActiveStatus = false;
+                Commodity.IsActive = false;
                 string result = await _repository.CommodityRepository.UpdateCommodity(Commodity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
