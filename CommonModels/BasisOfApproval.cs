@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Entities
 {
-    public class BasicOfApproval
+    public class BasisOfApproval
     {
         public int Id { get; set; }
-        public string? BasicOfApprovalName { get; set; }
+        public string? BasisOfApprovalName { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool IsActive { get; set; } = true;
