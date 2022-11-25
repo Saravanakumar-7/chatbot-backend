@@ -10,7 +10,7 @@ namespace Entities.DTOs
 {
     public class EnggBomDto
     {
-        public int Id { get; set; }
+        public int BOMId { get; set; }
 
         public string ItemNumber { get; set; }
 
@@ -61,10 +61,10 @@ namespace Entities.DTOs
     }
     public class EnggBomUpdateDto
     {
-        public int Id { get; set; }
+        public int BOMId { get; set; }
 
         [Required(ErrorMessage = "ItemNumber is required")]
-        public string ItemNumber { get; set; }
+        public string ItemNumbers { get; set; }
 
         [StringLength(500, ErrorMessage = "ItemDescription can't be longer than 500 characters")]
         public string? ItemDescription { get; set; }
@@ -85,6 +85,6 @@ namespace Entities.DTOs
 
         public List<EnggChildItemUpdateDto>? EnggChildItemUpdates { get; set; }
 
-    }
+    }   
 
 }

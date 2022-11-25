@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +10,8 @@ namespace Entities
 {
     public class EnggBom
     {
-        public int Id { get; set; }
+        [Key]
+        public int BOMId { get; set; }
 
         public string ItemNumber { get; set; }
 

@@ -29,13 +29,13 @@ namespace Repository
             enggBom.Unit = "Bangalore";
 
             var result = await Create(enggBom);
-            return result.Id;
+            return result.BOMId;
         }
 
         public async Task<string> DeleteEnggBom(EnggBom enggBom)
         {
             Delete(enggBom);
-            string result = $"BOM details of {enggBom.Id} is deleted successfully!";
+            string result = $"BOM details of {enggBom.BOMId} is deleted successfully!";
             return result;
         }
 
@@ -50,7 +50,7 @@ namespace Repository
              
 
             var bomDetails = PagedList<EnggBom>.ToPagedList(FindAll()
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+               .OrderBy(on => on.BOMId), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
             return bomDetails;
@@ -58,7 +58,7 @@ namespace Repository
 
         public async Task<EnggBom> GetEnggBomById(int id)
         {
-            var bomDetails = await _tipsMasterDbContext.EnggBoms.Where(x => x.Id == id)
+            var bomDetails = await _tipsMasterDbContext.EnggBoms.Where(x => x.BOMId == id)
                               .Include(t => t.EnggChildItems)
                                 .ThenInclude(x => x.EnggAlternates)
                                 .Include(m => m.EnggChildItems)
@@ -73,7 +73,7 @@ namespace Repository
             enggBom.LastModifiedBy = "Admin";
             enggBom.LastModifiedOn = DateTime.Now;
             Update(enggBom);
-            string result = $"Engineering BOM Detail {enggBom.Id} is updated successfully!";
+            string result = $"Engineering BOM Detail {enggBom.BOMId} is updated successfully!";
             return result;
         }
     }
