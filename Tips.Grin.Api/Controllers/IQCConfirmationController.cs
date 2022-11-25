@@ -236,7 +236,7 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteShopOrder(int id)
+        public async Task<IActionResult> DeleteIQC(int id)
         {
             ServiceResponse<IQCConfirmationDto> serviceResponse = new ServiceResponse<IQCConfirmationDto>();
 
@@ -272,7 +272,42 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+        /*
+        [HttpPost]
+        public async Task<IActionResult> CreateAllIqc([FromBody] IQCConfirmationPostDto iQCConfirmationPostDto)
+        {
+            ServiceResponse<IQCConfirmationPostDto> serviceResponse = new ServiceResponse<IQCConfirmationPostDto>();
 
-      
+            try
+            {
+                var bank = await _iQCConfirmationRepository.GetBankById(id);
+                if (bank is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Bank object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"bank with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
+                }
+                bank.IsActive = false;
+                string result = await _iQCConfirmationRepository.UpdateBank(bank);
+                _logger.LogInfo(result);
+                _iQCConfirmationRepository.SaveAsync();
+                serviceResponse.Message = "Deactivated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside Deactivate Bank action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }*/
     }
 }

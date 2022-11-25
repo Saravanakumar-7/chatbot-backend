@@ -25,6 +25,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IGrinRepository, GrinRepository>();
 builder.Services.AddScoped<IIQCConfirmationRepository, IQCConfirmationRepository>();
+builder.Services.AddScoped<IBinningRepository, BinningRepository>();
 
 var app = builder.Build();
 
