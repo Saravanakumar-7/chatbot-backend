@@ -33,7 +33,7 @@ namespace Repository
 
         public async Task<IEnumerable<Commodity>> GetAllActiveCommodity()
         {
-            var commodityList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            var commodityList = await FindByCondition(x => x.IsActive == true).ToListAsync();
             return commodityList;
         }
 
