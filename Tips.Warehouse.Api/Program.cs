@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
+using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Extensions;
+using Tips.Warehouse.Api.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,8 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

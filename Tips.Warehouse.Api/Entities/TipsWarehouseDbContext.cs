@@ -10,5 +10,7 @@ namespace Tips.Warehouse.Api.Entities
 
         }
 
+        public DbSet<Invoice> invoices { get; set; }
+        public DbSet<InvoiceChildItem> invoiceChildItems { get; set; }
     }
 }
