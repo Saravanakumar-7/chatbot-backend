@@ -68,7 +68,7 @@ namespace Entities
 
         public DbSet<ScopeOfSupply>? ScopeOfSupplies { get; set; }
         public DbSet<VendorDepartment>? VendorDepartments { get; set; }
-        public DbSet<BasicOfApproval>? BasicOfApprovals { get; set; }
+        public DbSet<BasisOfApproval>? BasisOfApprovals { get; set; }
         public DbSet<VendorCategory>? VendorCategories { get; set; }
 
         public DbSet<VendorContacts>? Contact { get; set; }

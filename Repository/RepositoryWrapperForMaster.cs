@@ -27,7 +27,7 @@ namespace Repository
         private IBankRepository? _bankRepo;
         private ICurrencyRepository? _currency;
 
-        private IBasicOfApprovalRepository? _basicOfApproval;
+        private IBasisOfApprovalRepository? _basisOfApproval;
         private IScopeOfSupplyRepository? _scopeOfSupply;
         private IVendorCategoryRepository? _vendorCategory;
         private IVendorDepartmentRepository? _vendorDepartment;
@@ -464,15 +464,15 @@ namespace Repository
                 return _currency;
             }
         }
-        public IBasicOfApprovalRepository BasicOfApprovalRepository
+        public IBasisOfApprovalRepository BasisOfApprovalRepository
         {
             get
             {
-                if (_basicOfApproval == null)
+                if (_basisOfApproval == null)
                 {
-                    _basicOfApproval = new BasicOfApprovalRepository(_tipsMasterDbContext);
+                    _basisOfApproval = new BasisOfApprovalRepository(_tipsMasterDbContext);
                 }
-                return _basicOfApproval;
+                return _basisOfApproval;
             }
         }
 

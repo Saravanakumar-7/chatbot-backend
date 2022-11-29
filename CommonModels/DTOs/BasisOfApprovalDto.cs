@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Entities.DTOs
 {
-    public class BasicOfApprovalDto
+    public class BasisOfApprovalDto
     {
         public int Id { get; set; }
-        public string? BasicOfApprovalName { get; set; }
+        public string? BasisOfApprovalName { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool IsActive { get; set; } = true;
@@ -21,11 +21,11 @@ namespace Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
-    public class BasicOfApprovalPostDto
+    public class BasisOfApprovalPostDto
     {
-        [Required(ErrorMessage = "BasicOfApprovalName is required")]
-        [StringLength(100, ErrorMessage = "BasicOfApprovalName can't be longer than 100 characters")]
-        public string? BasicOfApprovalName { get; set; }
+        [Required(ErrorMessage = "BasisOfApprovalName is required")]
+        [StringLength(100, ErrorMessage = "BasisOfApprovalName can't be longer than 100 characters")]
+        public string? BasisOfApprovalName { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
         [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]
@@ -37,12 +37,12 @@ namespace Entities.DTOs
 
     }
 
-    public class BasicOfApprovalUpdateDto
+    public class BasisOfApprovalUpdateDto
     {
         public int Id { get; set; }
-        [Required(ErrorMessage = "BasicOfApprovalName is required")]
-        [StringLength(100, ErrorMessage = "BasicOfApprovalName can't be longer than 100 characters")]
-        public string? BasicOfApprovalName { get; set; }
+        [Required(ErrorMessage = "BasisOfApprovalName is required")]
+        [StringLength(100, ErrorMessage = "BasisOfApprovalName can't be longer than 100 characters")]
+        public string? BasisOfApprovalName { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
         [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]

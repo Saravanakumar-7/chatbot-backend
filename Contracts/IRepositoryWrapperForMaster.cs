@@ -52,7 +52,7 @@ namespace Contracts
         IDepartmentRepository DepartmentRepository { get; }
         ICurrencyRepository CurrencyRepository { get; }
         IIncoTermRepository IncoTermRepository { get; }
-        IBasicOfApprovalRepository BasicOfApprovalRepository { get; }
+        IBasisOfApprovalRepository BasisOfApprovalRepository { get; }
         IVendorCategoryRepository VendorCategoryRepository { get; }
         IVendorDepartmentRepository VendorDepartmentRepository { get; }
         IScopeOfSupplyRepository ScopeOfSupplyRepository { get; }
