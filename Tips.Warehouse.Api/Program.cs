@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
+using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Extensions;
+using Tips.Warehouse.Api.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();  
 
 var app = builder.Build();
 
