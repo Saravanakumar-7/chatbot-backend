@@ -13,32 +13,29 @@ namespace Tips.SalesService.Api.Entities
         public int Id { get; set; }
 
         public string? ItemNumber { get; set; }
-        public string? RevisionNumber { get; set; }
-
-
         public int? Quantity { get; set; }
 
         public string? Description { get; set; }
      
 
-        public DateTime? ScheduleDate { get; set; }
+        //public DateTime? ScheduleDate { get; set; }
 
-        public int? ScheduleQuantity { get; set; }
+        //public int? ScheduleQuantity { get; set; }
 
-        public string? SelectCustomGroup { get; set; }
+        //public string? SelectCustomGroup { get; set; }
 
-        public DateTime? CustomFieldSchedule { get; set; }
+        //public DateTime? CustomFieldSchedule { get; set; }
 
-        public string? SelectCustomGroups { get; set; }
+        //public string? SelectCustomGroups { get; set; }
 
-        public string? LabelName { get; set; }
+        //public string? LabelName { get; set; }
 
-        public string? Type { get; set; }
+        //public string? Type { get; set; }
 
-        public string? MaxLengthUnit { get; set; }
+        //public string? MaxLengthUnit { get; set; }
 
-        //enggfield
-        public string? ItemMaster { get; set; } 
+        ////enggfield
+        //public string? ItemMaster { get; set; } 
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

@@ -21,7 +21,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
         public List<RfqCustomerSupport>? rfqCustomerSupports { get; set; }
-        public List<RfqNotes>? rfqNotes { get; set; }
+        //public List<RfqNotes>? rfqNotes { get; set; }
  
     }
     public class RfqPostDto
@@ -34,7 +34,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public List<RfqCustomerSupport>? rfqCustomerSupports { get; set; }
-        public List<RfqNotes>? rfqNotes { get; set; }
+        //public List<RfqNotes>? rfqNotes { get; set; }
     }
     public class RfqUpdateDto
     {
@@ -48,7 +48,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public List<RfqCustomerSupport>? rfqCustomerSupports { get; set; }
-        public List<RfqNotes>? rfqNotes { get; set; }
+        //public List<RfqNotes>? rfqNotes { get; set; }
     }
 
 }

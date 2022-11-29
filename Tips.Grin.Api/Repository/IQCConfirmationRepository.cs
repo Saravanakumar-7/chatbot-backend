@@ -32,6 +32,8 @@ namespace Tips.Grin.Api.Repository
             var result = await Create(iQCConfirmation);
             return result.Id;
         }
+         
+
         public async Task<IEnumerable<IQCConfirmation>> GetAllIqcDetails()
         {
             var IQCList = await FindAll().ToListAsync();
@@ -60,7 +62,7 @@ namespace Tips.Grin.Api.Repository
 
             return IQCList;
         }
-
+ 
     }
 
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts;
+using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -182,6 +183,76 @@ namespace Tips.Grin.Api.Controllers
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("IQCConfirmationById", "Successfully Created");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside Create IQCConfirmation action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+
+
+            }
+        }
+
+        //bulk save
+
+        [HttpPost]
+        public async Task<IActionResult> SaveMultipleIqc([FromBody] List<IQCConfirmationPostDto> iQCConfirmationPostDtos)
+        {
+            ServiceResponse<IQCConfirmationPostDto> serviceResponse = new ServiceResponse<IQCConfirmationPostDto>();
+
+            try
+            {
+                if (iQCConfirmationPostDtos == null)
+                {
+                    _logger.LogError("IQCConfirmation details object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "IQCConfirmation details object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest();
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid IQCConfirmation details object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                var IqcConfirmationList = _mapper.Map<List<IQCConfirmation>>(iQCConfirmationPostDtos);
+                bool isAnyRecordCreated = false;
+                foreach (var iqcDetails in IqcConfirmationList)
+                {
+                    if(iqcDetails.AcceptedQunatity > 0 || iqcDetails.RejectedQunatity > 0)
+                    {
+                        _iQCConfirmationRepository.Create(iqcDetails);
+                        isAnyRecordCreated = true;
+                    }                     
+                }
+                if (isAnyRecordCreated)
+                {
+                    _iQCConfirmationRepository.SaveAsync();
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Successfully Created";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Created("IQCConfirmationById", serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Nothing to save,Because accepted or rejected quantity is not greater than 0 in any rows !";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Created("IQCConfirmationById", serviceResponse);
+                }
+            
             }
             catch (Exception ex)
             {

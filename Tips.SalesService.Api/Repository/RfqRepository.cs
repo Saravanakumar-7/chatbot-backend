@@ -5,15 +5,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;  
+using System.Threading.Tasks;
+using Entities;
+using Entities.Helper;
 
 namespace Tips.SalesService.Api.Repository
 {
     public class RfqRepository : RepositoryBase<Rfq>, IRfqRepository
     {
-         public RfqRepository(TipsSalesServiceDbContext repositoryContext) : base(repositoryContext)
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+        public RfqRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
         {
-         }
+            _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+        } 
          public async Task<int?> CreateRfq(Rfq rfq)
         {
             rfq.CreatedBy = "Admin";
@@ -29,24 +33,20 @@ namespace Tips.SalesService.Api.Repository
             return result; 
         }
 
-        public async Task<IEnumerable<Rfq>> GetAllRfq()
+        public async Task<PagedList<Rfq>> GetAllRfq(PagingParameter pagingParameter)             
         {
-            var rfq = await TipsSalesServiceDbContext.rfqs
-                               .Include(t => t.rfqCustomerSupports)
-                               .Include(m=>m.rfqNotes)
-                               .ToListAsync();
-
+            var rfq = PagedList<Rfq>.ToPagedList(FindAll()
+           .Include(t => t.rfqCustomerSupports)
+           .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);           
             return rfq;
-
-            //var rfq = await FindAll().ToListAsync();
-            //return rfq;
+             
         }
          
         public async Task<Rfq> GetRfqById(int id)
         {
-            var rfq = await TipsSalesServiceDbContext.rfqs.Where(x => x.Id == id)
+            var rfq = await _tipsSalesServiceDbContext.rfqs.Where(x => x.Id == id)
                                .Include(t => t.rfqCustomerSupports)
-                               .Include(m=>m.rfqNotes)
+                               //.Include(m=>m.rfqNotes)
                             .FirstOrDefaultAsync();
 
             return rfq;
