@@ -62,7 +62,8 @@ namespace Repository
          
 
         private ICompanyMasterRepository? _companyMasterRepo;
-         
+
+        private ILeadRepository? _leadRepo;
 
         private IUOCRepository? _uOCRepo;
         private IUOMRepository? _uOMRepo;
@@ -85,6 +86,18 @@ namespace Repository
                     _enggBomRepository = new EngineeringBomRepository(_tipsMasterDbContext);
                 }
                 return _enggBomRepository;
+            }
+        }
+
+        public ILeadRepository LeadRepository
+        {
+            get
+            {
+                if (_leadRepo == null)
+                {
+                    _leadRepo = new LeadRepository(_tipsMasterDbContext);
+                }
+                return _leadRepo;
             }
         }
         public IPartTypesRepository partTypesRepository
@@ -677,6 +690,8 @@ namespace Repository
         public IEnggBomChildItemRepository EnggBomChildItemRepository => throw new NotImplementedException();
 
         public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
+
+        //public ICustomerInfoRepository CustomerInfoRepository => throw new NotImplementedException();
 
         //public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository => throw new NotImplementedException();
 

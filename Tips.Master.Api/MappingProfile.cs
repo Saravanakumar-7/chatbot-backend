@@ -291,6 +291,16 @@ namespace Tips.Master.Api
             CreateMap<PartTypes, PartTypesDtoPost>().ReverseMap();
             CreateMap<PartTypes, PartTypesDtoUpdate>().ReverseMap();
 
+            CreateMap<Lead, LeadDto>().ReverseMap();
+            CreateMap<Lead, LeadDtoPost>().ReverseMap();
+            CreateMap<Lead, LeadDtoUpdate>().ReverseMap();
+
+            CreateMap<LeadAddress, LeadAddressDto>().ReverseMap();
+            CreateMap<LeadAddress, LeadAddressPostDto>().ReverseMap();
+            CreateMap<LeadAddress, LeadAddressUpdateDto>().ReverseMap();
+
+
+
             CreateMap<Inventory, InventoyDto>().ReverseMap();
 
             CreateMap<Inventory_Transaction, Inventory_TransactionDto>().ReverseMap();
