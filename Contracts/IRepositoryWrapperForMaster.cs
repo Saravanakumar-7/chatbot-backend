@@ -87,6 +87,8 @@ namespace Contracts
 
         IEnggBomRepository EnggBomRepository { get; } 
         IPartTypesRepository partTypesRepository { get; }
+        ILeadRepository LeadRepository { get; }
+
 
         void SaveAsync();
     }

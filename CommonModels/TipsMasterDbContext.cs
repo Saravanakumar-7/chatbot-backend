@@ -92,6 +92,8 @@ namespace Entities
         public DbSet<Inventory_Transaction> Inventory_Transactions { get; set; }
 
         public DbSet<PartTypes> PartTypes { get; set; }
+        public DbSet<Lead> Leads { get; set; }
+        public DbSet<LeadAddress> leadAddresses { get; set; }
 
 
 
