@@ -95,7 +95,10 @@ namespace Entities
         public DbSet<Lead> Leads { get; set; }
         public DbSet<LeadAddress> leadAddresses { get; set; }
 
-
-
+        public DbSet<DemoStatus> DemoStatuses { get; set; }
+        public DbSet<LeadStatus> LeadStatuses { get; set; }
+        public DbSet<LeadType> LeadTypes { get; set; }
+        public DbSet<SecondarySource> SecondarySources { get; set; }
+        public DbSet<Source> Sources { get; set; }
     }
 }

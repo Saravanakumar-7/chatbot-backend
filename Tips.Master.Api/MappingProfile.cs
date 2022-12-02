@@ -300,6 +300,26 @@ namespace Tips.Master.Api
             CreateMap<LeadAddress, LeadAddressUpdateDto>().ReverseMap();
 
 
+            CreateMap<DemoStatus, DemoStatusDto>().ReverseMap();
+            CreateMap<DemoStatus, DemoStatusDtoPost>().ReverseMap();
+            CreateMap<DemoStatus, DemoStatusDtoUpdate>().ReverseMap();
+
+            CreateMap<LeadStatus, LeadStatusDto>().ReverseMap();
+            CreateMap<LeadStatus, LeadStatusDtoPost>().ReverseMap();
+            CreateMap<LeadStatus, LeadStatusDtoUpdate>().ReverseMap();
+
+            CreateMap<LeadType, LeadTypeDto>().ReverseMap();
+            CreateMap<LeadType, LeadTypeDtoPost>().ReverseMap();
+            CreateMap<LeadType, LeadTypeDtoUpdate>().ReverseMap();
+
+            CreateMap<SecondarySource, SecondarySourceDto>().ReverseMap();
+            CreateMap<SecondarySource, SecondarySourceDtoPost>().ReverseMap();
+            CreateMap<SecondarySource, SecondarySourceDtoUpdate>().ReverseMap();
+
+            CreateMap<Source, SourceDto>().ReverseMap();
+            CreateMap<Source, SourceDtoPost>().ReverseMap();
+            CreateMap<Source, SourceDtoUpdate>().ReverseMap();
+
 
             CreateMap<Inventory, InventoyDto>().ReverseMap();
 

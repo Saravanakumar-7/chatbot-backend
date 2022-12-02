@@ -23,6 +23,14 @@ namespace Tips.SalesService.Api
             CreateMap<SourcingVendor, SourcingVendorDto>().ReverseMap();
             CreateMap<SourcingVendor, SourcingVendorPostDto>().ReverseMap();
             CreateMap<SourcingVendor, SourcingVendorUpdateDto>().ReverseMap();
+
+            CreateMap<RfqSourcing, RfqSourcingDto>().ReverseMap();
+            CreateMap<RfqSourcing, RfqSourcingDtoPost>().ReverseMap();
+            CreateMap<RfqSourcing, RfqSourcingDtoUpdate>().ReverseMap();
+
+            CreateMap<RfqSourcingItems, RfqSourcingItemsDto>().ReverseMap();
+            CreateMap<RfqSourcingItems, RfqSourcingItemsDtoPost>().ReverseMap();
+            CreateMap<RfqSourcingItems, RfqSourcingItemsDtoUpdate>().ReverseMap();
         }
     }
 }

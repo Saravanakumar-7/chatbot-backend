@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿  using Microsoft.EntityFrameworkCore;
 
 namespace Tips.SalesService.Api.Entities
 {
@@ -19,8 +19,7 @@ namespace Tips.SalesService.Api.Entities
 
         public DbSet<SourcingVendor> sourcingVendors { get; set; }
 
-
-
+        public DbSet<RfqSourcing> RfqSourcings { get; set; }
 
     }
 }

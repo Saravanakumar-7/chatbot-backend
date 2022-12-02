@@ -71,7 +71,11 @@ namespace Repository
         private ILocationsRepository? _locationsRepo;
         private IProcessRepository? _processRepo;
         private IPartTypesRepository? _parttypesRepo;
-
+        private IDemoStatusRepository? _demoStatusRepo;
+        private ILeadStatusRepository? _leadStatusRepo;
+        private ILeadTypeRepository? _leadTypeRepo;
+        private ISecondarySourceRepository? _secondarySourceRepo;
+        private ISourceRepository? _sourceRepo;
 
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
@@ -86,6 +90,62 @@ namespace Repository
                     _enggBomRepository = new EngineeringBomRepository(_tipsMasterDbContext);
                 }
                 return _enggBomRepository;
+            }
+        }
+        public ISourceRepository sourceRepository
+        {
+            get
+            {
+                if (_sourceRepo == null)
+                {
+                    _sourceRepo = new SourceRepository(_tipsMasterDbContext);
+                }
+                return _sourceRepo;
+            }
+        }
+        public ISecondarySourceRepository secondarySourceRepository
+        {
+            get
+            {
+                if (_secondarySourceRepo == null)
+                {
+                    _secondarySourceRepo = new SecondarySourceRepository(_tipsMasterDbContext);
+                }
+                return _secondarySourceRepo;
+            }
+        }
+        public ILeadStatusRepository LeadStatusRepository
+        {
+            get
+            {
+                if (_leadStatusRepo == null)
+                {
+                    _leadStatusRepo = new LeadStatusRepository(_tipsMasterDbContext);
+                }
+                return _leadStatusRepo;
+            }
+        }
+        public ILeadTypeRepository LeadTypeRepository
+        {
+            get
+            {
+                if (_leadTypeRepo == null)
+                {
+                    _leadTypeRepo = new LeadTypeRepository(_tipsMasterDbContext);
+                }
+                return _leadTypeRepo;
+            }
+        }
+
+        public IDemoStatusRepository DemoStatusRepository
+        {
+            get
+            {
+                if (_demoStatusRepo == null)
+                {
+                    _demoStatusRepo = new DemoStatusRepository(_tipsMasterDbContext);
+                }
+                return _demoStatusRepo;
             }
         }
 
@@ -690,6 +750,8 @@ namespace Repository
         public IEnggBomChildItemRepository EnggBomChildItemRepository => throw new NotImplementedException();
 
         public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
+
+       
 
         //public ICustomerInfoRepository CustomerInfoRepository => throw new NotImplementedException();
 
