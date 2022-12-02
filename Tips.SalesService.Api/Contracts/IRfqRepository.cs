@@ -1,17 +1,15 @@
-﻿using Entities;
-using Entities.Helper;
+﻿using Entities.Helper;
+using Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using Tips.SalesService.Api.Entities; 
-
+using Tips.SalesService.Api.Entities;
 
 namespace Tips.SalesService.Api.Contracts
 {
- 
     public interface IRfqRepository : IRepositoryBase<Rfq>
     {
         Task<PagedList<Rfq>> GetAllRfq(PagingParameter pagingParameter);
@@ -19,6 +17,6 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> CreateRfq(Rfq rfq);
         Task<string> UpdateRfq(Rfq rfq);
         Task<string> DeleteRfq(Rfq rfq);
-    } 
 
+    }
 }
