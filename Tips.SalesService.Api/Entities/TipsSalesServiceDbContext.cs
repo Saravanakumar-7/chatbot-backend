@@ -15,6 +15,12 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<RfqNumber> rfqNumbers { get ;set;}
         public DbSet<RfqCustomerSupport> rfqCustomerSupports { get; set; }
 
+        public DbSet<RfqCSDeliverySchedule> rfqCSDeliverySchedules { get; set; }
+
+        public DbSet<RfqCustomerSupportItems> rfqCustomerSupportItems { get; set; }
+
+        public DbSet<RfqCustomerSupportNotes> rfqCustomerSupportNotes { get; set; }
+
         public DbSet<RfqCustomGroup> rfqCustomGroups { get; set; }
 
         public DbSet<SourcingVendor> sourcingVendors { get; set; }
