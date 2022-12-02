@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Entities;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -7,20 +9,20 @@ using System.Threading.Tasks;
 
 namespace Tips.SalesService.Api.Entities
 {
-    public class RfqNotes
+    public class RfqCSDeliverySchedule
     {
         public int Id { get; set; }
-        public string? FromCSCategory { get; set; }
+        public DateTime Date { get; set; }
 
-        public string? FromEnggCategory { get; set; }
-
-        public string? FromEnggNotes { get; set; }
-        public string? FromCSNotes { get; set; }
+        [Precision(13,3)]
+        public decimal Quantity { get; set; }
+         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        //public int RfqId { get; set; }
-        //public Rfq? Rfq { get; set; }
+
+        public int RfqCustomerSupportItemsId { get; set; }
+        public RfqCustomerSupportItems? rfqCustomerSupportItems { get; set; }
     }
 }

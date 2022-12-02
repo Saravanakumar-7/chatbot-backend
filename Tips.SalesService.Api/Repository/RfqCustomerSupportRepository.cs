@@ -1,0 +1,141 @@
+﻿using Tips.SalesService.Api.Contracts;
+using Tips.SalesService.Api.Entities; 
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Entities;
+using Entities.Helper;
+using Org.BouncyCastle.Ocsp;
+
+namespace Tips.SalesService.Api.Repository
+{
+    public class RfqCustomerSupportRepository : RepositoryBase<RfqCustomerSupport>, IRfqCustomerSupportRepository
+    {
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+        public RfqCustomerSupportRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        {
+            _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+        }
+
+        public async Task<int?> CreateRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport)
+        {
+            rfqCustomerSupport.CreatedBy = "Admin";
+            rfqCustomerSupport.CreatedOn = DateTime.Now;
+            rfqCustomerSupport.Unit = "Bangalore";
+            var result = await Create(rfqCustomerSupport);
+            return result.Id;
+        }
+         
+        public async Task<string> DeleteRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport)
+        {
+            Delete(rfqCustomerSupport);
+            string result = $"RFQ details of {rfqCustomerSupport.Id} is deleted successfully!";
+            return result;
+        }
+         
+
+        public async Task<PagedList<RfqCustomerSupport>> GetAllRfqCustomerSupport(PagingParameter pagingParameter)
+       {
+           var rfqCustomerSupport = PagedList<RfqCustomerSupport>.ToPagedList(FindAll()
+           .Include(t => t.rfqCustomerSupportItems)
+           .ThenInclude(u=>u.rfqCSDeliverySchedule)
+           .Include(x=>x.rfqCustomerSupportNotes)
+           .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            return rfqCustomerSupport;
+        }
+
+
+        public async Task<RfqCustomerSupport> GetRfqCustomerSupportById(int id)
+        {
+            var rfqCustomerSupport = await _tipsSalesServiceDbContext.rfqCustomerSupports.Where(x => x.Id == id)
+                              .Include(t => t.rfqCustomerSupportItems)
+                              .ThenInclude(n=>n.rfqCSDeliverySchedule)
+                           .Include(m=>m.rfqCustomerSupportNotes)
+                           .FirstOrDefaultAsync();
+
+            return rfqCustomerSupport; 
+        }
+
+        public async Task<RfqCustomerSupport> RfqCustomerSupportByRfqNumber(string RfqNumber)
+        {
+            var csByRfqNumber = await _tipsSalesServiceDbContext.rfqCustomerSupports
+                .Include(t => t.rfqCustomerSupportItems)
+                .ThenInclude(n => n.rfqCSDeliverySchedule)
+                .Include(m => m.rfqCustomerSupportNotes)
+              .Where(x => x.RfqNumber == RfqNumber)
+                        .FirstOrDefaultAsync();
+            return csByRfqNumber;
+        }
+
+        public async Task<string> UpdateRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport)
+        {
+            rfqCustomerSupport.LastModifiedBy = "Admin";
+            rfqCustomerSupport.LastModifiedOn = DateTime.Now;
+            Update(rfqCustomerSupport);
+            string result = $"RFQ of Detail {rfqCustomerSupport.Id} is updated successfully!";
+            return result;
+        }
+         
+        
+    }
+    public class RfqRepository : RepositoryBase<Rfq>, IRfqRepository
+    {
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+
+        public RfqRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        {
+            _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+
+        } 
+        public async Task<int?> CreateRfq(Rfq rfq)
+        {
+            rfq.CreatedBy = "Admin";
+            rfq.CreatedOn = DateTime.Now;
+            rfq.Unit = "Bangalore";
+            var result = await Create(rfq);
+            return result.Id;
+        }
+
+        public async Task<string> DeleteRfq(Rfq rfq)
+        {
+            Delete(rfq);
+            string result = $"RFQ details of {rfq.Id} is deleted successfully!";
+            return result;
+        }
+
+        public async Task<PagedList<Rfq>> GetAllRfq(PagingParameter pagingParameter)
+        {
+            var rfq = PagedList<Rfq>.ToPagedList(FindAll()
+           .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            return rfq;
+        }
+
+        public async Task<Rfq> GetRfqById(int id)
+        {
+            var rfq = await _tipsSalesServiceDbContext.rfqs.Where(x => x.Id == id)
+                          .FirstOrDefaultAsync();
+
+            return rfq;
+        }
+
+        //public async Task<Rfq> RfqCustomerSupportByRfqNumber(int RfqNumber)
+        //{
+        //    var csByRfqNumber = await _tipsSalesServiceDbContext.rfqCustomerSupports
+        //        .Where(x => x.RfqNumber == RfqNumber)
+        //                  .FirstOrDefaultAsync();
+        //    return csByRfqNumber;
+        //}
+
+        public async Task<string> UpdateRfq(Rfq rfq)
+        {
+            rfq.LastModifiedBy = "Admin";
+            rfq.LastModifiedOn = DateTime.Now;
+            Update(rfq);
+            string result = $"RFQ of Detail {rfq.Id} is updated successfully!";
+            return result;
+        }
+    }
+}
