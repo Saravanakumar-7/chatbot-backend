@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace Tips.Warehouse.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class InvoiceController : ControllerBase
     {
@@ -155,7 +155,7 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateShopOrder(int id, [FromBody] InvoiceDto InvoiceUpdateDto)
+        public async Task<IActionResult> UpdateInvoice(int id, [FromBody] InvoiceDto InvoiceUpdateDto)
         {
             ServiceResponse<InvoiceDto> serviceResponse = new ServiceResponse<InvoiceDto>();
 
