@@ -44,6 +44,38 @@ namespace Tips.SalesService.Api
             CreateMap<RfqSourcingItems, RfqSourcingItemsDto>().ReverseMap();
             CreateMap<RfqSourcingItems, RfqSourcingItemsDtoPost>().ReverseMap();
             CreateMap<RfqSourcingItems, RfqSourcingItemsDtoUpdate>().ReverseMap();
+
+            CreateMap<RfqEngg, RfqEnggDto>().ReverseMap();
+            CreateMap<RfqEngg, RfqEnggDtoPost>().ReverseMap();
+            CreateMap<RfqEngg, RfqEnggDtoUpdate>().ReverseMap();
+
+            CreateMap<RfqEnggItem, RfqEnggItemDto>().ReverseMap();
+            CreateMap<RfqEnggItem, RfqEnggItemDtoPost>().ReverseMap();
+            CreateMap<RfqEnggItem, RfqEnggItemDtoUpdate>().ReverseMap();
+
+            CreateMap<RfqEnggRiskIdentification, RfqEnggRiskIdentificationDto>().ReverseMap();
+            CreateMap<RfqEnggRiskIdentification, RfqEnggRiskIdentificationDtoPost>().ReverseMap();
+            CreateMap<RfqEnggRiskIdentification, RfqEnggRiskIdentificationDtoUpdate>().ReverseMap();
+
+            CreateMap<RfqLPCosting, RfqLPCostingDto>().ReverseMap();
+            CreateMap<RfqLPCosting, RfqLPCostingDtoPost>().ReverseMap();
+            CreateMap<RfqLPCosting, RfqLPCostingDtoUpdate>().ReverseMap();
+
+            CreateMap<RfqLPCostingItem, RfqLPCostingItemDto>().ReverseMap();
+            CreateMap<RfqLPCostingItem, RfqLPCostingItemDtoPost>().ReverseMap();
+            CreateMap<RfqLPCostingItem, RfqLPCostingItemDtoUpdate>().ReverseMap();
+
+            CreateMap<RfqLPCostingProcess, RfqLPCostingProcessDto>().ReverseMap();
+            CreateMap<RfqLPCostingProcess, RfqLPCostingProcessDtoPost>().ReverseMap();
+            CreateMap<RfqLPCostingProcess, RfqLPCostingProcessDtoUpdate>().ReverseMap();
+
+            CreateMap<RfqLPCostingNREConsumable, RfqLPCostingNREConsumableDto>().ReverseMap();
+            CreateMap<RfqLPCostingNREConsumable, RfqLPCostingNREConsumableDtoPost>().ReverseMap();
+            CreateMap<RfqLPCostingNREConsumable, RfqLPCostingNREConsumableDtoUpdate>().ReverseMap();
+
+            CreateMap<RfqLPCostingOtherCharges, RfqLPCostingOtherChargesDto>().ReverseMap();
+            CreateMap<RfqLPCostingOtherCharges, RfqLPCostingOtherChargesDtoPost>().ReverseMap();
+            CreateMap<RfqLPCostingOtherCharges, RfqLPCostingOtherChargesDtoUpdate>().ReverseMap();
         }
     }
 }

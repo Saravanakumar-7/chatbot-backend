@@ -10,7 +10,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class RfqSourcingItemsDto
     {
         public int Id { get; set; }
-        public int? ItemNumber { get; set; }
+        public string? ItemNumber { get; set; }
         public string? ItemDescription { get; set; }
         public int? QuantityReq { get; set; }
         public int? Count { get; set; }
@@ -24,7 +24,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class RfqSourcingItemsDtoPost
     {
         [StringLength(500, ErrorMessage = "ItemNumber can't be longer than 100 characters")]
-        public int? ItemNumber { get; set; }
+        public string? ItemNumber { get; set; }
         [StringLength(500, ErrorMessage = "ItemDescription can't be longer than 500 characters")]
         public string? ItemDescription { get; set; }
         [StringLength(500, ErrorMessage = "QuantityReq can't be longer than 500 characters")]
@@ -40,7 +40,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int Id { get; set; }
         [StringLength(500, ErrorMessage = "ItemNumber can't be longer than 100 characters")]
-        public int? ItemNumber { get; set; }
+        public string? ItemNumber { get; set; }
         [StringLength(500, ErrorMessage = "ItemDescription can't be longer than 500 characters")]
         public string? ItemDescription { get; set; }
         [StringLength(500, ErrorMessage = "QuantityReq can't be longer than 500 characters")]
