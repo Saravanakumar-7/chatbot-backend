@@ -20,6 +20,9 @@ namespace Tips.Production.Api
             CreateMap<ShopOrderConfirmation, ShopOrderConfirmationDtoPost>().ReverseMap();
             CreateMap<ShopOrderConfirmation, ShopOrderConfirmationDtoUpdate>().ReverseMap();
 
+            CreateMap<SAShopOrder, SAShopOrderDto>().ReverseMap();
+            CreateMap<SAShopOrder, SAShopOrderDtoPost>().ReverseMap();
+            CreateMap<SAShopOrder, SAShopOrderDtoUpdate>().ReverseMap();
         }
     }
 }

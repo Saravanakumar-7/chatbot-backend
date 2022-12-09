@@ -20,6 +20,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllers();
 builder.Services.AddTransient<IShopOrderRepository, ShopOrderRepository>();
 builder.Services.AddTransient<IShopOrderConfirmationRepository, ShopOrderConfirmationRepository>();
+builder.Services.AddTransient<ISAShopOrderRepository, SAShopOrderRepository>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
