@@ -22,15 +22,17 @@ namespace Tips.SalesService.Api.Controllers
     public class RfqController : ControllerBase
     {
         private IRfqCustomerSupportRepository _repository;
+        private IRfqCustomerSupportItemRepository _itemRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IRfqRepository _rfqRepository;
         private IRfqEnggRepository _rfqenggRepository;
         private IRfqLPCostingRepository _rfqlpcostingRepository;
-        public RfqController(IRfqCustomerSupportRepository repository,IRfqRepository rfqRepository, IRfqLPCostingRepository rfqLPCostingRepository, IRfqEnggRepository rfqEnggRepository, ILoggerManager logger, IMapper mapper)
+        public RfqController(IRfqCustomerSupportRepository repository, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, IRfqLPCostingRepository rfqLPCostingRepository, IRfqEnggRepository rfqEnggRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
+            _itemRepository = rfqCustomerSupportItemRepository;
             _mapper = mapper;
             _rfqRepository = rfqRepository;
             _rfqenggRepository = rfqEnggRepository;
@@ -118,6 +120,13 @@ namespace Tips.SalesService.Api.Controllers
             }
 
         }
+
+
+
+
+
+
+
         //Get all RfqLPCosting
 
         [HttpGet]
@@ -560,7 +569,61 @@ namespace Tips.SalesService.Api.Controllers
              
         }
 
-         [HttpPost]
+        //release active API
+        [HttpPut]
+        public async Task<IActionResult> UpdateRfqCustomerSupportRelease([FromBody] List<int> itemIds)
+        {
+            ServiceResponse<RfqCustomerSupportDto> serviceResponse = new ServiceResponse<RfqCustomerSupportDto>();
+
+            try
+            {
+                if (itemIds is null)
+                {
+                    _logger.LogError("RfqCustomerSupport Itemid object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Update RfqCustomerSupport Itemid object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                foreach (var id in itemIds)
+                {
+                    if (id == null)
+                    {
+                        _logger.LogError($"RfqCustomerSupport with item id: {id}, hasn't been found in db.");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"Update RfqCustomerSupport with item id: {id}, hasn't been found in db.";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        return NotFound(serviceResponse);
+                    }
+
+                    var rfqCustomerSupport = await _itemRepository.GetRfqCustomerSupportItemById(id);
+                    rfqCustomerSupport.ReleaseStatus = true;
+                    string result = await _itemRepository.ActivateRfqCustomerSupportItemById(rfqCustomerSupport);
+                    _logger.LogInfo(result);
+                    _repository.SaveAsync();
+                }
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Rfq CustomerSupport Release Activated Successfully ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateRfq action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> CreateRfqCustomerSupport([FromBody] RfqCustomerSupportPostDto rfqCustomerSupportDto)
         {
             ServiceResponse<RfqCustomerSupportDto> serviceResponse = new ServiceResponse<RfqCustomerSupportDto>();
