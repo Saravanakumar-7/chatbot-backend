@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using Tips.Purchase.Api.Entities.Dto;
+using Tips.Purchase.Api.Entities.DTOs;
+using Tips.Purchase.Api.Entities;
 
 namespace Tips.Purchase.Api
 {
@@ -6,7 +9,41 @@ namespace Tips.Purchase.Api
     {
         public MappingProfile()
         {
-            
+            CreateMap<PurchaseOrder, PurchaseOrderDto>().ReverseMap();
+            CreateMap<PurchaseOrder, PurchaseOrderDtoPost>().ReverseMap();
+            CreateMap<PurchaseOrder, PurchaseOrderDtoUpdate>().ReverseMap();
+
+            CreateMap<PoItems, PoItemsDto>().ReverseMap();
+            CreateMap<PoItems, PoItemsDtoPost>().ReverseMap();
+            CreateMap<PoItems, PoItemsDtoUpdate>().ReverseMap();
+
+            CreateMap<PoAddProject, PoAddProjectDto>().ReverseMap();
+            CreateMap<PoAddProject, PoAddProjectDtoPost>().ReverseMap();
+            CreateMap<PoAddProject, PoAddProjectDtoUpdate>().ReverseMap();
+
+            CreateMap<PoAddDeliverySchedule, PoAddDeliveryScheduleDto>().ReverseMap();
+            CreateMap<PoAddDeliverySchedule, PoAddDeliveryScheduleDtoPost>().ReverseMap();
+            CreateMap<PoAddDeliverySchedule, PoAddDeliveryScheduleDtoUpdate>().ReverseMap();
+
+       
+
+            CreateMap<PurchaseRequisition, PurchaseRequisitionDto>().ReverseMap();
+            CreateMap<PurchaseRequisition, PurchaseRequisitionDtoPost>().ReverseMap();
+            CreateMap<PurchaseRequisition, PurchaseRequisitionDtoUpdate>().ReverseMap();
+
+            CreateMap<PrItems, PrItemsDto>().ReverseMap();
+            CreateMap<PrItems, PrItemsDtoPost>().ReverseMap();
+            CreateMap<PrItems, PrItemsDtoUpdate>().ReverseMap();
+
+            CreateMap<PrAddProject, PrAddProjectDto>().ReverseMap();
+            CreateMap<PrAddProject, PrAddProjectDtoPost>().ReverseMap();
+            CreateMap<PrAddProject, PrAddProjectDtoUpdate>().ReverseMap();
+
+            CreateMap<PrAddDeliverySchedule, PrAddDeliveryScheduleDto>().ReverseMap();
+            CreateMap<PrAddDeliverySchedule, PrAddDeliveryScheduleDtoPost>().ReverseMap();
+            CreateMap<PrAddDeliverySchedule, PrAddDeliveryScheduleDtoUpdate>().ReverseMap();
+
+
         }
     }
 }
