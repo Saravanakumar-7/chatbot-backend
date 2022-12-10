@@ -31,7 +31,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<Rfq>> GetAllRfq()
         {
-            var rfq = await TipsSalesServiceDbContext.rfqs
+            var rfq = await _tipsSalesServiceDbContext.rfqs
                                .Include(t => t.rfqCustomerSupports)
                                .Include(m=>m.rfqNotes)
                                .ToListAsync();
@@ -44,7 +44,7 @@ namespace Tips.SalesService.Api.Repository
          
         public async Task<Rfq> GetRfqById(int id)
         {
-            var rfq = await TipsSalesServiceDbContext.rfqs.Where(x => x.Id == id)
+            var rfq = await _tipsSalesServiceDbContext.rfqs.Where(x => x.Id == id)
                                .Include(t => t.rfqCustomerSupports)
                                .Include(m=>m.rfqNotes)
                             .FirstOrDefaultAsync();
