@@ -58,6 +58,8 @@ namespace Entities.DTOs
         public string? SpecialTerms { get; set; }
 
         public string? PreferredFreightForwader { get; set; }
+        public string? Others { get; set; }
+
 
 
         //saturation
@@ -112,6 +114,7 @@ namespace Entities.DTOs
         public string? BasisOfApproval { get; set; }
 
         public bool InventoryItem { get; set; } = true;
+        public string? CustomerApprove { get; set; }
 
         public string? ApprovalStatus { get; set; }
 
@@ -123,7 +126,7 @@ namespace Entities.DTOs
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-        public bool IsActive { get; set; } = true;
+        //public bool IsActive { get; set; } = true;
         
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
@@ -134,6 +137,8 @@ namespace Entities.DTOs
         public List<CompanyAddressesDto>? CompanyAddresses { get; set; }
         public List<CompanyContactsDto>? CompanyContacts { get; set; }
         public List<CompanyBankingDto>? CompanyBankings { get; set; }
+        public List<CompanyMasterHeadCountingDto>? CompanyMasterHeadCountings { get; set; }
+
     }
 
     public class CompanyMasterDtoPost
@@ -187,6 +192,8 @@ namespace Entities.DTOs
         public string? SpecialTerms { get; set; }
 
         public string? PreferredFreightForwader { get; set; }
+        public string? Others { get; set; }
+
 
 
         //saturation
@@ -241,6 +248,7 @@ namespace Entities.DTOs
         public string? BasisOfApproval { get; set; }
 
         public bool InventoryItem { get; set; } = true;
+        public string? CustomerApprove { get; set; }
 
         public string? ApprovalStatus { get; set; }
 
@@ -252,7 +260,7 @@ namespace Entities.DTOs
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-        public bool IsActive { get; set; } = true;
+        //public bool IsActive { get; set; } = true;
         [Required(ErrorMessage = "Unit is required")]
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
         public string Unit { get; set; }
@@ -264,6 +272,8 @@ namespace Entities.DTOs
         public List<CompanyAddressesDtoPost>? CompanyAddresses { get; set; }
         public List<CompanyContactsDtoPost>? CompanyContacts { get; set; }
         public List<CompanyBankingDtoPost>? CompanyBankings { get; set; }
+        public List<CompanyMasterHeadCountingDtoPost>? CompanyMasterHeadCountings { get; set; }
+
     }
 
     public class CompanyMasterDtoUpdate
@@ -317,6 +327,8 @@ namespace Entities.DTOs
         public string? SpecialTerms { get; set; }
 
         public string? PreferredFreightForwader { get; set; }
+        public string? Others { get; set; }
+
 
 
         //saturation
@@ -371,6 +383,7 @@ namespace Entities.DTOs
         public string? BasisOfApproval { get; set; }
 
         public bool InventoryItem { get; set; } = true;
+        public string? CustomerApprove { get; set; }
 
         public string? ApprovalStatus { get; set; }
 
@@ -382,7 +395,7 @@ namespace Entities.DTOs
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-        public bool IsActive { get; set; } = true;
+        //public bool IsActive { get; set; } = true;
         [Required(ErrorMessage = "Unit is required")]
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
         public string Unit { get; set; }
@@ -394,6 +407,8 @@ namespace Entities.DTOs
         public List<CompanyAddressesDtoUpdate>? CompanyAddresses { get; set; }
         public List<CompanyContactsDtoUpdate>? CompanyContacts { get; set; }
         public List<CompanyBankingDtoUpdate>? CompanyBankings { get; set; }
+        public List<CompanyMasterHeadCountingDtoUpdate>? CompanyMasterHeadCountings { get; set; }
+
     }
 
     public class CompanyIdNameListDto

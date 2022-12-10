@@ -37,15 +37,19 @@ namespace Entities
         public DbSet<TypeOfCompany> typeOfCompanies { get; set; }
         public DbSet<PaymentTerm> paymentTerms { get; set; }
         public DbSet<PackingInstruction> packingInstructions { get; set; }
-        public DbSet<HeadCounting>? HeadCountings { get; set; }
 
+        public DbSet<Process> processes { get; set; }
+        public DbSet<HeadCounting>? HeadCountings { get; set; }
+        public DbSet<CompanyMasterHeadCounting>? CompanyMasterHeadCountings { get; set; }
+
+        public DbSet<CustomerMasterHeadCounting>? CustomerMasterHeadCountings { get; set; }
         public DbSet<UOM>Uom { get; set; }
         public DbSet<UOC> Uoc { get; set; }
         public DbSet<Commodity> Commodity { get; set; }
         public DbSet<Locations> Locations { get; set; }
 
         public DbSet<CompanyMaster> CompanyMasters { get; set; }
-        public DbSet<CompanyAddresses> CompanyAddresses { get; set; }
+        public DbSet<CompanyAddresses> CompanyAddresse { get; set; }
         public DbSet<CompanyContacts> CompanyContacts { get; set; }
         public DbSet<CompanyBanking> CompanyBankings { get; set; }
 
@@ -64,7 +68,7 @@ namespace Entities
 
         public DbSet<ScopeOfSupply>? ScopeOfSupplies { get; set; }
         public DbSet<VendorDepartment>? VendorDepartments { get; set; }
-        public DbSet<BasicOfApproval>? BasicOfApprovals { get; set; }
+        public DbSet<BasisOfApproval>? BasisOfApprovals { get; set; }
         public DbSet<VendorCategory>? VendorCategories { get; set; }
 
         public DbSet<VendorContacts>? Contact { get; set; }
@@ -87,6 +91,14 @@ namespace Entities
 
         public DbSet<Inventory_Transaction> Inventory_Transactions { get; set; }
 
+        public DbSet<PartTypes> PartTypes { get; set; }
+        public DbSet<Lead> Leads { get; set; }
+        public DbSet<LeadAddress> leadAddresses { get; set; }
 
+        public DbSet<DemoStatus> DemoStatuses { get; set; }
+        public DbSet<LeadStatus> LeadStatuses { get; set; }
+        public DbSet<LeadType> LeadTypes { get; set; }
+        public DbSet<SecondarySource> SecondarySources { get; set; }
+        public DbSet<Source> Sources { get; set; }
     }
 }

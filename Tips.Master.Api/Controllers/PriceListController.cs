@@ -123,7 +123,7 @@ namespace Tips.Master.Api.Controllers
 
         // POST api/<PriceListController>
         [HttpPost]
-        public IActionResult CreateAuditFrequeny([FromBody] PriceListDtoPost priceListDtoPost)
+        public IActionResult CreatePriceList([FromBody] PriceListDtoPost priceListDtoPost)
         {
             ServiceResponse<PriceListDto> serviceResponse = new ServiceResponse<PriceListDto>();
 
@@ -153,7 +153,7 @@ namespace Tips.Master.Api.Controllers
                 _repository.PriceListRepository.CreatePriceList(PriceList);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfylly Created";
+                serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetPriceListById", serviceResponse);
@@ -229,7 +229,7 @@ namespace Tips.Master.Api.Controllers
 
         // DELETE api/<PriceListController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAuditFrequency(int id)
+        public async Task<IActionResult> DeletePriceList(int id)
         {
             ServiceResponse<PriceListDto> serviceResponse = new ServiceResponse<PriceListDto>();
 
@@ -331,7 +331,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside DeactivatedauditFrequency action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeactivatePriceList action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }

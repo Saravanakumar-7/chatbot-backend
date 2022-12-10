@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using Entities.DTOs;
 
 namespace Tips.Grin.Api.Repository
 {
@@ -43,6 +44,19 @@ namespace Tips.Grin.Api.Repository
         {
             var GrinDetails = await FindAll().ToListAsync();
             return GrinDetails;
+        }
+
+        public async Task<IEnumerable<GrinNoListDto>> GetAllActiveGrinNoList()
+        {
+            IEnumerable<GrinNoListDto> GrinNoDetails = await _tipsGrinDbContext.Grins
+                                .Select(x => new GrinNoListDto()
+                                {                                  
+
+                                    Id= x.Id,
+                                })
+                              .ToListAsync();
+
+            return GrinNoDetails;
         }
 
         public async Task<PagedList<Grins>> GetAllGrin(PagingParameter pagingParameter)

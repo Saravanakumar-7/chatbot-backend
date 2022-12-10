@@ -11,11 +11,14 @@ namespace Entities
     {
 
         public int Id { get; set; }
+
         [Required]
         public string? CustomerId { get; set; }//api//api1
+        
         [Required]
         public string? CustomerName { get; set; }//api
         public string? CustomerAliasName { get; set; }//api1
+        
         [Required]
         public string? CustomerType { get; set; }
         public string? Address { get; set; }
@@ -33,7 +36,9 @@ namespace Entities
         public string? ExportUnitType { get; set; }
         public bool GeneralMSME { get; set; } = true;
         public string? SalesManager { get; set; }
+        public string? SalesManagerCode { get; set; }
         public string? Region { get; set; }
+       
 
         //RelatedLink
 
@@ -130,5 +135,7 @@ namespace Entities
         public List<CustomerShippingAddresses>? CustomerShippingAddresses { get; set; }
         public List<CustomerContacts>? CustomerContacts { get; set; }
         public List<CustomerBanking>? CustomerBanking { get; set; }
+
+        public List<CustomerMasterHeadCounting>? CustomerMasterHeadCountings { get; set; }
     }
 }

@@ -82,7 +82,7 @@ namespace Tips.Master.Api.Controllers
         }
         // GET api/<AuditFrequencyController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAuditFrequenyById(int id)
+        public async Task<IActionResult> GetAuditFrequencyById(int id)
         {
             ServiceResponse<AuditFrequencyDto> serviceResponse = new ServiceResponse<AuditFrequencyDto>();
 
@@ -123,7 +123,7 @@ namespace Tips.Master.Api.Controllers
         
         // POST api/<AuditFrequencyController>
         [HttpPost]
-        public IActionResult CreateAuditFrequeny([FromBody] AuditFrequencyDtoPost auditFrequencyDtoPost)
+        public IActionResult CreateAuditFrequency([FromBody] AuditFrequencyDtoPost auditFrequencyDtoPost)
         {
             ServiceResponse<AuditFrequencyDto> serviceResponse = new ServiceResponse<AuditFrequencyDto>();
 
@@ -153,10 +153,10 @@ namespace Tips.Master.Api.Controllers
                 _repository.AuditFrequencyRepository.CreateAuditFrequency(AuditFrequeny);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "AuditFrequency Created Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetAuditFrequenyById", serviceResponse);
+                return Created("GetAuditFrequencyById", serviceResponse);
             }
             catch (Exception ex)
             {
@@ -164,14 +164,14 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside CreateAuditFrequeny action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateAuditFrequency action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
         // PUT api/<AuditFrequencyController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAuditFrequeny(int id, [FromBody] AuditFrequencyDtoUpdate auditFrequencyDtoUpdate)
+        public async Task<IActionResult> UpdateAuditFrequency(int id, [FromBody] AuditFrequencyDtoUpdate auditFrequencyDtoUpdate)
         {
             ServiceResponse<AuditFrequencyDto> serviceResponse = new ServiceResponse<AuditFrequencyDto>();
 
@@ -180,10 +180,10 @@ namespace Tips.Master.Api.Controllers
                 if (auditFrequencyDtoUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "update AuditFrequeny object sent from client is null";
+                    serviceResponse.Message = "update AuditFrequency object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("update AuditFrequeny object sent from client is null.");
+                    _logger.LogError("update AuditFrequency object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
@@ -259,7 +259,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside AuditFrequency action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeleteAuditFrequency action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }

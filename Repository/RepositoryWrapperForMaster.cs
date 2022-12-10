@@ -27,7 +27,7 @@ namespace Repository
         private IBankRepository? _bankRepo;
         private ICurrencyRepository? _currency;
 
-        private IBasicOfApprovalRepository? _basicOfApproval;
+        private IBasisOfApprovalRepository? _basisOfApproval;
         private IScopeOfSupplyRepository? _scopeOfSupply;
         private IVendorCategoryRepository? _vendorCategory;
         private IVendorDepartmentRepository? _vendorDepartment;
@@ -62,13 +62,20 @@ namespace Repository
          
 
         private ICompanyMasterRepository? _companyMasterRepo;
-         
+
+        private ILeadRepository? _leadRepo;
 
         private IUOCRepository? _uOCRepo;
         private IUOMRepository? _uOMRepo;
         private ICommodityRepository? _commodityRepo;
         private ILocationsRepository? _locationsRepo;
-
+        private IProcessRepository? _processRepo;
+        private IPartTypesRepository? _parttypesRepo;
+        private IDemoStatusRepository? _demoStatusRepo;
+        private ILeadStatusRepository? _leadStatusRepo;
+        private ILeadTypeRepository? _leadTypeRepo;
+        private ISecondarySourceRepository? _secondarySourceRepo;
+        private ISourceRepository? _sourceRepo;
 
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
@@ -83,6 +90,96 @@ namespace Repository
                     _enggBomRepository = new EngineeringBomRepository(_tipsMasterDbContext);
                 }
                 return _enggBomRepository;
+            }
+        }
+        public ISourceRepository sourceRepository
+        {
+            get
+            {
+                if (_sourceRepo == null)
+                {
+                    _sourceRepo = new SourceRepository(_tipsMasterDbContext);
+                }
+                return _sourceRepo;
+            }
+        }
+        public ISecondarySourceRepository secondarySourceRepository
+        {
+            get
+            {
+                if (_secondarySourceRepo == null)
+                {
+                    _secondarySourceRepo = new SecondarySourceRepository(_tipsMasterDbContext);
+                }
+                return _secondarySourceRepo;
+            }
+        }
+        public ILeadStatusRepository LeadStatusRepository
+        {
+            get
+            {
+                if (_leadStatusRepo == null)
+                {
+                    _leadStatusRepo = new LeadStatusRepository(_tipsMasterDbContext);
+                }
+                return _leadStatusRepo;
+            }
+        }
+        public ILeadTypeRepository LeadTypeRepository
+        {
+            get
+            {
+                if (_leadTypeRepo == null)
+                {
+                    _leadTypeRepo = new LeadTypeRepository(_tipsMasterDbContext);
+                }
+                return _leadTypeRepo;
+            }
+        }
+
+        public IDemoStatusRepository DemoStatusRepository
+        {
+            get
+            {
+                if (_demoStatusRepo == null)
+                {
+                    _demoStatusRepo = new DemoStatusRepository(_tipsMasterDbContext);
+                }
+                return _demoStatusRepo;
+            }
+        }
+
+        public ILeadRepository LeadRepository
+        {
+            get
+            {
+                if (_leadRepo == null)
+                {
+                    _leadRepo = new LeadRepository(_tipsMasterDbContext);
+                }
+                return _leadRepo;
+            }
+        }
+        public IPartTypesRepository partTypesRepository
+        {
+            get
+            {
+                if (_parttypesRepo == null)
+                {
+                    _parttypesRepo = new PartTypesRepository(_tipsMasterDbContext);
+                }
+                return _parttypesRepo;
+            }
+        }
+        public IProcessRepository ProcessRepository
+        {
+            get
+            {
+                if (_processRepo == null)
+                {
+                    _processRepo = new ProcessRepository(_tipsMasterDbContext);
+                }
+                return _processRepo;
             }
         }
         public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository
@@ -440,15 +537,15 @@ namespace Repository
                 return _currency;
             }
         }
-        public IBasicOfApprovalRepository BasicOfApprovalRepository
+        public IBasisOfApprovalRepository BasisOfApprovalRepository
         {
             get
             {
-                if (_basicOfApproval == null)
+                if (_basisOfApproval == null)
                 {
-                    _basicOfApproval = new BasicOfApprovalRepository(_tipsMasterDbContext);
+                    _basisOfApproval = new BasisOfApprovalRepository(_tipsMasterDbContext);
                 }
-                return _basicOfApproval;
+                return _basisOfApproval;
             }
         }
 
@@ -653,6 +750,10 @@ namespace Repository
         public IEnggBomChildItemRepository EnggBomChildItemRepository => throw new NotImplementedException();
 
         public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
+
+       
+
+        //public ICustomerInfoRepository CustomerInfoRepository => throw new NotImplementedException();
 
         //public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository => throw new NotImplementedException();
 

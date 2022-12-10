@@ -19,13 +19,20 @@ builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureMSSqlContext(builder.Configuration);
-builder.Services.AddAutoMapper(typeof(Program)); 
+builder.Services.AddAutoMapper(typeof(Program));
 //builder.Services.AddDbContext<DbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Server=DESKTOP-EFBBM74;Database=TipsSalesService;Trusted_Connection=True;Trusted_Connection=SSPI;Encrypt=false;TrustServerCertificate=true;")));
- 
+
 //builder.Services.AddDbContext<TipsSalesServiceDbContext>();
 //builder.Services.AddScoped<IRfqRepository, RfqRepository>();
 
-builder.Services.AddScoped<IRfqRepository,RfqRepository>();
+builder.Services.AddScoped<IRfqLPCostingRepository, RfqLPCostingRepository>();
+builder.Services.AddScoped<IRfqSourcingRepository, RfqSourcingRepository>();
+builder.Services.AddScoped<IRfqEnggRepository, RfqEnggRepository>();
+builder.Services.AddScoped<IRfqCustomerSupportRepository,RfqCustomerSupportRepository>();
+builder.Services.AddScoped<IRfqRepository, RfqRepository>();
+//builder.Services.AddScoped<IRfqCustomerSupportNotesRepository, RfqCustomerSupportNotes>();
+
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -35,11 +42,11 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseHttpsRedirection();
 

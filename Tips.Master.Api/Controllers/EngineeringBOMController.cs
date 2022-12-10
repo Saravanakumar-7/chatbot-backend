@@ -206,7 +206,7 @@ namespace Tips.Master.Api.Controllers
 
         // PUT api/<EngineeringBOMController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEnggBom(int id, [FromBody] EnggBomPostDto enggBomDto)
+        public async Task<IActionResult> UpdateEnggBom(int id, [FromBody] EnggBomUpdateDto enggBomDto)
         {
             ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
 
@@ -244,14 +244,14 @@ namespace Tips.Master.Api.Controllers
 
                 var enggBomList = _mapper.Map<EnggBom>(updateEnggBom);
 
-                var enggChildItemDto = enggBomDto.EnggChildItemPosts;
+                var enggChildItemDto = enggBomDto.EnggChildItemUpdates;
 
                 var enggChildItemList = new List<EnggChildItem>();
                 for (int i = 0; i < enggChildItemDto.Count; i++)
                 {
                     EnggChildItem enggChildItemDetail = _mapper.Map<EnggChildItem>(enggChildItemDto[i]);
-                    enggChildItemDetail.EnggAlternates = _mapper.Map<List<EnggAlternates>>(enggChildItemDto[i].EnggAlternatesPostDtos);
-                    enggChildItemDetail.NREConsumable = _mapper.Map<NREConsumable>(enggChildItemDto[i].BomNREConsumablePostDto);
+                    enggChildItemDetail.EnggAlternates = _mapper.Map<List<EnggAlternates>>(enggChildItemDto[i].EnggAlternatesUpdateDtos);
+                    enggChildItemDetail.NREConsumable = _mapper.Map<NREConsumable>(enggChildItemDto[i].BomNREConsumableUpdateDto);
                     enggChildItemList.Add(enggChildItemDetail);
 
                 }

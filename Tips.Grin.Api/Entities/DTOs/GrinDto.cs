@@ -130,4 +130,9 @@ namespace Tips.Grin.Api.Entities.DTOs
 
 
     }
+    public class GrinNoListDto
+    {
+        public int Id { get; set; }
+        
+    }
 }

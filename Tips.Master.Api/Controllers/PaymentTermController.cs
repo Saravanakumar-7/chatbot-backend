@@ -154,8 +154,8 @@ namespace Tips.Master.Api.Controllers
                 _repository.PaymentTermRepository.CreatePaymentTerm(PaymentTerm);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfylly Created";
-                serviceResponse.Success = false;
+                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetPaymentTermById", serviceResponse);
             }
@@ -304,7 +304,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> DeactivateAuditFrequency(int id)
+        public async Task<IActionResult> DeactivatePaymentTerm(int id)
         {
             ServiceResponse<PaymentTermDto> serviceResponse = new ServiceResponse<PaymentTermDto>();
 

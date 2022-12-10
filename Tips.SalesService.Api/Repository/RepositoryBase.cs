@@ -9,11 +9,12 @@ namespace Tips.SalesService.Api.Repository
 {
     public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
-        protected TipsSalesServiceDbContext _tipsSalesServiceDbContext { get; set; }
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContext { get; set; }
         public RepositoryBase(TipsSalesServiceDbContext repositoryContext)
         {
             _tipsSalesServiceDbContext = repositoryContext;
         }
+         
         public  IQueryable<T> FindAll()
         {
 

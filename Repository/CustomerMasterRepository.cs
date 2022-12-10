@@ -61,6 +61,7 @@ namespace Repository
                                 .Include(x => x.CustomerShippingAddresses)
                                 .Include(m => m.CustomerContacts)
                                 .Include(s => s.CustomerBanking)
+                                .Include(v => v.CustomerMasterHeadCountings)
                                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
@@ -74,6 +75,7 @@ namespace Repository
                               .Include(x => x.CustomerShippingAddresses)
                               .Include(m => m.CustomerContacts)
                               .Include(s=>s.CustomerBanking)
+                              .Include(v => v.CustomerMasterHeadCountings)
                               .FirstOrDefaultAsync();
 
             return customerDetails;

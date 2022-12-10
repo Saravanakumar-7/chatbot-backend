@@ -20,6 +20,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public int ItemId { get; set; }
 
+
         public string? ProjectNumber { get; set; }
 
         [Precision(13, 3)]
@@ -38,7 +39,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public string Unit { get; set; }
 
-        public List<GrinPartsDto>? GrinPartsDtos { get; set; }
+        
 
     }
     public class IQCConfirmationPostDto
@@ -60,15 +61,13 @@ namespace Tips.Grin.Api.Entities.DTOs
         public bool IsBinningDone { get; set; } = false;
 
         public bool IsDeleted { get; set; } = false;
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+
 
         public string Unit { get; set; }
-        public List<GrinPartsPostDto>? grinPartsPostDtos { get; set; }
+
 
     }
+
     public class IQCConfirmationUpdateDto
     {
     public int Id { get; set; }
@@ -90,13 +89,8 @@ namespace Tips.Grin.Api.Entities.DTOs
     public bool IsBinningDone { get; set; } = false;
 
     public bool IsDeleted { get; set; } = false;
-    public string? CreatedBy { get; set; }
-    public DateTime? CreatedOn { get; set; }
-    public string? LastModifiedBy { get; set; }
-    public DateTime? LastModifiedOn { get; set; }
 
-    public string Unit { get; set; }
-     public List<GrinPartsUpdateDto>? GrinPartsUpdateDtos { get; set; }
+        public string Unit { get; set; }
 
     }
 

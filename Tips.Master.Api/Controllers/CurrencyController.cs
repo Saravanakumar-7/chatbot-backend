@@ -201,7 +201,7 @@ namespace Tips.Master.Api.Controllers
                 {
                     _logger.LogError($"Currency with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = " Update BasicOfApproval with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = " Update Currency with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);

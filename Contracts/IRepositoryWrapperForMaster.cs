@@ -52,7 +52,7 @@ namespace Contracts
         IDepartmentRepository DepartmentRepository { get; }
         ICurrencyRepository CurrencyRepository { get; }
         IIncoTermRepository IncoTermRepository { get; }
-        IBasicOfApprovalRepository BasicOfApprovalRepository { get; }
+        IBasisOfApprovalRepository BasisOfApprovalRepository { get; }
         IVendorCategoryRepository VendorCategoryRepository { get; }
         IVendorDepartmentRepository VendorDepartmentRepository { get; }
         IScopeOfSupplyRepository ScopeOfSupplyRepository { get; }
@@ -65,6 +65,8 @@ namespace Contracts
         IVendorAddressRepository VendorAddressRepository { get; }   
 
         IVendorBankingRepository VendorBankingRepository { get; }
+
+        IProcessRepository ProcessRepository { get; }
 
         IShipmentInstructionsRepository ShipmentInstructionsRepository { get; }
         ISegmentRepository SegmentRepository { get; }
@@ -83,7 +85,18 @@ namespace Contracts
 
         IEnggBomNREConsumableRepository EnggBomNREConsumableRepository { get; } 
 
-        IEnggBomRepository EnggBomRepository { get; }   
+        IEnggBomRepository EnggBomRepository { get; } 
+        IPartTypesRepository partTypesRepository { get; }
+        ILeadRepository LeadRepository { get; }
+        IDemoStatusRepository DemoStatusRepository { get; }
+
+        ILeadStatusRepository LeadStatusRepository { get; }
+
+        ILeadTypeRepository LeadTypeRepository { get; }
+        ISecondarySourceRepository secondarySourceRepository { get; }
+
+        ISourceRepository sourceRepository { get; }
+
 
         void SaveAsync();
     }
