@@ -30,6 +30,9 @@ builder.Services.AddScoped<IRfqSourcingRepository, RfqSourcingRepository>();
 builder.Services.AddScoped<IRfqEnggRepository, RfqEnggRepository>();
 builder.Services.AddScoped<IRfqCustomerSupportRepository,RfqCustomerSupportRepository>();
 builder.Services.AddScoped<IRfqRepository, RfqRepository>();
+builder.Services.AddScoped<ISalesOrderRepository,SalesOrderRepository>();
+builder.Services.AddScoped<IQuoteRepository,QuoteRepository>();
+
 //builder.Services.AddScoped<IRfqCustomerSupportNotesRepository, RfqCustomerSupportNotes>();
 
 
