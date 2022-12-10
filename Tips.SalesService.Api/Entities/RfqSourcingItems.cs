@@ -10,7 +10,7 @@ namespace Tips.SalesService.Api.Entities
     {
         
         public int Id { get; set; }
-        public int? ItemNumber { get; set; }
+        public string? ItemNumber { get; set; }
         public string? ItemDescription { get; set; }
         public int? QuantityReq { get; set;}       
         public int? Count { get; set;}

@@ -63,7 +63,120 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //GET All FG items
+        [HttpGet]
+        public async Task<IActionResult> GetAllFgItems([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
+            try
+            {
+                var ItemMasterList = await _repository.ItemMasterRepository.GetAllFGItems(pagingParameter);
+                _logger.LogInfo("Returned all fgItemMasters");
+                var metadata = new
+                {
+                    ItemMasterList.TotalCount,
+                    ItemMasterList.PageSize,
+                    ItemMasterList.CurrentPage,
+                    ItemMasterList.HasNext,
+                    ItemMasterList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(ItemMasterList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all fgItemMasters Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        //GET All Sa items
+        [HttpGet]
+        public async Task<IActionResult> GetAllSAItems([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+
+            try
+            {
+                var ItemMasterList = await _repository.ItemMasterRepository.GetAllSAItems(pagingParameter);
+                _logger.LogInfo("Returned all SaItemMasters");
+                var metadata = new
+                {
+                    ItemMasterList.TotalCount,
+                    ItemMasterList.PageSize,
+                    ItemMasterList.CurrentPage,
+                    ItemMasterList.HasNext,
+                    ItemMasterList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(ItemMasterList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SAItemMasters Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        //GET All FG&SAItems
+        [HttpGet]
+        public async Task<IActionResult> GetAllFgSaItems([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+
+            try
+            {
+                var ItemMasterList = await _repository.ItemMasterRepository.GetAllFgSaItems(pagingParameter);
+                _logger.LogInfo("Returned all SaItemMasters");
+                var metadata = new
+                {
+                    ItemMasterList.TotalCount,
+                    ItemMasterList.PageSize,
+                    ItemMasterList.CurrentPage,
+                    ItemMasterList.HasNext,
+                    ItemMasterList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(ItemMasterList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SAItemMasters Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         // GET api/<ItemMasterController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetItemById(int id)

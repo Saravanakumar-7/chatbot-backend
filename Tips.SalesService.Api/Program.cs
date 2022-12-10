@@ -20,16 +20,22 @@ builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureMSSqlContext(builder.Configuration);
-builder.Services.AddAutoMapper(typeof(Program)); 
+builder.Services.AddAutoMapper(typeof(Program));
 //builder.Services.AddDbContext<DbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Server=DESKTOP-EFBBM74;Database=TipsSalesService;Trusted_Connection=True;Trusted_Connection=SSPI;Encrypt=false;TrustServerCertificate=true;")));
- 
+
 //builder.Services.AddDbContext<TipsSalesServiceDbContext>();
 //builder.Services.AddScoped<IRfqRepository, RfqRepository>();
 
+builder.Services.AddScoped<IRfqLPCostingRepository, RfqLPCostingRepository>();
+builder.Services.AddScoped<IRfqSourcingRepository, RfqSourcingRepository>();
+builder.Services.AddScoped<IRfqEnggRepository, RfqEnggRepository>();
 builder.Services.AddScoped<IRfqCustomerSupportRepository,RfqCustomerSupportRepository>();
 builder.Services.AddScoped<IRfqCustomerSupportItemRepository, RfqCustomerSupportItemsRepository>();
 
 builder.Services.AddScoped<IRfqRepository, RfqRepository>();
+builder.Services.AddScoped<ISalesOrderRepository,SalesOrderRepository>();
+builder.Services.AddScoped<IQuoteRepository,QuoteRepository>();
+
 //builder.Services.AddScoped<IRfqCustomerSupportNotesRepository, RfqCustomerSupportNotes>();
 
 

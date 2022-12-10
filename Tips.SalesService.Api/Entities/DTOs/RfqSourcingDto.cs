@@ -17,7 +17,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public List<RfqSourcingItemsDto>? rfqSourcingItems { get; set; }
-        public List<RfqSourcingVendorDto>? rfqSourcingVendors { get; set; }
+        //public List<RfqSourcingVendorDto>? rfqSourcingVendors { get; set; }
 
     }
     public class RfqSourcingDtoPost
@@ -32,7 +32,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Required(ErrorMessage = "Unit is required")]
         public string Unit { get; set; }
         public List<RfqSourcingItemsDtoPost>? rfqSourcingItems { get; set; }
-        public List<RfqSourcingVendorDtoPost>? rfqSourcingVendors { get; set; }
+        //public List<RfqSourcingVendorDtoPost>? rfqSourcingVendors { get; set; }
 
 
 
@@ -50,7 +50,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Required(ErrorMessage = "Unit is required")]
         public string Unit { get; set; }
         public List<RfqSourcingItemsDtoUpdate>? rfqSourcingItems { get; set; }
-        public List<RfqSourcingVendorDtoUpdate>? rfqSourcingVendors { get; set; }
+       // public List<RfqSourcingVendorDtoUpdate>? rfqSourcingVendors { get; set; }
 
     }
 }

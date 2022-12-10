@@ -49,10 +49,45 @@ namespace Repository
                                 .Include(s => s.ItemMasterRouting)
                                 .Include(f => f.ItemMasterWarehouse)
                                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+                                 
+            return itemmasterList;
+        }
+        public async Task<PagedList<ItemMaster>> GetAllFGItems(PagingParameter pagingParameter)
+        {
+            var itemmasterList = PagedList<ItemMaster>.ToPagedList(FindAll().Where(a => a.ItemType == "Fg")
+                                .Include(t => t.ItemmasterAlternate)
+                                .Include(x => x.ItemMasterApprovedVendor)
+                                .Include(m => m.ItemMasterFileUpload)
+                                .Include(s => s.ItemMasterRouting)
+                                .Include(f => f.ItemMasterWarehouse)
+                                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return itemmasterList;
         }
-         
+        public async Task<PagedList<ItemMaster>> GetAllSAItems(PagingParameter pagingParameter)
+        {
+            var itemmasterList = PagedList<ItemMaster>.ToPagedList(FindAll().Where(a => a.ItemType == "Sa")
+                                .Include(t => t.ItemmasterAlternate)
+                                .Include(x => x.ItemMasterApprovedVendor)
+                                .Include(m => m.ItemMasterFileUpload)
+                                .Include(s => s.ItemMasterRouting)
+                                .Include(f => f.ItemMasterWarehouse)
+                                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+
+            return itemmasterList;
+        }
+        public async Task<PagedList<ItemMaster>> GetAllFgSaItems(PagingParameter pagingParameter)
+        {
+            var itemmasterList = PagedList<ItemMaster>.ToPagedList(FindAll().Where(a => a.ItemType == "Sa" || a.ItemType == "Fg")
+                                .Include(t => t.ItemmasterAlternate)
+                                .Include(x => x.ItemMasterApprovedVendor)
+                                .Include(m => m.ItemMasterFileUpload)
+                                .Include(s => s.ItemMasterRouting)
+                                .Include(f => f.ItemMasterWarehouse)
+                                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+
+            return itemmasterList;
+        }
 
         public async Task<ItemMaster> GetItemById(int id)
         {

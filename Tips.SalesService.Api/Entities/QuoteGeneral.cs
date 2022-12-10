@@ -1,0 +1,31 @@
+﻿namespace Tips.SalesService.Api.Entities
+{
+    public class QuoteGeneral
+    {
+        public int Id { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
+        public string? PriceList { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal DiscountType { get; set; }
+        public decimal DiscountAmount { get; set; }
+        public decimal DiscountedUnitPrice { get; set; }
+        public decimal SpecialDiscountType { get; set; }
+        public decimal SpecialDiscountAmount { get; set; }
+        public decimal TotalDiscountedUnitPrice { get; set; }
+        public decimal BasicAmount { get; set; }
+        public decimal HSNNo { get; set; }
+        public decimal IGST { get; set; }
+        public decimal CGST { get; set; }
+        public decimal UTGST { get; set; }
+        public decimal SGST { get; set; }
+        public decimal Total { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public int QuoteId { get; set; }
+        public Quote? Quote { get; set; }
+    }
+}
