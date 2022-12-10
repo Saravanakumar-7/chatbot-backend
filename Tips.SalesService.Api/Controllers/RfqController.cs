@@ -11,7 +11,9 @@ using Entities.Helper;
 using System.Net;
 using Newtonsoft.Json;
 using Microsoft.Build.Framework;
-using RfqCSDeliveryScheduleDto = Tips.SalesService.Api.Entities.DTOs.RfqCSDeliveryScheduleDto;
+//using RfqCSDeliveryScheduleDto = Tips.SalesService.Api.Entities.DTOs.RfqCSDeliveryScheduleDto;
+using NuGet.Configuration;
+using Org.BouncyCastle.Ocsp;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,16 +24,20 @@ namespace Tips.SalesService.Api.Controllers
     public class RfqController : ControllerBase
     {
         private IRfqCustomerSupportRepository _repository;
+        private IRfqCustomerSupportItemRepository _itemRepository;
         private ILoggerManager _logger;
+        private IRfqCustomerSupportItemRepository _repositoryItem;
         private IMapper _mapper;
         private IRfqRepository _rfqRepository;
 
-        public RfqController(IRfqCustomerSupportRepository repository,IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
+        public RfqController(IRfqCustomerSupportRepository repository,IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
+            _itemRepository = rfqCustomerSupportItemRepository;
+            //_repositoryItem = rfqCustomerSupportItem;
             _mapper = mapper;
-            _rfqRepository = rfqRepository; 
+            _rfqRepository = rfqRepository;
 
         }
 
@@ -102,7 +108,7 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.Message = "Returned all RfqCustomerSupport Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse); 
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
@@ -235,7 +241,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned RfqCustomerSupport with id: {id}");
-                    
+
                     RfqCustomerSupportDto rfqDto = _mapper.Map<RfqCustomerSupportDto>(rfq);
 
                     List<RfqCustomerSupportItemDto> rfqItemsDtos = new List<RfqCustomerSupportItemDto>();
@@ -252,7 +258,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Message = $"Returned RfqCustomerSupport with id: {id}";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse); 
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
@@ -264,10 +270,64 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
-             
+
         }
 
-         [HttpPost]
+        //release active API
+        [HttpPut]
+        public async Task<IActionResult> UpdateRfqCustomerSupportRelease([FromBody] List<int> itemIds)
+        {
+            ServiceResponse<RfqCustomerSupportDto> serviceResponse = new ServiceResponse<RfqCustomerSupportDto>();
+
+            try
+            {
+                if (itemIds is null)
+                {
+                    _logger.LogError("RfqCustomerSupport Itemid object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Update RfqCustomerSupport Itemid object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                } 
+
+                foreach (var id in itemIds)
+                {
+                    if (id == null)
+                    {
+                        _logger.LogError($"RfqCustomerSupport with item id: {id}, hasn't been found in db.");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"Update RfqCustomerSupport with item id: {id}, hasn't been found in db.";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        return NotFound(serviceResponse);
+                    }
+
+                    var rfqCustomerSupport = await _itemRepository.GetRfqCustomerSupportItemById(id);
+                    rfqCustomerSupport.ReleaseStatus = true;
+                    string result = await _itemRepository.ActivateRfqCustomerSupportItemById(rfqCustomerSupport);
+                    _logger.LogInfo(result);
+                    _repository.SaveAsync();
+                }                  
+                
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Rfq CustomerSupport Release Activated Successfully ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateRfq action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> CreateRfqCustomerSupport([FromBody] RfqCustomerSupportPostDto rfqCustomerSupportDto)
         {
             ServiceResponse<RfqCustomerSupportDto> serviceResponse = new ServiceResponse<RfqCustomerSupportDto>();
@@ -477,8 +537,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var rfq = await _repository.GetRfqCustomerSupportById(id);
-                if (rfq is null)
+                var updateRfqCustomerSupport = await _repository.GetRfqCustomerSupportById(id);
+                if (updateRfqCustomerSupport is null)
                 {
                     _logger.LogError($"RfqCustomerSupport with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -487,31 +547,24 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-
-                // var customfield = _mapper.Map<IEnumerable<RfqCustomerSupportItems>>(rfq.rfqCustomerSupportItems);
-                //var customnotes = _mapper.Map<IEnumerable<RfqCustomerSupportNotes>>(rfq.rfqCustomerSupportNotes);
-
-                //                var data = _mapper.Map(rfqCustomerSupportUpdateDto, rfq);
-
-                //              data.rfqCustomerSupportItems = customfield.ToList();
-                //            data.rfqCustomerSupportNotes = customnotes.ToList();
-
-                var rfqcustomerlist = _mapper.Map<RfqCustomerSupport>(rfq);
+                 
+                var rfqcustomerlist = _mapper.Map<RfqCustomerSupport>(updateRfqCustomerSupport);
 
                 var rfqItemDto = rfqCustomerSupportUpdateDto.rfqCustomerSupportItems;
 
                 var rfqCsItemList = new List<RfqCustomerSupportItems>();
                 for (int i = 0; i < rfqItemDto.Count; i++)
-                {
+                { 
                     RfqCustomerSupportItems rfqItemDetail = _mapper.Map<RfqCustomerSupportItems>(rfqItemDto[i]);
                     rfqItemDetail.rfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqItemDto[i].rfqCSDeliverySchedules);
+                    
                     rfqCsItemList.Add(rfqItemDetail);
 
                 }
                 rfqcustomerlist.rfqCustomerSupportItems = rfqCsItemList;
 
                 var data = _mapper.Map(rfqCustomerSupportUpdateDto, rfqcustomerlist);
-
+                  
                 string result = await _repository.UpdateRfqCustomerSupport(data);
                 _logger.LogInfo(result);
                  _repository.SaveAsync();

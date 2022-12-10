@@ -16,5 +16,10 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> UpdateRfqCustomerSupportItem(RfqCustomerSupportItems rfqCustomerSupportItems);
         Task<string> DeleteRfqCustomerSupportItem(RfqCustomerSupportItems rfqCustomerSupportItems);
 
+        Task<string> ActivateRfqCustomerSupportItemById(RfqCustomerSupportItems rfqCustomerSupportItems);
+
+
+        
+
     }
 }

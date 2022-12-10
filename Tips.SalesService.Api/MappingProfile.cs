@@ -11,6 +11,8 @@ namespace Tips.SalesService.Api
             CreateMap<RfqCustomerSupport, RfqCustomerSupportDto>().ReverseMap();
             CreateMap<RfqCustomerSupport, RfqCustomerSupportPostDto>().ReverseMap();
             CreateMap<RfqCustomerSupport, RfqCustomerSupportUpdateDto>().ReverseMap();
+            CreateMap<RfqCustomerSupport, RfqCustomerSupportUpdateReleaseDto>().ReverseMap();
+
 
             CreateMap<RfqCSDeliverySchedule, RfqCSDeliveryScheduleDto>().ReverseMap();
             CreateMap<RfqCSDeliverySchedule, RfqCSDeliverySchedulePostDto>().ReverseMap();
@@ -19,6 +21,9 @@ namespace Tips.SalesService.Api
             CreateMap<RfqCustomerSupportItems, RfqCustomerSupportItemDto>().ReverseMap();
             CreateMap<RfqCustomerSupportItems, RfqCustomerSupportItemPostDto>().ReverseMap();
             CreateMap<RfqCustomerSupportItems, RfqCustomerSupportItemUpdateDto>().ReverseMap();
+            CreateMap<RfqCustomerSupportItems, RfqCustomerSupportItemUpdateReleaseDto>().ReverseMap();
+
+            
 
             CreateMap<RfqCustomerSupportNotes, RfqCustomerSupportNotesDto>().ReverseMap();
             CreateMap<RfqCustomerSupportNotes, RfqCustomerSupportNotesPostDto>().ReverseMap();

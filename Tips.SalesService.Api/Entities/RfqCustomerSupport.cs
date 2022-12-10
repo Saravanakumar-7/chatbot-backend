@@ -28,6 +28,9 @@ namespace Tips.SalesService.Api.Entities
 
         public List<RfqCustomerSupportItems>? rfqCustomerSupportItems { get; set; }
         public List<RfqCustomerSupportNotes>? rfqCustomerSupportNotes { get; set; }
+        //public List<RfqCSDeliverySchedule>? rfqCSDeliverySchedules { get; set; }
+
+
 
 
     }

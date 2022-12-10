@@ -14,6 +14,7 @@ namespace Tips.SalesService.Api.Entities
         public string? ItemNumber { get; set; }
         public int? Quantity { get; set; }
         public string? Description { get; set; }
+        public bool ReleaseStatus { get; set; } = false;
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
