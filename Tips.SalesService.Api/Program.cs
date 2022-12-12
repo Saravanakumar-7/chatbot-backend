@@ -26,6 +26,8 @@ builder.Services.AddAutoMapper(typeof(Program));
 //builder.Services.AddDbContext<TipsSalesServiceDbContext>();
 //builder.Services.AddScoped<IRfqRepository, RfqRepository>();
 
+builder.Services.AddScoped<IFgOqcRepository, FgOqcRepository>();
+builder.Services.AddScoped<ISaOqcRepository, SaOqcRepository>();
 builder.Services.AddScoped<IRfqLPCostingRepository, RfqLPCostingRepository>();
 builder.Services.AddScoped<IRfqSourcingRepository, RfqSourcingRepository>();
 builder.Services.AddScoped<IRfqEnggRepository, RfqEnggRepository>();

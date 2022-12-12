@@ -1,4 +1,4 @@
-﻿  using Entities;
+﻿using Entities.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,9 +10,10 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqSourcingVendor
     {
-        
+        [Key]
         public int Id { get; set; }
         public string? Vendor { get; set; }
+        [Precision(13, 3)]
         public decimal? UnitPrice { get; set; }
         public string? UnitPricePer { get; set; }
         public string? Currency { get; set; }

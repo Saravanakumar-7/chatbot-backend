@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Entities.DTOs;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -27,9 +29,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         [StringLength(500, ErrorMessage = "ItemDescription can't be longer than 500 characters")]
         public string? ItemDescription { get; set; }
-        [StringLength(500, ErrorMessage = "QuantityReq can't be longer than 500 characters")]
         public int? QuantityReq { get; set; }
-        [StringLength(500, ErrorMessage = "Count can't be longer than 100 characters")]
         public int? Count { get; set; }
         [Required(ErrorMessage = "Unit is required")]
         public string Unit { get; set; }
@@ -43,9 +43,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         [StringLength(500, ErrorMessage = "ItemDescription can't be longer than 500 characters")]
         public string? ItemDescription { get; set; }
-        [StringLength(500, ErrorMessage = "QuantityReq can't be longer than 500 characters")]
         public int? QuantityReq { get; set; }
-        [StringLength(500, ErrorMessage = "Count can't be longer than 100 characters")]
         public int? Count { get; set; }
         [Required(ErrorMessage = "Unit is required")]
         public string Unit { get; set; }

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Helper;
+using Entities;
+using Microsoft.EntityFrameworkCore;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
 
@@ -25,13 +27,13 @@ namespace Tips.Grin.Api.Repository
         }
         public async Task<IEnumerable<Binning>> GetAllBinningDetails()
         {
-            var binningList = await FindAll().ToListAsync();
-            return (binningList);
+            var binnings = await FindAll().ToListAsync();
+            return binnings;
 
         }
         public async Task<IEnumerable<Binning>> GetBinningDetailsByGrinNo(string grinNo)
         {
-            var binningList = await FindByCondition(x => x.GrinNo == grinNo).ToListAsync();
+            var binningList = await FindByCondition(x => x.SelectGrinNo == grinNo).ToListAsync();
             return binningList;
         }
 
@@ -47,10 +49,20 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<Binning> GetBinningDetailsbyId(int id)
         {
-            var binningList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var binnings = await _tipsGrinDbContext.Binnings.Where(x => x.Id == id)
+                              .Include(t => t.binningItems)
+                              .ThenInclude(x => x.binningLocations)
+                           .FirstOrDefaultAsync();
 
-            return binningList;
+            return binnings;
         }
 
+        public async Task<string> DeleteBinning(Binning binning)
+        {
+            Delete(binning);
+            string result = $"binning details of {binning.Id} is deleted successfully!";
+            return result;
+
+        }
     }
 }

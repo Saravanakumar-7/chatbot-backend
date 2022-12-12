@@ -6,6 +6,8 @@ using System.Net;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities.DTOs;
 using Tips.Grin.Api.Entities;
+using Entities;
+using Newtonsoft.Json;
 
 namespace Tips.Grin.Api.Controllers
 {
@@ -32,6 +34,7 @@ namespace Tips.Grin.Api.Controllers
             try
             {
                 var binningList = await _binningRepository.GetAllBinningDetails();
+
                 _logger.LogInfo("Returned all Binning details()s");
                 var result = _mapper.Map<IEnumerable<BinningDto>>(binningList);
                 serviceResponse.Data = result;
@@ -123,6 +126,22 @@ namespace Tips.Grin.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
+                var binningList = _mapper.Map<Binning>(BinningUpdateDto);
+
+                var binningitemdto = BinningUpdateDto.binningItems;
+
+                var binningItemList = new List<BinningItems>();
+                for (int i = 0; i < binningitemdto.Count; i++)
+                {
+                    BinningItems binningItemDetail = _mapper.Map<BinningItems>(binningitemdto[i]);
+                    binningItemDetail.binningLocations = _mapper.Map<List<BinningLocation>>(binningitemdto[i].binningLocations);
+                    binningItemList.Add(binningItemDetail);
+
+                }
+                var data = _mapper.Map(BinningUpdateDto, BinningList);
+
+                data.binningItems = binningItemList;
+
                 var BinningEntity = _mapper.Map(BinningUpdateDto, BinningList);
 
                 string result = await _binningRepository.UpdateBinning(BinningEntity);
@@ -146,7 +165,7 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateBinning([FromBody] BinningPostDto binningPostDto)
+        public async Task<IActionResult> CreateBinning([FromBody] BinningPostDto binningPostDto)
         {
             ServiceResponse<BinningPostDto> serviceResponse = new ServiceResponse<BinningPostDto>();
 
@@ -171,8 +190,18 @@ namespace Tips.Grin.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-
                 var IQCList = _mapper.Map<Binning>(binningPostDto);
+                var binningsDto = binningPostDto.binningItems;
+
+                var binningItemList = new List<BinningItems>();
+                for (int i = 0; i < binningsDto.Count; i++)
+                {
+                    BinningItems binningItemListDetail = _mapper.Map<BinningItems>(binningsDto[i]);
+                    binningItemListDetail.binningLocations = _mapper.Map<List<BinningLocation>>(binningsDto[i].binningLocations);
+                    binningItemList.Add(binningItemListDetail);
+
+                }
+                IQCList.binningItems = binningItemList;
 
                 _binningRepository.CreateBinning(IQCList);
                 _binningRepository.SaveAsync();
@@ -180,17 +209,17 @@ namespace Tips.Grin.Api.Controllers
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("BinningById", "Successfully Created");
+                return Created("BinningById",serviceResponse);
             }
             catch (Exception ex)
-
             {
+
                 _logger.LogError($"Something went wrong inside Create Binning action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
 
 
             }
@@ -211,27 +240,41 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.Message = $"Binning details with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned Binning details with id: {id}");
-                    var result = _mapper.Map<BinningDto>(IQCList);
-                    serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    _logger.LogInfo($"Returned Binnings with id: {id}");
+                    //var result = _mapper.Map<BinningDto>(rfqsourcing);
+                    BinningDto binningDto = _mapper.Map<BinningDto>(IQCList);//Main model mapping
+
+                    //below mapping is child under child  
+
+                    List<BinningItemsDto> binningItemDtos = new List<BinningItemsDto>();
+
+                    foreach (var binningitemDetails in IQCList.binningItems)
+                    {
+                        BinningItemsDto binningItemDto = _mapper.Map<BinningItemsDto>(binningitemDetails);
+                        binningItemDto.binningLocations = _mapper.Map<List<BinningLocationDto>>(binningitemDetails.binningLocations);
+                        binningItemDtos.Add(binningItemDto);
+                    }
+
+                    binningDto.binningItems = binningItemDtos;
+                    serviceResponse.Data = binningDto;
+                    serviceResponse.Message = $"Returned BinningbyId with id: {id}";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside BinningById action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -268,7 +311,7 @@ namespace Tips.Grin.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
