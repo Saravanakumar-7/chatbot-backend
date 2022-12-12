@@ -33,6 +33,8 @@ namespace Tips.SalesService.Api
             CreateMap<Rfq, RfqDto>().ReverseMap();
             CreateMap<Rfq, RfqPostDto>().ReverseMap();
             CreateMap<Rfq, RfqUpdateDto>().ReverseMap();
+            CreateMap<Rfq, RfqNumberListDto>().ReverseMap();
+
 
             CreateMap<RfqCustomGroup, RfqCustomGroupDto>().ReverseMap();
             CreateMap<RfqCustomGroup, RfqCustomGroupPostDto>().ReverseMap();
@@ -50,6 +52,11 @@ namespace Tips.SalesService.Api
             CreateMap<RfqSourcingItems, RfqSourcingItemsDto>().ReverseMap();
             CreateMap<RfqSourcingItems, RfqSourcingItemsDtoPost>().ReverseMap();
             CreateMap<RfqSourcingItems, RfqSourcingItemsDtoUpdate>().ReverseMap();
+
+            CreateMap<RfqSourcingVendor, RfqSourcingVendorDto>().ReverseMap();
+            CreateMap<RfqSourcingVendor, RfqSourcingVendorDtoPost>().ReverseMap();
+            CreateMap<RfqSourcingVendor, RfqSourcingVendorDtoUpdate>().ReverseMap();
+
 
             CreateMap<RfqEngg, RfqEnggDto>().ReverseMap();
             CreateMap<RfqEngg, RfqEnggDtoPost>().ReverseMap();
@@ -115,6 +122,15 @@ namespace Tips.SalesService.Api
             CreateMap<QuoteSpecialTerms, QuoteSpecialTermsDtoPost>().ReverseMap();
             CreateMap<QuoteSpecialTerms, QuoteSpecialTermsDtoUpdate>().ReverseMap();
 
+
+            CreateMap<FgOqc, FgOqcDto>().ReverseMap();
+            CreateMap<FgOqc, FgOqcDtoPost>().ReverseMap();
+            CreateMap<FgOqc, FgOqcDtoUpdate>().ReverseMap();
+
+
+            CreateMap<SaOqc, SaOqcDto>().ReverseMap();
+            CreateMap<SaOqc, SaOqcDtoPost>().ReverseMap();
+            CreateMap<SaOqc, SaOqcDtoUpdate>().ReverseMap();
 
         }
     }
