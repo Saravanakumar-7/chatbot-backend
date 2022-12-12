@@ -38,6 +38,14 @@ namespace Tips.SalesService.Api.Entities
 
         public DbSet<RfqLPCosting> RfqLPCostings { get; set; }
 
+        public DbSet<SalesOrder> salesOrders { get; set; }
+
+        public DbSet<Quote> quotes { get; set; }
+
+        
+
+
+
         public DbSet<RfqLPCostingItem> RfqLPCostingItems { get; set; }
 
         public DbSet<RfqLPCostingProcess> RfqLPCostingProcesses { get; set; }

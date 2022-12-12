@@ -10,5 +10,8 @@ namespace Tips.Purchase.Api.Entities
 
         }
 
+        public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
+        public DbSet<PurchaseRequisition> PurchaseRequisition { get; set; }
+
     }
 }

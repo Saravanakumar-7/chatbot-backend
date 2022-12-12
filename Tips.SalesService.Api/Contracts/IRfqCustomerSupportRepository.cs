@@ -6,8 +6,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using Tips.SalesService.Api.Entities; 
-
+using Tips.SalesService.Api.Entities;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Contracts
 {
@@ -20,6 +20,16 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> UpdateRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport);
         Task<string> DeleteRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport);
         Task<RfqCustomerSupport> RfqCustomerSupportByRfqNumber(string RfqNumber);
+ 
+
+
+        //Task<List<RfqCustomerSupportItems>> RfqCustomerSupportRelease(RfqCustomerSupportItems rfqCustomerSupportItems);
+
+        //Task<RfqCustomerSupportItems> RfqCustomerSupportReleases(int id);
+
+        //Task<RfqCustomerSupportItems> RfqCustomerSupportRelease(RfqCustomerSupportReleaseDto rfqCustomerSupportReleaseDto);
+
+
     }
 
 }

@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 using Entities;
 using Entities.Helper;
 using Org.BouncyCastle.Ocsp;
-using Entities.DTOs;
 using Tips.SalesService.Api.Entities.DTOs;
+using System.Collections.Immutable;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -29,8 +29,10 @@ namespace Tips.SalesService.Api.Repository
             rfqCustomerSupport.Unit = "Bangalore";
             var result = await Create(rfqCustomerSupport);
             return result.Id;
-        }
-         
+        } 
+
+        
+
         public async Task<string> DeleteRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport)
         {
             Delete(rfqCustomerSupport);
@@ -47,7 +49,7 @@ namespace Tips.SalesService.Api.Repository
            .Include(x=>x.rfqCustomerSupportNotes)
            .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
             return rfqCustomerSupport;
-        }
+        } 
 
 
         public async Task<RfqCustomerSupport> GetRfqCustomerSupportById(int id)
@@ -59,7 +61,16 @@ namespace Tips.SalesService.Api.Repository
                            .FirstOrDefaultAsync();
 
             return rfqCustomerSupport; 
-        }
+        }          
+
+        //public async Task<string> ActivateRfqCustomerSupportItemById(RfqCustomerSupportItems rfqCustomerSupportItems)
+        //{
+        //    rfqCustomerSupportItems.LastModifiedBy = "Admin";
+        //    rfqCustomerSupportItems.LastModifiedOn = DateTime.Now;
+        //    Update(rfqCustomerSupportItems);
+        //    string result = $"CostCenter details of {rfqCustomerSupportItems.Id} is updated successfully!";
+        //    return result;
+        //}
 
         public async Task<RfqCustomerSupport> RfqCustomerSupportByRfqNumber(string RfqNumber)
         {
@@ -70,7 +81,7 @@ namespace Tips.SalesService.Api.Repository
               .Where(x => x.RfqNumber == RfqNumber)
                         .FirstOrDefaultAsync();
             return csByRfqNumber;
-        }
+        }      
 
         public async Task<string> UpdateRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport)
         {
@@ -81,8 +92,63 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
          
-        
+
+        //public async Task<string> ActivateRfqCustomerSupportItemById(RfqCustomerSupportItems rfqCustomerSupportItems)
+        //{
+        //       rfqCustomerSupportItems.LastModifiedBy = "Admin";
+        //       rfqCustomerSupportItems.LastModifiedOn = DateTime.Now;
+        //       Update(rfqCustomerSupportItems);
+        //       string result = $"CostCenter details of {rfqCustomerSupportItems.Id} is updated successfully!";
+        //       return result;
+        //}
     }
+
+    public class RfqCustomerSupportItemsRepository : RepositoryBase<RfqCustomerSupportItems>, IRfqCustomerSupportItemRepository
+    {
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+
+        public RfqCustomerSupportItemsRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        {
+            _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+
+        }
+
+        public async Task<string> ActivateRfqCustomerSupportItemById(RfqCustomerSupportItems rfqCustomerSupportItems)
+        {
+            rfqCustomerSupportItems.LastModifiedBy = "Admin";
+            rfqCustomerSupportItems.LastModifiedOn = DateTime.Now;
+            Update(rfqCustomerSupportItems);
+            string result = $"CostCenter details of {rfqCustomerSupportItems.Id} is updated successfully!";
+            return result;
+        }
+
+        public Task<int?> CreateRfqCustomerSupportItem(RfqCustomerSupportItems rfqCustomerSupportItems)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> DeleteRfqCustomerSupportItem(RfqCustomerSupportItems rfqCustomerSupportItems)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<RfqCustomerSupportItems>> GetAllRfqCustomerSupportItem()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<RfqCustomerSupportItems> GetRfqCustomerSupportItemById(int id)
+        {
+            var getActiveStatus = await _tipsSalesServiceDbContext.rfqCustomerSupportItems.Where(x => x.Id == id && x.ReleaseStatus == false).FirstOrDefaultAsync();
+            return getActiveStatus;
+        }
+
+        public Task<string> UpdateRfqCustomerSupportItem(RfqCustomerSupportItems rfqCustomerSupportItems)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class RfqRepository : RepositoryBase<Rfq>, IRfqRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
@@ -106,20 +172,6 @@ namespace Tips.SalesService.Api.Repository
             Delete(rfq);
             string result = $"RFQ details of {rfq.Id} is deleted successfully!";
             return result;
-        }
-
-        public async Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberList()
-        {
-            IEnumerable<RfqNumberListDto> rfqlistDetails = await _tipsSalesServiceDbContext.rfqs
-                                .Select(x => new RfqNumberListDto()
-                                {
-                                    Id = x.Id,
-                                    RfqNumber = x.RfqNumber,
-                                    CustomerName = x.CustomerName
-                                })
-                              .ToListAsync();
-
-            return rfqlistDetails;
         }
 
         public async Task<PagedList<Rfq>> GetAllRfq(PagingParameter pagingParameter)
@@ -154,7 +206,6 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
     }
-   
     public class RfqEnggRepository : RepositoryBase<RfqEngg>, IRfqEnggRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;

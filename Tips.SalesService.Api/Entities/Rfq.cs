@@ -18,6 +18,7 @@ namespace Tips.SalesService.Api.Entities
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
+        public bool ReleaseStatus { get; set; }=false;
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

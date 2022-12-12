@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Tips.SalesService.Api.Entities;
+using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api
@@ -11,6 +12,8 @@ namespace Tips.SalesService.Api
             CreateMap<RfqCustomerSupport, RfqCustomerSupportDto>().ReverseMap();
             CreateMap<RfqCustomerSupport, RfqCustomerSupportPostDto>().ReverseMap();
             CreateMap<RfqCustomerSupport, RfqCustomerSupportUpdateDto>().ReverseMap();
+            CreateMap<RfqCustomerSupport, RfqCustomerSupportUpdateReleaseDto>().ReverseMap();
+
 
             CreateMap<RfqCSDeliverySchedule, RfqCSDeliveryScheduleDto>().ReverseMap();
             CreateMap<RfqCSDeliverySchedule, RfqCSDeliverySchedulePostDto>().ReverseMap();
@@ -19,6 +22,9 @@ namespace Tips.SalesService.Api
             CreateMap<RfqCustomerSupportItems, RfqCustomerSupportItemDto>().ReverseMap();
             CreateMap<RfqCustomerSupportItems, RfqCustomerSupportItemPostDto>().ReverseMap();
             CreateMap<RfqCustomerSupportItems, RfqCustomerSupportItemUpdateDto>().ReverseMap();
+            CreateMap<RfqCustomerSupportItems, RfqCustomerSupportItemUpdateReleaseDto>().ReverseMap();
+
+            
 
             CreateMap<RfqCustomerSupportNotes, RfqCustomerSupportNotesDto>().ReverseMap();
             CreateMap<RfqCustomerSupportNotes, RfqCustomerSupportNotesPostDto>().ReverseMap();
@@ -27,7 +33,6 @@ namespace Tips.SalesService.Api
             CreateMap<Rfq, RfqDto>().ReverseMap();
             CreateMap<Rfq, RfqPostDto>().ReverseMap();
             CreateMap<Rfq, RfqUpdateDto>().ReverseMap();
-            CreateMap<Rfq, RfqNumberListDto>().ReverseMap();
 
             CreateMap<RfqCustomGroup, RfqCustomGroupDto>().ReverseMap();
             CreateMap<RfqCustomGroup, RfqCustomGroupPostDto>().ReverseMap();
@@ -45,10 +50,6 @@ namespace Tips.SalesService.Api
             CreateMap<RfqSourcingItems, RfqSourcingItemsDto>().ReverseMap();
             CreateMap<RfqSourcingItems, RfqSourcingItemsDtoPost>().ReverseMap();
             CreateMap<RfqSourcingItems, RfqSourcingItemsDtoUpdate>().ReverseMap();
-
-            CreateMap<RfqSourcingVendor, RfqSourcingVendorDto>().ReverseMap();
-            CreateMap<RfqSourcingVendor, RfqSourcingVendorDtoPost>().ReverseMap();
-            CreateMap<RfqSourcingVendor, RfqSourcingVendorDtoUpdate>().ReverseMap();
 
             CreateMap<RfqEngg, RfqEnggDto>().ReverseMap();
             CreateMap<RfqEngg, RfqEnggDtoPost>().ReverseMap();
@@ -82,14 +83,38 @@ namespace Tips.SalesService.Api
             CreateMap<RfqLPCostingOtherCharges, RfqLPCostingOtherChargesDtoPost>().ReverseMap();
             CreateMap<RfqLPCostingOtherCharges, RfqLPCostingOtherChargesDtoUpdate>().ReverseMap();
 
-            CreateMap<FgOqc, FgOqcDto>().ReverseMap();
-            CreateMap<FgOqc, FgOqcDtoPost>().ReverseMap();
-            CreateMap<FgOqc, FgOqcDtoUpdate>().ReverseMap();
+            CreateMap<SalesOrder, SalesOrderDto>().ReverseMap();
+            CreateMap<SalesOrder, SalesOrderDtoPost>().ReverseMap();
+            CreateMap<SalesOrder, SalesOrderDtoUpdate>().ReverseMap();
 
+            CreateMap<SalesOrderItems, SalesOrderItemsDto>().ReverseMap();
+            CreateMap<SalesOrderItems, SalesOrderItemsDtoPost>().ReverseMap();
+            CreateMap<SalesOrderItems, SalesOrderItemsDtoUpdate>().ReverseMap();
 
-            CreateMap<SaOqc, SaOqcDto>().ReverseMap();
-            CreateMap<SaOqc, SaOqcDtoPost>().ReverseMap();
-            CreateMap<SaOqc, SaOqcDtoUpdate>().ReverseMap();
+            CreateMap<Quote, QuoteDto>().ReverseMap();
+            CreateMap<Quote, QuoteDtoPost>().ReverseMap();
+            CreateMap<Quote, QuoteDtoUpdate>().ReverseMap();
+
+            CreateMap<QuoteAdditionalCharges, QuoteAdditionalChargesDto>().ReverseMap();
+            CreateMap<QuoteAdditionalCharges, QuoteAdditionalChargesDtoPost>().ReverseMap();
+            CreateMap<QuoteAdditionalCharges, QuoteAdditionalChargesDtoUpdate>().ReverseMap();
+
+            CreateMap<QuoteGeneral, QuoteGeneralDto>().ReverseMap();
+            CreateMap<QuoteGeneral, QuoteGeneralDtoPost>().ReverseMap();
+            CreateMap<QuoteGeneral, QuoteGeneralDtoUpdate>().ReverseMap();
+
+            CreateMap<QuoteOtherTerms, QuoteOtherTermsDto>().ReverseMap();
+            CreateMap<QuoteOtherTerms, QuoteOtherTermsDtoPost>().ReverseMap();
+            CreateMap<QuoteOtherTerms, QuoteOtherTermsDtoUpdate>().ReverseMap();
+
+            CreateMap<QuoteRFQNotes, QuoteRFQNotesDto>().ReverseMap();
+            CreateMap<QuoteRFQNotes, QuoteRFQNotesDtoPost>().ReverseMap();
+            CreateMap<QuoteRFQNotes, QuoteRFQNotesDtoUpdate>().ReverseMap();
+
+            CreateMap<QuoteSpecialTerms, QuoteSpecialTermsDto>().ReverseMap();
+            CreateMap<QuoteSpecialTerms, QuoteSpecialTermsDtoPost>().ReverseMap();
+            CreateMap<QuoteSpecialTerms, QuoteSpecialTermsDtoUpdate>().ReverseMap();
+
 
         }
     }

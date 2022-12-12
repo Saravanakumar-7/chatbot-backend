@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
+using Tips.Purchase.Api.Contracts;
 using Tips.Purchase.Api.Extensions;
+using Tips.Purchase.Api.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +16,8 @@ builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureMSSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
-
+builder.Services.AddScoped<IPurchaseRequisitionRepository, PurchaseRequisitionRepository>();
+builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

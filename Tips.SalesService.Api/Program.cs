@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.DotNet.Scaffolding.Shared.ProjectModel;
 using Microsoft.EntityFrameworkCore;
 using NLog;
+using Org.BouncyCastle.Crypto.Tls;
 using System;
 using System.Configuration;
 using Tips.SalesService.Api.Contracts;
@@ -31,7 +32,12 @@ builder.Services.AddScoped<IRfqLPCostingRepository, RfqLPCostingRepository>();
 builder.Services.AddScoped<IRfqSourcingRepository, RfqSourcingRepository>();
 builder.Services.AddScoped<IRfqEnggRepository, RfqEnggRepository>();
 builder.Services.AddScoped<IRfqCustomerSupportRepository,RfqCustomerSupportRepository>();
+builder.Services.AddScoped<IRfqCustomerSupportItemRepository, RfqCustomerSupportItemsRepository>();
+
 builder.Services.AddScoped<IRfqRepository, RfqRepository>();
+builder.Services.AddScoped<ISalesOrderRepository,SalesOrderRepository>();
+builder.Services.AddScoped<IQuoteRepository,QuoteRepository>();
+
 //builder.Services.AddScoped<IRfqCustomerSupportNotesRepository, RfqCustomerSupportNotes>();
 
 
