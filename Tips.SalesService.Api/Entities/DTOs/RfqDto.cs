@@ -52,4 +52,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
+    public class RfqNumberListDto
+    {
+        public int Id { get; set; }
+        public int RfqNumber { get; set; }
+        public string? CustomerName { get; set; }
+    }
 }

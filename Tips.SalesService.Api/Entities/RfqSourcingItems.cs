@@ -1,4 +1,7 @@
 ﻿using System;
+using Entities.DTOs;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,7 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqSourcingItems
     {
-        
+        [Key]
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? ItemDescription { get; set; }

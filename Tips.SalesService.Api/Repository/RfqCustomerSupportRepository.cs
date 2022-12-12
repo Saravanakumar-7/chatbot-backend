@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Entities;
 using Entities.Helper;
 using Org.BouncyCastle.Ocsp;
+using Entities.DTOs;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -106,6 +108,20 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
+        public async Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberList()
+        {
+            IEnumerable<RfqNumberListDto> rfqlistDetails = await _tipsSalesServiceDbContext.rfqs
+                                .Select(x => new RfqNumberListDto()
+                                {
+                                    Id = x.Id,
+                                    RfqNumber = x.RfqNumber,
+                                    CustomerName = x.CustomerName
+                                })
+                              .ToListAsync();
+
+            return rfqlistDetails;
+        }
+
         public async Task<PagedList<Rfq>> GetAllRfq(PagingParameter pagingParameter)
         {
             var rfq = PagedList<Rfq>.ToPagedList(FindAll()
@@ -138,6 +154,7 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
     }
+   
     public class RfqEnggRepository : RepositoryBase<RfqEngg>, IRfqEnggRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;

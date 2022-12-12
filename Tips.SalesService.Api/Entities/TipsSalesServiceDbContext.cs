@@ -26,6 +26,9 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<SourcingVendor> sourcingVendors { get; set; }
 
         public DbSet<RfqSourcing> RfqSourcings { get; set; }
+        public DbSet<RfqSourcingItems> RfqSourcingItems { get; set; }
+
+        public DbSet<RfqSourcingVendor> RfqSourcingVendors { get; set; }
 
         public DbSet<RfqEngg> RfqEnggs { get; set; }
 
@@ -40,6 +43,9 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<RfqLPCostingProcess> RfqLPCostingProcesses { get; set; }
         public DbSet<RfqLPCostingNREConsumable> RfqLPCostingNREConsumables { get; set; }
         public DbSet<RfqLPCostingOtherCharges> RfqLPCostingOtherCharges { get; set; }
+        public DbSet<FgOqc> FgOqcs { get; set; }
+        public DbSet<SaOqc> SaOqcs { get; set; }
+
 
     }
 }
