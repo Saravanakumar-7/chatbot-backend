@@ -261,6 +261,33 @@ namespace Tips.SalesService.Api.Controllers
 
 
         }
+
+        [HttpGet("{RfqNumber}")]
+        public async Task<IActionResult> GetAllActiveRfqCustomerSupportItemsByRfqNumber(string RfqNumber)
+        {
+            ServiceResponse<IEnumerable<RfqCustomerSupportItemDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqCustomerSupportItemDto>>();
+            try
+            {
+                var listOfRfqCustomerSupport = await _itemRepository.GetAllActiveRfqCustomerSupportItemsByRfqNumber(RfqNumber);
+                //_logger.LogInfo("Returned all PurchaseOrder");
+                var result = _mapper.Map<IEnumerable<RfqCustomerSupportItemDto>>(listOfRfqCustomerSupport);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ActiveRfqCustomerSupportItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveRfqCustomerSupportItemsByRfqNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //get RfqLPCosting by Rfqnumber
 
         [HttpGet("{RfqNumber}")]
