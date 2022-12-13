@@ -32,11 +32,11 @@ namespace Tips.SalesService.Api.Controllers
         {
             _repository = repository;
             _logger = logger;
-            _itemRepository = rfqCustomerSupportItemRepository;
             _mapper = mapper;
             _rfqRepository = rfqRepository;
             _rfqenggRepository = rfqEnggRepository;
             _rfqlpcostingRepository = rfqLPCostingRepository;
+            _itemRepository = rfqCustomerSupportItemRepository;
 
         }
 
@@ -120,13 +120,31 @@ namespace Tips.SalesService.Api.Controllers
             }
 
         }
-
-
-
-
-
-
-
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveRfqNumberList()
+        {
+            ServiceResponse<IEnumerable<RfqNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqNumberListDto>>();
+            try
+            {
+                var listOfrfqnumber = await _rfqRepository.GetAllActiveRfqNumberList();
+                //_logger.LogInfo("Returned all CustomerMaster");
+                var result = _mapper.Map<IEnumerable<RfqNumberListDto>>(listOfrfqnumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveRfqNumberList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         //Get all RfqLPCosting
 
         [HttpGet]
@@ -596,6 +614,7 @@ namespace Tips.SalesService.Api.Controllers
              
         }
 
+
         //release active API
         [HttpPut]
         public async Task<IActionResult> UpdateRfqCustomerSupportRelease([FromBody] List<int> itemIds)
@@ -649,6 +668,8 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
 
         [HttpPost]
         public async Task<IActionResult> CreateRfqCustomerSupport([FromBody] RfqCustomerSupportPostDto rfqCustomerSupportDto)

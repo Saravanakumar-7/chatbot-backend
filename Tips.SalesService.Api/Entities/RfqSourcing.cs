@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.DTOs;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,6 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqSourcing
     {
+        [Key]
         public int Id { get; set; }
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }

@@ -24,6 +24,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }
         public string? UploadFile { get; set; }
+        public bool IsActive { get; set; } = true;
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -54,8 +55,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
        [StringLength(500, ErrorMessage = "Duties can't be longer than 500 characters")]
 
         public string? Duties { get; set; }
-        [StringLength(500, ErrorMessage = "QuoteQuantity can't be longer than 500 characters")]
-
         public int? QuoteQuantity { get; set; }
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }
@@ -89,8 +88,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [StringLength(500, ErrorMessage = "Duties can't be longer than 500 characters")]
 
         public string? Duties { get; set; }
-        [StringLength(500, ErrorMessage = "QuoteQuantity can't be longer than 500 characters")]
-
         public int? QuoteQuantity { get; set; }
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }

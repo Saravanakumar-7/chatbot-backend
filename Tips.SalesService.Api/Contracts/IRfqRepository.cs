@@ -7,6 +7,8 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Tips.SalesService.Api.Entities;
+using Entities.DTOs;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Contracts
 {
@@ -17,6 +19,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> CreateRfq(Rfq rfq);
         Task<string> UpdateRfq(Rfq rfq);
         Task<string> DeleteRfq(Rfq rfq);
+        Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberList();
 
     }
 }

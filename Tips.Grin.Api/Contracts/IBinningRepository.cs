@@ -1,4 +1,5 @@
-﻿using Tips.Grin.Api.Entities;
+﻿using Entities;
+using Tips.Grin.Api.Entities;
 
 namespace Tips.Grin.Api.Contracts
 {
@@ -9,5 +10,9 @@ namespace Tips.Grin.Api.Contracts
         Task<string> UpdateBinning(Binning binning);
         Task<Binning> GetBinningDetailsbyId(int id);
         Task<int?> CreateBinning(Binning binning);
+        Task<string> DeleteBinning(Binning binning);
+
+
+        public void SaveAsync();
     }
 }

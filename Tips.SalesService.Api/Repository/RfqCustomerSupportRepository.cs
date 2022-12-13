@@ -11,6 +11,7 @@ using Entities.Helper;
 using Org.BouncyCastle.Ocsp;
 using Tips.SalesService.Api.Entities.DTOs;
 using System.Collections.Immutable;
+using Entities.DTOs;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -180,6 +181,20 @@ namespace Tips.SalesService.Api.Repository
             Delete(rfq);
             string result = $"RFQ details of {rfq.Id} is deleted successfully!";
             return result;
+        }
+
+        public async Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberList()
+        {
+            IEnumerable<RfqNumberListDto> rfqlistDetails = await _tipsSalesServiceDbContext.rfqs
+                                .Select(x => new RfqNumberListDto()
+                                {
+                                    Id = x.Id,
+                                    RfqNumber = x.RfqNumber,
+                                    CustomerName = x.CustomerName
+                                })
+                              .ToListAsync();
+
+            return rfqlistDetails;
         }
 
         public async Task<PagedList<Rfq>> GetAllRfq(PagingParameter pagingParameter)
