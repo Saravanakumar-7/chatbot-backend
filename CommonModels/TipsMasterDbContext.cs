@@ -100,5 +100,9 @@ namespace Entities
         public DbSet<LeadType> LeadTypes { get; set; }
         public DbSet<SecondarySource> SecondarySources { get; set; }
         public DbSet<Source> Sources { get; set; }
+
+        public DbSet<ReleaseEnggBom> ReleaseEnggBoms { get; set; }
+        public DbSet<ReleaseCostBom> ReleaseCostBoms { get; set; }
+        public DbSet<ReleaseProductBom> ReleaseProductBoms { get; set; }
     }
 }
