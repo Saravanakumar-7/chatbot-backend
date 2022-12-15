@@ -4,6 +4,7 @@ using Tips.Purchase.Api.Entities;
 using Entities.DTOs;
 using Contracts;
 using Tips.Purchase.Api.Entities.DTOs;
+using Tips.Purchase.Api.Entities.Dto;
 
 namespace Tips.Purchase.Api.Contracts
 {
@@ -19,6 +20,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllActivePurchaseOrderNameList();
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPurchaseOrderApprovalINameList();
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPurchaseOrderApprovalIINameList();
-
+        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPoNumberListByVendorName(string vendorName);
+        Task<IEnumerable<PurchaseOrderItemNoListDto>> GetAllPoItemNumberListByPoNumber(string poNumber);
     }
 }

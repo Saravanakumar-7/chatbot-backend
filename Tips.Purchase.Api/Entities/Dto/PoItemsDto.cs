@@ -9,13 +9,11 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string ItemNumber { get; set; }
         public string MftrItemNumber { get; set; }
         public string Description { get; set; }
-        public decimal UOM { get; set; }
-        [Precision(13, 8)]
+        public string UOM { get; set; }
         public decimal UnitPrice { get; set; }
-        [Precision(13, 3)]
         public decimal Quantity { get; set; }
         public string SpecialInstruction { get; set; }
-        public bool WantToAttachedTheTechnicalDoc { get; set; }
+        public bool IsTechnicalDocsRequired { get; set; }
         public decimal SGST { get; set; }
         public decimal CGST { get; set; }
         public decimal IGST { get; set; }
@@ -26,9 +24,9 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<PoAddProjectDto> poAddprojectsDto { get; set; }
-        public List<PoAddDeliveryScheduleDto> poAddDeliverySchedulesDto { get; set; }
-    
+        public List<PoAddProjectDto> PoAddprojectsDtoList { get; set; }
+        public List<PoAddDeliveryScheduleDto> PoAddDeliverySchedulesDtoList { get; set; }
+
     }
 
     public class PoItemsDtoPost
@@ -36,13 +34,11 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string ItemNumber { get; set; }
         public string MftrItemNumber { get; set; }
         public string Description { get; set; }
-        public decimal UOM { get; set; }
-        [Precision(13, 8)]
+        public string UOM { get; set; }
         public decimal UnitPrice { get; set; }
-        [Precision(13, 3)]
         public decimal Quantity { get; set; }
         public string SpecialInstruction { get; set; }
-        public bool WantToAttachedTheTechnicalDoc { get; set; }
+        public bool IsTechnicalDocsRequired { get; set; }
         public decimal SGST { get; set; }
         public decimal CGST { get; set; }
         public decimal IGST { get; set; }
@@ -53,9 +49,9 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<PoAddProjectDtoPost> poAddprojectsDtoPost { get; set; }
-        public List<PoAddDeliveryScheduleDtoPost> poAddDeliverySchedulesDtoPost { get; set; }
-       
+        public List<PoAddProjectDtoPost> PoAddprojectsDtoPostList { get; set; }
+        public List<PoAddDeliveryScheduleDtoPost> PoAddDeliverySchedulesDtoPostList { get; set; }
+
     }
 
     public class PoItemsDtoUpdate
@@ -64,13 +60,11 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string ItemNumber { get; set; }
         public string MftrItemNumber { get; set; }
         public string Description { get; set; }
-        public decimal UOM { get; set; }
-        [Precision(13, 8)]
+        public string UOM { get; set; }
         public decimal UnitPrice { get; set; }
-        [Precision(13, 3)]
         public decimal Quantity { get; set; }
         public string SpecialInstruction { get; set; }
-        public bool WantToAttachedTheTechnicalDoc { get; set; }
+        public bool IsTechnicalDocsRequired { get; set; }
         public decimal SGST { get; set; }
         public decimal CGST { get; set; }
         public decimal IGST { get; set; }
@@ -81,9 +75,13 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<PoAddProjectDtoUpdate> poAddprojectsDtoUpdate { get; set; }
-        public List<PoAddDeliveryScheduleDtoUpdate> poAddDeliverySchedulesDtoUpdate { get; set; }
-        
-    }
+        public List<PoAddProjectDtoUpdate> PoAddprojectsDtoUpdateList { get; set; }
+        public List<PoAddDeliveryScheduleDtoUpdate> PoAddDeliverySchedulesDtoUpdateList { get; set; }
 
+    }
+    public class PurchaseOrderItemNoListDto
+    {
+        public int Id { get; set; }
+        public string? ItemNumber { get; set; }
+    }
 }

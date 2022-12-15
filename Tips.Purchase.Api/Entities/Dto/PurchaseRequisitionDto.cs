@@ -49,7 +49,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<PrItemsDto>? prItemsDto { get; set; }
+        public List<PrItemsDto>? PrItemsDtoList { get; set; }
     }
 
     public class PurchaseRequisitionDtoPost
@@ -91,7 +91,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
     public DateTime? CreatedOn { get; set; }
     public string? LastModifiedBy { get; set; }
     public DateTime? LastModifiedOn { get; set; }
-    public List<PrItemsDtoPost>? prItemsDtoPost { get; set; }
+    public List<PrItemsDtoPost>? PrItemsDtoPostList { get; set; }
     }
     public class PurchaseRequisitionDtoUpdate
     {
@@ -134,7 +134,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<PrItemsDtoUpdate>? prItemsDtoUpdate { get; set; }
+        public List<PrItemsDtoUpdate>? PrItemsDtoUpdateList { get; set; }
     }
 
     public class PurchaseRequisitionIdNameListDto
