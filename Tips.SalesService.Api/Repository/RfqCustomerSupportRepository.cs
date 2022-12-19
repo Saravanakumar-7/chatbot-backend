@@ -82,7 +82,7 @@ namespace Tips.SalesService.Api.Repository
               .Where(x => x.RfqNumber == RfqNumber)
                         .FirstOrDefaultAsync();
             return csByRfqNumber;
-        }      
+        }
 
         public async Task<string> UpdateRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport)
         {
@@ -92,8 +92,8 @@ namespace Tips.SalesService.Api.Repository
             string result = $"RFQ of Detail {rfqCustomerSupport.Id} is updated successfully!";
             return result;
         }
-         
 
+     
         //public async Task<string> ActivateRfqCustomerSupportItemById(RfqCustomerSupportItems rfqCustomerSupportItems)
         //{
         //       rfqCustomerSupportItems.LastModifiedBy = "Admin";
@@ -131,6 +131,14 @@ namespace Tips.SalesService.Api.Repository
         public Task<string> DeleteRfqCustomerSupportItem(RfqCustomerSupportItems rfqCustomerSupportItems)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<RfqCustomerSupportItems>> GetAllActiveRfqCustomerSupportItemsByRfqNumber(string rfqNumber)
+        {
+            IEnumerable<RfqCustomerSupportItems> csByRfqNumber = await _tipsSalesServiceDbContext.rfqCustomerSupportItems
+             .Where(x => x.RfqNumber == rfqNumber && x.ReleaseStatus == true).ToListAsync();
+
+            return csByRfqNumber;
         }
 
         public Task<IEnumerable<RfqCustomerSupportItems>> GetAllRfqCustomerSupportItem()

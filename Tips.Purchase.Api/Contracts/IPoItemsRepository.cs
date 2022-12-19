@@ -5,11 +5,11 @@ namespace Tips.Purchase.Api.Contracts
 {
     public interface IPoItemsRepository
     {
-        Task<IEnumerable<PoItems>> GetAllPoItems();
-        Task<PoItems> GetPoItemsById(int id);
-        Task<IEnumerable<PoItems>> GetAllActivePoItems();
-        Task<int?> CreatePoItems(PoItems poItems);
-        Task<string> UpdatePoItems(PoItems poItems);
-        Task<string> DeletePoItems(PoItems poItems);
+        Task<IEnumerable<PoItem>> GetAllPoItems();
+        Task<PoItem> GetPoItemsById(int id);
+        Task<IEnumerable<PoItem>> GetAllActivePoItems();
+        Task<int?> CreatePoItems(PoItem poItems);
+        Task<string> UpdatePoItems(PoItem poItems);
+        Task<string> DeletePoItems(PoItem poItems);
     }
 }

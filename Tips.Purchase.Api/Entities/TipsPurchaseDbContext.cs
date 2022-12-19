@@ -11,7 +11,8 @@ namespace Tips.Purchase.Api.Entities
         }
 
         public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
-        public DbSet<PurchaseRequisition> PurchaseRequisition { get; set; }
+        public DbSet<PurchaseRequisition> PurchaseRequisitions { get; set; }
+        public DbSet<PoItem> PoItems { get; set; }
 
     }
 }

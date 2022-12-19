@@ -1,4 +1,6 @@
-﻿namespace Tips.Purchase.Api.Entities
+﻿using System.ComponentModel;
+
+namespace Tips.Purchase.Api.Entities
 {
     public class PurchaseOrder
     {
@@ -27,7 +29,7 @@
         //Terms
         public string RetentionPeriod { get; set; }
         public string SpecialTermsAndConditions { get; set; }
-
+        
         public bool POApprovalI { get; set; } = false;
         public string? POApprovedIBy { get; set; }
         public DateTime POApprovedIDate { get; set; }
@@ -41,7 +43,7 @@
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<PoItems>? poItems { get; set; }
+        public List<PoItem>? PoItemList { get; set; }
 
     }
 }

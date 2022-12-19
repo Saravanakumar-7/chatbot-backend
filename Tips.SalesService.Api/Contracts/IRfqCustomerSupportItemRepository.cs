@@ -8,7 +8,7 @@ using Tips.SalesService.Api.Entities;
 
 namespace Tips.SalesService.Api.Contracts
 {
-    public interface IRfqCustomerSupportItemRepository
+    public interface IRfqCustomerSupportItemRepository : IRepositoryBase<RfqCustomerSupportItems>
     {
         Task<IEnumerable<RfqCustomerSupportItems>> GetAllRfqCustomerSupportItem();
         Task<RfqCustomerSupportItems> GetRfqCustomerSupportItemById(int id);
@@ -17,9 +17,10 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> DeleteRfqCustomerSupportItem(RfqCustomerSupportItems rfqCustomerSupportItems);
 
         Task<string> ActivateRfqCustomerSupportItemById(RfqCustomerSupportItems rfqCustomerSupportItems);
+        Task<IEnumerable<RfqCustomerSupportItems>> GetAllActiveRfqCustomerSupportItemsByRfqNumber(string rfqNumber);
 
 
-        
+
 
     }
 }

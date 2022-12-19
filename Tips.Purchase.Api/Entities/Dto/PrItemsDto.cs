@@ -9,8 +9,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? ItemNumber { get; set; }
         public string? MftrItemNumber { get; set; }
         public string? Description { get; set; }
-        public decimal? UOM { get; set; }
-        [Precision(13, 3)]
+        public string? UOM { get; set; }
         public decimal? Quantity { get; set; }
         public string? SpecialInstruction { get; set; }
         public string? CreatedBy { get; set; }
@@ -18,8 +17,8 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
  
-        public List<PrAddProjectDto> prAddprojectsDto { get; set; }
-        public List<PrAddDeliveryScheduleDto> prAddDeliverySchedulesDto { get; set; }
+        public List<PrAddProjectDto> PrAddprojectsDtoList { get; set; }
+        public List<PrAddDeliveryScheduleDto> PrAddDeliverySchedulesDtoList { get; set; }
     }
 
     public class PrItemsDtoPost
@@ -30,8 +29,7 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         public string? Description { get; set; }
 
-        public decimal? UOM { get; set; }
-        [Precision(13, 3)]
+        public string? UOM { get; set; }
         public decimal? Quantity { get; set; }
 
         public string? SpecialInstruction { get; set; }
@@ -41,8 +39,8 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<PrAddProjectDtoPost> prAddprojectsDtoPost { get; set; }
-        public List<PrAddDeliveryScheduleDtoPost> prAddDeliverySchedulesDtoPost { get; set; }
+        public List<PrAddProjectDtoPost> PrAddprojectsDtoPostList { get; set; }
+        public List<PrAddDeliveryScheduleDtoPost> PrAddDeliverySchedulesDtoPostList { get; set; }
     }
 
     public class PrItemsDtoUpdate
@@ -54,8 +52,8 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         public string? Description { get; set; }
 
-        public decimal? UOM { get; set; }
-        [Precision(13, 3)]
+        public string? UOM { get; set; }
+      
         public decimal? Quantity { get; set; }
 
         public string? SpecialInstruction { get; set; }
@@ -65,8 +63,8 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<PrAddProjectDtoUpdate> prAddprojectsDtoUpdate { get; set; }
-        public List<PrAddDeliveryScheduleDtoUpdate> prAddDeliverySchedulesDtoUpdate { get; set; }
+        public List<PrAddProjectDtoUpdate> PrAddprojectsDtoUpdateList { get; set; }
+        public List<PrAddDeliveryScheduleDtoUpdate> PrAddDeliverySchedulesDtoUpdateList { get; set; }
     }
 
 }
