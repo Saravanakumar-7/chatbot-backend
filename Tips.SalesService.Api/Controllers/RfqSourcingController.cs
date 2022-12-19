@@ -100,9 +100,9 @@ namespace Tips.SalesService.Api.Controllers
 
                     foreach (var sourceitemDetails in rfqsourcing.rfqSourcingItems)
                     {
-                        RfqSourcingItemsDto rfqSpurceItemDto = _mapper.Map<RfqSourcingItemsDto>(sourceitemDetails);
-                        rfqSpurceItemDto.rfqSourcingVendors = _mapper.Map<List<RfqSourcingVendorDto>>(sourceitemDetails.rfqSourcingVendors);
-                        rfqSourseItemDtos.Add(rfqSpurceItemDto);
+                        RfqSourcingItemsDto rfqSourceItemDto = _mapper.Map<RfqSourcingItemsDto>(sourceitemDetails);
+                        rfqSourceItemDto.rfqSourcingVendors = _mapper.Map<List<RfqSourcingVendorDto>>(sourceitemDetails.rfqSourcingVendors);
+                        rfqSourseItemDtos.Add(rfqSourceItemDto);
                     }
 
                     rfqSourceDto.rfqSourcingItems = rfqSourseItemDtos;

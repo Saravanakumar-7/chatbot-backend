@@ -168,7 +168,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                _logger.LogInfo("Returned all RfqEngg");
+                _logger.LogInfo("Returned all Rfqlpcosting");
                 var result = _mapper.Map<IEnumerable<RfqLPCostingDto>>(listOfRfqLPCosting);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all RfqLPCosting Successfully";
@@ -700,7 +700,7 @@ namespace Tips.SalesService.Api.Controllers
 
         //release active API
         [HttpPut]
-        public async Task<IActionResult> UpdateRfqItemRelease([FromBody] List<int> itemIds)
+        public async Task<IActionResult> UpdateRfqEnggItemRelease([FromBody] List<int> itemIds)
         {
             ServiceResponse<RfqEnggDto> serviceResponse = new ServiceResponse<RfqEnggDto>();
 

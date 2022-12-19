@@ -1,5 +1,4 @@
-﻿using Entities.DTOs;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,19 +8,18 @@ using System.Threading.Tasks;
 
 namespace Tips.SalesService.Api.Entities
 {
-    public class RfqSourcing
+    public class ForeCastCustomerSupportNotes
     {
-       
+
         public int Id { get; set; }
-        public string? RFQNumber { get; set; }
-        public string? CustomerName { get; set; }
+        public string? CustomerSupportCategory { get; set; }
+        public string? CustomerSupportNotes { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
-        public List<RfqSourcingItems>? rfqSourcingItems { get; set; }
-
+        public int ForeCastCustomerSupportId { get; set; }
+        public ForeCastCustomerSupport? ForeCastCustomerSupport { get; set; }
     }
 }

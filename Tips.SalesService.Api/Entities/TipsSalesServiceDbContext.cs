@@ -42,9 +42,17 @@ namespace Tips.SalesService.Api.Entities
 
         public DbSet<Quote> quotes { get; set; }
 
-        
-
-
+        public DbSet<ForeCast> ForeCasts { get; set; }
+        public DbSet<ForeCastCustomerSupport> ForeCastCustomerSupports { get; set; }
+        public DbSet<ForeCastCustomerSupportItem> foreCastCustomerSupportItems { get; set; }
+        public DbSet<ForeCastCSDeliverySchedule> ForeCastCSDeliverySchedules { get; set; }
+        public DbSet<ForeCastCustomerSupportNotes> ForeCastCustomerSupportNotes { get; set; }
+        public DbSet<ForeCastEngg> ForeCastEnggs { get; set; }
+        public DbSet<ForeCastEnggItems> ForeCastEnggItems { get; set; }
+        public DbSet<ForeCastEnggRiskIdentification> ForeCastEnggRiskIdentifications { get; set; }
+        public DbSet<ForecastSourcing> ForecastSourcings { get; set; }
+        public DbSet<ForecastSourcingItems> ForecastSourcingItems { get; set; }
+        public DbSet<ForecastSourcingVendor> ForecastSourcingVendors { get; set; }
 
         public DbSet<RfqLPCostingItem> RfqLPCostingItems { get; set; }
 
@@ -53,7 +61,11 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<RfqLPCostingOtherCharges> RfqLPCostingOtherCharges { get; set; }
         public DbSet<FgOqc> FgOqcs { get; set; }
         public DbSet<SaOqc> SaOqcs { get; set; }
-
+        public DbSet<ForecastLpCosting> ForecastLpCostings { get; set; }
+        public DbSet<ForecastLpCostingItem> ForecastLpCostingItems { get; set; }
+        public DbSet<ForecastLpCostingProcess> ForecastLpCostingProcesses { get; set; }
+        public DbSet<ForecastLPCostingNREConsumable> ForecastLPCostingNREConsumables { get; set; }
+        public DbSet<ForecastLpCostingOtherCharges> ForecastLpCostingOtherCharges { get; set; }
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Entities.DTOs;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace Tips.SalesService.Api.Entities.DTOs
 {
-    public class RfqEnggDto
+    public class ForeCastDto
     {
         public int Id { get; set; }
         public string? CustomerName { get; set; }
         public string? RevisionNumber { get; set; }
-        public String? RfqNumber { get; set; }
-        public string? CustomerRfqNumber { get; set; }
+        public int ForeCastNumber { get; set; }
+        public string? CustomerForeCastRefrence { get; set; }
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public string Unit { get; set; }
@@ -22,46 +23,40 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<RfqEnggItemDto>? rfqEnggItems { get; set; }
-        public List<RfqEnggRiskIdentificationDto>? rfqEnggRiskIdentifications { get; set; }
-
     }
-    public class RfqEnggDtoPost
+    public class ForeCastPostDto
     {
-        [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
-
         public string? CustomerName { get; set; }
         public string? RevisionNumber { get; set; }
-        public string? RfqNumber { get; set; }
-        [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
-
-        public string? CustomerRfqNumber { get; set; }
+        public int ForeCastNumber { get; set; }
+        public string? CustomerForeCastRefrence { get; set; }
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public string Unit { get; set; }
-        public List<RfqEnggItemDtoPost>? rfqEnggItems { get; set; }
-
-        public List<RfqEnggRiskIdentificationDtoPost>? rfqEnggRiskIdentifications { get; set; }
-
-
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
     }
-    public class RfqEnggDtoUpdate
+    public class ForeCastUpdateDto
     {
         public int Id { get; set; }
-
-        [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
-
         public string? CustomerName { get; set; }
         public string? RevisionNumber { get; set; }
-        public string? RfqNumber { get; set; }
-        [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
-
-        public string? CustomerRfqNumber { get; set; }
+        public int ForeCastNumber { get; set; }
+        public string? CustomerForeCastRefrence { get; set; }
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public string Unit { get; set; }
-        public List<RfqEnggItemDtoUpdate>? rfqEnggItems { get; set; }
-        public List<RfqEnggRiskIdentificationDtoUpdate>? rfqEnggRiskIdentifications { get; set; }
-
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+    }
+    public class ForeCastNumberListDto
+    {
+        public int Id { get; set; }
+        public int ForeCastNumber { get; set; }
+        public string? CustomerName { get; set; }
     }
 }
