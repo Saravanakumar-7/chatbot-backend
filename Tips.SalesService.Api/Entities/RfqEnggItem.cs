@@ -13,6 +13,7 @@ namespace Tips.SalesService.Api.Entities
         public int Id { get; set; }
         public string? CustomerItemNumber { get; set; }
         public string Description { get; set; }
+        public bool ReleaseStatus { get; set; } = false;
         public int? Quantity { get;set;}
         public string? CostingBomVersionNo { get;}
         public string? ItemNumber { get; set; }

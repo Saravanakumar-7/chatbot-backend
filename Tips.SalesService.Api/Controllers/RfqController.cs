@@ -27,14 +27,16 @@ namespace Tips.SalesService.Api.Controllers
         private IMapper _mapper;
         private IRfqRepository _rfqRepository;
         private IRfqEnggRepository _rfqenggRepository;
+        private IRfqEnggItemRepository _rfqenggItemRepository;
         private IRfqLPCostingRepository _rfqlpcostingRepository;
-        public RfqController(IRfqCustomerSupportRepository repository, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, IRfqLPCostingRepository rfqLPCostingRepository, IRfqEnggRepository rfqEnggRepository, ILoggerManager logger, IMapper mapper)
+        public RfqController(IRfqEnggItemRepository rfqenggItemRepository, IRfqCustomerSupportRepository repository, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, IRfqLPCostingRepository rfqLPCostingRepository, IRfqEnggRepository rfqEnggRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _rfqRepository = rfqRepository;
             _rfqenggRepository = rfqEnggRepository;
+            _rfqenggItemRepository = rfqenggItemRepository;
             _rfqlpcostingRepository = rfqLPCostingRepository;
             _itemRepository = rfqCustomerSupportItemRepository;
 
@@ -300,6 +302,32 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetAllActiveRfqCustomerSupportItemsByRfqNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet("{RfqNumber}")]
+        public async Task<IActionResult> GetAllActiveRfqEnggItemByRfqNumber(string RfqNumber)
+        {
+            ServiceResponse<IEnumerable<RfqEnggItemDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqEnggItemDto>>();
+            try
+            {
+                var listOfRfqItem = await _rfqenggItemRepository.GetAllActiveRfqEnggItemByRfqNumber(RfqNumber);
+                //_logger.LogInfo("Returned all RfqEnggItem");
+                var result = _mapper.Map<IEnumerable<RfqEnggItemDto>>(listOfRfqItem);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ActiveRfqEnggItem";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveRfqEnggItemByRfqNumber action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -669,6 +697,60 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+
+        //release active API
+        [HttpPut]
+        public async Task<IActionResult> UpdateRfqItemRelease([FromBody] List<int> itemIds)
+        {
+            ServiceResponse<RfqEnggDto> serviceResponse = new ServiceResponse<RfqEnggDto>();
+
+            try
+            {
+                if (itemIds is null)
+                {
+                    _logger.LogError("RfqItemid object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Update RfqItemid object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                foreach (var id in itemIds)
+                {
+                    if (id == null)
+                    {
+                        _logger.LogError($"RfqItem with item id: {id}, hasn't been found in db.");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"Update RfqItem hasn't been found in db.";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        return NotFound(serviceResponse);
+                    }
+
+                    var rfqCustomerSupport = await _rfqenggItemRepository.GetRfqEnggItemById(id);
+                    rfqCustomerSupport.ReleaseStatus = true;
+                    string result = await _rfqenggItemRepository.ActivateRfqEnggItemById(rfqCustomerSupport);
+                    _logger.LogInfo(result);
+                    _repository.SaveAsync();
+                }
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "RfqItem  Release Activated Successfully ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateRfqItem action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
 
         [HttpPost]

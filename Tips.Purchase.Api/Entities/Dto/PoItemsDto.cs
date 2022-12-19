@@ -84,4 +84,20 @@ namespace Tips.Purchase.Api.Entities.Dto
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
     }
+
+    public class PoItemListDto
+    {
+        public int Id { get; set; }
+        public string? MftrItemNumber { get; set; }
+        public string? Description { get; set; }
+        public string? UOM { get; set; }
+        public decimal PoUnitPrice { get; set; }
+        public decimal PoOrderedQuantity { get; set; }
+        public decimal PoBalancedQuantity { get; set; }
+        public decimal SGST { get; set; }
+        public decimal CGST { get; set; }
+        public decimal IGST { get; set; }
+        public decimal UTGST { get; set; }
+        public decimal Total { get; set; }
+    }
 }
