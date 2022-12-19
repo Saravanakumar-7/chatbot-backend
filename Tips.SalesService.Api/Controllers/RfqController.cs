@@ -166,7 +166,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                _logger.LogInfo("Returned all RfqEngg");
+                _logger.LogInfo("Returned all Rfqlpcosting");
                 var result = _mapper.Map<IEnumerable<RfqLPCostingDto>>(listOfRfqLPCosting);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all RfqLPCosting Successfully";

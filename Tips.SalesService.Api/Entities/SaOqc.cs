@@ -1,16 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace Tips.SalesService.Api.Entities
 {
     public class SaOqc
     {
         public int? Id { get; set; }
-        public string? SAShopOrderNo { get; set; }
-
-        public string? ProjectNo { get; set; }
-
+        public string? ProjectNumber { get; set; }
         public string? FGItemNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
 
+        [Precision(18, 3)]
+        public decimal? ShopOrderQty { get; set; }
+        public string? SubAssemblyItemNumber { get; set; }
+        public string? SAShopOrderNumber { get;}
         [Precision(18, 3)]
         public decimal? SAShopOrderQty { get; set; }
         [Precision(18, 3)]

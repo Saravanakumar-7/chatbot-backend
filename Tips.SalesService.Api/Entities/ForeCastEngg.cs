@@ -1,4 +1,4 @@
-﻿using Entities.DTOs;
+﻿using Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,19 +9,21 @@ using System.Threading.Tasks;
 
 namespace Tips.SalesService.Api.Entities
 {
-    public class RfqSourcing
+    public class ForeCastEngg
     {
-       
         public int Id { get; set; }
-        public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
+        public string? ForecastNumber { get; set; }
+        public string? CustomerForecastReference { get; }
+        public DateTime? RequestReceiveDate { get; set; }
+        public DateTime? QuoteExpectDate { get; set; }
+        public string? RevisionNumber { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
-        public List<RfqSourcingItems>? rfqSourcingItems { get; set; }
-
+        public List<ForeCastEnggItems>? foreCastEnggItems { get; set; }
+        public List<ForeCastEnggRiskIdentification>? foreCastEnggRiskIdentifications { get; set; }
     }
 }
