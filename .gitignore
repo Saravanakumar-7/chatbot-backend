@@ -361,4 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/Tips.Grin.Api/Migrations/TipsGrinDbContextModelSnapshot.cs
+/Tips.SalesService.Api/Migrations
+/Tips.Warehouse.Api/Migrations
+/Tips.Purchase.Api/Migrations

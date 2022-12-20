@@ -216,9 +216,9 @@ namespace Tips.Master.Api
             CreateMap<VendorDepartment, VendorDepartmentPostDto>().ReverseMap();
             CreateMap<VendorDepartment, VendorDepartmentUpdateDto>().ReverseMap();
 
-            CreateMap<BasicOfApproval, BasicOfApprovalDto>().ReverseMap();
-            CreateMap<BasicOfApproval, BasicOfApprovalPostDto>().ReverseMap();
-            CreateMap<BasicOfApproval, BasicOfApprovalUpdateDto>().ReverseMap();
+            CreateMap<BasisOfApproval, BasisOfApprovalDto>().ReverseMap();
+            CreateMap<BasisOfApproval, BasisOfApprovalPostDto>().ReverseMap();
+            CreateMap<BasisOfApproval, BasisOfApprovalUpdateDto>().ReverseMap();
             //test
             CreateMap<VendorContacts, VendorContactsDto>().ReverseMap();
             CreateMap<VendorContacts, VendorContactsPostDto>().ReverseMap();
@@ -285,17 +285,53 @@ namespace Tips.Master.Api
 
             CreateMap<Process, ProcessDto>().ReverseMap();
             CreateMap<Process, ProcessDtoPost>().ReverseMap();
-            CreateMap<Process, PackingInstructionDtoUpdate>().ReverseMap();
+            CreateMap<Process, ProcessDtoUpdate>().ReverseMap();
 
             CreateMap<PartTypes, PartTypesDto>().ReverseMap();
             CreateMap<PartTypes, PartTypesDtoPost>().ReverseMap();
             CreateMap<PartTypes, PartTypesDtoUpdate>().ReverseMap();
 
+            CreateMap<Lead, LeadDto>().ReverseMap();
+            CreateMap<Lead, LeadDtoPost>().ReverseMap();
+            CreateMap<Lead, LeadDtoUpdate>().ReverseMap();
+
+            CreateMap<LeadAddress, LeadAddressDto>().ReverseMap();
+            CreateMap<LeadAddress, LeadAddressPostDto>().ReverseMap();
+            CreateMap<LeadAddress, LeadAddressUpdateDto>().ReverseMap();
+
+
+            CreateMap<DemoStatus, DemoStatusDto>().ReverseMap();
+            CreateMap<DemoStatus, DemoStatusDtoPost>().ReverseMap();
+            CreateMap<DemoStatus, DemoStatusDtoUpdate>().ReverseMap();
+
+            CreateMap<LeadStatus, LeadStatusDto>().ReverseMap();
+            CreateMap<LeadStatus, LeadStatusDtoPost>().ReverseMap();
+            CreateMap<LeadStatus, LeadStatusDtoUpdate>().ReverseMap();
+
+            CreateMap<LeadType, LeadTypeDto>().ReverseMap();
+            CreateMap<LeadType, LeadTypeDtoPost>().ReverseMap();
+            CreateMap<LeadType, LeadTypeDtoUpdate>().ReverseMap();
+
+            CreateMap<SecondarySource, SecondarySourceDto>().ReverseMap();
+            CreateMap<SecondarySource, SecondarySourceDtoPost>().ReverseMap();
+            CreateMap<SecondarySource, SecondarySourceDtoUpdate>().ReverseMap();
+
+            CreateMap<Source, SourceDto>().ReverseMap();
+            CreateMap<Source, SourceDtoPost>().ReverseMap();
+            CreateMap<Source, SourceDtoUpdate>().ReverseMap();
+
+
             CreateMap<Inventory, InventoyDto>().ReverseMap();
 
             CreateMap<Inventory_Transaction, Inventory_TransactionDto>().ReverseMap();
 
+            CreateMap<ReleaseEnggBom, ReleaseEnggBomDto>().ReverseMap();
+            CreateMap<ReleaseEnggBom, ReleaseEnggBomDtoPost>().ReverseMap();
+            CreateMap<ReleaseEnggBom, ReleaseEnggBomDtoUpdate>().ReverseMap();
 
+            CreateMap<ReleaseCostBom, ReleaseCostBomDtoPost>().ReverseMap();
+
+            CreateMap<ReleaseProductBom, ReleaseProductBomDtoPost>().ReverseMap();
 
         }
     }

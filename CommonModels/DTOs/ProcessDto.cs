@@ -39,10 +39,10 @@ namespace Entities.DTOs
     }
     public class ProcessDtoUpdate
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         [Required(ErrorMessage = "Process is required")]
         [StringLength(100, ErrorMessage = "Process can't be longer than 100 characters")]
-        public string AuditFrequency { get; set; }
+        public string ProcessName { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
         [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]

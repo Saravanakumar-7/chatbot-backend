@@ -10,7 +10,7 @@ namespace Entities.DTOs
 {
     public class EnggBomDto
     {
-        public int Id { get; set; }
+        public int BOMId { get; set; }
 
         public string ItemNumber { get; set; }
 
@@ -61,7 +61,7 @@ namespace Entities.DTOs
     }
     public class EnggBomUpdateDto
     {
-        public int Id { get; set; }
+        public int BOMId { get; set; }
 
         [Required(ErrorMessage = "ItemNumber is required")]
         public string ItemNumber { get; set; }
@@ -85,6 +85,6 @@ namespace Entities.DTOs
 
         public List<EnggChildItemUpdateDto>? EnggChildItemUpdates { get; set; }
 
-    }
+    }   
 
 }

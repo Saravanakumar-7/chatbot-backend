@@ -11,14 +11,14 @@ using Entities.DTOs;
 
 namespace Tips.Grin.Api.Contracts
 {
-    public interface IIQCConfirmationRepository
+    public interface IIQCConfirmationRepository : IRepositoryBase<IQCConfirmation>
     {
         Task<IEnumerable<IQCConfirmation>> GetAllIqcDetails();
-        Task<IQCConfirmation> GetIqcDetailByGrinNo(int id);
-        Task<int?> CreateIqc(IQCConfirmation iQCConfirmation);
-        Task<int?> CreateIqcById(IQCConfirmation iQCConfirmation);
+        Task<IEnumerable<IQCConfirmation>> GetIqcDetailsbyGrinNo(string grinNumber);
         Task<string> UpdateIqc(IQCConfirmation iQCConfirmation);
-        Task<string> DeleteIqc(IQCConfirmation iQCConfirmation); 
+        
+        Task<IQCConfirmation> GetIqcDetailsbyId(int id);              
+        Task<int?> CreateIqc(IQCConfirmation iQCConfirmation);         
 
     }
 }
