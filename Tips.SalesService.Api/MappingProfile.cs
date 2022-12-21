@@ -204,6 +204,30 @@ namespace Tips.SalesService.Api
             CreateMap<ForecastLpCostingOtherCharges, ForecastLpCostingOtherChargesDto>().ReverseMap();
             CreateMap<ForecastLpCostingOtherCharges, ForecastLPCostingOtherChargesDtoPost>().ReverseMap();
             CreateMap<ForecastLpCostingOtherCharges, ForecastLPCostingOtherChargesDtoUpdate>().ReverseMap();
+
+            CreateMap<MaterialRequest, MaterialRequestDto>().ReverseMap();
+            CreateMap<MaterialRequest, MaterialRequestDtoPost>().ReverseMap();
+            CreateMap<MaterialRequest, MaterialRequestDtoUpdate>().ReverseMap();
+
+            CreateMap<MaterialRequestItem, MaterialRequestItemDto>().ReverseMap();
+            CreateMap<MaterialRequestItem, MaterialRequestItemDtoPost>().ReverseMap();
+            CreateMap<MaterialRequestItem, MaterialRequestItemDtoUpdate>().ReverseMap();
+
+            CreateMap<MaterialTransactionNote, MaterialTransactionNoteDto>().ReverseMap();
+            CreateMap<MaterialTransactionNote, MaterialTransactionNoteDtoPost>().ReverseMap();
+            CreateMap<MaterialTransactionNote, MaterialTransactionNoteDtoUpdate>().ReverseMap();
+
+            CreateMap<MaterialTransactionNoteItem, MaterialTransactionNoteItemDto>().ReverseMap();
+            CreateMap<MaterialTransactionNoteItem, MaterialTransactionNoteItemDtoPost>().ReverseMap();
+            CreateMap<MaterialTransactionNoteItem, MaterialTransactionNoteItemDtoUpdate>().ReverseMap();
+
+            CreateMap<LocationTransfer, LocationTransferDto>().ReverseMap();
+            CreateMap<LocationTransfer, LocationTransferDtoPost>().ReverseMap();
+            CreateMap<LocationTransfer, LocationTransferDtoUpdate>().ReverseMap();
+
+            CreateMap<ReleaseLp, ReleaseLpDto>().ReverseMap();
+            CreateMap<ReleaseLp, ReleaseLpDtoPost>().ReverseMap();
+            CreateMap<ReleaseLp, ReleaseLpDtoUpdate>().ReverseMap();
         }
     }
 }

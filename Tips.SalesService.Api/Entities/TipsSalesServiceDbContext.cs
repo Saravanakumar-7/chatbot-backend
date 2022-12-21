@@ -67,5 +67,12 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<ForecastLPCostingNREConsumable> ForecastLPCostingNREConsumables { get; set; }
         public DbSet<ForecastLpCostingOtherCharges> ForecastLpCostingOtherCharges { get; set; }
 
+        public DbSet<MaterialRequest> materialRequests { get; set; }
+        public DbSet<MaterialRequestItem> materialRequestItems { get; set; }
+        public DbSet<MaterialTransactionNote> materialTransactionNotes { get; set; }
+        public DbSet<MaterialTransactionNoteItem> materialTransactionNoteItems { get; set; }
+        public DbSet<LocationTransfer> locationTransfers { get; set; }
+        public DbSet<ReleaseLp> ReleaseLps { get; set; }
+
     }
 }
