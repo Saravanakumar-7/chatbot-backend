@@ -29,7 +29,8 @@ namespace Tips.SalesService.Api.Controllers
         private IRfqEnggRepository _rfqenggRepository;
         private IRfqEnggItemRepository _rfqenggItemRepository;
         private IRfqLPCostingRepository _rfqlpcostingRepository;
-        public RfqController(IRfqEnggItemRepository rfqenggItemRepository, IRfqCustomerSupportRepository repository, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, IRfqLPCostingRepository rfqLPCostingRepository, IRfqEnggRepository rfqEnggRepository, ILoggerManager logger, IMapper mapper)
+        private IReleaseLpRepository _releaseLpRepository;
+        public RfqController(IRfqEnggItemRepository rfqenggItemRepository, IReleaseLpRepository releaseLpRepository, IRfqCustomerSupportRepository repository, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, IRfqLPCostingRepository rfqLPCostingRepository, IRfqEnggRepository rfqEnggRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
@@ -39,6 +40,7 @@ namespace Tips.SalesService.Api.Controllers
             _rfqenggItemRepository = rfqenggItemRepository;
             _rfqlpcostingRepository = rfqLPCostingRepository;
             _itemRepository = rfqCustomerSupportItemRepository;
+            _releaseLpRepository = releaseLpRepository;
 
         }
 
@@ -698,7 +700,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
 
-        //release active API
+        //release enggactive API
         [HttpPut]
         public async Task<IActionResult> UpdateRfqEnggItemRelease([FromBody] List<int> itemIds)
         {
@@ -777,14 +779,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
-                }
-                //var customfield = _mapper.Map<IEnumerable<RfqCustomerSupportItems>>(rfqCustomerSupportDto.rfqCustomerSupportItems);
-                //var customernotes = _mapper.Map<IEnumerable<RfqCustomerSupportNotes>>(rfqCustomerSupportDto.rfqCustomerSupportNotes);
-
-                //var rfqs = _mapper.Map<RfqCustomerSupport>(rfqCustomerSupportDto);
-
-                //rfqs.rfqCustomerSupportItems = customfield.ToList();
-                //rfqs.rfqCustomerSupportNotes = customernotes.ToList();
+                }               
 
                 var rfqCustomerSupportList = _mapper.Map<RfqCustomerSupport>(rfqCustomerSupportDto);
 
@@ -1216,13 +1211,7 @@ namespace Tips.SalesService.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                // var customfield = _mapper.Map<IEnumerable<RfqCustomerSupportItems>>(rfq.rfqCustomerSupportItems);
-                //var customnotes = _mapper.Map<IEnumerable<RfqCustomerSupportNotes>>(rfq.rfqCustomerSupportNotes);
-
-                //                var data = _mapper.Map(rfqCustomerSupportUpdateDto, rfq);
-
-                //              data.rfqCustomerSupportItems = customfield.ToList();
-                //            data.rfqCustomerSupportNotes = customnotes.ToList();
+                
 
                 var rfqcustomerlist = _mapper.Map<RfqCustomerSupport>(rfq);
 
@@ -1409,6 +1398,56 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> BulkRelease([FromBody] List<ReleaseLpDtoPost> releaseLpDtoPosts)
+        {
+            ServiceResponse<ReleaseLpDtoPost> serviceResponse = new ServiceResponse<ReleaseLpDtoPost>();
 
+            try
+            {
+                if (releaseLpDtoPosts == null)
+                {
+                    _logger.LogError("BulkRelease details object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "BulkRelease details object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest();
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid BulkRelease details object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                var bulklist = _mapper.Map<List<ReleaseLp>>(releaseLpDtoPosts);
+                foreach (var releaseLpdetails in bulklist)
+                {
+
+                    _releaseLpRepository.BulkRelease(releaseLpdetails);
+                }
+                _releaseLpRepository.SaveAsync();
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("ReleaseLpById", serviceResponse);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside Create ReleaseLp action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }
