@@ -10,7 +10,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class RfqCustomerSupportItemDto
     {
         public int Id { get; set; }
-        public string? ItemNumber { get; set; }         
+        public string RfqNumber { get; set; }
+        public string? ItemNumber { get; set; }
         public int? Quantity { get; set; }
         public string? Description { get; set; }
         public string Unit { get; set; }
@@ -25,6 +26,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqCustomerSupportItemPostDto
     {
+        public string RfqNumber { get; set; }
         public string? ItemNumber { get; set; }
 
         public int? Quantity { get; set; }
@@ -43,7 +45,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class RfqCustomerSupportItemUpdateDto
     {
         public int Id { get; set; }
-
+        public string RfqNumber { get; set; }
         public string? ItemNumber { get; set; } 
 
         public int? Quantity { get; set; }

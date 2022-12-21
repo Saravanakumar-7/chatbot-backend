@@ -132,6 +132,78 @@ namespace Tips.SalesService.Api
             CreateMap<SaOqc, SaOqcDtoPost>().ReverseMap();
             CreateMap<SaOqc, SaOqcDtoUpdate>().ReverseMap();
 
+            CreateMap<ForeCast, ForeCastDto>().ReverseMap();
+            CreateMap<ForeCast, ForeCastPostDto>().ReverseMap();
+            CreateMap<ForeCast, ForeCastUpdateDto>().ReverseMap();
+            CreateMap<ForeCast, ForeCastNumberListDto>().ReverseMap();
+
+            CreateMap<ForeCastCustomerSupport, ForeCastCustomerSupportDto>().ReverseMap();
+            CreateMap<ForeCastCustomerSupport, ForeCastCustomerSupportPostDto>().ReverseMap();
+            CreateMap<ForeCastCustomerSupport, ForeCastCustomerSupportUpdateDto>().ReverseMap();
+            CreateMap<ForeCastCustomerSupport, ForeCAstCustomerSupportUpdateReleaseDto>().ReverseMap();
+
+
+            CreateMap<ForeCastCSDeliverySchedule, ForeCastCSDeliveryScheduleDto>().ReverseMap();
+            CreateMap<ForeCastCSDeliverySchedule, ForeCastCSDeliverySchedulePostDto>().ReverseMap();
+            CreateMap<ForeCastCSDeliverySchedule, ForeCastCSDeliveryScheduleUpdateDto>().ReverseMap();
+
+            CreateMap<ForeCastCustomerSupportItem, ForeCastCustomerSupportItemDto>().ReverseMap();
+            CreateMap<ForeCastCustomerSupportItem, ForeCastCustomerSupportItemPostDto>().ReverseMap();
+            CreateMap<ForeCastCustomerSupportItem, ForeCastCustomerSupportItemUpdateDto>().ReverseMap();
+            CreateMap<ForeCastCustomerSupportItem, ForeCAstCustomerSupportUpdateReleaseDto>().ReverseMap();
+
+
+
+            CreateMap<ForeCastCustomerSupportNotes, ForeCastCustomerSupportNotesDto>().ReverseMap();
+            CreateMap<ForeCastCustomerSupportNotes, ForeCastCustomerSupportNotesPostDto>().ReverseMap();
+            CreateMap<ForeCastCustomerSupportNotes, ForeCastCustomerSupportNotesUpdateDto>().ReverseMap();
+
+            CreateMap<ForeCastEngg, ForeCastEnggDto>().ReverseMap();
+            CreateMap<ForeCastEngg, ForeCastEnggPostDto>().ReverseMap();
+            CreateMap<ForeCastEngg, ForeCastEnggUpdateDto>().ReverseMap();
+
+            CreateMap<ForeCastEnggItems, ForeCastEnggItemsDto>().ReverseMap();
+            CreateMap<ForeCastEnggItems, ForeCastEnggItemsPostDto>().ReverseMap();
+            CreateMap<ForeCastEnggItems, ForeCastEnggItemsUpdateDto>().ReverseMap();
+
+            CreateMap<ForeCastEnggRiskIdentification, ForeCastEnggRiskIdentificationDto>().ReverseMap();
+            CreateMap<ForeCastEnggRiskIdentification, ForeCastEnggRiskIdentificationPostDto>().ReverseMap();
+            CreateMap<ForeCastEnggRiskIdentification, ForeCastEnggRiskIdentificationUpdateDto>().ReverseMap();
+
+
+            CreateMap<ForecastSourcing, ForecastSourcingDto>().ReverseMap();
+            CreateMap<ForecastSourcing, ForecastSourcingDtoPost>().ReverseMap();
+            CreateMap<ForecastSourcing, ForecastSourcingDtoUpdate>().ReverseMap();
+
+            CreateMap<ForecastSourcingItems, ForecastSourcingItemsDto>().ReverseMap();
+            CreateMap<ForecastSourcingItems, ForecastSourcingItemsDtoPost>().ReverseMap();
+            CreateMap<ForecastSourcingItems, ForecastSourcingItemsDtoUpdate>().ReverseMap();
+
+            CreateMap<ForecastSourcingVendor, ForecastSourcingVendorDto>().ReverseMap();
+            CreateMap<ForecastSourcingVendor, ForecastSourcingVendorDtoPost>().ReverseMap();
+            CreateMap<ForecastSourcingVendor, ForecastSourcingVendorDtoUpdate>().ReverseMap();
+
+            CreateMap<ForecastLpCosting, ForecastLpCostingDto>().ReverseMap();
+            CreateMap<ForecastLpCosting, ForecastLPCostingDtoPost>().ReverseMap();
+            CreateMap<ForecastLpCosting, ForecastLPCostingDtoUpdate>().ReverseMap();
+
+            CreateMap<ForecastLpCostingItem, ForecastLpCostingItemDto>().ReverseMap();
+            CreateMap<ForecastLpCostingItem, ForecastLPCostingItemDtoPost>().ReverseMap();
+            CreateMap<ForecastLpCostingItem, ForecastLPCostingItemDtoUpdate>().ReverseMap();
+
+            CreateMap<ForecastLpCostingProcess, ForecastLpCostingProcessDto>().ReverseMap();
+            CreateMap<ForecastLpCostingProcess, ForecastLPCostingProcessDtoPost>().ReverseMap();
+            CreateMap<ForecastLpCostingProcess, ForecastLPCostingProcessDtoUpdate>().ReverseMap();
+
+
+
+            CreateMap<ForecastLPCostingNREConsumable, ForecastLpCostingNREConsumableDto>().ReverseMap();
+            CreateMap<ForecastLPCostingNREConsumable, ForecastLPCostingNREConsumableDtoPost>().ReverseMap();
+            CreateMap<ForecastLPCostingNREConsumable, ForecastLPCostingNREConsumableDtoUpdate>().ReverseMap();
+
+            CreateMap<ForecastLpCostingOtherCharges, ForecastLpCostingOtherChargesDto>().ReverseMap();
+            CreateMap<ForecastLpCostingOtherCharges, ForecastLPCostingOtherChargesDtoPost>().ReverseMap();
+            CreateMap<ForecastLpCostingOtherCharges, ForecastLPCostingOtherChargesDtoUpdate>().ReverseMap();
         }
     }
 }

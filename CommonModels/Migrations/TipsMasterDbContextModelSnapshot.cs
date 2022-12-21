@@ -22,48 +22,6 @@ namespace Entities.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Entities.AuditFrequency", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("AuditFrequencyName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("auditFrequencies");
-                });
-
             modelBuilder.Entity("Entities.Bank", b =>
                 {
                     b.Property<int>("Id")
@@ -94,10 +52,6 @@ namespace Entities.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -137,628 +91,9 @@ namespace Entities.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.ToTable("BasicOfApprovals");
-                });
-
-            modelBuilder.Entity("Entities.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("ActiveStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CategoryName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Category");
-                });
-
-            modelBuilder.Entity("Entities.Commodity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("ActiveStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CommodityType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Remarks")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Commodity");
-                });
-
-            modelBuilder.Entity("Entities.CompanyAddresses", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("CompanyMasterId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("GSTNNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PANNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PoAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("SameasAddress")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompanyMasterId");
-
-                    b.ToTable("CompanyAddresse");
-                });
-
-            modelBuilder.Entity("Entities.CompanyBanking", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("AccountNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BankName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Branch")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CompanyMasterId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("IBANCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IFSCCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Primary")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SwiftCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompanyMasterId");
-
-                    b.ToTable("CompanyBankings");
-                });
-
-            modelBuilder.Entity("Entities.CompanyContacts", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("AlternameMobileNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AlternateMobileCountryCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CallName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CompanyMasterId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Department")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Designation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Extension")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LandLine")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Language")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MobileCountryCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MobileNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Primary")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Salutation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TimeToCall")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompanyMasterId");
-
-                    b.ToTable("CompanyContacts");
-                });
-
-            modelBuilder.Entity("Entities.CompanyMaster", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("AS")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Advance")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ApprovalBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ApprovalDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ApprovalStatus")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AuditFrequency")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BasisOfApproval")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BoardNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Capacity")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CompanyAliasName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CompanyCategory")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CompanyType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Country")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Currency")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerApprove")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DNBHooversNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("ERP")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ERPvalue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ESDSetup")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ExportUnitType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FloorSpace")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("GST")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("GeneralEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("GeneralMSME")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("GooglePinLocation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HazmatSetup")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HeadCount")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ICRA")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IEC")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("ISO")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("InCoporation")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("IncoTerm")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("InventoryItem")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("MSME")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Machine")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Medical")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("NADCAP")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("NatureOfRelationship")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("OSP")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("OSPvalue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Others")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PAN")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PaymentTerms")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PinZipCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PreferredFreightForwader")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PurchaseGroup")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("ReAudit")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("RelatedCompanyAlias")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RelatedCompanyName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ScopeOfSupply")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SpecialTerms")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("State")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TIN")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ToolsandEquip")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TurnOver3years")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TypeOfCompany")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UOM")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("UdhyamCertificate")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Upload")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Website")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("sqft")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CompanyMasters");
-                });
-
-            modelBuilder.Entity("Entities.CompanyMasterHeadCounting", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("CompanyMasterId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DepartmentSkill")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NumberOfPeople")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompanyMasterId");
-
-                    b.ToTable("CompanyMasterHeadCountings");
-                });
-
-            modelBuilder.Entity("Entities.CostCenter", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CostCenterName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("costCenters");
-                });
-
-            modelBuilder.Entity("Entities.CostingMethod", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CostingMethodName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CostingMethods");
                 });
 
             modelBuilder.Entity("Entities.Currency", b =>
@@ -793,542 +128,9 @@ namespace Entities.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.ToTable("Currencies");
-                });
-
-            modelBuilder.Entity("Entities.CustomerAddresses", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CustomerMasterId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("GSTNNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InvoiceAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PANNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerMasterId");
-
-                    b.ToTable("CustomerAddresses");
-                });
-
-            modelBuilder.Entity("Entities.CustomerBanking", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("AccountNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BankName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Branch")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CustomerMasterId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("IBANCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IFSCCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Primary")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SwiftCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerMasterId");
-
-                    b.ToTable("CustomerBankings");
-                });
-
-            modelBuilder.Entity("Entities.CustomerContacts", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("AlternameMobileNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AlternateMobileCountryCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CallName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CustomerMasterId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Department")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Designation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Extension")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LandLine")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Language")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MobileCountryCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MobileNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Primary")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Salutation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Skypeld")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TimeToCall")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerMasterId");
-
-                    b.ToTable("CustomerContacts");
-                });
-
-            modelBuilder.Entity("Entities.CustomerMaster", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Advance")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ApprovalBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ApprovalDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("AuditFrequency")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BasisOfApproval")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BoardNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Capacity")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Country")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Currency")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerAliasName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerApprove")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerCategory")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DNBNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("DropShipment")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("ERP")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("ERPDetails")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ERPValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ESDSetup")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ESDSetupDetails")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ExportUnitType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FloorSpace")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("GST")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("GeneralEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("GeneralMSME")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("GooglePinLocation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HazmatSetup")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HazmatSetupDetails")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HeadCount")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ICRA")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IEC")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("INCOTerms")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Incorporation")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LDApplicable")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LDApplicableValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("MSME")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Machine")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MachineDetails")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NatureOfRelationship")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("OSP")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("OSPValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Others")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PAN")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("PODReq")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PackingInstructions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PartialDispatch")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PaymentTerms")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PinZipCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PreferredFreightForwarder")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("ReAudit")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Region")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RelatedCustomerAlias")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RelatedCustomerName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SalesManager")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ScopeOfSupply")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Segment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ShipmentInstructions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("SourceInspection")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SourceInspectionValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SpecialInstructions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SpecialTerms")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Sqft")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("State")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TIN")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ToolsAndEquip")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ToolsAndEquipDetails")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TurnOver")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TypeOfCompany")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UOM")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("UdhyamCertificate")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Upload")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Website")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CustomerMasters");
-                });
-
-            modelBuilder.Entity("Entities.CustomerMasterHeadCounting", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("CustomerMasterId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DepartmentSkill")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NumberOfPeople")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerMasterId");
-
-                    b.ToTable("CustomerMasterHeadCountings");
-                });
-
-            modelBuilder.Entity("Entities.CustomerShippingAddresses", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CustomerMasterId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("GSTNNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GooglePinLocation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("SameasAddress")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ShippingAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerMasterId");
-
-                    b.ToTable("CustomerShippingAddresses");
                 });
 
             modelBuilder.Entity("Entities.CustomerType", b =>
@@ -1361,10 +163,6 @@ namespace Entities.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1404,10 +202,6 @@ namespace Entities.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.ToTable("DeliveryTerms");
@@ -1445,297 +239,9 @@ namespace Entities.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.ToTable("Departments");
-                });
-
-            modelBuilder.Entity("Entities.EnggAlternates", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("ChildItemAlternateNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ChildItemNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("EnggChildItemId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ProbabilityOfUsage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("QuantityPer")
-                        .HasPrecision(13, 3)
-                        .HasColumnType("decimal(13,3)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UOM")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Version")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EnggChildItemId");
-
-                    b.ToTable("EnggAlternates");
-                });
-
-            modelBuilder.Entity("Entities.EnggBom", b =>
-                {
-                    b.Property<int>("BOMId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BOMId"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ItemDescription")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ItemNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ItemType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RevisionNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("BOMId");
-
-                    b.ToTable("EnggBoms");
-                });
-
-            modelBuilder.Entity("Entities.EnggChildItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("EnggBomId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ItemNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Quantity")
-                        .HasPrecision(13, 3)
-                        .HasColumnType("decimal(13,3)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ScrapAllowance")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ScrapAllowanceType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UOM")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Version")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EnggBomId");
-
-                    b.ToTable("EnggChildItems");
-                });
-
-            modelBuilder.Entity("Entities.ExportUnitType", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ExportUnitTypeName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("exportUnitTypes");
-                });
-
-            modelBuilder.Entity("Entities.GST_Percentage", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GSTPercentage")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("gst_Percentages");
-                });
-
-            modelBuilder.Entity("Entities.HeadCounting", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("DepartmentSkill")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NumberOfPeople")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("VendorMasterId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("VendorMasterId");
-
-                    b.ToTable("HeadCountings");
                 });
 
             modelBuilder.Entity("Entities.IncoTerm", b =>
@@ -1770,178 +276,9 @@ namespace Entities.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.ToTable("IncoTerms");
-                });
-
-            modelBuilder.Entity("Entities.Inventory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<decimal>("Balance_Quantity")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GrinMaterialType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GrinNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("GrinPartId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsStockAvailable")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Location")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MftrPartNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PartNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PartType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProjectNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ReferenceID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ReferenceIDFrom")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UOM")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("shopOrderNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Inventories");
-                });
-
-            modelBuilder.Entity("Entities.Inventory_Transaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<decimal>("BOM_Version_No")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<string>("From_Location")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("GrinMaterialType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Issued_By")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("Issued_DateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal?>("Issued_Quantity")
-                        .HasPrecision(13, 3)
-                        .HasColumnType("decimal(13,3)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("MftrPartNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("ModifiedStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PartNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProjectNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ReferenceID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ReferenceIDFrom")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ShopOrderId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TO_Location")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("UOM")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Inventory_Transactions");
                 });
 
             modelBuilder.Entity("Entities.ItemMaster", b =>
@@ -2065,8 +402,8 @@ namespace Entities.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<bool>("Kanban")
-                        .HasColumnType("bit");
+                    b.Property<string>("Kanban")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
@@ -2128,18 +465,14 @@ namespace Entities.Migrations
                     b.Property<string>("TwoBin")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Uom")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<DateTime?>("ValidFrom")
+                    b.Property<DateTime>("ValidFrom")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("ValidTo")
+                    b.Property<DateTime>("ValidTo")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("Valuation")
@@ -2176,10 +509,6 @@ namespace Entities.Migrations
                     b.Property<string>("ManufacturerPartNo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ItemMasterId");
@@ -2199,10 +528,6 @@ namespace Entities.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("ShareOfBusiness")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VendorCode")
@@ -2234,10 +559,6 @@ namespace Entities.Migrations
 
                     b.Property<long>("ItemMasterId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UploadedBy")
                         .HasColumnType("nvarchar(max)");
@@ -2281,10 +602,6 @@ namespace Entities.Migrations
                     b.Property<string>("RoutingDescription")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ItemMasterId");
@@ -2306,10 +623,6 @@ namespace Entities.Migrations
                     b.Property<long>("ItemMasterId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("WareHouse")
                         .HasColumnType("nvarchar(max)");
 
@@ -2318,48 +631,6 @@ namespace Entities.Migrations
                     b.HasIndex("ItemMasterId");
 
                     b.ToTable("ItemMasterWarehouse");
-                });
-
-            modelBuilder.Entity("Entities.Language", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LanguageName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Languages");
                 });
 
             modelBuilder.Entity("Entities.LeadTime", b =>
@@ -2376,9 +647,6 @@ namespace Entities.Migrations
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Days")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -2391,63 +659,15 @@ namespace Entities.Migrations
                     b.Property<DateTime?>("LastModifiedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("LeadTimeValue")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Weeks")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("LeadTimes");
-                });
-
-            modelBuilder.Entity("Entities.Locations", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("ActiveStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LocationName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Locations");
                 });
 
             modelBuilder.Entity("Entities.MaterialType", b =>
@@ -2482,356 +702,9 @@ namespace Entities.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.ToTable("MaterialTypes");
-                });
-
-            modelBuilder.Entity("Entities.NatureOfRelationship", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("NatureOfRelationshipName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("natureOfRelationships");
-                });
-
-            modelBuilder.Entity("Entities.NREConsumable", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("EnggChildItemId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal?>("NRECost")
-                        .HasPrecision(18, 3)
-                        .HasColumnType("decimal(18,3)");
-
-                    b.Property<string>("NREItemNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("NREQuantity")
-                        .HasPrecision(13, 3)
-                        .HasColumnType("decimal(13,3)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EnggChildItemId")
-                        .IsUnique();
-
-                    b.ToTable("BomNREConsumables");
-                });
-
-            modelBuilder.Entity("Entities.PackingInstruction", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PackingInstructionsName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("packingInstructions");
-                });
-
-            modelBuilder.Entity("Entities.PartTypes", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PartTypeName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PartTypes");
-                });
-
-            modelBuilder.Entity("Entities.PaymentTerm", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PaymentTerms")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("paymentTerms");
-                });
-
-            modelBuilder.Entity("Entities.PreferredFreightForwarder", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PreferredFreightforwarder")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("preferredFreightForwarders");
-                });
-
-            modelBuilder.Entity("Entities.PriceList", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Pricelist")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("priceLists");
-                });
-
-            modelBuilder.Entity("Entities.Process", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ProcessName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("processes");
                 });
 
             modelBuilder.Entity("Entities.ProcurementType", b =>
@@ -2866,177 +739,9 @@ namespace Entities.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.ToTable("ProcurementTypes");
-                });
-
-            modelBuilder.Entity("Entities.PurchaseGroup", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PurchaseGroupName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("purchaseGroups");
-                });
-
-            modelBuilder.Entity("Entities.QuoteTerms", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("ActiveStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("QuoteTermsName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("QuoteTerms");
-                });
-
-            modelBuilder.Entity("Entities.RiskCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("ActiveStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RiskCategoryName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RiskCategory");
-                });
-
-            modelBuilder.Entity("Entities.Salutations", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SalutationsName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("salutations");
                 });
 
             modelBuilder.Entity("Entities.ScopeOfSupply", b =>
@@ -3071,273 +776,9 @@ namespace Entities.Migrations
                     b.Property<string>("ScopeOfSupplyName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.ToTable("ScopeOfSupplies");
-                });
-
-            modelBuilder.Entity("Entities.Segment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("ActiveStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Remarks")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SegmentName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Segment");
-                });
-
-            modelBuilder.Entity("Entities.ShipmentInstructions", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("ActiveStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Remarks")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ShipmentInstructionsName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ShipmentInstructions");
-                });
-
-            modelBuilder.Entity("Entities.ShipmentMode", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ShipmentModeName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("shipmentModes");
-                });
-
-            modelBuilder.Entity("Entities.TypeOfCompany", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TypeOfCompanyName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("typeOfCompanies");
-                });
-
-            modelBuilder.Entity("Entities.UOC", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("ActiveStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Remarks")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UOCType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Uoc");
-                });
-
-            modelBuilder.Entity("Entities.UOM", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("ActiveStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Remarks")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UOMName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Uom");
                 });
 
             modelBuilder.Entity("Entities.VendorAddress", b =>
@@ -3374,10 +815,6 @@ namespace Entities.Migrations
 
                     b.Property<bool>("SameasAddress")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("VendorMasterId")
                         .HasColumnType("int");
@@ -3433,10 +870,6 @@ namespace Entities.Migrations
                     b.Property<string>("SwiftCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("VendorMasterId")
                         .HasColumnType("int");
 
@@ -3476,10 +909,6 @@ namespace Entities.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("VendorCategoryName")
                         .HasColumnType("nvarchar(max)");
 
@@ -3497,9 +926,6 @@ namespace Entities.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("AlternameMobileNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AlternateMobileCountryCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CallName")
@@ -3544,9 +970,6 @@ namespace Entities.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("MobileCountryCode")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("MobileNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -3557,10 +980,6 @@ namespace Entities.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TimeToCall")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("VendorMasterId")
@@ -3602,10 +1021,6 @@ namespace Entities.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("VendorDepartmentName")
                         .HasColumnType("nvarchar(max)");
 
@@ -3640,7 +1055,7 @@ namespace Entities.Migrations
                     b.Property<string>("AuditFrequency")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BasisOfApproval")
+                    b.Property<string>("BankOfApproval")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BoardNumber")
@@ -3662,9 +1077,6 @@ namespace Entities.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Currency")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerApprove")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DNBHooversNumber")
@@ -3751,9 +1163,6 @@ namespace Entities.Migrations
                     b.Property<string>("OSPvalue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Others")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("PAN")
                         .HasColumnType("bit");
 
@@ -3779,9 +1188,6 @@ namespace Entities.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ScopeOfSupply")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ShippingMode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SpecialTerms")
@@ -3810,10 +1216,6 @@ namespace Entities.Migrations
 
                     b.Property<bool>("UdhyamCertificate")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Upload")
                         .HasColumnType("nvarchar(max)");
@@ -3876,56 +1278,12 @@ namespace Entities.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("VolumeUomName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("VolumeUoms");
-                });
-
-            modelBuilder.Entity("Entities.Warehouse", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("ActiveStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WarehouseName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Warehouse");
                 });
 
             modelBuilder.Entity("Entities.WeightUom", b =>
@@ -3957,148 +1315,12 @@ namespace Entities.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("WeightUomName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("WeightUoms");
-                });
-
-            modelBuilder.Entity("Entities.CompanyAddresses", b =>
-                {
-                    b.HasOne("Entities.CompanyMaster", "CompanyMaster")
-                        .WithMany("CompanyAddresses")
-                        .HasForeignKey("CompanyMasterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CompanyMaster");
-                });
-
-            modelBuilder.Entity("Entities.CompanyBanking", b =>
-                {
-                    b.HasOne("Entities.CompanyMaster", "CompanyMaster")
-                        .WithMany("CompanyBankings")
-                        .HasForeignKey("CompanyMasterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CompanyMaster");
-                });
-
-            modelBuilder.Entity("Entities.CompanyContacts", b =>
-                {
-                    b.HasOne("Entities.CompanyMaster", "CompanyMaster")
-                        .WithMany("CompanyContacts")
-                        .HasForeignKey("CompanyMasterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CompanyMaster");
-                });
-
-            modelBuilder.Entity("Entities.CompanyMasterHeadCounting", b =>
-                {
-                    b.HasOne("Entities.CompanyMaster", "CompanyMaster")
-                        .WithMany("CompanyMasterHeadCountings")
-                        .HasForeignKey("CompanyMasterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CompanyMaster");
-                });
-
-            modelBuilder.Entity("Entities.CustomerAddresses", b =>
-                {
-                    b.HasOne("Entities.CustomerMaster", "CustomerMaster")
-                        .WithMany("CustomerAddresses")
-                        .HasForeignKey("CustomerMasterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CustomerMaster");
-                });
-
-            modelBuilder.Entity("Entities.CustomerBanking", b =>
-                {
-                    b.HasOne("Entities.CustomerMaster", "CustomerMaster")
-                        .WithMany("CustomerBanking")
-                        .HasForeignKey("CustomerMasterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CustomerMaster");
-                });
-
-            modelBuilder.Entity("Entities.CustomerContacts", b =>
-                {
-                    b.HasOne("Entities.CustomerMaster", "CustomerMaster")
-                        .WithMany("CustomerContacts")
-                        .HasForeignKey("CustomerMasterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CustomerMaster");
-                });
-
-            modelBuilder.Entity("Entities.CustomerMasterHeadCounting", b =>
-                {
-                    b.HasOne("Entities.CustomerMaster", "CustomerMaster")
-                        .WithMany("CustomerMasterHeadCountings")
-                        .HasForeignKey("CustomerMasterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CustomerMaster");
-                });
-
-            modelBuilder.Entity("Entities.CustomerShippingAddresses", b =>
-                {
-                    b.HasOne("Entities.CustomerMaster", "CustomerMaster")
-                        .WithMany("CustomerShippingAddresses")
-                        .HasForeignKey("CustomerMasterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CustomerMaster");
-                });
-
-            modelBuilder.Entity("Entities.EnggAlternates", b =>
-                {
-                    b.HasOne("Entities.EnggChildItem", "EnggChildItem")
-                        .WithMany("EnggAlternates")
-                        .HasForeignKey("EnggChildItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("EnggChildItem");
-                });
-
-            modelBuilder.Entity("Entities.EnggChildItem", b =>
-                {
-                    b.HasOne("Entities.EnggBom", "EnggBom")
-                        .WithMany("EnggChildItems")
-                        .HasForeignKey("EnggBomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("EnggBom");
-                });
-
-            modelBuilder.Entity("Entities.HeadCounting", b =>
-                {
-                    b.HasOne("Entities.VendorMaster", "VendorMaster")
-                        .WithMany("HeadCountings")
-                        .HasForeignKey("VendorMasterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VendorMaster");
                 });
 
             modelBuilder.Entity("Entities.ItemmasterAlternate", b =>
@@ -4156,17 +1378,6 @@ namespace Entities.Migrations
                     b.Navigation("ItemMaster");
                 });
 
-            modelBuilder.Entity("Entities.NREConsumable", b =>
-                {
-                    b.HasOne("Entities.EnggChildItem", "EnggChildItem")
-                        .WithOne("NREConsumable")
-                        .HasForeignKey("Entities.NREConsumable", "EnggChildItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("EnggChildItem");
-                });
-
             modelBuilder.Entity("Entities.VendorAddress", b =>
                 {
                     b.HasOne("Entities.VendorMaster", "VendorMaster")
@@ -4200,42 +1411,6 @@ namespace Entities.Migrations
                     b.Navigation("VendorMaster");
                 });
 
-            modelBuilder.Entity("Entities.CompanyMaster", b =>
-                {
-                    b.Navigation("CompanyAddresses");
-
-                    b.Navigation("CompanyBankings");
-
-                    b.Navigation("CompanyContacts");
-
-                    b.Navigation("CompanyMasterHeadCountings");
-                });
-
-            modelBuilder.Entity("Entities.CustomerMaster", b =>
-                {
-                    b.Navigation("CustomerAddresses");
-
-                    b.Navigation("CustomerBanking");
-
-                    b.Navigation("CustomerContacts");
-
-                    b.Navigation("CustomerMasterHeadCountings");
-
-                    b.Navigation("CustomerShippingAddresses");
-                });
-
-            modelBuilder.Entity("Entities.EnggBom", b =>
-                {
-                    b.Navigation("EnggChildItems");
-                });
-
-            modelBuilder.Entity("Entities.EnggChildItem", b =>
-                {
-                    b.Navigation("EnggAlternates");
-
-                    b.Navigation("NREConsumable");
-                });
-
             modelBuilder.Entity("Entities.ItemMaster", b =>
                 {
                     b.Navigation("ItemMasterApprovedVendor");
@@ -4254,8 +1429,6 @@ namespace Entities.Migrations
                     b.Navigation("Addresses");
 
                     b.Navigation("Contacts");
-
-                    b.Navigation("HeadCountings");
 
                     b.Navigation("VendorBankings");
                 });

@@ -10,12 +10,14 @@ using Tips.SalesService.Api.Entities;
 
 namespace Tips.SalesService.Api.Contracts
 {
-    public interface IRfqEnggItemRepository
+    public interface IRfqEnggItemRepository : IRepositoryBase<RfqEnggItem>
     {
         Task<IEnumerable<RfqEnggItem>> GetAllRfqEnggItems();
         Task<RfqEnggItem> GetRfqEnggItemById(int id);
         Task<int?> CreateRfqEnggItem(RfqEnggItem rfqEnggItem);
         Task<string> UpdateRfqEnggItem(RfqEnggItem rfqEnggItem);
         Task<string> DeleteRfqEnggItem(RfqEnggItem rfqEnggItem);
+        Task<IEnumerable<RfqEnggItem>> GetAllActiveRfqEnggItemByRfqNumber(string rfqNumber);
+        Task<string> ActivateRfqEnggItemById(RfqEnggItem rfqEnggItem);
     }
 }

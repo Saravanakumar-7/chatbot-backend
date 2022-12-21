@@ -88,15 +88,15 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogInfo($"Returned owner with id: {id}");
                     PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetails);
                     List<PoItemsDto> poItemsDtoList = new List<PoItemsDto>();
-                    foreach (var itemDetails in purchaseOrderDetails.poItems)
+                    foreach (var itemDetails in purchaseOrderDetails.PoItemList)
                     {
                         PoItemsDto poItemsDtos = _mapper.Map<PoItemsDto>(itemDetails);
-                        poItemsDtos.poAddprojectsDto = _mapper.Map<List<PoAddProjectDto>>(itemDetails.poAddprojects);
-                        poItemsDtos.poAddDeliverySchedulesDto = _mapper.Map<List<PoAddDeliveryScheduleDto>>(itemDetails.poAddDeliverySchedules);
+                        poItemsDtos.PoAddprojectsDtoList = _mapper.Map<List<PoAddProjectDto>>(itemDetails.PoAddprojects);
+                        poItemsDtos.PoAddDeliverySchedulesDtoList = _mapper.Map<List<PoAddDeliveryScheduleDto>>(itemDetails.PoAddDeliverySchedules);
                         poItemsDtoList.Add(poItemsDtos);
                     }
 
-                    purchaseOrderDto.poItemsDto = poItemsDtoList;     
+                    purchaseOrderDto.PoItemsDtoList = poItemsDtoList;     
                     serviceResponse.Data = purchaseOrderDto;
                     serviceResponse.Message = "Returned PurchaseOrder";
                     serviceResponse.Success = true;
@@ -142,17 +142,17 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
                 var purchaseOrder = _mapper.Map<PurchaseOrder>(purchaseOrderDtoPost);
-                var itemsDto = purchaseOrderDtoPost.poItemsDtoPost;
-                var itemsDtoList = new List<PoItems>();
+                var itemsDto = purchaseOrderDtoPost.PoItemsDtoPostList;
+                var itemsDtoList = new List<PoItem>();
                 for(int i=0;i< itemsDto.Count;i++)
                 {
-                    PoItems poItemsDetails=_mapper.Map<PoItems>(itemsDto[i]);
-                    poItemsDetails.poAddprojects = _mapper.Map<List<PoAddProject>>(itemsDto[i].poAddprojectsDtoPost);
-                    poItemsDetails.poAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(itemsDto[i].poAddDeliverySchedulesDtoPost);
+                    PoItem poItemsDetails=_mapper.Map<PoItem>(itemsDto[i]);
+                    poItemsDetails.PoAddprojects = _mapper.Map<List<PoAddProject>>(itemsDto[i].PoAddprojectsDtoPostList);
+                    poItemsDetails.PoAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(itemsDto[i].PoAddDeliverySchedulesDtoPostList);
                     
                     itemsDtoList.Add(poItemsDetails);
                 }
-                purchaseOrder.poItems=itemsDtoList;
+                purchaseOrder.PoItemList=itemsDtoList;
 
                 await _repository.CreatePurchaseOrder(purchaseOrder);
                 _repository.SaveAsync();
@@ -212,16 +212,16 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
                 var purchaseOrderList = _mapper.Map<PurchaseOrder>(updatePurchaseOrder);
-                var itemsDto = purchaseOrderDtoUpdate.poItemsDtoUpdate;
-                var itemsList = new List<PoItems>();
+                var itemsDto = purchaseOrderDtoUpdate.PoItemsDtoUpdateList;
+                var itemsList = new List<PoItem>();
                 for (int i = 0; i < itemsDto.Count; i++)
                 {
-                    PoItems poItemsDetails = _mapper.Map<PoItems>(itemsDto[i]);
-                    poItemsDetails.poAddprojects = _mapper.Map<List<PoAddProject>>(itemsDto[i].poAddprojectsDtoUpdate);
-                    poItemsDetails.poAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(itemsDto[i].poAddDeliverySchedulesDtoUpdate);  
+                    PoItem poItemsDetails = _mapper.Map<PoItem>(itemsDto[i]);
+                    poItemsDetails.PoAddprojects = _mapper.Map<List<PoAddProject>>(itemsDto[i].PoAddprojectsDtoUpdateList);
+                    poItemsDetails.PoAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(itemsDto[i].PoAddDeliverySchedulesDtoUpdateList);  
                     itemsList.Add(poItemsDetails);
                 }
-                purchaseOrderList.poItems = itemsList;
+                purchaseOrderList.PoItemList = itemsList;
                 var data = _mapper.Map(purchaseOrderDtoUpdate, purchaseOrderList);
                 string result = await _repository.UpdatePurchaseOrder(data);
                 _logger.LogInfo(result);
@@ -438,6 +438,83 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        [HttpGet("{VendorName}")]
+        public async Task<IActionResult> GetAllPoNumberListByVendorName(string VendorName)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var listOfPoNumber = await _repository.GetAllPoNumberListByVendorName(VendorName);
+                //_logger.LogInfo("Returned all PurchaseOrder");
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(listOfPoNumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PoNumberList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllPoNumberListByVendorName action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet("{PoNumber}")]
+        public async Task<IActionResult> GetAllPoItemNumberListByPoNumber(string PoNumber)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderItemNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderItemNoListDto>>();
+            try
+            {
+                var listOfPoNumber = await _repository.GetAllPoItemNumberListByPoNumber(PoNumber);
+                //_logger.LogInfo("Returned all PurchaseOrder");
+                var result = _mapper.Map<IEnumerable<PurchaseOrderItemNoListDto>>(listOfPoNumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PoItemNumberList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllPoItemNumberListByPoNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        //[HttpGet("{PoNumber}/{ItemNumber}")]
+        //public async Task<IActionResult> GetAllPoListByPoNumberAndItemNumber(string PoNumber,string ItemNumber)
+        //{
+        //    ServiceResponse<IEnumerable<PoItemListDto>> serviceResponse = new ServiceResponse<IEnumerable<PoItemListDto>>();
+        //    try
+        //    {
+        //        var listOfPoItem = await _repository.GetAllPoListByPoNumberAndItemNumber(PoNumber, ItemNumber);
+        //        //_logger.LogInfo("Returned all PurchaseOrder");
+        //        var result = _mapper.Map<IEnumerable<PoItemListDto>>(listOfPoItem);
+        //        serviceResponse.Data = result;
+        //        serviceResponse.Message = "Returned all PoItemNumberList";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong inside GetAllPoListByPoNumberAndItemNumber action";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
 
     }
 }

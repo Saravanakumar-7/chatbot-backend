@@ -96,8 +96,10 @@ namespace Contracts
         ISecondarySourceRepository secondarySourceRepository { get; }
 
         ISourceRepository sourceRepository { get; }
-
-
+        
+        IReleaseEnggBomRepository releaseEnggBomRepository { get; }
+        IReleaseCostBomRepository releaseCostBomRepository { get; }
+        IReleaseProductBomRepository releaseProductBomRepository { get; }
         void SaveAsync();
     }
 }

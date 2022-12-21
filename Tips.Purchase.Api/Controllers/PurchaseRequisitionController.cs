@@ -47,10 +47,10 @@ namespace Tips.Purchase.Api.Controllers
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                _logger.LogInfo("Returned all PurchaseRequisition");
+                _logger.LogInfo("Returned all PurchaseRequisitions");
                 var result = _mapper.Map<IEnumerable<PurchaseRequisitionDto>>(listOfPurchaseRequisition);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all PurchaseRequisition";
+                serviceResponse.Message = "Returned all PurchaseRequisitions";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -78,10 +78,10 @@ namespace Tips.Purchase.Api.Controllers
                 if (purchaseRequisitionDetails == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"PurchaseRequisition  hasn't been found in db.";
+                    serviceResponse.Message = $"PurchaseRequisitions  hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"PurchaseRequisition with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"PurchaseRequisitions with id: {id}, hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
@@ -89,17 +89,17 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogInfo($"Returned owner with id: {id}");
                     PurchaseRequisitionDto PurchaseRequisitionDto = _mapper.Map<PurchaseRequisitionDto>(purchaseRequisitionDetails);
                     List<PrItemsDto> prItemsDtoList = new List<PrItemsDto>();
-                    foreach (var itemDetails in purchaseRequisitionDetails.prItems)
+                    foreach (var itemDetails in purchaseRequisitionDetails.PrItemList)
                     {
                         PrItemsDto prItemsDtos = _mapper.Map<PrItemsDto>(itemDetails);
-                        prItemsDtos.prAddprojectsDto = _mapper.Map<List<PrAddProjectDto>>(itemDetails.prAddprojects);
-                        prItemsDtos.prAddDeliverySchedulesDto = _mapper.Map<List<PrAddDeliveryScheduleDto>>(itemDetails.prAddDeliverySchedules);
+                        prItemsDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(itemDetails.PrAddprojects);
+                        prItemsDtos.PrAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliveryScheduleDto>>(itemDetails.PrAddDeliverySchedules);
                         prItemsDtoList.Add(prItemsDtos);
                     }
-                    PurchaseRequisitionDto.prItemsDto = prItemsDtoList;
+                    PurchaseRequisitionDto.PrItemsDtoList = prItemsDtoList;
 
                     serviceResponse.Data = PurchaseRequisitionDto;
-                    serviceResponse.Message = "Returned PurchaseRequisition";
+                    serviceResponse.Message = "Returned PurchaseRequisitions";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -126,38 +126,38 @@ namespace Tips.Purchase.Api.Controllers
                 if (purchaseRequistionDtoPost is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "PurchaseRequisition object sent from client is null.";
+                    serviceResponse.Message = "PurchaseRequisitions object sent from client is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("PurchaseRequisition object sent from client is null.");
+                    _logger.LogError("PurchaseRequisitions object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid PurchaseRequisition object sent from client.";
+                    serviceResponse.Message = "Invalid PurchaseRequisitions object sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid PurchaseRequisition object sent from client.");
+                    _logger.LogError("Invalid PurchaseRequisitions object sent from client.");
                     return BadRequest(serviceResponse);
                 }
 
                 var purchaseRequisition = _mapper.Map<PurchaseRequisition>(purchaseRequistionDtoPost);
-                var itemsDto = purchaseRequistionDtoPost.prItemsDtoPost;
-                var itemsDtoList = new List<PrItems>();
+                var itemsDto = purchaseRequistionDtoPost.PrItemsDtoPostList;
+                var itemsDtoList = new List<PrItem>();
                 for (int i = 0; i < itemsDto.Count; i++)
                 {
-                    PrItems prItemsDetails = _mapper.Map<PrItems>(itemsDto[i]);
-                    prItemsDetails.prAddprojects = _mapper.Map<List<PrAddProject>>(itemsDto[i].prAddprojectsDtoPost);
-                    prItemsDetails.prAddDeliverySchedules = _mapper.Map<List<PrAddDeliverySchedule>>(itemsDto[i].prAddDeliverySchedulesDtoPost);
+                    PrItem prItemsDetails = _mapper.Map<PrItem>(itemsDto[i]);
+                    prItemsDetails.PrAddprojects = _mapper.Map<List<PrAddProject>>(itemsDto[i].PrAddprojectsDtoPostList);
+                    prItemsDetails.PrAddDeliverySchedules = _mapper.Map<List<PrAddDeliverySchedule>>(itemsDto[i].PrAddDeliverySchedulesDtoPostList);
                     itemsDtoList.Add(prItemsDetails);
                 }
-                purchaseRequisition.prItems = itemsDtoList;
+                purchaseRequisition.PrItemList = itemsDtoList;
 
                 await _repository.CreatePurchaseRequisition(purchaseRequisition);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = " PurchaseRequisition Successfully Created";
+                serviceResponse.Message = " PurchaseRequisitions Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -183,18 +183,18 @@ namespace Tips.Purchase.Api.Controllers
             {
                 if (purchaseRequisitionDtoUpdate is null)
                 {
-                    _logger.LogError("Update PurchaseRequisition object sent from client is null.");
+                    _logger.LogError("Update PurchaseRequisitions object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Update PurchaseRequisition object sent from client is null.";
+                    serviceResponse.Message = "Update PurchaseRequisitions object sent from client is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid Update PurchaseRequisition object sent from client.");
+                    _logger.LogError("Invalid Update PurchaseRequisitions object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Update PurchaseRequisition object sent from client.";
+                    serviceResponse.Message = "Invalid Update PurchaseRequisitions object sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -202,31 +202,31 @@ namespace Tips.Purchase.Api.Controllers
                 var updatePurchaseRequistion = await _repository.GetPurchaseRequisitionById(id);
                 if (updatePurchaseRequistion is null)
                 {
-                    _logger.LogError($"Update PurchaseRequisition with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Update PurchaseRequisitions with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update PurchaseRequisition hasn't been found in db.";
+                    serviceResponse.Message = $"Update PurchaseRequisitions hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
                 var purchaseRequistionList = _mapper.Map<PurchaseRequisition>(updatePurchaseRequistion);
-                var itemsDto = purchaseRequisitionDtoUpdate.prItemsDtoUpdate;
-                var itemsList = new List<PrItems>();
+                var itemsDto = purchaseRequisitionDtoUpdate.PrItemsDtoUpdateList;
+                var itemsList = new List<PrItem>();
                 for (int i = 0; i < itemsDto.Count; i++)
                 {
-                    PrItems prItemsDetails = _mapper.Map<PrItems>(itemsDto[i]);
-                    prItemsDetails.prAddprojects = _mapper.Map<List<PrAddProject>>(itemsDto[i].prAddprojectsDtoUpdate);
-                    prItemsDetails.prAddDeliverySchedules = _mapper.Map<List<PrAddDeliverySchedule>>(itemsDto[i].prAddDeliverySchedulesDtoUpdate);
+                    PrItem prItemsDetails = _mapper.Map<PrItem>(itemsDto[i]);
+                    prItemsDetails.PrAddprojects = _mapper.Map<List<PrAddProject>>(itemsDto[i].PrAddprojectsDtoUpdateList);
+                    prItemsDetails.PrAddDeliverySchedules = _mapper.Map<List<PrAddDeliverySchedule>>(itemsDto[i].PrAddDeliverySchedulesDtoUpdateList);
                     itemsList.Add(prItemsDetails);
                 }
-                purchaseRequistionList.prItems = itemsList;
+                purchaseRequistionList.PrItemList = itemsList;
                 var data = _mapper.Map(purchaseRequisitionDtoUpdate, purchaseRequistionList);
                 string result = await _repository.UpdatePurchaseRequisition(data);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = " PurchaseRequisition Successfully Updated";
+                serviceResponse.Message = " PurchaseRequisitions Successfully Updated";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -252,9 +252,9 @@ namespace Tips.Purchase.Api.Controllers
                 var deletePurchaseRequisition = await _repository.GetPurchaseRequisitionById(id);
                 if (deletePurchaseRequisition == null)
                 {
-                    _logger.LogError($"Delete PurchaseRequisition with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Delete PurchaseRequisitions with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Delete PurchaseRequisition hasn't been found in db.";
+                    serviceResponse.Message = $"Delete PurchaseRequisitions hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
@@ -264,7 +264,7 @@ namespace Tips.Purchase.Api.Controllers
                 _repository.SaveAsync();
 
                 serviceResponse.Data = null;
-                serviceResponse.Message = " PurchaseRequisition Successfully Deleted";
+                serviceResponse.Message = " PurchaseRequisitions Successfully Deleted";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -287,10 +287,10 @@ namespace Tips.Purchase.Api.Controllers
             try
             {
                 var listOfPurchaseRequisition = await _repository.GetAllActivePurchaseRequisitionNameList();
-                //_logger.LogInfo("Returned all PurchaseRequisition");
+                //_logger.LogInfo("Returned all PurchaseRequisitions");
                 var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(listOfPurchaseRequisition);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all PurchaseRequisition";
+                serviceResponse.Message = "Returned all PurchaseRequisitions";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -313,7 +313,7 @@ namespace Tips.Purchase.Api.Controllers
             try
             {
                 var listOfPurchaseRequisition = await _repository.GetAllPendingPurchaseRequisitionApprovalINameList();
-                //_logger.LogInfo("Returned all PurchaseRequisition");
+                //_logger.LogInfo("Returned all PurchaseRequisitions");
                 var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(listOfPurchaseRequisition);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PendingApprovalIPurchaseRequisition";
@@ -339,7 +339,7 @@ namespace Tips.Purchase.Api.Controllers
             try
             {
                 var listOfPurchaseRequisition = await _repository.GetAllPendingPurchaseRequisitionApprovalIINameList();
-                //_logger.LogInfo("Returned all PurchaseRequisition");
+                //_logger.LogInfo("Returned all PurchaseRequisitions");
                 var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(listOfPurchaseRequisition);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PendingApprovalIIPurchaseRequisition";

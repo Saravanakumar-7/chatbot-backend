@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Entities
     public class RfqCustomerSupportItems
     {
         public int Id { get; set; }
+        public string RfqNumber { get; set; }
         public string? ItemNumber { get; set; }
         public int? Quantity { get; set; }
         public string? Description { get; set; }

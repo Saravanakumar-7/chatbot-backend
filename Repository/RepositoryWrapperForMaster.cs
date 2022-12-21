@@ -76,6 +76,9 @@ namespace Repository
         private ILeadTypeRepository? _leadTypeRepo;
         private ISecondarySourceRepository? _secondarySourceRepo;
         private ISourceRepository? _sourceRepo;
+        private IReleaseEnggBomRepository? _releaseEnggBomRepo;
+        private IReleaseCostBomRepository? _releaseCostBomRepo;
+        private IReleaseProductBomRepository? _releaseProductBomRepo;
 
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
@@ -708,6 +711,43 @@ namespace Repository
             }
         }
 
+        public IReleaseEnggBomRepository releaseEnggBomRepository
+        {
+            get
+            {
+                if (_releaseEnggBomRepo == null)
+                {
+                    _releaseEnggBomRepo = new ReleaseEnggBomRepository(_tipsMasterDbContext);
+                }
+                return _releaseEnggBomRepo;
+            }
+        }
+
+
+        public IReleaseCostBomRepository releaseCostBomRepository
+        {
+            get
+            {
+                if (_releaseCostBomRepo == null)
+                {
+                    _releaseCostBomRepo = new ReleaseCostBomRepository(_tipsMasterDbContext);
+                }
+                return _releaseCostBomRepo;
+            }
+        }
+
+
+        public IReleaseProductBomRepository releaseProductBomRepository
+        {
+            get
+            {
+                if (_releaseProductBomRepo == null)
+                {
+                    _releaseProductBomRepo = new ReleaseProductBomRepository(_tipsMasterDbContext);
+                }
+                return _releaseProductBomRepo;
+            }
+        }
 
         public IVendorContactRepository VendorContactRepository => throw new NotImplementedException();
 
