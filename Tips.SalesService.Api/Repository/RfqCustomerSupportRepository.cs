@@ -363,4 +363,23 @@ namespace Tips.SalesService.Api.Repository
         }    
 
     }
+
+    public class RfqLPReleaseRepository : RepositoryBase<ReleaseLp>, IReleaseLpRepository
+    {
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+
+        public RfqLPReleaseRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        {
+            _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+        }
+
+        public async Task<ReleaseLp> BulkRelease(ReleaseLp releaseLp)
+        {
+            releaseLp.CreatedBy = "Admin";
+            releaseLp.CreatedOn = DateTime.Now;
+            releaseLp.Unit = "Bangalore";
+            var result = await Create(releaseLp);
+            return result;
+        }
+    }
 }
