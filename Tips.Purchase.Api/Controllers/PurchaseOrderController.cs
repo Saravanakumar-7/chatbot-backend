@@ -490,5 +490,31 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        //[HttpGet("{PoNumber}/{ItemNumber}")]
+        //public async Task<IActionResult> GetAllPoListByPoNumberAndItemNumber(string PoNumber,string ItemNumber)
+        //{
+        //    ServiceResponse<IEnumerable<PoItemListDto>> serviceResponse = new ServiceResponse<IEnumerable<PoItemListDto>>();
+        //    try
+        //    {
+        //        var listOfPoItem = await _repository.GetAllPoListByPoNumberAndItemNumber(PoNumber, ItemNumber);
+        //        //_logger.LogInfo("Returned all PurchaseOrder");
+        //        var result = _mapper.Map<IEnumerable<PoItemListDto>>(listOfPoItem);
+        //        serviceResponse.Data = result;
+        //        serviceResponse.Message = "Returned all PoItemNumberList";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong inside GetAllPoListByPoNumberAndItemNumber action";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
     }
 }

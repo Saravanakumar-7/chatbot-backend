@@ -159,5 +159,35 @@ namespace Tips.Purchase.Api.Repository
 
             return itemDetails;
         }
+
+        //public async Task<IEnumerable<PoItemListDto>> GetAllPoListByPoNumberAndItemNumber(string poNumber, string itemNumber)
+        //{
+        //    int poId = await _tipsPurchaseDbContext.PurchaseOrders
+        //        .Where(s => s.PONumber == poNumber)               
+        //        .Select(x => x.Id).FirstOrDefaultAsync();
+
+        //    IEnumerable<PoItemListDto> poitemDetails = await _tipsPurchaseDbContext.PoItems
+        //                 .Where(x=>x.ItemNumber==itemNumber)
+        //                 .Where(r => r.PurchaseOrderId == poId)
+        //                 .Include(s => s.PoAddprojects)
+        //                 .Select(r => new PoItemListDto()
+        //                 {
+        //                     Id = r.Id,
+        //                     MftrItemNumber=r.MftrItemNumber,
+        //                     Description=r.Description,
+        //                     UOM = r.UOM,
+        //                     PoUnitPrice=r.UnitPrice,
+        //                     PoBalancedQuantity=r.Quantity,
+        //                     PoOrderedQuantity=r.Quantity,
+        //                     SGST = r.SGST,
+        //                     CGST = r.CGST,
+        //                     IGST = r.IGST,
+        //                     UTGST = r.UTGST,
+        //                     Total=r.Total,
+        //                 }).ToListAsync();
+                         
+
+        //    return poitemDetails;
+        //}
     }       
 }

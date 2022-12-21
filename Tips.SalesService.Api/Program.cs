@@ -10,6 +10,7 @@ using Tips.SalesService.Api.Controllers;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Extensions;
 using Tips.SalesService.Api.Repository;
+using static Tips.SalesService.Api.Repository.RfqEnggItemRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +30,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IFgOqcRepository, FgOqcRepository>();
 builder.Services.AddScoped<ISaOqcRepository, SaOqcRepository>();
 
-builder.Services.AddScoped<IRfqLPCostingRepository, RfqLPCostingRepository>();
+builder.Services.AddScoped<IRfqLPCostingRepository,RfqLPCostingRepository>();
 builder.Services.AddScoped<IRfqSourcingRepository, RfqSourcingRepository>();
 builder.Services.AddScoped<IRfqEnggRepository, RfqEnggRepository>();
 builder.Services.AddScoped<IRfqCustomerSupportRepository,RfqCustomerSupportRepository>();

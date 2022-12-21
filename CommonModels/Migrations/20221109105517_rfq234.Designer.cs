@@ -4,6 +4,7 @@ using Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Entities.Migrations
 {
     [DbContext(typeof(TipsMasterDbContext))]
-    partial class TipsMasterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221109105517_rfq234")]
+    partial class rfq234
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -816,7 +818,10 @@ namespace Entities.Migrations
                     b.Property<bool>("SameasAddress")
                         .HasColumnType("bit");
 
-                    b.Property<int>("VendorMasterId")
+                    b.Property<int>("VendorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("VendorMasterId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -870,7 +875,10 @@ namespace Entities.Migrations
                     b.Property<string>("SwiftCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VendorMasterId")
+                    b.Property<int>("VendorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("VendorMasterId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -982,7 +990,10 @@ namespace Entities.Migrations
                     b.Property<string>("TimeToCall")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VendorMasterId")
+                    b.Property<int>("VendorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("VendorMasterId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -1382,9 +1393,7 @@ namespace Entities.Migrations
                 {
                     b.HasOne("Entities.VendorMaster", "VendorMaster")
                         .WithMany("Addresses")
-                        .HasForeignKey("VendorMasterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("VendorMasterId");
 
                     b.Navigation("VendorMaster");
                 });
@@ -1393,9 +1402,7 @@ namespace Entities.Migrations
                 {
                     b.HasOne("Entities.VendorMaster", "VendorMaster")
                         .WithMany("VendorBankings")
-                        .HasForeignKey("VendorMasterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("VendorMasterId");
 
                     b.Navigation("VendorMaster");
                 });
@@ -1404,9 +1411,7 @@ namespace Entities.Migrations
                 {
                     b.HasOne("Entities.VendorMaster", "VendorMaster")
                         .WithMany("Contacts")
-                        .HasForeignKey("VendorMasterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("VendorMasterId");
 
                     b.Navigation("VendorMaster");
                 });

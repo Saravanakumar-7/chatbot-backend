@@ -22,5 +22,6 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPurchaseOrderApprovalIINameList();
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPoNumberListByVendorName(string vendorName);
         Task<IEnumerable<PurchaseOrderItemNoListDto>> GetAllPoItemNumberListByPoNumber(string poNumber);
+        //Task<IEnumerable<PoItemListDto>> GetAllPoListByPoNumberAndItemNumber(string poNumber,string itemNumber);
     }
 }

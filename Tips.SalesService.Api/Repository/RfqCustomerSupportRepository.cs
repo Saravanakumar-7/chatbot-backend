@@ -12,6 +12,7 @@ using Org.BouncyCastle.Ocsp;
 using Tips.SalesService.Api.Entities.DTOs;
 using System.Collections.Immutable;
 using Entities.DTOs;
+using System.Linq.Expressions;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -292,9 +293,66 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
     }
-    // RfqLPCosting
-    public class RfqLPCostingRepository : RepositoryBase<RfqLPCosting>, IRfqLPCostingRepository
+
+    public class RfqEnggItemRepository : RepositoryBase<RfqEnggItem>, IRfqEnggItemRepository
     {
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+        public RfqEnggItemRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        {
+            _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+        }
+
+        public async Task<string> ActivateRfqEnggItemById(RfqEnggItem rfqEnggItem)
+        {
+            rfqEnggItem.LastModifiedBy = "Admin";
+            rfqEnggItem.LastModifiedOn = DateTime.Now;
+            Update(rfqEnggItem);
+            string result = $"CostCenter details of {rfqEnggItem.Id} is updated successfully!";
+            return result;
+        }
+
+        public Task<int?> CreateRfqEnggItem(RfqEnggItem rfqEnggItem)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> DeleteRfqEnggItem(RfqEnggItem rfqEnggItem)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public async Task<IEnumerable<RfqEnggItem>> GetAllActiveRfqEnggItemByRfqNumber(string rfqNumber)
+        {
+            int poId = await _tipsSalesServiceDbContext.RfqEnggs
+              .Where(s => s.RFQNumber == rfqNumber).Select(x => x.Id).FirstOrDefaultAsync();
+
+            IEnumerable<RfqEnggItem> rfqEnggItems = await _tipsSalesServiceDbContext.RfqEnggItems
+                 .Where(x => x.RfqEnggId == poId)
+             .Where(x => x.ReleaseStatus == true).ToListAsync();
+
+            return rfqEnggItems;
+        }
+
+        public Task<IEnumerable<RfqEnggItem>> GetAllRfqEnggItems()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<RfqEnggItem> GetRfqEnggItemById(int id)
+        {
+            var getActiveStatus = await _tipsSalesServiceDbContext.RfqEnggItems.Where(x => x.Id == id && x.ReleaseStatus == false).FirstOrDefaultAsync();
+            return getActiveStatus;
+        }
+
+        public Task<string> UpdateRfqEnggItem(RfqEnggItem rfqEnggItem)
+        {
+            throw new NotImplementedException();
+        }
+
+        // RfqLPCosting
+        public class RfqLPCostingRepository : RepositoryBase<RfqLPCosting>, IRfqLPCostingRepository
+        {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
 
         public RfqLPCostingRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
@@ -382,4 +440,5 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
     }
+}
 }
