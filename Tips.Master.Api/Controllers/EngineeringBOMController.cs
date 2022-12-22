@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Entities.Migrations;
 using System.Net;
 using Newtonsoft.Json;
+using Repository;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,14 +19,20 @@ namespace Tips.Master.Api.Controllers
     public class EngineeringBOMController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
+        private IReleaseEnggBomRepository _releaseEnggBomRepository;
         private ILoggerManager _logger;
+        private IReleaseProductBomRepository _releaseProductBomRepository;
         private IMapper _mapper;
-
-        public EngineeringBOMController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        private IReleaseCostBomRepository _releaseCostBomRepository;
+ 
+        public EngineeringBOMController(IRepositoryWrapperForMaster repository, IReleaseProductBomRepository releaseProductBomRepository, IReleaseCostBomRepository releaseCostBomRepository, IReleaseEnggBomRepository releaseEnggBomRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _releaseCostBomRepository = releaseCostBomRepository;
+            _releaseEnggBomRepository = releaseEnggBomRepository;
+            _releaseProductBomRepository = releaseProductBomRepository;
         }
         // GET: api/<EngineeringBOMController>
         [HttpGet]
@@ -47,7 +54,7 @@ namespace Tips.Master.Api.Controllers
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-                 
+
 
 
                 _logger.LogInfo("Returned all Boms");
@@ -97,7 +104,7 @@ namespace Tips.Master.Api.Controllers
             {
                 var bom = await _repository.EnggBomRepository.GetEnggBomById(id);
 
-               
+
 
                 if (bom == null)
                 {
@@ -111,7 +118,7 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Engineering Bom with id: {id}");
-                     EnggBomDto enggBomDto = _mapper.Map<EnggBomDto>(bom);
+                    EnggBomDto enggBomDto = _mapper.Map<EnggBomDto>(bom);
                     List<EnggChildItemDto> childItemsDtos = new List<EnggChildItemDto>();
                     foreach (var itemDetails in bom.EnggChildItems)
                     {
@@ -127,7 +134,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-               
+
             }
             catch (Exception ex)
             {
@@ -182,7 +189,7 @@ namespace Tips.Master.Api.Controllers
 
                 }
                 enggBomList.EnggChildItems = enggChildItemList;
-                
+
                 _repository.EnggBomRepository.CreateEnggBom(enggBomList);
 
                 _repository.SaveAsync();
@@ -257,7 +264,7 @@ namespace Tips.Master.Api.Controllers
                 }
                 enggBomList.EnggChildItems = enggChildItemList;
 
-                 var data = _mapper.Map(enggBomDto, enggBomList);
+                var data = _mapper.Map(enggBomDto, enggBomList);
 
                 string result = await _repository.EnggBomRepository.UpdateEnggBom(data);
 
@@ -312,7 +319,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var listOfReleaseEnggBom = await _repository.ReleaseEnggBomRepository.GetAllReleaseEnggBom(pagingParameter);
+                var listOfReleaseEnggBom = await _releaseEnggBomRepository.GetAllReleaseEnggBom(pagingParameter);
 
                 var metadata = new
                 {
@@ -352,7 +359,9 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var releaseEnggBomDtoDetails = await _repository.ReleaseEnggBomRepository.GetReleaseEnggBomById(id);
+                //var releaseEnggBomDtoDetails = await _repository.releaseEnggBomRepository.GetReleaseEnggBomById(id);
+                var releaseEnggBomDtoDetails = await _releaseEnggBomRepository.GetReleaseEnggBomById(id);
+
 
                 if (releaseEnggBomDtoDetails == null)
                 {
@@ -412,8 +421,9 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var release = _mapper.Map <ReleaseEnggBom> (releaseEnggBomDtoPost);
-                _repository.ReleaseEnggBomRepository.CreateReleaseEnggBom(release);
+                var release = _mapper.Map<ReleaseEnggBom>(releaseEnggBomDtoPost);
+                //_repository.releaseEnggBomRepository.CreateReleaseEnggBom(release);
+                _releaseEnggBomRepository.CreateReleaseEnggBom(release);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ReleaseEnggBom Successfully Created";
@@ -458,7 +468,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var updateReleaseEnggBom = await _repository.ReleaseEnggBomRepository.GetReleaseEnggBomById(id);
+                var updateReleaseEnggBom = await _releaseEnggBomRepository.GetReleaseEnggBomById(id);
                 if (updateReleaseEnggBom is null)
                 {
                     _logger.LogError($" updateReleaseEnggBom with id: {id}, hasn't been found in db.");
@@ -469,7 +479,7 @@ namespace Tips.Master.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                 var data = _mapper.Map(releaseEnggBomDtoUpdate, updateReleaseEnggBom);
-                string result = await _repository.ReleaseEnggBomRepository.UpdateReleaseEnggBom(data);
+                string result = await _releaseEnggBomRepository.UpdateReleaseEnggBom(data);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -496,7 +506,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var deleteReleaseEnggBom = await _repository.ReleaseEnggBomRepository.GetReleaseEnggBomById(id);
+                var deleteReleaseEnggBom = await _releaseEnggBomRepository.GetReleaseEnggBomById(id);
                 if (deleteReleaseEnggBom == null)
                 {
                     _logger.LogError($"deleteReleaseEnggBom  with id: {id}, hasn't been found in db.");
@@ -506,7 +516,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.ReleaseEnggBomRepository.DeleteReleaseEnggBom(deleteReleaseEnggBom);
+                string result = await _releaseEnggBomRepository.DeleteReleaseEnggBom(deleteReleaseEnggBom);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -554,7 +564,7 @@ namespace Tips.Master.Api.Controllers
                 }
 
                 var release = _mapper.Map<ReleaseCostBom>(releaseCostBomDtoPost);
-                _repository.ReleaseCostBomRepository.CreateReleaseCostBom(release);
+                _releaseCostBomRepository.CreateReleaseCostBom(release);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ReleaseCostBom Successfully Created";
@@ -601,7 +611,7 @@ namespace Tips.Master.Api.Controllers
                 }
 
                 var release = _mapper.Map<ReleaseProductBom>(releaseProductBomDtoPost);
-                _repository.ReleaseProductBomRepository.CreateReleaseProductBom(release);
+                _releaseProductBomRepository.CreateReleaseProductBom(release);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ReleaseProductBom Successfully Created";
@@ -1114,6 +1124,5 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
     }
 }
