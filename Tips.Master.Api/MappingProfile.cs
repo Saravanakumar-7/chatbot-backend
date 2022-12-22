@@ -333,6 +333,14 @@ namespace Tips.Master.Api
 
             CreateMap<ReleaseProductBom, ReleaseProductBomDtoPost>().ReverseMap();
 
+            CreateMap<EnggBomGroup, EnggBomGroupDto>().ReverseMap();
+            CreateMap<EnggBomGroup, EnggBomGroupDtoPost>().ReverseMap();
+            CreateMap<EnggBomGroup, EnggBomGroupDtoUpdate>().ReverseMap();
+
+            CreateMap<EnggCustomField, EnggCustomFieldDto>().ReverseMap();
+            CreateMap<EnggCustomField, EnggCustomFieldDtoPost>().ReverseMap();
+            CreateMap<EnggCustomField, EnggCustomFieldDtoUpdate>().ReverseMap();
+
         }
     }
 }

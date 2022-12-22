@@ -33,10 +33,12 @@ builder.Services.AddScoped<ISaOqcRepository, SaOqcRepository>();
 builder.Services.AddScoped<IRfqLPCostingRepository,RfqLPCostingRepository>();
 builder.Services.AddScoped<IRfqSourcingRepository, RfqSourcingRepository>();
 builder.Services.AddScoped<IRfqEnggRepository, RfqEnggRepository>();
+builder.Services.AddScoped<IRfqEnggItemRepository,RfqEnggItemRepository>();
 builder.Services.AddScoped<IRfqCustomerSupportRepository,RfqCustomerSupportRepository>();
 builder.Services.AddScoped<IRfqCustomerSupportItemRepository, RfqCustomerSupportItemsRepository>();
 builder.Services.AddScoped<IRfqRepository, RfqRepository>();
-
+builder.Services.AddScoped<IRfqCustomGroupRepository,RfqCustomGroupRepository>();
+builder.Services.AddScoped<IRfqCustomFieldRepository,RfqCustomFieldRepository>();
 builder.Services.AddScoped<ISalesOrderRepository,SalesOrderRepository>();
 builder.Services.AddScoped<IQuoteRepository,QuoteRepository>();
 
@@ -47,8 +49,8 @@ builder.Services.AddScoped<IForeCastCustomerSupportItemRepository, ForeCastCusto
 builder.Services.AddScoped<IForeCastEnggRepository, ForeCastEnggRepository>();
 builder.Services.AddScoped<IForecastSourcingRepository, ForeCastSourcingRepository>();
 builder.Services.AddScoped<IForecastLpCostingRepository, ForecastLpCostingRepository>();
-
-
+builder.Services.AddScoped<IForeCastCustomGroupRepository, ForeCastCustomGroupRepository>();
+builder.Services.AddScoped<IForeCastCustomFieldRepository, ForeCastCustomFieldRepository>();
 //builder.Services.AddScoped<IRfqCustomerSupportNotesRepository, RfqCustomerSupportNotes>();
 
 

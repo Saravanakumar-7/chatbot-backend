@@ -97,9 +97,12 @@ namespace Contracts
 
         ISourceRepository sourceRepository { get; }
         
-        IReleaseEnggBomRepository releaseEnggBomRepository { get; }
-        IReleaseCostBomRepository releaseCostBomRepository { get; }
-        IReleaseProductBomRepository releaseProductBomRepository { get; }
+        IReleaseEnggBomRepository ReleaseEnggBomRepository { get; }
+        IReleaseCostBomRepository ReleaseCostBomRepository { get; }
+        IReleaseProductBomRepository ReleaseProductBomRepository { get; }
+
+        IEnggBomGroupRepository EnggBomGroupRepository { get; }
+        IEnggCustomFieldRepository EnggCustomFieldRepository { get; }
         void SaveAsync();
     }
 }

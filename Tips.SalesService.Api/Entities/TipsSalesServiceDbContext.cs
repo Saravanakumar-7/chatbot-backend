@@ -21,7 +21,7 @@ namespace Tips.SalesService.Api.Entities
 
         public DbSet<RfqCustomerSupportNotes> rfqCustomerSupportNotes { get; set; }
 
-        public DbSet<RfqCustomGroup> rfqCustomGroups { get; set; }
+        public DbSet<RfqCustomGroup> RfqCustomGroups { get; set; }
 
         public DbSet<SourcingVendor> sourcingVendors { get; set; }
 
@@ -66,6 +66,9 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<ForecastLpCostingProcess> ForecastLpCostingProcesses { get; set; }
         public DbSet<ForecastLPCostingNREConsumable> ForecastLPCostingNREConsumables { get; set; }
         public DbSet<ForecastLpCostingOtherCharges> ForecastLpCostingOtherCharges { get; set; }
+        public DbSet<RfqCustomField> RfqCustomFields { get; set; }
+        public DbSet<ForeCastCustomGroup> ForeCastCustomGroups { get; set; }
+        public DbSet<ForeCastCustomField> ForeCastCustomFields { get; set; }
 
     }
 }

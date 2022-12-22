@@ -171,4 +171,112 @@ namespace Repository
             return result.Id;
         }
     }
+    public class EnggBomGroupRepository : RepositoryBase<EnggBomGroup>, IEnggBomGroupRepository
+    {
+        private TipsMasterDbContext _tipsMasterDbContext;
+        public EnggBomGroupRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        {
+            _tipsMasterDbContext = repositoryContext;
+        }
+
+        public async Task<int?> CreateEnggBomGroup(EnggBomGroup enggbomGroup)
+        {
+            enggbomGroup.CreatedBy = "Admin";
+            enggbomGroup.CreatedOn = DateTime.Now;
+            enggbomGroup.LastModifiedBy = "Admin";
+            enggbomGroup.LastModifiedOn = DateTime.Now;
+            var result = await Create(enggbomGroup);
+            return result.Id;
+        }
+
+        public async Task<string> DeleteEnggBomGroup(EnggBomGroup enggbomGroup)
+        {
+            Delete(enggbomGroup);
+            string result = $"EnggBomGroup details of {enggbomGroup.Id} is deleted successfully!";
+            return result;
+        }
+
+        public async Task<IEnumerable<EnggBomGroup>> GetAllActiveEnggBomGroup()
+        {
+            var enggbomGroupDetails = await FindAll().ToListAsync();
+            return enggbomGroupDetails;
+        }
+
+        public async Task<PagedList<EnggBomGroup>> GetAllEnggBomGroup(PagingParameter pagingParameter)
+        {
+            var enggbomGroupDetails = PagedList<EnggBomGroup>.ToPagedList(FindAll()
+             .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+
+
+            return enggbomGroupDetails;
+        }
+
+        public async Task<EnggBomGroup> GetEnggBomGroupById(int id)
+        {
+            var enggbomGroupDetails = await _tipsMasterDbContext.BomGroups.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return enggbomGroupDetails;
+        }
+
+        public async Task<string> UpdateEnggBomGroup(EnggBomGroup enggbomGroup)
+        {
+            enggbomGroup.LastModifiedBy = "Admin";
+            enggbomGroup.LastModifiedOn = DateTime.Now;
+            Update(enggbomGroup);
+            string result = $"EnggBomGroup Detail {enggbomGroup.Id} is updated successfully!";
+            return result;
+        }
+    }
+    public class EnggCustomFieldRepository : RepositoryBase<EnggCustomField>, IEnggCustomFieldRepository
+    {
+        private TipsMasterDbContext _tipsMasterDbContext;
+        public EnggCustomFieldRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        {
+            _tipsMasterDbContext = repositoryContext;
+        }
+
+        public async Task<int?> CreateEnggCustomField(EnggCustomField enggcustomFields)
+        {
+            enggcustomFields.CreatedBy = "Admin";
+            enggcustomFields.CreatedOn = DateTime.Now;
+            enggcustomFields.LastModifiedBy = "Admin";
+            enggcustomFields.LastModifiedOn = DateTime.Now;
+            var result = await Create(enggcustomFields);
+            return result.Id;
+        }
+
+        public async Task<string> DeleteEnggCustomField(EnggCustomField enggcustomFields)
+        {
+            Delete(enggcustomFields);
+            string result = $"EnggCustomFields details of {enggcustomFields.Id} is deleted successfully!";
+            return result;
+        }
+
+        public async Task<IEnumerable<EnggCustomField>> GetAllActiveEnggCustomFields()
+        {
+            var enggcustomFieldsDetails = await FindAll().ToListAsync();
+            return enggcustomFieldsDetails;
+        }
+
+        public async Task<PagedList<EnggCustomField>> GetAllEnggCustomFields(PagingParameter pagingParameter)
+        {
+            var enggcustomFieldsDetails = PagedList<EnggCustomField>.ToPagedList(FindAll()
+            .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            return enggcustomFieldsDetails;
+        }
+
+        public async Task<EnggCustomField> GetEnggCustomFieldById(int id)
+        {
+            var enggcustomFieldsDetails = await _tipsMasterDbContext.CustomFields.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return enggcustomFieldsDetails;
+        }
+
+        public async Task<string> UpdateEnggCustomField(EnggCustomField enggcustomFields)
+        {
+            enggcustomFields.LastModifiedBy = "Admin";
+            enggcustomFields.LastModifiedOn = DateTime.Now;
+            Update(enggcustomFields);
+            string result = $"EnggCustomFields Detail {enggcustomFields.Id} is updated successfully!";
+            return result;
+        }
+    }
 }

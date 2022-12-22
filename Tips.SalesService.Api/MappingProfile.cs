@@ -204,6 +204,18 @@ namespace Tips.SalesService.Api
             CreateMap<ForecastLpCostingOtherCharges, ForecastLpCostingOtherChargesDto>().ReverseMap();
             CreateMap<ForecastLpCostingOtherCharges, ForecastLPCostingOtherChargesDtoPost>().ReverseMap();
             CreateMap<ForecastLpCostingOtherCharges, ForecastLPCostingOtherChargesDtoUpdate>().ReverseMap();
+
+            CreateMap<RfqCustomField, RfqCustomFieldDto>().ReverseMap();
+            CreateMap<RfqCustomField, RfqCustomFieldDtoPost>().ReverseMap();
+            CreateMap<RfqCustomField, RfqCustomFieldDtoUpdate>().ReverseMap();
+
+            CreateMap<ForeCastCustomField, ForeCastCustomFieldDto>().ReverseMap();
+            CreateMap<ForeCastCustomField, ForeCastCustomFieldDtoPost>().ReverseMap();
+            CreateMap<ForeCastCustomField, ForeCastCustomFieldDtoUpdate>().ReverseMap();
+
+            CreateMap<ForeCastCustomGroup, ForeCastCustomGroupDto>().ReverseMap();
+            CreateMap<ForeCastCustomGroup, ForeCastCustomGroupDtoPost>().ReverseMap();
+            CreateMap<ForeCastCustomGroup, ForeCastCustomGroupDtoUpdate>().ReverseMap();
         }
     }
 }
