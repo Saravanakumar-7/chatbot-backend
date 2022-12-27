@@ -6,7 +6,7 @@ using System.Net;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
-//using Tips.Production.Api.Migrations;
+using Tips.Production.Api.Migrations;
 using Tips.Production.Api.Repository;
 
 namespace Tips.Production.Api.Controllers
