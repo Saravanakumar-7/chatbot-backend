@@ -22,6 +22,7 @@ namespace Repository
             scopeOfSupply.CreatedBy = "Admin";
             scopeOfSupply.CreatedOn = DateTime.Now;
             var result = await Create(scopeOfSupply);
+            scopeOfSupply.Unit = "Bangalore";
             return result.Id;
         }
 

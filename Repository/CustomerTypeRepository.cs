@@ -46,6 +46,7 @@ namespace Repository
             customerType.CreatedBy = "Admin";
             customerType.CreatedOn = DateTime.Now;
             var result= await Create(customerType);
+            customerType.Unit = "Bangalore";
             return result.Id;
         }
 

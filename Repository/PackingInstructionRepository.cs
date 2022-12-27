@@ -21,6 +21,7 @@ namespace Repository
             packingInstruction.CreatedBy = "Admin";
             packingInstruction.CreatedOn = DateTime.Now;
             var result = await Create(packingInstruction);
+            packingInstruction.Unit = "Bangalore";
             return result.Id;
         }
 

@@ -21,6 +21,7 @@ namespace Repository
             warehouse.CreatedBy = "Admin";
             warehouse.CreatedOn = DateTime.Now;
             var result = await Create(warehouse);
+            warehouse.Unit = "Bangalore";
             return result.Id;
         }
 

@@ -21,6 +21,7 @@ namespace Repository
             segment.CreatedBy = "Admin";
             segment.CreatedOn = DateTime.Now;
             var result = await Create(segment);
+            segment.Unit = "Bangalore";
             return result.Id;
         }
 

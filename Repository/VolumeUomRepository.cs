@@ -21,6 +21,7 @@ namespace Repository
             volumeUom.CreatedBy = "Admin";
             volumeUom.CreatedOn = DateTime.Now;
             var result = await Create(volumeUom);
+            volumeUom.Unit = "Bangalore";
             return result.Id;
 
             //throw new NotImplementedException();

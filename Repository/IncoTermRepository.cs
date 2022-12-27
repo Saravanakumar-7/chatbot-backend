@@ -22,6 +22,7 @@ namespace Repository
             incoTerm.CreatedBy = "Admin";
             incoTerm.CreatedOn = DateTime.Now;
             var result = await Create(incoTerm);
+            incoTerm.Unit = "Bangalore";
             return result.Id;
         }
 

@@ -21,6 +21,7 @@ namespace Repository
             locations.CreatedBy = "Admin";
             locations.CreatedOn = DateTime.Now;
             var result = await Create(locations);
+            locations.Unit = "Bangalore";
             return result.Id;
         }
 

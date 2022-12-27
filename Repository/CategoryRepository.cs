@@ -21,7 +21,9 @@ namespace Repository
             category.CreatedBy = "Admin";
             category.CreatedOn = DateTime.Now;
             var result = await Create(category);
+            category.Unit = "Bangalore";
             return result.Id;
+           
         }
 
         public async Task<string> DeleteCategory(Category category)

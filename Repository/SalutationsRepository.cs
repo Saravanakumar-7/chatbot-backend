@@ -20,6 +20,7 @@ namespace Repository
             salutations.CreatedBy = "Admin";
             salutations.CreatedOn = DateTime.Now;
             var result = await Create(salutations);
+            salutations.Unit = "Bangalore";
             return result.Id;
         }
 

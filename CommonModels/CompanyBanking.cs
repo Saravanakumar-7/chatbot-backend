@@ -18,13 +18,13 @@ namespace Entities
         public string? IBANCode { get; set; }
         public bool Primary { get; set; } = true;
         public bool IsActive { get; set; } = true;
-
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public int CompanyId { get; set; }
+        public int CompanyMasterId { get; set; }
 
         public CompanyMaster? CompanyMaster { get; set; }
     }

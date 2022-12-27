@@ -52,7 +52,7 @@ namespace Contracts
         IDepartmentRepository DepartmentRepository { get; }
         ICurrencyRepository CurrencyRepository { get; }
         IIncoTermRepository IncoTermRepository { get; }
-        IBasicOfApprovalRepository BasicOfApprovalRepository { get; }
+        IBasisOfApprovalRepository BasisOfApprovalRepository { get; }
         IVendorCategoryRepository VendorCategoryRepository { get; }
         IVendorDepartmentRepository VendorDepartmentRepository { get; }
         IScopeOfSupplyRepository ScopeOfSupplyRepository { get; }
@@ -66,13 +66,43 @@ namespace Contracts
 
         IVendorBankingRepository VendorBankingRepository { get; }
 
+        IProcessRepository ProcessRepository { get; }
+
         IShipmentInstructionsRepository ShipmentInstructionsRepository { get; }
         ISegmentRepository SegmentRepository { get; }
         IQuoteTermsRepository QuoteTermsRepository { get; }
         IRiskCategoryRepository RiskCategoryRepository { get; }
         IWarehouseRepository WarehouseRepository { get; }
         ICategoryRepository CategoryRepository { get; }
+        IPreferredFreightForwarderRepository PreferredFreightForwarderRepository { get; }
+        IGST_PercentageRepository GST_PercentageRepository { get; }
+        IShipmentModeRepository ShipmentModeRepository { get; }
+        IPriceListRepository PriceListRepository { get; }
 
+        IEnggBomAlternatesRepository EnggBomAlternatesRepository { get; }
+
+        IEnggBomChildItemRepository EnggBomChildItemRepository { get; }
+
+        IEnggBomNREConsumableRepository EnggBomNREConsumableRepository { get; } 
+
+        IEnggBomRepository EnggBomRepository { get; } 
+        IPartTypesRepository partTypesRepository { get; }
+        ILeadRepository LeadRepository { get; }
+        IDemoStatusRepository DemoStatusRepository { get; }
+
+        ILeadStatusRepository LeadStatusRepository { get; }
+
+        ILeadTypeRepository LeadTypeRepository { get; }
+        ISecondarySourceRepository secondarySourceRepository { get; }
+
+        ISourceRepository sourceRepository { get; }
+        
+        IReleaseEnggBomRepository ReleaseEnggBomRepository { get; }
+        IReleaseCostBomRepository ReleaseCostBomRepository { get; }
+        IReleaseProductBomRepository ReleaseProductBomRepository { get; }
+
+        IEnggBomGroupRepository EnggBomGroupRepository { get; }
+        IEnggCustomFieldRepository EnggCustomFieldRepository { get; }
         void SaveAsync();
     }
 }

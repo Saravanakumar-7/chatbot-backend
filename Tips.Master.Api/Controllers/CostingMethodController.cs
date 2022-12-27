@@ -44,7 +44,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -72,7 +72,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -113,10 +113,10 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside GetCostingMethodById action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -151,8 +151,8 @@ namespace Tips.Master.Api.Controllers
                 _repository.CostingMethodRepository.CreateCostingMethod(CostingMethods);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfylly Created";
-                serviceResponse.Success = false;
+                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;               
                 return Created("GetCostingMethodById", serviceResponse);
             }

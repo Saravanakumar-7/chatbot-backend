@@ -19,6 +19,7 @@ namespace Repository
         {
             deliveryTerm.CreatedBy = "Admin";
             deliveryTerm.CreatedOn = DateTime.Now;
+            deliveryTerm.Unit = "Bangalore";
             var result = await Create(deliveryTerm);
             return result.Id;
 
