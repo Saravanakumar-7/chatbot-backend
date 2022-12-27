@@ -1,4 +1,4 @@
-﻿namespace Tips.Warehouse.Api.Entities.Dto
+﻿namespace Tips.Warehouse.Api.Entities.DTOs
 {
     public class DeliveryOrderDto
     {

@@ -1,53 +1,68 @@
-﻿namespace Tips.Warehouse.Api.Entities.Dto
+﻿namespace Tips.Warehouse.Api.Entities.DTOs
 {
-    public class DeliveryOrderItemsDto
+    public class BTODeliveryOrderItemsDto
     {
         public int Id { get; set; }
         public string FGItemNo { get; set; }
-        public string ItemDescription { get; set; }
-        public decimal ShopOrderNo { get; set; }
+        public string Description { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal UOC { get; set; }
         public decimal UOM { get; set; }
         public decimal FGOrderQty { get; set; }
+        public decimal OrderBalanceQty { get; set; }
         public decimal FGStock { get; set; }
+        public decimal Discount { get; set; }
+        public decimal NetValue { get; set; }
         public decimal DispatchQty { get; set; }
+        public string SerialNo { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public List<BTOSerialNumberDto> bTOSerialNumberDto { get; set; }
+
     }
-    public class DeliveryOrderItemsDtoPost
+    public class BTODeliveryOrderItemsDtoPost
     {
         public string FGItemNo { get; set; }
-        public string ItemDescription { get; set; }
-        public decimal ShopOrderNo { get; set; }
+        public string Description { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal UOC { get; set; }
         public decimal UOM { get; set; }
         public decimal FGOrderQty { get; set; }
+        public decimal OrderBalanceQty { get; set; }
         public decimal FGStock { get; set; }
+        public decimal Discount { get; set; }
+        public decimal NetValue { get; set; }
         public decimal DispatchQty { get; set; }
+        public string SerialNo { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public List<BTOSerialNumberDtoPost> bTOSerialNumberDtopost { get; set; }
+
     }
-    public class DeliveryOrderItemsDtoUpdate
+    public class BTODeliveryOrderItemsDtoUpdate
     {
         public int Id { get; set; }
         public string FGItemNo { get; set; }
-        public string ItemDescription { get; set; }
-        public decimal ShopOrderNo { get; set; }
+        public string Description { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal UOC { get; set; }
         public decimal UOM { get; set; }
         public decimal FGOrderQty { get; set; }
+        public decimal OrderBalanceQty { get; set; }
         public decimal FGStock { get; set; }
+        public decimal Discount { get; set; }
+        public decimal NetValue { get; set; }
         public decimal DispatchQty { get; set; }
+        public string SerialNo { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public List<BTOSerialNumberDtoUpdate> bTOSerialNumberDtoUpdate { get; set; }
+
     }
 }

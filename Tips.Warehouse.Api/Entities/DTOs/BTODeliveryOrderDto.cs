@@ -1,4 +1,4 @@
-﻿namespace Tips.Warehouse.Api.Entities.Dto
+﻿namespace Tips.Warehouse.Api.Entities.DTOs
 {
     public class BTODeliveryOrderDto
     {
@@ -18,7 +18,7 @@
     }
     public class BTODeliveryOrderDtoPost
     {
-       
+
         public string CustomerName { get; set; }
         public string CustomerAliasName { get; set; }
         public string CustomerLeadId { get; set; }
