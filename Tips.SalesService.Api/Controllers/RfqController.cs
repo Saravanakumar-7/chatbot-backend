@@ -29,7 +29,10 @@ namespace Tips.SalesService.Api.Controllers
         private IRfqEnggRepository _rfqenggRepository;
         private IRfqEnggItemRepository _rfqenggItemRepository;
         private IRfqLPCostingRepository _rfqlpcostingRepository;
-        public RfqController(IRfqEnggItemRepository rfqenggItemRepository, IRfqCustomerSupportRepository repository, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, IRfqLPCostingRepository rfqLPCostingRepository, IRfqEnggRepository rfqEnggRepository, ILoggerManager logger, IMapper mapper)
+        private IReleaseLpRepository _releaseLpRepository;
+        private IRfqCustomFieldRepository _rfqCustomFieldRepository;
+        private IRfqCustomGroupRepository _rfqCustomGroupRepository;
+        public RfqController(IRfqCustomGroupRepository rfqCustomGroupRepository, IRfqCustomFieldRepository rfqCustomFieldRepository, IRfqEnggItemRepository rfqenggItemRepository, IReleaseLpRepository releaseLpRepository, IRfqCustomerSupportRepository repository, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, IRfqLPCostingRepository rfqLPCostingRepository, IRfqEnggRepository rfqEnggRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
@@ -39,7 +42,9 @@ namespace Tips.SalesService.Api.Controllers
             _rfqenggItemRepository = rfqenggItemRepository;
             _rfqlpcostingRepository = rfqLPCostingRepository;
             _itemRepository = rfqCustomerSupportItemRepository;
-
+            _releaseLpRepository = releaseLpRepository;
+            _rfqCustomFieldRepository = rfqCustomFieldRepository;
+            _rfqCustomGroupRepository = rfqCustomGroupRepository;
         }
 
         //rfq getall 
@@ -698,7 +703,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
 
-        //release active API
+        //release enggactive API
         [HttpPut]
         public async Task<IActionResult> UpdateRfqEnggItemRelease([FromBody] List<int> itemIds)
         {
@@ -777,14 +782,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
-                }
-                //var customfield = _mapper.Map<IEnumerable<RfqCustomerSupportItems>>(rfqCustomerSupportDto.rfqCustomerSupportItems);
-                //var customernotes = _mapper.Map<IEnumerable<RfqCustomerSupportNotes>>(rfqCustomerSupportDto.rfqCustomerSupportNotes);
-
-                //var rfqs = _mapper.Map<RfqCustomerSupport>(rfqCustomerSupportDto);
-
-                //rfqs.rfqCustomerSupportItems = customfield.ToList();
-                //rfqs.rfqCustomerSupportNotes = customernotes.ToList();
+                }               
 
                 var rfqCustomerSupportList = _mapper.Map<RfqCustomerSupport>(rfqCustomerSupportDto);
 
@@ -1216,13 +1214,7 @@ namespace Tips.SalesService.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                // var customfield = _mapper.Map<IEnumerable<RfqCustomerSupportItems>>(rfq.rfqCustomerSupportItems);
-                //var customnotes = _mapper.Map<IEnumerable<RfqCustomerSupportNotes>>(rfq.rfqCustomerSupportNotes);
-
-                //                var data = _mapper.Map(rfqCustomerSupportUpdateDto, rfq);
-
-                //              data.rfqCustomerSupportItems = customfield.ToList();
-                //            data.rfqCustomerSupportNotes = customnotes.ToList();
+                
 
                 var rfqcustomerlist = _mapper.Map<RfqCustomerSupport>(rfq);
 
@@ -1409,6 +1401,579 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> BulkRelease([FromBody] List<ReleaseLpDtoPost> releaseLpDtoPosts)
+        {
+            ServiceResponse<ReleaseLpDtoPost> serviceResponse = new ServiceResponse<ReleaseLpDtoPost>();
+
+            try
+            {
+                if (releaseLpDtoPosts == null)
+                {
+                    _logger.LogError("BulkRelease details object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "BulkRelease details object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest();
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid BulkRelease details object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                var bulklist = _mapper.Map<List<ReleaseLp>>(releaseLpDtoPosts);
+                foreach (var releaseLpdetails in bulklist)
+                {
+
+                    _releaseLpRepository.BulkRelease(releaseLpdetails);
+                }
+                _releaseLpRepository.SaveAsync();
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("ReleaseLpById", serviceResponse);
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside Create ReleaseLp action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        //Unrelease active API
+        [HttpPut]
+        public async Task<IActionResult> UpdateRfqEnggItemUnRelease([FromBody] int id)
+        {
+            ServiceResponse<RfqEnggDto> serviceResponse = new ServiceResponse<RfqEnggDto>();
+
+            try
+            {
+                if (id == null)
+                {
+                    _logger.LogError($"RfqEnngItem with item id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Update RfqEnggItem hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+
+                var rfqEnggItem = await _rfqenggItemRepository.GetRfqEnggItemById(id);
+                rfqEnggItem.ReleaseStatus = false;
+                string result = await _rfqenggItemRepository.DeactivateRfqEnggItemById(rfqEnggItem);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "RfqEnggItem  UnRelease Activated Successfully ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateRfqEnggItemUnRelease action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        //Unrelease active API
+        [HttpPut]
+        public async Task<IActionResult> UpdateRfqRfqCustomerSupportItemUnRelease([FromBody] int id)
+        {
+            ServiceResponse<RfqCustomerSupportDto> serviceResponse = new ServiceResponse<RfqCustomerSupportDto>();
+
+            try
+            {
+                if (id == null)
+                {
+                    _logger.LogError($"RfqCustomerSupportItem with item id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Update RfqCustomerSupportItem hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+
+                var RfqCustomerSupportItem = await _itemRepository.GetRfqCustomerSupportItemById(id);
+                RfqCustomerSupportItem.ReleaseStatus = false;
+                string result = await _itemRepository.DeactivateRfqCustomerSupportItemById(RfqCustomerSupportItem);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "RfqCustomerSupportItem  UnRelease Activated Successfully ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateRfqCustomerSupportItemUnRelease action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // GET: api/<RfqCustomGroupController>
+        [HttpGet]
+        public async Task<IActionResult> GetAllRfqCustomGroup([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<RfqCustomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqCustomGroupDto>>();
+            try
+            {
+                var listOfRfqCustomGroup = await _rfqCustomGroupRepository.GetAllRfqCustomGroup(pagingParameter);
+                var metadata = new
+                {
+                    listOfRfqCustomGroup.TotalCount,
+                    listOfRfqCustomGroup.PageSize,
+                    listOfRfqCustomGroup.CurrentPage,
+                    listOfRfqCustomGroup.HasNext,
+                    listOfRfqCustomGroup.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all BomGroup");
+                var rfqCustomGroupEntity = _mapper.Map<IEnumerable<RfqCustomGroupDto>>(listOfRfqCustomGroup);
+                serviceResponse.Data = rfqCustomGroupEntity;
+                serviceResponse.Message = "Returned all RfqCustomGroup";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // GET: api/<RfqCustomGroupController>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetRfqCustomGroupById(int id)
+        {
+            ServiceResponse<RfqCustomGroupDto> serviceResponse = new ServiceResponse<RfqCustomGroupDto>();
+
+            try
+            {
+                var rfqCustomGroupList = await _rfqCustomGroupRepository.GetRfqCustomGroupById(id);
+                if (rfqCustomGroupList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqCustomGroup hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqCustomGroup with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {id}");
+                    var rfqCustomGroupEntity = _mapper.Map<RfqCustomGroupDto>(rfqCustomGroupList);
+                    serviceResponse.Data = rfqCustomGroupEntity;
+                    serviceResponse.Message = "Returned RfqCustomGroup Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetRfqCustomGroupById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // POST: api/<RfqCustomGroupController>
+        [HttpPost]
+        public IActionResult CreateRfqCustomGroup([FromBody] RfqCustomGroupPostDto rfqCustomGroupPostDto)
+        {
+            ServiceResponse<RfqCustomGroupPostDto> serviceResponse = new ServiceResponse<RfqCustomGroupPostDto>();
+
+            try
+            {
+                if (rfqCustomGroupPostDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "RfqCustomGroup object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("RfqCustomGroup object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid RfqCustomGroup object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid RfqCustomGroup object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var rfqCustomGroupEntity = _mapper.Map<RfqCustomGroup>(rfqCustomGroupPostDto);
+                _rfqCustomGroupRepository.CreateRfqCustomGroup(rfqCustomGroupEntity);
+                _rfqCustomGroupRepository.SaveAsync();
+                serviceResponse.Message = "RfqCustomGroup Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside CreateRfqCustomGroup action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // PUT: api/<RfqCustomGroupController>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRfqCustomGroup(int id, [FromBody] RfqCustomGroupUpdateDto rfqCustomGroupUpdateDto)
+        {
+            ServiceResponse<RfqCustomGroupUpdateDto> serviceResponse = new ServiceResponse<RfqCustomGroupUpdateDto>();
+
+            try
+            {
+                if (rfqCustomGroupUpdateDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update RfqCustomGroup object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update RfqCustomGroup object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update RfqCustomGroup object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Update RfqCustomGroup object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var rfqCustomGroupEntity = await _rfqCustomGroupRepository.GetRfqCustomGroupById(id);
+                if (rfqCustomGroupEntity is null)
+                {
+                    _logger.LogError($"Update RfqCustomGroup with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " UpdateRfqCustomGroup hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                _mapper.Map(rfqCustomGroupUpdateDto, rfqCustomGroupEntity);
+                string result = await _rfqCustomGroupRepository.UpdateRfqCustomGroup(rfqCustomGroupEntity);
+                _logger.LogInfo(result);
+                _rfqCustomGroupRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "RfqCustomGroup Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside UpdateRfqCustomGroup action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // DELETE: api/<RfqCustomGroupController>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRfqCustomGroup(int id)
+        {
+            ServiceResponse<RfqCustomGroupDto> serviceResponse = new ServiceResponse<RfqCustomGroupDto>();
+
+            try
+            {
+                var rfqCustomGroupList = await _rfqCustomGroupRepository.GetRfqCustomGroupById(id);
+                if (rfqCustomGroupList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Delete RfqCustomGroup object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Delete RfqCustomGroup with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
+                }
+                string result = await _rfqCustomGroupRepository.DeleteRfqCustomGroup(rfqCustomGroupList);
+                _logger.LogInfo(result);
+                _rfqCustomGroupRepository.SaveAsync();
+                serviceResponse.Message = "RfqCustomGroup Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside DeleteRfqCustomGroup action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // GET: api/<RfqCustomFieldController>
+        [HttpGet]
+        public async Task<IActionResult> GetAllRfqCustomField([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<RfqCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqCustomFieldDto>>();
+            try
+            {
+                var listOfRfqCustomField = await _rfqCustomFieldRepository.GetAllRfqCustomField(pagingParameter);
+                var metadata = new
+                {
+                    listOfRfqCustomField.TotalCount,
+                    listOfRfqCustomField.PageSize,
+                    listOfRfqCustomField.CurrentPage,
+                    listOfRfqCustomField.HasNext,
+                    listOfRfqCustomField.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all RfqCustomField");
+                var rfqCustomFieldEntity = _mapper.Map<IEnumerable<RfqCustomFieldDto>>(listOfRfqCustomField);
+                serviceResponse.Data = rfqCustomFieldEntity;
+                serviceResponse.Message = "Returned all RfqCustomField";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        // GET: api/<RfqCustomFieldController>
+        [HttpGet("{id}")]
+                public async Task<IActionResult> GetRfqCustomFieldById(int id)
+                {
+                    ServiceResponse<RfqCustomFieldDto> serviceResponse = new ServiceResponse<RfqCustomFieldDto>();
+
+                    try
+                    {
+                        var rfqCustomFieldList = await _rfqCustomFieldRepository.GetRfqCustomFieldById(id);
+                        if (rfqCustomFieldList == null)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = $"RfqCustomField hasn't been found in db.";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                            _logger.LogError($"RfqCustomField with id: {id}, hasn't been found in db.");
+                            return NotFound(serviceResponse);
+                        }
+                        else
+                        {
+                            _logger.LogInfo($"Returned RfqCustomField with id: {id}");
+                            var rfqCustomFieldEntity = _mapper.Map<RfqCustomFieldDto>(rfqCustomFieldList);
+                            serviceResponse.Data = rfqCustomFieldEntity;
+                            serviceResponse.Message = "Returned RfqCustomField Successfully";
+                            serviceResponse.Success = true;
+                            serviceResponse.StatusCode = HttpStatusCode.OK;
+                            return Ok(serviceResponse);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Something went wrong inside GetRfqCustomFieldById action: {ex.Message}");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Something went wrong. Please try again!";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
+                }
+
+                // POST: api/<RfqCustomFieldController>
+                [HttpPost]
+                public IActionResult CreateRfqCustomField([FromBody] RfqCustomFieldDtoPost rfqCustomFieldDtoPost)
+                {
+                    ServiceResponse<RfqCustomFieldDtoPost> serviceResponse = new ServiceResponse<RfqCustomFieldDtoPost>();
+
+                    try
+                    {
+                        if (rfqCustomFieldDtoPost is null)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "RfqCustomField object sent from client is null";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("RfqCustomField object sent from client is null.");
+                            return BadRequest(serviceResponse);
+                        }
+                        if (!ModelState.IsValid)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "Invalid RfqCustomField object sent from client";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Invalid RfqCustomField object sent from client.");
+                            return BadRequest(serviceResponse);
+                        }
+                        var rfqCustomFieldEntity = _mapper.Map<RfqCustomField>(rfqCustomFieldDtoPost);
+                        _rfqCustomFieldRepository.CreateRfqCustomField(rfqCustomFieldEntity);
+                        _rfqCustomFieldRepository.SaveAsync();
+                        serviceResponse.Message = "RfqCustomField Successfully Created";
+                        serviceResponse.Success = true;
+                        serviceResponse.StatusCode = HttpStatusCode.OK;
+                        return Ok(serviceResponse);
+                    }
+                    catch (Exception ex)
+                    {
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Internal server error";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        _logger.LogError($"Something went wrong inside CreateRfqCustomField action: {ex.Message}");
+                        return StatusCode(500, serviceResponse);
+                    }
+                }
+
+                // PUT: api/<RfqCustomFieldController>
+                [HttpPut("{id}")]
+                public async Task<IActionResult> UpdateRfqCustomField(int id, [FromBody] RfqCustomFieldDtoUpdate rfqCustomFieldDtoUpdate)
+                {
+                    ServiceResponse<RfqCustomFieldDtoUpdate> serviceResponse = new ServiceResponse<RfqCustomFieldDtoUpdate>();
+
+                    try
+                    {
+                        if (rfqCustomFieldDtoUpdate is null)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "update RfqCustomField object sent from client is null";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("update RfqCustomField object sent from client is null.");
+                            return BadRequest(serviceResponse);
+                        }
+                        if (!ModelState.IsValid)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "Invalid Update RfqCustomField object sent from client";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Invalid Update RfqCustomField object sent from client.");
+                            return BadRequest(serviceResponse);
+                        }
+                        var rfqCustomFieldEntity = await _rfqCustomFieldRepository.GetRfqCustomFieldById(id);
+                        if (rfqCustomFieldEntity is null)
+                        {
+                            _logger.LogError($"Update RfqCustomField with id: {id}, hasn't been found in db.");
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = " UpdateRfqCustomField hasn't been found in db.";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                            return NotFound(serviceResponse);
+                        }
+                        _mapper.Map(rfqCustomFieldDtoUpdate, rfqCustomFieldEntity);
+                        string result = await _rfqCustomFieldRepository.UpdateRfqCustomField(rfqCustomFieldEntity);
+                        _logger.LogInfo(result);
+                        _rfqCustomFieldRepository.SaveAsync();
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "RfqCustomField Updated Successfully";
+                        serviceResponse.Success = true;
+                        serviceResponse.StatusCode = HttpStatusCode.OK;
+                        return Ok(serviceResponse);
+                    }
+                    catch (Exception ex)
+                    {
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Internal server error";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        _logger.LogError($"Something went wrong inside UpdateRfqCustomField action: {ex.Message}");
+                        return StatusCode(500, serviceResponse);
+                    }
+                }
+
+                // DELETE: api/<RfqCustomFieldController>
+                [HttpDelete("{id}")]
+                public async Task<IActionResult> DeleteRfqCustomField(int id)
+                {
+                    ServiceResponse<RfqCustomFieldDto> serviceResponse = new ServiceResponse<RfqCustomFieldDto>();
+
+                    try
+                    {
+                        var rfqCustomFieldList = await _rfqCustomFieldRepository.GetRfqCustomFieldById(id);
+                        if (rfqCustomFieldList == null)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "Delete RfqCustomField object sent from client is null";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError($"Delete RfqCustomField with id: {id}, hasn't been found in db.");
+                            return BadRequest(serviceResponse);
+                        }
+                        string result = await _rfqCustomFieldRepository.DeleteRfqCustomField(rfqCustomFieldList);
+                        _logger.LogInfo(result);
+                        _rfqCustomFieldRepository.SaveAsync();
+                        serviceResponse.Message = "RfqCustomField Deleted Successfully";
+                        serviceResponse.Success = true;
+                        serviceResponse.StatusCode = HttpStatusCode.OK;
+                        return Ok(serviceResponse);
+                    }
+                    catch (Exception ex)
+                    {
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Internal server error";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        _logger.LogError($"Something went wrong inside DeleteRfqCustomField action: {ex.Message}");
+                        return StatusCode(500, serviceResponse);
+                    }
+                }
 
     }
+
 }
+

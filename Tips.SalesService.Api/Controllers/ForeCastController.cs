@@ -12,6 +12,7 @@ using System.Net;
 using Newtonsoft.Json;
 using Microsoft.Build.Framework;
 using NuGet.Protocol.Core.Types;
+using static Tips.SalesService.Api.Repository.RfqEnggItemRepository;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Tips.SalesService.Api.Controllers
@@ -28,7 +29,9 @@ namespace Tips.SalesService.Api.Controllers
         private IMapper _mapper;
         private IForeCastEnggRepository _forecastenggRepository;
         private IForecastLpCostingRepository _lpcostingRepository;
-        public ForeCastController(IForeCastRepository foreCastRepository, IForecastSourcingRepository forecastSourcingRepository, IForecastLpCostingRepository forecastLpCostingRepository, IForeCastEnggRepository foreCastEnggRepository, IForeCastCustomerSupportRepository foreCastCustomerSupportRepository,IForeCastCustomerSupportItemRepository foreCastCustomerSupportItemRepository ,ILoggerManager logger, IMapper mapper)
+        private IForeCastCustomGroupRepository _forecastcustomgroupRepository;
+        private IForeCastCustomFieldRepository _forecastcustomfieldRepository;
+        public ForeCastController(IForeCastCustomFieldRepository foreCastCustomFieldRepository, IForeCastCustomGroupRepository foreCastCustomGroupRepository, IForeCastRepository foreCastRepository, IForecastSourcingRepository forecastSourcingRepository, IForecastLpCostingRepository forecastLpCostingRepository, IForeCastEnggRepository foreCastEnggRepository, IForeCastCustomerSupportRepository foreCastCustomerSupportRepository,IForeCastCustomerSupportItemRepository foreCastCustomerSupportItemRepository ,ILoggerManager logger, IMapper mapper)
         {
            _Forecastrepository= foreCastRepository;
             _logger = logger;
@@ -38,6 +41,8 @@ namespace Tips.SalesService.Api.Controllers
             _forecastenggRepository = foreCastEnggRepository;
             _sourcingrepository = forecastSourcingRepository;
             _lpcostingRepository = forecastLpCostingRepository;
+            _forecastcustomgroupRepository = foreCastCustomGroupRepository;
+            _forecastcustomfieldRepository = foreCastCustomFieldRepository;
         }
         // GET: api/<ForeCastController>
         [HttpGet]
@@ -1503,5 +1508,440 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        // GET: api/<ForeCastCustomGroupController>
+        [HttpGet]
+        public async Task<IActionResult> GetAllForeCastCustomGroup([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<ForeCastCustomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<ForeCastCustomGroupDto>>();
+            try
+            {
+                var listOfForeCastCustomGroup = await _forecastcustomgroupRepository.GetAllForeCastCustomGroup(pagingParameter);
+                var metadata = new
+                {
+                    listOfForeCastCustomGroup.TotalCount,
+                    listOfForeCastCustomGroup.PageSize,
+                    listOfForeCastCustomGroup.CurrentPage,
+                    listOfForeCastCustomGroup.HasNext,
+                    listOfForeCastCustomGroup.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all ForeCastCustomGroup");
+                var foreCastCustomGroupEntity = _mapper.Map<IEnumerable<ForeCastCustomGroupDto>>(listOfForeCastCustomGroup);
+                serviceResponse.Data = foreCastCustomGroupEntity;
+                serviceResponse.Message = "Returned all ForeCastCustomGroup";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // GET: api/<ForeCastCustomGroupController>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetForeCastCustomGroupById(int id)
+        {
+            ServiceResponse<ForeCastCustomGroupDto> serviceResponse = new ServiceResponse<ForeCastCustomGroupDto>();
+
+            try
+            {
+                var foreCastCustomGroupList = await _forecastcustomgroupRepository.GetForeCastCustomGroupById(id);
+                if (foreCastCustomGroupList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ForeCastCustomGroup hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ForeCastCustomGroup with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {id}");
+                    var foreCastCustomGroupEntity = _mapper.Map<ForeCastCustomGroupDto>(foreCastCustomGroupList);
+                    serviceResponse.Data = foreCastCustomGroupEntity;
+                    serviceResponse.Message = "Returned ForeCastCustomGroup Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetForeCastCustomGroupById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // POST: api/<ForeCastCustomGroupController>
+        [HttpPost]
+        public IActionResult CreateForeCastCustomGroup([FromBody] ForeCastCustomGroupDtoPost foreCastCustomGroupDtoPost)
+        {
+            ServiceResponse<ForeCastCustomGroupDtoPost> serviceResponse = new ServiceResponse<ForeCastCustomGroupDtoPost>();
+
+            try
+            {
+                if (foreCastCustomGroupDtoPost is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ForeCastCustomGroup object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("ForeCastCustomGroup object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid ForeCastCustomGroup object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid ForeCastCustomGroup object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var foreCastCustomGroupEntity = _mapper.Map<ForeCastCustomGroup>(foreCastCustomGroupDtoPost);
+                _forecastcustomgroupRepository.CreateForeCastCustomGroup(foreCastCustomGroupEntity);
+                _forecastcustomgroupRepository.SaveAsync();
+                serviceResponse.Message = "ForeCastCustomGroup Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside CreateForeCastCustomGroup action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // PUT: api/<ForeCastCustomGroupController>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateForeCastCustomGroup(int id, [FromBody] ForeCastCustomGroupDtoUpdate foreCastCustomGroupDtoUpdate)
+        {
+            ServiceResponse<ForeCastCustomGroupDtoUpdate> serviceResponse = new ServiceResponse<ForeCastCustomGroupDtoUpdate>();
+
+            try
+            {
+                if (foreCastCustomGroupDtoUpdate is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update ForeCastCustomGroup object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update ForeCastCustomGroup object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update ForeCastCustomGroup object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Update ForeCastCustomGroup object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var foreCastCustomGroupEntity = await _forecastcustomgroupRepository.GetForeCastCustomGroupById(id);
+                if (foreCastCustomGroupEntity is null)
+                {
+                    _logger.LogError($"Update ForeCastCustomGroup with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " UpdateForeCastCustomGroup hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                _mapper.Map(foreCastCustomGroupDtoUpdate, foreCastCustomGroupEntity);
+                string result = await _forecastcustomgroupRepository.UpdateForeCastCustomGroup(foreCastCustomGroupEntity);
+                _logger.LogInfo(result);
+                _forecastcustomgroupRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "ForeCastCustomGroup Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside UpdateForeCastCustomGroup action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // DELETE: api/<ForeCastCustomGroupController>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteForeCastCustomGroup(int id)
+        {
+            ServiceResponse<ForeCastCustomGroupDto> serviceResponse = new ServiceResponse<ForeCastCustomGroupDto>();
+
+            try
+            {
+                var foreCastCustomGroupList = await _forecastcustomgroupRepository.GetForeCastCustomGroupById(id);
+                if (foreCastCustomGroupList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Delete ForeCastCustomGroup object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Delete ForeCastCustomGroup with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
+                }
+                string result = await _forecastcustomgroupRepository.DeleteForeCastCustomGroup(foreCastCustomGroupList);
+                _logger.LogInfo(result);
+                _forecastcustomgroupRepository.SaveAsync();
+                serviceResponse.Message = "ForeCastCustomGroup Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside DeleteForeCastCustomGroup action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // GET: api/<ForeCastCustomFieldController>
+        [HttpGet]
+        public async Task<IActionResult> GetAllForeCastCustomField([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<ForeCastCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<ForeCastCustomFieldDto>>();
+            try
+            {
+                var listOfForeCastCustomField = await _forecastcustomfieldRepository.GetAllForeCastCustomField(pagingParameter);
+                var metadata = new
+                {
+                    listOfForeCastCustomField.TotalCount,
+                    listOfForeCastCustomField.PageSize,
+                    listOfForeCastCustomField.CurrentPage,
+                    listOfForeCastCustomField.HasNext,
+                    listOfForeCastCustomField.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all ForeCastCustomField");
+                var foreCastCustomFieldEntity = _mapper.Map<IEnumerable<ForeCastCustomFieldDto>>(listOfForeCastCustomField);
+                serviceResponse.Data = foreCastCustomFieldEntity;
+                serviceResponse.Message = "Returned all ForeCastCustomField";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // GET: api/<ForeCastCustomFieldController>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetForeCastCustomFieldById(int id)
+        {
+            ServiceResponse<ForeCastCustomFieldDto> serviceResponse = new ServiceResponse<ForeCastCustomFieldDto>();
+
+            try
+            {
+                var foreCastCustomFieldList = await _forecastcustomfieldRepository.GetForeCastCustomFieldById(id);
+                if (foreCastCustomFieldList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ForeCastCustomField hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ForeCastCustomField with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned ForeCastCustomField with id: {id}");
+                    var foreCastCustomFieldEntity = _mapper.Map<ForeCastCustomFieldDto>(foreCastCustomFieldList);
+                    serviceResponse.Data = foreCastCustomFieldEntity;
+                    serviceResponse.Message = "Returned ForeCastCustomField Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetForeCastCustomFieldById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // POST: api/<ForeCastCustomFieldController>
+        [HttpPost]
+        public IActionResult CreateForeCastCustomField([FromBody] ForeCastCustomFieldDtoPost foreCastCustomFieldDtoPost)
+        {
+            ServiceResponse<ForeCastCustomFieldDtoPost> serviceResponse = new ServiceResponse<ForeCastCustomFieldDtoPost>();
+
+            try
+            {
+                if (foreCastCustomFieldDtoPost is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ForeCastCustomField object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("ForeCastCustomField object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid ForeCastCustomField object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid ForeCastCustomField object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var foreCastCustomFieldEntity = _mapper.Map<ForeCastCustomField>(foreCastCustomFieldDtoPost);
+                _forecastcustomfieldRepository.CreateForeCastCustomField(foreCastCustomFieldEntity);
+                _forecastcustomfieldRepository.SaveAsync();
+                serviceResponse.Message = "ForeCastCustomField Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside CreateForeCastCustomField action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // PUT: api/<ForeCastCustomFieldController>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateForeCastCustomField(int id, [FromBody] ForeCastCustomFieldDtoUpdate foreCastCustomFieldDtoUpdate)
+        {
+            ServiceResponse<ForeCastCustomFieldDtoUpdate> serviceResponse = new ServiceResponse<ForeCastCustomFieldDtoUpdate>();
+
+            try
+            {
+                if (foreCastCustomFieldDtoUpdate is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update ForeCastCustomField object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update ForeCastCustomField object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update ForeCastCustomField object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Update ForeCastCustomField object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var foreCastCustomFieldEntity = await _forecastcustomfieldRepository.GetForeCastCustomFieldById(id);
+                if (foreCastCustomFieldEntity is null)
+                {
+                    _logger.LogError($"Update ForeCastCustomField with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " UpdateForeCastCustomField hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                _mapper.Map(foreCastCustomFieldDtoUpdate, foreCastCustomFieldEntity);
+                string result = await _forecastcustomfieldRepository.UpdateForeCastCustomField(foreCastCustomFieldEntity);
+                _logger.LogInfo(result);
+                _forecastcustomfieldRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "ForeCastCustomField Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside UpdateForeCastCustomField action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // DELETE: api/<ForeCastCustomFieldController>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteForeCastCustomField(int id)
+        {
+            ServiceResponse<ForeCastCustomFieldDto> serviceResponse = new ServiceResponse<ForeCastCustomFieldDto>();
+
+            try
+            {
+                var foreCastCustomFieldList = await _forecastcustomfieldRepository.GetForeCastCustomFieldById(id);
+                if (foreCastCustomFieldList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Delete ForeCastCustomField object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Delete ForeCastCustomField with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
+                }
+                string result = await _forecastcustomfieldRepository.DeleteForeCastCustomField(foreCastCustomFieldList);
+                _logger.LogInfo(result);
+                _forecastcustomfieldRepository.SaveAsync();
+                serviceResponse.Message = "ForeCastCustomField Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside DeleteForeCastCustomField action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 }

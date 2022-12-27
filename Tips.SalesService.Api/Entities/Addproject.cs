@@ -15,5 +15,6 @@ namespace Tips.SalesService.Api.Entities
         public string ProjectNumber { get; set; }
         public string ProjectQuantity { get; set; }
 
+
     }
 }

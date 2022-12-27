@@ -79,6 +79,8 @@ namespace Repository
         private IReleaseEnggBomRepository? _releaseEnggBomRepo;
         private IReleaseCostBomRepository? _releaseCostBomRepo;
         private IReleaseProductBomRepository? _releaseProductBomRepo;
+        private IEnggBomGroupRepository? _enggbomGroupRepo;
+        private IEnggCustomFieldRepository? _enggcustomFieldRepo;
 
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
@@ -711,7 +713,7 @@ namespace Repository
             }
         }
 
-        public IReleaseEnggBomRepository releaseEnggBomRepository
+        public IReleaseEnggBomRepository ReleaseEnggBomRepository
         {
             get
             {
@@ -724,7 +726,7 @@ namespace Repository
         }
 
 
-        public IReleaseCostBomRepository releaseCostBomRepository
+        public IReleaseCostBomRepository ReleaseCostBomRepository
         {
             get
             {
@@ -737,7 +739,7 @@ namespace Repository
         }
 
 
-        public IReleaseProductBomRepository releaseProductBomRepository
+        public IReleaseProductBomRepository ReleaseProductBomRepository
         {
             get
             {
@@ -746,6 +748,30 @@ namespace Repository
                     _releaseProductBomRepo = new ReleaseProductBomRepository(_tipsMasterDbContext);
                 }
                 return _releaseProductBomRepo;
+            }
+        }
+
+        public IEnggBomGroupRepository EnggBomGroupRepository
+        {
+            get
+            {
+                if (_enggbomGroupRepo == null)
+                {
+                    _enggbomGroupRepo = new EnggBomGroupRepository(_tipsMasterDbContext);
+                }
+                return _enggbomGroupRepo;
+            }
+        }
+
+        public IEnggCustomFieldRepository EnggCustomFieldRepository
+        {
+            get
+            {
+                if (_enggcustomFieldRepo == null)
+                {
+                    _enggcustomFieldRepo = new EnggCustomFieldRepository(_tipsMasterDbContext);
+                }
+                return _enggcustomFieldRepo;
             }
         }
 

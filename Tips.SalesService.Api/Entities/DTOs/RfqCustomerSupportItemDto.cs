@@ -16,6 +16,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? Description { get; set; }
         public string Unit { get; set; }
 
+        public bool ReleaseStatus { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

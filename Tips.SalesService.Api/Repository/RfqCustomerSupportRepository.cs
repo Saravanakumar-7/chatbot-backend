@@ -129,6 +129,15 @@ namespace Tips.SalesService.Api.Repository
             throw new NotImplementedException();
         }
 
+        public async Task<string> DeactivateRfqCustomerSupportItemById(RfqCustomerSupportItems rfqCustomerSupportItems)
+        {
+            rfqCustomerSupportItems.LastModifiedBy = "Admin";
+            rfqCustomerSupportItems.LastModifiedOn = DateTime.Now;
+            Update(rfqCustomerSupportItems);
+            string result = $"CostCenter details of {rfqCustomerSupportItems.Id} is updated successfully!";
+            return result;
+        }
+
         public Task<string> DeleteRfqCustomerSupportItem(RfqCustomerSupportItems rfqCustomerSupportItems)
         {
             throw new NotImplementedException();
@@ -149,8 +158,8 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<RfqCustomerSupportItems> GetRfqCustomerSupportItemById(int id)
         {
-            var getActiveStatus = await _tipsSalesServiceDbContext.rfqCustomerSupportItems.Where(x => x.Id == id && x.ReleaseStatus == false).FirstOrDefaultAsync();
-            return getActiveStatus;
+            var rfqCustomerSupportItemId = await _tipsSalesServiceDbContext.rfqCustomerSupportItems.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return rfqCustomerSupportItemId;
         }
 
         public Task<string> UpdateRfqCustomerSupportItem(RfqCustomerSupportItems rfqCustomerSupportItems)
@@ -316,6 +325,15 @@ namespace Tips.SalesService.Api.Repository
             throw new NotImplementedException();
         }
 
+        public async Task<string> DeactivateRfqEnggItemById(RfqEnggItem rfqEnggItem)
+        {
+            rfqEnggItem.LastModifiedBy = "Admin";
+            rfqEnggItem.LastModifiedOn = DateTime.Now;
+            Update(rfqEnggItem);
+            string result = $"CostCenter details of {rfqEnggItem.Id} is updated successfully!";
+            return result;
+        }
+
         public Task<string> DeleteRfqEnggItem(RfqEnggItem rfqEnggItem)
         {
             throw new NotImplementedException();
@@ -341,8 +359,8 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<RfqEnggItem> GetRfqEnggItemById(int id)
         {
-            var getActiveStatus = await _tipsSalesServiceDbContext.RfqEnggItems.Where(x => x.Id == id && x.ReleaseStatus == false).FirstOrDefaultAsync();
-            return getActiveStatus;
+            var rfqEnggItems = await _tipsSalesServiceDbContext.RfqEnggItems.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return rfqEnggItems;
         }
 
         public Task<string> UpdateRfqEnggItem(RfqEnggItem rfqEnggItem)
@@ -353,73 +371,190 @@ namespace Tips.SalesService.Api.Repository
         // RfqLPCosting
         public class RfqLPCostingRepository : RepositoryBase<RfqLPCosting>, IRfqLPCostingRepository
         {
+            private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+
+            public RfqLPCostingRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+            {
+                _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+
+            }
+            public async Task<int?> CreateRfqLPCosting(RfqLPCosting rfqLPCosting)
+            {
+                rfqLPCosting.CreatedBy = "Admin";
+                rfqLPCosting.CreatedOn = DateTime.Now;
+                rfqLPCosting.Unit = "Bangalore";
+                var result = await Create(rfqLPCosting);
+                return result.Id;
+            }
+
+            public async Task<string> DeleteRfqLPCosting(RfqLPCosting rfqLPCosting)
+            {
+                Delete(rfqLPCosting);
+                string result = $"RFQLPCosting details of {rfqLPCosting.Id} is deleted successfully!";
+                return result;
+            }
+            public async Task<PagedList<RfqLPCosting>> GetAllRfqLPCosting(PagingParameter pagingParameter)
+            {
+                var rfqLPCosting = PagedList<RfqLPCosting>.ToPagedList(FindAll()
+                    .Include(x => x.rfqLPCostingItems)
+                    .ThenInclude(u => u.rfqLPCostingProcesses)
+                     .Include(x => x.rfqLPCostingItems)
+                     .ThenInclude(v => v.rfqLPCostingNREConsumables)
+                     .Include(x => x.rfqLPCostingItems)
+                     .ThenInclude(w => w.rfqLPCostingOtherCharges)
+               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+                return rfqLPCosting;
+            }
+
+            public async Task<RfqLPCosting> GetRfqLPCostingById(int id)
+            {
+                var rfqLPCosting = await _tipsSalesServiceDbContext.RfqLPCostings.Where(x => x.Id == id)
+                     .Include(x => x.rfqLPCostingItems)
+                     .ThenInclude(u => u.rfqLPCostingProcesses)
+                     .Include(x => x.rfqLPCostingItems)
+                     .ThenInclude(v => v.rfqLPCostingNREConsumables)
+                     .Include(x => x.rfqLPCostingItems)
+                     .ThenInclude(w => w.rfqLPCostingOtherCharges)
+                              .FirstOrDefaultAsync();
+
+                return rfqLPCosting;
+            }
+
+
+            public async Task<string> UpdateRfqLPCosting(RfqLPCosting rfqLPCosting)
+            {
+                rfqLPCosting.LastModifiedBy = "Admin";
+                rfqLPCosting.LastModifiedOn = DateTime.Now;
+                Update(rfqLPCosting);
+                string result = $"RFQ of Detail {rfqLPCosting.Id} is updated successfully!";
+                return result;
+            }
+            public async Task<RfqLPCosting> RfqLPCostingByRfqNumber(string RfqNumber)
+            {
+                var LpCostingByRfqNumber = await _tipsSalesServiceDbContext.RfqLPCostings
+                    .Include(t => t.rfqLPCostingItems)
+                  .Where(x => x.RfqNumber == RfqNumber)
+                            .FirstOrDefaultAsync();
+                return LpCostingByRfqNumber;
+            }
+
+        }
+        public class RfqCustomGroupRepository : RepositoryBase<RfqCustomGroup>, IRfqCustomGroupRepository
+        {
+            private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+
+            public RfqCustomGroupRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+            {
+                _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+
+            }
+
+            public async Task<int?> CreateRfqCustomGroup(RfqCustomGroup rfqCustomGroup)
+            {
+                rfqCustomGroup.CreatedBy = "Admin";
+                rfqCustomGroup.CreatedOn = DateTime.Now;
+                rfqCustomGroup.LastModifiedBy = "Admin";
+                rfqCustomGroup.LastModifiedOn = DateTime.Now;
+                var result = await Create(rfqCustomGroup);
+                return result.Id;
+            }
+
+            public async Task<string> DeleteRfqCustomGroup(RfqCustomGroup rfqCustomGroup)
+            {
+                Delete(rfqCustomGroup);
+                string result = $"RfqCustomGroup details of {rfqCustomGroup.Id} is deleted successfully!";
+                return result;
+            }
+
+            public async Task<PagedList<RfqCustomGroup>> GetAllRfqCustomGroup(PagingParameter pagingParameter)
+            {
+                var rfqCustomGroupDetails = PagedList<RfqCustomGroup>.ToPagedList(FindAll()
+               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+                return rfqCustomGroupDetails;
+            }
+
+            public async Task<RfqCustomGroup> GetRfqCustomGroupById(int id)
+            {
+                var rfqCustomGroupDetails = await _tipsSalesServiceDbContext.RfqCustomGroups.Where(x => x.Id == id).FirstOrDefaultAsync();
+                return rfqCustomGroupDetails;
+            }
+
+            public async Task<string> UpdateRfqCustomGroup(RfqCustomGroup rfqCustomGroup)
+            {
+                rfqCustomGroup.LastModifiedBy = "Admin";
+                rfqCustomGroup.LastModifiedOn = DateTime.Now;
+                Update(rfqCustomGroup);
+                string result = $"RfqCustomGroup Detail {rfqCustomGroup.Id} is updated successfully!";
+                return result;
+            }
+        }
+        public class RfqCustomFieldRepository : RepositoryBase<RfqCustomField>, IRfqCustomFieldRepository
+        {
+            private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+
+            public RfqCustomFieldRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+            {
+                _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+
+            }
+
+            public async Task<int?> CreateRfqCustomField(RfqCustomField rfqCustomField)
+            {
+                rfqCustomField.CreatedBy = "Admin";
+                rfqCustomField.CreatedOn = DateTime.Now;
+                rfqCustomField.LastModifiedBy = "Admin";
+                rfqCustomField.LastModifiedOn = DateTime.Now;
+                var result = await Create(rfqCustomField);
+                return result.Id;
+            }
+
+            public async Task<string> DeleteRfqCustomField(RfqCustomField rfqCustomField)
+            {
+                Delete(rfqCustomField);
+                string result = $"RfqCustomField details of {rfqCustomField.Id} is deleted successfully!";
+                return result;
+            }
+
+            public async Task<PagedList<RfqCustomField>> GetAllRfqCustomField(PagingParameter pagingParameter)
+            {
+                var rfqcustomFieldsDetails = PagedList<RfqCustomField>.ToPagedList(FindAll()
+               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+                return rfqcustomFieldsDetails;
+            }
+
+            public async Task<RfqCustomField> GetRfqCustomFieldById(int id)
+            {
+                var rfqcustomFieldsDetails = await _tipsSalesServiceDbContext.RfqCustomFields.Where(x => x.Id == id).FirstOrDefaultAsync();
+                return rfqcustomFieldsDetails;
+            }
+
+            public async Task<string> UpdateRfqCustomField(RfqCustomField rfqCustomField)
+            {
+                rfqCustomField.LastModifiedBy = "Admin";
+                rfqCustomField.LastModifiedOn = DateTime.Now;
+                Update(rfqCustomField);
+                string result = $"RfqCustomField Detail {rfqCustomField.Id} is updated successfully!";
+                return result;
+            }
+        }
+    }
+
+    public class RfqLPReleaseRepository : RepositoryBase<ReleaseLp>, IReleaseLpRepository
+    {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
 
-        public RfqLPCostingRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        public RfqLPReleaseRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
-
-        }
-        public async Task<int?> CreateRfqLPCosting(RfqLPCosting rfqLPCosting)
-        {
-            rfqLPCosting.CreatedBy = "Admin";
-            rfqLPCosting.CreatedOn = DateTime.Now;
-            rfqLPCosting.Unit = "Bangalore";
-            var result = await Create(rfqLPCosting);
-            return result.Id;
         }
 
-        public async Task<string> DeleteRfqLPCosting(RfqLPCosting rfqLPCosting)
+        public async Task<ReleaseLp> BulkRelease(ReleaseLp releaseLp)
         {
-            Delete(rfqLPCosting);
-            string result = $"RFQLPCosting details of {rfqLPCosting.Id} is deleted successfully!";
-            return result;
-        }      
-        public async Task<PagedList<RfqLPCosting>> GetAllRfqLPCosting(PagingParameter pagingParameter)
-        {
-            var rfqLPCosting = PagedList<RfqLPCosting>.ToPagedList(FindAll()
-                .Include (x => x.rfqLPCostingItems)
-                .ThenInclude(u => u.rfqLPCostingProcesses)
-                 .Include(x => x.rfqLPCostingItems)
-                 .ThenInclude(v => v.rfqLPCostingNREConsumables)
-                 .Include(x => x.rfqLPCostingItems)
-                 .ThenInclude(w => w.rfqLPCostingOtherCharges)
-           .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return rfqLPCosting;
-        }
-
-        public async Task<RfqLPCosting> GetRfqLPCostingById(int id)
-        {
-            var rfqLPCosting = await _tipsSalesServiceDbContext.RfqLPCostings.Where(x => x.Id == id)
-                 .Include(x => x.rfqLPCostingItems)
-                 .ThenInclude(u => u.rfqLPCostingProcesses)
-                 .Include(x => x.rfqLPCostingItems)
-                 .ThenInclude(v => v.rfqLPCostingNREConsumables)
-                 .Include(x => x.rfqLPCostingItems)
-                 .ThenInclude(w => w.rfqLPCostingOtherCharges)
-                          .FirstOrDefaultAsync();
-
-            return rfqLPCosting;
-        }
-
-
-        public async Task<string> UpdateRfqLPCosting(RfqLPCosting rfqLPCosting)
-        {
-            rfqLPCosting.LastModifiedBy = "Admin";
-            rfqLPCosting.LastModifiedOn = DateTime.Now;
-            Update(rfqLPCosting);
-            string result = $"RFQ of Detail {rfqLPCosting.Id} is updated successfully!";
+            releaseLp.CreatedBy = "Admin";
+            releaseLp.CreatedOn = DateTime.Now;
+            releaseLp.Unit = "Bangalore";
+            var result = await Create(releaseLp);
             return result;
         }
-        public async Task<RfqLPCosting> RfqLPCostingByRfqNumber(string RfqNumber)
-        {
-            var LpCostingByRfqNumber = await _tipsSalesServiceDbContext.RfqLPCostings
-                .Include(t => t.rfqLPCostingItems)
-              .Where(x => x.RfqNumber == RfqNumber)
-                        .FirstOrDefaultAsync();
-            return LpCostingByRfqNumber;
-        }    
-
     }
-}
 }

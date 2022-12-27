@@ -126,7 +126,7 @@ namespace Tips.SalesService.Api.Repository
             return forecastCustomerSupport;
         }
 
-       
+
 
         public async Task<ForeCastCustomerSupport> ForeCastCustomerSupportByForeCastNumber(string ForeCastNumber)
         {
@@ -158,7 +158,7 @@ namespace Tips.SalesService.Api.Repository
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
 
-        }      
+        }
 
         public async Task<string> ActivateForeCastCustomerSupportItemById(ForeCastCustomerSupportItem foreCastCustomerSupportItem)
         {
@@ -385,6 +385,104 @@ namespace Tips.SalesService.Api.Repository
             forecastLpCosting.LastModifiedOn = DateTime.Now;
             Update(forecastLpCosting);
             string result = $"forecastLpCosting of Detail {forecastLpCosting.Id} is updated successfully!";
+            return result;
+        }
+    }
+
+    public class ForeCastCustomGroupRepository : RepositoryBase<ForeCastCustomGroup>, IForeCastCustomGroupRepository
+    {
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+
+        public ForeCastCustomGroupRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        {
+            _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+        }
+
+        public async Task<int?> CreateForeCastCustomGroup(ForeCastCustomGroup foreCastCustomGroup)
+        {
+            foreCastCustomGroup.CreatedBy = "Admin";
+            foreCastCustomGroup.CreatedOn = DateTime.Now;
+            foreCastCustomGroup.LastModifiedBy = "Admin";
+            foreCastCustomGroup.LastModifiedOn = DateTime.Now;
+            var result = await Create(foreCastCustomGroup);
+            return result.Id;
+        }
+
+        public async Task<string> DeleteForeCastCustomGroup(ForeCastCustomGroup foreCastCustomGroup)
+        {
+            Delete(foreCastCustomGroup);
+            string result = $"ForeCastCustomGroup details of {foreCastCustomGroup.Id} is deleted successfully!";
+            return result;
+        }
+
+        public async Task<PagedList<ForeCastCustomGroup>> GetAllForeCastCustomGroup(PagingParameter pagingParameter)
+        {
+            var foreCastCustomGroupDetails = PagedList<ForeCastCustomGroup>.ToPagedList(FindAll()
+                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            return foreCastCustomGroupDetails;
+        }
+
+        public async Task<ForeCastCustomGroup> GetForeCastCustomGroupById(int id)
+        {
+            var foreCastCustomGroupDetails = await _tipsSalesServiceDbContext.ForeCastCustomGroups.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return foreCastCustomGroupDetails;
+        }
+
+        public async Task<string> UpdateForeCastCustomGroup(ForeCastCustomGroup foreCastCustomGroup)
+        {
+            foreCastCustomGroup.LastModifiedBy = "Admin";
+            foreCastCustomGroup.LastModifiedOn = DateTime.Now;
+            Update(foreCastCustomGroup);
+            string result = $"ForeCastCustomGroup Detail {foreCastCustomGroup.Id} is updated successfully!";
+            return result;
+        }
+    }
+
+    public class ForeCastCustomFieldRepository : RepositoryBase<ForeCastCustomField>, IForeCastCustomFieldRepository
+    {
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+
+        public ForeCastCustomFieldRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        {
+            _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+        }
+
+        public async Task<int?> CreateForeCastCustomField(ForeCastCustomField foreCastCustomField)
+        {
+            foreCastCustomField.CreatedBy = "Admin";
+            foreCastCustomField.CreatedOn = DateTime.Now;
+            foreCastCustomField.LastModifiedBy = "Admin";
+            foreCastCustomField.LastModifiedOn = DateTime.Now;
+            var result = await Create(foreCastCustomField);
+            return result.Id;
+        }
+
+        public async Task<string> DeleteForeCastCustomField(ForeCastCustomField foreCastCustomField)
+        {
+            Delete(foreCastCustomField);
+            string result = $"ForeCastCustomField details of {foreCastCustomField.Id} is deleted successfully!";
+            return result;
+        }
+
+        public async Task<PagedList<ForeCastCustomField>> GetAllForeCastCustomField(PagingParameter pagingParameter)
+        {
+            var foreCastCustomFieldDetails = PagedList<ForeCastCustomField>.ToPagedList(FindAll()
+                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            return foreCastCustomFieldDetails;
+        }
+
+        public async Task<ForeCastCustomField> GetForeCastCustomFieldById(int id)
+        {
+            var foreCastCustomFieldDetails = await _tipsSalesServiceDbContext.ForeCastCustomFields.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return foreCastCustomFieldDetails;
+        }
+
+        public async Task<string> UpdateForeCastCustomField(ForeCastCustomField foreCastCustomField)
+        {
+            foreCastCustomField.LastModifiedBy = "Admin";
+            foreCastCustomField.LastModifiedOn = DateTime.Now;
+            Update(foreCastCustomField);
+            string result = $"ForeCastCustomField Detail {foreCastCustomField.Id} is updated successfully!";
             return result;
         }
     }

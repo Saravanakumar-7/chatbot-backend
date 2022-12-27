@@ -104,5 +104,8 @@ namespace Entities
         public DbSet<ReleaseEnggBom> ReleaseEnggBoms { get; set; }
         public DbSet<ReleaseCostBom> ReleaseCostBoms { get; set; }
         public DbSet<ReleaseProductBom> ReleaseProductBoms { get; set; }
+
+        public DbSet<EnggBomGroup> BomGroups { get; set; }
+        public DbSet<EnggCustomField> CustomFields { get; set; }
     }
 }

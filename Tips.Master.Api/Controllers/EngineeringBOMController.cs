@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Entities.Migrations;
 using System.Net;
 using Newtonsoft.Json;
+using Repository;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,14 +19,20 @@ namespace Tips.Master.Api.Controllers
     public class EngineeringBOMController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
+        private IReleaseEnggBomRepository _releaseEnggBomRepository;
         private ILoggerManager _logger;
+        private IReleaseProductBomRepository _releaseProductBomRepository;
         private IMapper _mapper;
-
-        public EngineeringBOMController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        private IReleaseCostBomRepository _releaseCostBomRepository;
+ 
+        public EngineeringBOMController(IRepositoryWrapperForMaster repository, IReleaseProductBomRepository releaseProductBomRepository, IReleaseCostBomRepository releaseCostBomRepository, IReleaseEnggBomRepository releaseEnggBomRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _releaseCostBomRepository = releaseCostBomRepository;
+            _releaseEnggBomRepository = releaseEnggBomRepository;
+            _releaseProductBomRepository = releaseProductBomRepository;
         }
         // GET: api/<EngineeringBOMController>
         [HttpGet]
@@ -47,7 +54,7 @@ namespace Tips.Master.Api.Controllers
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-                 
+
 
 
                 _logger.LogInfo("Returned all Boms");
@@ -97,7 +104,7 @@ namespace Tips.Master.Api.Controllers
             {
                 var bom = await _repository.EnggBomRepository.GetEnggBomById(id);
 
-               
+
 
                 if (bom == null)
                 {
@@ -111,7 +118,7 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Engineering Bom with id: {id}");
-                     EnggBomDto enggBomDto = _mapper.Map<EnggBomDto>(bom);
+                    EnggBomDto enggBomDto = _mapper.Map<EnggBomDto>(bom);
                     List<EnggChildItemDto> childItemsDtos = new List<EnggChildItemDto>();
                     foreach (var itemDetails in bom.EnggChildItems)
                     {
@@ -127,7 +134,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-               
+
             }
             catch (Exception ex)
             {
@@ -182,7 +189,7 @@ namespace Tips.Master.Api.Controllers
 
                 }
                 enggBomList.EnggChildItems = enggChildItemList;
-                
+
                 _repository.EnggBomRepository.CreateEnggBom(enggBomList);
 
                 _repository.SaveAsync();
@@ -257,7 +264,7 @@ namespace Tips.Master.Api.Controllers
                 }
                 enggBomList.EnggChildItems = enggChildItemList;
 
-                 var data = _mapper.Map(enggBomDto, enggBomList);
+                var data = _mapper.Map(enggBomDto, enggBomList);
 
                 string result = await _repository.EnggBomRepository.UpdateEnggBom(data);
 
@@ -312,7 +319,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var listOfReleaseEnggBom = await _repository.releaseEnggBomRepository.GetAllReleaseEnggBom(pagingParameter);
+                var listOfReleaseEnggBom = await _releaseEnggBomRepository.GetAllReleaseEnggBom(pagingParameter);
 
                 var metadata = new
                 {
@@ -352,7 +359,9 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var releaseEnggBomDtoDetails = await _repository.releaseEnggBomRepository.GetReleaseEnggBomById(id);
+                //var releaseEnggBomDtoDetails = await _repository.releaseEnggBomRepository.GetReleaseEnggBomById(id);
+                var releaseEnggBomDtoDetails = await _releaseEnggBomRepository.GetReleaseEnggBomById(id);
+
 
                 if (releaseEnggBomDtoDetails == null)
                 {
@@ -412,8 +421,9 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var release = _mapper.Map <ReleaseEnggBom> (releaseEnggBomDtoPost);
-                _repository.releaseEnggBomRepository.CreateReleaseEnggBom(release);
+                var release = _mapper.Map<ReleaseEnggBom>(releaseEnggBomDtoPost);
+                //_repository.releaseEnggBomRepository.CreateReleaseEnggBom(release);
+                _releaseEnggBomRepository.CreateReleaseEnggBom(release);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ReleaseEnggBom Successfully Created";
@@ -458,7 +468,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var updateReleaseEnggBom = await _repository.releaseEnggBomRepository.GetReleaseEnggBomById(id);
+                var updateReleaseEnggBom = await _releaseEnggBomRepository.GetReleaseEnggBomById(id);
                 if (updateReleaseEnggBom is null)
                 {
                     _logger.LogError($" updateReleaseEnggBom with id: {id}, hasn't been found in db.");
@@ -469,7 +479,7 @@ namespace Tips.Master.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                 var data = _mapper.Map(releaseEnggBomDtoUpdate, updateReleaseEnggBom);
-                string result = await _repository.releaseEnggBomRepository.UpdateReleaseEnggBom(data);
+                string result = await _releaseEnggBomRepository.UpdateReleaseEnggBom(data);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -496,7 +506,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var deleteReleaseEnggBom = await _repository.releaseEnggBomRepository.GetReleaseEnggBomById(id);
+                var deleteReleaseEnggBom = await _releaseEnggBomRepository.GetReleaseEnggBomById(id);
                 if (deleteReleaseEnggBom == null)
                 {
                     _logger.LogError($"deleteReleaseEnggBom  with id: {id}, hasn't been found in db.");
@@ -506,7 +516,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.releaseEnggBomRepository.DeleteReleaseEnggBom(deleteReleaseEnggBom);
+                string result = await _releaseEnggBomRepository.DeleteReleaseEnggBom(deleteReleaseEnggBom);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -554,7 +564,7 @@ namespace Tips.Master.Api.Controllers
                 }
 
                 var release = _mapper.Map<ReleaseCostBom>(releaseCostBomDtoPost);
-                _repository.releaseCostBomRepository.CreateReleaseCostBom(release);
+                _releaseCostBomRepository.CreateReleaseCostBom(release);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ReleaseCostBom Successfully Created";
@@ -601,7 +611,7 @@ namespace Tips.Master.Api.Controllers
                 }
 
                 var release = _mapper.Map<ReleaseProductBom>(releaseProductBomDtoPost);
-                _repository.releaseProductBomRepository.CreateReleaseProductBom(release);
+                _releaseProductBomRepository.CreateReleaseProductBom(release);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ReleaseProductBom Successfully Created";
@@ -621,5 +631,498 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        // GET: api/<EnggBomGroupController>
+        [HttpGet]
+        public async Task<IActionResult> GetAllEnggBomGroup([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<EnggBomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomGroupDto>>();
+            try
+            {
+                var listOfEnggBomGroup = await _repository.EnggBomGroupRepository.GetAllEnggBomGroup(pagingParameter);
+                var metadata = new
+                {
+                    listOfEnggBomGroup.TotalCount,
+                    listOfEnggBomGroup.PageSize,
+                    listOfEnggBomGroup.CurrentPage,
+                    listOfEnggBomGroup.HasNext,
+                    listOfEnggBomGroup.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all EnggBomGroup");
+                var enggbomGroupEntity = _mapper.Map<IEnumerable<EnggBomGroupDto>>(listOfEnggBomGroup);
+                serviceResponse.Data = enggbomGroupEntity;
+                serviceResponse.Message = "Returned all EnggBomGroup";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // GET: api/<EnggBomGroupController>
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveEnggBomGroup()
+        {
+            ServiceResponse<IEnumerable<EnggBomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomGroupDto>>();
+
+            try
+            {
+                var enggBomGroupList = await _repository.EnggBomGroupRepository.GetAllActiveEnggBomGroup();
+                _logger.LogInfo("Returned all ActiveEnggBomGroup");
+                var enggbomGroupEntity = _mapper.Map<IEnumerable<EnggBomGroupDto>>(enggBomGroupList);
+                serviceResponse.Data = enggbomGroupEntity;
+                serviceResponse.Message = "Returned all  ActiveEnggBomGroup Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+
+            }
+        }
+
+        // GET: api/<EnggBomGroupController>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetEnggBomGroupById(int id)
+        {
+            ServiceResponse<EnggBomGroupDto> serviceResponse = new ServiceResponse<EnggBomGroupDto>();
+
+            try
+            {
+                var enggbomGroupList = await _repository.EnggBomGroupRepository.GetEnggBomGroupById(id);
+                if (enggbomGroupList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"EnggBomGroup hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"EnggBomGroup with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {id}");
+                    var enggbomGroupEntity = _mapper.Map<EnggBomGroupDto>(enggbomGroupList);
+                    serviceResponse.Data = enggbomGroupEntity;
+                    serviceResponse.Message = "Returned EnggBomGroup Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetEnggBomGroupById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // POST: api/<EnggBomGroupController>
+        [HttpPost]
+        public IActionResult CreateEnggBomGroup([FromBody] EnggBomGroupDtoPost enggbomGroupDtoPost)
+        {
+            ServiceResponse<EnggBomGroupDtoPost> serviceResponse = new ServiceResponse<EnggBomGroupDtoPost>();
+
+            try
+            {
+                if (enggbomGroupDtoPost is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "EnggBomGroup object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("EnggBomGroup object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid EnggBomGroup object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid EnggBomGroup object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var enggbomGroupEntity = _mapper.Map<EnggBomGroup>(enggbomGroupDtoPost);
+                _repository.EnggBomGroupRepository.CreateEnggBomGroup(enggbomGroupEntity);
+                _repository.SaveAsync();
+                serviceResponse.Message = "EnggBomGroup Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside CreateEnggBomGroup action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // PUT: api/<EnggBomGroupController>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateEnggBomGroup(int id, [FromBody] EnggBomGroupDtoUpdate enggbomGroupDtoUpdate)
+        {
+            ServiceResponse<EnggBomGroupDtoUpdate> serviceResponse = new ServiceResponse<EnggBomGroupDtoUpdate>();
+
+            try
+            {
+                if (enggbomGroupDtoUpdate is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update EnggBomGroup object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update EnggBomGroup object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update EnggBomGroup object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Update EnggBomGroup object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var enggbomGroupEntity = await _repository.EnggBomGroupRepository.GetEnggBomGroupById(id);
+                if (enggbomGroupEntity is null)
+                {
+                    _logger.LogError($"Update EnggBomGroup with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " UpdateEnggBomGroup hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                _mapper.Map(enggbomGroupDtoUpdate, enggbomGroupEntity);
+                string result = await _repository.EnggBomGroupRepository.UpdateEnggBomGroup(enggbomGroupEntity);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "EnggBomGroup Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside UpdateEnggBomGroup action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // DELETE: api/<EnggBomGroupController>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEnggBomGroup(int id)
+        {
+            ServiceResponse<EnggBomGroupDto> serviceResponse = new ServiceResponse<EnggBomGroupDto>();
+
+            try
+            {
+                var enggBomGroupList = await _repository.EnggBomGroupRepository.GetEnggBomGroupById(id);
+                if (enggBomGroupList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Delete EnggBomGroup object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Delete EnggBomGroup with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
+                }
+                string result = await _repository.EnggBomGroupRepository.DeleteEnggBomGroup(enggBomGroupList);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Message = "EnggBomGroup Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside DeleteEnggBomGroup action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // GET: api/<EnggCustomFieldController>
+        [HttpGet]
+        public async Task<IActionResult> GetAllEnggCustomField([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<EnggCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggCustomFieldDto>>();
+            try
+            {
+                var listOfEnggCustomField = await _repository.EnggCustomFieldRepository.GetAllEnggCustomFields(pagingParameter);
+                var metadata = new
+                {
+                    listOfEnggCustomField.TotalCount,
+                    listOfEnggCustomField.PageSize,
+                    listOfEnggCustomField.CurrentPage,
+                    listOfEnggCustomField.HasNext,
+                    listOfEnggCustomField.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all EnggCustomField");
+                var enggcustomFieldEntity = _mapper.Map<IEnumerable<EnggCustomFieldDto>>(listOfEnggCustomField);
+                serviceResponse.Data = enggcustomFieldEntity;
+                serviceResponse.Message = "Returned all EnggCustomField";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // GET: api/<EnggCustomFieldController>
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveEnggCustomField()
+        {
+            ServiceResponse<IEnumerable<EnggCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggCustomFieldDto>>();
+
+            try
+            {
+                var enggCustomFieldEntityList = await _repository.EnggCustomFieldRepository.GetAllActiveEnggCustomFields();
+                _logger.LogInfo("Returned all EnggActiveCustomField");
+                var enggCustomFieldEntity = _mapper.Map<IEnumerable<EnggCustomFieldDto>>(enggCustomFieldEntityList);
+                serviceResponse.Data = enggCustomFieldEntity;
+                serviceResponse.Message = "Returned all  ActiveEnggCustomField Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+
+            }
+        }
+
+        // GET: api/<EnggCustomFieldController>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetEnggCustomFieldById(int id)
+        {
+            ServiceResponse<EnggCustomFieldDto> serviceResponse = new ServiceResponse<EnggCustomFieldDto>();
+
+            try
+            {
+                var enggcustomFieldList = await _repository.EnggCustomFieldRepository.GetEnggCustomFieldById(id);
+                if (enggcustomFieldList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"EnggcustomField hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"EnggcustomField with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned EnggcustomField with id: {id}");
+                    var enggcustomFieldEntity = _mapper.Map<EnggCustomFieldDto>(enggcustomFieldList);
+                    serviceResponse.Data = enggcustomFieldEntity;
+                    serviceResponse.Message = "Returned EnggcustomField Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetEnggCustomFieldById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // POST: api/<EnggCustomFieldController>
+        [HttpPost]
+        public IActionResult CreateEnggCustomField([FromBody] EnggCustomFieldDtoPost enggcustomFieldDtoPost)
+        {
+            ServiceResponse<EnggCustomFieldDtoPost> serviceResponse = new ServiceResponse<EnggCustomFieldDtoPost>();
+
+            try
+            {
+                if (enggcustomFieldDtoPost is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "EnggCustomField object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("EnggCustomField object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid EnggCustomField object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid EnggcustomField object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var enggcustomFieldEntity = _mapper.Map<EnggCustomField>(enggcustomFieldDtoPost);
+                _repository.EnggCustomFieldRepository.CreateEnggCustomField(enggcustomFieldEntity);
+                _repository.SaveAsync();
+                serviceResponse.Message = "EnggCustomField Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside CreateEnggCustomField action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // PUT: api/<EnggCustomFieldController>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateEnggCustomField(int id, [FromBody] EnggCustomFieldDtoUpdate enggcustomFieldDtoUpdate)
+        {
+            ServiceResponse<EnggCustomFieldDtoUpdate> serviceResponse = new ServiceResponse<EnggCustomFieldDtoUpdate>();
+
+            try
+            {
+                if (enggcustomFieldDtoUpdate is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "update EnggCustomField object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("update EnggCustomField object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update EnggCustomField object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Update EnggCustomField object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var enggcustomFieldEntity = await _repository.EnggCustomFieldRepository.GetEnggCustomFieldById(id);
+                if (enggcustomFieldEntity is null)
+                {
+                    _logger.LogError($"Update EnggCustomField with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " UpdateEnggCustomField hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                _mapper.Map(enggcustomFieldDtoUpdate, enggcustomFieldEntity);
+                string result = await _repository.EnggCustomFieldRepository.UpdateEnggCustomField(enggcustomFieldEntity);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "EnggCustomField Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside UpdateEnggCustomField action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // DELETE: api/<EnggCustomFieldController>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEnggCustomField(int id)
+        {
+            ServiceResponse<EnggCustomFieldDto> serviceResponse = new ServiceResponse<EnggCustomFieldDto>();
+
+            try
+            {
+                var enggCustomFieldList = await _repository.EnggCustomFieldRepository.GetEnggCustomFieldById(id);
+                if (enggCustomFieldList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Delete EnggCustomField object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Delete EnggCustomField with id: {id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
+                }
+                string result = await _repository.EnggCustomFieldRepository.DeleteEnggCustomField(enggCustomFieldList);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Message = "EnggCustomField Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside DeleteEnggBomGroup action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }
