@@ -364,3 +364,4 @@ FodyWeavers.xsd
 /Tips.SalesService.Api/Migrations
 /Tips.Warehouse.Api/Migrations
 /Tips.Purchase.Api/Migrations
+/CommonModels/Migrations/TipsMasterDbContextModelSnapshot.cs
