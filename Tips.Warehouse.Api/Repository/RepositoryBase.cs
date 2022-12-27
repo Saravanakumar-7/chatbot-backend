@@ -1,9 +1,8 @@
-﻿using Contracts;
+using Contracts;
 using Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using System.Linq.Expressions;
-
 using Tips.Warehouse.Api.Entities;
 
 namespace Tips.Warehouse.Api.Repository

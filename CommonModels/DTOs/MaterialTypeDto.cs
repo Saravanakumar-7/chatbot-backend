@@ -42,7 +42,7 @@ namespace Entities.DTOs
         public int Id { get; set; }
         [Required(ErrorMessage = "MaterialType is required")]
         [StringLength(100, ErrorMessage = "MaterialType can't be longer than 100 characters")]
-        public string? CustomerTypeName { get; set; }
+        public string? MaterialTypeName { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
         [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]

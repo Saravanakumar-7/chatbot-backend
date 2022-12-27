@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -14,7 +14,6 @@ namespace Tips.Warehouse.Api.Contracts
         Task<T> Create(T entity);
         void Update(T entity);
         void Delete(T entity);
-        void SaveAsync();
-
+        public void SaveAsync();
     }
 }
