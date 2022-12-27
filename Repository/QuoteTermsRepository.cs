@@ -21,6 +21,7 @@ namespace Repository
             quoteTerms.CreatedBy = "Admin";
             quoteTerms.CreatedOn = DateTime.Now;
             var result = await Create(quoteTerms);
+            quoteTerms.Unit = "Bangalore";
             return result.Id;
         }
 

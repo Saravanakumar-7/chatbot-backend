@@ -1,0 +1,92 @@
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Tips.SalesService.Api.Entities.DTOs
+{
+    public class ReleaseLpDto
+    {
+        public int? Id { get; set; }
+        public string? RFQNo { get; set; }
+        public string? CustomerName { get; set; }
+        public string? Rev { get; set; }
+        public DateTime? DateOnLpCreation { get; set; }
+        public string? ItemNo { get; set; }
+        public string? RLpItemNo { get; set; }
+        public string? Description { get; set; }
+        public decimal? Qty { get; set; }
+        public string? UOC { get; set; }
+        public string? LeastCost { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Markup { get; set; }
+        public string? PriceList { get; set; }
+        public DateTime? ValidThrough { get; set; }
+        public bool? IsDiscountApplicable { get; set; }
+
+        public string? Unit { get; set; }
+
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+
+    }
+
+    public class ReleaseLpDtoPost
+    {
+
+        public string? RFQNo { get; set; }
+        public string? CustomerName { get; set; }
+        public string? Rev { get; set; }
+        public DateTime? DateOnLpCreation { get; set; }
+        public string? ItemNo { get; set; }
+        public string? RLpItemNo { get; set; }
+        public string? Description { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Qty { get; set; }
+        public string? UOC { get; set; }
+        public string? LeastCost { get; set; }
+
+        public decimal? Markup { get; set; }
+        [Precision(18, 3)]
+        public string? PriceList { get; set; }
+        public DateTime? ValidThrough { get; set; }
+        public bool? IsDiscountApplicable { get; set; }
+        public string Unit { get; set; }
+
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+    }
+
+    public class ReleaseLpDtoUpdate
+    {
+        public int? Id { get; set; }
+        public string? RFQNo { get; set; }
+        public string? CustomerName { get; set; }
+        public string? Rev { get; set; }
+        public DateTime? DateOnLpCreation { get; set; }
+        public string? ItemNo { get; set; }
+        public string? RLpItemNo { get; set; }
+        public string? Description { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Qty { get; set; }
+
+        public string? UOC { get; set; }
+        public string? LeastCost { get; set; }
+
+        public decimal? Markup { get; set; }
+        [Precision(18, 3)]
+        public string? PriceList { get; set; }
+        public DateTime? ValidThrough { get; set; }
+        public bool? IsDiscountApplicable { get; set; }
+        public string Unit { get; set; }
+
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+    }
+}

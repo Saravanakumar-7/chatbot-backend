@@ -156,8 +156,8 @@ namespace Tips.Master.Api.Controllers
                 _repository.VendorCategoryRepository.CreateVendorCategory(vendorCategory);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfylly Created";
-                serviceResponse.Success = false;
+                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Success = true;
                 return Created("GetVendorCategoryById",serviceResponse);                 
             }
             catch (Exception ex)

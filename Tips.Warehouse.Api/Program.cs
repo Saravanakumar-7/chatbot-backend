@@ -17,7 +17,6 @@ builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureMSSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 
-
 builder.Services.AddControllers();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();
@@ -26,6 +25,13 @@ builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderReposi
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();  
+builder.Services.AddScoped<IBTODeliveryOrderRepository, BTODeliveryOrderRepository>();
+builder.Services.AddScoped<IDeliveryOrderRepository, DeliveryOrderRepository>();
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 

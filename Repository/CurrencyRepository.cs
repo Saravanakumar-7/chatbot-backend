@@ -21,6 +21,7 @@ namespace Repository
             currency.CreatedBy = "Admin";
             currency.CreatedOn = DateTime.Now;
             var result = await Create(currency);
+            currency.Unit = "Bangalore";
             return result.Id;
         }
 

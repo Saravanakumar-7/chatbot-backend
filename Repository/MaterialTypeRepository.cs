@@ -21,6 +21,7 @@ namespace Repository
             materialType.CreatedBy = "Admin";
             materialType.CreatedOn = DateTime.Now;
             var result = await Create(materialType);
+            materialType.Unit = "Bangalore";
             return result.Id;
         }
 

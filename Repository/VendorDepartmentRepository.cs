@@ -22,6 +22,7 @@ namespace Repository
             vendorDepartment.CreatedBy = "Admin";
             vendorDepartment.CreatedOn = DateTime.Now;
             var result = await Create(vendorDepartment);
+            vendorDepartment.Unit = "Bangalore";
             return result.Id;
         }
 

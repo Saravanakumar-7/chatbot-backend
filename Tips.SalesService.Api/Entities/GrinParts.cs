@@ -29,14 +29,14 @@ namespace Tips.SalesService.Api.Entities
 
         public decimal POUnitPrice { get; set; }
 
-        public int Quantity { get; set; }
+        public decimal Quantity { get; set; }
 
         public string UOM { get; set; }
 
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
 
-        public string COCUpload { get; set; }
+        public string? COCUpload { get; set; }
         public decimal? SGST { get; set; }
 
         public decimal? IGST { get; set; }
@@ -44,7 +44,6 @@ namespace Tips.SalesService.Api.Entities
         public decimal? CGST { get; set; }
 
         public decimal? UTGST { get; set; }
-
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

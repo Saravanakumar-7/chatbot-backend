@@ -21,6 +21,7 @@ namespace Repository
             bank.CreatedBy = "Admin";
             bank.CreatedOn = DateTime.Now;
             var result = await Create(bank);
+            bank.Unit = "Bangalore";
             return result.Id;
         }
 

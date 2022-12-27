@@ -23,6 +23,7 @@ namespace Repository
             companyMaster.CreatedBy = "Admin";
             companyMaster.CreatedOn = DateTime.Now;
             var result = await Create(companyMaster);
+            companyMaster.Unit = "Bangalore";
             return result.Id;
         }
 
@@ -59,6 +60,7 @@ namespace Repository
                                 .Include(t => t.CompanyAddresses)
                                 .Include(x => x.CompanyContacts)
                                 .Include(m => m.CompanyBankings)
+                                .Include(v => v.CompanyMasterHeadCountings)
                                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
@@ -72,6 +74,7 @@ namespace Repository
                                 .Include(t => t.CompanyAddresses)
                                 .Include(x => x.CompanyContacts)
                                 .Include(m => m.CompanyBankings)
+                                .Include(v => v.CompanyMasterHeadCountings)
                                 .FirstOrDefaultAsync();
 
             return companyMasterDetails;

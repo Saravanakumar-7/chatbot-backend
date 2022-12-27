@@ -21,6 +21,7 @@ namespace Repository
             department.CreatedBy = "Admin";
             department.CreatedOn = DateTime.Now;
             var result = await Create(department);
+            department.Unit = "Bangalore";
             return result.Id;
         }
 

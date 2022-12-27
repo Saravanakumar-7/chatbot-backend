@@ -15,8 +15,9 @@ namespace Entities
             public string? CallName { get; set; }
 
             public string? MobileNumber { get; set; }
+        public string? MobileCountryCode { get; set; }
 
-            public string? LandLine { get; set; }
+        public string? LandLine { get; set; }
 
             public string? TimeToCall { get; set; }
 
@@ -31,20 +32,22 @@ namespace Entities
             public string? Department { get; set; }
 
             public string? AlternameMobileNumber { get; set; }
-
-            public bool IsActive { get; set; } = true;
+        public string? AlternateMobileCountryCode { get; set; }
+        public bool IsActive { get; set; } = true;
 
             public string? Email { get; set; }
 
             public string? Extension { get; set; }
 
             public string? Language { get; set; }
+             public string Unit { get; set; }
 
-            public string? CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
             public DateTime? CreatedOn { get; set; }
             public string? LastModifiedBy { get; set; }
             public DateTime? LastModifiedOn { get; set; }
-            public int CompanyId { get; set; }
+
+            public int CompanyMasterId { get; set; }
 
             public CompanyMaster? CompanyMaster { get; set; }
     }

@@ -29,7 +29,7 @@ namespace Entities
         public string? Country { get; set; }
 
         public string? PinZipCode { get; set; }
-
+        public string? ShippingMode { get; set; }
         public string? PurchaseGroup { get; set; }
         public string? BoardNumber { get; set; }
         public string? Website { get; set; }
@@ -39,6 +39,7 @@ namespace Entities
 
         public string? TypeOfCompany { get; set; }
         public string? ExportUnitType { get; set; }
+
 
         public bool GeneralMSME { get; set; } = true;
 
@@ -57,10 +58,11 @@ namespace Entities
         public string? PaymentTerms { get; set; }
 
         public string? IncoTerm { get; set; }
-
+      
         public string? SpecialTerms { get; set; }
 
         public string? PreferredFreightForwader { get; set; }
+        public string? Others { get; set; }
 
         //saturation
 
@@ -111,7 +113,8 @@ namespace Entities
 
         public string? VendorCategory { get; set; }
 
-        public string? BankOfApproval { get; set; }
+        public string? BasisOfApproval { get; set; }
+        public string? CustomerApprove { get; set; }
 
         public bool InventoryItem { get; set; } = true;
 
@@ -126,6 +129,7 @@ namespace Entities
 
         public string? AuditFrequency { get; set; }
         public bool IsActive { get; set; } = true;
+        public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

@@ -29,6 +29,7 @@ namespace Entities.DTOs
         public string? Country { get; set; }
 
         public string? PinZipCode { get; set; }
+        public string? ShippingMode { get; set; }
 
         public string? PurchaseGroup { get; set; }
         public string? BoardNumber { get; set; }
@@ -61,6 +62,8 @@ namespace Entities.DTOs
         public string? SpecialTerms { get; set; }
 
         public string? PreferredFreightForwader { get; set; }
+
+        public string? Others { get; set; }
 
         //saturation
 
@@ -111,8 +114,8 @@ namespace Entities.DTOs
 
         public string? VendorCategory { get; set; }
 
-        public string? BankOfApproval { get; set; }
-
+        public string? BasisOfApproval { get; set; }
+        public string? CustomerApprove { get; set; }
         public bool InventoryItem { get; set; } = true;
 
         public string? ApprovalStatus { get; set; }
@@ -125,7 +128,7 @@ namespace Entities.DTOs
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -163,6 +166,7 @@ namespace Entities.DTOs
         public string? Country { get; set; }
 
         public string? PinZipCode { get; set; }
+        public string? ShippingMode { get; set; }
 
         public string? PurchaseGroup { get; set; }
         public string? BoardNumber { get; set; }
@@ -196,6 +200,7 @@ namespace Entities.DTOs
         public string? SpecialTerms { get; set; }
 
         public string? PreferredFreightForwader { get; set; }
+        public string? Others { get; set; }
 
         //saturation
 
@@ -246,8 +251,8 @@ namespace Entities.DTOs
 
         public string? VendorCategory { get; set; }
 
-        public string? BankOfApproval { get; set; }
-
+        public string? BasisOfApproval { get; set; }
+        public string? CustomerApprove { get; set; }
         public bool InventoryItem { get; set; } = true;
 
         public string? ApprovalStatus { get; set; }
@@ -260,6 +265,9 @@ namespace Entities.DTOs
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
+        [Required(ErrorMessage = "Unit is required")]
+        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
+        public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -301,6 +309,7 @@ namespace Entities.DTOs
         public string? Country { get; set; }
 
         public string? PinZipCode { get; set; }
+        public string? ShippingMode { get; set; }
 
         public string? PurchaseGroup { get; set; }
         public string? BoardNumber { get; set; }
@@ -333,6 +342,7 @@ namespace Entities.DTOs
         public string? SpecialTerms { get; set; }
 
         public string? PreferredFreightForwader { get; set; }
+        public string? Others { get; set; }
 
         //saturation
 
@@ -383,8 +393,8 @@ namespace Entities.DTOs
 
         public string? VendorCategory { get; set; }
 
-        public string? BankOfApproval { get; set; }
-
+        public string? BasisOfApproval { get; set; }
+        public string? CustomerApprove { get; set; }
         public bool InventoryItem { get; set; } = true;
 
         public string? ApprovalStatus { get; set; }
@@ -394,6 +404,9 @@ namespace Entities.DTOs
         public string? Upload { get; set; }
         public bool ReAudit { get; set; } = true;
         public string? AuditFrequency { get; set; }
+        [Required(ErrorMessage = "Unit is required")]
+        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

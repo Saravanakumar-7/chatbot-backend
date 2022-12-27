@@ -21,6 +21,7 @@ namespace Repository
             exportUnitType.CreatedBy = "Admin";
             exportUnitType.CreatedOn = DateTime.Now;
             var result = await Create(exportUnitType);
+            exportUnitType.Unit = "Bangalore";
             return result.Id;
         }
 

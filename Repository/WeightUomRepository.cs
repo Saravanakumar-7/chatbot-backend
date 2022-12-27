@@ -21,6 +21,7 @@ namespace Repository
             weightUom.CreatedBy = "Admin";
             weightUom.CreatedOn = DateTime.Now;
             var result = await Create(weightUom);
+            weightUom.Unit = "Bangalore";
             return result.Id;
         }
 

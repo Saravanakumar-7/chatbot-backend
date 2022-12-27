@@ -21,6 +21,7 @@ namespace Repository
             language.CreatedBy = "Admin";
             language.CreatedOn = DateTime.Now;
             var result = await Create(language);
+            language.Unit = "Bangalore";
             return result.Id;
         }
 

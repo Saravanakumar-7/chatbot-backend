@@ -23,10 +23,11 @@ namespace Repository
                 vendorMaster.CreatedBy = "Admin";
                 vendorMaster.CreatedOn = DateTime.Now;
                 vendorMaster.LastModifiedBy = "Admin";
-                vendorMaster.LastModifiedOn = DateTime.Now;
-                
-        var result = await Create(vendorMaster);
-                return result.Id; 
+                vendorMaster.LastModifiedOn = DateTime.Now; 
+            
+                var result = await Create(vendorMaster);
+            vendorMaster.Unit = "Bangalore";
+            return result.Id; 
 
         }
          
