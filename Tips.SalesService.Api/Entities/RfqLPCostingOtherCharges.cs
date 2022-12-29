@@ -11,8 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqLPCostingOtherCharges
     {
-        [Key]
-        public int OthersId { get; set; }
+        public int Id { get; set; }
         public string? NameOfLable { get; set; }       
 
         [Precision(13, 8)]

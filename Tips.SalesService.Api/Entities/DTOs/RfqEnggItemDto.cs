@@ -41,7 +41,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqEnggItemDtoUpdate
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
 
 
         public string? CustomerItemNumber { get; set; }

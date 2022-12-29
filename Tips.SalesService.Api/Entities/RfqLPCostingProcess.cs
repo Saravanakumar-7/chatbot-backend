@@ -12,8 +12,8 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqLPCostingProcess
     {
-        [Key]
-        public int ProcessId { get; set; }
+        
+        public int Id { get; set; }
         public string? ProcessSteps { get; set; }
         public string? MachineHrs { get; set; }
         [Precision(13, 3)]

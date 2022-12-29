@@ -1018,19 +1018,20 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 var forelpcostingList = _mapper.Map<ForecastLpCosting>(forecastLPCostingDtoUpdate);
 
-                var lpcostingitemDto = forecastLPCostingDtoUpdate.forecastLPCostingItems;
+                var flpcostingitemDto = forecastLPCostingDtoUpdate.forecastLPCostingItems;
 
                 var forecastlpcostingitemList = new List<ForecastLpCostingItem>();
-                for (int i = 0; i < lpcostingitemDto.Count; i++)
+                for (int i = 0; i < flpcostingitemDto.Count; i++)
                 {
-                    ForecastLpCostingItem lpcostingItemDetail = _mapper.Map<ForecastLpCostingItem>(lpcostingitemDto[i]);
-                    lpcostingItemDetail.forecastLpCostingProcesses = _mapper.Map<List<ForecastLpCostingProcess>>(lpcostingitemDto[i].forecastLPCostingProcesses);
-                    lpcostingItemDetail.forecastLPCostingNREConsumables = _mapper.Map<List<ForecastLPCostingNREConsumable>>(lpcostingitemDto[i].forecastLPCostingNREConsumables);
-                    lpcostingItemDetail.forecastLpCostingOtherCharges = _mapper.Map<List<ForecastLpCostingOtherCharges>>(lpcostingitemDto[i].forecastLPCostingOthers);
+                    ForecastLpCostingItem flpcostingItemDetail = _mapper.Map<ForecastLpCostingItem>(flpcostingitemDto[i]);
+                    flpcostingItemDetail.forecastLpCostingProcesses = _mapper.Map<List<ForecastLpCostingProcess>>(flpcostingitemDto[i].forecastLPCostingProcesses);
+                    flpcostingItemDetail.forecastLPCostingNREConsumables = _mapper.Map<List<ForecastLPCostingNREConsumable>>(flpcostingitemDto[i].forecastLPCostingNREConsumables);
+                    flpcostingItemDetail.forecastLpCostingOtherCharges = _mapper.Map<List<ForecastLpCostingOtherCharges>>(flpcostingitemDto[i].forecastLPCostingOthers);
 
-                    forecastlpcostingitemList.Add(lpcostingItemDetail);
+                    forecastlpcostingitemList.Add(flpcostingItemDetail);
 
                 }
+
                 var data = _mapper.Map(forecastLPCostingDtoUpdate, forecastlpcosting);
 
                 string result = await _lpcostingRepository.UpdateForecastLpCosting(data);

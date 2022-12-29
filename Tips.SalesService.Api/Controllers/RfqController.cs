@@ -261,7 +261,7 @@ namespace Tips.SalesService.Api.Controllers
                     foreach (var itemDetails in rfq.rfqCustomerSupportItems)
                     {
                         RfqCustomerSupportItemDto rfqItemDto = _mapper.Map<RfqCustomerSupportItemDto>(itemDetails);
-                        rfqItemDto.rfqCSDeliverySchedules = _mapper.Map<List<RfqCSDeliveryScheduleDto>>(itemDetails.rfqCSDeliverySchedule);
+                        rfqItemDto.rfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliveryScheduleDto>>(itemDetails.rfqCSDeliverySchedule);
                         rfqItemsDtos.Add(rfqItemDto);
                     }
                     rfqDto.rfqCustomerSupportItems = rfqItemsDtos;
@@ -622,7 +622,7 @@ namespace Tips.SalesService.Api.Controllers
                     foreach (var itemDetails in rfq.rfqCustomerSupportItems)
                     {
                         RfqCustomerSupportItemDto rfqItemDto = _mapper.Map<RfqCustomerSupportItemDto>(itemDetails);
-                        rfqItemDto.rfqCSDeliverySchedules = _mapper.Map<List<RfqCSDeliveryScheduleDto>>(itemDetails.rfqCSDeliverySchedule);
+                        rfqItemDto.rfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliveryScheduleDto>>(itemDetails.rfqCSDeliverySchedule);
                         rfqItemsDtos.Add(rfqItemDto);
                     }
                     rfqDto.rfqCustomerSupportItems = rfqItemsDtos;
@@ -793,7 +793,7 @@ namespace Tips.SalesService.Api.Controllers
                 for (int i = 0; i < rfqCustomerSupportItemDto.Count; i++)
                 {
                     RfqCustomerSupportItems rfqCSItems = _mapper.Map<RfqCustomerSupportItems>(rfqCustomerSupportItemDto[i]);
-                    rfqCSItems.rfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqCustomerSupportItemDto[i].rfqCSDeliverySchedules);
+                    rfqCSItems.rfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqCustomerSupportItemDto[i].rfqCSDeliverySchedule);
                     rfqCustomerSupportLists.Add(rfqCSItems);
 
                 }
@@ -1203,8 +1203,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var rfq = await _repository.GetRfqCustomerSupportById(id);
-                if (rfq is null)
+                var rfqcs = await _repository.GetRfqCustomerSupportById(id);
+                if (rfqcs is null)
                 {
                     _logger.LogError($"RfqCustomerSupport with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1216,7 +1216,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 
 
-                var rfqcustomerlist = _mapper.Map<RfqCustomerSupport>(rfq);
+                var rfqcustomerlist = _mapper.Map<RfqCustomerSupport>(rfqcs);
 
                 var rfqItemDto = rfqCustomerSupportUpdateDto.rfqCustomerSupportItems;
 
@@ -1224,12 +1224,11 @@ namespace Tips.SalesService.Api.Controllers
                 for (int i = 0; i < rfqItemDto.Count; i++)
                 {
                     RfqCustomerSupportItems rfqItemDetail = _mapper.Map<RfqCustomerSupportItems>(rfqItemDto[i]);
-                    rfqItemDetail.rfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqItemDto[i].rfqCSDeliverySchedules);
+                    rfqItemDetail.rfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqItemDto[i].rfqCSDeliverySchedule);
                     rfqCsItemList.Add(rfqItemDetail);
 
                 }
                 rfqcustomerlist.rfqCustomerSupportItems = rfqCsItemList;
-
                 var data = _mapper.Map(rfqCustomerSupportUpdateDto, rfqcustomerlist);
 
                 string result = await _repository.UpdateRfqCustomerSupport(data);

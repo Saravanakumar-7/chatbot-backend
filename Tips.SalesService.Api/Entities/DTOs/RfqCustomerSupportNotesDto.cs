@@ -34,7 +34,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqCustomerSupportNotesUpdateDto
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
 
         [StringLength(500, ErrorMessage = "CustomerSupportCategory can't be longer than 500 characters")]
         public string? CustomerSupportCategory { get; set; }

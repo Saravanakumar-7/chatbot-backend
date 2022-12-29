@@ -159,7 +159,7 @@ namespace Tips.SalesService.Api.Controllers
                 for (int i = 0; i < rfqSourceDto.Count; i++)
                 {
                     RfqSourcingItems sourceItemListDetail = _mapper.Map<RfqSourcingItems>(rfqSourceDto[i]);
-                    sourceItemListDetail.rfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(rfqSourceDto[i].rfqSourcingVendors);                   
+                     sourceItemListDetail.rfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(rfqSourceDto[i].rfqSourcingVendors);                   
                     sourceItemList.Add(sourceItemListDetail);
 
                 }
