@@ -11,7 +11,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 {
     public class RfqLPCostingNREConsumableDto
     {
-        public int NREId { get; set; }
+        public int Id { get; set; }
         public int? NREQty { get; set; }
         [Precision(13, 3)]
         public decimal? NRECost { get; set; }
@@ -30,7 +30,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqLPCostingNREConsumableDtoUpdate
     {
-        public int NREId { get; set; }
+       
 
         public int? NREQty { get; set; }
         [Precision(13, 3)]

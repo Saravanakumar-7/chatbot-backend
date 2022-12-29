@@ -34,7 +34,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqEnggRiskIdentificationDtoUpdate
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string? Category { get; set; }
         [StringLength(500, ErrorMessage = "Note can't be longer than 500 characters")]
 

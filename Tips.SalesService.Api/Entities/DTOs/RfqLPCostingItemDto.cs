@@ -54,7 +54,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqLPCostingItemDtoUpdate
     {
-        public int Id { get; set; }
+       
         [StringLength(500, ErrorMessage = "ItemNumber can't be longer than 500 characters")]
 
         public string? ItemNumber { get; set; }

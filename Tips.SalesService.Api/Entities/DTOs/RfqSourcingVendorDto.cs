@@ -59,12 +59,14 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }
         public string? UploadFile { get; set; }
+        public bool IsActive { get; set; } = true;
+
         [Required(ErrorMessage = "Unit is required")]
         public string Unit { get; set; }
     }
     public class RfqSourcingVendorDtoUpdate
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
 
         [StringLength(500, ErrorMessage = "Vendor can't be longer than 500 characters")]
 
@@ -92,6 +94,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }
         public string? UploadFile { get; set; }
+
         [Required(ErrorMessage = "Unit is required")]
         public string Unit { get; set; }
     }

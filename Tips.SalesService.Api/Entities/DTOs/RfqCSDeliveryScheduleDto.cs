@@ -37,7 +37,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
     public class RfqCSDeliveryScheduleUpdateDto
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
 
         public DateTime Date { get; set; }
 

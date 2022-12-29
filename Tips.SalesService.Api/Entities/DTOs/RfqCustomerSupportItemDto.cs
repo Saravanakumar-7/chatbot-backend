@@ -21,7 +21,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<RfqCSDeliveryScheduleDto>? rfqCSDeliverySchedules { get; set; }
+        public List<RfqCSDeliveryScheduleDto>? rfqCSDeliverySchedule { get; set; }
 
     }
     public class RfqCustomerSupportItemPostDto
@@ -39,12 +39,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<RfqCSDeliverySchedulePostDto>? rfqCSDeliverySchedules { get; set; }
+        public List<RfqCSDeliverySchedulePostDto>? rfqCSDeliverySchedule { get; set; }
 
     }
     public class RfqCustomerSupportItemUpdateDto
     {
-        public int Id { get; set; }
+       // public int Id { get; set; }
         public string RfqNumber { get; set; }
         public string? ItemNumber { get; set; } 
 
@@ -58,7 +58,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<RfqCSDeliveryScheduleUpdateDto>? rfqCSDeliverySchedules { get; set; }
+        public List<RfqCSDeliveryScheduleUpdateDto>? rfqCSDeliverySchedule { get; set; }
 
     }
     public class RfqCustomerSupportItemUpdateReleaseDto
@@ -81,7 +81,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<RfqCSDeliveryScheduleUpdateDto>? rfqCSDeliverySchedules { get; set; }
+        public List<RfqCSDeliveryScheduleUpdateDto>? rfqCSDeliverySchedule { get; set; }
 
     }
 }
