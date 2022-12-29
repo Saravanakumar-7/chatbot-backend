@@ -42,22 +42,22 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
-                var listOfGrin = await _repository.GetAllGrin(pagingParameter);
+                var GetallGrins = await _repository.GetAllGrin(pagingParameter);
 
                 var metadata = new
                 {
-                    listOfGrin.TotalCount,
-                    listOfGrin.PageSize,
-                    listOfGrin.CurrentPage,
-                    listOfGrin.HasNext,
-                    listOfGrin.HasPreviuos
+                    GetallGrins.TotalCount,
+                    GetallGrins.PageSize,
+                    GetallGrins.CurrentPage,
+                    GetallGrins.HasNext,
+                    GetallGrins.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
 
                 _logger.LogInfo("Returned all Grins");
-                var result = _mapper.Map<IEnumerable<GrinDto>>(listOfGrin);
+                var result = _mapper.Map<IEnumerable<GrinDto>>(GetallGrins);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Grins Successfully";
                 serviceResponse.Success = true;
@@ -83,9 +83,9 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
-                var GrinDetails = await _repository.GetGrinById(id);
+                var GrinDetailsbyId = await _repository.GetGrinById(id);
 
-                if (GrinDetails == null)
+                if (GrinDetailsbyId == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"Grin with id hasn't been found in db.";
@@ -97,7 +97,7 @@ namespace Tips.Grin.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Grin with id: {id}");
-                    var result = _mapper.Map<GrinDto>(GrinDetails);
+                    var result = _mapper.Map<GrinDto>(GrinDetailsbyId);
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned GrinById Successfully";
                     serviceResponse.Success = true;
@@ -242,8 +242,8 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
-                var deletegrin = await _repository.GetGrinById(id);
-                if (deletegrin == null)
+                var Deletegrin = await _repository.GetGrinById(id);
+                if (Deletegrin == null)
                 {
                     _logger.LogError($"Delete grin with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -252,7 +252,7 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.DeleteGrin(deletegrin);
+                string result = await _repository.DeleteGrin(Deletegrin);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -274,12 +274,11 @@ namespace Tips.Grin.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllActiveGrinNoList()
         {
-            ServiceResponse<IEnumerable<GrinNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinNoListDto>>();
+            ServiceResponse<IEnumerable<GrinNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinNumberListDto>>();
             try
             {
-                var listOfgrinno = await _repository.GetAllActiveGrinNoList();
-                //_logger.LogInfo("Returned all CustomerMaster");
-                var result = _mapper.Map<IEnumerable<GrinNoListDto>>(listOfgrinno);
+                var AllActiveGrinNo = await _repository.GetAllActiveGrinNoList();
+                var result = _mapper.Map<IEnumerable<GrinNumberListDto>>(AllActiveGrinNo);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all GrinNoList";
                 serviceResponse.Success = true;

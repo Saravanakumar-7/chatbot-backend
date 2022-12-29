@@ -229,8 +229,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var costcenter = await _repository.CostCenterRepository.GetCostCenterById(id);
-                if (costcenter == null)
+                var DeleteCostcenter = await _repository.CostCenterRepository.GetCostCenterById(id);
+                if (DeleteCostcenter == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Delete Costcenter object sent from client is null";
@@ -239,7 +239,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"Delete Costcenter with id: {id}, hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.CostCenterRepository.DeleteCostCenter(costcenter);
+                string result = await _repository.CostCenterRepository.DeleteCostCenter(DeleteCostcenter);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deleted Successfully";
@@ -254,7 +254,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeleteCostcenter action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -266,8 +266,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var Costcenter = await _repository.CostCenterRepository.GetCostCenterById(id);
-                if (Costcenter is null)
+                var CostcenterActivate = await _repository.CostCenterRepository.GetCostCenterById(id);
+                if (CostcenterActivate is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Costcenter object sent from client is null";
@@ -276,8 +276,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"Costcenter with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                Costcenter.IsActive = true;
-                string result = await _repository.CostCenterRepository.UpdateCostCenter(Costcenter);
+                CostcenterActivate.IsActive = true;
+                string result = await _repository.CostCenterRepository.UpdateCostCenter(CostcenterActivate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -302,8 +302,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var Costcenter = await _repository.CostCenterRepository.GetCostCenterById(id);
-                if (Costcenter is null)
+                var CostcenterDeactivate = await _repository.CostCenterRepository.GetCostCenterById(id);
+                if (CostcenterDeactivate is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Costcenter object sent from client is null";
@@ -312,8 +312,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"purchasegroup with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                Costcenter.IsActive = false;
-                string result = await _repository.CostCenterRepository.UpdateCostCenter(Costcenter);
+                CostcenterDeactivate.IsActive = false;
+                string result = await _repository.CostCenterRepository.UpdateCostCenter(CostcenterDeactivate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deactivated Successfully";

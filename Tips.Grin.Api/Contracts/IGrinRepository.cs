@@ -19,6 +19,6 @@ namespace Tips.Grin.Api.Contracts
         Task<string> UpdateGrin(Grins grins);
         Task<string> DeleteGrin(Grins grins);
 
-        Task<IEnumerable<GrinNoListDto>> GetAllActiveGrinNoList();
+        Task<IEnumerable<GrinNumberListDto>> GetAllActiveGrinNoList();
     }
 }

@@ -7,11 +7,11 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
 
         public int Id { get; set; }
-        public string? ItemNo { get; set; }
+        public string? ItemNumber { get; set; }
         public string? Description { get; set; }
-        public string? MftrItemNo { get; set; }
-        public string? ProjectNo { get; set; }
-        public string? ManufactureBatchNo { get; set; }
+        public string? MftrItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? ManufactureBatchNumber { get; set; }
         [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
         [Precision(18, 3)]
@@ -21,7 +21,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? POUnitPrice { get; set; }
         
-        public string? Uom { get; set; }
+        public string? UOM { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
         [Precision(18, 3)]
@@ -30,25 +30,25 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? AcceptedQty { get; set; }
         [Precision(18, 3)]
         public decimal? RejectedQty { get; set; }
-        public string unit { get; set; }
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        //public List<BinningItemsDto>? binningItems { get; set; }
-        public List<BinningLocationDto>? binningLocations { get; set; }
+      
+        public List<BinningLocationDto>? BinningLocations { get; set; }
     }
 
 
     public class BinningItemsPostDto
     {
 
-        public string? ItemNo { get; set; }
+        public string? ItemNumber { get; set; }
         public string? Description { get; set; }
-        public string? MftrItemNo { get; set; }
-        public string? ProjectNo { get; set; }
-        public string? ManufactureBatchNo { get; set; }
+        public string? MftrItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? ManufactureBatchNumber { get; set; }
         [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
         [Precision(18, 3)]
@@ -58,7 +58,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? POUnitPrice { get; set; }
         
-        public string? Uom { get; set; }
+        public string? UOM { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
         [Precision(18, 3)]
@@ -67,23 +67,19 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? AcceptedQty { get; set; }
         [Precision(18, 3)]
         public decimal? RejectedQty { get; set; }
-        public string unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-        public List<BinningLocationPostDto>? binningLocations { get; set; }
+        
+        public List<BinningLocationPostDto>? BinningLocations { get; set; }
 
     }
     public class BinningItemsUpdateDto
     {
 
         public int Id { get; set; }
-        public string? ItemNo { get; set; }
+        public string? ItemNumber { get; set; }
         public string? Description { get; set; }
-        public string? MftrItemNo { get; set; }
-        public string? ProjectNo { get; set; }
-        public string? ManufactureBatchNo { get; set; }
+        public string? MftrItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? ManufactureBatchNumber { get; set; }
         [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
         [Precision(18, 3)]
@@ -92,7 +88,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? POBalancedQty { get; set; }
         [Precision(18, 3)]
         public decimal? POUnitPrice { get; set; }
-        public string? Uom { get; set; }
+        public string? UOM { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
         [Precision(18, 3)]
@@ -101,11 +97,11 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? AcceptedQty { get; set; }
         [Precision(18, 3)]
         public decimal? RejectedQty { get; set; }
-        public string unit { get; set; }
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<BinningLocationUpdateDto>? binningLocations { get; set; }
+        public List<BinningLocationUpdateDto>? BinningLocations { get; set; }
     }
 }

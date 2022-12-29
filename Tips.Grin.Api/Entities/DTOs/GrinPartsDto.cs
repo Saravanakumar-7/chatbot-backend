@@ -26,16 +26,16 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal UnitPrice { get; set; }
 
         [Precision(13, 3)]
-        public decimal POOrderQuantity { get; set; }
+        public decimal POOrderQty { get; set; }
 
         [Precision(13, 3)]
-        public decimal POBalancedQuantity { get; set; }
+        public decimal POBalancedQty { get; set; }
 
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
 
         [Precision(13, 3)]
-        public decimal Quantity { get; set; }
+        public decimal Qty { get; set; }
 
         public string UOM { get; set; }
 
@@ -81,21 +81,21 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal UnitPrice { get; set; }
 
-        [Required(ErrorMessage = "POOrderQuantity is required")]
+        [Required(ErrorMessage = "POOrderQty is required")]
         [Precision(13, 3)]
-        public decimal POOrderQuantity { get; set; }
+        public decimal POOrderQty { get; set; }
 
-        [Required(ErrorMessage = "POBalancedQuantity is required")]
+        [Required(ErrorMessage = "POBalancedQty is required")]
         [Precision(13, 3)]
-        public decimal POBalancedQuantity { get; set; }
+        public decimal POBalancedQty { get; set; }
 
         [Required(ErrorMessage = "POUnitPrice is required")]
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
 
-        [Required(ErrorMessage = "Quantity is required")]
+        [Required(ErrorMessage = "Qty is required")]
         [Precision(13, 3)]
-        public decimal Quantity { get; set; }
+        public decimal Qty { get; set; }
 
         [Required(ErrorMessage = "UOM is required")]
         public string UOM { get; set; }
@@ -112,12 +112,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public decimal? UTGST { get; set; }
 
-        public string Unit { get; set; }
 
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
     }
     public class GrinPartsUpdateDto
     {
@@ -144,21 +139,21 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal UnitPrice { get; set; }
 
-        [Required(ErrorMessage = "POOrderQuantity is required")]
+        [Required(ErrorMessage = "POOrderQty is required")]
         [Precision(13, 3)]
-        public decimal POOrderQuantity { get; set; }
+        public decimal POOrderQty { get; set; }
 
-        [Required(ErrorMessage = "POBalancedQuantity is required")]
+        [Required(ErrorMessage = "POBalancedQty is required")]
         [Precision(13, 3)]
-        public decimal POBalancedQuantity { get; set; }
+        public decimal POBalancedQty { get; set; }
 
         [Required(ErrorMessage = "POUnitPrice is required")]
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
 
-        [Required(ErrorMessage = "Quantity is required")]
+        [Required(ErrorMessage = "Qty is required")]
         [Precision(13, 3)]
-        public decimal Quantity { get; set; }
+        public decimal Qty { get; set; }
 
         [Required(ErrorMessage = "UOM is required")]
         public string UOM { get; set; }

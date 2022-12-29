@@ -34,9 +34,9 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
-                var IQCList = await _iQCConfirmationRepository.GetAllIqcDetails();
+                var GetallIQC = await _iQCConfirmationRepository.GetAllIqcDetails();
                 _logger.LogInfo("Returned all IQCConfirmation details()s");
-                var result = _mapper.Map<IEnumerable<IQCConfirmationDto>>(IQCList);
+                var result = _mapper.Map<IEnumerable<IQCConfirmationDto>>(GetallIQC);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Successfully Returned all IQCConfirmation";
                 serviceResponse.Success = true;
@@ -61,8 +61,8 @@ namespace Tips.Grin.Api.Controllers
 
                 try
                 {
-                    var IQCList = await _iQCConfirmationRepository.GetIqcDetailsbyGrinNo(grinNumber);
-                    if (IQCList == null)
+                    var IQCbyGriNo = await _iQCConfirmationRepository.GetIqcDetailsbyGrinNo(grinNumber);
+                    if (IQCbyGriNo == null)
                     {
                         _logger.LogError($"IQCConfirmation Details with GrinNumber: {grinNumber}, hasn't been found in db.");
                         serviceResponse.Data = null;
@@ -74,7 +74,7 @@ namespace Tips.Grin.Api.Controllers
                     else
                     {
                         _logger.LogInfo($"Returned IQCConfirmation Details with id: {grinNumber}");
-                        var result = _mapper.Map<IEnumerable<IQCConfirmationDto>>(IQCList);
+                        var result = _mapper.Map<IEnumerable<IQCConfirmationDto>>(IQCbyGriNo);
                         serviceResponse.Data = result;
                         serviceResponse.Message = "Successfully Returned IQCConfirmationbyGrinNo";
                         serviceResponse.Success = true;
@@ -119,14 +119,14 @@ namespace Tips.Grin.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var IQCList = await _iQCConfirmationRepository.GetIqcDetailsbyId(id);
-                if (IQCList is null)
+                var IQCUpdate = await _iQCConfirmationRepository.GetIqcDetailsbyId(id);
+                if (IQCUpdate is null)
                 {
                     _logger.LogError($"IQCConfirmation details with id: {id}, hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
 
-                var IQCEntity = _mapper.Map(IQCConfirmationUpdateDto, IQCList);
+                var IQCEntity = _mapper.Map(IQCConfirmationUpdateDto, IQCUpdate);
 
                 string result = await _iQCConfirmationRepository.UpdateIqc(IQCEntity);
                 _logger.LogInfo(result);
@@ -175,9 +175,9 @@ namespace Tips.Grin.Api.Controllers
                 }
 
 
-                var IQCList = _mapper.Map<IQCConfirmation>(iQCConfirmationPostDto);
+                var IQCCreate = _mapper.Map<IQCConfirmation>(iQCConfirmationPostDto);
                 
-                _iQCConfirmationRepository.CreateIqc(IQCList);
+                _iQCConfirmationRepository.CreateIqc(IQCCreate);
                 _iQCConfirmationRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "IQCConfirmation Successfully Created";
@@ -230,7 +230,7 @@ namespace Tips.Grin.Api.Controllers
                 bool isAnyRecordCreated = false;
                 foreach (var iqcDetails in IqcConfirmationList)
                 {
-                    if(iqcDetails.AcceptedQunatity > 0 || iqcDetails.RejectedQunatity > 0)
+                    if(iqcDetails.AcceptedQty > 0 || iqcDetails.RejectedQty > 0)
                     {
                         _iQCConfirmationRepository.Create(iqcDetails);
                         isAnyRecordCreated = true;
@@ -275,8 +275,8 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
-                var IQCList = await _iQCConfirmationRepository.GetIqcDetailsbyId(id);
-                if (IQCList == null)
+                var IQCbyId = await _iQCConfirmationRepository.GetIqcDetailsbyId(id);
+                if (IQCbyId == null)
                 {
                     _logger.LogError($"IQCConfirmation details with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -288,7 +288,7 @@ namespace Tips.Grin.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned IQCConfirmation details with id: {id}");
-                    var result = _mapper.Map<IQCConfirmationDto>(IQCList);
+                    var result = _mapper.Map<IQCConfirmationDto>(IQCbyId);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Success";
                     serviceResponse.Success = true;
@@ -314,19 +314,19 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
-                var shopOrders = await _iQCConfirmationRepository.GetIqcDetailsbyId(id);
-                if (shopOrders == null)
+                var IQCDelete = await _iQCConfirmationRepository.GetIqcDetailsbyId(id);
+                if (IQCDelete == null)
                 {
-                    _logger.LogError($"Confirmation with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"IQCDelete with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"IQCConfirmation with id hasn't been found in db.";
+                    serviceResponse.Message = $"IQCDelete with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
-                shopOrders.IsDeleted = true;
-                string result = await _iQCConfirmationRepository.UpdateIqc(shopOrders);
+                IQCDelete.IsDeleted = true;
+                string result = await _iQCConfirmationRepository.UpdateIqc(IQCDelete);
                 serviceResponse.Message = "IQCConfirmation Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -343,42 +343,6 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-        /*
-        [HttpPost]
-        public async Task<IActionResult> CreateAllIqc([FromBody] IQCConfirmationPostDto iQCConfirmationPostDto)
-        {
-            ServiceResponse<IQCConfirmationPostDto> serviceResponse = new ServiceResponse<IQCConfirmationPostDto>();
-
-            try
-            {
-                var bank = await _iQCConfirmationRepository.GetBankById(id);
-                if (bank is null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Bank object sent from client is null";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"bank with id: {id}, hasn't been found in db.");
-                    return BadRequest(serviceResponse);
-                }
-                bank.IsActive = false;
-                string result = await _iQCConfirmationRepository.UpdateBank(bank);
-                _logger.LogInfo(result);
-                _iQCConfirmationRepository.SaveAsync();
-                serviceResponse.Message = "Deactivated Successfully";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside Deactivate Bank action: {ex.Message}");
-                return StatusCode(500, serviceResponse);
-            }
-        }*/
+      
     }
 }

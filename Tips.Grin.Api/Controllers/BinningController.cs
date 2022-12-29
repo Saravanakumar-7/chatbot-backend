@@ -33,12 +33,12 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
-                var binningList = await _binningRepository.GetAllBinningDetails();
+                var GetallBinnings = await _binningRepository.GetAllBinningDetails();
 
                 _logger.LogInfo("Returned all Binning details()s");
-                var result = _mapper.Map<IEnumerable<BinningDto>>(binningList);
+                var result = _mapper.Map<IEnumerable<BinningDto>>(GetallBinnings);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Successfully Returned BinningDetails";
+                serviceResponse.Message = "Success";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -61,12 +61,12 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
-                var binningList = await _binningRepository.GetBinningDetailsByGrinNo(grinNo);
-                if (binningList == null)
+                var BinningsByGrinNo = await _binningRepository.GetBinningDetailsByGrinNo(grinNo);
+                if (BinningsByGrinNo == null)
                 {
                     _logger.LogError($"Binning Details with GrinNumber: {grinNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Binning Details with GrinNumber hasn't been found in db.";
+                    serviceResponse.Message = $"Binning Details with GrinNumber: {grinNo}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
@@ -74,9 +74,9 @@ namespace Tips.Grin.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Binning Details with id: {grinNo}");
-                    var result = _mapper.Map<IEnumerable<BinningDto>>(binningList);
+                    var result = _mapper.Map<IEnumerable<BinningDto>>(BinningsByGrinNo);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Successfully Returned BinningDetailsByGrinNo";
+                    serviceResponse.Message = "Success";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);
@@ -94,9 +94,9 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBinning(int id, [FromBody] BinningUpdateDto BinningUpdateDto)
+        public async Task<IActionResult> UpdateBinning(int id, [FromBody] BinningDto BinningUpdateDto)
         {
-            ServiceResponse<BinningUpdateDto> serviceResponse = new ServiceResponse<BinningUpdateDto>();
+            ServiceResponse<BinningDto> serviceResponse = new ServiceResponse<BinningDto>();
 
             try
             {
@@ -119,8 +119,8 @@ namespace Tips.Grin.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var BinningList = await _binningRepository.GetBinningDetailsbyId(id);
-                if (BinningList is null)
+                var UpdateBinnings = await _binningRepository.GetBinningDetailsbyId(id);
+                if (UpdateBinnings is null)
                 {
                     _logger.LogError($"Binning details with id: {id}, hasn't been found in db.");
                     return NotFound(serviceResponse);
@@ -128,27 +128,27 @@ namespace Tips.Grin.Api.Controllers
 
                 var binningList = _mapper.Map<Binning>(BinningUpdateDto);
 
-                var binningitemdto = BinningUpdateDto.binningItems;
+                var binningitemdto = BinningUpdateDto.BinningItems;
 
                 var binningItemList = new List<BinningItems>();
                 for (int i = 0; i < binningitemdto.Count; i++)
                 {
                     BinningItems binningItemDetail = _mapper.Map<BinningItems>(binningitemdto[i]);
-                    binningItemDetail.binningLocations = _mapper.Map<List<BinningLocation>>(binningitemdto[i].binningLocations);
+                    binningItemDetail.BinningLocations = _mapper.Map<List<BinningLocation>>(binningitemdto[i].BinningLocations);
                     binningItemList.Add(binningItemDetail);
 
                 }
-                var data = _mapper.Map(BinningUpdateDto, BinningList);
+                var data = _mapper.Map(BinningUpdateDto, UpdateBinnings);
 
-                data.binningItems = binningItemList;
+                data.BinningItems = binningItemList;
 
-                var BinningEntity = _mapper.Map(BinningUpdateDto, BinningList);
+                var BinningEntity = _mapper.Map(BinningUpdateDto, UpdateBinnings);
 
                 string result = await _binningRepository.UpdateBinning(BinningEntity);
                 _logger.LogInfo(result);
                 _binningRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Binning Updated Successfully";
+                serviceResponse.Message = "Update Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -190,23 +190,23 @@ namespace Tips.Grin.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var binningList = _mapper.Map<Binning>(binningPostDto);
-                var binningsDto = binningPostDto.binningItems;
+                var BinningCreation = _mapper.Map<Binning>(binningPostDto);
+                var binningsDto = binningPostDto.BinningItems;
 
                 var binningItemList = new List<BinningItems>();
                 for (int i = 0; i < binningsDto.Count; i++)
                 {
                     BinningItems binningItemListDetail = _mapper.Map<BinningItems>(binningsDto[i]);
-                    binningItemListDetail.binningLocations = _mapper.Map<List<BinningLocation>>(binningsDto[i].binningLocations);
+                    binningItemListDetail.BinningLocations = _mapper.Map<List<BinningLocation>>(binningsDto[i].BinningLocations);
                     binningItemList.Add(binningItemListDetail);
 
                 }
-                binningList.binningItems = binningItemList;
+                BinningCreation.BinningItems = binningItemList;
 
-                _binningRepository.CreateBinning(binningList);
+                _binningRepository.CreateBinning(BinningCreation);
                 _binningRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Binning Successfully Created";
+                serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("BinningById",serviceResponse);
@@ -232,12 +232,12 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
-                var binningList = await _binningRepository.GetBinningDetailsbyId(id);
-                if (binningList == null)
+                var BinningsById = await _binningRepository.GetBinningDetailsbyId(id);
+                if (BinningsById == null)
                 {
                     _logger.LogError($"Binning details with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Binning details with id hasn't been found in db.";
+                    serviceResponse.Message = $"Binning details with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
@@ -245,23 +245,23 @@ namespace Tips.Grin.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Binnings with id: {id}");
-                    //var result = _mapper.Map<BinningDto>(rfqsourcing);
-                    BinningDto binningDto = _mapper.Map<BinningDto>(binningList);//Main model mapping
+                    
+                    BinningDto binningDto = _mapper.Map<BinningDto>(BinningsById);//Main model mapping
 
                     //below mapping is child under child  
 
                     List<BinningItemsDto> binningItemDtos = new List<BinningItemsDto>();
 
-                    foreach (var binningitemDetails in binningList.binningItems)
+                    foreach (var binningitemDetails in BinningsById.BinningItems)
                     {
                         BinningItemsDto binningItemDto = _mapper.Map<BinningItemsDto>(binningitemDetails);
-                        binningItemDto.binningLocations = _mapper.Map<List<BinningLocationDto>>(binningitemDetails.binningLocations);
+                        binningItemDto.BinningLocations = _mapper.Map<List<BinningLocationDto>>(binningitemDetails.BinningLocations);
                         binningItemDtos.Add(binningItemDto);
                     }
 
-                    binningDto.binningItems = binningItemDtos;
+                    binningDto.BinningItems = binningItemDtos;
                     serviceResponse.Data = binningDto;
-                    serviceResponse.Message = $"Returned BinningbyId";
+                    serviceResponse.Message = $"Returned BinningbyId with id: {id}";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -285,20 +285,21 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
-                var shopOrders = await _binningRepository.GetBinningDetailsbyId(id);
-                if (shopOrders == null)
+                var BinningDelete = await _binningRepository.GetBinningDetailsbyId(id);
+                if (BinningDelete == null)
                 {
                     _logger.LogError($"Confirmation with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Binning with id hasn't been found in db.";
+                    serviceResponse.Message = $"Binning with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
-                shopOrders.IsDeleted = true;
-                string result = await _binningRepository.UpdateBinning(shopOrders);
-                serviceResponse.Message = "Binning Deleted Successfully";
+                BinningDelete.IsDeleted = true;
+                string result = await _binningRepository.UpdateBinning(BinningDelete);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Delete Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

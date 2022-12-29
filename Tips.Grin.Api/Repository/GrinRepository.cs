@@ -27,7 +27,6 @@ namespace Tips.Grin.Api.Repository
             grins.CreatedOn = DateTime.Now;
             grins.LastModifiedBy = "Admin";
             grins.LastModifiedOn = DateTime.Now;
-            //grins.Unit = "Bangalore";
 
             var result = await Create(grins);
             return result.Id;
@@ -46,35 +45,35 @@ namespace Tips.Grin.Api.Repository
             return GrinDetails;
         }
 
-        public async Task<IEnumerable<GrinNoListDto>> GetAllActiveGrinNoList()
+        public async Task<IEnumerable<GrinNumberListDto>> GetAllActiveGrinNoList()
         {
-            IEnumerable<GrinNoListDto> GrinNoDetails = await _tipsGrinDbContext.Grins
-                                .Select(x => new GrinNoListDto()
+            IEnumerable<GrinNumberListDto> AllActiveGrinNoDetails = await _tipsGrinDbContext.Grins
+                                .Select(x => new GrinNumberListDto()
                                 {                                  
 
                                     Id= x.Id,
                                 })
                               .ToListAsync();
 
-            return GrinNoDetails;
+            return AllActiveGrinNoDetails;
         }
 
         public async Task<PagedList<Grins>> GetAllGrin(PagingParameter pagingParameter)
         {
-            var grinDetails = PagedList<Grins>.ToPagedList(FindAll()
+            var GetallGrinDetails = PagedList<Grins>.ToPagedList(FindAll()
                                 .Include(t => t.GrinParts)
                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return grinDetails;
+            return GetallGrinDetails;
         }
 
         public async Task<Grins> GetGrinById(int id)
         {
-            var grinDetails = await _tipsGrinDbContext.Grins.Where(x => x.Id == id)
+            var GrinDetailsbyId = await _tipsGrinDbContext.Grins.Where(x => x.Id == id)
                                .Include(x => x.GrinParts)
                                .FirstOrDefaultAsync();
 
-            return grinDetails;
+            return GrinDetailsbyId;
         }
          
 

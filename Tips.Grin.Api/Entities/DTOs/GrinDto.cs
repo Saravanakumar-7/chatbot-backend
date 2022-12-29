@@ -20,7 +20,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public string? InvoiceValue { get; set; }
 
-        public string? PoNumber { get; set; }
+        public string? PONumber { get; set; }
 
         public DateTime? InvoiceDate { get; set; }
 
@@ -60,7 +60,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public string? InvoiceValue { get; set; }
 
-        public string? PoNumber { get; set; }
+        public string? PONumber { get; set; }
 
         public DateTime? InvoiceDate { get; set; }
 
@@ -79,12 +79,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public int? TotalInvoice { get; set; }
 
         public string? GrinDocuments { get; set; }
-        public string Unit { get; set; }
-
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+     
 
         public List<GrinPartsPostDto>? GrinParts { get; set; }
 
@@ -101,7 +96,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public string? InvoiceValue { get; set; }
 
-        public string? PoNumber { get; set; }
+        public string? PONumber { get; set; }
 
         public DateTime? InvoiceDate { get; set; }
 
@@ -130,7 +125,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
 
     }
-    public class GrinNoListDto
+    public class GrinNumberListDto
     {
         public int Id { get; set; }
         
