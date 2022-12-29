@@ -8,6 +8,7 @@ using System.Net;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
 using Tips.Grin.Api.Entities.DTOs;
+using Tips.Grin.Api.Repository;
 
 namespace Tips.Grin.Api.Controllers
 {
@@ -37,7 +38,7 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogInfo("Returned all IQCConfirmation details()s");
                 var result = _mapper.Map<IEnumerable<IQCConfirmationDto>>(IQCList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Successfully Returned all IQCConfirmation";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -65,7 +66,7 @@ namespace Tips.Grin.Api.Controllers
                     {
                         _logger.LogError($"IQCConfirmation Details with GrinNumber: {grinNumber}, hasn't been found in db.");
                         serviceResponse.Data = null;
-                        serviceResponse.Message = $"IQCConfirmation Details with GrinNumber: {grinNumber}, hasn't been found in db.";
+                        serviceResponse.Message = $"IQCConfirmation Details with GrinNumber hasn't been found in db.";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.NotFound;
                         return NotFound();
@@ -75,7 +76,7 @@ namespace Tips.Grin.Api.Controllers
                         _logger.LogInfo($"Returned IQCConfirmation Details with id: {grinNumber}");
                         var result = _mapper.Map<IEnumerable<IQCConfirmationDto>>(IQCList);
                         serviceResponse.Data = result;
-                        serviceResponse.Message = "Success";
+                        serviceResponse.Message = "Successfully Returned IQCConfirmationbyGrinNo";
                         serviceResponse.Success = true;
                         serviceResponse.StatusCode = HttpStatusCode.OK;
                         return Ok(result);
@@ -131,7 +132,7 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogInfo(result);
                 _iQCConfirmationRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = "IQCConfirmation Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -179,7 +180,7 @@ namespace Tips.Grin.Api.Controllers
                 _iQCConfirmationRepository.CreateIqc(IQCList);
                 _iQCConfirmationRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "IQCConfirmation Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("IQCConfirmationById", "Successfully Created");
@@ -279,7 +280,7 @@ namespace Tips.Grin.Api.Controllers
                 {
                     _logger.LogError($"IQCConfirmation details with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"IQCConfirmation details with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"IQCConfirmation details with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
@@ -318,7 +319,7 @@ namespace Tips.Grin.Api.Controllers
                 {
                     _logger.LogError($"Confirmation with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"IQCConfirmation with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"IQCConfirmation with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
@@ -326,8 +327,7 @@ namespace Tips.Grin.Api.Controllers
 
                 shopOrders.IsDeleted = true;
                 string result = await _iQCConfirmationRepository.UpdateIqc(shopOrders);
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Delete Successfully";
+                serviceResponse.Message = "IQCConfirmation Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
