@@ -33,9 +33,6 @@ namespace Entities.DTOs
        
         [StringLength(100, ErrorMessage = "ReleaseNote can't be longer than 100 characters")]
         public string ReleaseNote { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+       
     }
 }

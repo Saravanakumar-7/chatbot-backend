@@ -15,10 +15,6 @@ namespace Entities.DTOs
         public string? VendorCode { get; set; }
         public string? VendorName { get; set; }
         public string? ShareOfBusiness { get; set; }
-
-        //[ForeignKey(nameof(ItemMaster))]
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -31,13 +27,7 @@ namespace Entities.DTOs
         public string? VendorCode { get; set; }
         public string? VendorName { get; set; }
         public string? ShareOfBusiness { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
-
-        //[ForeignKey(nameof(ItemMaster))]
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
+      
     }
 
     public class ItemMasterApprovedVendorDtoUpdate
@@ -51,9 +41,7 @@ namespace Entities.DTOs
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
         public string Unit { get; set; }
 
-        //[ForeignKey(nameof(ItemMaster))]
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
+       
     }
 
 }

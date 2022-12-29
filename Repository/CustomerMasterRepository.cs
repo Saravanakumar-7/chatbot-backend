@@ -22,8 +22,9 @@ namespace Repository
         {
             customerMaster.CreatedBy = "Admin";
             customerMaster.CreatedOn = DateTime.Now;
-            var result = await Create(customerMaster);
             customerMaster.Unit = "Bangalore";
+            var result = await Create(customerMaster);
+            
             return result.Id;
         }
 
@@ -36,7 +37,7 @@ namespace Repository
 
         public async Task<IEnumerable<CustomerIdNameListDto>> GetAllActiveCustomerIdNameList()
         {
-            IEnumerable<CustomerIdNameListDto> customerDetails = await TipsMasterDbContext.CustomerMasters
+            IEnumerable<CustomerIdNameListDto> AllActiveCustomerIDName = await TipsMasterDbContext.CustomerMasters
                                 .Select(x => new CustomerIdNameListDto() 
                                 {
                                     Id = x.Id,
@@ -45,18 +46,18 @@ namespace Repository
                                 })
                               .ToListAsync();   
 
-            return customerDetails;
+            return AllActiveCustomerIDName;
         }
 
         public async Task<IEnumerable<CustomerMaster>> GetAllActiveCustomerMaster()
         {
-            var customerDetails = await FindAll().ToListAsync();
-            return customerDetails;
+            var AllActiveCustomermaster = await FindAll().ToListAsync();
+            return AllActiveCustomermaster;
         }
 
         public async Task<PagedList<CustomerMaster>> GetAllCustomerMaster(PagingParameter pagingParameter)
         {
-            var customerDetails = PagedList<CustomerMaster>.ToPagedList(FindAll()
+            var GetallCustomerDetails = PagedList<CustomerMaster>.ToPagedList(FindAll()
                                 .Include(t => t.CustomerAddresses)
                                 .Include(x => x.CustomerShippingAddresses)
                                 .Include(m => m.CustomerContacts)
@@ -65,12 +66,12 @@ namespace Repository
                                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
-            return customerDetails;
+            return GetallCustomerDetails;
         }         
 
         public async Task<CustomerMaster> GetCustomerMasterById(int id)
         {
-            var customerDetails = await TipsMasterDbContext.CustomerMasters.Where(x => x.Id == id)
+            var CustomerDetailsbyId = await TipsMasterDbContext.CustomerMasters.Where(x => x.Id == id)
                               .Include(x => x.CustomerAddresses)
                               .Include(x => x.CustomerShippingAddresses)
                               .Include(m => m.CustomerContacts)
@@ -78,7 +79,7 @@ namespace Repository
                               .Include(v => v.CustomerMasterHeadCountings)
                               .FirstOrDefaultAsync();
 
-            return customerDetails;
+            return CustomerDetailsbyId;
         }
 
         public async Task<string> UpdateCustomerMaster(CustomerMaster customerMaster)

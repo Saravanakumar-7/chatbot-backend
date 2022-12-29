@@ -33,20 +33,20 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<IEnumerable<CompanyMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<CompanyMasterDto>>();
             try
             {
-                var listOfCompanyMaster = await _repository.CompanyMasterRepository.GetAllCompanyMaster(pagingParameter);
+                var GetallCompanyMaster = await _repository.CompanyMasterRepository.GetAllCompanyMaster(pagingParameter);
                 var metadata = new
                 {
-                    listOfCompanyMaster.TotalCount,
-                    listOfCompanyMaster.PageSize,
-                    listOfCompanyMaster.CurrentPage,
-                    listOfCompanyMaster.HasNext,
-                    listOfCompanyMaster.HasPreviuos
+                    GetallCompanyMaster.TotalCount,
+                    GetallCompanyMaster.PageSize,
+                    GetallCompanyMaster.CurrentPage,
+                    GetallCompanyMaster.HasNext,
+                    GetallCompanyMaster.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all CompanyMaster");
-                var result = _mapper.Map<IEnumerable<CompanyMasterDto>>(listOfCompanyMaster);
+                var result = _mapper.Map<IEnumerable<CompanyMasterDto>>(GetallCompanyMaster);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all CompanyMasters Successfully";
                 serviceResponse.Success = true;
@@ -71,9 +71,9 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<CompanyMasterDto> serviceResponse = new ServiceResponse<CompanyMasterDto>();
             try
             {
-                var CompanyMasterDetails = await _repository.CompanyMasterRepository.GetCompanyMasterById(id);
+                var CompanyMasterbyId = await _repository.CompanyMasterRepository.GetCompanyMasterById(id);
 
-                if (CompanyMasterDetails == null)
+                if (CompanyMasterbyId == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"CompanyMaster with id: {id}, hasn't been found in db.";
@@ -85,7 +85,7 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned CompanyMaster with id: {id}");
-                    var result = _mapper.Map<CompanyMasterDto>(CompanyMasterDetails);
+                    var result = _mapper.Map<CompanyMasterDto>(CompanyMasterbyId);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned CompanyMaster with id Successfully";
                     serviceResponse.Success = true;
@@ -149,7 +149,7 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CompanyMaster action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -235,8 +235,8 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<CompanyMasterDto> serviceResponse = new ServiceResponse<CompanyMasterDto>();
             try
             {
-                var deleteCompany = await _repository.CompanyMasterRepository.GetCompanyMasterById(id);
-                if (deleteCompany == null)
+                var DeleteCompanymaster = await _repository.CompanyMasterRepository.GetCompanyMasterById(id);
+                if (DeleteCompanymaster == null)
                 {
                     _logger.LogError($"Delete Company with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -245,7 +245,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.CompanyMasterRepository.DeleteCompanyMaster(deleteCompany);
+                string result = await _repository.CompanyMasterRepository.DeleteCompanyMaster(DeleteCompanymaster);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
 
@@ -257,7 +257,7 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeleteCompanymaster action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -272,9 +272,8 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<IEnumerable<CompanyIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<CompanyIdNameListDto>>();
             try
             {
-                var listOfCompanyMaster = await _repository.CompanyMasterRepository.GetAllActiveCompanyIdNameList();
-                //_logger.LogInfo("Returned all CustomerMaster");
-                var result = _mapper.Map<IEnumerable<CompanyIdNameListDto>>(listOfCompanyMaster);
+                var AllActiveCompanymasterIDName = await _repository.CompanyMasterRepository.GetAllActiveCompanyIdNameList();
+                var result = _mapper.Map<IEnumerable<CompanyIdNameListDto>>(AllActiveCompanymasterIDName);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Success";
                 serviceResponse.Success = true;

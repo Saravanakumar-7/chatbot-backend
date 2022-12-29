@@ -20,8 +20,9 @@ namespace Repository
         {
             department.CreatedBy = "Admin";
             department.CreatedOn = DateTime.Now;
-            var result = await Create(department);
             department.Unit = "Bangalore";
+            var result = await Create(department);
+            
             return result.Id;
         }
 
@@ -34,22 +35,22 @@ namespace Repository
 
         public async Task<IEnumerable<Department>> GetAllActiveDepartment()
         {
-            var Department = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return Department;
+            var AllActiveDepartment = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveDepartment;
         }
 
         public async Task<IEnumerable<Department>> GetAllDepartment()
         {
-            var Departments= await FindAll().ToListAsync();
+            var GetallDepartments= await FindAll().ToListAsync();
 
-            return Departments;
+            return GetallDepartments;
         }
 
         public async Task<Department> GetDepartmentById(int id)
         {
-            var department = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var DepartmentbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return department;
+            return DepartmentbyId;
         }
 
         public async Task<string> UpdateDepartment(Department department)

@@ -20,8 +20,9 @@ namespace Repository
         {
             locations.CreatedBy = "Admin";
             locations.CreatedOn = DateTime.Now;
-            var result = await Create(locations);
             locations.Unit = "Bangalore";
+            var result = await Create(locations);
+
             return result.Id;
         }
 
@@ -34,21 +35,21 @@ namespace Repository
 
         public async Task<IEnumerable<Locations>> GetAllActiveLocations()
         {
-            var locationsList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return locationsList;
+            var AllActivelocations = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            return AllActivelocations;
         }
 
         public async Task<IEnumerable<Locations>> GetAllLocations()
         {
 
-            var locationsList = await FindAll().ToListAsync();
-            return locationsList;
+            var GetallLocations = await FindAll().ToListAsync();
+            return GetallLocations;
         }
 
         public async Task<Locations> GetLocationsById(int id)
         {
-            var locationsList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-            return locationsList;
+            var LocationsbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return LocationsbyId;
         }
 
         public async Task<string> UpdateLocations(Locations locations)

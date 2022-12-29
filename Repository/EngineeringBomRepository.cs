@@ -41,31 +41,31 @@ namespace Repository
 
         public async Task<IEnumerable<EnggBom>> GetAllActiveEnggBom()
         {
-            var bomDetails = await FindAll().ToListAsync();
-            return bomDetails;
+            var AllActiveEnggBomDetails = await FindAll().ToListAsync();
+            return AllActiveEnggBomDetails;
         }
 
         public async Task<PagedList<EnggBom>> GetAllEnggBOM(PagingParameter pagingParameter)
         {
 
 
-            var bomDetails = PagedList<EnggBom>.ToPagedList(FindAll()
+            var GetallEnggbomDetails = PagedList<EnggBom>.ToPagedList(FindAll()
                .OrderBy(on => on.BOMId), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
-            return bomDetails;
+            return GetallEnggbomDetails;
         }
 
         public async Task<EnggBom> GetEnggBomById(int id)
         {
-            var bomDetails = await _tipsMasterDbContext.EnggBoms.Where(x => x.BOMId == id)
+            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.BOMId == id)
                               .Include(t => t.EnggChildItems)
                                 .ThenInclude(x => x.EnggAlternates)
                                 .Include(m => m.EnggChildItems)
                                 .ThenInclude(i => i.NREConsumable)
                               .FirstOrDefaultAsync();
 
-            return bomDetails;
+            return EnggBomDetailsbyId;
         }
 
         public async Task<string> UpdateEnggBom(EnggBom enggBom)
@@ -105,23 +105,23 @@ namespace Repository
 
         public async Task<IEnumerable<ReleaseEnggBom>> GetAllActiveReleaseEnggBom()
         {
-            var releaseEnggBomDetails = await FindAll().ToListAsync();
-            return releaseEnggBomDetails;
+            var AllActiveReleaseEnggBomDetails = await FindAll().ToListAsync();
+            return AllActiveReleaseEnggBomDetails;
         }
 
         public async Task<PagedList<ReleaseEnggBom>> GetAllReleaseEnggBom(PagingParameter pagingParameter)
         {
-            var releaseEnggBomDetails = PagedList<ReleaseEnggBom>.ToPagedList(FindAll()
+            var GetallReleaseEnggBomDetails = PagedList<ReleaseEnggBom>.ToPagedList(FindAll()
               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
-            return releaseEnggBomDetails;
+            return GetallReleaseEnggBomDetails;
         }
 
         public async Task<ReleaseEnggBom> GetReleaseEnggBomById(int id)
         {
-            var releaseEnggBomDetails = await _tipsMasterDbContext.ReleaseEnggBoms.Where(x => x.Id == id).FirstOrDefaultAsync();
-            return releaseEnggBomDetails;
+            var ReleaseEnggBomDetailsbyId = await _tipsMasterDbContext.ReleaseEnggBoms.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return ReleaseEnggBomDetailsbyId;
         }
 
         public async Task<string> UpdateReleaseEnggBom(ReleaseEnggBom releaseEnggBom)
@@ -198,23 +198,23 @@ namespace Repository
 
         public async Task<IEnumerable<EnggBomGroup>> GetAllActiveEnggBomGroup()
         {
-            var enggbomGroupDetails = await FindAll().ToListAsync();
-            return enggbomGroupDetails;
+            var AllActiveEnggbomGroupDetails = await FindAll().ToListAsync();
+            return AllActiveEnggbomGroupDetails;
         }
 
         public async Task<PagedList<EnggBomGroup>> GetAllEnggBomGroup(PagingParameter pagingParameter)
         {
-            var enggbomGroupDetails = PagedList<EnggBomGroup>.ToPagedList(FindAll()
+            var GetallEnggbomGroupDetails = PagedList<EnggBomGroup>.ToPagedList(FindAll()
              .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
-            return enggbomGroupDetails;
+            return GetallEnggbomGroupDetails;
         }
 
         public async Task<EnggBomGroup> GetEnggBomGroupById(int id)
         {
-            var enggbomGroupDetails = await _tipsMasterDbContext.BomGroups.Where(x => x.Id == id).FirstOrDefaultAsync();
-            return enggbomGroupDetails;
+            var EnggbomGroupDetailsbyId = await _tipsMasterDbContext.BomGroups.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return EnggbomGroupDetailsbyId;
         }
 
         public async Task<string> UpdateEnggBomGroup(EnggBomGroup enggbomGroup)
@@ -253,21 +253,21 @@ namespace Repository
 
         public async Task<IEnumerable<EnggCustomField>> GetAllActiveEnggCustomFields()
         {
-            var enggcustomFieldsDetails = await FindAll().ToListAsync();
-            return enggcustomFieldsDetails;
+            var AllActiveEnggcustomFieldsDetails = await FindAll().ToListAsync();
+            return AllActiveEnggcustomFieldsDetails;
         }
 
         public async Task<PagedList<EnggCustomField>> GetAllEnggCustomFields(PagingParameter pagingParameter)
         {
-            var enggcustomFieldsDetails = PagedList<EnggCustomField>.ToPagedList(FindAll()
+            var GetallEnggcustomFieldsDetails = PagedList<EnggCustomField>.ToPagedList(FindAll()
             .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return enggcustomFieldsDetails;
+            return GetallEnggcustomFieldsDetails;
         }
 
         public async Task<EnggCustomField> GetEnggCustomFieldById(int id)
         {
-            var enggcustomFieldsDetails = await _tipsMasterDbContext.CustomFields.Where(x => x.Id == id).FirstOrDefaultAsync();
-            return enggcustomFieldsDetails;
+            var EnggcustomFieldsDetailsbyId = await _tipsMasterDbContext.CustomFields.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return EnggcustomFieldsDetailsbyId;
         }
 
         public async Task<string> UpdateEnggCustomField(EnggCustomField enggcustomFields)

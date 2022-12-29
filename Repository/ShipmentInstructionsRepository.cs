@@ -20,8 +20,9 @@ namespace Repository
         {
             shipmentInstructions.CreatedBy = "Admin";
             shipmentInstructions.CreatedOn = DateTime.Now;
-            var result = await Create(shipmentInstructions);
             shipmentInstructions.Unit = "Bangalore";
+            var result = await Create(shipmentInstructions);
+
             return result.Id;
         }
 
@@ -34,20 +35,20 @@ namespace Repository
 
         public async Task<IEnumerable<ShipmentInstructions>> GetAllActiveShipmentInstructions()
         {
-            var shipmentInstructionsList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return shipmentInstructionsList;
+            var AllActiveShipmentInstructions= await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            return AllActiveShipmentInstructions;
         }
 
         public async Task<IEnumerable<ShipmentInstructions>> GetAllShipmentInstructions()
         {
-            var shipmentInstructionsList = await FindAll().ToListAsync();
-            return shipmentInstructionsList;
+            var GetallshipmentInstructions = await FindAll().ToListAsync();
+            return GetallshipmentInstructions;
         }
 
         public async Task<ShipmentInstructions> GetShipmentInstructionsById(int id)
         {
-            var shipmentInstructionsList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-            return shipmentInstructionsList;
+            var ShipmentInstructionsbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return ShipmentInstructionsbyId;
         }
 
         public async Task<string> UpdateShipmentInstructions(ShipmentInstructions shipmentInstructions)

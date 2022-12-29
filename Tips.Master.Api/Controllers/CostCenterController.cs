@@ -31,9 +31,9 @@ namespace Tips.Master.Api.Controllers
             try
             {
 
-                var CostCenterList = await _repository.CostCenterRepository.GetAllCostCenters();
+                var GetallCostCenters = await _repository.CostCenterRepository.GetAllCostCenters();
                 _logger.LogInfo("Returned all CostCenters");
-                var result = _mapper.Map<IEnumerable<CostCenterDto>>(CostCenterList);
+                var result = _mapper.Map<IEnumerable<CostCenterDto>>(GetallCostCenters);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all CostCenters Successfully";
                 serviceResponse.Success = true;
@@ -58,9 +58,9 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var CostCenters = await _repository.CostCenterRepository.GetAllActiveCostCenters();
+                var AllActiveCostCenters = await _repository.CostCenterRepository.GetAllActiveCostCenters();
                 _logger.LogInfo("Returned all CostCenters");
-                var result = _mapper.Map<IEnumerable<CostCenterDto>>(CostCenters);
+                var result = _mapper.Map<IEnumerable<CostCenterDto>>(AllActiveCostCenters);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Active CostCenters Successfully";
                 serviceResponse.Success = true;
@@ -87,8 +87,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var CostCenter = await _repository.CostCenterRepository.GetCostCenterById(id);
-                if (CostCenter == null)
+                var CostCenterbyId = await _repository.CostCenterRepository.GetCostCenterById(id);
+                if (CostCenterbyId == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"CostCenter with id: {id}, hasn't been found in db.";
@@ -101,7 +101,7 @@ namespace Tips.Master.Api.Controllers
                 {
 
                     _logger.LogInfo($"Returned CostCenter with id: {id}");
-                    var result = _mapper.Map<CostCenterDto>(CostCenter);
+                    var result = _mapper.Map<CostCenterDto>(CostCenterbyId);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned CostCenter with id Successfully";
                     serviceResponse.Success = true;
@@ -134,7 +134,6 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Costcenter object sent from client is null.");
-                    //return BadRequest("PurchaseGroup object is null");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
@@ -144,11 +143,10 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid Costcenter object sent from client.");
-                    //return BadRequest("Invalid model object");
                     return BadRequest(serviceResponse);
                 }
-                var costcenter = _mapper.Map<CostCenter>(costCenterDtoPost);
-                _repository.CostCenterRepository.CreateCostCenter(costcenter);
+                var CreateCostcenter = _mapper.Map<CostCenter>(costCenterDtoPost);
+                _repository.CostCenterRepository.CreateCostCenter(CreateCostcenter);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
@@ -193,8 +191,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid Update Costcenter object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var costcenter = await _repository.CostCenterRepository.GetCostCenterById(id);
-                if (costcenter is null)
+                var UpdateCostcenter = await _repository.CostCenterRepository.GetCostCenterById(id);
+                if (UpdateCostcenter is null)
                 {
                     _logger.LogError($"Update costcenter with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -203,8 +201,8 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(costCenterDtoUpdate, costcenter);
-                string result = await _repository.CostCenterRepository.UpdateCostCenter(costcenter);
+                _mapper.Map(costCenterDtoUpdate, UpdateCostcenter);
+                string result = await _repository.CostCenterRepository.UpdateCostCenter(UpdateCostcenter);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;

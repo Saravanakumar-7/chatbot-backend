@@ -20,8 +20,9 @@ namespace Repository
         {
             costCenter.CreatedBy = "Admin";
             costCenter.CreatedOn = DateTime.Now;
-            var result = await Create(costCenter);
             costCenter.Unit = "Bangalore";
+            var result = await Create(costCenter);
+            
             return result.Id;
         }
 
@@ -35,24 +36,24 @@ namespace Repository
 
         public async Task<IEnumerable<CostCenter>> GetAllActiveCostCenters()
         {
-            var costcenterList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return costcenterList;
+            var AllActiveCostcenters = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveCostcenters;
         }
 
         public async Task<IEnumerable<CostCenter>> GetAllCostCenters()
         {
 
-            var costcenterList = await FindAll().ToListAsync();
+            var GetallCostcenters = await FindAll().ToListAsync();
 
-            return costcenterList;
+            return GetallCostcenters;
         }
 
         public async Task<CostCenter> GetCostCenterById(int id)
         {
 
-            var costCenter = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var CostCenterbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return costCenter;
+            return CostCenterbyId;
         }
 
         public async Task<string> UpdateCostCenter(CostCenter costCenter)

@@ -21,8 +21,9 @@ namespace Repository
         {
             purchaseGroup.CreatedBy = "Admin";
             purchaseGroup.CreatedOn = DateTime.Now;
-            var result = await Create(purchaseGroup);
             purchaseGroup.Unit = "Bangalore";
+            var result = await Create(purchaseGroup);
+
             return result.Id;
         }
 
@@ -35,23 +36,23 @@ namespace Repository
 
         public async Task<IEnumerable<PurchaseGroup>> GetAllActivePurchaseGroups()
         {
-            var purchaseGroups = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return purchaseGroups;
+            var AllActivepurchaseGroups = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActivepurchaseGroups;
         }
 
         public async Task<IEnumerable<PurchaseGroup>> GetAllPurchaseGroups()
         {
-            var purchaseGroups = await FindAll().ToListAsync();
+            var GetallPurchaseGroups = await FindAll().ToListAsync();
 
-            return purchaseGroups;
+            return GetallPurchaseGroups;
         }
       
 
         public async Task<PurchaseGroup> GetPurchaseGroupById(int id)
         {
-            var purchaseGroup = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var PurchaseGroupbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return purchaseGroup;
+            return PurchaseGroupbyId;
         }
 
         public async Task<string> UpdatePurchaseGroup(PurchaseGroup purchaseGroup)

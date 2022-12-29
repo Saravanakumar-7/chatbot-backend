@@ -24,9 +24,9 @@ namespace Repository
             lead.CreatedOn = DateTime.Now;
             lead.LastModifiedBy = "Admin";
             lead.LastModifiedOn = DateTime.Now;
-
-            var result = await Create(lead);
             lead.Unit = "Bangalore";
+            var result = await Create(lead);
+            
             return result.Id;
 
         }
@@ -40,18 +40,18 @@ namespace Repository
 
         public async Task<PagedList<Lead>> GetAllLeads(PagingParameter pagingParameter)
         {
-            var leadDetails = PagedList<Lead>.ToPagedList(FindAll()
+            var GetallleadDetails = PagedList<Lead>.ToPagedList(FindAll()
                                 .Include(x => x.LeadAddress)
                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return leadDetails;
+            return GetallleadDetails;
         }      
 
         public async Task<Lead> GetLeadById(int id)
         {
-            var leadDetails = await TipsMasterDbContext.Leads.Where(x => x.Id == id)                               
+            var LeadDetailsbyId = await TipsMasterDbContext.Leads.Where(x => x.Id == id)                               
                                .Include(v => v.LeadAddress)
                                .FirstOrDefaultAsync();
-            return leadDetails;
+            return LeadDetailsbyId;
         }
 
         public async Task<string> UpdateLead(Lead lead)

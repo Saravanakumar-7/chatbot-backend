@@ -19,8 +19,9 @@ namespace Repository
         {
             partTypes.CreatedBy = "Admin";
             partTypes.CreatedOn = DateTime.Now;
-            var result = await Create(partTypes);
             partTypes.Unit = "Bangalore";
+            var result = await Create(partTypes);
+            
             return result.Id;
         }
 
@@ -33,22 +34,22 @@ namespace Repository
 
         public async Task<IEnumerable<PartTypes>> GetAllActivePartTypes()
         {
-            var PartTypeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return PartTypeList;
+            var AllActivePartTypes = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActivePartTypes;
         }
 
         public async Task<IEnumerable<PartTypes>> GetAllPartTypes()
         {
-            var PartTypeList = await FindAll().ToListAsync();
+            var GetallPartTypes = await FindAll().ToListAsync();
 
-            return PartTypeList;
+            return GetallPartTypes;
         }
 
         public async Task<PartTypes> GetPartTypesById(int id)
         {
-            var partTypes = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var PartTypesbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return partTypes;
+            return PartTypesbyId;
         }
 
         public async Task<string> UpdatePartTypes(PartTypes partTypes)

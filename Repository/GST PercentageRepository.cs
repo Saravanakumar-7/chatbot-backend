@@ -20,8 +20,9 @@ namespace Repository
         {
             gst_Percentage.CreatedBy = "Admin";
             gst_Percentage.CreatedOn = DateTime.Now;
-            var result = await Create(gst_Percentage);
             gst_Percentage.Unit = "Bangalore";
+            var result = await Create(gst_Percentage);
+           
             return result.Id;
         }
 
@@ -34,22 +35,22 @@ namespace Repository
 
         public async Task<IEnumerable<GST_Percentage>> GetAllActiveGST_Percentages()
         {
-            var gst_PercentageList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return gst_PercentageList;
+            var AllActiveGst_PercentageList = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveGst_PercentageList;
         }
 
         public async Task<IEnumerable<GST_Percentage>> GetAllGST_Percentages()
         {
-            var gst_PercentageList = await FindAll().ToListAsync();
+            var GetallGst_PercentageList = await FindAll().ToListAsync();
 
-            return gst_PercentageList;
+            return GetallGst_PercentageList;
         }
 
         public async Task<GST_Percentage> GetGST_PercentageById(int id)
         {
-            var gst_Percentage = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var Gst_PercentagebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return gst_Percentage;
+            return Gst_PercentagebyId;
         }
 
         public async Task<string> UpdateGST_Percentage(GST_Percentage gst_Percentage)

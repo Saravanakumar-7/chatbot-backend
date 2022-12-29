@@ -20,8 +20,9 @@ namespace Repository
         {
             shipmentMode.CreatedBy = "Admin";
             shipmentMode.CreatedOn = DateTime.Now;
-            var result = await Create(shipmentMode);
             shipmentMode.Unit = "Bangalore";
+            var result = await Create(shipmentMode);
+
             return result.Id;
         }
 
@@ -35,22 +36,22 @@ namespace Repository
         public async Task<IEnumerable<ShipmentMode>> GetAllActiveShipmentModes()
         {
 
-            var shipmentModeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return shipmentModeList;
+            var AllActiveShipmentModes = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveShipmentModes;
         }
 
         public async Task<IEnumerable<ShipmentMode>> GetAllShipmentModes()
         {
-            var shipmentModeList = await FindAll().ToListAsync();
+            var GetallShipmentModes = await FindAll().ToListAsync();
 
-            return shipmentModeList;
+            return GetallShipmentModes;
         }
 
         public async Task<ShipmentMode> GetShipmentModeById(int id)
         {
-            var shipmentMode = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var ShipmentModebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return shipmentMode;
+            return ShipmentModebyId;
         }
 
         public async Task<string> UpdateShipmentMode(ShipmentMode shipmentMode)

@@ -38,9 +38,7 @@ namespace Entities.DTOs
         public bool SameasAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
+      
 
 
 

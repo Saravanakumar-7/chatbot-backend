@@ -19,8 +19,9 @@ namespace Repository
         {
             secondarySource.CreatedBy = "Admin";
             secondarySource.CreatedOn = DateTime.Now;
-            var result = await Create(secondarySource);
             secondarySource.Unit = "Bangalore";
+            var result = await Create(secondarySource);
+            
             return result.Id;
 
         }
@@ -35,23 +36,23 @@ namespace Repository
         public async Task<IEnumerable<SecondarySource>> GetAllActiveSecondarySources()
         {
 
-            var secondarySegments = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return secondarySegments;
+            var AllActiveSecondarySources = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveSecondarySources;
         }
 
         public async Task<IEnumerable<SecondarySource>> GetAllSecondarySources()
         {
 
-            var secondarySegmentsList = await FindAll().ToListAsync();
+            var GetallSecondarySourcesList = await FindAll().ToListAsync();
 
-            return secondarySegmentsList;
+            return GetallSecondarySourcesList;
         }
 
         public async Task<SecondarySource> GetSecondarySourceById(int id)
         {
-            var secondarySegments = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var SecondarySourcesbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return secondarySegments;
+            return SecondarySourcesbyId;
         }
         public async Task<string> UpdateSecondarySource(SecondarySource secondarySource)
         {

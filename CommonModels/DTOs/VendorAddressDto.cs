@@ -30,7 +30,7 @@ namespace Entities.DTOs
 
     public class VendorAddressPostDto
     {
-        [StringLength(500, ErrorMessage = "PoAddress can't be longer than 500 characters")]
+        [StringLength(500, ErrorMessage = "POAddress can't be longer than 500 characters")]
         public string? PoAddress { get; set; }
         public string? GSTNNumber { get; set; }
         [StringLength(500, ErrorMessage = "PANNumber can't be longer than 500 characters")]
@@ -38,16 +38,14 @@ namespace Entities.DTOs
         public bool SameasAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
+       
 
     }
 
     public class VendorAddressUpdateDto
     {
         public int Id { get; set; }
-        [StringLength(500, ErrorMessage = "PoAddress can't be longer than 500 characters")]
+        [StringLength(500, ErrorMessage = "POAddress can't be longer than 500 characters")]
         public string? PoAddress { get; set; }
         public string? GSTNNumber { get; set; }
         [StringLength(500, ErrorMessage = "PANNumber can't be longer than 500 characters")]

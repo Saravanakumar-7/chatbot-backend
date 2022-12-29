@@ -9,7 +9,7 @@ namespace Contracts
 {
     public interface IBasisOfApprovalRepository : IRepositoryBase<BasisOfApproval>
     {
-        Task<IEnumerable<BasisOfApproval>> GetAlBasisOfApproval();
+        Task<IEnumerable<BasisOfApproval>> GetAllBasisOfApproval();
         Task<BasisOfApproval> GetBasisOfApprovalById(int id);
         Task<IEnumerable<BasisOfApproval>> GetAllActiveBasisOfApproval();
         Task<int?> CreateBasisOfApproval(BasisOfApproval basisOfApproval);

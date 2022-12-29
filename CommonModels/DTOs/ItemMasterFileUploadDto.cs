@@ -16,8 +16,7 @@ namespace Entities.DTOs
         public string? FilePath { get; set; }
         public DateTime UploadedOn { get; set; }
         public string? UploadedBy { get; set; }
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
+       
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -31,9 +30,7 @@ namespace Entities.DTOs
         public string? FilePath { get; set; }
         public DateTime UploadedOn { get; set; }
         public string? UploadedBy { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
+      
     }
 
     public class ItemMasterFileUploadDtoUpdate

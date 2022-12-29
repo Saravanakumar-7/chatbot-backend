@@ -20,8 +20,9 @@ namespace Repository
         {
             priceList.CreatedBy = "Admin";
             priceList.CreatedOn = DateTime.Now;
-            var result = await Create(priceList);
             priceList.Unit = "Bangalore";
+            var result = await Create(priceList);
+            
             return result.Id;
         }
 
@@ -35,24 +36,24 @@ namespace Repository
         public async Task<IEnumerable<PriceList>> GetAllActivePriceLists()
         {
 
-            var priceListList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return priceListList;
+            var AllActivePriceList= await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActivePriceList;
         }
 
         public async Task<IEnumerable<PriceList>> GetAllPriceLists()
         {
 
-            var priceListList = await FindAll().ToListAsync();
+            var GetallPriceList = await FindAll().ToListAsync();
 
-            return priceListList;
+            return GetallPriceList;
         }
 
         public async Task<PriceList> GetPriceListById(int id)
         {
 
-            var priceList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var PriceListbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return priceList;
+            return PriceListbyId;
         }
 
         public async Task<string> UpdatePriceList(PriceList priceList)
