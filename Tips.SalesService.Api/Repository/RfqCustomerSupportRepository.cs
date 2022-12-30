@@ -176,7 +176,14 @@ namespace Tips.SalesService.Api.Repository
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
 
-        } 
+        }
+        public async Task<Rfq> RfqSourcingByRfqNumbersss(string RfqNumber)
+        {
+            var SourcingByRfqNumber = await _tipsSalesServiceDbContext.rfqs
+              .Where(x => x.RfqNumber == RfqNumber)
+                        .FirstOrDefaultAsync();
+            return SourcingByRfqNumber;
+        }
         public async Task<int?> CreateRfq(Rfq rfq)
         {
             rfq.CreatedBy = "Admin";
