@@ -60,22 +60,7 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all Boms");
                 var bomDtoDetails = _mapper.Map<IEnumerable<EnggBomDto>>(listOfBoms);
 
-                //var bomDtoDetails = new List<EnggBomDto>();
 
-                //foreach (var bom in listOfBoms)
-                //{
-                //    EnggBomDto enggBomDto = _mapper.Map<EnggBomDto>(bom);
-                //    List<EnggChildItemDto> childItemsDtos = new List<EnggChildItemDto>();   
-                //    foreach (var itemDetails in bom.EnggChildItems)
-                //    {
-                //        EnggChildItemDto enggChildItemDto = _mapper.Map<EnggChildItemDto>(itemDetails);
-                //        enggChildItemDto.EnggAlternatesDtos = _mapper.Map<List<EnggAlternatesDto>>(itemDetails.EnggAlternates);
-                //        enggChildItemDto.BomNREConsumableDto = _mapper.Map<BomNREConsumableDto>(itemDetails.NREConsumable);
-                //        childItemsDtos.Add(enggChildItemDto);
-                //    }
-                //    enggBomDto.EnggChildItemDtos = childItemsDtos;
-                //    bomDtoDetails.Add(enggBomDto);
-                //}
 
                 serviceResponse.Data = bomDtoDetails;
                 serviceResponse.Message = "Returned all Engineering Boms Successfully";
@@ -269,23 +254,7 @@ namespace Tips.Master.Api.Controllers
                 string result = await _repository.EnggBomRepository.UpdateEnggBom(data);
 
 
-                //var address = _mapper.Map<IEnumerable<VendorAddress>>(vendorMasterUpdateDto.Addresses);
-
-                //var contact = _mapper.Map<IEnumerable<VendorContacts>>(vendorMasterUpdateDto.Contacts);
-
-                //var banking = _mapper.Map<IEnumerable<VendorBanking>>(vendorMasterUpdateDto.VendorBankings);
-
-                //var Headcount = _mapper.Map<IEnumerable<HeadCounting>>(vendorMasterUpdateDto.HeadCountings);
-
-                //var data = _mapper.Map(vendorMasterUpdateDto, updatevendor);
-
-
-                //data.Addresses = address.ToList();
-                //data.Contacts = contact.ToList();
-                //data.VendorBankings = banking.ToList();
-                //data.HeadCountings = Headcount.ToList();
-
-                //string result = await _repository.VendorRepository.UpdateVendor(data);
+                
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;

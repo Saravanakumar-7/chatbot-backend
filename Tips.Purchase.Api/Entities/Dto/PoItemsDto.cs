@@ -11,7 +11,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string Description { get; set; }
         public string UOM { get; set; }
         public decimal UnitPrice { get; set; }
-        public decimal Quantity { get; set; }
+        public decimal Qty { get; set; }
         public string SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
         public decimal SGST { get; set; }
@@ -24,8 +24,8 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<PoAddProjectDto> PoAddprojectsDtoList { get; set; }
-        public List<PoAddDeliveryScheduleDto> PoAddDeliverySchedulesDtoList { get; set; }
+        public List<PoAddProjectDto> POAddprojectsDtoList { get; set; }
+        public List<PoAddDeliveryScheduleDto> POAddDeliverySchedulesDtoList { get; set; }
 
     }
 
@@ -36,7 +36,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string Description { get; set; }
         public string UOM { get; set; }
         public decimal UnitPrice { get; set; }
-        public decimal Quantity { get; set; }
+        public decimal Qty { get; set; }
         public string SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
         public decimal SGST { get; set; }
@@ -44,13 +44,10 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal IGST { get; set; }
         public decimal UTGST { get; set; }
         public decimal Total { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
 
-        public List<PoAddProjectDtoPost> PoAddprojectsDtoPostList { get; set; }
-        public List<PoAddDeliveryScheduleDtoPost> PoAddDeliverySchedulesDtoPostList { get; set; }
+
+        public List<PoAddProjectDtoPost> POAddprojectsDtoPostList { get; set; }
+        public List<PoAddDeliveryScheduleDtoPost> POAddDeliverySchedulesDtoPostList { get; set; }
 
     }
 
@@ -62,7 +59,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string Description { get; set; }
         public string UOM { get; set; }
         public decimal UnitPrice { get; set; }
-        public decimal Quantity { get; set; }
+        public decimal Qty { get; set; }
         public string SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
         public decimal SGST { get; set; }
@@ -75,8 +72,8 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<PoAddProjectDtoUpdate> PoAddprojectsDtoUpdateList { get; set; }
-        public List<PoAddDeliveryScheduleDtoUpdate> PoAddDeliverySchedulesDtoUpdateList { get; set; }
+        public List<PoAddProjectDtoUpdate> POAddprojectsDtoUpdateList { get; set; }
+        public List<PoAddDeliveryScheduleDtoUpdate> POAddDeliverySchedulesDtoUpdateList { get; set; }
 
     }
     public class PurchaseOrderItemNoListDto
@@ -91,9 +88,9 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? MftrItemNumber { get; set; }
         public string? Description { get; set; }
         public string? UOM { get; set; }
-        public decimal PoUnitPrice { get; set; }
-        public decimal PoOrderedQuantity { get; set; }
-        public decimal PoBalancedQuantity { get; set; }
+        public decimal POUnitPrice { get; set; }
+        public decimal POOrderedQty { get; set; }
+        public decimal POBalancedQty { get; set; }
         public decimal SGST { get; set; }
         public decimal CGST { get; set; }
         public decimal IGST { get; set; }

@@ -35,20 +35,20 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<PurchaseRequisitionDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionDto>>();
             try
             {
-                var listOfPurchaseRequisition = await _repository.GetAllPurchaseRequisition(pagingParameter);
+                var AllPurchaseRequisition = await _repository.GetAllPurchaseRequisition(pagingParameter);
                 var metadata = new
                 {
-                    listOfPurchaseRequisition.TotalCount,
-                    listOfPurchaseRequisition.PageSize,
-                    listOfPurchaseRequisition.CurrentPage,
-                    listOfPurchaseRequisition.HasNext,
-                    listOfPurchaseRequisition.HasPreviuos
+                    AllPurchaseRequisition.TotalCount,
+                    AllPurchaseRequisition.PageSize,
+                    AllPurchaseRequisition.CurrentPage,
+                    AllPurchaseRequisition.HasNext,
+                    AllPurchaseRequisition.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all PurchaseRequisitions");
-                var result = _mapper.Map<IEnumerable<PurchaseRequisitionDto>>(listOfPurchaseRequisition);
+                var result = _mapper.Map<IEnumerable<PurchaseRequisitionDto>>(AllPurchaseRequisition);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PurchaseRequisitions";
                 serviceResponse.Success = true;
@@ -73,9 +73,9 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<PurchaseRequisitionDto> serviceResponse = new ServiceResponse<PurchaseRequisitionDto>();
             try
             {
-                var purchaseRequisitionDetails = await _repository.GetPurchaseRequisitionById(id);
+                var PurchaseRequisitionDetailsbyId = await _repository.GetPurchaseRequisitionById(id);
 
-                if (purchaseRequisitionDetails == null)
+                if (PurchaseRequisitionDetailsbyId == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"PurchaseRequisitions  hasn't been found in db.";
@@ -87,9 +87,9 @@ namespace Tips.Purchase.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    PurchaseRequisitionDto PurchaseRequisitionDto = _mapper.Map<PurchaseRequisitionDto>(purchaseRequisitionDetails);
+                    PurchaseRequisitionDto PurchaseRequisitionDto = _mapper.Map<PurchaseRequisitionDto>(PurchaseRequisitionDetailsbyId);
                     List<PrItemsDto> prItemsDtoList = new List<PrItemsDto>();
-                    foreach (var itemDetails in purchaseRequisitionDetails.PrItemList)
+                    foreach (var itemDetails in PurchaseRequisitionDetailsbyId.PrItemList)
                     {
                         PrItemsDto prItemsDtos = _mapper.Map<PrItemsDto>(itemDetails);
                         prItemsDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(itemDetails.PrAddprojects);
@@ -142,7 +142,7 @@ namespace Tips.Purchase.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var purchaseRequisition = _mapper.Map<PurchaseRequisition>(purchaseRequistionDtoPost);
+                var PurchaseRequisitionCreate = _mapper.Map<PurchaseRequisition>(purchaseRequistionDtoPost);
                 var itemsDto = purchaseRequistionDtoPost.PrItemsDtoPostList;
                 var itemsDtoList = new List<PrItem>();
                 for (int i = 0; i < itemsDto.Count; i++)
@@ -152,9 +152,9 @@ namespace Tips.Purchase.Api.Controllers
                     prItemsDetails.PrAddDeliverySchedules = _mapper.Map<List<PrAddDeliverySchedule>>(itemsDto[i].PrAddDeliverySchedulesDtoPostList);
                     itemsDtoList.Add(prItemsDetails);
                 }
-                purchaseRequisition.PrItemList = itemsDtoList;
+                PurchaseRequisitionCreate.PrItemList = itemsDtoList;
 
-                await _repository.CreatePurchaseRequisition(purchaseRequisition);
+                await _repository.CreatePurchaseRequisition(PurchaseRequisitionCreate);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = " PurchaseRequisitions Successfully Created";
@@ -286,9 +286,8 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>>();
             try
             {
-                var listOfPurchaseRequisition = await _repository.GetAllActivePurchaseRequisitionNameList();
-                //_logger.LogInfo("Returned all PurchaseRequisitions");
-                var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(listOfPurchaseRequisition);
+                var AllActivePurchaseRequisitionName = await _repository.GetAllActivePurchaseRequisitionNameList();
+                var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(AllActivePurchaseRequisitionName);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PurchaseRequisitions";
                 serviceResponse.Success = true;
@@ -312,9 +311,8 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>>();
             try
             {
-                var listOfPurchaseRequisition = await _repository.GetAllPendingPurchaseRequisitionApprovalINameList();
-                //_logger.LogInfo("Returned all PurchaseRequisitions");
-                var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(listOfPurchaseRequisition);
+                var AllPendingPRApprovalIName = await _repository.GetAllPendingPurchaseRequisitionApprovalINameList();
+                var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(AllPendingPRApprovalIName);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PendingApprovalIPurchaseRequisition";
                 serviceResponse.Success = true;
@@ -338,9 +336,8 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>>();
             try
             {
-                var listOfPurchaseRequisition = await _repository.GetAllPendingPurchaseRequisitionApprovalIINameList();
-                //_logger.LogInfo("Returned all PurchaseRequisitions");
-                var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(listOfPurchaseRequisition);
+                var AllPendingPRApprovalIIName = await _repository.GetAllPendingPurchaseRequisitionApprovalIINameList();
+                var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(AllPendingPRApprovalIIName);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PendingApprovalIIPurchaseRequisition";
                 serviceResponse.Success = true;
@@ -365,8 +362,8 @@ namespace Tips.Purchase.Api.Controllers
 
             try
             {
-                var purchaseRequisition = await _repository.GetPurchaseRequisitionByPRNumber(PRNumber);
-                if (purchaseRequisition is null)
+                var ActivatePRApprovalI = await _repository.GetPurchaseRequisitionByPRNumber(PRNumber);
+                if (ActivatePRApprovalI is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "PurchaseRequisitionApprovalI object sent from client is null";
@@ -375,10 +372,10 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError($"PurchaseRequisitionApprovalI with string: {PRNumber}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                purchaseRequisition.PRApprovalI = true;
-                purchaseRequisition.PRApprovedIBy = "Admin";
-                purchaseRequisition.PRApprovedIDate = DateTime.Now;
-                string result = await _repository.UpdatePurchaseRequisition(purchaseRequisition);
+                ActivatePRApprovalI.PRApprovalI = true;
+                ActivatePRApprovalI.PRApprovedIBy = "Admin";
+                ActivatePRApprovalI.PRApprovedIDate = DateTime.Now;
+                string result = await _repository.UpdatePurchaseRequisition(ActivatePRApprovalI);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -404,8 +401,8 @@ namespace Tips.Purchase.Api.Controllers
 
             try
             {
-                var purchaseRequisition = await _repository.GetPurchaseRequisitionByPRNumber(PRNumber);
-                if (purchaseRequisition is null)
+                var ActivatePRApprovalII = await _repository.GetPurchaseRequisitionByPRNumber(PRNumber);
+                if (ActivatePRApprovalII is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "PurchaseRequisitionApprovalII object sent from client is null";
@@ -414,10 +411,10 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError($"PurchaseRequisitionApprovalII with string: {PRNumber}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                purchaseRequisition.PRApprovalII = true;
-                purchaseRequisition.PRApprovedIIBy = "Admin";
-                purchaseRequisition.PRApprovedIIDate = DateTime.Now;
-                string result = await _repository.UpdatePurchaseRequisition(purchaseRequisition);
+                ActivatePRApprovalII.PRApprovalII = true;
+                ActivatePRApprovalII.PRApprovedIIBy = "Admin";
+                ActivatePRApprovalII.PRApprovedIIDate = DateTime.Now;
+                string result = await _repository.UpdatePurchaseRequisition(ActivatePRApprovalII);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
