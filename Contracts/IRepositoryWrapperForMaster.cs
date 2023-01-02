@@ -103,6 +103,9 @@ namespace Contracts
 
         IEnggBomGroupRepository EnggBomGroupRepository { get; }
         IEnggCustomFieldRepository EnggCustomFieldRepository { get; }
+
+        IEngineeringCustomFieldRepository EngineeringCustomFieldRepository { get; }
+
         void SaveAsync();
     }
 }

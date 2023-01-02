@@ -341,6 +341,10 @@ namespace Tips.Master.Api
             CreateMap<EnggCustomField, EnggCustomFieldDtoPost>().ReverseMap();
             CreateMap<EnggCustomField, EnggCustomFieldDtoUpdate>().ReverseMap();
 
+            CreateMap<EngineeringCustomField, EngineeringCustomFieldDto>().ReverseMap();
+            CreateMap<EngineeringCustomField, EngineeringCustomFieldPostDto>().ReverseMap();
+            CreateMap<EngineeringCustomField, EngineeringCustomFieldUpdateDto>().ReverseMap();
+
         }
     }
 }
