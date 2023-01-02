@@ -21,8 +21,9 @@ namespace Repository
         {
             vendorDepartment.CreatedBy = "Admin";
             vendorDepartment.CreatedOn = DateTime.Now;
-            var result = await Create(vendorDepartment);
             vendorDepartment.Unit = "Bangalore";
+            var result = await Create(vendorDepartment);
+            
             return result.Id;
         }
 
@@ -35,22 +36,22 @@ namespace Repository
 
         public async Task<IEnumerable<VendorDepartment>> GetAllActiveVendorDepartment()
         {
-            var vendorDepartments = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return vendorDepartments;
+            var AllActiveVendorDepartments = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveVendorDepartments;
         }
 
         public async Task<IEnumerable<VendorDepartment>> GetAllVendorDepartment()
         {
-            var vendorDepartments = await FindAll().ToListAsync();
+            var GetallVendorDepartments = await FindAll().ToListAsync();
 
-            return vendorDepartments;
+            return GetallVendorDepartments;
         }
 
         public async Task<VendorDepartment> GetVendorDepartmentById(int id)
         {
-            var vendorDepartment = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var VendorDepartmentbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return vendorDepartment;
+            return VendorDepartmentbyId;
         }
 
         public async Task<string> UpdateVendorDepartment(VendorDepartment vendorDepartment)

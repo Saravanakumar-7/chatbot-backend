@@ -95,7 +95,7 @@ namespace Entities.DTOs
         public string? Capacity { get; set; }
         public string? UOM { get; set; }
         public string? FloorSpace { get; set; }
-        public string? sqft { get; set; }
+        public string? Sqft { get; set; }
 
         public string? Machine { get; set; }
         public string? ToolsandEquip { get; set; }
@@ -232,7 +232,7 @@ namespace Entities.DTOs
         public string? Capacity { get; set; }
         public string? UOM { get; set; }
         public string? FloorSpace { get; set; }
-        public string? sqft { get; set; }
+        public string? Sqft { get; set; }
 
         public string? Machine { get; set; }
         public string? ToolsandEquip { get; set; }
@@ -265,14 +265,7 @@ namespace Entities.DTOs
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
-
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        
 
         public List<VendorAddressPostDto>? Addresses { get; set; }
         public List<VendorContactsPostDto>? Contacts { get; set; }
@@ -374,7 +367,7 @@ namespace Entities.DTOs
         public string? Capacity { get; set; }
         public string? UOM { get; set; }
         public string? FloorSpace { get; set; }
-        public string? sqft { get; set; }
+        public string? Sqft { get; set; }
 
         public string? Machine { get; set; }
         public string? ToolsandEquip { get; set; }

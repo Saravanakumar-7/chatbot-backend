@@ -94,7 +94,7 @@ namespace Entities
         public string? Capacity { get; set; }
         public string? UOM { get; set; }
         public string? FloorSpace { get; set; }
-        public string? sqft { get; set; }
+        public string? Sqft { get; set; }
 
         public string? Machine { get; set; }
         public string? ToolsandEquip { get; set; }

@@ -20,8 +20,9 @@ namespace Repository
         {
             weightUom.CreatedBy = "Admin";
             weightUom.CreatedOn = DateTime.Now;
-            var result = await Create(weightUom);
             weightUom.Unit = "Bangalore";
+            var result = await Create(weightUom);
+            
             return result.Id;
         }
 
@@ -34,23 +35,23 @@ namespace Repository
 
         public async Task<IEnumerable<WeightUom>> GetAllActiveWeightUom()
         {
-            var WeightUomList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return WeightUomList;
+            var AllActiveWeightUom= await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveWeightUom;
         }
 
         public async Task<IEnumerable<WeightUom>> GetAllWeightUom()
         {
 
-            var weightUoms = await FindAll().ToListAsync();
+            var GetallWeightUom = await FindAll().ToListAsync();
 
-            return weightUoms;
+            return GetallWeightUom;
         }
 
         public async Task<WeightUom> GetWeightUomById(int id)
         {
-            var weightUom = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var WeightUombyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return weightUom;
+            return WeightUombyId;
         }
 
         public async Task<string> UpdateWeightUom(WeightUom weightUom)

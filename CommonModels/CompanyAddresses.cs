@@ -10,7 +10,7 @@ namespace Entities
     {
         public int Id { get; set; }
 
-        public string? PoAddress { get; set; }
+        public string? POAddress { get; set; }
 
         public string? GSTNNumber { get; set; }
 

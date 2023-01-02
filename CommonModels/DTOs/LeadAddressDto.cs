@@ -73,8 +73,6 @@ namespace Entities.DTOs
         [StringLength(100, ErrorMessage = "ZIP can't be longer than 100 characters")]
         public string? ZIP { get; set; }
 
-        public string Unit { get; set; }
-
     }
 
     public class LeadAddressUpdateDto

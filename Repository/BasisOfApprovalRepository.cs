@@ -21,8 +21,8 @@ namespace Repository
         {
             basisOfApproval.CreatedBy = "Admin";
             basisOfApproval.CreatedOn = DateTime.Now;
-            var result = await Create(basisOfApproval);
             basisOfApproval.Unit = "Bangalore";
+            var result = await Create(basisOfApproval);
             return result.Id;
         }
 
@@ -33,24 +33,24 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<BasisOfApproval>> GetAlBasisOfApproval()
+        public async Task<IEnumerable<BasisOfApproval>> GetAllBasisOfApproval()
         {
-            var basisOfApprovals = await FindAll().ToListAsync();
+            var GetallBasicofApprovals = await FindAll().ToListAsync();
 
-            return basisOfApprovals;
+            return GetallBasicofApprovals;
         }
 
         public async Task<IEnumerable<BasisOfApproval>> GetAllActiveBasisOfApproval()
         {
-            var basisOfApprovals = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return basisOfApprovals;
+            var AllActiveBasisofApprovals = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveBasisofApprovals;
         }
 
         public async Task<BasisOfApproval> GetBasisOfApprovalById(int id)
         {
-            var basisOfApproval = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var BasisOfApprovalbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return basisOfApproval;
+            return BasisOfApprovalbyId;
         }
 
         public async Task<string> UpdateBasisOfApproval(BasisOfApproval basisOfApproval)

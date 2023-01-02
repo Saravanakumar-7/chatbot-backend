@@ -23,65 +23,52 @@ namespace Repository
                 vendorMaster.CreatedBy = "Admin";
                 vendorMaster.CreatedOn = DateTime.Now;
                 vendorMaster.LastModifiedBy = "Admin";
-                vendorMaster.LastModifiedOn = DateTime.Now; 
-            
-                var result = await Create(vendorMaster);
-            vendorMaster.Unit = "Bangalore";
+                vendorMaster.LastModifiedOn = DateTime.Now;
+                 vendorMaster.Unit = "Bangalore";
+                 var result = await Create(vendorMaster);
+           
             return result.Id; 
 
         }
          
 
-        //public async Task<string> DeleteVendor(VendorMasterDto vendorMasterDto)
-        //{
-        //    //Delete(vendorMasterDto.Address);
-        //    //string result = $"Delete Vendor details of {vendorMasterDto.Id} is deleted successfully!";
-        //    //return result;
-        //    throw new NotImplementedException();
-
-        //}
-
         public async Task<IEnumerable<VendorMaster>> GetAllActiveVendors()
         {
-            var vendorDetails = await FindAll().ToListAsync();
-            return vendorDetails;
-            //throw new NotImplementedException();
+            var AllActiveVendorDetails = await FindAll().ToListAsync();
+            return AllActiveVendorDetails;
+            
 
         }
 
         public async Task<PagedList<VendorMaster>> GetAllVendors(PagingParameter pagingParameter)
         {
 
-            var vendorDetails = PagedList<VendorMaster>.ToPagedList(FindAll()
+            var GetallVendorDetails = PagedList<VendorMaster>.ToPagedList(FindAll()
                                 .Include(t => t.VendorBankings)
                                 .Include(x => x.Addresses)
                                 .Include(m => m.Contacts)
                                 .Include(v => v.HeadCountings)
                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            //var vendorDetails = await TipsMasterDbContext.VendorMasters
-            //                    .Include(t=> t.VendorBankings)
-            //                    .Include(x=> x.Addresses)
-            //                    .Include(m=> m.Contacts)
-            //                    .ToListAsync();
 
-            return vendorDetails;
-            //throw new NotImplementedException();
+
+            return GetallVendorDetails;
+            
 
 
         }
 
         public async Task<VendorMaster> GetVendorById(int id)
         {
-          var vendorDetails = await TipsMasterDbContext.VendorMasters.Where(x=> x.Id == id)
+          var VendorDetailsbyId = await TipsMasterDbContext.VendorMasters.Where(x=> x.Id == id)
                               .Include(x => x.VendorBankings)
                               .Include(x => x.Addresses)
                               .Include(m => m.Contacts)
                               .Include(v => v.HeadCountings)
                               .FirstOrDefaultAsync();
 
-          return vendorDetails;
-          //  throw new NotImplementedException();
+          return VendorDetailsbyId;
+          
         }
          
 
@@ -103,7 +90,7 @@ namespace Repository
 
         public async Task<IEnumerable<VendorIdNameListDto>> GetAllActiveVendorNameList()
         {
-            IEnumerable<VendorIdNameListDto> vendorDetails = await TipsMasterDbContext.VendorMasters
+            IEnumerable<VendorIdNameListDto> AllActiveVendorName = await TipsMasterDbContext.VendorMasters
                                 .Select(x => new VendorIdNameListDto()
                                 {
                                     Id = x.Id,
@@ -112,7 +99,7 @@ namespace Repository
                                 })
                               .ToListAsync();
 
-            return vendorDetails;
+            return AllActiveVendorName;
         }
          
     }

@@ -20,8 +20,9 @@ namespace Repository
         {
             leadType.CreatedBy = "Admin";
             leadType.CreatedOn = DateTime.Now;
-            var result = await Create(leadType);
             leadType.Unit = "Bangalore";
+            var result = await Create(leadType);
+            
             return result.Id;
 
         }
@@ -36,23 +37,23 @@ namespace Repository
         public async Task<IEnumerable<LeadType>> GetAllActiveLeadTypes()
         {
 
-            var leadTypeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return leadTypeList;
+            var AllActiveLeadType= await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveLeadType;
         }
 
         public async Task<IEnumerable<LeadType>> GetAllLeadTypes()
         {
 
-            var leadStatusList = await FindAll().ToListAsync();
+            var GetallLeadTypes = await FindAll().ToListAsync();
 
-            return leadStatusList;
+            return GetallLeadTypes;
         }
 
         public async Task<LeadType> GetLeadTypeById(int id)
         {
-            var leadType = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var LeadTypebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return leadType;
+            return LeadTypebyId;
         }
         public async Task<string> UpdateLeadType(LeadType leadType)
         {

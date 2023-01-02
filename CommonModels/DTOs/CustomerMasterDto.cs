@@ -91,8 +91,7 @@ namespace Entities.DTOs
         public string? FloorSpace { get; set; }
         public string? Machine { get; set; }
         public string? ToolsAndEquip { get; set; }
-        //public string? Tools { get; set; }
-        //public string? Equip { get; set; }
+      
         public bool ERP { get; set; }
         public string? ERPValue { get; set; }
         public string? ESDSetup { get; set; }
@@ -101,8 +100,7 @@ namespace Entities.DTOs
         public string? Sqft { get; set; }
         public string? MachineDetails { get; set; }
         public string? ToolsandEquipDetails { get; set; }
-        //public string? ToolsDetials { get; set; }
-        //public string? EquipDetials { get; set; }
+
         public bool ERPDetails { get; set; }
         public string? ESDSetupDetails { get; set; }
         public string? HazmatSetupDetails { get; set; }
@@ -125,7 +123,7 @@ namespace Entities.DTOs
 
         public string? AuditFrequency { get; set; }
         public string? CustomerApprove { get; set; }
-        //public bool IsActive { get; set; } = true;
+
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -216,8 +214,7 @@ namespace Entities.DTOs
         public string? FloorSpace { get; set; }
         public string? Machine { get; set; }
         public string? ToolsAndEquip { get; set; }
-        //public string? Tools { get; set; }
-        //public string? Equip { get; set; }
+
         public bool ERP { get; set; }
         public string? ERPValue { get; set; }
         public string? ESDSetup { get; set; }
@@ -228,8 +225,7 @@ namespace Entities.DTOs
 
         public string? ToolsandEquipDetails { get; set; }
 
-        //public string? ToolsDetials { get; set; }
-        //public string? EquipDetials { get; set; }
+
         public bool ERPDetails { get; set; }
         public string? ESDSetupDetails { get; set; }
         public string? HazmatSetupDetails { get; set; }
@@ -252,14 +248,7 @@ namespace Entities.DTOs
 
         public string? AuditFrequency { get; set; }
         public string? CustomerApprove { get; set; }
-        //public bool IsActive { get; set; } = true;
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        
 
         public List<CustomerAddressesDtoPost>? CustomerAddress { get; set; }
         public List<CustomerShippingAddressesDtoPost>? CustomerShippingAddresses { get; set; }

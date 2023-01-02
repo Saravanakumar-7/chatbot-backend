@@ -67,4 +67,7 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
     }
-}
+
+  
+
+    }

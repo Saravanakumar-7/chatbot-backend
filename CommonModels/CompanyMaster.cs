@@ -92,7 +92,7 @@ namespace Entities
         public string? Capacity { get; set; }
         public string? UOM { get; set; }
         public string? FloorSpace { get; set; }
-        public string? sqft { get; set; }
+        public string? Sqft { get; set; }
 
         public string? Machine { get; set; }
         public string? ToolsandEquip { get; set; }
@@ -126,7 +126,7 @@ namespace Entities
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-        //public bool IsActive { get; set; } = true;
+      
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

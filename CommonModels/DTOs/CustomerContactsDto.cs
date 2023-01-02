@@ -85,9 +85,7 @@ namespace Entities.DTOs
         public string? Extension { get; set; }
         public string? Skypeld { get; set; }
         public string? Language { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
+       
 
 
 

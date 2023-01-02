@@ -30,9 +30,7 @@ namespace Entities.DTOs
         [StringLength(500, ErrorMessage = "NumberOfPeople can't be longer than 500 characters")]
 
         public string? NumberOfPeople { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
+  
     }
     public class CustomerMasterHeadCountingDtoUpdate
     {

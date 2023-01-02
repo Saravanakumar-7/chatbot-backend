@@ -13,8 +13,6 @@ namespace Entities.DTOs
 
         public string? ShippingAddress { get; set; }
 
-        //public string? GSTNNumber { get; set; }
-
         public string? GooglePinLocation { get; set; }
 
         public bool SameasAddress { get; set; } = false;
@@ -32,17 +30,12 @@ namespace Entities.DTOs
 
         public string? ShippingAddress { get; set; }
 
-        //public string? GSTNNumber { get; set; }
-
         public string? GooglePinLocation { get; set; }
 
         public bool SameasAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
 
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
 
     }
     public class CustomerShippingAddressesDtoUpdate
@@ -50,8 +43,6 @@ namespace Entities.DTOs
         public int Id { get; set; }
 
         public string? ShippingAddress { get; set; }
-
-        //public string? GSTNNumber { get; set; }
 
         public string? GooglePinLocation { get; set; }
 

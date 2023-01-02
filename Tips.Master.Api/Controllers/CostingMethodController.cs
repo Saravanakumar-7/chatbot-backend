@@ -31,9 +31,9 @@ namespace Tips.Master.Api.Controllers
             try
             {
 
-                var CostingMethodList = await _repository.CostingMethodRepository.GetAllCostingMethods();
+                var GetallCostingMethod = await _repository.CostingMethodRepository.GetAllCostingMethods();
                 _logger.LogInfo("Returned all CostingMethods");
-                var result = _mapper.Map<IEnumerable<CostingMethodDto>>(CostingMethodList);
+                var result = _mapper.Map<IEnumerable<CostingMethodDto>>(GetallCostingMethod);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all CostingMethods Successfully";
                 serviceResponse.Success = true;
@@ -58,9 +58,9 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var CostingMethods = await _repository.CostingMethodRepository.GetAllActiveCostingMethods();
+                var AllActiveCostingMethods = await _repository.CostingMethodRepository.GetAllActiveCostingMethods();
                 _logger.LogInfo("Returned all CostingMethods");
-                var result = _mapper.Map<IEnumerable<CostingMethodDto>>(CostingMethods);
+                var result = _mapper.Map<IEnumerable<CostingMethodDto>>(AllActiveCostingMethods);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all CostingMethods Successfully";
                 serviceResponse.Success = true;
@@ -87,8 +87,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var CostingMethods = await _repository.CostingMethodRepository.GetCostingMethodById(id);
-                if (CostingMethods == null)
+                var CostingMethodsbyId = await _repository.CostingMethodRepository.GetCostingMethodById(id);
+                if (CostingMethodsbyId == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"CostingMethod with id: {id}, hasn't been found in db.";
@@ -101,7 +101,7 @@ namespace Tips.Master.Api.Controllers
                 {
 
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    var result = _mapper.Map<CostingMethodDto>(CostingMethods);
+                    var result = _mapper.Map<CostingMethodDto>(CostingMethodsbyId);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Success";
                     serviceResponse.Success = true;
@@ -134,7 +134,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("CostingMethod object sent from client is null.");
-                    //return BadRequest("PurchaseGroup object is null");
+                    
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
@@ -144,11 +144,11 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid CostingMethod object sent from client.");
-                    //return BadRequest("Invalid model object");
+
                     return BadRequest(serviceResponse);
                 }
-                var CostingMethods = _mapper.Map<CostingMethod>(costingMethodDtoPost);
-                _repository.CostingMethodRepository.CreateCostingMethod(CostingMethods);
+                var CostingMethodsCreate = _mapper.Map<CostingMethod>(costingMethodDtoPost);
+                _repository.CostingMethodRepository.CreateCostingMethod(CostingMethodsCreate);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
@@ -194,8 +194,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid Update CostingMethod object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var CostingMethods = await _repository.CostingMethodRepository.GetCostingMethodById(id);
-                if (CostingMethods is null)
+                var CostingMethodsUpdate = await _repository.CostingMethodRepository.GetCostingMethodById(id);
+                if (CostingMethodsUpdate is null)
                 {
                     _logger.LogError($"Update CostingMethod with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -204,8 +204,8 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(costingMethodDtoUpdate, CostingMethods);
-                string result = await _repository.CostingMethodRepository.UpdateCostingMethod(CostingMethods);
+                _mapper.Map(costingMethodDtoUpdate, CostingMethodsUpdate);
+                string result = await _repository.CostingMethodRepository.UpdateCostingMethod(CostingMethodsUpdate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -232,8 +232,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var CostingMethod = await _repository.CostingMethodRepository.GetCostingMethodById(id);
-                if (CostingMethod == null)
+                var DeleteCostingmethod = await _repository.CostingMethodRepository.GetCostingMethodById(id);
+                if (DeleteCostingmethod == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Delete CostingMethod object sent from client is null";
@@ -242,7 +242,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"Delete CostingMethod with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                string result = await _repository.CostingMethodRepository.DeleteCostingMethod(CostingMethod);
+                string result = await _repository.CostingMethodRepository.DeleteCostingMethod(DeleteCostingmethod);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deleted Successfully";
@@ -269,8 +269,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var CostingMethod = await _repository.CostingMethodRepository.GetCostingMethodById(id);
-                if (CostingMethod is null)
+                var CostingMethodActivate = await _repository.CostingMethodRepository.GetCostingMethodById(id);
+                if (CostingMethodActivate is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "CostingMethod object sent from client is null";
@@ -279,8 +279,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"CostingMethod with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                CostingMethod.IsActive = true;
-                string result = await _repository.CostingMethodRepository.UpdateCostingMethod(CostingMethod);
+                CostingMethodActivate.IsActive = true;
+                string result = await _repository.CostingMethodRepository.UpdateCostingMethod(CostingMethodActivate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -306,8 +306,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var CostingMethod = await _repository.CostingMethodRepository.GetCostingMethodById(id);
-                if (CostingMethod is null)
+                var CostingMethodDeactivate = await _repository.CostingMethodRepository.GetCostingMethodById(id);
+                if (CostingMethodDeactivate is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "CostingMethod object sent from client is null";
@@ -316,8 +316,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"CostingMethod with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                CostingMethod.IsActive = false;
-                string result = await _repository.CostingMethodRepository.UpdateCostingMethod(CostingMethod);
+                CostingMethodDeactivate.IsActive = false;
+                string result = await _repository.CostingMethodRepository.UpdateCostingMethod(CostingMethodDeactivate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deactivated Successfully";

@@ -36,13 +36,13 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<IEnumerable<PurchaseRequisition>> GetAllActivePurchaseRequisition()
         {
-            var purchaseRequistionDetails = await FindAll().ToListAsync();
-            return purchaseRequistionDetails;
+            var AllActivepurchaseRequistions = await FindAll().ToListAsync();
+            return AllActivepurchaseRequistions;
         }
 
         public async Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllActivePurchaseRequisitionNameList()
         {
-            IEnumerable<PurchaseRequisitionIdNameListDto> purchaseRequistionDetails = await _tipsPurchaseDbContext.PurchaseRequisitions
+            IEnumerable<PurchaseRequisitionIdNameListDto> AllActivepurchaseRequistionsName = await _tipsPurchaseDbContext.PurchaseRequisitions
                                 .Select(x => new PurchaseRequisitionIdNameListDto()
                                 {
                                     Id = x.Id,
@@ -50,12 +50,12 @@ namespace Tips.Purchase.Api.Repository
                                 })
                               .ToListAsync();
 
-            return purchaseRequistionDetails;
+            return AllActivepurchaseRequistionsName;
         }
 
         public async Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPurchaseRequisitionApprovalINameList()
         {
-            IEnumerable<PurchaseRequisitionIdNameListDto> purchaseRequistionDetails = await _tipsPurchaseDbContext.PurchaseRequisitions
+            IEnumerable<PurchaseRequisitionIdNameListDto> AllPendingPRApprovalIName = await _tipsPurchaseDbContext.PurchaseRequisitions
                             .Where(x => x.PRApprovalI == false).Select(x => new PurchaseRequisitionIdNameListDto()
                             {
                                 Id = x.Id,
@@ -63,12 +63,12 @@ namespace Tips.Purchase.Api.Repository
                             }).ToListAsync();
 
 
-            return purchaseRequistionDetails;
+            return AllPendingPRApprovalIName;
         }
 
         public async Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPurchaseRequisitionApprovalIINameList()
         {
-            IEnumerable<PurchaseRequisitionIdNameListDto> purchaseRequistionDetails = await _tipsPurchaseDbContext.PurchaseRequisitions
+            IEnumerable<PurchaseRequisitionIdNameListDto> AllPendingPRApprovalIIName = await _tipsPurchaseDbContext.PurchaseRequisitions
                             .Where(x => x.PRApprovalII == false).Select(x => new PurchaseRequisitionIdNameListDto()
                             {
                                 Id = x.Id,
@@ -76,44 +76,44 @@ namespace Tips.Purchase.Api.Repository
                             }).ToListAsync();
 
 
-            return purchaseRequistionDetails;
+            return AllPendingPRApprovalIIName;
         }
 
         public async Task<PagedList<PurchaseRequisition>> GetAllPurchaseRequisition(PagingParameter pagingParameter)
         {
   
-            var purchaseRequistionDetails = PagedList<PurchaseRequisition>.ToPagedList(FindAll()
+            var GetallPurchaseRequistionDetails = PagedList<PurchaseRequisition>.ToPagedList(FindAll()
                                 .Include(t => t.PrItemList)
                                 .ThenInclude(x => x.PrAddprojects)
                                 .Include(m => m.PrItemList)
                                 .ThenInclude(i => i.PrAddDeliverySchedules)
                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return purchaseRequistionDetails;
+            return GetallPurchaseRequistionDetails;
         }
 
         public async Task<PurchaseRequisition> GetPurchaseRequisitionById(int id)
         {
-            var purchaseRequistionDetails = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.Id == id)
+            var PurchaseRequistionbyId = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.Id == id)
                                  .Include(t => t.PrItemList)
                                  .ThenInclude(x => x.PrAddprojects)
                                 .Include(m => m.PrItemList)
                                 .ThenInclude(i => i.PrAddDeliverySchedules)
                                 .FirstOrDefaultAsync();
 
-            return purchaseRequistionDetails;
+            return PurchaseRequistionbyId;
         }
 
         public async Task<PurchaseRequisition> GetPurchaseRequisitionByPRNumber(string PRNumber)
         {
-            var purchaseRequistionDetails = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PRNumber == PRNumber)
+            var PurchaseRequistionByPRNumber = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PRNumber == PRNumber)
                                  .Include(t => t.PrItemList)
                                  .ThenInclude(x => x.PrAddprojects)
                                 .Include(m => m.PrItemList)
                                 .ThenInclude(i => i.PrAddDeliverySchedules)
                                 .FirstOrDefaultAsync();
 
-            return purchaseRequistionDetails;
+            return PurchaseRequistionByPRNumber;
         }
 
         public async Task<string> UpdatePurchaseRequisition(PurchaseRequisition purchaseRequisitions)

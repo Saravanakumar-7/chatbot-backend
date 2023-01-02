@@ -20,8 +20,8 @@ namespace Repository
         {
             category.CreatedBy = "Admin";
             category.CreatedOn = DateTime.Now;
-            var result = await Create(category);
             category.Unit = "Bangalore";
+            var result = await Create(category);
             return result.Id;
            
         }
@@ -35,20 +35,20 @@ namespace Repository
 
         public async Task<IEnumerable<Category>> GetAllActiveCategory()
         {
-            var categoryList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return categoryList;
+            var AllActiveCategories = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            return AllActiveCategories;
         }
 
         public async Task<IEnumerable<Category>> GetAllCategory()
         {
-            var categoryList = await FindAll().ToListAsync();
-            return categoryList;
+            var GetallCategories = await FindAll().ToListAsync();
+            return GetallCategories;
         }
 
         public async Task<Category> GetCategoryById(int id)
         {
-            var categoryList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-            return categoryList;
+            var CategorybyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return CategorybyId;
         }
 
         public async Task<string> UpdateCategory(Category category)

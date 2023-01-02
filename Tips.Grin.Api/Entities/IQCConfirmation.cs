@@ -23,10 +23,10 @@ namespace Tips.Grin.Api.Entities
         public string? ProjectNumber { get; set; }
 
         [Precision(13,3)]
-        public decimal? AcceptedQunatity { get; set; }
+        public decimal? AcceptedQty { get; set; }
 
         [Precision(13,3)]
-        public decimal? RejectedQunatity { get; set; }
+        public decimal? RejectedQty { get; set; }
 
         public bool IsBinningDone { get; set; } = false;
 

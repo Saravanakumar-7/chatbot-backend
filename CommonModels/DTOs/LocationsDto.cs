@@ -10,6 +10,9 @@ namespace Entities.DTOs
     public class LocationsDto
     {
         public int Id { get; set; }
+
+        public string Warehouse { get; set; }
+
         [Required]
         public string LocationName { get; set; }
         public string Description { get; set; }
@@ -24,19 +27,19 @@ namespace Entities.DTOs
 
     public class LocationsDtoPost
     {
+        public string Warehouse { get; set; }
+
         [Required]
         public string LocationName { get; set; }
         public string Description { get; set; }
         public string Remarks { get; set; }
         public bool ActiveStatus { get; set; } = true;
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
-
+       
     }
     public class LocationsDtoUpdate
     {
         public int Id { get; set; }
+
         [Required]
         public string LocationName { get; set; }
         public string Description { get; set; }

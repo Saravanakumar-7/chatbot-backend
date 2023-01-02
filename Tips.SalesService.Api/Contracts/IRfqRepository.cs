@@ -20,6 +20,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> UpdateRfq(Rfq rfq);
         Task<string> DeleteRfq(Rfq rfq);
         Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberList();
+        Task<Rfq> RfqSourcingByRfqNumbersss(string id);
 
     }
 }

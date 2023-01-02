@@ -19,8 +19,6 @@ namespace Tips.Grin.Api.Entities
 
         public string? InvoiceValue { get; set; }
 
-        public string? PoNumber { get; set; }
-
         public DateTime? InvoiceDate { get; set; }
 
         public string? AWBNumber1 { get; set; }

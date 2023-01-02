@@ -34,7 +34,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var basisOfApprovals = await _repository.BasisOfApprovalRepository.GetAlBasisOfApproval();
+                var basisOfApprovals = await _repository.BasisOfApprovalRepository.GetAllBasisOfApproval();
                 _logger.LogInfo("Returned all BasisOfApproval");
                 var result = _mapper.Map<IEnumerable<BasisOfApprovalDto>>(basisOfApprovals);
                 serviceResponse.Data = result;
@@ -60,7 +60,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var basisOfApprovals = await _repository.BasisOfApprovalRepository.GetAlBasisOfApproval();
+                var basisOfApprovals = await _repository.BasisOfApprovalRepository.GetAllBasisOfApproval();
                 _logger.LogInfo("Returned all BasisOfApproval");
                 var result = _mapper.Map<IEnumerable<BasisOfApprovalDto>>(basisOfApprovals);
                 serviceResponse.Data = result;

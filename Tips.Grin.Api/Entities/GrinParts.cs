@@ -15,7 +15,8 @@ namespace Tips.Grin.Api.Entities
 
         public string ItemNumber { get; set; } 
             
-            public string ItemDescription { get; set; }
+        public string ItemDescription { get; set; }
+        public string? PONumber { get; set; }
 
         public string MftrItemNumber { get; set; }
 
@@ -27,16 +28,16 @@ namespace Tips.Grin.Api.Entities
         public decimal UnitPrice { get; set; }
 
         [Precision(13,3)]
-        public decimal POOrderQuantity { get; set; }
+        public decimal POOrderQty { get; set; }
 
         [Precision(13, 3)]
-        public decimal POBalancedQuantity { get; set; }
+        public decimal POBalancedQty { get; set; }
 
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
 
         [Precision(13, 3)]
-        public decimal Quantity { get; set; }
+        public decimal Qty { get; set; }
 
         public string UOM { get; set; }
 
@@ -66,5 +67,6 @@ namespace Tips.Grin.Api.Entities
         public int GrinsId { get; set; }
         public Grins? Grins { get; set; }
 
+        public List<ProjectNumber>? ProjectNumbers { get; set; }
     }
 }

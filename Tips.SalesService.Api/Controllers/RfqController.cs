@@ -848,7 +848,9 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
+                
                  var rfqs = _mapper.Map<Rfq>(rfqPostDto);
+               // rfqs.IsSourcing = true;
 
                 //var notes = _mapper.Map<IEnumerable<RfqNotes>>(rfq.rfqNotes);
 
@@ -899,6 +901,7 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse); 
                 }
                 var rfqLPCosting = _mapper.Map<RfqLPCosting>(rfqLPCostingDtoPost);
+
                 var rfqLPCostingDto = rfqLPCostingDtoPost.rfqLPCostingItems;
 
                 var lpcostingItemList = new List<RfqLPCostingItem>();

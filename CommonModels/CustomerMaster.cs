@@ -89,8 +89,7 @@ namespace Entities
         public string? FloorSpace { get; set; }
         public string? Machine { get; set; }
         public string? ToolsAndEquip { get; set; }
-        //public string? Tools { get; set; }
-        //public string? Equip { get; set; }
+      
         public bool ERP { get; set; }
         public string? ERPValue { get; set; }
         public string?ESDSetup { get; set; }
@@ -99,8 +98,7 @@ namespace Entities
         public string? Sqft { get; set; }
         public string? MachineDetails { get; set; }
         public string? ToolsAndEquipDetails { get; set; }
-        //public string? ToolsDetials { get; set; }
-        //public string? EquipDetials { get; set; }
+     
         public bool ERPDetails { get; set; }
         public string? ESDSetupDetails { get; set; }
         public string? HazmatSetupDetails { get; set; }
@@ -123,7 +121,7 @@ namespace Entities
 
         public string? AuditFrequency { get; set; }
         public string? CustomerApprove { get; set; }
-        //public bool IsActive { get; set; } = true;
+   
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }

@@ -20,8 +20,9 @@ namespace Repository
         {
             natureOfRelationship.CreatedBy = "Admin";
             natureOfRelationship.CreatedOn = DateTime.Now;
-            var result = await Create(natureOfRelationship);
             natureOfRelationship.Unit = "Bangalore";
+            var result = await Create(natureOfRelationship);
+            
             return result.Id;
         }
 
@@ -35,23 +36,23 @@ namespace Repository
         public async Task<IEnumerable<NatureOfRelationship>> GetAllActiveNatureOfRelationships()
         {
 
-            var natureOfRelationshipList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return natureOfRelationshipList;
+            var AllActiveNatureOfRelationships = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveNatureOfRelationships;
         }
 
         public async Task<IEnumerable<NatureOfRelationship>> GetAllNatureOfRelationships()
         {
-            var natureOfRelationshipList = await FindAll().ToListAsync();
+            var GetallNatureOfRelationships = await FindAll().ToListAsync();
 
-            return natureOfRelationshipList;
+            return GetallNatureOfRelationships;
         }
 
         public async Task<NatureOfRelationship> GetNatureOfRelationshipById(int id)
         {
 
-            var natureOfRelationship = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var NatureOfRelationshipbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return natureOfRelationship;
+            return NatureOfRelationshipbyId;
         }
 
         public async Task<string> UpdateNatureOfRelationship(NatureOfRelationship natureOfRelationship)

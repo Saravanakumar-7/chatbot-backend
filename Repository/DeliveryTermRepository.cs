@@ -22,8 +22,6 @@ namespace Repository
             deliveryTerm.Unit = "Bangalore";
             var result = await Create(deliveryTerm);
             return result.Id;
-
-            //throw new NotImplementedException();
         }
 
         public async Task<string> DeleteDeliveryTerm(DeliveryTerm deliveryTerm)
@@ -31,31 +29,30 @@ namespace Repository
             Delete(deliveryTerm);
             string result = $"Delivery Terms details of {deliveryTerm.Id} is deleted successfully!";
             return result;
-            //throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<DeliveryTerm>> GetAllActiveDeliveryTerms()
         {
-            var DeliveryTermList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return DeliveryTermList;
-            //throw new NotImplementedException();
+            var AllActiveDeliveryTerm = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveDeliveryTerm;
+
         }
 
         public async Task<IEnumerable<DeliveryTerm>> GetAllDeliveryTerms()
         {
 
-            var DeliveryTermList = await FindAll().ToListAsync();
+            var GetallDeliveryTerms = await FindAll().ToListAsync();
 
-            return DeliveryTermList;
-            //throw new NotImplementedException();
+            return GetallDeliveryTerms;
+            
         }
 
         public async Task<DeliveryTerm> GetDeliveryTermById(int id)
         {
-            var deliveryTerm = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var DeliveryTermbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return deliveryTerm;
-            // throw new NotImplementedException();
+            return DeliveryTermbyId;
+          
         }
 
         public async Task<string> UpdateDeliveryTerm(DeliveryTerm deliveryTerm)
@@ -65,7 +62,7 @@ namespace Repository
             Update(deliveryTerm);
             string result = $"Delivery Term of Detail {deliveryTerm.Id} is updated successfully!";
             return result;
-            //throw new NotImplementedException();
+        
         }
     }
 }

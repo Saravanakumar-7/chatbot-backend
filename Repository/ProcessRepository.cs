@@ -20,8 +20,9 @@ namespace Repository
         {
             process.CreatedBy = "Admin";
             process.CreatedOn = DateTime.Now;
-            var result = await Create(process);
             process.Unit = "Bangalore";
+            var result = await Create(process);
+
             return result.Id;
         }
 
@@ -34,22 +35,22 @@ namespace Repository
 
         public async Task<IEnumerable<Process>> GetAllActiveProcesses()
         {
-            var ProcessList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return ProcessList;
+            var AllActiveProcessList = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveProcessList;
         }
 
         public async Task<IEnumerable<Process>> GetAllProcesses()
         {
-            var ProcessList = await FindAll().ToListAsync();
+            var GetallProcessList = await FindAll().ToListAsync();
 
-            return ProcessList;
+            return GetallProcessList;
         }
 
         public async Task<Process> GetProcessById(int id)
         {
-            var process = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var ProcessById = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return process;
+            return ProcessById;
         }
 
         public async Task<string> UpdateProcess(Process process)
