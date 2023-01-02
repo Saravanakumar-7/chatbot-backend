@@ -165,7 +165,7 @@ namespace Entities.DTOs
         public string? StagOfConstuction { get; set; }
 
         public string? Tags { get; set; }
-        public string Unit { get; set; }
+        
         public List<LeadAddressPostDto>? LeadAddresses { get; set; }
 
     }

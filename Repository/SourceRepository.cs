@@ -19,8 +19,9 @@ namespace Repository
         {
             source.CreatedBy = "Admin";
             source.CreatedOn = DateTime.Now;
-            var result = await Create(source);
             source.Unit = "Bangalore";
+            var result = await Create(source);
+         
             return result.Id;
 
         }
@@ -35,23 +36,23 @@ namespace Repository
         public async Task<IEnumerable<Source>> GetAllActiveSources()
         {
 
-            var secondarySegments = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return secondarySegments;
+            var AllActiveSecondarySources = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveSecondarySources;
         }
 
         public async Task<IEnumerable<Source>> GetAllSources()
         {
 
-            var sources = await FindAll().ToListAsync();
+            var GetallSources = await FindAll().ToListAsync();
 
-            return sources;
+            return GetallSources;
         }
 
         public async Task<Source> GetSourceById(int id)
         {
-            var sources = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var SourcesbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return sources;
+            return SourcesbyId;
         }
         public async Task<string> UpdateSource(Source source)
         {

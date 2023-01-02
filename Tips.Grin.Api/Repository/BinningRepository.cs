@@ -22,19 +22,20 @@ namespace Tips.Grin.Api.Repository
             binning.LastModifiedOn = DateTime.Now;
             binning.CreatedBy = "Admin";
             binning.CreatedOn = DateTime.Now;
+            binning.Unit = "Bangalore";
             var result = await Create(binning);
             return result.Id;
         }
         public async Task<IEnumerable<Binning>> GetAllBinningDetails()
         {
-            var binnings = await FindAll().ToListAsync();
-            return binnings;
+            var GetallBinnings = await FindAll().ToListAsync();
+            return GetallBinnings;
 
         }
         public async Task<IEnumerable<Binning>> GetBinningDetailsByGrinNo(string grinNo)
         {
-            var binningList = await FindByCondition(x => x.SelectGrinNo == grinNo).ToListAsync();
-            return binningList;
+            var BinningbyGrinNo = await FindByCondition(x => x.SelectGrinNumber == grinNo).ToListAsync();
+            return BinningbyGrinNo;
         }
 
         public async Task<string> UpdateBinning(Binning binning)
@@ -42,19 +43,19 @@ namespace Tips.Grin.Api.Repository
             binning.LastModifiedBy = "Admin";
             binning.LastModifiedOn = DateTime.Now;
             Update(binning);
-            string result = $"LeadTime details of {binning.Id} is updated successfully!";
+            string result = $"binning details of {binning.Id} is updated successfully!";
             return result;
         }
 
 
         public async Task<Binning> GetBinningDetailsbyId(int id)
         {
-            var binnings = await _tipsGrinDbContext.Binnings.Where(x => x.Id == id)
-                              .Include(t => t.binningItems)
-                              .ThenInclude(x => x.binningLocations)
+            var BinningbyId = await _tipsGrinDbContext.Binnings.Where(x => x.Id == id)
+                              .Include(t => t.BinningItems)
+                              .ThenInclude(x => x.BinningLocations)
                            .FirstOrDefaultAsync();
 
-            return binnings;
+            return BinningbyId;
         }
 
         public async Task<string> DeleteBinning(Binning binning)

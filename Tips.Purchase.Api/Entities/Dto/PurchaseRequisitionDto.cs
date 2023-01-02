@@ -37,13 +37,6 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public string? SpecialTermsConditions { get; set; }
 
-        //public bool PRApprovalI { get; set; }
-        //public string PRApprovedIBy { get; set; }
-        //public DateTime PRApprovedIDate { get; set; }
-
-        //public bool PRApprovalII { get; set; }
-        //public string PRApprovedIIBy { get; set; }
-        //public DateTime PRApprovedIIDate { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -79,18 +72,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
     public string? SpecialTermsConditions { get; set; }
 
-        //public bool PRApprovalI { get; set; }
-        //public string PRApprovedIBy { get; set; }
-        //public DateTime PRApprovedIDate { get; set; }
-
-        //public bool PRApprovalII { get; set; }
-        //public string PRApprovedIIBy { get; set; }
-        //public DateTime PRApprovedIIDate { get; set; }
-
-        public string? CreatedBy { get; set; }
-    public DateTime? CreatedOn { get; set; }
-    public string? LastModifiedBy { get; set; }
-    public DateTime? LastModifiedOn { get; set; }
+        
     public List<PrItemsDtoPost>? PrItemsDtoPostList { get; set; }
     }
     public class PurchaseRequisitionDtoUpdate
@@ -122,13 +104,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public string? SpecialTermsConditions { get; set; }
 
-        //public bool PRApprovalI { get; set; }
-        //public string PRApprovedIBy { get; set; }
-        //public DateTime PRApprovedIDate { get; set; }
-
-        //public bool PRApprovalII { get; set; }
-        //public string PRApprovedIIBy { get; set; }
-        //public DateTime PRApprovedIIDate { get; set; }
+        
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

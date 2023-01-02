@@ -11,8 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqLPCostingNREConsumable
     {
-        [Key]
-        public int NREId { get; set; }
+        public int Id { get; set; }
         public int? NREQty { get; set; }
         [Precision(13, 3)]
         public decimal? NRECost { get; set; }

@@ -20,8 +20,9 @@ namespace Repository
         {
             exportUnitType.CreatedBy = "Admin";
             exportUnitType.CreatedOn = DateTime.Now;
-            var result = await Create(exportUnitType);
             exportUnitType.Unit = "Bangalore";
+            var result = await Create(exportUnitType);
+            
             return result.Id;
         }
 
@@ -35,23 +36,23 @@ namespace Repository
         public async Task<IEnumerable<ExportUnitType>> GetAllActiveExportUnitTypes()
         {
 
-            var exportUnitTypeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return exportUnitTypeList;
+            var AllActiveExportUnitTypes = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveExportUnitTypes;
         }
 
         public async Task<IEnumerable<ExportUnitType>> GetAllExportUnitTypes()
         {
 
-            var exportUnitTypeList = await FindAll().ToListAsync();
+            var GetallExportUnitTypes = await FindAll().ToListAsync();
 
-            return exportUnitTypeList;
+            return GetallExportUnitTypes;
         }
 
         public async Task<ExportUnitType> GetExportUnitTypeById(int id)
         {
-            var exportUnitType = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var ExportUnitTypebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return exportUnitType;
+            return ExportUnitTypebyId;
         }
 
         public async Task<string> UpdateExportUnitType(ExportUnitType exportUnitType)

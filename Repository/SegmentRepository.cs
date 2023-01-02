@@ -20,8 +20,9 @@ namespace Repository
         {
             segment.CreatedBy = "Admin";
             segment.CreatedOn = DateTime.Now;
-            var result = await Create(segment);
             segment.Unit = "Bangalore";
+            var result = await Create(segment);
+          
             return result.Id;
         }
 
@@ -34,20 +35,20 @@ namespace Repository
 
         public async Task<IEnumerable<Segment>> GetAllActiveSegment()
         {
-            var segmentList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return segmentList;
+            var AllActiveSegmentList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            return AllActiveSegmentList;
         }
 
         public async Task<IEnumerable<Segment>> GetAllSegment()
         {
-            var segmentList = await FindAll().ToListAsync();
-            return segmentList;
+            var GetallsegmentList = await FindAll().ToListAsync();
+            return GetallsegmentList;
         }
 
         public async Task<Segment> GetSegmentById(int id)
         {
-            var segmentList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-            return segmentList;
+            var SegmentbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return SegmentbyId;
         }
 
         public async Task<string> UpdateSegment(Segment segment)

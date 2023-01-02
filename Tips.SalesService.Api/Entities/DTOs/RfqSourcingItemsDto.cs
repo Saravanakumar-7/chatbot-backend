@@ -38,13 +38,14 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqSourcingItemsDtoUpdate
     {
-        public int Id { get; set; }
+       // public int Id { get; set; }
         [StringLength(500, ErrorMessage = "ItemNumber can't be longer than 100 characters")]
         public string? ItemNumber { get; set; }
         [StringLength(500, ErrorMessage = "ItemDescription can't be longer than 500 characters")]
         public string? ItemDescription { get; set; }
         public int? QuantityReq { get; set; }
         public int? Count { get; set; }
+
         [Required(ErrorMessage = "Unit is required")]
         public string Unit { get; set; }
         public List<RfqSourcingVendorDtoUpdate>? rfqSourcingVendors { get; set; }

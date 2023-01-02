@@ -35,7 +35,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var currencies = await _repository.CurrencyRepository.GetAllActiveCurrency();
+                var currencies = await _repository.CurrencyRepository.GetAllCurrency();
                 _logger.LogInfo("Returned all Currencies");
                 var result = _mapper.Map<IEnumerable<CurrencyDto>>(currencies);
                 serviceResponse.Data = result;
@@ -55,13 +55,13 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllActivecurrencies()
+        public async Task<IActionResult> GetAllActiveCurrency()
         {
             ServiceResponse<IEnumerable<CurrencyDto>> serviceResponse = new ServiceResponse<IEnumerable<CurrencyDto>>();
 
             try
             {
-                var currencies = await _repository.CostingMethodRepository.GetAllActiveCostingMethods();
+                var currencies = await _repository.CurrencyRepository.GetAllActiveCurrency();
                 _logger.LogInfo("Returned all Currency");
                 var result = _mapper.Map<IEnumerable<CurrencyDto>>(currencies);
                 serviceResponse.Data = result;

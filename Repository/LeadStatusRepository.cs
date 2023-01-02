@@ -20,8 +20,9 @@ namespace Repository
         {
             leadStatus.CreatedBy = "Admin";
             leadStatus.CreatedOn = DateTime.Now;
-            var result = await Create(leadStatus);
             leadStatus.Unit = "Bangalore";
+            var result = await Create(leadStatus);
+            
             return result.Id;
 
         }
@@ -36,23 +37,23 @@ namespace Repository
         public async Task<IEnumerable<LeadStatus>> GetAllActiveLeadStatus()
         {
 
-            var leadStatusList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return leadStatusList;
+            var AllActiveLeadStatus = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveLeadStatus;
         }
 
         public async Task<IEnumerable<LeadStatus>> GetAllLeadStatus()
         {
 
-            var leadStatusList = await FindAll().ToListAsync();
+            var GetallLeadStatus = await FindAll().ToListAsync();
 
-            return leadStatusList;
+            return GetallLeadStatus;
         }
 
         public async Task<LeadStatus> GetLeadStatusById(int id)
         {
-            var leadStatus = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var LeadStatusbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return leadStatus;
+            return LeadStatusbyId;
         }
         public async Task<string> UpdateLeadStatus(LeadStatus leadStatus)
         {

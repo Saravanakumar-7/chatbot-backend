@@ -12,7 +12,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 {
     public class RfqLPCostingOtherChargesDto
     {
-        public int OthersId { get; set; }
+        public int Id { get; set; }
         public string? NameOfLable { get; set; }      
 
         [Precision(13, 8)]
@@ -38,17 +38,15 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqLPCostingOtherChargesDtoUpdate
     {
-        public int OthersId { get; set; }
-
         [StringLength(500, ErrorMessage = "NameOfLable can't be longer than 500 characters")]
 
         public string? NameOfLable { get; set; }      
        
         [Precision(13, 8)]
         public decimal? CostOfLable { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
 
         public string Unit { get; set; }
+
 
     }
 }

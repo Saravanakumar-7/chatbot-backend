@@ -20,8 +20,9 @@ namespace Repository
         {
             preferredFreightForwarder.CreatedBy = "Admin";
             preferredFreightForwarder.CreatedOn = DateTime.Now;
-            var result = await Create(preferredFreightForwarder);
             preferredFreightForwarder.Unit = "Bangalore";
+            var result = await Create(preferredFreightForwarder);
+            
             return result.Id;
         }
 
@@ -35,22 +36,22 @@ namespace Repository
         public async Task<IEnumerable<PreferredFreightForwarder>> GetAllActivePreferredFreightForwarders()
         {
 
-            var preferredFreightForwarderlist = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return preferredFreightForwarderlist;
+            var AllActivePreferredFreightForwarder = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActivePreferredFreightForwarder;
         }
 
         public async Task<IEnumerable<PreferredFreightForwarder>> GetAllPreferredFreightForwarders()
         {
-            var preferredFreightForwarderlist = await FindAll().ToListAsync();
+            var GetallPreferredFreightForwarderlist = await FindAll().ToListAsync();
 
-            return preferredFreightForwarderlist;
+            return GetallPreferredFreightForwarderlist;
         }
 
         public async Task<PreferredFreightForwarder> GetPreferredFreightForwarderById(int id)
         {
-            var preferredFreightForwarder = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var PreferredFreightForwarderbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return preferredFreightForwarder;
+            return PreferredFreightForwarderbyId;
         }
 
         public async Task<string> UpdatePreferredFreightForwarder(PreferredFreightForwarder preferredFreightForwarder)
@@ -58,7 +59,7 @@ namespace Repository
             preferredFreightForwarder.LastModifiedBy = "Admin";
             preferredFreightForwarder.LastModifiedOn = DateTime.Now;
             Update(preferredFreightForwarder);
-            string result = $"AuditFrequency details of {preferredFreightForwarder.Id} is updated successfully!";
+            string result = $"PreferredFreightForwarder details of {preferredFreightForwarder.Id} is updated successfully!";
             return result;
         }
     }

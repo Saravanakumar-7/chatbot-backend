@@ -20,10 +20,6 @@ namespace Entities.DTOs
         public string? LaborHours { get; set; }
         [DefaultValue(false)]
         public bool IsRoutingActive { get; set; }
-
-        //[ForeignKey(nameof(ItemMaster))]
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -41,13 +37,6 @@ namespace Entities.DTOs
         [DefaultValue(false)]
         public bool IsRoutingActive { get; set; }
 
-        //[ForeignKey(nameof(ItemMaster))]
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
-
     }
 
     public class ItemMasterRoutingDtoUpdate
@@ -62,9 +51,6 @@ namespace Entities.DTOs
         [DefaultValue(false)]
         public bool IsRoutingActive { get; set; }
 
-        //[ForeignKey(nameof(ItemMaster))]
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
         [Required(ErrorMessage = "Unit is required")]
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
         public string Unit { get; set; }

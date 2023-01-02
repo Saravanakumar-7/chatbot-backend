@@ -20,8 +20,9 @@ namespace Repository
         {
             demoStatus.CreatedBy = "Admin";
             demoStatus.CreatedOn = DateTime.Now;
-            var result = await Create(demoStatus);
             demoStatus.Unit = "Bangalore";
+            var result = await Create(demoStatus);
+           
             return result.Id;
 
         }
@@ -36,23 +37,23 @@ namespace Repository
         public async Task<IEnumerable<DemoStatus>> GetAllActiveDemoStatus()
         {
 
-            var demoStatusList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return demoStatusList;
+            var AllActiveDemoStatus = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveDemoStatus;
         }
 
         public async Task<IEnumerable<DemoStatus>> GetAllDemoStatus()
         {
 
-            var demoStatusList = await FindAll().ToListAsync();
+            var GetallDemoStatus= await FindAll().ToListAsync();
 
-            return demoStatusList;
+            return GetallDemoStatus;
         }
 
         public async Task<DemoStatus> GetDemoStatusById(int id)
         {
-            var demoStatus = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var DemoStatusbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return demoStatus;
+            return DemoStatusbyId;
         }
         public async Task<string> UpdateDemoStatus(DemoStatus demoStatus)
         {

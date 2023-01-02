@@ -36,14 +36,14 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<IEnumerable<IQCConfirmation>> GetAllIqcDetails()
         {
-            var IQCList = await FindAll().ToListAsync();
-            return (IQCList);
+            var GetallIQCList = await FindAll().ToListAsync();
+            return (GetallIQCList);
 
         }
         public async Task<IEnumerable<IQCConfirmation>> GetIqcDetailsbyGrinNo(string grinNumber)
     {
-            var IQCList = await FindByCondition(x => x.GrinNumber == grinNumber).ToListAsync();
-            return IQCList;
+            var IQCByGrinNo = await FindByCondition(x => x.GrinNumber == grinNumber).ToListAsync();
+            return IQCByGrinNo;
         }
 
         public async Task<string> UpdateIqc(IQCConfirmation iQCConfirmation)
@@ -51,16 +51,16 @@ namespace Tips.Grin.Api.Repository
             iQCConfirmation.LastModifiedBy = "Admin";
             iQCConfirmation.LastModifiedOn = DateTime.Now;
             Update(iQCConfirmation);
-            string result = $"LeadTime details of {iQCConfirmation.Id} is updated successfully!";
+            string result = $"IQC details of {iQCConfirmation.Id} is updated successfully!";
             return result;
         }
 
 
         public async Task<IQCConfirmation> GetIqcDetailsbyId(int id)
         {
-            var IQCList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var IQCById = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return IQCList;
+            return IQCById;
         }
  
     }

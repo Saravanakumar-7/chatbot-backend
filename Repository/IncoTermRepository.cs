@@ -21,8 +21,9 @@ namespace Repository
         {
             incoTerm.CreatedBy = "Admin";
             incoTerm.CreatedOn = DateTime.Now;
-            var result = await Create(incoTerm);
             incoTerm.Unit = "Bangalore";
+            var result = await Create(incoTerm);
+           
             return result.Id;
         }
 
@@ -35,22 +36,22 @@ namespace Repository
 
         public async Task<IEnumerable<IncoTerm>> GetAllActiveIncoTerm()
         {
-            var incoTerms = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return incoTerms;
+            var AllActiveIncoTerms = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveIncoTerms;
         }
 
         public async Task<IEnumerable<IncoTerm>> GetAllIncoTerm()
         {
-            var incoTerms = await FindAll().ToListAsync();
+            var GetallIncoTerms = await FindAll().ToListAsync();
 
-            return incoTerms;
+            return GetallIncoTerms;
         }
 
         public async Task<IncoTerm> GetIncoTermById(int id)
         {
-            var incoTerm = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var IncoTermbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return incoTerm;
+            return IncoTermbyId;
         }
 
         public async Task<string> UpdateIncoTerm(IncoTerm incoTerm)

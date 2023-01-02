@@ -20,8 +20,9 @@ namespace Repository
         {
             currency.CreatedBy = "Admin";
             currency.CreatedOn = DateTime.Now;
-            var result = await Create(currency);
             currency.Unit = "Bangalore";
+            var result = await Create(currency);
+            
             return result.Id;
         }
 
@@ -34,22 +35,22 @@ namespace Repository
 
         public async Task<IEnumerable<Currency>> GetAllActiveCurrency()
         {
-            var currencies = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return currencies;
+            var AllActivecurrencies = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActivecurrencies;
         }
 
         public async Task<IEnumerable<Currency>> GetAllCurrency()
         {
-            var currencies = await FindAll().ToListAsync();
+            var Getallcurrencies = await FindAll().ToListAsync();
 
-            return currencies;
+            return Getallcurrencies;
         }
 
         public async Task<Currency> GetCurrencyById(int id)
         {
-            var currency = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var CurrencybyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return currency;
+            return CurrencybyId;
         }
 
         public async Task<string> UpdateCurrency(Currency currency)

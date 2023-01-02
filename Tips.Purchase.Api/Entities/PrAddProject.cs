@@ -14,7 +14,7 @@ namespace Tips.Purchase.Api.Entities
         public int Id { get; set; }
         public string PrProjectNumber { get; set; }
         [Precision(13, 2)]
-        public decimal PrProjectQuantity { get; set; }
+        public decimal PrProjectQty { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

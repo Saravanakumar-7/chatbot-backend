@@ -132,9 +132,9 @@ namespace Entities.DTOs
         public string? Hsn { get; set; }
         [MaxLength(100)]
         public string? MaterialGroup { get; set; }
-        //[DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
+        
         public DateTime? ValidFrom { get; set; }
-        //[DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
+        
         public DateTime? ValidTo { get; set; }
         [MaxLength(50)]
         public string? PurchaseGroup { get; set; }
@@ -198,9 +198,7 @@ namespace Entities.DTOs
         public bool Valuation { get; set; }
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
+     
         public List<ItemmasterAlternateDtoPost>? ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouseDtoPost>? ItemMasterWarehouse { get; set; }
         public List<ItemMasterApprovedVendorDtoPost>? ItemMasterApprovedVendor { get; set; }

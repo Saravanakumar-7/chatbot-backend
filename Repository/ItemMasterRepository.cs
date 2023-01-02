@@ -22,8 +22,9 @@ namespace Repository
         {
             itemMaster.CreatedBy = "Admin";
             itemMaster.CreatedOn = DateTime.Now;
-            var result = await Create(itemMaster);
             itemMaster.Unit = "Bangalore";
+            var result = await Create(itemMaster);
+            
             return result.Id;
         }
 
@@ -36,13 +37,13 @@ namespace Repository
 
         public async Task<IEnumerable<ItemMaster>> GetAllActiveItems()
         {
-            var LeadTimeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return LeadTimeList;
+            var AllActiveItems= await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveItems;
         }
 
         public async Task<PagedList<ItemMaster>> GetAllItems(PagingParameter pagingParameter)
         {
-            var itemmasterList = PagedList<ItemMaster>.ToPagedList(FindAll()
+            var GetallItemmaster= PagedList<ItemMaster>.ToPagedList(FindAll()
                                 .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(m => m.ItemMasterFileUpload)
@@ -50,11 +51,11 @@ namespace Repository
                                 .Include(f => f.ItemMasterWarehouse)
                                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
                                  
-            return itemmasterList;
+            return GetallItemmaster;
         }
         public async Task<PagedList<ItemMaster>> GetAllFGItems(PagingParameter pagingParameter)
         {
-            var itemmasterList = PagedList<ItemMaster>.ToPagedList(FindAll().Where(a => a.ItemType == "Fg")
+            var GetallFgItems = PagedList<ItemMaster>.ToPagedList(FindAll().Where(a => a.ItemType == "Fg")
                                 .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(m => m.ItemMasterFileUpload)
@@ -62,11 +63,11 @@ namespace Repository
                                 .Include(f => f.ItemMasterWarehouse)
                                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return itemmasterList;
+            return GetallFgItems;
         }
         public async Task<PagedList<ItemMaster>> GetAllSAItems(PagingParameter pagingParameter)
         {
-            var itemmasterList = PagedList<ItemMaster>.ToPagedList(FindAll().Where(a => a.ItemType == "Sa")
+            var GetallSaItems = PagedList<ItemMaster>.ToPagedList(FindAll().Where(a => a.ItemType == "Sa")
                                 .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(m => m.ItemMasterFileUpload)
@@ -74,11 +75,11 @@ namespace Repository
                                 .Include(f => f.ItemMasterWarehouse)
                                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return itemmasterList;
+            return GetallSaItems;
         }
         public async Task<PagedList<ItemMaster>> GetAllFgSaItems(PagingParameter pagingParameter)
         {
-            var itemmasterList = PagedList<ItemMaster>.ToPagedList(FindAll().Where(a => a.ItemType == "Sa" || a.ItemType == "Fg")
+            var GetallFgSaItems = PagedList<ItemMaster>.ToPagedList(FindAll().Where(a => a.ItemType == "Sa" || a.ItemType == "Fg")
                                 .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(m => m.ItemMasterFileUpload)
@@ -86,12 +87,12 @@ namespace Repository
                                 .Include(f => f.ItemMasterWarehouse)
                                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return itemmasterList;
+            return GetallFgSaItems;
         }
 
         public async Task<ItemMaster> GetItemById(int id)
         {
-            var ItemMasterList = await TipsMasterDbContext.ItemMasters
+            var ItemMasterbyId = await TipsMasterDbContext.ItemMasters
                             .Where(x => x.Id == id)
                              .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
@@ -99,9 +100,9 @@ namespace Repository
                                 .Include(s => s.ItemMasterRouting)
                                 .Include(p => p.ItemMasterWarehouse)
                              .FirstOrDefaultAsync();
-            //var ItemMasterList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+           
 
-            return ItemMasterList;
+            return ItemMasterbyId;
         }
 
         public async Task<string> UpdateItem(ItemMaster itemMaster)
@@ -114,7 +115,7 @@ namespace Repository
         }
         public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllActiveItemMasterIdNoList()
         {
-            IEnumerable<ItemMasterIdNoListDto> ItemMasterDetails = await TipsMasterDbContext.ItemMasters
+            IEnumerable<ItemMasterIdNoListDto> AllActiveItemmasterIDNO = await TipsMasterDbContext.ItemMasters
                                 .Select(c => new ItemMasterIdNoListDto()
                                 {
                                     id = c.Id,
@@ -125,14 +126,14 @@ namespace Repository
                                 })
                               .ToListAsync();
 
-            return ItemMasterDetails;
+            return AllActiveItemmasterIDNO;
         }
         public async Task<ItemMaster> GetItemByItemNumber(string ItemNumber)
         {
-            var ItemNumberList = await FindByCondition(x => x.ItemNumber == ItemNumber)
+            var ItemByItemNo = await FindByCondition(x => x.ItemNumber == ItemNumber)
 
                              .FirstOrDefaultAsync();
-            return ItemNumberList;
+            return ItemByItemNo;
         }       
          
     }

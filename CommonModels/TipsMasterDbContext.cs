@@ -21,24 +21,24 @@ namespace Entities
         public DbSet<RiskCategory> RiskCategory { get; set; }
         public DbSet<QuoteTerms> QuoteTerms { get; set; }
         public DbSet<Segment> Segment { get; set; }
-        public DbSet<PreferredFreightForwarder> preferredFreightForwarders { get; set; }
-        public DbSet<GST_Percentage> gst_Percentages { get; set; }
-        public DbSet<PriceList> priceLists { get; set; }
-        public DbSet<ShipmentMode> shipmentModes { get; set; }
+        public DbSet<PreferredFreightForwarder> PreferredFreightForwarders { get; set; }
+        public DbSet<GST_Percentage> Gst_Percentages { get; set; }
+        public DbSet<PriceList> PriceLists { get; set; }
+        public DbSet<ShipmentMode> ShipmentModes { get; set; }
         // pavan
-        public DbSet<CostCenter> costCenters { get; set; }
-        public DbSet<PurchaseGroup> purchaseGroups { get; set; }
+        public DbSet<CostCenter> CostCenters { get; set; }
+        public DbSet<PurchaseGroup> PurchaseGroups { get; set; }
         public DbSet<CostingMethod> CostingMethods { get; set; }
-        public DbSet<AuditFrequency> auditFrequencies { get; set; }
-        public DbSet<NatureOfRelationship> natureOfRelationships { get; set; }
+        public DbSet<AuditFrequency> AuditFrequencies { get; set; }
+        public DbSet<NatureOfRelationship> NatureOfRelationships { get; set; }
         public DbSet<Language> Languages { get; set; }
-        public DbSet<Salutations> salutations { get; set; }
-        public DbSet<ExportUnitType> exportUnitTypes { get; set; }
-        public DbSet<TypeOfCompany> typeOfCompanies { get; set; }
-        public DbSet<PaymentTerm> paymentTerms { get; set; }
-        public DbSet<PackingInstruction> packingInstructions { get; set; }
+        public DbSet<Salutations> Salutations { get; set; }
+        public DbSet<ExportUnitType> ExportUnitTypes { get; set; }
+        public DbSet<TypeOfCompany> TypeOfCompanies { get; set; }
+        public DbSet<PaymentTerm> PaymentTerms { get; set; }
+        public DbSet<PackingInstruction> PackingInstructions { get; set; }
 
-        public DbSet<Process> processes { get; set; }
+        public DbSet<Process> Processes { get; set; }
         public DbSet<HeadCounting>? HeadCountings { get; set; }
         public DbSet<CompanyMasterHeadCounting>? CompanyMasterHeadCountings { get; set; }
 
@@ -93,7 +93,7 @@ namespace Entities
 
         public DbSet<PartTypes> PartTypes { get; set; }
         public DbSet<Lead> Leads { get; set; }
-        public DbSet<LeadAddress> leadAddresses { get; set; }
+        public DbSet<LeadAddress> LeadAddresses { get; set; }
 
         public DbSet<DemoStatus> DemoStatuses { get; set; }
         public DbSet<LeadStatus> LeadStatuses { get; set; }

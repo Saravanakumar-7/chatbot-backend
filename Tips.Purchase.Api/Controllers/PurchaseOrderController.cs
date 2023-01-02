@@ -34,20 +34,20 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<PurchaseOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderDto>>();
             try
             {
-                var listOfPurchaseOrder = await _repository.GetAllPurchaseOrder(pagingParameter);
+                var AllPurchaseOrder = await _repository.GetAllPurchaseOrder(pagingParameter);
                 var metadata = new
                 {
-                    listOfPurchaseOrder.TotalCount,
-                    listOfPurchaseOrder.PageSize,
-                    listOfPurchaseOrder.CurrentPage,
-                    listOfPurchaseOrder.HasNext,
-                    listOfPurchaseOrder.HasPreviuos
+                    AllPurchaseOrder.TotalCount,
+                    AllPurchaseOrder.PageSize,
+                    AllPurchaseOrder.CurrentPage,
+                    AllPurchaseOrder.HasNext,
+                    AllPurchaseOrder.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all PurchaseOrder");
-                var result = _mapper.Map<IEnumerable<PurchaseOrderDto>>(listOfPurchaseOrder);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderDto>>(AllPurchaseOrder);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PurchaseOrder";
                 serviceResponse.Success = true;
@@ -72,9 +72,9 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
             try
             {
-                var purchaseOrderDetails = await _repository.GetPurchaseOrderById(id);
+                var purchaseOrderDetailsbyId = await _repository.GetPurchaseOrderById(id);
 
-                if (purchaseOrderDetails == null)
+                if (purchaseOrderDetailsbyId == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"PurchaseOrder  hasn't been found in db.";
@@ -86,17 +86,17 @@ namespace Tips.Purchase.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetails);
+                    PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetailsbyId);
                     List<PoItemsDto> poItemsDtoList = new List<PoItemsDto>();
-                    foreach (var itemDetails in purchaseOrderDetails.PoItemList)
+                    foreach (var itemDetails in purchaseOrderDetailsbyId.POItemList)
                     {
                         PoItemsDto poItemsDtos = _mapper.Map<PoItemsDto>(itemDetails);
-                        poItemsDtos.PoAddprojectsDtoList = _mapper.Map<List<PoAddProjectDto>>(itemDetails.PoAddprojects);
-                        poItemsDtos.PoAddDeliverySchedulesDtoList = _mapper.Map<List<PoAddDeliveryScheduleDto>>(itemDetails.PoAddDeliverySchedules);
+                        poItemsDtos.POAddprojectsDtoList = _mapper.Map<List<PoAddProjectDto>>(itemDetails.POAddprojects);
+                        poItemsDtos.POAddDeliverySchedulesDtoList = _mapper.Map<List<PoAddDeliveryScheduleDto>>(itemDetails.POAddDeliverySchedules);
                         poItemsDtoList.Add(poItemsDtos);
                     }
 
-                    purchaseOrderDto.PoItemsDtoList = poItemsDtoList;     
+                    purchaseOrderDto.POItemsDtoList = poItemsDtoList;     
                     serviceResponse.Data = purchaseOrderDto;
                     serviceResponse.Message = "Returned PurchaseOrder";
                     serviceResponse.Success = true;
@@ -142,17 +142,17 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
                 var purchaseOrder = _mapper.Map<PurchaseOrder>(purchaseOrderDtoPost);
-                var itemsDto = purchaseOrderDtoPost.PoItemsDtoPostList;
+                var itemsDto = purchaseOrderDtoPost.POItemsDtoPostList;
                 var itemsDtoList = new List<PoItem>();
                 for(int i=0;i< itemsDto.Count;i++)
                 {
                     PoItem poItemsDetails=_mapper.Map<PoItem>(itemsDto[i]);
-                    poItemsDetails.PoAddprojects = _mapper.Map<List<PoAddProject>>(itemsDto[i].PoAddprojectsDtoPostList);
-                    poItemsDetails.PoAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(itemsDto[i].PoAddDeliverySchedulesDtoPostList);
+                    poItemsDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(itemsDto[i].POAddprojectsDtoPostList);
+                    poItemsDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(itemsDto[i].POAddDeliverySchedulesDtoPostList);
                     
                     itemsDtoList.Add(poItemsDetails);
                 }
-                purchaseOrder.PoItemList=itemsDtoList;
+                purchaseOrder.POItemList=itemsDtoList;
 
                 await _repository.CreatePurchaseOrder(purchaseOrder);
                 _repository.SaveAsync();
@@ -212,16 +212,16 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
                 var purchaseOrderList = _mapper.Map<PurchaseOrder>(updatePurchaseOrder);
-                var itemsDto = purchaseOrderDtoUpdate.PoItemsDtoUpdateList;
+                var itemsDto = purchaseOrderDtoUpdate.POItemsDtoUpdateList;
                 var itemsList = new List<PoItem>();
                 for (int i = 0; i < itemsDto.Count; i++)
                 {
                     PoItem poItemsDetails = _mapper.Map<PoItem>(itemsDto[i]);
-                    poItemsDetails.PoAddprojects = _mapper.Map<List<PoAddProject>>(itemsDto[i].PoAddprojectsDtoUpdateList);
-                    poItemsDetails.PoAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(itemsDto[i].PoAddDeliverySchedulesDtoUpdateList);  
+                    poItemsDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(itemsDto[i].POAddprojectsDtoUpdateList);
+                    poItemsDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(itemsDto[i].POAddDeliverySchedulesDtoUpdateList);  
                     itemsList.Add(poItemsDetails);
                 }
-                purchaseOrderList.PoItemList = itemsList;
+                purchaseOrderList.POItemList = itemsList;
                 var data = _mapper.Map(purchaseOrderDtoUpdate, purchaseOrderList);
                 string result = await _repository.UpdatePurchaseOrder(data);
                 _logger.LogInfo(result);
@@ -287,9 +287,8 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
             try
             {
-                var listOfPurchaseOrder = await _repository.GetAllActivePurchaseOrderNameList();
-                //_logger.LogInfo("Returned all PurchaseOrder");
-                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(listOfPurchaseOrder);
+                var AllActivePurchaseOrder = await _repository.GetAllActivePurchaseOrderNameList();
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(AllActivePurchaseOrder);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PurchaseOrder";
                 serviceResponse.Success = true;
@@ -313,9 +312,9 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
             try
             {
-                var listOfPurchaseOrder = await _repository.GetAllPendingPurchaseOrderApprovalINameList();
-                //_logger.LogInfo("Returned all PurchaseOrder");
-                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(listOfPurchaseOrder);
+                var AllPendingPurchaseOrderApprovalIName = await _repository.GetAllPendingPurchaseOrderApprovalINameList();
+             
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(AllPendingPurchaseOrderApprovalIName);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PendingApprovalIPurchaseOrder";
                 serviceResponse.Success = true;
@@ -339,9 +338,8 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
             try
             {
-                var listOfPurchaseOrder = await _repository.GetAllPendingPurchaseOrderApprovalIINameList();
-                //_logger.LogInfo("Returned all PurchaseOrder");
-                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(listOfPurchaseOrder);
+                var AllPendingPurchaseOrderApprovalIIName = await _repository.GetAllPendingPurchaseOrderApprovalIINameList();
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(AllPendingPurchaseOrderApprovalIIName);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PendingApprovalIIPurchaseOrder";
                 serviceResponse.Success = true;
@@ -366,8 +364,8 @@ namespace Tips.Purchase.Api.Controllers
 
             try
             {
-                var purchaseOrder = await _repository.GetPurchaseOrderByPONumber(PONumber);
-                if (purchaseOrder is null)
+                var ActivatePOApprovalI = await _repository.GetPurchaseOrderByPONumber(PONumber);
+                if (ActivatePOApprovalI is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "PurchaseOrderApprovalI object sent from client is null";
@@ -376,10 +374,10 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError($"PurchaseOrderApprovalI with string: {PONumber}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                purchaseOrder.POApprovalI = true;
-                purchaseOrder.POApprovedIBy = "Admin";
-                purchaseOrder.POApprovedIDate = DateTime.Now;
-                string result = await _repository.UpdatePurchaseOrder(purchaseOrder);
+                ActivatePOApprovalI.POApprovalI = true;
+                ActivatePOApprovalI.POApprovedIBy = "Admin";
+                ActivatePOApprovalI.POApprovedIDate = DateTime.Now;
+                string result = await _repository.UpdatePurchaseOrder(ActivatePOApprovalI);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -406,8 +404,8 @@ namespace Tips.Purchase.Api.Controllers
 
             try
             {
-                var purchaseOrder = await _repository.GetPurchaseOrderByPONumber(PONumber);
-                if (purchaseOrder is null)
+                var ActivatePOApprovalII = await _repository.GetPurchaseOrderByPONumber(PONumber);
+                if (ActivatePOApprovalII is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "PurchaseOrderApprovalII object sent from client is null";
@@ -416,10 +414,10 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError($"PurchaseOrderApprovalII with string: {PONumber}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                purchaseOrder.POApprovalII = true;
-                purchaseOrder.POApprovedIIBy = "Admin";
-                purchaseOrder.POApprovedIIDate = DateTime.Now;
-                string result = await _repository.UpdatePurchaseOrder(purchaseOrder);
+                ActivatePOApprovalII.POApprovalII = true;
+                ActivatePOApprovalII.POApprovedIIBy = "Admin";
+                ActivatePOApprovalII.POApprovedIIDate = DateTime.Now;
+                string result = await _repository.UpdatePurchaseOrder(ActivatePOApprovalII);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -444,9 +442,8 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
             try
             {
-                var listOfPoNumber = await _repository.GetAllPoNumberListByVendorName(VendorName);
-                //_logger.LogInfo("Returned all PurchaseOrder");
-                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(listOfPoNumber);
+                var AllPONumberbyVendorName = await _repository.GetAllPoNumberListByVendorName(VendorName);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(AllPONumberbyVendorName);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PoNumberList";
                 serviceResponse.Success = true;
@@ -470,9 +467,8 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<PurchaseOrderItemNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderItemNoListDto>>();
             try
             {
-                var listOfPoNumber = await _repository.GetAllPoItemNumberListByPoNumber(PoNumber);
-                //_logger.LogInfo("Returned all PurchaseOrder");
-                var result = _mapper.Map<IEnumerable<PurchaseOrderItemNoListDto>>(listOfPoNumber);
+                var AllPOItemNumberbyPONumber = await _repository.GetAllPoItemNumberListByPoNumber(PoNumber);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderItemNoListDto>>(AllPOItemNumberbyPONumber);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PoItemNumberList";
                 serviceResponse.Success = true;
@@ -490,31 +486,6 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-        //[HttpGet("{PoNumber}/{ItemNumber}")]
-        //public async Task<IActionResult> GetAllPoListByPoNumberAndItemNumber(string PoNumber,string ItemNumber)
-        //{
-        //    ServiceResponse<IEnumerable<PoItemListDto>> serviceResponse = new ServiceResponse<IEnumerable<PoItemListDto>>();
-        //    try
-        //    {
-        //        var listOfPoItem = await _repository.GetAllPoListByPoNumberAndItemNumber(PoNumber, ItemNumber);
-        //        //_logger.LogInfo("Returned all PurchaseOrder");
-        //        var result = _mapper.Map<IEnumerable<PoItemListDto>>(listOfPoItem);
-        //        serviceResponse.Data = result;
-        //        serviceResponse.Message = "Returned all PoItemNumberList";
-        //        serviceResponse.Success = true;
-        //        serviceResponse.StatusCode = HttpStatusCode.OK;
-        //        return Ok(serviceResponse);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex.Message);
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = $"Something went wrong inside GetAllPoListByPoNumberAndItemNumber action";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    }
-        //}
 
     }
 }

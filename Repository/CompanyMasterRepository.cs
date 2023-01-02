@@ -22,8 +22,9 @@ namespace Repository
         {
             companyMaster.CreatedBy = "Admin";
             companyMaster.CreatedOn = DateTime.Now;
-            var result = await Create(companyMaster);
             companyMaster.Unit = "Bangalore";
+            var result = await Create(companyMaster);
+            
             return result.Id;
         }
 
@@ -36,7 +37,7 @@ namespace Repository
 
         public async Task<IEnumerable<CompanyIdNameListDto>> GetAllActiveCompanyIdNameList()
         {
-            IEnumerable<CompanyIdNameListDto> companyDetails = await TipsMasterDbContext.CompanyMasters
+            IEnumerable<CompanyIdNameListDto> AllActiveCompanyIDName = await TipsMasterDbContext.CompanyMasters
                                 .Select(x => new CompanyIdNameListDto()
                                 {
                                     Id = x.Id,
@@ -45,18 +46,18 @@ namespace Repository
                                 })
                               .ToListAsync();
 
-            return companyDetails;
+            return AllActiveCompanyIDName;
         }
 
         public async Task<IEnumerable<CompanyMaster>> GetAllActiveCompanyMaster()
         {
-            var companyMasterDetails = await FindAll().ToListAsync();
-            return companyMasterDetails;
+            var AllActiveCompanyMasterDetails = await FindAll().ToListAsync();
+            return AllActiveCompanyMasterDetails;
         }
 
         public async Task<PagedList<CompanyMaster>> GetAllCompanyMaster(PagingParameter pagingParameter)
         {
-            var companyMasterDetails = PagedList<CompanyMaster>.ToPagedList(FindAll()
+            var GetallCompanyMasterDetails = PagedList<CompanyMaster>.ToPagedList(FindAll()
                                 .Include(t => t.CompanyAddresses)
                                 .Include(x => x.CompanyContacts)
                                 .Include(m => m.CompanyBankings)
@@ -64,20 +65,20 @@ namespace Repository
                                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
-            return companyMasterDetails;
+            return GetallCompanyMasterDetails;
         }
          
 
         public async Task<CompanyMaster> GetCompanyMasterById(int id)
         {
-            var companyMasterDetails = await TipsMasterDbContext.CompanyMasters.Where(x => x.Id == id)
+            var CompanyMasterbyId = await TipsMasterDbContext.CompanyMasters.Where(x => x.Id == id)
                                 .Include(t => t.CompanyAddresses)
                                 .Include(x => x.CompanyContacts)
                                 .Include(m => m.CompanyBankings)
                                 .Include(v => v.CompanyMasterHeadCountings)
                                 .FirstOrDefaultAsync();
 
-            return companyMasterDetails;
+            return CompanyMasterbyId;
         }
 
         public async Task<string> UpdateCompanyMaster(CompanyMaster companyMaster)

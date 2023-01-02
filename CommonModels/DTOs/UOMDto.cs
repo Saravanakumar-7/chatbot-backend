@@ -29,9 +29,7 @@ namespace Entities.DTOs
         public string Description { get; set; }
         public string Remarks { get; set; }
         public bool ActiveStatus { get; set; } = true;
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
+     
 
     }
     public class UOMDtoUpdate

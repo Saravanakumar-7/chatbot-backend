@@ -22,13 +22,14 @@ namespace Tips.SalesService.Api.Controllers
         private IRfqSourcingRepository _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
+        private IRfqRepository _rfqRepository;
 
-        public RfqSourcingController(IRfqSourcingRepository repository, ILoggerManager logger, IMapper mapper)
+        public RfqSourcingController(IRfqSourcingRepository repository,IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
-
+            _rfqRepository = rfqRepository;
         }
         // GET: api/<RfqSourcingController>
         [HttpGet]
@@ -151,15 +152,20 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
+
+                
+
                 //var sourceitems = _mapper.Map<IEnumerable<RfqSourcingItems>>(rfqSourcingDtoPost.rfqSourcingItems);
                 var rfqsource = _mapper.Map<RfqSourcing>(rfqSourcingDtoPost);
+                var data = rfqsource.RFQNumber;
+                var rfqsourcingssss = await _rfqRepository.RfqSourcingByRfqNumbersss(data);
+                rfqsourcingssss.IsSourcing = true;
                 var rfqSourceDto = rfqSourcingDtoPost.rfqSourcingItems;
-
-                var sourceItemList = new List<RfqSourcingItems>();
+                 var sourceItemList = new List<RfqSourcingItems>();
                 for (int i = 0; i < rfqSourceDto.Count; i++)
                 {
                     RfqSourcingItems sourceItemListDetail = _mapper.Map<RfqSourcingItems>(rfqSourceDto[i]);
-                    sourceItemListDetail.rfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(rfqSourceDto[i].rfqSourcingVendors);                   
+                     sourceItemListDetail.rfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(rfqSourceDto[i].rfqSourcingVendors);                   
                     sourceItemList.Add(sourceItemListDetail);
 
                 }
@@ -168,7 +174,7 @@ namespace Tips.SalesService.Api.Controllers
                 //var notes = _mapper.Map<IEnumerable<RfqNotes>>(rfq.rfqNotes);
 
                 _repository.CreateRfqSourcing(rfqsource);
-
+                _rfqRepository.Update(rfqsourcingssss);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";

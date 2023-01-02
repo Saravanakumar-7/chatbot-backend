@@ -11,7 +11,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 {
     public class RfqLPCostingProcessDto
     {
-        public int ProcessId { get; set; }
+        public int Id { get; set; }
         public string? ProcessSteps { get; set; }
         public string? MachineHrs { get; set; }
         [Precision(13, 3)]
@@ -40,8 +40,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqLPCostingProcessDtoUpdate
     {
-        public int ProcessId { get; set; }
-
+       
         public string? ProcessSteps { get; set; }
         public string? MachineHrs { get; set; }
         [Precision(13, 3)]

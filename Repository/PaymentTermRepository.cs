@@ -20,8 +20,9 @@ namespace Repository
         {
             paymentTerm.CreatedBy = "Admin";
             paymentTerm.CreatedOn = DateTime.Now;
-            var result = await Create(paymentTerm);
             paymentTerm.Unit = "Bangalore";
+            var result = await Create(paymentTerm);
+           
             return result.Id;
         }
 
@@ -29,31 +30,31 @@ namespace Repository
         {
 
             Delete(paymentTerm);
-            string result = $"AuditFrequency details of {paymentTerm.Id} is deleted successfully!";
+            string result = $"PaymentTerm details of {paymentTerm.Id} is deleted successfully!";
             return result;
         }
 
         public async Task<IEnumerable<PaymentTerm>> GetAllActivepaymentTerms()
         {
 
-            var PaymentTermList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return PaymentTermList;
+            var AllActivePaymentTerms = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActivePaymentTerms;
         }
 
         public async Task<IEnumerable<PaymentTerm>> GetAllpaymentTerms()
         {
 
-            var PaymentTermList = await FindAll().ToListAsync();
+            var GetallPaymentTerms = await FindAll().ToListAsync();
 
-            return PaymentTermList;
+            return GetallPaymentTerms;
         }
 
         public async Task<PaymentTerm> GetpaymentTermById(int id)
         {
 
-            var PaymentTerm = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var PaymentTermbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return PaymentTerm;
+            return PaymentTermbyId;
         }
 
         public async Task<string> UpdatePaymentTerm(PaymentTerm paymentTerm)
@@ -61,7 +62,7 @@ namespace Repository
             paymentTerm.LastModifiedBy = "Admin";
             paymentTerm.LastModifiedOn = DateTime.Now;
             Update(paymentTerm);
-            string result = $"AuditFrequency details of {paymentTerm.Id} is updated successfully!";
+            string result = $"PaymentTerm details of {paymentTerm.Id} is updated successfully!";
             return result;
         }
     }

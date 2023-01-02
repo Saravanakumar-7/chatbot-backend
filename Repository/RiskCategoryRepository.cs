@@ -20,8 +20,9 @@ namespace Repository
         {
             riskCategory.CreatedBy = "Admin";
             riskCategory.CreatedOn = DateTime.Now;
-            var result = await Create(riskCategory);
             riskCategory.Unit = "Bangalore";
+            var result = await Create(riskCategory);
+
             return result.Id;
         }
 
@@ -34,21 +35,21 @@ namespace Repository
 
         public async Task<IEnumerable<RiskCategory>> GetAllActiveRiskCategory()
         {
-            var riskCategoryList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return riskCategoryList;
+            var AllActiveRiskCategory = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            return AllActiveRiskCategory;
         }
 
         public async Task<IEnumerable<RiskCategory>> GetAllRiskCategory()
         {
 
-            var riskCategoryList = await FindAll().ToListAsync();
-            return riskCategoryList;
+            var GetallRiskCategory = await FindAll().ToListAsync();
+            return GetallRiskCategory;
         }
 
         public async Task<RiskCategory> GetRiskCategoryById(int id)
         {
-            var riskCategoryList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-            return riskCategoryList;
+            var RiskCategorybyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return RiskCategorybyId;
         }
 
         public async Task<string> UpdateRiskCategory(RiskCategory riskCategory)
