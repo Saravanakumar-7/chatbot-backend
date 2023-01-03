@@ -23,17 +23,15 @@ namespace Tips.Master.Api.Controllers
         private ILoggerManager _logger;
         private IReleaseProductBomRepository _releaseProductBomRepository;
         private IMapper _mapper;
-        private IReleaseCostBomRepository _releaseCostBomRepository;
-        private IEngineeringCustomFieldRepository _engineeringCustomFieldRepository;
+        private IReleaseCostBomRepository _releaseCostBomRepository; 
  
-        public EngineeringBOMController(IRepositoryWrapperForMaster repository,IEngineeringCustomFieldRepository engineeringCustomFieldRepository ,IReleaseProductBomRepository releaseProductBomRepository, IReleaseCostBomRepository releaseCostBomRepository, IReleaseEnggBomRepository releaseEnggBomRepository, ILoggerManager logger, IMapper mapper)
+        public EngineeringBOMController(IRepositoryWrapperForMaster repository,IReleaseProductBomRepository releaseProductBomRepository, IReleaseCostBomRepository releaseCostBomRepository, IReleaseEnggBomRepository releaseEnggBomRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _releaseCostBomRepository = releaseCostBomRepository;
-            _engineeringCustomFieldRepository = engineeringCustomFieldRepository;
-            _releaseEnggBomRepository = releaseEnggBomRepository;
+             _releaseEnggBomRepository = releaseEnggBomRepository;
             _releaseProductBomRepository = releaseProductBomRepository;
         }
         // GET: api/<EngineeringBOMController>
@@ -197,17 +195,19 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+         
 
-        //json stored code
+        //[HttpPost]
+        //[Route("add-adress")]
+        //public async Task<IActionResult> CreateEnggCustField([FromQuery] int id, [FromBody] EngineeringCustomField engineeringCustomField)
+        //{
+        //    var result = await _engineeringCustomFieldRepository.Employee.Where(_ => _.Id == id).FirstOrDefaultAsync();
 
-        [HttpPost]
-         public async Task<IActionResult> CreateEnggCustField([FromBody] EngineeringCustomFieldPostDto engineeringCustomFieldPostDto)
-        {
-            var enggBomLists = _mapper.Map<EngineeringCustomField>(engineeringCustomFieldPostDto);
-            _engineeringCustomFieldRepository.CreateEnggCustField(enggBomLists);
-            _repository.SaveAsync();
-            return Ok();
-        }
+        //    result?.ContactDetails?.Addresses?.Add(address);
+
+        //    await _myWorldDbContext.SaveChangesAsync();
+        //    return Ok();
+        //}
 
 
 

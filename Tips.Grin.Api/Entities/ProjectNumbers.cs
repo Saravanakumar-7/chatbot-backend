@@ -1,12 +1,18 @@
-﻿namespace Tips.Grin.Api.Entities
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Tips.Grin.Api.Entities
 {
-    public class ProjectNumber
+    public class ProjectNumbers
     {
         public int Id { get; set; }
-        public string? Projectnumber { get; set; }
+        public string? ProjectNumber { get; set; }
         public string? ItemNumber { get; set; }
-        public decimal? Quantity { get; set; }
-        public decimal? ProjectQuantity { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Qty { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? ProjectQty { get; set; }
 
         public string Unit { get; set; }
 
@@ -15,7 +21,7 @@
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public int ProjectNumberId { get; set; }
+        public int GrinPartsId { get; set; }
         public GrinParts? GrinParts { get; set; }
 
 

@@ -10,16 +10,13 @@ namespace Tips.Grin.Api.Entities.DTOs
 {
     public class GrinPartsDto
     {
-        public int Id { get; set; }
-
-        public string ItemNumber { get; set; }
-            
+        public int Id { get; set; } 
         public string ItemDescription { get; set; }
         public string? PONumber { get; set; }
 
         public string MftrItemNumber { get; set; }
 
-        public string ProjectNumber { get; set; }
+        public string? ProjectNumber { get; set; }
 
         public string ManufactureBatchNumber { get; set; }
 
@@ -35,8 +32,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
 
-        [Precision(13, 3)]
-        public decimal Qty { get; set; }
+       
 
         public string UOM { get; set; }
 
@@ -44,11 +40,19 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ManufactureDate { get; set; }
 
         public string? COCUpload { get; set; }
+
+        [Precision(13, 3)]
         public decimal? SGST { get; set; }
+
+        [Precision(13, 3)]
 
         public decimal? IGST { get; set; }
 
+        [Precision(13, 3)]
+
         public decimal? CGST { get; set; }
+
+        [Precision(13, 3)]
 
         public decimal? UTGST { get; set; }
         public string Unit { get; set; }
@@ -57,14 +61,13 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<ProjectNumberDto>? ProjectNumbers { get; set; }
+        public List<ProjectNumbersDto>? ProjectNumbers { get; set; }
+
 
     }
     public class GrinPartsPostDto
     {
-        [Required(ErrorMessage = "ItemNumber is required")]
-        [StringLength(100, ErrorMessage = "ItemNumber can't be longer than 100 characters")]
-        public string ItemNumber { get; set; }
+        
 
         [Required(ErrorMessage = "ItemDescription is required")]
         [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
@@ -76,7 +79,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string MftrItemNumber { get; set; }
 
         [Required(ErrorMessage = "ProjectNumber is required")]
-        public string ProjectNumber { get; set; }
+        public string? ProjectNumber { get; set; }
 
         [Required(ErrorMessage = "ManufactureBatchNumber is required")]
         public string ManufactureBatchNumber { get; set; }
@@ -97,9 +100,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
 
-        [Required(ErrorMessage = "Qty is required")]
-        [Precision(13, 3)]
-        public decimal Qty { get; set; }
+        
 
         [Required(ErrorMessage = "UOM is required")]
         public string UOM { get; set; }
@@ -115,8 +116,10 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? CGST { get; set; }
 
         public decimal? UTGST { get; set; }
+        
 
-        public List<ProjectNumberDtoPost>? ProjectNumbers { get; set; }
+
+        public List<ProjectNumbersDtoPost>? ProjectNumbers { get; set; }
 
 
     }
@@ -124,10 +127,6 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "ItemNumber is required")]
-        [StringLength(100, ErrorMessage = "ItemNumber can't be longer than 100 characters")]
-        public string ItemNumber { get; set; }
-
         [Required(ErrorMessage = "ItemDescription is required")]
         [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
         public string ItemDescription { get; set; }
@@ -137,7 +136,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string MftrItemNumber { get; set; }
 
         [Required(ErrorMessage = "ProjectNumber is required")]
-        public string ProjectNumber { get; set; }
+        public string? ProjectNumber { get; set; }
 
         [Required(ErrorMessage = "ManufactureBatchNumber is required")]
         public string ManufactureBatchNumber { get; set; }
@@ -158,9 +157,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
 
-        [Required(ErrorMessage = "Qty is required")]
-        [Precision(13, 3)]
-        public decimal Qty { get; set; }
 
         [Required(ErrorMessage = "UOM is required")]
         public string UOM { get; set; }
@@ -184,6 +180,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<ProjectNumberDtoUpdate>? ProjectNumbers { get; set; }
+        
+        public List<ProjectNumbersDtoUpdate>? ProjectNumbers { get; set; }
     }
 }

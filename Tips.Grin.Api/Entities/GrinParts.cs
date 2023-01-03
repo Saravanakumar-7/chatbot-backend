@@ -12,15 +12,12 @@ namespace Tips.Grin.Api.Entities
     public class GrinParts
     {
         public int Id { get; set; }
-
-        public string ItemNumber { get; set; } 
-            
+                    
         public string ItemDescription { get; set; }
         public string? PONumber { get; set; }
+        public string? ProjectNumber { get; set; }
 
         public string MftrItemNumber { get; set; }
-
-        public string ProjectNumber { get; set; }
 
         public string ManufactureBatchNumber { get; set; }
 
@@ -36,8 +33,7 @@ namespace Tips.Grin.Api.Entities
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
 
-        [Precision(13, 3)]
-        public decimal Qty { get; set; }
+       
 
         public string UOM { get; set; }
 
@@ -67,6 +63,6 @@ namespace Tips.Grin.Api.Entities
         public int GrinsId { get; set; }
         public Grins? Grins { get; set; }
 
-        public List<ProjectNumber>? ProjectNumbers { get; set; }
+        public List<ProjectNumbers>? ProjectNumbers { get; set; }
     }
 }
