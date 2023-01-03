@@ -81,8 +81,7 @@ namespace Repository
         private IReleaseProductBomRepository? _releaseProductBomRepo;
         private IEnggBomGroupRepository? _enggbomGroupRepo;
         private IEnggCustomFieldRepository? _enggcustomFieldRepo;
-
-        private IEngineeringCustomFieldRepository? _engineeringCustomField;
+         
 
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
@@ -99,23 +98,8 @@ namespace Repository
                 return _enggBomRepository;
             }
         }
-
-        public IEngineeringCustomFieldRepository EngineeringCustomFieldRepository
-        {
-            get
-            {
-                if (_engineeringCustomField == null)
-                {
-                    _engineeringCustomField = new EngineeringCustomFieldRepository(_tipsMasterDbContext);
-                }
-                return _engineeringCustomField;
-            }
-        }
-
-        //public IEngineeringCustomFieldRepository EngineeringCustomFieldRepository => throw new NotImplementedException();
-
-        //        public IEngineeringCustomFieldRepository EngineeringCustomFieldRepository => throw new NotImplementedException();
-
+ 
+         
         public ISourceRepository sourceRepository
         {
             get
