@@ -10,7 +10,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? MftrItemNumber { get; set; }
         public string? Description { get; set; }
         public string? UOM { get; set; }
-        public decimal? Quantity { get; set; }
+        public decimal? Qty { get; set; }
         public string? SpecialInstruction { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -30,7 +30,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? Description { get; set; }
 
         public string? UOM { get; set; }
-        public decimal? Quantity { get; set; }
+        public decimal? Qty { get; set; }
 
         public string? SpecialInstruction { get; set; }
 
@@ -54,7 +54,7 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         public string? UOM { get; set; }
       
-        public decimal? Quantity { get; set; }
+        public decimal? Qty { get; set; }
 
         public string? SpecialInstruction { get; set; }
 

@@ -15,6 +15,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string ItemNumber { get; set; }
             
         public string ItemDescription { get; set; }
+        public string? PONumber { get; set; }
 
         public string MftrItemNumber { get; set; }
 
@@ -55,7 +56,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        
+
+        public List<ProjectNumberDto>? ProjectNumbers { get; set; }
+
     }
     public class GrinPartsPostDto
     {
@@ -66,6 +69,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Required(ErrorMessage = "ItemDescription is required")]
         [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
         public string ItemDescription { get; set; }
+        public string? PONumber { get; set; }
 
 
         [Required(ErrorMessage = "MftrItemNumber is required")]
@@ -112,6 +116,8 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public decimal? UTGST { get; set; }
 
+        public List<ProjectNumberDtoPost>? ProjectNumbers { get; set; }
+
 
     }
     public class GrinPartsUpdateDto
@@ -125,6 +131,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Required(ErrorMessage = "ItemDescription is required")]
         [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
         public string ItemDescription { get; set; }
+        public string? PONumber { get; set; }
 
         [Required(ErrorMessage = "MftrItemNumber is required")]
         public string MftrItemNumber { get; set; }
@@ -176,5 +183,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+
+        public List<ProjectNumberDtoUpdate>? ProjectNumbers { get; set; }
     }
 }

@@ -23,6 +23,22 @@ namespace Tips.Production.Api
             CreateMap<SAShopOrder, SAShopOrderDto>().ReverseMap();
             CreateMap<SAShopOrder, SAShopOrderDtoPost>().ReverseMap();
             CreateMap<SAShopOrder, SAShopOrderDtoUpdate>().ReverseMap();
+
+            CreateMap<SAShopOrderMaterialIssue, SAShopOrderMaterialIssueDto>().ReverseMap();
+            CreateMap<SAShopOrderMaterialIssue, SAShopOrderMaterialIssueDtoPost>().ReverseMap();
+            CreateMap<SAShopOrderMaterialIssue, SAShopOrderMaterialIssueDtoUpdate>().ReverseMap();
+
+            CreateMap<SAShopOrderMaterialIssueGeneral, SAShopOrderMaterialIssueGeneralDto>().ReverseMap();
+            CreateMap<SAShopOrderMaterialIssueGeneral, SAShopOrderMaterialIssueGeneralDtoPost>().ReverseMap();
+            CreateMap<SAShopOrderMaterialIssueGeneral, SAShopOrderMaterialIssueGeneralDtoUpdate>().ReverseMap();
+
+            CreateMap<FGShopOrderMaterialIssue, FGShopOrderMaterialIssueDto>().ReverseMap();
+            CreateMap<FGShopOrderMaterialIssue, FGShopOrderMaterialIssueDtoPost>().ReverseMap();
+            CreateMap<FGShopOrderMaterialIssue, FGShopOrderMaterialIssueDtoUpdate>().ReverseMap();
+
+            CreateMap<FGShopOrderMaterialIssueGeneral, FGShopOrderMaterialIssueGeneralDto>().ReverseMap();
+            CreateMap<FGShopOrderMaterialIssueGeneral, FGShopOrderMaterialIssueGeneralDtoPost>().ReverseMap();
+            CreateMap<FGShopOrderMaterialIssueGeneral, FGShopOrderMaterialIssueGeneralDtoUpdate>().ReverseMap();
         }
     }
 }

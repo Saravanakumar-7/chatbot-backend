@@ -24,13 +24,15 @@ namespace Tips.Master.Api.Controllers
         private IReleaseProductBomRepository _releaseProductBomRepository;
         private IMapper _mapper;
         private IReleaseCostBomRepository _releaseCostBomRepository;
+        private IEngineeringCustomFieldRepository _engineeringCustomFieldRepository;
  
-        public EngineeringBOMController(IRepositoryWrapperForMaster repository, IReleaseProductBomRepository releaseProductBomRepository, IReleaseCostBomRepository releaseCostBomRepository, IReleaseEnggBomRepository releaseEnggBomRepository, ILoggerManager logger, IMapper mapper)
+        public EngineeringBOMController(IRepositoryWrapperForMaster repository,IEngineeringCustomFieldRepository engineeringCustomFieldRepository ,IReleaseProductBomRepository releaseProductBomRepository, IReleaseCostBomRepository releaseCostBomRepository, IReleaseEnggBomRepository releaseEnggBomRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _releaseCostBomRepository = releaseCostBomRepository;
+            _engineeringCustomFieldRepository = engineeringCustomFieldRepository;
             _releaseEnggBomRepository = releaseEnggBomRepository;
             _releaseProductBomRepository = releaseProductBomRepository;
         }
@@ -60,22 +62,7 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo("Returned all Boms");
                 var bomDtoDetails = _mapper.Map<IEnumerable<EnggBomDto>>(listOfBoms);
 
-                //var bomDtoDetails = new List<EnggBomDto>();
 
-                //foreach (var bom in listOfBoms)
-                //{
-                //    EnggBomDto enggBomDto = _mapper.Map<EnggBomDto>(bom);
-                //    List<EnggChildItemDto> childItemsDtos = new List<EnggChildItemDto>();   
-                //    foreach (var itemDetails in bom.EnggChildItems)
-                //    {
-                //        EnggChildItemDto enggChildItemDto = _mapper.Map<EnggChildItemDto>(itemDetails);
-                //        enggChildItemDto.EnggAlternatesDtos = _mapper.Map<List<EnggAlternatesDto>>(itemDetails.EnggAlternates);
-                //        enggChildItemDto.BomNREConsumableDto = _mapper.Map<BomNREConsumableDto>(itemDetails.NREConsumable);
-                //        childItemsDtos.Add(enggChildItemDto);
-                //    }
-                //    enggBomDto.EnggChildItemDtos = childItemsDtos;
-                //    bomDtoDetails.Add(enggBomDto);
-                //}
 
                 serviceResponse.Data = bomDtoDetails;
                 serviceResponse.Message = "Returned all Engineering Boms Successfully";
@@ -211,6 +198,19 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        //json stored code
+
+        [HttpPost]
+         public async Task<IActionResult> CreateEnggCustField([FromBody] EngineeringCustomFieldPostDto engineeringCustomFieldPostDto)
+        {
+            var enggBomLists = _mapper.Map<EngineeringCustomField>(engineeringCustomFieldPostDto);
+            _engineeringCustomFieldRepository.CreateEnggCustField(enggBomLists);
+            _repository.SaveAsync();
+            return Ok();
+        }
+
+
+
         // PUT api/<EngineeringBOMController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEnggBom(int id, [FromBody] EnggBomUpdateDto enggBomDto)
@@ -269,23 +269,7 @@ namespace Tips.Master.Api.Controllers
                 string result = await _repository.EnggBomRepository.UpdateEnggBom(data);
 
 
-                //var address = _mapper.Map<IEnumerable<VendorAddress>>(vendorMasterUpdateDto.Addresses);
-
-                //var contact = _mapper.Map<IEnumerable<VendorContacts>>(vendorMasterUpdateDto.Contacts);
-
-                //var banking = _mapper.Map<IEnumerable<VendorBanking>>(vendorMasterUpdateDto.VendorBankings);
-
-                //var Headcount = _mapper.Map<IEnumerable<HeadCounting>>(vendorMasterUpdateDto.HeadCountings);
-
-                //var data = _mapper.Map(vendorMasterUpdateDto, updatevendor);
-
-
-                //data.Addresses = address.ToList();
-                //data.Contacts = contact.ToList();
-                //data.VendorBankings = banking.ToList();
-                //data.HeadCountings = Headcount.ToList();
-
-                //string result = await _repository.VendorRepository.UpdateVendor(data);
+                
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;

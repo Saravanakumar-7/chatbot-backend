@@ -95,16 +95,30 @@ namespace Tips.Grin.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                 else
+
                 {
-                    _logger.LogInfo($"Returned Grin with id: {id}");
-                    var result = _mapper.Map<GrinDto>(GrinDetailsbyId);
-                    serviceResponse.Data = result;
-                    serviceResponse.Message = $"Returned GrinById Successfully";
+                    _logger.LogInfo($"Returned rfqsourcing with id: {id}");
+                    GrinDto grinDto = _mapper.Map<GrinDto>(GrinDetailsbyId);//Main model mapping
+
+                    //below mapping is child under child  
+
+                    List<GrinPartsDto> grinPartsDtos = new List<GrinPartsDto>();
+
+                    foreach (var GrinpartsDetails in GrinDetailsbyId.GrinParts)
+                    {
+                        GrinPartsDto grinPartsDto = _mapper.Map<GrinPartsDto>(GrinpartsDetails);
+                        grinPartsDto.ProjectNumbers = _mapper.Map<List<ProjectNumberDto>>(GrinpartsDetails.ProjectNumbers);
+                        grinPartsDtos.Add(grinPartsDto);
+                    }
+
+                    grinDto.GrinParts = grinPartsDtos;
+                    serviceResponse.Data = grinDto;
+                    serviceResponse.Message = $"Returned Grin with id: {id}";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-            }
+                }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetGrinById action: {ex.Message}");
@@ -146,6 +160,17 @@ namespace Tips.Grin.Api.Controllers
 
                 var grin = _mapper.Map<IEnumerable<GrinParts>>(grinPostDto.GrinParts);
                 var grins = _mapper.Map<Grins>(grinPostDto);
+                var grinDto = grinPostDto.GrinParts;
+
+                var GrinpartsList = new List<GrinParts>();
+                for (int i = 0; i < grinDto.Count; i++)
+                {
+                    GrinParts grinPartsList = _mapper.Map<GrinParts>(grinDto[i]);
+                    grinPartsList.ProjectNumbers = _mapper.Map<List<ProjectNumber>>(grinDto[i].ProjectNumbers);
+                    GrinpartsList.Add(grinPartsList);
+
+                }
+                //grins.GrinParts = GrinpartsList;
 
                 grins.GrinParts = grin.ToList();
 
@@ -206,8 +231,23 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
+               
 
                 var grinparts = _mapper.Map<IEnumerable<GrinParts>>(grinDto.GrinParts);
+
+                var grinList = _mapper.Map<Grins>(grinDto);
+
+                var grinPartsDto = grinDto.GrinParts;
+
+                var GrinpartsList = new List<GrinParts>();
+                for (int i = 0; i < grinPartsDto.Count; i++)
+                {
+                    GrinParts grinPartsDetail = _mapper.Map<GrinParts>(grinPartsDto[i]);
+                    grinPartsDetail.ProjectNumbers = _mapper.Map<List<ProjectNumber>>(grinPartsDto[i].ProjectNumbers);
+
+                    GrinpartsList.Add(grinPartsDetail);
+
+                }
 
                 var data = _mapper.Map(grinDto, updategrin);
 

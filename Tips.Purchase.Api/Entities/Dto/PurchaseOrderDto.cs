@@ -31,20 +31,14 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string RetentionPeriod { get; set; }
         public string SpecialTermsAndConditions { get; set; }
 
-        //public bool POApprovalI { get; set; }
-        //public string POApprovedIBy { get; set; }
-        //public DateTime POApprovedIDate { get; set; }
 
-        //public bool POApprovalII { get; set; }
-        //public string POApprovedIIBy { get; set; }
-        //public DateTime POApprovedIIDate { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<PoItemsDto>? PoItemsDtoList { get; set; }
+        public List<PoItemsDto>? POItemsDtoList { get; set; }
         
     }
 
@@ -76,20 +70,10 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string RetentionPeriod { get; set; }
         public string SpecialTermsAndConditions { get; set; }
 
-        //public bool POApprovalI { get; set; }
-        //public string POApprovedIBy { get; set; }
-        //public DateTime POApprovedIDate { get; set; }
+       
 
-        //public bool POApprovalII { get; set; }
-        //public string POApprovedIIBy { get; set; }
-        //public DateTime POApprovedIIDate { get; set; }
-
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-
-        public List<PoItemsDtoPost>? PoItemsDtoPostList { get; set; }
+     
+        public List<PoItemsDtoPost>? POItemsDtoPostList { get; set; }
        
     }
     public class PurchaseOrderDtoUpdate
@@ -120,20 +104,14 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string RetentionPeriod { get; set; }
         public string SpecialTermsAndConditions { get; set; }
 
-        //public bool POApprovalI { get; set; }
-        //public string POApprovedIBy { get; set; }
-        //public DateTime POApprovedIDate { get; set; }
-
-        //public bool POApprovalII { get; set; }
-        //public string POApprovedIIBy { get; set; }
-        //public DateTime POApprovedIIDate { get; set; }
+        
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<PoItemsDtoUpdate>? PoItemsDtoUpdateList { get; set; }
+        public List<PoItemsDtoUpdate>? POItemsDtoUpdateList { get; set; }
        
     }
     public class PurchaseOrderIdNameListDto

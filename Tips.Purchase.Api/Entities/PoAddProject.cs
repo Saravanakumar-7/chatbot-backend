@@ -5,15 +5,15 @@ namespace Tips.Purchase.Api.Entities
     public class PoAddProject
     {
         public int Id { get; set; }
-        public string PoProjectNumber { get; set; }
+        public string POProjectNumber { get; set; }
         [Precision(13, 2)]
-        public decimal PoProjectQuantity { get; set; }
+        public decimal POProjectQty { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public int PoItemDetailId { get; set; }
-        public PoItem? PoItemDetail { get; set; }
+        public int POItemDetailId { get; set; }
+        public PoItem? POItemDetail { get; set; }
 
     }
 }

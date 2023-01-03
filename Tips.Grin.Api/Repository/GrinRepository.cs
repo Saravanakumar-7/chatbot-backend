@@ -62,6 +62,7 @@ namespace Tips.Grin.Api.Repository
         {
             var GetallGrinDetails = PagedList<Grins>.ToPagedList(FindAll()
                                 .Include(t => t.GrinParts)
+                                .ThenInclude(t => t.ProjectNumbers)
                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return GetallGrinDetails;
@@ -71,6 +72,7 @@ namespace Tips.Grin.Api.Repository
         {
             var GrinDetailsbyId = await _tipsGrinDbContext.Grins.Where(x => x.Id == id)
                                .Include(x => x.GrinParts)
+                               .ThenInclude(t => t.ProjectNumbers)
                                .FirstOrDefaultAsync();
 
             return GrinDetailsbyId;

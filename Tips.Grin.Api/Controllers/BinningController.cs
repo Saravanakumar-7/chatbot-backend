@@ -35,7 +35,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 var GetallBinnings = await _binningRepository.GetAllBinningDetails();
 
-                _logger.LogInfo("Returned all Binning details()s");
+                _logger.LogInfo("Returned all Binning details");
                 var result = _mapper.Map<IEnumerable<BinningDto>>(GetallBinnings);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Success";

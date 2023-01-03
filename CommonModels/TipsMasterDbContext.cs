@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Entities
 {
@@ -107,5 +108,18 @@ namespace Entities
 
         public DbSet<EnggBomGroup> BomGroups { get; set; }
         public DbSet<EnggCustomField> CustomFields { get; set; }
+         
+        public DbSet<EngineeringCustomField> EngineeringCustomFields { get; set; }  
+
+        protected override void OnModelCreating (ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<EngineeringCustomField>().OwnsOne(
+                EngineeringCustomField => EngineeringCustomField , OwnedNavigationBuilder =>
+                {
+                    OwnedNavigationBuilder.ToJson(); 
+                }
+             );
+         }
+
     }
 }

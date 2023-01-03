@@ -16,6 +16,7 @@ namespace Tips.Grin.Api.Entities
         public string ItemNumber { get; set; } 
             
         public string ItemDescription { get; set; }
+        public string? PONumber { get; set; }
 
         public string MftrItemNumber { get; set; }
 
@@ -66,5 +67,6 @@ namespace Tips.Grin.Api.Entities
         public int GrinsId { get; set; }
         public Grins? Grins { get; set; }
 
+        public List<ProjectNumber>? ProjectNumbers { get; set; }
     }
 }
