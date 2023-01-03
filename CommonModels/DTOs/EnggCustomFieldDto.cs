@@ -24,6 +24,7 @@ namespace Entities.DTOs
         public string LabelName { get; set; }
         public string Type { get; set; }
         public string MaxLength { get; set; }
+        //public string Unit { get; set; }
       
     }
     public class EnggCustomFieldDtoUpdate

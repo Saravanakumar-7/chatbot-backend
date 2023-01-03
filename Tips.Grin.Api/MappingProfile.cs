@@ -12,10 +12,16 @@ namespace Tips.Grin.Api
             CreateMap<Grins, GrinDto>().ReverseMap();
             CreateMap<Grins, GrinPostDto>().ReverseMap();
             CreateMap<Grins, GrinUpdateDto>().ReverseMap();
+            CreateMap<Grins, GrinNumberListDto>().ReverseMap();
 
             CreateMap<GrinParts, GrinPartsDto>().ReverseMap();
             CreateMap<GrinParts, GrinPartsPostDto>().ReverseMap();
             CreateMap<GrinParts, GrinPartsUpdateDto>().ReverseMap();
+
+
+            CreateMap<ProjectNumbers, ProjectNumbersDto>().ReverseMap();
+            CreateMap<ProjectNumbers, ProjectNumbersDtoPost>().ReverseMap();
+            CreateMap<ProjectNumbers, ProjectNumbersDtoUpdate>().ReverseMap();
 
             CreateMap<IQCConfirmation, IQCConfirmationDto>().ReverseMap();
             CreateMap<IQCConfirmation, IQCConfirmationPostDto>().ReverseMap();
