@@ -184,6 +184,20 @@ namespace Tips.SalesService.Api.Repository
                         .FirstOrDefaultAsync();
             return SourcingByRfqNumber;
         }
+        public async Task<Rfq> RfqLpCostingReleaseByRfqNumberss(string RfqNumber)
+        {
+            var lpcostingByRfqNumber = await _tipsSalesServiceDbContext.rfqs
+              .Where(x => x.RfqNumber == RfqNumber)
+                        .FirstOrDefaultAsync();
+            return lpcostingByRfqNumber;
+        }
+        public async Task<Rfq> RfqLpcostingByRfqNumberss(string RfqNumber)
+        {
+            var lpcostingReleaseByRfqNumber = await _tipsSalesServiceDbContext.rfqs
+              .Where(x => x.RfqNumber == RfqNumber)
+                        .FirstOrDefaultAsync();
+            return lpcostingReleaseByRfqNumber;
+        }
         public async Task<int?> CreateRfq(Rfq rfq)
         {
             rfq.CreatedBy = "Admin";

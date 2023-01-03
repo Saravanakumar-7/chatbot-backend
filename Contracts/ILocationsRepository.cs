@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
+using Entities.DTOs;
 
 namespace Contracts
 {
@@ -15,5 +16,7 @@ namespace Contracts
         Task<int?> CreateLocations(Locations locations);
         Task<string> UpdateLocations(Locations locations);
         Task<string> DeleteLocations(Locations locations);
+        Task<IEnumerable<Locations>> GetListofLocationsByWarehouse(string Warehouse);
+
     }
 }

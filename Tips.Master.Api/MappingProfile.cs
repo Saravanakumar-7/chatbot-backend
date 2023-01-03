@@ -52,6 +52,7 @@ namespace Tips.Master.Api
             CreateMap<Locations, LocationsDto>().ReverseMap();
             CreateMap<Locations, LocationsDtoPost>().ReverseMap();
             CreateMap<Locations, LocationsDtoUpdate>().ReverseMap();
+            CreateMap<Locations, GetListofLocationsByWarehouseDto>().ReverseMap();
 
 
             CreateMap<CustomerMaster, CustomerMasterDto>().ReverseMap();

@@ -10,6 +10,7 @@ namespace Entities.DTOs
     public class LocationsDto
     {
         public int Id { get; set; }
+        public string WarehouseId { get; set; }
 
         public string Warehouse { get; set; }
 
@@ -27,6 +28,8 @@ namespace Entities.DTOs
 
     public class LocationsDtoPost
     {
+        public string WarehouseId { get; set; }
+
         public string Warehouse { get; set; }
 
         [Required]
@@ -39,6 +42,8 @@ namespace Entities.DTOs
     public class LocationsDtoUpdate
     {
         public int Id { get; set; }
+        public string WarehouseId { get; set; }
+        public string Warehouse { get; set; }
 
         [Required]
         public string LocationName { get; set; }
@@ -49,5 +54,13 @@ namespace Entities.DTOs
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
         public string Unit { get; set; }
 
+    }
+
+    public class GetListofLocationsByWarehouseDto
+    {
+        public long id { get; set; }
+        public string WarehouseId { get; set; }
+        public string Warehouse { get; set; }
+        public string LocationName { get; set; }
     }
 }

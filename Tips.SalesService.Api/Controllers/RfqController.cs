@@ -395,7 +395,6 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
 
-
         }
 
         //get RfqEngg by Rfqnumber
@@ -901,7 +900,9 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse); 
                 }
                 var rfqLPCosting = _mapper.Map<RfqLPCosting>(rfqLPCostingDtoPost);
-
+                var data = rfqLPCosting.RfqNumber;
+                var rfqlpcostiningss = await _rfqRepository.RfqLpcostingByRfqNumberss(data);
+                rfqlpcostiningss.IsLpCosting = true;
                 var rfqLPCostingDto = rfqLPCostingDtoPost.rfqLPCostingItems;
 
                 var lpcostingItemList = new List<RfqLPCostingItem>();
@@ -918,6 +919,7 @@ namespace Tips.SalesService.Api.Controllers
                
 
                 _rfqlpcostingRepository.CreateRfqLPCosting(rfqLPCosting);
+                _rfqRepository.Update(rfqlpcostiningss);
                 _rfqlpcostingRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
@@ -1428,15 +1430,23 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-
                 var bulklist = _mapper.Map<List<ReleaseLp>>(releaseLpDtoPosts);
+
+                // for(int i=0;i<=bulklist.Count();i++)
+                //{
+                    var data = bulklist[0].RfqNumber;
+                    
+                //}
+                var lpreleases = await _rfqRepository.RfqLpCostingReleaseByRfqNumberss(data);
+                lpreleases.IsLpCostingRelease = true;
+
                 foreach (var releaseLpdetails in bulklist)
                 {
-
+                    
                     _releaseLpRepository.BulkRelease(releaseLpdetails);
                 }
-                _releaseLpRepository.SaveAsync();
-
+                _rfqRepository.Update(lpreleases);
+                _releaseLpRepository.SaveAsync();               
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;

@@ -5,7 +5,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class ReleaseLpDto
     {
         public int? Id { get; set; }
-        public string? RFQNo { get; set; }
+        public string? RfqNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? Rev { get; set; }
         public DateTime? DateOnLpCreation { get; set; }
@@ -34,7 +34,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class ReleaseLpDtoPost
     {
 
-        public string? RFQNo { get; set; }
+        public string? RfqNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? Rev { get; set; }
         public DateTime? DateOnLpCreation { get; set; }
@@ -63,7 +63,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class ReleaseLpDtoUpdate
     {
         public int? Id { get; set; }
-        public string? RFQNo { get; set; }
+        public string? RfqNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? Rev { get; set; }
         public DateTime? DateOnLpCreation { get; set; }

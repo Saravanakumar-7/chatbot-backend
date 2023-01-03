@@ -8,7 +8,7 @@ namespace Tips.SalesService.Api.Entities
         [Key]
 
         public int? Id { get; set; }
-        public string? RFQNo { get; set; }
+        public string? RfqNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? Rev { get; set; }
         public DateTime? DateOnLpCreation { get; set; }
