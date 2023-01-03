@@ -156,22 +156,27 @@ namespace Tips.SalesService.Api.Controllers
                 
 
                 //var sourceitems = _mapper.Map<IEnumerable<RfqSourcingItems>>(rfqSourcingDtoPost.rfqSourcingItems);
-                var rfqsource = _mapper.Map<RfqSourcing>(rfqSourcingDtoPost);
+                var rfqsource = _mapper.Map<RfqSourcing>(rfqSourcingDtoPost);      
+
                 var data = rfqsource.RFQNumber;
                 var rfqsourcingssss = await _rfqRepository.RfqSourcingByRfqNumbersss(data);
                 rfqsourcingssss.IsSourcing = true;
                 var rfqSourceDto = rfqSourcingDtoPost.rfqSourcingItems;
-                 var sourceItemList = new List<RfqSourcingItems>();
+                 var sourceItemList = new List<RfqSourcingItems>();            
                 for (int i = 0; i < rfqSourceDto.Count; i++)
                 {
                     RfqSourcingItems sourceItemListDetail = _mapper.Map<RfqSourcingItems>(rfqSourceDto[i]);
                      sourceItemListDetail.rfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(rfqSourceDto[i].rfqSourcingVendors);                   
                     sourceItemList.Add(sourceItemListDetail);
+                    sourceItemListDetail.Unit = "Banglore";
+                    sourceItemListDetail.rfqSourcingVendors[i].Unit = "Banglore";
 
                 }
                 rfqsource.rfqSourcingItems = sourceItemList;
 
                 //var notes = _mapper.Map<IEnumerable<RfqNotes>>(rfq.rfqNotes);
+
+                
 
                 _repository.CreateRfqSourcing(rfqsource);
                 _rfqRepository.Update(rfqsourcingssss);

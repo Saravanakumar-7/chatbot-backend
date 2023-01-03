@@ -12,8 +12,8 @@ namespace Contracts
         Task<IEnumerable<AuditFrequency>> GetAllAuditFrequencies();
         Task<AuditFrequency> GetAuditFrequenyById(int id);
         Task<IEnumerable<AuditFrequency>> GetAllActiveAuditFrequencies();
-        Task<int?> CreateAuditFrequency(AuditFrequency customerType);
-        Task<string> UpdateAuditFrequency(AuditFrequency customerType);
-        Task<string> DeleteAuditFrequency(AuditFrequency customerType);
+        Task<int?> CreateAuditFrequency(AuditFrequency auditFrequency);
+        Task<string> UpdateAuditFrequency(AuditFrequency auditFrequency);
+        Task<string> DeleteAuditFrequency(AuditFrequency auditFrequency);
     }
 }

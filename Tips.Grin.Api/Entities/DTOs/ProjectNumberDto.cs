@@ -1,12 +1,18 @@
-﻿namespace Tips.Grin.Api.Entities.DTOs
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Tips.Grin.Api.Entities.DTOs
 {
-    public class ProjectNumberDto
+    public class ProjectNumbersDto
     {
         public int Id { get; set; }
-        public string? Projectnumber { get; set; }
+        public string? ProjectNumber { get; set; }
         public string? ItemNumber { get; set; }
-        public decimal? Quantity { get; set; }
-        public decimal? ProjectQuantity { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Qty { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? ProjectQty { get; set; }
 
         public string Unit { get; set; }
 
@@ -17,21 +23,29 @@
 
     }
 
-    public class ProjectNumberDtoPost
+    public class ProjectNumbersDtoPost
     {
-        public string? Projectnumber { get; set; }
+        public string? ProjectNumber { get; set; }
         public string? ItemNumber { get; set; }
-        public decimal? Quantity { get; set; }
-        public decimal? ProjectQuantity { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Qty { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? ProjectQty { get; set; }
     }
 
-    public class ProjectNumberDtoUpdate
+    public class ProjectNumbersDtoUpdate
     {
         public int Id { get; set; }
-        public string? Projectnumber { get; set; }
+        public string? ProjectNumber { get; set; }
         public string? ItemNumber { get; set; }
-        public decimal? Quantity { get; set; }
-        public decimal? ProjectQuantity { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Qty { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? ProjectQty { get; set; }
 
         public string Unit { get; set; }
 

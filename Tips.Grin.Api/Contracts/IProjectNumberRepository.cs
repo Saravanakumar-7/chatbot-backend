@@ -4,11 +4,11 @@ namespace Tips.Grin.Api.Contracts
 {
     public interface IProjectNumberRepository
     {
-        Task<IEnumerable<ProjectNumber>> GetAllProjectNumber();
-        Task<ProjectNumber> GetProjectNumberById(int id);
-        Task<IEnumerable<ProjectNumber>> GetAllActiveProjectNumber();
-        Task<int?> CreateProjectNumber(ProjectNumber projectnumber);
-        Task<string> UpdateProjectNumber(ProjectNumber projectnumber);
-        Task<string> DeleteProjectNumber(ProjectNumber projectnumber);
+        Task<IEnumerable<ProjectNumbers>> GetAllProjectNumber();
+        Task<ProjectNumbers> GetProjectNumberById(int id);
+        Task<IEnumerable<ProjectNumbers>> GetAllActiveProjectNumber();
+        Task<int?> CreateProjectNumber(ProjectNumbers projectnumber);
+        Task<string> UpdateProjectNumber(ProjectNumbers projectnumber);
+        Task<string> DeleteProjectNumber(ProjectNumbers projectnumber);
     }
 }
