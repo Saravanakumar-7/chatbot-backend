@@ -11,7 +11,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Required]
         [MaxLength(100)]
-        public string? ShopOrderNo { get; set; }
+        public string? ShopOrderNumber { get; set; }
 
         [Required]
         [Precision(13, 2)]
@@ -46,7 +46,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Required]
         [MaxLength(100)]
-        public string? ShopOrderNo { get; set; }
+        public string? ShopOrderNumber { get; set; }
 
         [Required]
         [Precision(13, 2)]
@@ -74,7 +74,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Required]
         [MaxLength(100)]
-        public string? ShopOrderNo { get; set; }
+        public string? ShopOrderNumber { get; set; }
 
         [Required]
         [Precision(13, 2)]

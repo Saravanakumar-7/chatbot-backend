@@ -30,18 +30,18 @@ namespace Tips.Production.Api.Repository
 
         public async Task<IEnumerable<SAShopOrder>> GetAllSAShopOrders()
         {
-            var SAshopOrderList = await _tipsProductionDbContext.SAshopOrders.ToListAsync();
+            var sAshopOrderList = await _tipsProductionDbContext.SAshopOrders.ToListAsync();
 
-            return (SAshopOrderList);
+            return (sAshopOrderList);
 
         }
 
         public async Task<SAShopOrder> GetSAShopOrderById(int id)
         {
-            var SAshopOrderList = await _tipsProductionDbContext.SAshopOrders
+            var sAShopOrderList = await _tipsProductionDbContext.SAshopOrders
                             .Where(x => x.Id == id)
                                 .FirstOrDefaultAsync();
-            return SAshopOrderList;
+            return sAShopOrderList;
         }
 
         public async Task<string> UpdateSAShopOrder(SAShopOrder SAshopOrders)
@@ -49,32 +49,32 @@ namespace Tips.Production.Api.Repository
             SAshopOrders.LastModifiedBy = "Admin";
             SAshopOrders.LastModifiedOn = DateTime.Now;
             Update(SAshopOrders);
-            string result = $"LeadTime details of {SAshopOrders.Id} is updated successfully!";
+            string result = $"SAShopOrder details of {SAshopOrders.Id} is updated successfully!";
             return result;
         }
 
         public async Task<SAShopOrder> GetSAShopOrderBySalesOrderNo(string salesOrderNo)
         {
-            var sashopOrderList = await FindByCondition(x => x.SalesOrderNo == salesOrderNo)
+            var sAShopOrderList = await FindByCondition(x => x.SalesOrderNumber == salesOrderNo)
 
                                 .FirstOrDefaultAsync();
-            return sashopOrderList;
+            return sAShopOrderList;
         }
 
-        public async Task<SAShopOrder> GetSAShopOrderShopOrderNo(string SAShopOrderNo)
+        public async Task<SAShopOrder> GetSAShopOrderBySAShopOrderNo(string SAShopOrderNo)
         {
-            var sashopOrderList = await
-                            FindByCondition(x => x.SAShopOrderNo == SAShopOrderNo)
+            var sAShopOrderList = await
+                            FindByCondition(x => x.SAShopOrderNumber == SAShopOrderNo)
                                 .FirstOrDefaultAsync();
-            return sashopOrderList;
+            return sAShopOrderList;
         }
 
         public async Task<IEnumerable<SAShopOrder>> GetAllOpenSAShopOrders()
         {
-            var sashopOrderList = await FindByCondition(x => x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2)
+            var sAShopOrderList = await FindByCondition(x => x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2)
                 .ToListAsync();
 
-            return (sashopOrderList);
+            return (sAShopOrderList);
 
         }
     }

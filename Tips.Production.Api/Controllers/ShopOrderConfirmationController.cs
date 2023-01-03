@@ -41,7 +41,7 @@ namespace Tips.Production.Api.Controllers
                 _logger.LogInfo("Returned all ShopOrderConfirmationdetails()s");
                 var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(shopOrderConfirmationList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "ShopOrderConfirmation Successfully Returned";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -70,7 +70,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError($"ShopOrderConfirmationdetails with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrderConfirmationdetails with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrderConfirmationdetails with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
@@ -80,7 +80,7 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogInfo($"Returned ShopOrderConfirmationdetails with id: {id}");
                     var result = _mapper.Map<ShopOrderConfirmationDto>(shopOrderConfirmationList);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "ShopOrderConfirmationById Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);
@@ -131,10 +131,10 @@ namespace Tips.Production.Api.Controllers
                 _shopOrderConfirmationRepository.CreateShopOrderConfirmation(shopOrderConfirmationList);
                 _shopOrderConfirmationRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "ShopOrderConfirmation Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetShopOrderById", "Successfully Created");
+                return Created("GetShopOrderById", serviceResponse);
             }
             catch (Exception ex)
             {
@@ -148,13 +148,13 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateShopOrderConfirmation(int id, [FromBody] ShopOrderConfirmationDto ShopOrderConfirmationDtoUpdate)
+        public async Task<IActionResult> UpdateShopOrderConfirmation(int id, [FromBody] ShopOrderConfirmationDto shopOrderConfirmationDtoUpdate)
         {
             ServiceResponse<ShopOrderConfirmationDto> serviceResponse = new ServiceResponse<ShopOrderConfirmationDto>();
 
             try
             {
-                if (ShopOrderConfirmationDtoUpdate is null)
+                if (shopOrderConfirmationDtoUpdate is null)
                 {
                     _logger.LogError("ShopOrderConfirmationdetails object sent from client is null.");
                     serviceResponse.Data = null;
@@ -180,13 +180,13 @@ namespace Tips.Production.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                var shopOrderEntity = _mapper.Map(ShopOrderConfirmationDtoUpdate, shopOrderConfirmationList);
+                var shopOrderEntity = _mapper.Map(shopOrderConfirmationDtoUpdate, shopOrderConfirmationList);
 
                 string result = await _shopOrderConfirmationRepository.UpdateShopOrderConfirmation(shopOrderEntity);
                 _logger.LogInfo(result);
                 _shopOrderConfirmationRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = "ShopOrderConfirmation Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -213,9 +213,9 @@ namespace Tips.Production.Api.Controllers
                 var shopOrderConfirmations = await _shopOrderConfirmationRepository.GetShopOrderConfirmationById(id);
                 if (shopOrderConfirmations == null)
                 {
-                    _logger.LogError($"Confirmation with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"ShopOrderConfirmation with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Confirmation with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrderConfirmation with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
@@ -224,7 +224,7 @@ namespace Tips.Production.Api.Controllers
                 shopOrderConfirmations.IsDeleted = true;
                 string result = await _shopOrderConfirmationRepository.UpdateShopOrderConfirmation(shopOrderConfirmations);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Delete Successfully";
+                serviceResponse.Message = "ShopOrderConfirmation Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -252,7 +252,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError($"ShopOrderConfirmationdetails with id: {shopOrderNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrderConfirmationdetails with id: {shopOrderNo}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrderConfirmationdetails with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
@@ -262,7 +262,7 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogInfo($"Returned ShopOrderConfirmationdetails with id: {shopOrderNo}");
                     var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(shopOrderConfirmationList);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "ShopOrderConfirmationByShopOrderNo Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);
@@ -270,7 +270,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetshopOrderConfirmationById action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetAllShopOrderConfirmationByShopOrderNo action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
@@ -291,7 +291,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError($"ShopOrderConfirmationdetails with id: {shopOrderNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrderConfirmationdetails with id: {shopOrderNo}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrderConfirmationdetails with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
@@ -302,7 +302,7 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogInfo($"Returned ShopOrderConfirmationdetails with id: {shopOrderNo}");
                     var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(shopOrderConfirmationList);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "OqcByShopOrderNo Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);
@@ -310,7 +310,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetshopOrderConfirmationById action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetOpenDataForOqcByShopOrderNo action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;

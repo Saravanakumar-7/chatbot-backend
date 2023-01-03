@@ -12,7 +12,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Required]
         [MaxLength(100)]
-        public string? ShopOrderNo { get; set; }
+        public string? ShopOrderNumber { get; set; }
 
         [Required]
         [MaxLength(50)]
@@ -20,11 +20,11 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Required]
         [MaxLength(50)]
-        public string? ProjectNo { get; set; }
+        public string? ProjectNumber { get; set; }
 
         [Required]
         [MaxLength(100)]
-        public string? FGItemNo { get; set; }
+        public string? FGItemNumber { get; set; }
 
         [Required]
         [MaxLength(200)]
@@ -32,7 +32,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Required]
         [MaxLength(50)]
-        public string? SalesOrderNo { get; set; }
+        public string? SalesOrderNumber { get; set; }
 
         [Required]
         public Decimal SalesOrderQty { get; set; }
@@ -44,7 +44,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime ShopOrderCloseDate { get; set; }
 
         [MaxLength(100)]
-        public string? SalesOrderPoNo { get; set; }
+        public string? SalesOrderPONumber { get; set; }
 
         public OrderStatus Status { get; set; }
 
@@ -84,7 +84,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Required]
         [MaxLength(100)]
-        public string? ShopOrderNo { get; set; }
+        public string? ShopOrderNumber { get; set; }
 
         [Required]
         [MaxLength(50)]
@@ -92,11 +92,11 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Required]
         [MaxLength(50)]
-        public string? ProjectNo { get; set; }
+        public string? ProjectNumber { get; set; }
 
         [Required]
         [MaxLength(100)]
-        public string? FGItemNo { get; set; }
+        public string? FGItemNumber { get; set; }
 
         [Required]
         [MaxLength(200)]
@@ -104,7 +104,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Required]
         [MaxLength(50)]
-        public string? SalesOrderNo { get; set; }
+        public string? SalesOrderNumber { get; set; }
 
         [Required]
         public Decimal SalesOrderQty { get; set; }
@@ -116,7 +116,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime ShopOrderCloseDate { get; set; }
 
         [MaxLength(100)]
-        public string? SalesOrderPoNo { get; set; }
+        public string? SalesOrderPONumber { get; set; }
 
         public OrderStatus Status { get; set; }
 
@@ -157,7 +157,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Required]
         [MaxLength(100)]
-        public string? ShopOrderNo { get; set; }
+        public string? ShopOrderNumber { get; set; }
 
         [Required]
         [MaxLength(50)]
@@ -165,11 +165,11 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Required]
         [MaxLength(50)]
-        public string? ProjectNo { get; set; }
+        public string? ProjectNumber { get; set; }
 
         [Required]
         [MaxLength(100)]
-        public string? FGItemNo { get; set; }
+        public string? FGItemNumber { get; set; }
 
         [Required]
         [MaxLength(200)]
@@ -177,7 +177,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Required]
         [MaxLength(50)]
-        public string? SalesOrderNo { get; set; }
+        public string? SalesOrderNumber { get; set; }
 
         [Required]
         public Decimal SalesOrderQty { get; set; }
@@ -189,7 +189,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime ShopOrderCloseDate { get; set; }
 
         [MaxLength(100)]
-        public string? SalesOrderPoNo { get; set; }
+        public string? SalesOrderPONumber { get; set; }
 
         public OrderStatus Status { get; set; }
 
