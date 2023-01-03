@@ -26,8 +26,9 @@ namespace Tips.SalesService.Api.Repository
         {
             rfqSourcing.CreatedBy = "Admin";
             rfqSourcing.CreatedOn = DateTime.Now;
-            rfqSourcing.Unit = "Bangalore";
-            var result = await Create(rfqSourcing);           
+            rfqSourcing.Unit = "Bangalore";            
+            var result = await Create(rfqSourcing);    
+            
             return result.Id;
         }
 

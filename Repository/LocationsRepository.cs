@@ -5,7 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
+using Entities.DTOs;
 using Microsoft.EntityFrameworkCore;
+using Entities.Helper;
+using System.Collections.Immutable;
 
 namespace Repository
 {
@@ -60,5 +63,31 @@ namespace Repository
             string result = $"Locations details of {locations.Id} is updated successfully!";
             return result;
         }
+        //public async Task<Locations> GetListofLocationsByWarehouse(string Warehouse)
+        //{
+        //    var locationsbyWh = await TipsMasterDbContext.Locations
+
+        //        .Where(x => x.Warehouse == Warehouse).FirstOrDefaultAsync();
+
+        //    return locationsbyWh;
+        //}
+
+        //public async Task<Locations> GetListofLocationsByWarehouse(string Warehouse)
+        //{
+        //    var locationsBywh = await FindByCondition(x => x.Warehouse == Warehouse)
+        //        .ToList();
+
+        //    return locationsBywh;
+        //}
+        public async Task<IEnumerable<Locations>> GetListofLocationsByWarehouse(string Warehouse)
+        {
+            IEnumerable<Locations> locationbyWh = await TipsMasterDbContext.Locations
+             .Where(x => x.Warehouse == Warehouse ).ToListAsync();
+
+            return locationbyWh;
+
+            
+        }
     }
+    
 }

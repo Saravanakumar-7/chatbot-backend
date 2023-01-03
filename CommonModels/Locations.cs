@@ -10,6 +10,8 @@ namespace Entities
     public class Locations
     {
         public int Id { get; set; }
+        public string WarehouseId { get; set; }
+
 
         [Required]
         public string Warehouse { get; set; }
