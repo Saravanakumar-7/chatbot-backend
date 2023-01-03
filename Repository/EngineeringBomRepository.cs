@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -171,27 +172,7 @@ namespace Repository
             var result = await Create(releaseProductBom);
             return result.Id;
         }
-    }
-
-    //json data
-
-    public class EngineeringCustomFieldRepository : RepositoryBase<EngineeringCustomField>, IEngineeringCustomFieldRepository
-    {
-        private TipsMasterDbContext _tipsMasterDbContext;
-        public EngineeringCustomFieldRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
-        {
-            _tipsMasterDbContext = repositoryContext;
-        }
-
-        public async Task<int?> CreateEnggCustField(EngineeringCustomField engineeringCustomField)
-        {
-            var result = await Create(engineeringCustomField);
-            return result.Id;
-        }
-
-    }
-
-
+    } 
 
     public class EnggBomGroupRepository : RepositoryBase<EnggBomGroup>, IEnggBomGroupRepository
     {
