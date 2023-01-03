@@ -32,7 +32,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? Qty { get; set; }
 
         [Precision(18, 3)]
+     
         public decimal? ProjectQty { get; set; }
+       
     }
 
     public class ProjectNumbersDtoUpdate

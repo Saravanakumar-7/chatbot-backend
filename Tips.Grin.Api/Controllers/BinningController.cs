@@ -199,6 +199,9 @@ namespace Tips.Grin.Api.Controllers
                     BinningItems binningItemListDetails = _mapper.Map<BinningItems>(binningsDto[i]);
                     binningItemListDetails.BinningLocations = _mapper.Map<List<BinningLocation>>(binningsDto[i].BinningLocations);
                     binningItemList.Add(binningItemListDetails);
+                    binningItemListDetails.Unit = "Bangalore";
+                    binningItemListDetails.BinningLocations[i].Unit = "Bangalore";
+
 
                 }
                 BinningCreation.BinningItems = binningItemList;

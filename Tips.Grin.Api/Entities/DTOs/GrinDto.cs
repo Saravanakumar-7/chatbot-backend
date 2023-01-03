@@ -77,7 +77,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public int? TotalInvoice { get; set; }
 
         public string? GrinDocuments { get; set; }
-     
+        
 
         public List<GrinPartsPostDto>? GrinParts { get; set; }
 
