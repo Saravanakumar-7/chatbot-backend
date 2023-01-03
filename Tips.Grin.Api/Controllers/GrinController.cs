@@ -168,6 +168,8 @@ namespace Tips.Grin.Api.Controllers
                     GrinParts grinPartsList = _mapper.Map<GrinParts>(grinpartsDto[i]);
                     grinPartsList.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinpartsDto[i].ProjectNumbers);
                     GrinpartsList.Add(grinPartsList);
+                    grinPartsList.Unit = "Bangalore";
+                    grinPartsList.ProjectNumbers[i].Unit = "Bangalore";
 
                 }
                 //grins.GrinParts = GrinpartsList;
