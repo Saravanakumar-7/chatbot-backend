@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Production.Api.Entities
 {
@@ -6,6 +7,7 @@ namespace Tips.Production.Api.Entities
     {
         public int Id { get; set; }
         public string PartNumber { get; set; }
+        [MinLength(500)]
         public string Description { get; set; }
         public string PartType { get; set; }
         public string UOM { get; set; }

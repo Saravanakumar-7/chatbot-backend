@@ -18,7 +18,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
         public List<SAShopOrderMaterialIssueGeneralDto>? SAShopOrderMaterialIssueGeneralDtos { get; set; }
     }
-    public class SAShopOrderMaterialIssueDtoPost
+    public class SAShopOrderMaterialIssuePostDto
     {
         public string SAShopOrderNumber { get; set; }
         public DateTime SAShopOrderDate { get; set; }
@@ -31,9 +31,9 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<SAShopOrderMaterialIssueGeneralDtoPost>? SAShopOrderMaterialIssueGeneralPostDtos { get; set; }
+        public List<SAShopOrderMaterialIssueGeneralPostDto>? SAShopOrderMaterialIssueGeneralPostDtos { get; set; }
     }
-    public class SAShopOrderMaterialIssueDtoUpdate
+    public class SAShopOrderMaterialIssueUpdateDto
     {
         public int Id { get; set; }
         public string SAShopOrderNumber { get; set; }
@@ -47,6 +47,6 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<SAShopOrderMaterialIssueGeneralDtoUpdate>? SAShopOrderMaterialIssueGeneralUpdateDtos { get; set; }
+        public List<SAShopOrderMaterialIssueGeneralUpdateDto>? SAShopOrderMaterialIssueGeneralUpdateDtos { get; set; }
     }
 }

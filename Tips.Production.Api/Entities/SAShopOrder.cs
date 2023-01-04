@@ -36,7 +36,7 @@ namespace Tips.Production.Api.Entities
 
 
         [Required]
-        [MaxLength(200)]
+        [MaxLength(500)]
         public string? Description { get; set; }
 
 

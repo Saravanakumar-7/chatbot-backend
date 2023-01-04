@@ -43,11 +43,11 @@ namespace Tips.Production.Api.Repository
 
         public async Task<SAShopOrderMaterialIssue> GetSAShopOrderMaterialIssueById(int id)
         {
-            var sAShopOrderMaterialIssueDetails = await _tipsProductionDbContext.SAShopOrderMaterialIssues.Where(x => x.Id == id)
+            var sAShopOrderMaterialIssue = await _tipsProductionDbContext.SAShopOrderMaterialIssues.Where(x => x.Id == id)
                                 .Include(t => t.SAShopOrderMaterialIssueGeneralList)
                                 .FirstOrDefaultAsync();
 
-            return sAShopOrderMaterialIssueDetails;
+            return sAShopOrderMaterialIssue;
         }
 
         public async Task<string> UpdateSAShopOrderMaterialIssue(SAShopOrderMaterialIssue sAShopOrderMaterialIssue)
