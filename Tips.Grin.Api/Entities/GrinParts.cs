@@ -12,7 +12,11 @@ namespace Tips.Grin.Api.Entities
     public class GrinParts
     {
         public int Id { get; set; }
-                    
+
+        public string? ItemNumber { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Qty { get; set; }
         public string ItemDescription { get; set; }
         public string? PONumber { get; set; }
         public string? ProjectNumber { get; set; }
@@ -53,7 +57,6 @@ namespace Tips.Grin.Api.Entities
 
         [Precision(13, 3)]
         public decimal? UTGST { get; set; }
-        public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

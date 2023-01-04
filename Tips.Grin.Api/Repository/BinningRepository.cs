@@ -18,8 +18,7 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<int?> CreateBinning(Binning binning)
         {
-            binning.LastModifiedBy = "Admin";
-            binning.LastModifiedOn = DateTime.Now;
+           
             binning.CreatedBy = "Admin";
             binning.CreatedOn = DateTime.Now;
             binning.Unit = "Bangalore";
@@ -34,7 +33,7 @@ namespace Tips.Grin.Api.Repository
         }
         public async Task<IEnumerable<Binning>> GetBinningDetailsByGrinNo(string grinNo)
         {
-            var BinningbyGrinNo = await FindByCondition(x => x.SelectGrinNumber == grinNo).ToListAsync();
+            var BinningbyGrinNo = await FindByCondition(x => x.GrinNumber == grinNo).ToListAsync();
             return BinningbyGrinNo;
         }
 

@@ -25,9 +25,9 @@ namespace Tips.Grin.Api.Repository
         {
             grins.CreatedBy = "Admin";
             grins.CreatedOn = DateTime.Now;
-            grins.LastModifiedBy = "Admin";
+
             grins.Unit = "Bangalore";
-            grins.LastModifiedOn = DateTime.Now;
+            
 
             var result = await Create(grins);
             return result.Id;
@@ -53,7 +53,7 @@ namespace Tips.Grin.Api.Repository
                                 {                                  
 
                                     Id= x.Id,
-                                    grinNumber=x.grinNumber
+                                    GrinNumber=x.GrinNumber
                                 })
                               .ToListAsync();
 

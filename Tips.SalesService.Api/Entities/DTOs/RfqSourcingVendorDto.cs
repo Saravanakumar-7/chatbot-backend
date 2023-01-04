@@ -61,8 +61,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? UploadFile { get; set; }
         public bool IsActive { get; set; } = true;
 
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
+       // [Required(ErrorMessage = "Unit is required")]
+       // public string Unit { get; set; }
     }
     public class RfqSourcingVendorDtoUpdate
     {

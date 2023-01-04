@@ -32,8 +32,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         public string? CustomerName { get; set; }
        
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
+        //[Required(ErrorMessage = "Unit is required")]
+       // public string Unit { get; set; }
         public List<RfqSourcingItemsDtoPost>? rfqSourcingItems { get; set; }
        
 

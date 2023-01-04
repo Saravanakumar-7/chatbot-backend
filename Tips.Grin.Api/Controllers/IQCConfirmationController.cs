@@ -54,7 +54,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-            [HttpGet("{grinNumber}")]
+            [HttpGet("{GrinNumber}")]
             public async Task<IActionResult> GetIqcDetailsbyGrinNo(string grinNumber) 
             {
                 ServiceResponse<IEnumerable<IQCConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationDto>>();

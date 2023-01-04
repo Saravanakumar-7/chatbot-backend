@@ -197,17 +197,6 @@ namespace Tips.Master.Api.Controllers
         }
          
 
-        //[HttpPost]
-        //[Route("add-adress")]
-        //public async Task<IActionResult> CreateEnggCustField([FromQuery] int id, [FromBody] EngineeringCustomField engineeringCustomField)
-        //{
-        //    var result = await _engineeringCustomFieldRepository.Employee.Where(_ => _.Id == id).FirstOrDefaultAsync();
-
-        //    result?.ContactDetails?.Addresses?.Add(address);
-
-        //    await _myWorldDbContext.SaveChangesAsync();
-        //    return Ok();
-        //}
 
 
 
