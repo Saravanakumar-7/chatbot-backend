@@ -25,10 +25,9 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<int?> CreateIqc(IQCConfirmation iQCConfirmation)
         {
-            iQCConfirmation.LastModifiedBy = "Admin";
-            iQCConfirmation.LastModifiedOn = DateTime.Now;
             iQCConfirmation.CreatedBy = "Admin";
             iQCConfirmation.CreatedOn = DateTime.Now;
+            iQCConfirmation.Unit = "Bangalore";
             var result = await Create(iQCConfirmation);
             return result.Id;
         }

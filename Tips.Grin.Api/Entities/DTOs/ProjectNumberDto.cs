@@ -11,8 +11,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? ProjectQty { get; set; }
 
-        public string Unit { get; set; }
-
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -39,8 +37,6 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? ProjectQty { get; set; }
-
-        public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

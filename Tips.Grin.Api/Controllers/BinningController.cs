@@ -123,6 +123,10 @@ namespace Tips.Grin.Api.Controllers
                 if (UpdateBinnings is null)
                 {
                     _logger.LogError($"Binning details with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Update Grin with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
@@ -142,10 +146,11 @@ namespace Tips.Grin.Api.Controllers
 
                 data.BinningItems = binningItemList;
 
-                var BinningEntity = _mapper.Map(BinningUpdateDto, UpdateBinnings);
+                //var BinningEntity = _mapper.Map(BinningUpdateDto, UpdateBinnings);
 
-                string result = await _binningRepository.UpdateBinning(BinningEntity);
+                string result = await _binningRepository.UpdateBinning(data);
                 _logger.LogInfo(result);
+                //_binningRepository.Update(data);
                 _binningRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Update Successfully";
@@ -199,8 +204,6 @@ namespace Tips.Grin.Api.Controllers
                     BinningItems binningItemListDetails = _mapper.Map<BinningItems>(binningsDto[i]);
                     binningItemListDetails.BinningLocations = _mapper.Map<List<BinningLocation>>(binningsDto[i].BinningLocations);
                     binningItemList.Add(binningItemListDetails);
-                    binningItemListDetails.Unit = "Bangalore";
-                    binningItemListDetails.BinningLocations[i].Unit = "Bangalore";
 
 
                 }
@@ -208,7 +211,7 @@ namespace Tips.Grin.Api.Controllers
 
                 _binningRepository.CreateBinning(BinningCreation);
 
-                _binningRepository.Update(BinningCreation);
+               // _binningRepository.Update(BinningCreation);
                 _binningRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
