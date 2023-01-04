@@ -12,7 +12,7 @@ namespace Tips.Production.Api.Entities
 
         [Required]
         [MaxLength(100)]
-        public string? SAShopOrderNo { get; set; }
+        public string? SAShopOrderNumber { get; set; }
 
 
         [Required]
@@ -22,17 +22,17 @@ namespace Tips.Production.Api.Entities
 
         [Required]
         [MaxLength(50)]
-        public string? ProjectNo { get; set; }
+        public string? ProjectNumber { get; set; }
 
 
         [Required]
         [MaxLength(100)]
-        public string? FGItemNo { get; set; }
+        public string? FGItemNumber { get; set; }
 
 
         [Required]
         [MaxLength(100)]
-        public string? SAItemno { get; set; }
+        public string? SAItemNumber { get; set; }
 
 
         [Required]
@@ -42,7 +42,7 @@ namespace Tips.Production.Api.Entities
 
         [Required]
         [MaxLength(50)]
-        public string? SalesOrderNo { get; set; }
+        public string? SalesOrderNumber { get; set; }
 
 
         [Precision(13, 2)]
@@ -60,7 +60,7 @@ namespace Tips.Production.Api.Entities
 
 
         [MaxLength(100)]
-        public string? SalesOrderPoNo { get; set; }
+        public string? SalesOrderPONumber { get; set; }
 
 
         [DefaultValue(0)]

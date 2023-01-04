@@ -51,22 +51,22 @@ namespace Tips.Production.Api.Repository
             shopOrder.LastModifiedBy = "Admin";
             shopOrder.LastModifiedOn = DateTime.Now;
             Update(shopOrder);
-            string result = $"LeadTime details of {shopOrder.Id} is updated successfully!";
+            string result = $"ShopOrder details of {shopOrder.Id} is updated successfully!";
             return result;
         }
 
         public async Task<ShopOrder> GetShopOrderBySalesOrderNo(string salesOrderNo)
         {
-            var shopOrderList = await FindByCondition(x => x.SalesOrderNo == salesOrderNo)
+            var shopOrderList = await FindByCondition(x => x.SalesOrderNumber == salesOrderNo)
                 
                              .FirstOrDefaultAsync();
             return shopOrderList;
         }
 
-        public async Task<ShopOrder> GetShopOrderShopOrderNo(string ShopOrderNo)
+        public async Task<ShopOrder> GetShopOrderByShopOrderNo(string ShopOrderNo)
         {
             var shopOrderList = await
-                            FindByCondition(x => x.ShopOrderNo == ShopOrderNo)
+                            FindByCondition(x => x.ShopOrderNumber == ShopOrderNo)
                              .FirstOrDefaultAsync();
             return shopOrderList;
         }

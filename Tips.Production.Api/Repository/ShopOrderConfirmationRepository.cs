@@ -43,13 +43,13 @@ namespace Tips.Production.Api.Repository
             shopOrderConfirmation.LastModifiedBy = "Admin";
             shopOrderConfirmation.LastModifiedOn = DateTime.Now;
             Update(shopOrderConfirmation);
-            string result = $"LeadTime details of {shopOrderConfirmation.Id} is updated successfully!";
+            string result = $"ShopOrderConfirmation details of {shopOrderConfirmation.Id} is updated successfully!";
             return result;
         }
 
         public async Task<IEnumerable<ShopOrderConfirmation>> GetAllShopOrderConfirmationByShopOrderNo(string shopOrderNo)
         {
-            var shopOrderConfirmationList = await FindByCondition(x => x.ShopOrderNo ==shopOrderNo).ToListAsync();
+            var shopOrderConfirmationList = await FindByCondition(x => x.ShopOrderNumber ==shopOrderNo).ToListAsync();
                             // .FirstOrDefaultAsync();
             return shopOrderConfirmationList;
 
@@ -57,7 +57,7 @@ namespace Tips.Production.Api.Repository
         
         public async Task<IEnumerable<ShopOrderConfirmation>> GetOpenDataForOqcByShopOrderNo(string shopOrderNo)
         {
-            var shopOrderConfirmationList = await FindByCondition(x => x.ShopOrderNo == shopOrderNo &&  x.IsOQCDone == false).ToListAsync();
+            var shopOrderConfirmationList = await FindByCondition(x => x.ShopOrderNumber == shopOrderNo &&  x.IsOQCDone == false).ToListAsync();
             // .FirstOrDefaultAsync();
             return shopOrderConfirmationList;
 

@@ -35,7 +35,7 @@ namespace Tips.Production.Api.Controllers
                 _logger.LogInfo("Returned all ShopOrders()s");
                 var result = _mapper.Map<IEnumerable<ShopOrderDto>>(shopOrderList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "ShopOrder Successfully Returned";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -64,7 +64,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError($"ShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrder with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrder with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
@@ -74,7 +74,7 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogInfo($"Returned ShopOrder with id: {id}");
                     var result = _mapper.Map<ShopOrderDto>(shopOrders);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "ShopOrderById Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);
@@ -121,14 +121,14 @@ namespace Tips.Production.Api.Controllers
                 _shopOrderRepository.CreateShopOrder(shopOrderEntity);
                 _shopOrderRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "ShopOrder Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetShopOrderById", "Successfully Created");
+                return Created("GetShopOrderById", serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateShopOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -138,13 +138,13 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateShopOrder(int id, [FromBody] ShopOrderDto ShopOrderDtoUpdate)
+        public async Task<IActionResult> UpdateShopOrder(int id, [FromBody] ShopOrderDto shopOrderDtoUpdate)
         {
             ServiceResponse<ShopOrderDto> serviceResponse = new ServiceResponse<ShopOrderDto>();
 
             try
             {
-                if (ShopOrderDtoUpdate is null)
+                if (shopOrderDtoUpdate is null)
                 {
                     _logger.LogError("ShopOrder object sent from client is null.");
                     serviceResponse.Data = null;
@@ -166,17 +166,17 @@ namespace Tips.Production.Api.Controllers
                 var shopOrders = await _shopOrderRepository.GetShopOrderById(id);
                 if (shopOrders is null)
                 {
-                    _logger.LogError($"ItemMaster with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"ShopOrder with id: {id}, hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
 
-                var shopOrderEntity = _mapper.Map(ShopOrderDtoUpdate, shopOrders);
+                var shopOrderEntity = _mapper.Map(shopOrderDtoUpdate, shopOrders);
 
                 string result = await _shopOrderRepository.UpdateShopOrder(shopOrderEntity);
                 _logger.LogInfo(result);
                 _shopOrderRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = "ShopOrder Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -204,7 +204,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError($"ShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrder with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrder with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
@@ -213,7 +213,7 @@ namespace Tips.Production.Api.Controllers
                 shopOrders.IsDeleted = true;
                 string result = await _shopOrderRepository.UpdateShopOrder(shopOrders);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Delete Successfully";
+                serviceResponse.Message = "ShopOrder Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -246,7 +246,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError($"ShopOrder with id: {salesOrderNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrder with id: {salesOrderNo}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrder with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
@@ -256,7 +256,7 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogInfo($"Returned ShopOrder with id: {salesOrderNo}");
                     var result = _mapper.Map<ShopOrderDto>(shopOrders);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "ShopOrder Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);
@@ -264,7 +264,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetshopOrderById action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetShopOrderBySalesOrderNo action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
@@ -280,12 +280,12 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var shopOrders = await _shopOrderRepository.GetShopOrderShopOrderNo(shopOrderNo);
+                var shopOrders = await _shopOrderRepository.GetShopOrderByShopOrderNo(shopOrderNo);
                 if (shopOrders == null)
                 {
                     _logger.LogError($"ShopOrder with id: {shopOrderNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrder with id: {shopOrderNo}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrder with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
@@ -295,7 +295,7 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogInfo($"Returned ShopOrder with id: {shopOrderNo}");
                     var result = _mapper.Map<ShopOrderDto>(shopOrders);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "ShopOrderByShopOrderNo Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);
@@ -324,7 +324,7 @@ namespace Tips.Production.Api.Controllers
                 _logger.LogInfo("Returned all ShopOrders()s");
                 var result = _mapper.Map<IEnumerable<ShopOrderDto>>(shopOrderList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "ShopOrders Successfully Returned";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -353,7 +353,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError($"ShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrder with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrder with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
@@ -371,7 +371,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteShopOrder action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside ShortCloseShopOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;

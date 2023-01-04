@@ -5,16 +5,16 @@ namespace Tips.Production.Api.Entities
     public class SAShopOrderMaterialIssueGeneral
     {
         public int Id { get; set; }
-        public string PartNo { get; set; }
+        public string PartNumber { get; set; }
         public string Description { get; set; }
         public string PartType { get; set; }
         public string UOM { get; set; }
         [Precision(13, 2)]
-        public decimal Quantity { get; set; }
+        public decimal Qty { get; set; }
         [Precision(13, 2)]
-        public decimal RequiredQuantity { get; set; }
+        public decimal RequiredQty { get; set; }
         [Precision(13, 2)]
-        public decimal AvailableQuantity { get; set; }
+        public decimal AvailableQty { get; set; }
         [Precision(13, 2)]
         public decimal AlreadyIssuedQty { get; set; }
         [Precision(13, 2)]

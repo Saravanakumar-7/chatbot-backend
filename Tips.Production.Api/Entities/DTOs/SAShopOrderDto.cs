@@ -10,25 +10,25 @@ namespace Tips.Production.Api.Entities.DTOs
         public int Id { get; set; }
 
         
-        public string? SAShopOrderNo { get; set; }
+        public string? SAShopOrderNumber { get; set; }
 
 
         public string? ProjectType { get; set; }
 
 
-        public string? ProjectNo { get; set; }
+        public string? ProjectNumber { get; set; }
 
 
-        public string? FGItemNo { get; set; }
+        public string? FGItemNumber { get; set; }
 
 
-        public string? SAItemno { get; set; }
+        public string? SAItemNumber { get; set; }
 
 
         public string? Description { get; set; }
 
 
-        public string? SalesOrderNo { get; set; }
+        public string? SalesOrderNumber { get; set; }
 
 
         public decimal SalesOrderQty { get; set; }
@@ -40,7 +40,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? SAShopOrderCloseDate { get; set; }
 
 
-        public string? SalesOrderPoNo { get; set; }
+        public string? SalesOrderPONumber { get; set; }
 
 
         public OrderStatus Status { get; set; }
@@ -80,25 +80,25 @@ namespace Tips.Production.Api.Entities.DTOs
     public class SAShopOrderDtoPost
     {
         
-        public string? SAShopOrderNo { get; set; }
+        public string? SAShopOrderNumber { get; set; }
 
 
         public string? ProjectType { get; set; }
 
 
-        public string? ProjectNo { get; set; }
+        public string? ProjectNumber { get; set; }
 
 
-        public string? FGItemNo { get; set; }
+        public string? FGItemNumber { get; set; }
 
 
-        public string? SAItemno { get; set; }
+        public string? SAItemNumber { get; set; }
 
 
         public string? Description { get; set; }
 
 
-        public string? SalesOrderNo { get; set; }
+        public string? SalesOrderNumber { get; set; }
 
 
         public decimal SalesOrderQty { get; set; }
@@ -110,7 +110,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? SAShopOrderCloseDate { get; set; }
 
 
-        public string? SalesOrderPoNo { get; set; }
+        public string? SalesOrderPONumber { get; set; }
 
 
         public OrderStatus Status { get; set; }
@@ -147,25 +147,25 @@ namespace Tips.Production.Api.Entities.DTOs
         public int Id { get; set; }
 
 
-        public string? SAShopOrderNo { get; set; }
+        public string? SAShopOrderNumber { get; set; }
 
 
         public string? ProjectType { get; set; }
 
 
-        public string? ProjectNo { get; set; }
+        public string? ProjectNumber { get; set; }
 
 
-        public string? FGItemNo { get; set; }
+        public string? FGItemNumber { get; set; }
 
 
-        public string? SAItemno { get; set; }
+        public string? SAItemNumber { get; set; }
 
 
         public string? Description { get; set; }
 
 
-        public string? SalesOrderNo { get; set; }
+        public string? SalesOrderNumber { get; set; }
 
 
         public decimal SalesOrderQty { get; set; }
@@ -177,7 +177,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? SAShopOrderCloseDate { get; set; }
 
 
-        public string? SalesOrderPoNo { get; set; }
+        public string? SalesOrderPONumber { get; set; }
 
 
         public OrderStatus Status { get; set; }

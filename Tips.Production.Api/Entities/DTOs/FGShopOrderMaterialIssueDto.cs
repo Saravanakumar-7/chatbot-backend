@@ -5,10 +5,10 @@ namespace Tips.Production.Api.Entities.DTOs
     public class FGShopOrderMaterialIssueDto
     {
         public int Id { get; set; }
-        public string ShopOrderNo { get; set; }
+        public string ShopOrderNumber { get; set; }
         public DateTime ShopOrderDate { get; set; }
         public string ProjectNumber { get; set; }
-        public string FGPartNo { get; set; }
+        public string FGPartNumber { get; set; }
         [Precision(13, 2)]
         public decimal ShopOrderQty { get; set; }
         public string ShopOrderType { get; set; }
@@ -21,10 +21,10 @@ namespace Tips.Production.Api.Entities.DTOs
     public class FGShopOrderMaterialIssueDtoPost
     {
         public int Id { get; set; }
-        public string ShopOrderNo { get; set; }
+        public string ShopOrderNumber { get; set; }
         public DateTime ShopOrderDate { get; set; }
         public string ProjectNumber { get; set; }
-        public string FGPartNo { get; set; }
+        public string FGPartNumber { get; set; }
         [Precision(13, 2)]
         public decimal ShopOrderQty { get; set; }
         public string ShopOrderType { get; set; }
@@ -37,10 +37,10 @@ namespace Tips.Production.Api.Entities.DTOs
     public class FGShopOrderMaterialIssueDtoUpdate
     {
         public int Id { get; set; }
-        public string ShopOrderNo { get; set; }
+        public string ShopOrderNumber { get; set; }
         public DateTime ShopOrderDate { get; set; }
         public string ProjectNumber { get; set; }
-        public string FGPartNo { get; set; }
+        public string FGPartNumber { get; set; }
         [Precision(13, 2)]
         public decimal ShopOrderQty { get; set; }
         public string ShopOrderType { get; set; }
