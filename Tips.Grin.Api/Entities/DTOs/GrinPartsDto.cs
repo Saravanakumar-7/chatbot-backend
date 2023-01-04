@@ -12,6 +12,10 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public int Id { get; set; } 
         public string ItemDescription { get; set; }
+        public string? ItemNumber { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Qty { get; set; }
         public string? PONumber { get; set; }
 
         public string MftrItemNumber { get; set; }
@@ -74,6 +78,11 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string ItemDescription { get; set; }
         public string? PONumber { get; set; }
 
+        public string? ItemNumber { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Qty { get; set; }
+
 
         [Required(ErrorMessage = "MftrItemNumber is required")]
         public string MftrItemNumber { get; set; }
@@ -131,6 +140,11 @@ namespace Tips.Grin.Api.Entities.DTOs
         [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
         public string ItemDescription { get; set; }
         public string? PONumber { get; set; }
+
+        public string? ItemNumber { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Qty { get; set; }
 
         [Required(ErrorMessage = "MftrItemNumber is required")]
         public string MftrItemNumber { get; set; }

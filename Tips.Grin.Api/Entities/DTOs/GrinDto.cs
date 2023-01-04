@@ -11,7 +11,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class GrinDto
     {
         public int Id { get; set; }
-        public string? grinNumber { get; set; }
+        public string? GrinNumber { get; set; }
 
         public string? VendorName { get; set; }
 
@@ -37,7 +37,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public int? TotalInvoice { get; set; }
 
-        public string? GrinDocuments { get; set; }
+     
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
@@ -51,7 +51,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     }
     public class GrinPostDto
     {
-        public string? grinNumber { get; set; }
+        public string? GrinNumber { get; set; }
         public string? VendorName { get; set; }
 
         public string? VendorId { get; set; }
@@ -76,7 +76,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public int? TotalInvoice { get; set; }
 
-        public string? GrinDocuments { get; set; }
+    
         
 
         public List<GrinPartsPostDto>? GrinParts { get; set; }
@@ -86,7 +86,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class GrinUpdateDto
     {
         public int Id { get; set; }
-        public string? grinNumber { get; set; }
+        public string? GrinNumber { get; set; }
         public string? VendorName { get; set; }
 
         public string? VendorId { get; set; }
@@ -111,7 +111,6 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public int? TotalInvoice { get; set; }
 
-        public string? GrinDocuments { get; set; }
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
@@ -125,7 +124,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class GrinNumberListDto
     {
         public int Id { get; set; }
-        public string? grinNumber { get; set; }
+        public string? GrinNumber { get; set; }
         
     }
 }

@@ -6,10 +6,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? ProjectNumber { get; set; }
-        public string? ItemNumber { get; set; }
-
-        [Precision(18, 3)]
-        public decimal? Qty { get; set; }
+        
 
         [Precision(18, 3)]
         public decimal? ProjectQty { get; set; }
@@ -26,10 +23,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class ProjectNumbersDtoPost
     {
         public string? ProjectNumber { get; set; }
-        public string? ItemNumber { get; set; }
-
-        [Precision(18, 3)]
-        public decimal? Qty { get; set; }
+     
 
         [Precision(18, 3)]
      
@@ -41,10 +35,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? ProjectNumber { get; set; }
-        public string? ItemNumber { get; set; }
 
-        [Precision(18, 3)]
-        public decimal? Qty { get; set; }
 
         [Precision(18, 3)]
         public decimal? ProjectQty { get; set; }

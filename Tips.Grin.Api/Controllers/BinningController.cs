@@ -207,6 +207,8 @@ namespace Tips.Grin.Api.Controllers
                 BinningCreation.BinningItems = binningItemList;
 
                 _binningRepository.CreateBinning(BinningCreation);
+
+                _binningRepository.Update(BinningCreation);
                 _binningRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";

@@ -53,7 +53,7 @@ namespace Tips.Grin.Api.Repository
                                 {                                  
 
                                     Id= x.Id,
-                                    grinNumber=x.grinNumber
+                                    GrinNumber=x.GrinNumber
                                 })
                               .ToListAsync();
 
