@@ -21,6 +21,7 @@ namespace Tips.Production.Api.Repository
             sAShopOrderMaterialIssue.LastModifiedOn = DateTime.Now;
             sAShopOrderMaterialIssue.CreatedBy = "Admin";
             sAShopOrderMaterialIssue.CreatedOn = DateTime.Now;
+            sAShopOrderMaterialIssue.Unit = "Bangalore";
             var result = await Create(sAShopOrderMaterialIssue);
             return result.Id;
         }
@@ -34,20 +35,20 @@ namespace Tips.Production.Api.Repository
 
         public async Task<PagedList<SAShopOrderMaterialIssue>> GetAllSAShopOrderMaterialIssue(PagingParameter pagingParameter)
         {
-            var sAShopOrderMaterialIssueDetails = PagedList<SAShopOrderMaterialIssue>.ToPagedList(FindAll()
+            var getAllSAShopOrderMaterialIssueDetails = PagedList<SAShopOrderMaterialIssue>.ToPagedList(FindAll()
                               .Include(t => t.SAShopOrderMaterialIssueGeneralList)
              .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return sAShopOrderMaterialIssueDetails;
+            return getAllSAShopOrderMaterialIssueDetails;
         }
 
         public async Task<SAShopOrderMaterialIssue> GetSAShopOrderMaterialIssueById(int id)
         {
-            var sAShopOrderMaterialIssue = await _tipsProductionDbContext.SAShopOrderMaterialIssues.Where(x => x.Id == id)
+            var getSAShopOrderMaterialIssue = await _tipsProductionDbContext.SAShopOrderMaterialIssues.Where(x => x.Id == id)
                                 .Include(t => t.SAShopOrderMaterialIssueGeneralList)
                                 .FirstOrDefaultAsync();
 
-            return sAShopOrderMaterialIssue;
+            return getSAShopOrderMaterialIssue;
         }
 
         public async Task<string> UpdateSAShopOrderMaterialIssue(SAShopOrderMaterialIssue sAShopOrderMaterialIssue)

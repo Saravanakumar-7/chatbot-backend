@@ -87,12 +87,14 @@ namespace Tips.Production.Api.Controllers
 
                     FGShopOrderMaterialIssueDto fGShopOrderMaterialIssueDtos = _mapper.Map<FGShopOrderMaterialIssueDto>(getFGShopOrderMaterialIssue);
                     List<FGShopOrderMaterialIssueGeneralDto> fGShopOrderMaterialIssueGeneralDtoList = new List<FGShopOrderMaterialIssueGeneralDto>();
+                    if (getFGShopOrderMaterialIssue.FGShopOrderMaterialIssueGeneralList != null)
+                    {
                         foreach (var itemDetails in getFGShopOrderMaterialIssue.FGShopOrderMaterialIssueGeneralList)
                         {
                             FGShopOrderMaterialIssueGeneralDto fGShopOrderMaterialIssueGeneralDtos = _mapper.Map<FGShopOrderMaterialIssueGeneralDto>(itemDetails);
                             fGShopOrderMaterialIssueGeneralDtoList.Add(fGShopOrderMaterialIssueGeneralDtos);
                         }
-
+                    }
                     fGShopOrderMaterialIssueDtos.FGShopOrderMaterialIssueGeneralDtos = fGShopOrderMaterialIssueGeneralDtoList;
                     serviceResponse.Data = fGShopOrderMaterialIssueDtos;
                     serviceResponse.Message = $"Returned FGShopOrderMaterialIssueById Successfully";
@@ -142,7 +144,7 @@ namespace Tips.Production.Api.Controllers
                 var fGShopOrderMaterialIssueGeneral = _mapper.Map<IEnumerable<FGShopOrderMaterialIssueGeneral>>(fGShopOrderMaterialIssuePostDto.FGShopOrderMaterialIssueGeneralPostDtos);
                 var fGShopOrderMaterialIssue = _mapper.Map<FGShopOrderMaterialIssue>(fGShopOrderMaterialIssuePostDto);
                 fGShopOrderMaterialIssue.FGShopOrderMaterialIssueGeneralList = fGShopOrderMaterialIssueGeneral.ToList();
-                _fGShopOrderMaterialIssueRepository.CreateFGShopOrderMaterialIssue(fGShopOrderMaterialIssue);
+                await _fGShopOrderMaterialIssueRepository.CreateFGShopOrderMaterialIssue(fGShopOrderMaterialIssue);
                 _fGShopOrderMaterialIssueRepository.SaveAsync();
 
                 serviceResponse.Data = null;

@@ -140,10 +140,6 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime LastModifiedOn { get; set; }
 
-        [Required]
-        public string? Unit { get; set; }
-
-
     }
 
     public class ShopOrderUpdateDto

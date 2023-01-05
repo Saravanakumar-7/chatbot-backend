@@ -25,17 +25,17 @@ namespace Tips.Production.Api.Repository
 
         public async Task<IEnumerable<ShopOrderConfirmation>> GetAllShopOrderConfirmation()
         {
-            var shopOrderConfirmationDetails = await FindAll().ToListAsync();
-            return (shopOrderConfirmationDetails);
+            var getAllShopOrderConfirmationDetails = await FindAll().ToListAsync();
+            return (getAllShopOrderConfirmationDetails);
 
         }
 
         public async Task<ShopOrderConfirmation> GetShopOrderConfirmationById(int id)
         {
-            var shopOrderCondition = await 
+            var getShopOrderConfirmation = await 
                             FindByCondition(x => x.Id == id)
                              .FirstOrDefaultAsync();
-            return shopOrderCondition;
+            return getShopOrderConfirmation;
         }
 
         public async Task<string> UpdateShopOrderConfirmation(ShopOrderConfirmation shopOrderConfirmation)
@@ -49,17 +49,17 @@ namespace Tips.Production.Api.Repository
 
         public async Task<IEnumerable<ShopOrderConfirmation>> GetAllShopOrderConfirmationByShopOrderNo(string shopOrderNo)
         {
-            var shopOrderConfirmationList = await FindByCondition(x => x.ShopOrderNumber ==shopOrderNo).ToListAsync();
+            var getAllShopOrderConfirmationByShopOrderNoList = await FindByCondition(x => x.ShopOrderNumber ==shopOrderNo).ToListAsync();
                             // .FirstOrDefaultAsync();
-            return shopOrderConfirmationList;
+            return getAllShopOrderConfirmationByShopOrderNoList;
 
         }
         
         public async Task<IEnumerable<ShopOrderConfirmation>> GetOpenDataForOqcByShopOrderNo(string shopOrderNo)
         {
-            var shopOrderConfirmationList = await FindByCondition(x => x.ShopOrderNumber == shopOrderNo &&  x.IsOQCDone == false).ToListAsync();
+            var getOpenDataForOqcByShopOrderNoList = await FindByCondition(x => x.ShopOrderNumber == shopOrderNo &&  x.IsOQCDone == false).ToListAsync();
             // .FirstOrDefaultAsync();
-            return shopOrderConfirmationList;
+            return getOpenDataForOqcByShopOrderNoList;
 
         }
         

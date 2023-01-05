@@ -6,11 +6,11 @@ namespace Tips.Production.Api.Entities.DTOs
     public class FGShopOrderMaterialIssueGeneralDto
     {
         public int Id { get; set; }
-        public string PartNumber { get; set; }
+        public string? PartNumber { get; set; }
         [MinLength(500)]
-        public string Description { get; set; }
-        public string PartType { get; set; }
-        public string UOM { get; set; }
+        public string? Description { get; set; }
+        public string? PartType { get; set; }
+        public string? UOM { get; set; }
         [Precision(13, 2)]
         public decimal Qty { get; set; }
         [Precision(13, 2)]
@@ -28,11 +28,11 @@ namespace Tips.Production.Api.Entities.DTOs
     }
     public class FGShopOrderMaterialIssueGeneralPostDto
     {
-        public string PartNumber { get; set; }
+        public string? PartNumber { get; set; }
         [MinLength(500)]
-        public string Description { get; set; }
-        public string PartType { get; set; }
-        public string UOM { get; set; }
+        public string? Description { get; set; }
+        public string? PartType { get; set; }
+        public string? UOM { get; set; }
         [Precision(13, 2)]
         public decimal Qty { get; set; }
         [Precision(13, 2)]
@@ -51,11 +51,11 @@ namespace Tips.Production.Api.Entities.DTOs
     public class FGShopOrderMaterialIssueGeneralUpdateDto
     {
         public int Id { get; set; }
-        public string PartNumber { get; set; }
+        public string? PartNumber { get; set; }
         [MinLength(500)]
-        public string Description { get; set; }
-        public string PartType { get; set; }
-        public string UOM { get; set; }
+        public string? Description { get; set; }
+        public string? PartType { get; set; }
+        public string? UOM { get; set; }
         [Precision(13, 2)]
         public decimal Qty { get; set; }
         [Precision(13, 2)]

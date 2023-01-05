@@ -88,10 +88,13 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogInfo($"Returned SAShopOrderMaterialIssue with id: {id}");
                     SAShopOrderMaterialIssueDto sAShopOrderMaterialIssueDtos = _mapper.Map<SAShopOrderMaterialIssueDto>(getSAShopOrderMaterialIssue);
                     List<SAShopOrderMaterialIssueGeneralDto> sAShopOrderMaterialIssueGeneralDtoList = new List<SAShopOrderMaterialIssueGeneralDto>();
-                    foreach (var itemDetails in getSAShopOrderMaterialIssue.SAShopOrderMaterialIssueGeneralList)
+                    if (getSAShopOrderMaterialIssue.SAShopOrderMaterialIssueGeneralList != null)
                     {
-                        SAShopOrderMaterialIssueGeneralDto sAShopOrderMaterialIssueGeneralDtos = _mapper.Map<SAShopOrderMaterialIssueGeneralDto>(itemDetails);
-                        sAShopOrderMaterialIssueGeneralDtoList.Add(sAShopOrderMaterialIssueGeneralDtos);
+                        foreach (var itemDetails in getSAShopOrderMaterialIssue.SAShopOrderMaterialIssueGeneralList)
+                        {
+                            SAShopOrderMaterialIssueGeneralDto sAShopOrderMaterialIssueGeneralDtos = _mapper.Map<SAShopOrderMaterialIssueGeneralDto>(itemDetails);
+                            sAShopOrderMaterialIssueGeneralDtoList.Add(sAShopOrderMaterialIssueGeneralDtos);
+                        }
                     }
                     sAShopOrderMaterialIssueDtos.SAShopOrderMaterialIssueGeneralDtos = sAShopOrderMaterialIssueGeneralDtoList;
                     serviceResponse.Data = sAShopOrderMaterialIssueDtos;
@@ -142,7 +145,7 @@ namespace Tips.Production.Api.Controllers
                 var sAShopOrderMaterialIssueGeneral = _mapper.Map<IEnumerable<SAShopOrderMaterialIssueGeneral>>(sAShopOrderMaterialIssuePostDto.SAShopOrderMaterialIssueGeneralPostDtos);
                 var sAShopOrderMaterialIssue = _mapper.Map<SAShopOrderMaterialIssue>(sAShopOrderMaterialIssuePostDto);
                 sAShopOrderMaterialIssue.SAShopOrderMaterialIssueGeneralList = sAShopOrderMaterialIssueGeneral.ToList();
-                _sAShopOrderMaterialIssueRepository.CreateSAShopOrderMaterialIssue(sAShopOrderMaterialIssue);
+                await _sAShopOrderMaterialIssueRepository.CreateSAShopOrderMaterialIssue(sAShopOrderMaterialIssue);
                 _sAShopOrderMaterialIssueRepository.SaveAsync();
 
                 serviceResponse.Data = null;

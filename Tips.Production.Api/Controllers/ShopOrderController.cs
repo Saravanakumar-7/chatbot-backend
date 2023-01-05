@@ -35,7 +35,7 @@ namespace Tips.Production.Api.Controllers
                 _logger.LogInfo("Returned all ShopOrders");
                 var result = _mapper.Map<IEnumerable<ShopOrderDto>>(getAllShopOrders);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "ShopOrders Successfully Returned";
+                serviceResponse.Message = "ShopOrder Successfully Returned";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -116,8 +116,8 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var shopOrder = _mapper.Map<ShopOrder>(shopOrderPostDto);
 
+                var shopOrder = _mapper.Map<ShopOrder>(shopOrderPostDto);
                 _shopOrderRepository.CreateShopOrder(shopOrder);
                 _shopOrderRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -199,8 +199,8 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var deleteShopOrders = await _shopOrderRepository.GetShopOrderById(id);
-                if (deleteShopOrders == null)
+                var deleteShopOrder = await _shopOrderRepository.GetShopOrderById(id);
+                if (deleteShopOrder == null)
                 {
                     _logger.LogError($"ShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -210,8 +210,8 @@ namespace Tips.Production.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                deleteShopOrders.IsDeleted = true;
-                string result = await _shopOrderRepository.UpdateShopOrder(deleteShopOrders);
+                deleteShopOrder.IsDeleted = true;
+                string result = await _shopOrderRepository.UpdateShopOrder(deleteShopOrder);
                 _shopOrderRepository.SaveAsync();
                 serviceResponse.Message = "ShopOrder Deleted Successfully";
                 serviceResponse.Success = true;
@@ -320,9 +320,9 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getAllShopOrder = await _shopOrderRepository.GetAllOpenShopOrders();
+                var getAllOpenShopOrder = await _shopOrderRepository.GetAllOpenShopOrders();
                 _logger.LogInfo("Returned all ShopOrders");
-                var result = _mapper.Map<IEnumerable<ShopOrderDto>>(getAllShopOrder);
+                var result = _mapper.Map<IEnumerable<ShopOrderDto>>(getAllOpenShopOrder);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "ShopOrders Successfully Returned";
                 serviceResponse.Success = true;
@@ -348,8 +348,8 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getShopOrder = await _shopOrderRepository.GetShopOrderById(id);
-                if (getShopOrder == null)
+                var getShortCloseShopOrder = await _shopOrderRepository.GetShopOrderById(id);
+                if (getShortCloseShopOrder == null)
                 {
                     _logger.LogError($"ShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -359,10 +359,10 @@ namespace Tips.Production.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                getShopOrder.IsShortClosed = true;
-                getShopOrder.ShorClosedBy = "Admin";
-                getShopOrder.ShortClosedOn = DateTime.Now;
-                string result = await _shopOrderRepository.UpdateShopOrder(getShopOrder);
+                getShortCloseShopOrder.IsShortClosed = true;
+                getShortCloseShopOrder.ShorClosedBy = "Admin";
+                getShortCloseShopOrder.ShortClosedOn = DateTime.Now;
+                string result = await _shopOrderRepository.UpdateShopOrder(getShortCloseShopOrder);
                 _shopOrderRepository.SaveAsync();
                 serviceResponse.Message = "ShopOrder have been closed";
                 serviceResponse.Success = true;
