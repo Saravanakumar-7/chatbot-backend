@@ -98,10 +98,9 @@ namespace Tips.Grin.Api.Controllers
 
                 {
                     _logger.LogInfo($"Returned GrinDetailsById with id: {id}");
-                    GrinDto grinDto = _mapper.Map<GrinDto>(GrinDetailsbyId);//Main model mapping
+                    GrinDto grinDto = _mapper.Map<GrinDto>(GrinDetailsbyId);
 
-                    //below mapping is child under child  
-
+                    
                     List<GrinPartsDto> grinPartsDtos = new List<GrinPartsDto>();
 
                     foreach (var GrinpartsDetails in GrinDetailsbyId.GrinParts)
@@ -131,7 +130,7 @@ namespace Tips.Grin.Api.Controllers
         }
 
 
-        // POST api/<GrinController>
+   
         [HttpPost]
         public async Task<IActionResult> CreateGrin([FromBody] GrinPostDto grinPostDto)
         {
@@ -158,24 +157,23 @@ namespace Tips.Grin.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-               //var grin = _mapper.Map<IEnumerable<GrinParts>>(grinPostDto.GrinParts);
+               
                 var grinsList = _mapper.Map<Grins>(grinPostDto);
                 var grinpartsDto = grinPostDto.GrinParts;
 
                 var GrinpartsList = new List<GrinParts>();
                 for (int i = 0; i < grinpartsDto.Count; i++)
                 {
-                    GrinParts grinPartsList = _mapper.Map<GrinParts>(grinpartsDto[i]);
-                    grinPartsList.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinpartsDto[i].ProjectNumbers);
-                    GrinpartsList.Add(grinPartsList);
-                    //grinPartsList.Unit = "Bangalore";
-                    //grinPartsList.ProjectNumbers[i].Unit = "Bangalore";
+                    GrinParts grinParts = _mapper.Map<GrinParts>(grinpartsDto[i]);
+                    grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinpartsDto[i].ProjectNumbers);
+                    GrinpartsList.Add(grinParts);
+                  
 
                 }
-                //grins.GrinParts = GrinpartsList;
+                
 
                 grinsList.GrinParts = GrinpartsList;
-                //grins.GrinParts = grin.ToList();
+                
 
                 _repository.CreateGrin(grinsList);
 
@@ -198,7 +196,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-        // PUT api/<GrinController>/5
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateGrin(int id, [FromBody] GrinDto grinDto)
         {
@@ -250,7 +248,10 @@ namespace Tips.Grin.Api.Controllers
 
                     GrinpartsList.Add(grinPartsDetail);
 
+
                 }
+
+
 
                 var data = _mapper.Map(grinDto, updategrin);
 

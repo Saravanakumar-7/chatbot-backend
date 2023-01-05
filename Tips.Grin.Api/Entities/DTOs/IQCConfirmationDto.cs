@@ -88,6 +88,8 @@ namespace Tips.Grin.Api.Entities.DTOs
 
     public bool IsDeleted { get; set; } = false;
 
+    public string Unit { get; set; }
+
 
     }
 

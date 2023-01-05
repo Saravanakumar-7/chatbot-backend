@@ -94,7 +94,7 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBinning(int id, [FromBody] BinningDto BinningUpdateDto)
+        public async Task<IActionResult> UpdateBinning(int id, [FromBody] BinningUpdateDto BinningUpdateDto)
         {
             ServiceResponse<BinningDto> serviceResponse = new ServiceResponse<BinningDto>();
 
@@ -146,11 +146,11 @@ namespace Tips.Grin.Api.Controllers
 
                 data.BinningItems = binningItemList;
 
-                //var BinningEntity = _mapper.Map(BinningUpdateDto, UpdateBinnings);
+                
 
                 string result = await _binningRepository.UpdateBinning(data);
                 _logger.LogInfo(result);
-                //_binningRepository.Update(data);
+
                 _binningRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Update Successfully";
@@ -211,7 +211,7 @@ namespace Tips.Grin.Api.Controllers
 
                 _binningRepository.CreateBinning(BinningCreation);
 
-               // _binningRepository.Update(BinningCreation);
+
                 _binningRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
@@ -254,9 +254,9 @@ namespace Tips.Grin.Api.Controllers
                 {
                     _logger.LogInfo($"Returned Binnings with id: {id}");
                     
-                    BinningDto binningDto = _mapper.Map<BinningDto>(BinningsById);//Main model mapping
+                    BinningDto binningDto = _mapper.Map<BinningDto>(BinningsById);
 
-                    //below mapping is child under child  
+                   
 
                     List<BinningItemsDto> binningItemDtos = new List<BinningItemsDto>();
 
