@@ -31,22 +31,22 @@ namespace Tips.Production.Api.Controllers
             ServiceResponse<IEnumerable<FGShopOrderMaterialIssueDto>> serviceResponse = new ServiceResponse<IEnumerable<FGShopOrderMaterialIssueDto>>();
             try
             {
-                var listOfFGShopOrderMaterialIssue = await _fGShopOrderMaterialIssueRepository.GetAllFGShopOrderMaterialIssue(pagingParameter);
+                var getAllFGShopOrderMaterialIssues = await _fGShopOrderMaterialIssueRepository.GetAllFGShopOrderMaterialIssue(pagingParameter);
                 var metadata = new
                 {
-                    listOfFGShopOrderMaterialIssue.TotalCount,
-                    listOfFGShopOrderMaterialIssue.PageSize,
-                    listOfFGShopOrderMaterialIssue.CurrentPage,
-                    listOfFGShopOrderMaterialIssue.HasNext,
-                    listOfFGShopOrderMaterialIssue.HasPreviuos
+                    getAllFGShopOrderMaterialIssues.TotalCount,
+                    getAllFGShopOrderMaterialIssues.PageSize,
+                    getAllFGShopOrderMaterialIssues.CurrentPage,
+                    getAllFGShopOrderMaterialIssues.HasNext,
+                    getAllFGShopOrderMaterialIssues.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                _logger.LogInfo("Returned all FGShopOrderMaterialIssue");
-                var result = _mapper.Map<IEnumerable<FGShopOrderMaterialIssueDto>>(listOfFGShopOrderMaterialIssue);
+                _logger.LogInfo("Returned all FGShopOrderMaterialIssues");
+                var result = _mapper.Map<IEnumerable<FGShopOrderMaterialIssueDto>>(getAllFGShopOrderMaterialIssues);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all FGShopOrderMaterialIssue";
+                serviceResponse.Message = "Returned all FGShopOrderMaterialIssues";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -70,9 +70,9 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var fGShopOrderMaterialIssueDetails = await _fGShopOrderMaterialIssueRepository.GetFGShopOrderMaterialIssueById(id);
+                var getFGShopOrderMaterialIssue = await _fGShopOrderMaterialIssueRepository.GetFGShopOrderMaterialIssueById(id);
 
-                if (fGShopOrderMaterialIssueDetails == null)
+                if (getFGShopOrderMaterialIssue == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"FGShopOrderMaterialIssue with id hasn't been found in db.";
@@ -85,16 +85,17 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogInfo($"Returned FGShopOrderMaterialIssue with id: {id}");
 
-                    FGShopOrderMaterialIssueDto fGShopOrderMaterialIssueEntity = _mapper.Map<FGShopOrderMaterialIssueDto>(fGShopOrderMaterialIssueDetails);
+                    FGShopOrderMaterialIssueDto fGShopOrderMaterialIssueDtos = _mapper.Map<FGShopOrderMaterialIssueDto>(getFGShopOrderMaterialIssue);
                     List<FGShopOrderMaterialIssueGeneralDto> fGShopOrderMaterialIssueGeneralDtoList = new List<FGShopOrderMaterialIssueGeneralDto>();
-                    foreach(var itemDetails in fGShopOrderMaterialIssueDetails.FGShopOrderMaterialIssueGeneralList)
-                    {
-                        FGShopOrderMaterialIssueGeneralDto fGShopOrderMaterialIssueGeneralDtos = _mapper.Map<FGShopOrderMaterialIssueGeneralDto>(itemDetails);
-                        fGShopOrderMaterialIssueGeneralDtoList.Add(fGShopOrderMaterialIssueGeneralDtos);
-                    }
-                    fGShopOrderMaterialIssueEntity.FGShopOrderMaterialIssueGeneralDtos = fGShopOrderMaterialIssueGeneralDtoList;
-                    serviceResponse.Data = fGShopOrderMaterialIssueEntity;
-                    serviceResponse.Message = $"Returned FGShopOrderMaterialIssue with id Successfully";
+                        foreach (var itemDetails in getFGShopOrderMaterialIssue.FGShopOrderMaterialIssueGeneralList)
+                        {
+                            FGShopOrderMaterialIssueGeneralDto fGShopOrderMaterialIssueGeneralDtos = _mapper.Map<FGShopOrderMaterialIssueGeneralDto>(itemDetails);
+                            fGShopOrderMaterialIssueGeneralDtoList.Add(fGShopOrderMaterialIssueGeneralDtos);
+                        }
+
+                    fGShopOrderMaterialIssueDtos.FGShopOrderMaterialIssueGeneralDtos = fGShopOrderMaterialIssueGeneralDtoList;
+                    serviceResponse.Data = fGShopOrderMaterialIssueDtos;
+                    serviceResponse.Message = $"Returned FGShopOrderMaterialIssueById Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -113,13 +114,13 @@ namespace Tips.Production.Api.Controllers
 
         // POST api/<FGShopOrderMaterialIssueController>
         [HttpPost]
-        public async Task<IActionResult> CreateFGShopOrderMaterialIssue([FromBody] FGShopOrderMaterialIssueDtoPost fGShopOrderMaterialIssueDtoPost)
+        public async Task<IActionResult> CreateFGShopOrderMaterialIssue([FromBody] FGShopOrderMaterialIssuePostDto fGShopOrderMaterialIssuePostDto)
         {
             ServiceResponse<FGShopOrderMaterialIssueDto> serviceResponse = new ServiceResponse<FGShopOrderMaterialIssueDto>();
 
             try
             {
-                if (fGShopOrderMaterialIssueDtoPost is null)
+                if (fGShopOrderMaterialIssuePostDto is null)
                 {
                     _logger.LogError("FGShopOrderMaterialIssueDetails object sent from client is null.");
                     serviceResponse.Data = null;
@@ -138,14 +139,14 @@ namespace Tips.Production.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var fGShopOrderMaterialIssueGeneralEntity = _mapper.Map<IEnumerable<FGShopOrderMaterialIssueGeneral>>(fGShopOrderMaterialIssueDtoPost.FGShopOrderMaterialIssueGeneralPostDtos);
-                var fGShopOrderMaterialIssueEntity = _mapper.Map<FGShopOrderMaterialIssue>(fGShopOrderMaterialIssueDtoPost);
-                fGShopOrderMaterialIssueEntity.FGShopOrderMaterialIssueGeneralList = fGShopOrderMaterialIssueGeneralEntity.ToList();
-                _fGShopOrderMaterialIssueRepository.CreateFGShopOrderMaterialIssue(fGShopOrderMaterialIssueEntity);
+                var fGShopOrderMaterialIssueGeneral = _mapper.Map<IEnumerable<FGShopOrderMaterialIssueGeneral>>(fGShopOrderMaterialIssuePostDto.FGShopOrderMaterialIssueGeneralPostDtos);
+                var fGShopOrderMaterialIssue = _mapper.Map<FGShopOrderMaterialIssue>(fGShopOrderMaterialIssuePostDto);
+                fGShopOrderMaterialIssue.FGShopOrderMaterialIssueGeneralList = fGShopOrderMaterialIssueGeneral.ToList();
+                _fGShopOrderMaterialIssueRepository.CreateFGShopOrderMaterialIssue(fGShopOrderMaterialIssue);
                 _fGShopOrderMaterialIssueRepository.SaveAsync();
 
                 serviceResponse.Data = null;
-                serviceResponse.Message = "FGShopOrderMaterialIssueDetails Successfully Created";
+                serviceResponse.Message = "FGShopOrderMaterialIssue Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetFGShopOrderMaterialIssueById", serviceResponse);
@@ -164,13 +165,13 @@ namespace Tips.Production.Api.Controllers
 
         // PUT api/<FGShopOrderMaterialIssueController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateFGShopOrderMaterialIssue(int id, [FromBody] FGShopOrderMaterialIssueDtoUpdate fGShopOrderMaterialIssueDtoUpdate)
+        public async Task<IActionResult> UpdateFGShopOrderMaterialIssue(int id, [FromBody] FGShopOrderMaterialIssueUpdateDto fGShopOrderMaterialIssueUpdateDto)
         {
-            ServiceResponse<FGShopOrderMaterialIssueDtoUpdate> serviceResponse = new ServiceResponse<FGShopOrderMaterialIssueDtoUpdate>();
+            ServiceResponse<FGShopOrderMaterialIssueUpdateDto> serviceResponse = new ServiceResponse<FGShopOrderMaterialIssueUpdateDto>();
 
             try
             {
-                if (fGShopOrderMaterialIssueDtoUpdate is null)
+                if (fGShopOrderMaterialIssueUpdateDto is null)
                 {
                     _logger.LogError("Update FGShopOrderMaterialIssue object sent from client is null.");
                     serviceResponse.Data = null;
@@ -199,10 +200,10 @@ namespace Tips.Production.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                var fGShopOrderMaterialIssueGeneral = _mapper.Map<IEnumerable<FGShopOrderMaterialIssueGeneral>>(fGShopOrderMaterialIssueDtoUpdate.FGShopOrderMaterialIssueGeneralUpdateDtos);
-                var fGShopOrderMaterialIssueEntity = _mapper.Map(fGShopOrderMaterialIssueDtoUpdate, updateFGShopOrderMaterialIssue);
-                fGShopOrderMaterialIssueEntity.FGShopOrderMaterialIssueGeneralList = fGShopOrderMaterialIssueGeneral.ToList();
-                string result = await _fGShopOrderMaterialIssueRepository.UpdateFGShopOrderMaterialIssue(fGShopOrderMaterialIssueEntity);
+                var fGShopOrderMaterialIssueGeneral = _mapper.Map<IEnumerable<FGShopOrderMaterialIssueGeneral>>(fGShopOrderMaterialIssueUpdateDto.FGShopOrderMaterialIssueGeneralUpdateDtos);
+                var fGShopOrderMaterialIssue = _mapper.Map(fGShopOrderMaterialIssueUpdateDto, updateFGShopOrderMaterialIssue);
+                fGShopOrderMaterialIssue.FGShopOrderMaterialIssueGeneralList = fGShopOrderMaterialIssueGeneral.ToList();
+                string result = await _fGShopOrderMaterialIssueRepository.UpdateFGShopOrderMaterialIssue(fGShopOrderMaterialIssue);
                 _logger.LogInfo(result);
                 _fGShopOrderMaterialIssueRepository.SaveAsync();
                 serviceResponse.Data = null;

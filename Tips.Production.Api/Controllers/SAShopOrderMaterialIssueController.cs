@@ -33,22 +33,22 @@ namespace Tips.Production.Api.Controllers
             ServiceResponse<IEnumerable<SAShopOrderMaterialIssueDto>> serviceResponse = new ServiceResponse<IEnumerable<SAShopOrderMaterialIssueDto>>();
             try
             {
-                var listOfSAShopOrderMaterialIssue = await _sAShopOrderMaterialIssueRepository.GetAllSAShopOrderMaterialIssue(pagingParameter);
+                var getAllSAShopOrderMaterialIssues = await _sAShopOrderMaterialIssueRepository.GetAllSAShopOrderMaterialIssue(pagingParameter);
                 var metadata = new
                 {
-                    listOfSAShopOrderMaterialIssue.TotalCount,
-                    listOfSAShopOrderMaterialIssue.PageSize,
-                    listOfSAShopOrderMaterialIssue.CurrentPage,
-                    listOfSAShopOrderMaterialIssue.HasNext,
-                    listOfSAShopOrderMaterialIssue.HasPreviuos
+                    getAllSAShopOrderMaterialIssues.TotalCount,
+                    getAllSAShopOrderMaterialIssues.PageSize,
+                    getAllSAShopOrderMaterialIssues.CurrentPage,
+                    getAllSAShopOrderMaterialIssues.HasNext,
+                    getAllSAShopOrderMaterialIssues.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                _logger.LogInfo("Returned all SAShopOrderMaterialIssue");
-                var result = _mapper.Map<IEnumerable<SAShopOrderMaterialIssueDto>>(listOfSAShopOrderMaterialIssue);
+                _logger.LogInfo("Returned all SAShopOrderMaterialIssues");
+                var result = _mapper.Map<IEnumerable<SAShopOrderMaterialIssueDto>>(getAllSAShopOrderMaterialIssues);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all SAShopOrderMaterialIssue";
+                serviceResponse.Message = "Returned all SAShopOrderMaterialIssues";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -72,9 +72,9 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var sAShopOrderMaterialIssueDetails = await _sAShopOrderMaterialIssueRepository.GetSAShopOrderMaterialIssueById(id);
+                var getSAShopOrderMaterialIssue = await _sAShopOrderMaterialIssueRepository.GetSAShopOrderMaterialIssueById(id);
 
-                if (sAShopOrderMaterialIssueDetails == null)
+                if (getSAShopOrderMaterialIssue == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"SAShopOrderMaterialIssue with id hasn't been found in db.";
@@ -86,16 +86,16 @@ namespace Tips.Production.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned SAShopOrderMaterialIssue with id: {id}");
-                    SAShopOrderMaterialIssueDto sAShopOrderMaterialIssueEntity = _mapper.Map<SAShopOrderMaterialIssueDto>(sAShopOrderMaterialIssueDetails);
+                    SAShopOrderMaterialIssueDto sAShopOrderMaterialIssueDtos = _mapper.Map<SAShopOrderMaterialIssueDto>(getSAShopOrderMaterialIssue);
                     List<SAShopOrderMaterialIssueGeneralDto> sAShopOrderMaterialIssueGeneralDtoList = new List<SAShopOrderMaterialIssueGeneralDto>();
-                    foreach (var itemDetails in sAShopOrderMaterialIssueDetails.SAShopOrderMaterialIssueGeneralList)
+                    foreach (var itemDetails in getSAShopOrderMaterialIssue.SAShopOrderMaterialIssueGeneralList)
                     {
                         SAShopOrderMaterialIssueGeneralDto sAShopOrderMaterialIssueGeneralDtos = _mapper.Map<SAShopOrderMaterialIssueGeneralDto>(itemDetails);
                         sAShopOrderMaterialIssueGeneralDtoList.Add(sAShopOrderMaterialIssueGeneralDtos);
                     }
-                    sAShopOrderMaterialIssueEntity.SAShopOrderMaterialIssueGeneralDtos = sAShopOrderMaterialIssueGeneralDtoList;
-                    serviceResponse.Data = sAShopOrderMaterialIssueEntity;
-                    serviceResponse.Message = $"Returned SAShopOrderMaterialIssue with id Successfully";
+                    sAShopOrderMaterialIssueDtos.SAShopOrderMaterialIssueGeneralDtos = sAShopOrderMaterialIssueGeneralDtoList;
+                    serviceResponse.Data = sAShopOrderMaterialIssueDtos;
+                    serviceResponse.Message = $"Returned SAShopOrderMaterialIssueById Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -114,13 +114,13 @@ namespace Tips.Production.Api.Controllers
 
         // POST api/<SAShopOrderMaterialIssueController>
         [HttpPost]
-        public async Task<IActionResult> CreateSAShopOrderMaterialIssue([FromBody] SAShopOrderMaterialIssueDtoPost sAShopOrderMaterialIssueDtoPost)
+        public async Task<IActionResult> CreateSAShopOrderMaterialIssue([FromBody] SAShopOrderMaterialIssuePostDto sAShopOrderMaterialIssuePostDto)
         {
             ServiceResponse<SAShopOrderMaterialIssueDto> serviceResponse = new ServiceResponse<SAShopOrderMaterialIssueDto>();
 
             try
             {
-                if (sAShopOrderMaterialIssueDtoPost is null)
+                if (sAShopOrderMaterialIssuePostDto is null)
                 {
                     _logger.LogError("SAShopOrderMaterialIssueDetails object sent from client is null.");
                     serviceResponse.Data = null;
@@ -139,14 +139,14 @@ namespace Tips.Production.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var sAShopOrderMaterialIssueGeneralEntity = _mapper.Map<IEnumerable<SAShopOrderMaterialIssueGeneral>>(sAShopOrderMaterialIssueDtoPost.SAShopOrderMaterialIssueGeneralPostDtos);
-                var sAShopOrderMaterialIssueEntity = _mapper.Map<SAShopOrderMaterialIssue>(sAShopOrderMaterialIssueDtoPost);
-                sAShopOrderMaterialIssueEntity.SAShopOrderMaterialIssueGeneralList = sAShopOrderMaterialIssueGeneralEntity.ToList();
-                _sAShopOrderMaterialIssueRepository.CreateSAShopOrderMaterialIssue(sAShopOrderMaterialIssueEntity);
+                var sAShopOrderMaterialIssueGeneral = _mapper.Map<IEnumerable<SAShopOrderMaterialIssueGeneral>>(sAShopOrderMaterialIssuePostDto.SAShopOrderMaterialIssueGeneralPostDtos);
+                var sAShopOrderMaterialIssue = _mapper.Map<SAShopOrderMaterialIssue>(sAShopOrderMaterialIssuePostDto);
+                sAShopOrderMaterialIssue.SAShopOrderMaterialIssueGeneralList = sAShopOrderMaterialIssueGeneral.ToList();
+                _sAShopOrderMaterialIssueRepository.CreateSAShopOrderMaterialIssue(sAShopOrderMaterialIssue);
                 _sAShopOrderMaterialIssueRepository.SaveAsync();
 
                 serviceResponse.Data = null;
-                serviceResponse.Message = "SAShopOrderMaterialIssueDetails Successfully Created";
+                serviceResponse.Message = "SAShopOrderMaterialIssue Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetSAShopOrderMaterialIssueById", serviceResponse);
@@ -165,13 +165,13 @@ namespace Tips.Production.Api.Controllers
 
         // PUT api/<SAShopOrderMaterialIssueController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSAShopOrderMaterialIssue(int id, [FromBody] SAShopOrderMaterialIssueDtoUpdate sAShopOrderMaterialIssueDtoUpdate)
+        public async Task<IActionResult> UpdateSAShopOrderMaterialIssue(int id, [FromBody] SAShopOrderMaterialIssueUpdateDto sAShopOrderMaterialIssueUpdateDto)
         {
-            ServiceResponse<SAShopOrderMaterialIssueDtoUpdate> serviceResponse = new ServiceResponse<SAShopOrderMaterialIssueDtoUpdate>();
+            ServiceResponse<SAShopOrderMaterialIssueUpdateDto> serviceResponse = new ServiceResponse<SAShopOrderMaterialIssueUpdateDto>();
 
             try
             {
-                if (sAShopOrderMaterialIssueDtoUpdate is null)
+                if (sAShopOrderMaterialIssueUpdateDto is null)
                 {
                     _logger.LogError("Update SAShopOrderMaterialIssue object sent from client is null.");
                     serviceResponse.Data = null;
@@ -200,10 +200,10 @@ namespace Tips.Production.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                var sAShopOrderMaterialIssueGeneral = _mapper.Map<IEnumerable<SAShopOrderMaterialIssueGeneral>>(sAShopOrderMaterialIssueDtoUpdate.SAShopOrderMaterialIssueGeneralUpdateDtos);
-                var sAShopOrderMaterialIssueEntity = _mapper.Map(sAShopOrderMaterialIssueDtoUpdate, updateSAShopOrderMaterialIssue);
-                sAShopOrderMaterialIssueEntity.SAShopOrderMaterialIssueGeneralList = sAShopOrderMaterialIssueGeneral.ToList();
-                string result = await _sAShopOrderMaterialIssueRepository.UpdateSAShopOrderMaterialIssue(sAShopOrderMaterialIssueEntity);
+                var sAShopOrderMaterialIssueGeneral = _mapper.Map<IEnumerable<SAShopOrderMaterialIssueGeneral>>(sAShopOrderMaterialIssueUpdateDto.SAShopOrderMaterialIssueGeneralUpdateDtos);
+                var sAShopOrderMaterialIssue = _mapper.Map(sAShopOrderMaterialIssueUpdateDto, updateSAShopOrderMaterialIssue);
+                sAShopOrderMaterialIssue.SAShopOrderMaterialIssueGeneralList = sAShopOrderMaterialIssueGeneral.ToList();
+                string result = await _sAShopOrderMaterialIssueRepository.UpdateSAShopOrderMaterialIssue(sAShopOrderMaterialIssue);
                 _logger.LogInfo(result);
                 _sAShopOrderMaterialIssueRepository.SaveAsync();
                 serviceResponse.Data = null;

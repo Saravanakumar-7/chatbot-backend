@@ -24,7 +24,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public string? SAItemNumber { get; set; }
 
-
+        [MaxLength(500)]
         public string? Description { get; set; }
 
 
@@ -77,7 +77,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
     }
 
-    public class SAShopOrderDtoPost
+    public class SAShopOrderPostDto
     {
         
         public string? SAShopOrderNumber { get; set; }
@@ -94,7 +94,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public string? SAItemNumber { get; set; }
 
-
+        [MaxLength(500)]
         public string? Description { get; set; }
 
 
@@ -142,7 +142,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
     }
 
-    public class SAShopOrderDtoUpdate
+    public class SAShopOrderUpdateDto
     {
         public int Id { get; set; }
 
@@ -161,7 +161,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public string? SAItemNumber { get; set; }
 
-
+        [MaxLength(500)]
         public string? Description { get; set; }
 
 

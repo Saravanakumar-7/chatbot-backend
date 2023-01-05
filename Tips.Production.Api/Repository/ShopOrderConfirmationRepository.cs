@@ -25,17 +25,17 @@ namespace Tips.Production.Api.Repository
 
         public async Task<IEnumerable<ShopOrderConfirmation>> GetAllShopOrderConfirmation()
         {
-            var shopOrderConfirmationList = await FindAll().ToListAsync();
-            return (shopOrderConfirmationList);
+            var shopOrderConfirmationDetails = await FindAll().ToListAsync();
+            return (shopOrderConfirmationDetails);
 
         }
 
         public async Task<ShopOrderConfirmation> GetShopOrderConfirmationById(int id)
         {
-            var shopOrderConditionList = await 
+            var shopOrderCondition = await 
                             FindByCondition(x => x.Id == id)
                              .FirstOrDefaultAsync();
-            return shopOrderConditionList;
+            return shopOrderCondition;
         }
 
         public async Task<string> UpdateShopOrderConfirmation(ShopOrderConfirmation shopOrderConfirmation)

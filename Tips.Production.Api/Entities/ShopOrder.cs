@@ -29,7 +29,7 @@ namespace Tips.Production.Api.Entities
         public string? FGItemNumber { get; set; }
 
         [Required]
-        [MaxLength(200)]
+        [MaxLength(500)]
         public string? Description { get; set; }
 
         [Required]

@@ -32,18 +32,18 @@ namespace Tips.Production.Api.Repository
 
         public async Task<IEnumerable<ShopOrder>> GetAllShopOrders()
         {
-            var shopOrderList = await _tipsProductionDbContext.shopOrders.ToListAsync();
+            var shopOrderDetails = await _tipsProductionDbContext.shopOrders.ToListAsync();
 
-            return (shopOrderList);
+            return (shopOrderDetails);
 
         }
 
         public async Task<ShopOrder> GetShopOrderById(int id)
         {
-            var shopOrderList = await _tipsProductionDbContext.shopOrders
+            var shopOrder = await _tipsProductionDbContext.shopOrders
                             .Where(x => x.Id == id)
                              .FirstOrDefaultAsync();
-            return shopOrderList;
+            return shopOrder;
         }
 
         public async Task<string> UpdateShopOrder(ShopOrder shopOrder)

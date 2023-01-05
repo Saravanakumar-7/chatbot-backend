@@ -18,9 +18,8 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
         public List<FGShopOrderMaterialIssueGeneralDto>? FGShopOrderMaterialIssueGeneralDtos { get; set; }
     }
-    public class FGShopOrderMaterialIssueDtoPost
+    public class FGShopOrderMaterialIssuePostDto
     {
-        public int Id { get; set; }
         public string ShopOrderNumber { get; set; }
         public DateTime ShopOrderDate { get; set; }
         public string ProjectNumber { get; set; }
@@ -32,9 +31,9 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<FGShopOrderMaterialIssueGeneralDtoPost>? FGShopOrderMaterialIssueGeneralPostDtos { get; set; }
+        public List<FGShopOrderMaterialIssueGeneralPostDto>? FGShopOrderMaterialIssueGeneralPostDtos { get; set; }
     }
-    public class FGShopOrderMaterialIssueDtoUpdate
+    public class FGShopOrderMaterialIssueUpdateDto
     {
         public int Id { get; set; }
         public string ShopOrderNumber { get; set; }
@@ -48,6 +47,6 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<FGShopOrderMaterialIssueGeneralDtoUpdate>? FGShopOrderMaterialIssueGeneralUpdateDtos { get; set; }
+        public List<FGShopOrderMaterialIssueGeneralUpdateDto>? FGShopOrderMaterialIssueGeneralUpdateDtos { get; set; }
     }
 }

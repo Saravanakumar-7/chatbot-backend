@@ -39,7 +39,7 @@ namespace Tips.Production.Api.Entities.DTOs
     }
 
 
-    public class ShopOrderConfirmationDtoPost
+    public class ShopOrderConfirmationPostDto
     {
 
 
@@ -67,7 +67,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
     }
 
-    public class ShopOrderConfirmationDtoUpdate
+    public class ShopOrderConfirmationUpdateDto
     {
         [Required]
         public int Id { get; set; }

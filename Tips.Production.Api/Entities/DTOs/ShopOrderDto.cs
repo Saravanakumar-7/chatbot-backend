@@ -27,7 +27,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? FGItemNumber { get; set; }
 
         [Required]
-        [MaxLength(200)]
+        [MaxLength(500)]
         public string? Description { get; set; }
 
         [Required]
@@ -76,11 +76,8 @@ namespace Tips.Production.Api.Entities.DTOs
 
     }
 
-    public class ShopOrderDtoPost
+    public class ShopOrderPostDto
     {
-        [Key]
-        [Required]
-        public int Id { get; set; }
 
         [Required]
         [MaxLength(100)]
@@ -99,7 +96,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? FGItemNumber { get; set; }
 
         [Required]
-        [MaxLength(200)]
+        [MaxLength(500)]
         public string? Description { get; set; }
 
         [Required]
@@ -149,7 +146,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
     }
 
-    public class ShopOrderDtoUpdate
+    public class ShopOrderUpdateDto
     {
         [Key]
         [Required]
@@ -172,7 +169,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? FGItemNumber { get; set; }
 
         [Required]
-        [MaxLength(200)]
+        [MaxLength(500)]
         public string? Description { get; set; }
 
         [Required]

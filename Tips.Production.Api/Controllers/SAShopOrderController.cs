@@ -31,9 +31,9 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var sAShopOrderList = await _sashopOrderRepository.GetAllSAShopOrders();
+                var gettAllAShopOrders = await _sashopOrderRepository.GetAllSAShopOrders();
                 _logger.LogInfo("Returned all SAShopOrders()s");
-                var result = _mapper.Map<IEnumerable<SAShopOrderDto>>(sAShopOrderList);
+                var result = _mapper.Map<IEnumerable<SAShopOrderDto>>(gettAllAShopOrders);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "SAShopOrder Successfully Returned";
                 serviceResponse.Success = true;
@@ -59,8 +59,8 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var sAShopOrders = await _sashopOrderRepository.GetSAShopOrderById(id);
-                if (sAShopOrders == null)
+                var getSAShopOrder = await _sashopOrderRepository.GetSAShopOrderById(id);
+                if (getSAShopOrder == null)
                 {
                     _logger.LogError($"SAShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -72,7 +72,7 @@ namespace Tips.Production.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned SAShopOrder with id: {id}");
-                    var result = _mapper.Map<SAShopOrderDto>(sAShopOrders);
+                    var result = _mapper.Map<SAShopOrderDto>(getSAShopOrder);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "SAShopOrderById Successfully Returned";
                     serviceResponse.Success = true;
@@ -92,13 +92,13 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateSAShopOrder([FromBody] SAShopOrderDtoPost sAShopOrderDtoPost)
+        public IActionResult CreateSAShopOrder([FromBody] SAShopOrderPostDto sAShopOrderPostDto)
         {
             ServiceResponse<SAShopOrderDto> serviceResponse = new ServiceResponse<SAShopOrderDto>();
 
             try
             {
-                if (sAShopOrderDtoPost == null)
+                if (sAShopOrderPostDto == null)
                 {
                     _logger.LogError("SAShopOrder object sent from client is null.");
                     serviceResponse.Data = null;
@@ -116,9 +116,9 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var sAShopOrderEntity = _mapper.Map<SAShopOrder>(sAShopOrderDtoPost);
+                var sAShopOrder = _mapper.Map<SAShopOrder>(sAShopOrderPostDto);
 
-                _sashopOrderRepository.CreateSAShopOrder(sAShopOrderEntity);
+                _sashopOrderRepository.CreateSAShopOrder(sAShopOrder);
                 _sashopOrderRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SAShopOrder Successfully Created";
@@ -138,13 +138,13 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSAShopOrder(int id, [FromBody] SAShopOrderDto sAShopOrderDtoUpdate)
+        public async Task<IActionResult> UpdateSAShopOrder(int id, [FromBody] SAShopOrderDto sAShopOrderUpdateDto)
         {
             ServiceResponse<SAShopOrderDto> serviceResponse = new ServiceResponse<SAShopOrderDto>();
 
             try
             {
-                if (sAShopOrderDtoUpdate is null)
+                if (sAShopOrderUpdateDto is null)
                 {
                     _logger.LogError("SAShopOrder object sent from client is null.");
                     serviceResponse.Data = null;
@@ -163,16 +163,16 @@ namespace Tips.Production.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var sAShopOrders = await _sashopOrderRepository.GetSAShopOrderById(id);
-                if (sAShopOrders is null)
+                var updateSAShopOrders = await _sashopOrderRepository.GetSAShopOrderById(id);
+                if (updateSAShopOrders is null)
                 {
                     _logger.LogError($"SAShopOrder with id: {id}, hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
 
-                var sAShopOrderEntity = _mapper.Map(sAShopOrderDtoUpdate, sAShopOrders);
+                var sAShopOrder = _mapper.Map(sAShopOrderUpdateDto, updateSAShopOrders);
 
-                string result = await _sashopOrderRepository.UpdateSAShopOrder(sAShopOrderEntity);
+                string result = await _sashopOrderRepository.UpdateSAShopOrder(sAShopOrder);
                 _logger.LogInfo(result);
                 _sashopOrderRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -199,8 +199,8 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var sAShopOrders = await _sashopOrderRepository.GetSAShopOrderById(id);
-                if (sAShopOrders == null)
+                var deleteSAShopOrder = await _sashopOrderRepository.GetSAShopOrderById(id);
+                if (deleteSAShopOrder == null)
                 {
                     _logger.LogError($"SAShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -210,9 +210,9 @@ namespace Tips.Production.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                sAShopOrders.IsDeleted = true;
-                string result = await _sashopOrderRepository.UpdateSAShopOrder(sAShopOrders);
-                serviceResponse.Data = null;
+                deleteSAShopOrder.IsDeleted = true;
+                string result = await _sashopOrderRepository.UpdateSAShopOrder(deleteSAShopOrder);
+                _sashopOrderRepository.SaveAsync();
                 serviceResponse.Message = "SAShopOrder Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -237,20 +237,20 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var sAShopOrders = await _sashopOrderRepository.GetSAShopOrderBySalesOrderNo(salesOrderNo);
-                if (sAShopOrders == null)
+                var getSAShopOrderBySalesOrderNo = await _sashopOrderRepository.GetSAShopOrderBySalesOrderNo(salesOrderNo);
+                if (getSAShopOrderBySalesOrderNo == null)
                 {
-                    _logger.LogError($"SAShopOrder with id: {salesOrderNo}, hasn't been found in db.");
+                    _logger.LogError($"SAShopOrder with salesOrderNo: {salesOrderNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"SAShopOrder with id hasn't been found in db.";
+                    serviceResponse.Message = $"SAShopOrder with salesOrderNo hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned SAShopOrder with id: {salesOrderNo}");
-                    var result = _mapper.Map<SAShopOrderDto>(sAShopOrders);
+                    _logger.LogInfo($"Returned SAShopOrder with salesOrderNo: {salesOrderNo}");
+                    var result = _mapper.Map<SAShopOrderDto>(getSAShopOrderBySalesOrderNo);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "SAShopOrderBySalesOrderNumber Successfully Returned";
                     serviceResponse.Success = true;
@@ -276,20 +276,20 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var sAShopOrders = await _sashopOrderRepository.GetSAShopOrderBySAShopOrderNo(SAshopOrderNo);
-                if (sAShopOrders == null)
+                var getSAShopOrderByShopOrderNo = await _sashopOrderRepository.GetSAShopOrderBySAShopOrderNo(SAshopOrderNo);
+                if (getSAShopOrderByShopOrderNo == null)
                 {
-                    _logger.LogError($"SAShopOrder with id: {SAshopOrderNo}, hasn't been found in db.");
+                    _logger.LogError($"SAShopOrder with SAshopOrderNo: {SAshopOrderNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"SAShopOrder with id hasn't been found in db.";
+                    serviceResponse.Message = $"SAShopOrder with SAshopOrderNo hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned SAShopOrder with id: {SAshopOrderNo}");
-                    var result = _mapper.Map<SAShopOrderDto>(sAShopOrders);
+                    _logger.LogInfo($"Returned SAShopOrder with SAshopOrderNo: {SAshopOrderNo}");
+                    var result = _mapper.Map<SAShopOrderDto>(getSAShopOrderByShopOrderNo);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "SAShopOrderByShopOrderNo Successfully Returned";
                     serviceResponse.Success = true;
@@ -316,11 +316,11 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var sAShopOrderList = await _sashopOrderRepository.GetAllOpenSAShopOrders();
-                _logger.LogInfo("Returned all ShopOrders()s");
-                var result = _mapper.Map<IEnumerable<SAShopOrderDto>>(sAShopOrderList);
+                var getAllOpenSAShopOrder = await _sashopOrderRepository.GetAllOpenSAShopOrders();
+                _logger.LogInfo("Returned all SAShopOrders");
+                var result = _mapper.Map<IEnumerable<SAShopOrderDto>>(getAllOpenSAShopOrder);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "ShopOrders Successfully Returned";
+                serviceResponse.Message = "SAShopOrders Successfully Returned";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -344,8 +344,8 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var sAShopOrders = await _sashopOrderRepository.GetSAShopOrderById(id);
-                if (sAShopOrders == null)
+                var shortCloseSAShopOrder = await _sashopOrderRepository.GetSAShopOrderById(id);
+                if (shortCloseSAShopOrder == null)
                 {
                     _logger.LogError($"SAShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -355,11 +355,11 @@ namespace Tips.Production.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                sAShopOrders.IsShortClosed = true;
-                sAShopOrders.ShorClosedBy = "Admin";
-                sAShopOrders.ShortClosedOn = DateTime.Now;
-                string result = await _sashopOrderRepository.UpdateSAShopOrder(sAShopOrders);
-                serviceResponse.Data = null;
+                shortCloseSAShopOrder.IsShortClosed = true;
+                shortCloseSAShopOrder.ShorClosedBy = "Admin";
+                shortCloseSAShopOrder.ShortClosedOn = DateTime.Now;
+                string result = await _sashopOrderRepository.UpdateSAShopOrder(shortCloseSAShopOrder);
+                _sashopOrderRepository.SaveAsync();
                 serviceResponse.Message = "SAShopOrder have been closed";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -367,7 +367,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteSAShopOrder action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside ShortCloseSAShopOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
@@ -6,6 +7,7 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string PartNumber { get; set; }
+        [MinLength(500)]
         public string Description { get; set; }
         public string PartType { get; set; }
         public string UOM { get; set; }
@@ -24,9 +26,10 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
-    public class FGShopOrderMaterialIssueGeneralDtoPost
+    public class FGShopOrderMaterialIssueGeneralPostDto
     {
         public string PartNumber { get; set; }
+        [MinLength(500)]
         public string Description { get; set; }
         public string PartType { get; set; }
         public string UOM { get; set; }
@@ -45,10 +48,11 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
-    public class FGShopOrderMaterialIssueGeneralDtoUpdate
+    public class FGShopOrderMaterialIssueGeneralUpdateDto
     {
         public int Id { get; set; }
         public string PartNumber { get; set; }
+        [MinLength(500)]
         public string Description { get; set; }
         public string PartType { get; set; }
         public string UOM { get; set; }
