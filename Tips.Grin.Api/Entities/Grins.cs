@@ -12,11 +12,17 @@ namespace Tips.Grin.Api.Entities
         public int Id { get; set; }
         public string? GrinNumber { get; set; }
 
-        public string? VendorName { get; set; }
+        [Required]
+        public string PONumber { get; set; }
 
-        public string? VendorId { get; set; }
+        [Required]
+        public string VendorName { get; set; } 
 
-        public string? InvoiceNumber { get; set; }
+        [Required]
+        public string VendorId { get; set; }
+
+        [Required]
+        public string InvoiceNumber { get; set; }
 
         public string? InvoiceValue { get; set; }
 

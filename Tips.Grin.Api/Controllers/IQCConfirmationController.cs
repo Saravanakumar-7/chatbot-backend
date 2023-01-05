@@ -198,7 +198,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-        //bulk save
+       
 
         [HttpPost]
         public async Task<IActionResult> SaveMultipleIqc([FromBody] List<IQCConfirmationPostDto> iQCConfirmationPostDtos)

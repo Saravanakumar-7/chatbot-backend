@@ -10,34 +10,46 @@ namespace Tips.Grin.Api.Entities.DTOs
 {
     public class GrinPartsDto
     {
-        public int Id { get; set; } 
-        public string ItemDescription { get; set; }
+        public int Id { get; set; }
+        [Required]
+
         public string? ItemNumber { get; set; }
 
+        [Required]
         [Precision(18, 3)]
         public decimal? Qty { get; set; }
+
+        [Required]
+        public string ItemDescription { get; set; }
         public string? PONumber { get; set; }
 
-        public string MftrItemNumber { get; set; }
-
+        [Required]
         public string? ProjectNumber { get; set; }
 
+        [Required]
+        public string MftrItemNumber { get; set; }
+
+        [Required]
         public string ManufactureBatchNumber { get; set; }
 
-        [Precision(18,3)]
+        [Required]
+        [Precision(18, 3)]
         public decimal UnitPrice { get; set; }
 
+        [Required]
         [Precision(13, 3)]
         public decimal POOrderQty { get; set; }
 
+        [Required]
         [Precision(13, 3)]
         public decimal POBalancedQty { get; set; }
 
+        [Required]
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
 
-       
 
+        [Required]
         public string UOM { get; set; }
 
         public DateTime? ExpiryDate { get; set; }
@@ -49,15 +61,12 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? SGST { get; set; }
 
         [Precision(13, 3)]
-
         public decimal? IGST { get; set; }
 
         [Precision(13, 3)]
-
         public decimal? CGST { get; set; }
 
         [Precision(13, 3)]
-
         public decimal? UTGST { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
