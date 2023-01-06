@@ -54,10 +54,10 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public decimal ScrapQty { get; set; }
 
-
+        [DefaultValue(false)]
         public bool IsDeleted { get; set; }
 
-
+        [DefaultValue(false)]
         public bool IsShortClosed { get; set; }
 
         public DateTime? ShortClosedOn { get; set; }
@@ -124,10 +124,10 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public decimal ScrapQty { get; set; }
 
-
+        [DefaultValue(false)]
         public bool IsDeleted { get; set; }
 
-
+        [DefaultValue(false)]
         public bool IsShortClosed { get; set; }
 
         public DateTime? ShortClosedOn { get; set; }
@@ -191,10 +191,10 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public decimal ScrapQty { get; set; }
 
-
+        [DefaultValue(false)]
         public bool IsDeleted { get; set; }
 
-
+        [DefaultValue(false)]
         public bool IsShortClosed { get; set; }
 
         public DateTime? ShortClosedOn { get; set; }
@@ -205,7 +205,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public IssueStatus MaterialIssueStatus { get; set; }
 
-        
+        public string? Unit { get; set; }
 
     }
 

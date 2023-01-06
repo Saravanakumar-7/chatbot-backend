@@ -39,10 +39,5 @@ namespace Tips.Production.Api.Entities
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
 
-       //public int ShopOrderId { get; set; }
-
-        
-      //public ShopOrder? ShopOrders { get; set; }
-
     }
 }

@@ -31,8 +31,10 @@ namespace Tips.Grin.Api.Repository
 
             var result = await Create(grins);
             return result.Id;
-        }
-        
+        }        
+
+       
+         
         public async Task<string> DeleteGrin(Grins grins)
         {
             Delete(grins);
@@ -93,4 +95,23 @@ namespace Tips.Grin.Api.Repository
        
 
     }
-}
+    public class UploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository
+    {
+        private TipsGrinDbContext _tipsGrinDbContext;
+        public UploadDocumentRepository(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
+        {
+            _tipsGrinDbContext = tipsGrinDbContext;
+        } 
+
+        public async Task<int?> CreateUploadDocumentGrin(DocumentUpload documentUpload)
+        {
+            documentUpload.CreatedBy = "Admin";
+            documentUpload.CreatedOn = DateTime.Now;
+            documentUpload.LastModifiedBy = "Admin";
+            documentUpload.LastModifiedOn = DateTime.Now;
+
+            var result = await Create(documentUpload);
+            return result.Id;
+        }
+    }
+  }

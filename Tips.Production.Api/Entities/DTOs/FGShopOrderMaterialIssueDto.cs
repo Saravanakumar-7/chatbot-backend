@@ -5,13 +5,14 @@ namespace Tips.Production.Api.Entities.DTOs
     public class FGShopOrderMaterialIssueDto
     {
         public int Id { get; set; }
-        public string ShopOrderNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
         public DateTime ShopOrderDate { get; set; }
-        public string ProjectNumber { get; set; }
-        public string FGPartNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? FGPartNumber { get; set; }
         [Precision(13, 2)]
         public decimal ShopOrderQty { get; set; }
-        public string ShopOrderType { get; set; }
+        public string? ShopOrderType { get; set; }
+        public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -20,13 +21,13 @@ namespace Tips.Production.Api.Entities.DTOs
     }
     public class FGShopOrderMaterialIssuePostDto
     {
-        public string ShopOrderNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
         public DateTime ShopOrderDate { get; set; }
-        public string ProjectNumber { get; set; }
-        public string FGPartNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? FGPartNumber { get; set; }
         [Precision(13, 2)]
         public decimal ShopOrderQty { get; set; }
-        public string ShopOrderType { get; set; }
+        public string? ShopOrderType { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -36,13 +37,14 @@ namespace Tips.Production.Api.Entities.DTOs
     public class FGShopOrderMaterialIssueUpdateDto
     {
         public int Id { get; set; }
-        public string ShopOrderNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
         public DateTime ShopOrderDate { get; set; }
-        public string ProjectNumber { get; set; }
-        public string FGPartNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? FGPartNumber { get; set; }
         [Precision(13, 2)]
         public decimal ShopOrderQty { get; set; }
-        public string ShopOrderType { get; set; }
+        public string? ShopOrderType { get; set; }
+        public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

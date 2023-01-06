@@ -30,18 +30,18 @@ namespace Tips.Production.Api.Repository
 
         public async Task<IEnumerable<SAShopOrder>> GetAllSAShopOrders()
         {
-            var sAshopOrderDetials = await _tipsProductionDbContext.SAshopOrders.ToListAsync();
+            var getAllSAshopOrderDetials = await _tipsProductionDbContext.SAshopOrders.ToListAsync();
 
-            return (sAshopOrderDetials);
+            return (getAllSAshopOrderDetials);
 
         }
 
         public async Task<SAShopOrder> GetSAShopOrderById(int id)
         {
-            var sAShopOrder = await _tipsProductionDbContext.SAshopOrders
+            var getSAShopOrder = await _tipsProductionDbContext.SAshopOrders
                             .Where(x => x.Id == id)
                                 .FirstOrDefaultAsync();
-            return sAShopOrder;
+            return getSAShopOrder;
         }
 
         public async Task<string> UpdateSAShopOrder(SAShopOrder SAshopOrders)
@@ -55,26 +55,26 @@ namespace Tips.Production.Api.Repository
 
         public async Task<SAShopOrder> GetSAShopOrderBySalesOrderNo(string salesOrderNo)
         {
-            var sAShopOrderList = await FindByCondition(x => x.SalesOrderNumber == salesOrderNo)
+            var getSAShopOrderBySalesOrderNoList = await FindByCondition(x => x.SalesOrderNumber == salesOrderNo)
 
                                 .FirstOrDefaultAsync();
-            return sAShopOrderList;
+            return getSAShopOrderBySalesOrderNoList;
         }
 
         public async Task<SAShopOrder> GetSAShopOrderBySAShopOrderNo(string SAShopOrderNo)
         {
-            var sAShopOrderList = await
+            var getSAShopOrderBySAShopOrderNoList = await
                             FindByCondition(x => x.SAShopOrderNumber == SAShopOrderNo)
                                 .FirstOrDefaultAsync();
-            return sAShopOrderList;
+            return getSAShopOrderBySAShopOrderNoList;
         }
 
         public async Task<IEnumerable<SAShopOrder>> GetAllOpenSAShopOrders()
         {
-            var sAShopOrderList = await FindByCondition(x => x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2)
+            var getAllOpenSAShopOrderList = await FindByCondition(x => x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2)
                 .ToListAsync();
 
-            return (sAShopOrderList);
+            return (getAllOpenSAShopOrderList);
 
         }
     }

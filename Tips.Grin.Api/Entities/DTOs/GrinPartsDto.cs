@@ -56,7 +56,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
 
-        public string? COCUpload { get; set; }
+        public List<DocumentUploadDto> COCUpload { get; set; }
 
         [Precision(13, 3)]
         public decimal? SGST { get; set; }
@@ -126,7 +126,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
 
-        public string? COCUpload { get; set; }
+        public List<DocumentUploadPostDto> COCUpload { get; set; }
         public decimal? SGST { get; set; }
 
         public decimal? IGST { get; set; }
@@ -139,7 +139,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public List<ProjectNumbersDtoPost>? ProjectNumbers { get; set; }
 
-
+ 
     }
     public class GrinPartsUpdateDto
     {
@@ -187,7 +187,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
 
-        public string? COCUpload { get; set; }
+        public List<DocumentUploadDto> COCUpload { get; set; }
         public decimal? SGST { get; set; }
 
         public decimal? IGST { get; set; }

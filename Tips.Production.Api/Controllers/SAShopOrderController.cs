@@ -163,14 +163,14 @@ namespace Tips.Production.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var updateSAShopOrders = await _sashopOrderRepository.GetSAShopOrderById(id);
-                if (updateSAShopOrders is null)
+                var updateSAShopOrder = await _sashopOrderRepository.GetSAShopOrderById(id);
+                if (updateSAShopOrder is null)
                 {
                     _logger.LogError($"SAShopOrder with id: {id}, hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
 
-                var sAShopOrder = _mapper.Map(sAShopOrderUpdateDto, updateSAShopOrders);
+                var sAShopOrder = _mapper.Map(sAShopOrderUpdateDto, updateSAShopOrder);
 
                 string result = await _sashopOrderRepository.UpdateSAShopOrder(sAShopOrder);
                 _logger.LogInfo(result);
@@ -344,8 +344,8 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var shortCloseSAShopOrder = await _sashopOrderRepository.GetSAShopOrderById(id);
-                if (shortCloseSAShopOrder == null)
+                var getShortCloseSAShopOrder = await _sashopOrderRepository.GetSAShopOrderById(id);
+                if (getShortCloseSAShopOrder == null)
                 {
                     _logger.LogError($"SAShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -355,10 +355,10 @@ namespace Tips.Production.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                shortCloseSAShopOrder.IsShortClosed = true;
-                shortCloseSAShopOrder.ShorClosedBy = "Admin";
-                shortCloseSAShopOrder.ShortClosedOn = DateTime.Now;
-                string result = await _sashopOrderRepository.UpdateSAShopOrder(shortCloseSAShopOrder);
+                getShortCloseSAShopOrder.IsShortClosed = true;
+                getShortCloseSAShopOrder.ShorClosedBy = "Admin";
+                getShortCloseSAShopOrder.ShortClosedOn = DateTime.Now;
+                string result = await _sashopOrderRepository.UpdateSAShopOrder(getShortCloseSAShopOrder);
                 _sashopOrderRepository.SaveAsync();
                 serviceResponse.Message = "SAShopOrder have been closed";
                 serviceResponse.Success = true;

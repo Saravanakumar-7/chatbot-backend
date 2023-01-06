@@ -37,9 +37,9 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getAllShopOrderConfirmation = await _shopOrderConfirmationRepository.GetAllShopOrderConfirmation();
+                var getAllShopOrderConfirmations = await _shopOrderConfirmationRepository.GetAllShopOrderConfirmation();
                 _logger.LogInfo("Returned all ShopOrderConfirmationdetails");
-                var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(getAllShopOrderConfirmation);
+                var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(getAllShopOrderConfirmations);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "ShopOrderConfirmation Successfully Returned";
                 serviceResponse.Success = true;
@@ -123,11 +123,7 @@ namespace Tips.Production.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
  
-
-                //var shopOrderDetails = _shopOrderRepo.GetShopOrderShopOrderNo(shopOrderConfirmationDtoPost.ShopOrderNo);
-                
                 var shopOrderConfirmation = _mapper.Map<ShopOrderConfirmation>(shopOrderConfirmationPostDto);
-                //shopOrderConfirmationList.ShopOrderId = shopOrderDetails.Id;
                 _shopOrderConfirmationRepository.CreateShopOrderConfirmation(shopOrderConfirmation);
                 _shopOrderConfirmationRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -286,8 +282,8 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getOqcByShopOrderNo = await _shopOrderConfirmationRepository.GetOpenDataForOqcByShopOrderNo(shopOrderNo);
-                if (getOqcByShopOrderNo == null)
+                var getOpenDataForOqcByShopOrderNo = await _shopOrderConfirmationRepository.GetOpenDataForOqcByShopOrderNo(shopOrderNo);
+                if (getOpenDataForOqcByShopOrderNo == null)
                 {
                     _logger.LogError($"Oqc with shopOrderNo: {shopOrderNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -300,9 +296,9 @@ namespace Tips.Production.Api.Controllers
                 {
                    // shopOrderConfirmationList.IsOQCDone = False;
                     _logger.LogInfo($"Returned Oqc with shopOrderNo: {shopOrderNo}");
-                    var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(getOqcByShopOrderNo);
+                    var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(getOpenDataForOqcByShopOrderNo);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "OqcByShopOrderNo Successfully Returned";
+                    serviceResponse.Message = "OpenDataForOqcByShopOrderNo Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);

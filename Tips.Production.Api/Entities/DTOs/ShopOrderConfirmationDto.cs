@@ -34,15 +34,10 @@ namespace Tips.Production.Api.Entities.DTOs
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
 
-
-
     }
-
 
     public class ShopOrderConfirmationPostDto
     {
-
-
 
         [Required]
         [MaxLength(100)]
@@ -63,8 +58,6 @@ namespace Tips.Production.Api.Entities.DTOs
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
 
-
-
     }
 
     public class ShopOrderConfirmationUpdateDto
@@ -84,6 +77,7 @@ namespace Tips.Production.Api.Entities.DTOs
         [Precision(13, 2)]
         public string? WipConfirmedQty { get; set; }
 
+        public string? Unit { get; set; }
 
         [DefaultValue(false)]
         public bool IsOQCDone { get; set; }

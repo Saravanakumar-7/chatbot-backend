@@ -21,6 +21,7 @@ namespace Tips.Production.Api.Repository
             fGShopOrderMaterialIssue.LastModifiedOn = DateTime.Now;
             fGShopOrderMaterialIssue.CreatedBy = "Admin";
             fGShopOrderMaterialIssue.CreatedOn = DateTime.Now;
+            fGShopOrderMaterialIssue.Unit = "Bangalore";
             var result = await Create(fGShopOrderMaterialIssue);
             return result.Id;
         }
@@ -34,20 +35,20 @@ namespace Tips.Production.Api.Repository
 
         public async Task<PagedList<FGShopOrderMaterialIssue>> GetAllFGShopOrderMaterialIssue(PagingParameter pagingParameter)
         {
-            var fGShopOrderMaterialIssueDetails = PagedList<FGShopOrderMaterialIssue>.ToPagedList(FindAll()
+            var getAllFGShopOrderMaterialIssueDetails = PagedList<FGShopOrderMaterialIssue>.ToPagedList(FindAll()
                                .Include(t => t.FGShopOrderMaterialIssueGeneralList)
               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return fGShopOrderMaterialIssueDetails;
+            return getAllFGShopOrderMaterialIssueDetails;
         }
 
         public async Task<FGShopOrderMaterialIssue> GetFGShopOrderMaterialIssueById(int id)
         {
-            var fGShopOrderMaterialIssue = await _tipsProductionDbContext.FGShopOrderMaterialIssues.Where(x => x.Id == id)
+            var getFGShopOrderMaterialIssue = await _tipsProductionDbContext.FGShopOrderMaterialIssues.Where(x => x.Id == id)
                                 .Include(t => t.FGShopOrderMaterialIssueGeneralList)
                                 .FirstOrDefaultAsync();
 
-            return fGShopOrderMaterialIssue;
+            return getFGShopOrderMaterialIssue;
         }
 
         public async Task<string> UpdateFGShopOrderMaterialIssue(FGShopOrderMaterialIssue fGShopOrderMaterialIssue)
