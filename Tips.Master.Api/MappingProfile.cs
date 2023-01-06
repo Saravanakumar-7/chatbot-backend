@@ -73,8 +73,7 @@ namespace Tips.Master.Api
 
             CreateMap<CustomerBanking, CustomerBankingDto>().ReverseMap();
             CreateMap<CustomerBanking, CustomerBankingDtoPost>().ReverseMap();
-            CreateMap<CustomerBanking, CustomerContactsDtoUpdate>().ReverseMap();
-
+            CreateMap<CustomerBanking, CustomerBankingDtoUpdate>().ReverseMap();
 
             CreateMap<CompanyMaster, CompanyMasterDto>().ReverseMap();
             CreateMap<CompanyMaster, CompanyMasterDtoPost>().ReverseMap();
@@ -237,9 +236,9 @@ namespace Tips.Master.Api
             CreateMap<VendorMaster, VendorMasterPostDto>().ReverseMap();
             CreateMap<VendorMaster, VendorMasterPostDto>().ReverseMap();
 
-            CreateMap<HeadCounting, HeadCountingDto>().ReverseMap();
-            CreateMap<HeadCounting, HeadCountingPostDto>().ReverseMap();
-            CreateMap<HeadCounting, HeadCountingUpdateDto>().ReverseMap();
+            CreateMap<VendorHeadCounting, VendorHeadCountingDto>().ReverseMap();
+            CreateMap<VendorHeadCounting, HeadCountingPostDto>().ReverseMap();
+            CreateMap<VendorHeadCounting, HeadCountingUpdateDto>().ReverseMap();
 
             CreateMap<PreferredFreightForwarder, PreferredFreightForwarderDto>().ReverseMap();
             CreateMap<PreferredFreightForwarder, PreferredFreightForwarderDtoPost>().ReverseMap();

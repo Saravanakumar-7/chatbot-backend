@@ -11,14 +11,14 @@ namespace Entities
     {
 
         public int Id { get; set; }
-
-        public string VendorId { get; set; }
-
-        public string VendorName { get; set; }
+        [Required(ErrorMessage = "VendorId is required")]
+        public string? VendorId { get; set; }
+        [Required(ErrorMessage = "VendorName is required")]
+        public string? VendorName { get; set; }
 
         public string? VendorAliasName { get; set; }
-
-        public string VendorType { get; set; }
+        [Required(ErrorMessage = "VendorType is required")]
+        public string? VendorType { get; set; }
 
         public string? Address { get; set; }
         
@@ -129,7 +129,7 @@ namespace Entities
 
         public string? AuditFrequency { get; set; }
         public bool IsActive { get; set; } = true;
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -140,7 +140,7 @@ namespace Entities
         public List<VendorContacts>? Contacts { get; set; }
         public List<VendorAddress>? Addresses { get; set; } 
 
-        public List<HeadCounting>? HeadCountings { get; set; }
+        public List<VendorHeadCounting>? HeadCountings { get; set; }
 
     }
 }

@@ -32,22 +32,22 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<IEnumerable<CustomerMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerMasterDto>>();
             try
             {
-                var listOfCustomerMaster = await _repository.CustomerMasterRepository.GetAllCustomerMaster(pagingParameter);
+                var getAllCustomerMastersList = await _repository.CustomerMasterRepository.GetAllCustomerMasters(pagingParameter);
                 //_logger.LogInfo("Returned all CustomerMaster");
                 var metadata = new
                 {
-                    listOfCustomerMaster.TotalCount,
-                    listOfCustomerMaster.PageSize,
-                    listOfCustomerMaster.CurrentPage,
-                    listOfCustomerMaster.HasNext,
-                    listOfCustomerMaster.HasPreviuos
+                    getAllCustomerMastersList.TotalCount,
+                    getAllCustomerMastersList.PageSize,
+                    getAllCustomerMastersList.CurrentPage,
+                    getAllCustomerMastersList.HasNext,
+                    getAllCustomerMastersList.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                var result = _mapper.Map<IEnumerable<CustomerMasterDto>>(listOfCustomerMaster);
+                var result = _mapper.Map<IEnumerable<CustomerMasterDto>>(getAllCustomerMastersList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all Customers Successfully";
+                serviceResponse.Message = "Returned all CustomerMasters Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -56,7 +56,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                  serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllCustomerMaster action: {ex.Message}";
+                serviceResponse.Message = $"Something went wrong inside GetAllCustomerMasters action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -69,12 +69,12 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();
             try
             {
-                var CustomerMasterDetails = await _repository.CustomerMasterRepository.GetCustomerMasterById(id);
+                var getCustomerMasterById = await _repository.CustomerMasterRepository.GetCustomerMasterById(id);
 
-                if (CustomerMasterDetails == null)
+                if (getCustomerMasterById == null)
                 {
                     serviceResponse.Data= null;
-                    serviceResponse.Message = $"CustomerMaster with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"CustomerMaster with id hasn't been found in db.";
                     serviceResponse.Success=false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"CustomerMaster with id: {id}, hasn't been found in db.");
@@ -83,9 +83,9 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned CustomerMaster with id: {id}");
-                    var result = _mapper.Map<CustomerMasterDto>(CustomerMasterDetails);
+                    var result = _mapper.Map<CustomerMasterDto>(getCustomerMasterById);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned CustomerMaster with id Successfully";
+                    serviceResponse.Message = "Returned CustomerMasterById Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -130,8 +130,8 @@ namespace Tips.Master.Api.Controllers
                 
                 var contacts = _mapper.Map<IEnumerable<CustomerContacts>>(customerMasterDtoPost.CustomerContacts);
                 var shippingAddresses = _mapper.Map<IEnumerable<CustomerShippingAddresses>>(customerMasterDtoPost.CustomerShippingAddresses);
-                var addresses = _mapper.Map<IEnumerable<CustomerAddresses>>(customerMasterDtoPost.CustomerAddress);
-                var banking = _mapper.Map<IEnumerable<CustomerBanking>>(customerMasterDtoPost.CustomerBankings);
+                var addresses = _mapper.Map<IEnumerable<CustomerAddresses>>(customerMasterDtoPost.CustomerAddresses);
+                var banking = _mapper.Map<IEnumerable<CustomerBanking>>(customerMasterDtoPost.CustomerBanking);
                 var headcount = _mapper.Map<IEnumerable<CustomerMasterHeadCounting>>(customerMasterDtoPost.CustomerMasterHeadCountings);
 
                 var customerMaster = _mapper.Map<CustomerMaster>(customerMasterDtoPost);
@@ -154,7 +154,7 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateCustomerMaster action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -165,12 +165,12 @@ namespace Tips.Master.Api.Controllers
 
          [HttpPut("{id}")]
 
-        public async Task<IActionResult> UpdateCustomerMaster(int id, [FromBody] CustomerMasterDtoPost customerMasterDto)
+        public async Task<IActionResult> UpdateCustomerMaster(int id, [FromBody] CustomerMasterDtoUpdate customerMasterDtoUpdate)
         {
-            ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();
+            ServiceResponse<CustomerMasterDtoUpdate> serviceResponse = new ServiceResponse<CustomerMasterDtoUpdate>();
             try
             {
-                if (customerMasterDto is null)
+                if (customerMasterDtoUpdate is null)
                 {
                     _logger.LogError("Update CustomerMaster object sent from client is null.");
                     serviceResponse.Data = null;
@@ -193,32 +193,31 @@ namespace Tips.Master.Api.Controllers
                 {
                     _logger.LogError($"Update CustomerMaster with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update CustomerMaster with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Update CustomerMaster with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
                
-                var addresses = _mapper.Map<IEnumerable<CustomerAddresses>>(customerMasterDto.CustomerAddress);
-                var contacts = _mapper.Map<IEnumerable<CustomerContacts>>(customerMasterDto.CustomerContacts);
-                var shippingAddresses = _mapper.Map<IEnumerable<CustomerShippingAddresses>>(customerMasterDto.CustomerShippingAddresses);
-                var banking = _mapper.Map<IEnumerable<CustomerBanking>>(customerMasterDto.CustomerBankings);
-                var HeadcountDetails = _mapper.Map<IEnumerable<CustomerMasterHeadCounting>>(customerMasterDto.CustomerMasterHeadCountings);
+                var addresses = _mapper.Map<IEnumerable<CustomerAddresses>>(customerMasterDtoUpdate.CustomerAddresses);
+                var contacts = _mapper.Map<IEnumerable<CustomerContacts>>(customerMasterDtoUpdate.CustomerContacts);
+                var shippingAddresses = _mapper.Map<IEnumerable<CustomerShippingAddresses>>(customerMasterDtoUpdate.CustomerShippingAddresses);
+                var banking = _mapper.Map<IEnumerable<CustomerBanking>>(customerMasterDtoUpdate.CustomerBanking);
+                var HeadcountDetails = _mapper.Map<IEnumerable<CustomerMasterHeadCounting>>(customerMasterDtoUpdate.CustomerMasterHeadCountings);
 
-                var customerDetials = _mapper.Map(customerMasterDto, updateCustomerMaster);
-                //var customerDetials = _mapper.Map<CustomerMaster>(customerMasterDto);
+                var customerMasters = _mapper.Map(customerMasterDtoUpdate, updateCustomerMaster);
 
-                customerDetials.CustomerAddresses= addresses.ToList();
-                customerDetials.CustomerContacts= contacts.ToList();
-                customerDetials.CustomerShippingAddresses= shippingAddresses.ToList();
-                customerDetials.CustomerBanking= banking.ToList();
-                customerDetials.CustomerMasterHeadCountings = HeadcountDetails.ToList();
-                string result = await _repository.CustomerMasterRepository.UpdateCustomerMaster(customerDetials);
+                customerMasters.CustomerAddresses= addresses.ToList();
+                customerMasters.CustomerContacts= contacts.ToList();
+                customerMasters.CustomerShippingAddresses= shippingAddresses.ToList();
+                customerMasters.CustomerBanking= banking.ToList();
+                customerMasters.CustomerMasterHeadCountings = HeadcountDetails.ToList();
+                string result = await _repository.CustomerMasterRepository.UpdateCustomerMaster(customerMasters);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = result;
+                serviceResponse.Message = " CustomerMaster Successfully Updated"; ;
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -240,28 +239,28 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();
             try
             {
-                var deleteCustomer = await _repository.CustomerMasterRepository.GetCustomerMasterById(id);
-                if (deleteCustomer == null)
+                var deleteCustomerMaster = await _repository.CustomerMasterRepository.GetCustomerMasterById(id);
+                if (deleteCustomerMaster == null)
                 {
-                    _logger.LogError($"Delete Customer with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Delete CustomerMaster with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Delete Customer with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Delete CustomerMaster with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.CustomerMasterRepository.DeleteCustomerMaster(deleteCustomer);
+                string result = await _repository.CustomerMasterRepository.DeleteCustomerMaster(deleteCustomerMaster);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = result;
+                serviceResponse.Message = " CustomerMaster Successfully Deleted"; 
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeleteCustomerMaster action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -276,11 +275,11 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<IEnumerable<CustomerIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerIdNameListDto>>();
             try
             {
-                var listOfCustomerMaster = await _repository.CustomerMasterRepository.GetAllActiveCustomerIdNameList();
+                var listOfActiveCustomerMaster = await _repository.CustomerMasterRepository.GetAllActiveCustomerMasterIdNameList();
                 //_logger.LogInfo("Returned all CustomerMaster");
-                var result = _mapper.Map<IEnumerable<CustomerIdNameListDto>>(listOfCustomerMaster);
+                var result = _mapper.Map<IEnumerable<CustomerIdNameListDto>>(listOfActiveCustomerMaster);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned All ActiveCustomerIdNameList";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

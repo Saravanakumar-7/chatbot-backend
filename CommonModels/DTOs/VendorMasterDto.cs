@@ -11,14 +11,14 @@ namespace Entities.DTOs
     public class VendorMasterDto
     {
         public int Id { get; set; }
-
-        public string VendorId { get; set; }
-
-        public string VendorName { get; set; }
+        [Required(ErrorMessage = "VendorId is required")]
+        public string? VendorId { get; set; }
+        [Required(ErrorMessage = "VendorName is required")]
+        public string? VendorName { get; set; }
 
         public string? VendorAliasName { get; set; }
-
-        public string VendorType { get; set; }
+        [Required(ErrorMessage = "VendorType is required")]
+        public string? VendorType { get; set; }
 
         public string? Address { get; set; }
 
@@ -128,7 +128,7 @@ namespace Entities.DTOs
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -136,7 +136,7 @@ namespace Entities.DTOs
         public List<VendorAddressDto>? Addresses { get; set; }
         public List<VendorContactsDto>? Contacts { get; set; }
         public List<VendorBankingDto>? VendorBankings { get; set; }
-        public List<HeadCountingDto>? HeadCountings { get; set; }
+        public List<VendorHeadCountingDto>? HeadCountings { get; set; }
     }
 
 
@@ -145,17 +145,17 @@ namespace Entities.DTOs
  
         [Required(ErrorMessage = "VendorId is required")]
         [StringLength(100, ErrorMessage = "VendorId can't be longer than 100 characters")]
-        public string VendorId { get; set; }
+        public string? VendorId { get; set; }
 
         [Required(ErrorMessage = "VendorName is required")]
         [StringLength(100, ErrorMessage = "VendorName can't be longer than 100 characters")]
-        public string VendorName { get; set; }
+        public string? VendorName { get; set; }
 
         public string? VendorAliasName { get; set; }
         
         [Required(ErrorMessage = "VendorType is required")]
         [StringLength(500, ErrorMessage = "VendorType can't be longer than 500 characters")]
-        public string VendorType { get; set; }
+        public string? VendorType { get; set; }
 
         public string? Address { get; set; }
 
@@ -280,18 +280,18 @@ namespace Entities.DTOs
         [Required(ErrorMessage = "VendorId is required")]
         [StringLength(100, ErrorMessage = "VendorId can't be longer than 100 characters")]
 
-        public string VendorId { get; set; }
+        public string? VendorId { get; set; }
 
         [Required(ErrorMessage = "VendorName is required")]
         [StringLength(100, ErrorMessage = "VendorName can't be longer than 100 characters")]
 
-        public string VendorName { get; set; }
+        public string? VendorName { get; set; }
 
         public string? VendorAliasName { get; set; }
         [Required(ErrorMessage = "VendorType is required")]
         [StringLength(500, ErrorMessage = "VendorType can't be longer than 500 characters")]
 
-        public string VendorType { get; set; }
+        public string? VendorType { get; set; }
 
         public string? Address { get; set; }
 
@@ -399,7 +399,7 @@ namespace Entities.DTOs
         public string? AuditFrequency { get; set; }
         [Required(ErrorMessage = "Unit is required")]
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

@@ -11,13 +11,13 @@ namespace Contracts
 {
     public interface IVendorRepository : IRepositoryBase<VendorMaster>
     {
-        Task<PagedList<VendorMaster>> GetAllVendors(PagingParameter pagingParameter);
-        Task<VendorMaster> GetVendorById(int id);
-        Task<IEnumerable<VendorMaster>> GetAllActiveVendors();
-        Task<int?> CreateVendor(VendorMaster vendorMaster);
-        Task<string> UpdateVendor(VendorMaster vendorMaster);
-        Task<string> DeleteVendor(VendorMaster vendorMaster);
-        Task<IEnumerable<VendorIdNameListDto>> GetAllActiveVendorNameList();
+        Task<PagedList<VendorMaster>> GetAllVendorMasters(PagingParameter pagingParameter);
+        Task<VendorMaster> GetVendorMasterById(int id);
+        Task<IEnumerable<VendorMaster>> GetAllActiveVendorMasters();
+        Task<int?> CreateVendorMaster(VendorMaster vendorMaster);
+        Task<string> UpdateVendorMaster(VendorMaster vendorMaster);
+        Task<string> DeleteVendorMaster(VendorMaster vendorMaster);
+        Task<IEnumerable<VendorIdNameListDto>> GetAllActiveVendorMasterNameList();
 
     }
 }

@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface IItemMasterApprovedVendor
     {
-        Task<IEnumerable<ItemMasterApprovedVendor>> GetAllItemMasterApprovedVendor();
+        Task<IEnumerable<ItemMasterApprovedVendor>> GetAllItemMasterApprovedVendors();
         Task<ItemMasterApprovedVendor> GetItemMasterApprovedVendorById(int id);
-        Task<IEnumerable<ItemMasterApprovedVendor>> GetAllActiveItemMasterApprovedVendor();
+        Task<IEnumerable<ItemMasterApprovedVendor>> GetAllActiveItemMasterApprovedVendors();
         Task<int?> CreateItemMasterApprovedVendor(ItemMasterApprovedVendor itemMasterApprovedVendor);
         Task<string> UpdateItemMasterApprovedVendor(ItemMasterApprovedVendor itemMasterApprovedVendor);
         Task<string> DeleteItemMasterApprovedVendor(ItemMasterApprovedVendor itemMasterApprovedVendor);

@@ -15,7 +15,6 @@ namespace Entities
         public string? LaborHours { get; set; }
         [DefaultValue(false)]
         public bool IsRoutingActive { get; set; }
-        public string Unit { get; set; }
 
         public long ItemMasterId { get; set; }
         public ItemMaster? ItemMaster { get; set; }

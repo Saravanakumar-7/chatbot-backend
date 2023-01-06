@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface IVendorAddressRepository
     {
-        Task<IEnumerable<VendorAddress>> GetAllVendorsAddress();
+        Task<IEnumerable<VendorAddress>> GetAllVendorAddresses();
         Task<VendorAddress> GetVendorAddressById(int id);
-        Task<IEnumerable<VendorAddress>> GetAllActiveVendorsAddress();
+        Task<IEnumerable<VendorAddress>> GetAllActiveVendorAddresses();
         Task<int?> CreateVendorAddress(VendorAddress vendorAddress);
         Task<string> UpdateVendorAddress(VendorAddress vendorAddress);
         Task<string> DeleteVendorAddress(VendorAddress vendorAddress);

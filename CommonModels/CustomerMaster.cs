@@ -12,14 +12,14 @@ namespace Entities
 
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "CustomerId is required")]
         public string? CustomerId { get; set; }//api//api1
         
-        [Required]
+        [Required(ErrorMessage = "CustomerName is required")]
         public string? CustomerName { get; set; }//api
         public string? CustomerAliasName { get; set; }//api1
         
-        [Required]
+        [Required(ErrorMessage = "CustomerType is required")]
         public string? CustomerType { get; set; }
         public string? Address { get; set; }
         public string? City { get; set; }
@@ -122,7 +122,7 @@ namespace Entities
         public string? AuditFrequency { get; set; }
         public string? CustomerApprove { get; set; }
    
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

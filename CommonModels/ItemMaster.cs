@@ -14,14 +14,17 @@ namespace Entities
         [Key]
         [Column("ItemMasterId")]
         public long Id { get; set; }
+        [Required(ErrorMessage = "ItemNumber is required")]
         [MaxLength(100)]
         public string? ItemNumber { get; set; }
+        [Required(ErrorMessage = "Description is required")]
         [MaxLength(500)]
         public string? Description { get; set; }
         [DefaultValue(true)]
         public bool IsActive { get; set; }
         [DefaultValue(false)]
         public bool IsObsolete { get; set; }
+        [Required(ErrorMessage = "ItemType is required")]
         [MaxLength(50)]
         public string? ItemType { get; set; }
         [MaxLength(20)]
@@ -70,7 +73,7 @@ namespace Entities
         public string? FootPrint { get; set; }
         public decimal Min { get; set; }
         public decimal Max { get; set; }
-        public string? Leadtime { get; set; }
+        public string? LeadTime { get; set; }
         public string? Reorder { get; set; }
         public string? TwoBin { get; set; }
         public bool Kanban { get; set; }
