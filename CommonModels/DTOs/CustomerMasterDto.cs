@@ -141,6 +141,7 @@ namespace Entities.DTOs
     {
         [Required]
         public string? CustomerId { get; set; }
+
         [Required]
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }

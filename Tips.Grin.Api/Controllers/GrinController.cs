@@ -32,7 +32,7 @@ namespace Tips.Grin.Api.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/<GrinController>
+
         [HttpGet]
 
         public async Task<IActionResult> GetAllGrin([FromQuery] PagingParameter pagingParameter)
@@ -42,22 +42,22 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
-                var GetallGrins = await _repository.GetAllGrin(pagingParameter);
+                var getAllGrinsDetails = await _repository.GetAllGrin(pagingParameter);
 
                 var metadata = new
                 {
-                    GetallGrins.TotalCount,
-                    GetallGrins.PageSize,
-                    GetallGrins.CurrentPage,
-                    GetallGrins.HasNext,
-                    GetallGrins.HasPreviuos
+                    getAllGrinsDetails.TotalCount,
+                    getAllGrinsDetails.PageSize,
+                    getAllGrinsDetails.CurrentPage,
+                    getAllGrinsDetails.HasNext,
+                    getAllGrinsDetails.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
 
                 _logger.LogInfo("Returned all Grins");
-                var result = _mapper.Map<IEnumerable<GrinDto>>(GetallGrins);
+                var result = _mapper.Map<IEnumerable<GrinDto>>(getAllGrinsDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Grins Successfully";
                 serviceResponse.Success = true;
@@ -75,7 +75,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-        // GET api/<GrinController>/5
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGrinById(int id)
         {
@@ -83,9 +83,9 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
-                var GrinDetailsbyId = await _repository.GetGrinById(id);
+                var grinDetailsbyId = await _repository.GetGrinById(id);
 
-                if (GrinDetailsbyId == null)
+                if (grinDetailsbyId == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"Grin with id hasn't been found in db.";
@@ -98,16 +98,20 @@ namespace Tips.Grin.Api.Controllers
 
                 {
                     _logger.LogInfo($"Returned GrinDetailsById with id: {id}");
-                    GrinDto grinDto = _mapper.Map<GrinDto>(GrinDetailsbyId);
+                    GrinDto grinDto = _mapper.Map<GrinDto>(grinDetailsbyId);
 
                     
                     List<GrinPartsDto> grinPartsDtos = new List<GrinPartsDto>();
 
-                    foreach (var GrinpartsDetails in GrinDetailsbyId.GrinParts)
+                    if (grinDetailsbyId.GrinParts != null)
                     {
-                        GrinPartsDto grinPartsDto = _mapper.Map<GrinPartsDto>(GrinpartsDetails);
-                        grinPartsDto.ProjectNumbers = _mapper.Map<List<ProjectNumbersDto>>(GrinpartsDetails.ProjectNumbers);
-                        grinPartsDtos.Add(grinPartsDto);
+
+                        foreach (var GrinpartsDetails in grinDetailsbyId.GrinParts)
+                        {
+                            GrinPartsDto grinPartsDto = _mapper.Map<GrinPartsDto>(GrinpartsDetails);
+                            grinPartsDto.ProjectNumbers = _mapper.Map<List<ProjectNumbersDto>>(GrinpartsDetails.ProjectNumbers);
+                            grinPartsDtos.Add(grinPartsDto);
+                        }
                     }
 
                     grinDto.GrinParts = grinPartsDtos;
@@ -158,24 +162,28 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                
-                var grinsList = _mapper.Map<Grins>(grinPostDto);
-                var grinpartsDto = grinPostDto.GrinParts;
+                var createGrin = _mapper.Map<Grins>(grinPostDto);
+                var grinPartsDto = grinPostDto.GrinParts;
 
                 var GrinpartsList = new List<GrinParts>();
-                for (int i = 0; i < grinpartsDto.Count; i++)
+
+                if (grinPartsDto != null)
                 {
-                    GrinParts grinParts = _mapper.Map<GrinParts>(grinpartsDto[i]);
-                    grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinpartsDto[i].ProjectNumbers);
-                    GrinpartsList.Add(grinParts);
-                  
+                    for (int i = 0; i < grinPartsDto.Count; i++)
+                    {
+                        GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
+                        grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
+                        GrinpartsList.Add(grinParts);
 
+
+                    }
                 }
+
+
+                createGrin.GrinParts = GrinpartsList;
                 
 
-                grinsList.GrinParts = GrinpartsList;
-                
-
-                _repository.CreateGrin(grinsList);
+               await _repository.CreateGrin(createGrin);
 
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -222,8 +230,8 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var updategrin = await _repository.GetGrinById(id);
-                if (updategrin is null)
+                var updateGrin = await _repository.GetGrinById(id);
+                if (updateGrin is null)
                 {
                     _logger.LogError($"Update Grin with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -234,31 +242,33 @@ namespace Tips.Grin.Api.Controllers
                 }
                
 
-                var grinparts = _mapper.Map<IEnumerable<GrinParts>>(grinDto.GrinParts);
+                var grinParts = _mapper.Map<IEnumerable<GrinParts>>(grinDto.GrinParts);
 
                 var grinList = _mapper.Map<Grins>(grinDto);
 
                 var grinPartsDto = grinDto.GrinParts;
 
-                var GrinpartsList = new List<GrinParts>();
-                for (int i = 0; i < grinPartsDto.Count; i++)
+                var grinpartsList = new List<GrinParts>();
+
+                if (grinPartsDto != null)
                 {
-                    GrinParts grinPartsDetail = _mapper.Map<GrinParts>(grinPartsDto[i]);
-                    grinPartsDetail.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
+                    for (int i = 0; i < grinPartsDto.Count; i++)
+                    {
+                        GrinParts grinPartsDetail = _mapper.Map<GrinParts>(grinPartsDto[i]);
+                        grinPartsDetail.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
 
-                    GrinpartsList.Add(grinPartsDetail);
+                        grinpartsList.Add(grinPartsDetail);
 
 
+                    }
                 }
 
+                var updateGrinDetail = _mapper.Map(grinDto, updateGrin);
 
 
-                var data = _mapper.Map(grinDto, updategrin);
+                updateGrinDetail.GrinParts = grinParts.ToList();
 
-
-                data.GrinParts = grinparts.ToList();
-
-                string result = await _repository.UpdateGrin(data);
+                string result = await _repository.UpdateGrin(updateGrinDetail);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -278,7 +288,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-        // DELETE api/<GrinController>/5
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGrin(int id)
         {
@@ -286,8 +296,8 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
-                var Deletegrin = await _repository.GetGrinById(id);
-                if (Deletegrin == null)
+                var deleteGrin = await _repository.GetGrinById(id);
+                if (deleteGrin == null)
                 {
                     _logger.LogError($"Delete grin with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -296,7 +306,7 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.DeleteGrin(Deletegrin);
+                string result = await _repository.DeleteGrin(deleteGrin);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -321,8 +331,8 @@ namespace Tips.Grin.Api.Controllers
             ServiceResponse<IEnumerable<GrinNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinNumberListDto>>();
             try
             {
-                var AllActiveGrinNo = await _repository.GetAllActiveGrinNoList();
-                var result = _mapper.Map<IEnumerable<GrinNumberListDto>>(AllActiveGrinNo);
+                var allActiveGrinNoList = await _repository.GetAllActiveGrinNoList();
+                var result = _mapper.Map<IEnumerable<GrinNumberListDto>>(allActiveGrinNoList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all GrinNoList";
                 serviceResponse.Success = true;

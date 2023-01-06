@@ -19,7 +19,7 @@
     }
     public class PoAddProjectDtoUpdate
     {
-        public int Id { get; set; }
+       
         public string POProjectNumber { get; set; }
         public decimal POProjectQty { get; set; }
         public string? CreatedBy { get; set; }

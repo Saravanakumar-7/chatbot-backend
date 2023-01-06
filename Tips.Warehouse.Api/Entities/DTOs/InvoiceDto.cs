@@ -10,7 +10,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CompanyName { get; set; }
-        string? Remarks { get; set; }
+        public string? Remarks { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -27,7 +27,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CompanyName { get; set; }
-        string? Remarks { get; set; }
+         public string? Remarks { get; set; }
         public List<InvoiceChildItemPostDto>? InvoiceChildItems { get; set; }
     }
 
@@ -38,7 +38,13 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CompanyName { get; set; }
-        string? Remarks { get; set; }
+        public string? Remarks { get; set; }
+
+        public string? Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
         public List<InvoiceChildItemUpdateDto>? InvoiceChildItems { get; set; }
     }
 

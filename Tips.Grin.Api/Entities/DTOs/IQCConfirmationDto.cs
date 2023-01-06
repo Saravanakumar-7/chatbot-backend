@@ -68,7 +68,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
     public class IQCConfirmationUpdateDto
     {
-    public int Id { get; set; }
+
     
     public string? GrinNumber { get; set; }
 
