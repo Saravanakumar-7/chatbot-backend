@@ -6,6 +6,7 @@ namespace Tips.Purchase.Api.Entities
     {
         public int Id { get; set; }
         public string POProjectNumber { get; set; }
+
         [Precision(13, 2)]
         public decimal POProjectQty { get; set; }
         public string? CreatedBy { get; set; }

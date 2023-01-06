@@ -139,12 +139,13 @@ namespace Entities.DTOs
     }
     public class CustomerMasterDtoPost
     {
-        [Required(ErrorMessage = "CustomerId is required")]
+        [Required(ErrorMessage = "CompanyId is required")]
         public string? CustomerId { get; set; }
-        [Required(ErrorMessage = "CustomerName is required")]
+
+        [Required(ErrorMessage = "CompanyId is required")]
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
-        [Required(ErrorMessage = "CustomerType is required")]
+        [Required(ErrorMessage = "CompanyId is required")]
         public string? CustomerType { get; set; }
         public string? Address { get; set; }
         public string? City { get; set; }
@@ -250,10 +251,10 @@ namespace Entities.DTOs
         public string? CustomerApprove { get; set; }
         
 
-        public List<CustomerAddressesDtoPost>? CustomerAddresses { get; set; }
+        public List<CustomerAddressesDtoPost>? CustomerAddress { get; set; }
         public List<CustomerShippingAddressesDtoPost>? CustomerShippingAddresses { get; set; }
         public List<CustomerContactsDtoPost>? CustomerContacts { get; set; }
-        public List<CustomerBankingDtoPost>? CustomerBanking { get; set; }
+        public List<CustomerBankingDtoPost>? CustomerBankings { get; set; }
         public List<CustomerMasterHeadCountingDtoPost>? CustomerMasterHeadCountings { get; set; }
     }
     public class CustomerMasterDtoUpdate
@@ -369,7 +370,7 @@ namespace Entities.DTOs
 
     public string? AuditFrequency { get; set; }
         public string? CustomerApprove { get; set; }
-        
+        //public bool IsActive { get; set; } = true;
         [Required(ErrorMessage = "Unit is required")]
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
         public string? Unit { get; set; }
@@ -378,10 +379,10 @@ namespace Entities.DTOs
     public string? LastModifiedBy { get; set; }
     public DateTime? LastModifiedOn { get; set; }
 
-    public List<CustomerAddressesDtoUpdate>? CustomerAddresses { get; set; }
+    public List<CustomerAddressesDtoUpdate>? CustomerAddress { get; set; }
     public List<CustomerShippingAddressesDtoUpdate>? CustomerShippingAddresses { get; set; }
     public List<CustomerContactsDtoUpdate>? CustomerContacts { get; set; }
-    public List<CustomerBankingDtoUpdate>? CustomerBanking { get; set; }
+    public List<CustomerBankingDtoUpdate>? CustomerBankings { get; set; }
     public List<CustomerMasterHeadCountingDtoUpdate>? CustomerMasterHeadCountings { get; set; }
 
     }

@@ -18,8 +18,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             deliveryOrder.CreatedBy = "Admin";
             deliveryOrder.CreatedOn = DateTime.Now;
-            deliveryOrder.LastModifiedBy = "Admin";
-            deliveryOrder.LastModifiedOn = DateTime.Now;
+            deliveryOrder.Unit = "Bangalore";
             var result = await Create(deliveryOrder);
             return result.Id;
         }
@@ -33,30 +32,30 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<IEnumerable<DeliveryOrder>> GetAllActiveDeliveryOrder()
         {
-            var deliveryOrderDetails = await FindAll().ToListAsync();
-            return deliveryOrderDetails;
+            var allActiveDeliveryOrderDetails = await FindAll().ToListAsync();
+            return allActiveDeliveryOrderDetails;
         }
 
-        public async Task<PagedList<DeliveryOrder>> GetAllDeliveryOrder(PagingParameter pagingParameter, string DeliveryOrderNumber)
+        public async Task<PagedList<DeliveryOrder>> GetAllDeliveryOrder(PagingParameter pagingParameter)
         {
-            var deliveryOrderDetails = PagedList<DeliveryOrder>.ToPagedList(FindAll()
+            var allDeliveryOrderDetails = PagedList<DeliveryOrder>.ToPagedList(FindAll()
                                  .Include(t => t.deliveryOrderItems)
                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return deliveryOrderDetails;
+            return allDeliveryOrderDetails;
         }
 
-        public async Task<DeliveryOrder> GetDeliveryOrderById(int id, string DeliveryOrderNumber)
+        public async Task<DeliveryOrder> GetDeliveryOrderById(int id)
         {
-            var deliveryOrderDetails = await _tipsWarehouseDbContext.deliveryOrder.Where(x => x.Id == id)
+            var deliveryOrderDetailsbyId = await _tipsWarehouseDbContext.deliveryOrder.Where(x => x.Id == id)
                               .Include(t => t.deliveryOrderItems)
                               .FirstOrDefaultAsync();
 
 
-            return deliveryOrderDetails;
+            return deliveryOrderDetailsbyId;
         }
 
-        public async Task<string> UpdateDeliveryOrder(DeliveryOrder deliveryOrder, string DeliveryOrderNumber)
+        public async Task<string> UpdateDeliveryOrder(DeliveryOrder deliveryOrder)
         {
             deliveryOrder.LastModifiedBy = "Admin";
             deliveryOrder.LastModifiedOn = DateTime.Now;

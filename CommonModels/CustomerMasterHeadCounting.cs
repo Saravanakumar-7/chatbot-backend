@@ -13,7 +13,8 @@ namespace Entities
         public string? DepartmentSkill { get; set; }
 
         public string? NumberOfPeople { get; set; }
-  
+
+
         public int CustomerMasterId { get; set; }
 
         public CustomerMaster? CustomerMaster { get; set; }

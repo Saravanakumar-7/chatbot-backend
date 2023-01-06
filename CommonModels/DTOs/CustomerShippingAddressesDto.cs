@@ -18,6 +18,7 @@ namespace Entities.DTOs
         public bool SameAsAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
+        
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -48,6 +49,8 @@ namespace Entities.DTOs
         public bool SameAsAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
+
+       
 
     }
 }

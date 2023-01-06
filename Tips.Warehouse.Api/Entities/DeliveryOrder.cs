@@ -9,6 +9,8 @@
        public string DeliveryOrderNumber { get; set; }
        public string PONumber { get; set; }
        public DateTime DODate { get; set; }
+
+       public string Unit { get; set; }
        public string? CreatedBy { get; set; }
        public DateTime? CreatedOn { get; set; }
        public string? LastModifiedBy { get; set; }

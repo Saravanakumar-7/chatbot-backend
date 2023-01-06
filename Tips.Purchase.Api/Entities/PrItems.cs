@@ -9,6 +9,7 @@ namespace Tips.Purchase.Api.Entities
         public string? MftrItemNumber { get; set; }
         public string? Description { get; set; }
         public string? UOM { get; set; }
+
         [Precision(13, 2)]
         public decimal? Qty { get; set; }
         public string? SpecialInstruction { get; set; }
