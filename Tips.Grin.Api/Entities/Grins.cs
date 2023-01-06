@@ -41,6 +41,7 @@ namespace Tips.Grin.Api.Entities
         public DateTime? BEDate { get; set; }
 
         public int? TotalInvoice { get; set; }
+        public string? GrinDocuments { get; set; }
 
         public string Unit { get; set; }
 
@@ -51,7 +52,8 @@ namespace Tips.Grin.Api.Entities
 
 
         public List<GrinParts>? GrinParts { get; set; }
-       
-         
+        public List<ProjectNumbers>? ProjectNumbers { get; set; }
+
+
     }
 }
