@@ -16,7 +16,7 @@ namespace Tips.Production.Api.Entities
 
         [Required]
         [MaxLength(100)]
-        public string? ShopOrderNo { get; set; }
+        public string? ShopOrderNumber { get; set; }
 
         [Required]
         [Precision(13, 2)]
@@ -38,11 +38,6 @@ namespace Tips.Production.Api.Entities
 
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
-
-       //public int ShopOrderId { get; set; }
-
-        
-      //public ShopOrder? ShopOrders { get; set; }
 
     }
 }

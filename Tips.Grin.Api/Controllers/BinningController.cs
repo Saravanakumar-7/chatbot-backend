@@ -94,7 +94,7 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBinning(int id, [FromBody] BinningDto BinningUpdateDto)
+        public async Task<IActionResult> UpdateBinning(int id, [FromBody] BinningUpdateDto BinningUpdateDto)
         {
             ServiceResponse<BinningDto> serviceResponse = new ServiceResponse<BinningDto>();
 
@@ -123,6 +123,10 @@ namespace Tips.Grin.Api.Controllers
                 if (UpdateBinnings is null)
                 {
                     _logger.LogError($"Binning details with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Update Grin with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
@@ -142,10 +146,11 @@ namespace Tips.Grin.Api.Controllers
 
                 data.BinningItems = binningItemList;
 
-                var BinningEntity = _mapper.Map(BinningUpdateDto, UpdateBinnings);
+                
 
-                string result = await _binningRepository.UpdateBinning(BinningEntity);
+                string result = await _binningRepository.UpdateBinning(data);
                 _logger.LogInfo(result);
+
                 _binningRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Update Successfully";
@@ -200,10 +205,13 @@ namespace Tips.Grin.Api.Controllers
                     binningItemListDetails.BinningLocations = _mapper.Map<List<BinningLocation>>(binningsDto[i].BinningLocations);
                     binningItemList.Add(binningItemListDetails);
 
+
                 }
                 BinningCreation.BinningItems = binningItemList;
 
                 _binningRepository.CreateBinning(BinningCreation);
+
+
                 _binningRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
@@ -246,9 +254,9 @@ namespace Tips.Grin.Api.Controllers
                 {
                     _logger.LogInfo($"Returned Binnings with id: {id}");
                     
-                    BinningDto binningDto = _mapper.Map<BinningDto>(BinningsById);//Main model mapping
+                    BinningDto binningDto = _mapper.Map<BinningDto>(BinningsById);
 
-                    //below mapping is child under child  
+                   
 
                     List<BinningItemsDto> binningItemDtos = new List<BinningItemsDto>();
 

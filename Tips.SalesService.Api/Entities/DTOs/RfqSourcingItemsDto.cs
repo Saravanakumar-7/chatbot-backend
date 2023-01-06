@@ -31,8 +31,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ItemDescription { get; set; }
         public int? QuantityReq { get; set; }
         public int? Count { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
+        //[Required(ErrorMessage = "Unit is required")]
+        //public string Unit { get; set; }
         public List<RfqSourcingVendorDtoPost>? rfqSourcingVendors { get; set; }
 
     }

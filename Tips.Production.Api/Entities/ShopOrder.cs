@@ -13,7 +13,7 @@ namespace Tips.Production.Api.Entities
 
         [Required]
         [MaxLength(100)]
-        public string? ShopOrderNo { get; set; }
+        public string? ShopOrderNumber { get; set; }
         
 
         [Required]
@@ -22,19 +22,19 @@ namespace Tips.Production.Api.Entities
 
         [Required]
         [MaxLength(50)]
-        public string? ProjectNo { get; set; }
+        public string? ProjectNumber { get; set; }
 
         [Required]
         [MaxLength(100)]
-        public string? FGItemNo { get; set; }
+        public string? FGItemNumber { get; set; }
 
         [Required]
-        [MaxLength(200)]
+        [MaxLength(500)]
         public string? Description { get; set; }
 
         [Required]
         [MaxLength(50)]
-        public string? SalesOrderNo { get; set; }
+        public string? SalesOrderNumber { get; set; }
        
 
         [Precision(13,2)]
@@ -49,7 +49,7 @@ namespace Tips.Production.Api.Entities
         public DateTime? ShopOrderCloseDate { get; set; }
 
         [MaxLength(100)]
-        public string? SalesOrderPoNo { get; set; }
+        public string? SalesOrderPONumber { get; set; }
 
         [DefaultValue(0)]
         public OrderStatus Status { get; set; }

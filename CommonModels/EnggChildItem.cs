@@ -28,6 +28,7 @@ namespace Entities
         public string? ScrapAllowance { get; set; }
 
         public string? ScrapAllowanceType { get; set; }
+        public string? CustomFields { get; set; }
 
         [DefaultValue(true)]
         public bool IsActive { get; set; }

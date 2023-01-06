@@ -28,22 +28,20 @@ namespace Tips.Production.Api.Repository
             return result.Id;
         }
 
-      
-
         public async Task<IEnumerable<ShopOrder>> GetAllShopOrders()
         {
-            var shopOrderList = await _tipsProductionDbContext.shopOrders.ToListAsync();
+            var getAllShopOrderDetails = await _tipsProductionDbContext.shopOrders.ToListAsync();
 
-            return (shopOrderList);
+            return (getAllShopOrderDetails);
 
         }
 
         public async Task<ShopOrder> GetShopOrderById(int id)
         {
-            var shopOrderList = await _tipsProductionDbContext.shopOrders
+            var getShopOrder = await _tipsProductionDbContext.shopOrders
                             .Where(x => x.Id == id)
                              .FirstOrDefaultAsync();
-            return shopOrderList;
+            return getShopOrder;
         }
 
         public async Task<string> UpdateShopOrder(ShopOrder shopOrder)
@@ -51,32 +49,32 @@ namespace Tips.Production.Api.Repository
             shopOrder.LastModifiedBy = "Admin";
             shopOrder.LastModifiedOn = DateTime.Now;
             Update(shopOrder);
-            string result = $"LeadTime details of {shopOrder.Id} is updated successfully!";
+            string result = $"ShopOrder details of {shopOrder.Id} is updated successfully!";
             return result;
         }
 
         public async Task<ShopOrder> GetShopOrderBySalesOrderNo(string salesOrderNo)
         {
-            var shopOrderList = await FindByCondition(x => x.SalesOrderNo == salesOrderNo)
+            var getShopOrderBySalesOrderNoList = await FindByCondition(x => x.SalesOrderNumber == salesOrderNo)
                 
                              .FirstOrDefaultAsync();
-            return shopOrderList;
+            return getShopOrderBySalesOrderNoList;
         }
 
-        public async Task<ShopOrder> GetShopOrderShopOrderNo(string ShopOrderNo)
+        public async Task<ShopOrder> GetShopOrderByShopOrderNo(string ShopOrderNo)
         {
-            var shopOrderList = await
-                            FindByCondition(x => x.ShopOrderNo == ShopOrderNo)
+            var getShopOrderByShopOrderNoList = await
+                            FindByCondition(x => x.ShopOrderNumber == ShopOrderNo)
                              .FirstOrDefaultAsync();
-            return shopOrderList;
+            return getShopOrderByShopOrderNoList;
         }
 
         public async Task<IEnumerable<ShopOrder>> GetAllOpenShopOrders()
         {
-            var shopOrderList = await FindByCondition(x => x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2 )
+            var getAllOpenShopOrderList = await FindByCondition(x => x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2 )
                 .ToListAsync();
 
-            return (shopOrderList);
+            return (getAllOpenShopOrderList);
 
         }
     }

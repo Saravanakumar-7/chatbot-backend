@@ -35,7 +35,7 @@ namespace Tips.Grin.Api.Entities
         public decimal? AcceptedQty { get; set; }
         [Precision(18, 3)]
         public decimal? RejectedQty { get; set; }
-        public string Unit { get; set; }
+
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

@@ -1,20 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
     public class FGShopOrderMaterialIssueGeneralDto
     {
         public int Id { get; set; }
-        public string PartNo { get; set; }
-        public string Description { get; set; }
-        public string PartType { get; set; }
-        public string UOM { get; set; }
+        public string? PartNumber { get; set; }
+        [MinLength(500)]
+        public string? Description { get; set; }
+        public string? PartType { get; set; }
+        public string? UOM { get; set; }
         [Precision(13, 2)]
-        public decimal Quantity { get; set; }
+        public decimal Qty { get; set; }
         [Precision(13, 2)]
-        public decimal RequiredQuantity { get; set; }
+        public decimal RequiredQty { get; set; }
         [Precision(13, 2)]
-        public decimal AvailableQuantity { get; set; }
+        public decimal AvailableQty { get; set; }
         [Precision(13, 2)]
         public decimal AlreadyIssuedQty { get; set; }
         [Precision(13, 2)]
@@ -24,18 +26,19 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
-    public class FGShopOrderMaterialIssueGeneralDtoPost
+    public class FGShopOrderMaterialIssueGeneralPostDto
     {
-        public string PartNo { get; set; }
-        public string Description { get; set; }
-        public string PartType { get; set; }
-        public string UOM { get; set; }
+        public string? PartNumber { get; set; }
+        [MinLength(500)]
+        public string? Description { get; set; }
+        public string? PartType { get; set; }
+        public string? UOM { get; set; }
         [Precision(13, 2)]
-        public decimal Quantity { get; set; }
+        public decimal Qty { get; set; }
         [Precision(13, 2)]
-        public decimal RequiredQuantity { get; set; }
+        public decimal RequiredQty { get; set; }
         [Precision(13, 2)]
-        public decimal AvailableQuantity { get; set; }
+        public decimal AvailableQty { get; set; }
         [Precision(13, 2)]
         public decimal AlreadyIssuedQty { get; set; }
         [Precision(13, 2)]
@@ -45,19 +48,20 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
-    public class FGShopOrderMaterialIssueGeneralDtoUpdate
+    public class FGShopOrderMaterialIssueGeneralUpdateDto
     {
         public int Id { get; set; }
-        public string PartNo { get; set; }
-        public string Description { get; set; }
-        public string PartType { get; set; }
-        public string UOM { get; set; }
+        public string? PartNumber { get; set; }
+        [MinLength(500)]
+        public string? Description { get; set; }
+        public string? PartType { get; set; }
+        public string? UOM { get; set; }
         [Precision(13, 2)]
-        public decimal Quantity { get; set; }
+        public decimal Qty { get; set; }
         [Precision(13, 2)]
-        public decimal RequiredQuantity { get; set; }
+        public decimal RequiredQty { get; set; }
         [Precision(13, 2)]
-        public decimal AvailableQuantity { get; set; }
+        public decimal AvailableQty { get; set; }
         [Precision(13, 2)]
         public decimal AlreadyIssuedQty { get; set; }
         [Precision(13, 2)]

@@ -54,7 +54,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-            [HttpGet("{grinNumber}")]
+            [HttpGet("{GrinNumber}")]
             public async Task<IActionResult> GetIqcDetailsbyGrinNo(string grinNumber) 
             {
                 ServiceResponse<IEnumerable<IQCConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationDto>>();
@@ -198,7 +198,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-        //bulk save
+       
 
         [HttpPost]
         public async Task<IActionResult> SaveMultipleIqc([FromBody] List<IQCConfirmationPostDto> iQCConfirmationPostDtos)

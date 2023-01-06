@@ -7,9 +7,7 @@ namespace Tips.Production.Api.Contracts
         Task<ShopOrderConfirmation> GetShopOrderConfirmationById(int id);
         Task<long> CreateShopOrderConfirmation(ShopOrderConfirmation shopOrderConfirmation);
         Task<string> UpdateShopOrderConfirmation(ShopOrderConfirmation shopOrderConfirmation);
-
         Task<IEnumerable<ShopOrderConfirmation>> GetAllShopOrderConfirmationByShopOrderNo(string shopOrderNo);
-
         Task<IEnumerable<ShopOrderConfirmation>> GetOpenDataForOqcByShopOrderNo(string shopOrderNo);
         
 
