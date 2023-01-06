@@ -19,6 +19,7 @@ namespace Tips.Grin.Api.Entities
 
         public DbSet<BinningLocation> BinningLocations { get; set; }
 
+        public DbSet<DocumentUpload> DocumentUploads { get; set; }
 
 
     }

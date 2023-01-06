@@ -37,7 +37,7 @@ namespace Tips.Grin.Api.Entities
         public int? TotalInvoice { get; set; }
 
         public string? GrinDocuments { get; set; }
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

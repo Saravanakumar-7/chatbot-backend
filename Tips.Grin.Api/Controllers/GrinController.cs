@@ -10,6 +10,15 @@ using Entities;
 using Newtonsoft.Json;
 using Entities.DTOs;
 using Tips.Grin.Api.Repository;
+using System.IO;
+using System.Web;
+using Microsoft.AspNetCore.Hosting;
+
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.Extensions.Hosting.Internal;
+using Microsoft.Extensions.Hosting;
+using System;
+using Microsoft.AspNetCore.Http;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -21,16 +30,21 @@ namespace Tips.Grin.Api.Controllers
     public class GrinController : ControllerBase
     {
         private IGrinRepository _repository;
-        private ILoggerManager _logger;
+         private ILoggerManager _logger;
         private IMapper _mapper;
+        private IDocumentUploadRepository _documentUploadRepository;
 
+        private readonly IWebHostEnvironment _webHostEnvironment;
+             
 
-        public GrinController(IGrinRepository repository, ILoggerManager logger, IMapper mapper)
+        public GrinController(IGrinRepository repository, IDocumentUploadRepository documentUploadRepository,IWebHostEnvironment webHostEnvironment,ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
-        }
+            _webHostEnvironment = webHostEnvironment;
+            _documentUploadRepository = documentUploadRepository;
+         }
 
         // GET: api/<GrinController>
         [HttpGet]
@@ -130,6 +144,82 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+        //upload file
+
+        //[HttpPost]
+        //public async Task<IActionResult> UploadFiles([FromBody] DocumentUploadDto files)
+        //{
+
+        //    //var IqcConfirmationList = _mapper.Map<List<DocumentUpload>>(files);
+        //    //for (int i = 0; i <= files.Count(); i++)
+        //    //{ 
+        //    var fileContent = files.FileByte;
+        //    string tPath = files.FileName + "." + files.FileExtension;
+        //    string FileExt = Path.GetExtension(tPath).ToUpper();
+
+
+        //    string webRootPath = _webHostEnvironment.WebRootPath;
+        //    string contentRootPath = _webHostEnvironment.ContentRootPath;
+
+        //    string host = HttpContext.Request.Host.Value;
+
+ 
+             
+
+        //    //if (FileExt == ".PDF" || FileExt == ".PPT" || FileExt == ".DOC" || FileExt == ".DOCX" || FileExt == ".XLSX" || FileExt == ".XLS" || FileExt == ".JPG") { }
+
+        //    string base64String = Convert.ToBase64String(fileContent, 0, fileContent.Length);
+
+
+
+        //    byte[] bytes = Convert.FromBase64String(base64String);
+
+        //    //string filePath = Server.MapPath("~/Files/" + Path.GetFileName(FileUpload1.PostedFile.FileName));
+        //    //File.WriteAllBytes(filePath, imageBytes);
+
+        //    //   for (int i=0;i<=files.Count();i++)
+        //    //{
+        //    //var fileContent = Convert.FromBase64String(file.FileByte);
+        //    //using (var stream = new MemoryStream(test))
+        //    //{
+        //    //   var uploadedFile = new DocumentUpload
+        //    //   {
+        //    //       FileName = files[i].FileName,
+        //    //       FileExtension = files[i].FileExtension,
+        //    //       FilePath = test,
+        //    //    };
+
+        //    //    _context.UploadedFiles.Add(uploadedFile);
+        //    //    await _context.SaveChangesAsync();
+        //    //     }
+        //    //}
+
+        //    //foreach (var file in uploadDocLists)
+        //    //{
+        //    //    // Decode the base64-encoded file content
+        //    //    byte[] fileContent = Convert.FromBase64String(file.FileByte);
+
+        //    //    // Save the file to the database using EF
+        //    //    using (var stream = new MemoryStream(fileContent))
+        //    //    {
+        //    //        var uploadedFile = new DocumentUpload
+        //    //        {
+        //    //            FileName = file.FileName,
+        //    //            FileExtension = file,
+        //    //            FilePath = stream.ToArray()
+        //    //        };
+
+        //    //        _context.UploadedFiles.Add(uploadedFile);
+        //    //        await _context.SaveChangesAsync();
+        //    //    }
+        //    //}
+
+        //    return Ok();
+        //}
+
+
+
+        //
 
         // POST api/<GrinController>
         [HttpPost]
@@ -157,27 +247,95 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
+                 
+                 
+                var grins = _mapper.Map<Grins>(grinPostDto);
+                var grinPartsDto = grinPostDto.GrinParts;
 
-               //var grin = _mapper.Map<IEnumerable<GrinParts>>(grinPostDto.GrinParts);
-                var grinsList = _mapper.Map<Grins>(grinPostDto);
-                var grinpartsDto = grinPostDto.GrinParts;
-
-                var GrinpartsList = new List<GrinParts>();
-                for (int i = 0; i < grinpartsDto.Count; i++)
+                var grinPartsList = new List<GrinParts>();
+                if (grinPartsDto != null)
                 {
-                    GrinParts grinPartsList = _mapper.Map<GrinParts>(grinpartsDto[i]);
-                    grinPartsList.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinpartsDto[i].ProjectNumbers);
-                    GrinpartsList.Add(grinPartsList);
+                    for (int i = 0; i < grinPartsDto.Count; i++)
+                    {
 
+                        GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
+                        grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
+                        grinPartsList.Add(grinParts);
+
+                    }
                 }
-                //grins.GrinParts = GrinpartsList;
 
-                grinsList.GrinParts = GrinpartsList;
-                //grins.GrinParts = grin.ToList();
+                grins.GrinParts = grinPartsList; 
 
-                _repository.CreateGrin(grinsList);
+                await _repository.CreateGrin(grins);
+                // grin upload
+ 
+                var grinUploadDetails = grinPostDto.GrinDocuments;
+                foreach (var grinUploadDetail in grinUploadDetails)
+                {
+                    // for (int i = 0; i <= grinUploadDetail.Count(); i++)
+                    //{
+                    var fileContent = grinUploadDetail.FileByte;
+                    var grinNumber = grins.grinNumber;
+
+                    string fileName = grinUploadDetail.FileName + "." + grinUploadDetail.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+            
+                    Guid guid = Guid.NewGuid(); 
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", guid.ToString() + "_" + fileName);
+                    //string data = Convert.FromBase64String(fileContent);
+
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                       ms.Position = 0;
+                       using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                       {
+                            ms.WriteTo(fileStream);
+                       }                          
+                       var uploadedFile = new DocumentUpload
+                       {
+                               FileName = fileName,
+                               FileExtension = FileExt,
+                               FilePath = filePath,
+                               ParentId = grinNumber,
+                               DocumentFrom ="GrinDocument",
+                        };
+                        
+                            _documentUploadRepository.CreateUploadDocumentGrin(uploadedFile);
+                            _documentUploadRepository.SaveAsync();
+                        
+                    }
+                    //if (project.ProjectImageFileName != null)
+                    //{
+                    //    string filespath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "ProjectUploads", guid.ToString() + "_" + project.ProjectImageFileName);
+                    //    using (MemoryStream ms = new MemoryStream(project.ProjectImage))
+                    //    {
+                    //        ms.Position = 0;
+                    //        using (var fileStream = new FileStream(imagePath, FileMode.Create, FileAccess.Write))
+                    //        {
+                    //            ms.WriteTo(fileStream);
+                    //        }
+
+                    //    }
+                    //}
+
+
+                         //using (var stream = new MemoryStream(test))
+                        //{
+                        //   var uploadedFile = new DocumentUpload
+                        //   {
+                        //       FileName = files[i].FileName,
+                        //       FileExtension = files[i].FileExtension,
+                        //       FilePath = test,
+                        //    };
+                        //    _context.UploadedFiles.Add(uploadedFile);
+                        //    await _context.SaveChangesAsync();
+                        //     }
+                }
 
                 _repository.SaveAsync();
+                //grinparts 
+                //Grin upload
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Grin Successfully Created";
                 serviceResponse.Success = true;
@@ -195,9 +353,11 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //Document Upload save Method
+         
 
-        // PUT api/<GrinController>/5
-        [HttpPut("{id}")]
+            // PUT api/<GrinController>/5
+            [HttpPut("{id}")]
         public async Task<IActionResult> UpdateGrin(int id, [FromBody] GrinDto grinDto)
         {
             ServiceResponse<GrinDto> serviceResponse = new ServiceResponse<GrinDto>();

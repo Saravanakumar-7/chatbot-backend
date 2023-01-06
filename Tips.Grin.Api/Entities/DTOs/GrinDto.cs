@@ -37,7 +37,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public int? TotalInvoice { get; set; }
 
-        public string? GrinDocuments { get; set; }
+        public List<DocumentUploadDto> GrinDocuments { get; set; }
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
@@ -76,12 +76,12 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public int? TotalInvoice { get; set; }
 
-        public string? GrinDocuments { get; set; }
-     
+        public List<DocumentUploadPostDto> GrinDocuments { get; set; }
+
 
         public List<GrinPartsPostDto>? GrinParts { get; set; }
 
-
+ 
     }
     public class GrinUpdateDto
     {
@@ -111,7 +111,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public int? TotalInvoice { get; set; }
 
-        public string? GrinDocuments { get; set; }
+        public List<DocumentUploadUpdateDto> GrinDocuments { get; set; }
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }

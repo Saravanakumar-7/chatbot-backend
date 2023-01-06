@@ -27,6 +27,9 @@ builder.Services.AddScoped<IGrinRepository, GrinRepository>();
 builder.Services.AddScoped<IIQCConfirmationRepository, IQCConfirmationRepository>();
 builder.Services.AddScoped<IBinningRepository, BinningRepository>();
 
+builder.Services.AddScoped<IDocumentUploadRepository, UploadDocumentRepository>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
