@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Entities.Helper;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 
@@ -18,8 +19,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             bTODeliveryOrder.CreatedBy = "Admin";
             bTODeliveryOrder.CreatedOn = DateTime.Now;
-            bTODeliveryOrder.LastModifiedBy = "Admin";
-            bTODeliveryOrder.LastModifiedOn = DateTime.Now;
+            bTODeliveryOrder.Unit = "Bangalore";
             var result = await Create(bTODeliveryOrder);
             return result.Id;
         }
@@ -33,32 +33,36 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<IEnumerable<BTODeliveryOrder>> GetAllActiveBTODeliveryOrder()
         {
-            var bTODeliveryOrderDetails = await FindAll().ToListAsync();
-            return bTODeliveryOrderDetails;
+            var getAllActiveBTODetails = await FindAll().ToListAsync();
+            return getAllActiveBTODetails;
         }
 
-        public async Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrder(PagingParameter pagingParameter, string BTONumber)
+        public async Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrder(PagingParameter pagingParameter)
         {
-            var bTODeliveryOrderDetails = PagedList<BTODeliveryOrder>.ToPagedList(FindAll()
-                                 .Include(t => t.bTODeliveryOrderItems)
-                                 .ThenInclude(s => s.bTOSerialNumbers)
+            var getAllBTODetails = PagedList<BTODeliveryOrder>.ToPagedList(FindAll()
+                                 .Include(t => t.BTODeliveryOrderItems)
+                                 .ThenInclude(s => s.BTOSerialNumbers)
                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return bTODeliveryOrderDetails;
+            return getAllBTODetails;
         }
 
-        public async Task<BTODeliveryOrder> GetBTODeliveryOrderById(int id, string BTONumber)
+        
+
+        public async Task<BTODeliveryOrder> GetBTODeliveryOrderById(int id)
         {
-            var bTODeliveryOrderDetails = await _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.Id == id)
-                                .Include(t => t.bTODeliveryOrderItems)
-                                .ThenInclude(s=>s.bTOSerialNumbers)
+            var bTODeliveryOrderDetailsbyId = await _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.Id == id)
+                                .Include(t => t.BTODeliveryOrderItems)
+                                .ThenInclude(s => s.BTOSerialNumbers)
                                 .FirstOrDefaultAsync();
 
 
-            return bTODeliveryOrderDetails;
+            return bTODeliveryOrderDetailsbyId;
         }
 
-        public async Task<string> UpdateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder, string BTONumber)
+    
+
+        public async Task<string> UpdateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder)
         {
             bTODeliveryOrder.LastModifiedBy = "Admin";
             bTODeliveryOrder.LastModifiedOn = DateTime.Now;
@@ -66,5 +70,8 @@ namespace Tips.Warehouse.Api.Repository
             string result = $"BTODeliveryOrder of Detail {bTODeliveryOrder.Id} is updated successfully!";
             return result;
         }
+
+       
     }
-}
+        }
+ 

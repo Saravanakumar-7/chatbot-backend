@@ -31,12 +31,14 @@ namespace Tips.Grin.Api.Entities
         public bool IsBinningDone { get; set; } = false;
 
         public bool IsDeleted { get; set; } = false;
+
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public string Unit { get; set; }
+       
 
         
 

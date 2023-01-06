@@ -27,14 +27,14 @@ namespace Tips.Grin.Api.Repository
         }
         public async Task<IEnumerable<Binning>> GetAllBinningDetails()
         {
-            var GetallBinnings = await FindAll().ToListAsync();
-            return GetallBinnings;
+            var getAllBinnings = await FindAll().ToListAsync();
+            return getAllBinnings;
 
         }
         public async Task<IEnumerable<Binning>> GetBinningDetailsByGrinNo(string grinNo)
         {
-            var BinningbyGrinNo = await FindByCondition(x => x.GrinNumber == grinNo).ToListAsync();
-            return BinningbyGrinNo;
+            var binningDetailsByGrinNo = await FindByCondition(x => x.GrinNumber == grinNo).ToListAsync();
+            return binningDetailsByGrinNo;
         }
 
         public async Task<string> UpdateBinning(Binning binning)
@@ -43,18 +43,18 @@ namespace Tips.Grin.Api.Repository
             binning.LastModifiedOn = DateTime.Now;
             Update(binning);
             string result = $"binning details of {binning.Id} is updated successfully!";
-            return result;
+             return result;
         }
 
 
         public async Task<Binning> GetBinningDetailsbyId(int id)
         {
-            var BinningbyId = await _tipsGrinDbContext.Binnings.Where(x => x.Id == id)
+            var binningDetailsById = await _tipsGrinDbContext.Binnings.Where(x => x.Id == id)
                               .Include(t => t.BinningItems)
                               .ThenInclude(x => x.BinningLocations)
                            .FirstOrDefaultAsync();
 
-            return BinningbyId;
+            return binningDetailsById;
         }
 
         public async Task<string> DeleteBinning(Binning binning)

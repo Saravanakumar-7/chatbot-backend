@@ -31,7 +31,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
     public class ProjectNumbersDtoUpdate
     {
-        public int Id { get; set; }
+        
         public string? ProjectNumber { get; set; }
 
 

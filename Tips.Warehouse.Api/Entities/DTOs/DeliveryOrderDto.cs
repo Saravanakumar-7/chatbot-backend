@@ -9,11 +9,13 @@
         public string DeliveryOrderNumber { get; set; }
         public string PONumber { get; set; }
         public DateTime DODate { get; set; }
+
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<DeliveryOrderItemsDto>? deliveryOrderItemsDto { get; set; }
+        public List<DeliveryOrderItemsDto>? DeliveryOrderItemsDto { get; set; }
     }
     public class DeliveryOrderDtoPost
     {
@@ -23,11 +25,8 @@
         public string DeliveryOrderNumber { get; set; }
         public string PONumber { get; set; }
         public DateTime DODate { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-        public List<DeliveryOrderItemsDtoPost>? deliveryOrderItemsDtoPost { get; set; }
+        
+        public List<DeliveryOrderItemsDtoPost>? DeliveryOrderItemsDtoPost { get; set; }
     }
     public class DeliveryOrderDtoUpdate
     {
@@ -38,6 +37,8 @@
         public string DeliveryOrderNumber { get; set; }
         public string PONumber { get; set; }
         public DateTime DODate { get; set; }
+
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

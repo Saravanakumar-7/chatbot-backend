@@ -9,7 +9,7 @@
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public int BTODeliveryOrderItemId { get; set; }
-        public BTODeliveryOrderItems? bTODeliveryOrderItems { get; set; }
+        public BTODeliveryOrderItems? BTODeliveryOrderItems { get; set; }
 
     }
 }

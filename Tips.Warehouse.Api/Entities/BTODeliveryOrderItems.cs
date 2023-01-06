@@ -23,6 +23,6 @@ namespace Tips.Warehouse.Api.Entities
         public DateTime? LastModifiedOn { get; set; }
         public int BTODeliveryOrderId { get; set; }
         public BTODeliveryOrder? BTODeliveryOrders { get; set; }
-        public List<BTOSerialNumber> bTOSerialNumbers { get; set; }   
+        public List<BTOSerialNumber> BTOSerialNumbers { get; set; }   
     }
 }

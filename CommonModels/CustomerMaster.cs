@@ -13,11 +13,11 @@ namespace Entities
         public int Id { get; set; }
 
         [Required]
-        public string? CustomerId { get; set; }//api//api1
+        public string? CustomerId { get; set; }
         
         [Required]
-        public string? CustomerName { get; set; }//api
-        public string? CustomerAliasName { get; set; }//api1
+        public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
         
         [Required]
         public string? CustomerType { get; set; }

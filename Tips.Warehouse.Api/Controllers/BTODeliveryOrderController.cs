@@ -26,27 +26,27 @@ namespace Tips.Warehouse.Api.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/<BTODeliveryOrderController>
+
         [HttpGet]
-        public async Task<IActionResult> GetAllBTODeliveryOrder([FromQuery] PagingParameter pagingParameter, string BTONumber)
+        public async Task<IActionResult> GetAllBTODeliveryOrder([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<BTODeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderDto>>();
             try
             {
-                var listOfBTODeliveryOrder = await _repository.GetAllBTODeliveryOrder(pagingParameter,BTONumber);
+                var allBTODeliveryOrdersDetails = await _repository.GetAllBTODeliveryOrder(pagingParameter);
                 var metadata = new
                 {
-                    listOfBTODeliveryOrder.TotalCount,
-                    listOfBTODeliveryOrder.PageSize,
-                    listOfBTODeliveryOrder.CurrentPage,
-                    listOfBTODeliveryOrder.HasNext,
-                    listOfBTODeliveryOrder.HasPreviuos
+                    allBTODeliveryOrdersDetails.TotalCount,
+                    allBTODeliveryOrdersDetails.PageSize,
+                    allBTODeliveryOrdersDetails.CurrentPage,
+                    allBTODeliveryOrdersDetails.HasNext,
+                    allBTODeliveryOrdersDetails.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all BTODeliveryOrder");
-                var result = _mapper.Map<IEnumerable<BTODeliveryOrderDto>>(listOfBTODeliveryOrder);
+                var result = _mapper.Map<IEnumerable<BTODeliveryOrderDto>>(allBTODeliveryOrdersDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all BTODeliveryOrder";
                 serviceResponse.Success = true;
@@ -64,16 +64,16 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        // GET api/<BTODeliveryOrderController>/5
+       
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBTODeliveryOrderById(int id, string BTONumber)
+        public async Task<IActionResult> GetBTODeliveryOrderById(int id)
         {
             ServiceResponse<BTODeliveryOrderDto> serviceResponse = new ServiceResponse<BTODeliveryOrderDto>();
             try
             {
-                var bTODeliveryOrderDetails = await _repository.GetBTODeliveryOrderById(id, BTONumber);
+                var bTODeliveryOrderDetailById = await _repository.GetBTODeliveryOrderById(id);
 
-                if (bTODeliveryOrderDetails == null)
+                if (bTODeliveryOrderDetailById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"BTODeliveryOrder  hasn't been found in db.";
@@ -85,15 +85,23 @@ namespace Tips.Warehouse.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    BTODeliveryOrderDto bTODeliveryOrderDto = _mapper.Map<BTODeliveryOrderDto>(bTODeliveryOrderDetails);
+
+                    BTODeliveryOrderDto bTODeliveryOrderDto = _mapper.Map<BTODeliveryOrderDto>(bTODeliveryOrderDetailById);
+
                     List<BTODeliveryOrderItemsDto> BTODeliveryOrderItemsDtoList = new List<BTODeliveryOrderItemsDto>();
-                    foreach (var itemDetails in bTODeliveryOrderDetails.bTODeliveryOrderItems)
+
+                    if (bTODeliveryOrderDetailById.BTODeliveryOrderItems != null)
                     {
-                        BTODeliveryOrderItemsDto BTODeliveryOrderItemsDtos = _mapper.Map<BTODeliveryOrderItemsDto>(itemDetails);
-                        BTODeliveryOrderItemsDtos.bTOSerialNumberDto = _mapper.Map<List<BTOSerialNumberDto>>(itemDetails.bTOSerialNumbers);
-                        BTODeliveryOrderItemsDtoList.Add(BTODeliveryOrderItemsDtos);
+
+                        foreach (var deliveryOrderitemDetails in bTODeliveryOrderDetailById.BTODeliveryOrderItems)
+                        {
+                            BTODeliveryOrderItemsDto BTODeliveryOrderItemsDtos = _mapper.Map<BTODeliveryOrderItemsDto>(deliveryOrderitemDetails);
+                            BTODeliveryOrderItemsDtos.BTOSerialNumberDto = _mapper.Map<List<BTOSerialNumberDto>>(deliveryOrderitemDetails.BTOSerialNumbers);
+                            BTODeliveryOrderItemsDtoList.Add(BTODeliveryOrderItemsDtos);
+                        }
                     }
-                    bTODeliveryOrderDto.bTODeliveryOrderItemsDto = BTODeliveryOrderItemsDtoList;
+
+                    bTODeliveryOrderDto.BTODeliveryOrderItemsDto = BTODeliveryOrderItemsDtoList;
 
                     serviceResponse.Data = bTODeliveryOrderDto;
                     serviceResponse.Message = "Returned BTODeliveryOrder";
@@ -113,7 +121,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        // POST api/<BTODeliveryOrderController>
+        
         [HttpPost]
         public async Task<IActionResult> CreateBTODeliveryOrder([FromBody] BTODeliveryOrderDtoPost bTODeliveryOrderDtoPost)
         {
@@ -140,16 +148,22 @@ namespace Tips.Warehouse.Api.Controllers
                 }
 
                 var bTODeliveryOrder = _mapper.Map<BTODeliveryOrder>(bTODeliveryOrderDtoPost);
-                var bTODeliveryOrderitemsDto = bTODeliveryOrderDtoPost.bTODeliveryOrderItemsDtoPost;
+
+                var bTODeliveryOrderitemsDto = bTODeliveryOrderDtoPost.BTODeliveryOrderItemsDtoPost;
 
                 var bTODeliveryOrderItemsDtoList = new List<BTODeliveryOrderItems>();
-                for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
+
+                if (bTODeliveryOrderitemsDto != null)
                 {
-                    BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);
-                    bTODeliveryOrderItemsDetails.bTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].bTOSerialNumberDtopost);
-                    bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDetails);
+                    for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
+                    {
+                        BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);
+                        bTODeliveryOrderItemsDetails.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDtoPost);
+                        bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDetails);
+                    }
                 }
-                bTODeliveryOrder.bTODeliveryOrderItems = bTODeliveryOrderItemsDtoList;
+
+                bTODeliveryOrder.BTODeliveryOrderItems = bTODeliveryOrderItemsDtoList;
 
                 await _repository.CreateBTODeliveryOrder(bTODeliveryOrder);
                 _repository.SaveAsync();
@@ -162,7 +176,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside BtoDelivaryOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong ,try again";
                 serviceResponse.Success = false;
@@ -171,9 +185,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        // PUT api/<BTODeliveryOrderController>/5
+        
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBTODeliveryOrder(int id, string BTONumber, [FromBody] BTODeliveryOrderDtoPost bTODeliveryOrderDtoUpdate)
+        public async Task<IActionResult> UpdateBTODeliveryOrder(int id, [FromBody] BTODeliveryOrderDtoUpdate bTODeliveryOrderDtoUpdate)
         {
             ServiceResponse<BTODeliveryOrderDto> serviceResponse = new ServiceResponse<BTODeliveryOrderDto>();
             try
@@ -196,8 +210,8 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var updateBTODeliveryOrder = await _repository.GetBTODeliveryOrderById(id, BTONumber);
-                if (updateBTODeliveryOrder is null)
+                var bTODeliveryOrderbyId = await _repository.GetBTODeliveryOrderById(id);
+                if (bTODeliveryOrderbyId is null)
                 {
                     _logger.LogError($"Update BTODeliveryOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -208,21 +222,26 @@ namespace Tips.Warehouse.Api.Controllers
                 }
 
 
-                var bTODeliveryOrderList = _mapper.Map<BTODeliveryOrder>(updateBTODeliveryOrder);
+                var bTODeliveryOrder = _mapper.Map<BTODeliveryOrder>(bTODeliveryOrderDtoUpdate);
 
-                var bTODeliveryOrderitemsDto = bTODeliveryOrderDtoUpdate.bTODeliveryOrderItemsDtoPost;
+                var bTODeliveryOrderitemsDto = bTODeliveryOrderDtoUpdate.BTODeliveryOrderItemsDto;
 
                 var bTODeliveryOrderitemsList = new List<BTODeliveryOrderItems>();
-                for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
+
+                if (bTODeliveryOrderitemsDto != null)
                 {
-                    BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);
-                    bTODeliveryOrderItemsDetails.bTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].bTOSerialNumberDtopost);
+                    for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
+                    {
+                        BTODeliveryOrderItems bTODeliveryOrderItems = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);
+                        bTODeliveryOrderItems.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDto);
 
+                    }
                 }
-                bTODeliveryOrderList.bTODeliveryOrderItems = bTODeliveryOrderitemsList;
-                var data = _mapper.Map(bTODeliveryOrderDtoUpdate, bTODeliveryOrderList);
 
-                string result = await _repository.UpdateBTODeliveryOrder(data, BTONumber);
+                bTODeliveryOrder.BTODeliveryOrderItems = bTODeliveryOrderitemsList;
+                var data = _mapper.Map(bTODeliveryOrderDto, bTODeliveryOrder);
+
+                string result = await _repository.UpdateBTODeliveryOrder(data);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -242,15 +261,14 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        // DELETE api/<BTODeliveryOrderController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBTODeliveryOrder(int id, string BTONumber)
+        public async Task<IActionResult> DeleteBTODeliveryOrder(int id)
         {
             ServiceResponse<BTODeliveryOrderDto> serviceResponse = new ServiceResponse<BTODeliveryOrderDto>();
             try
             {
-                var deleteBTODeliveryOrder = await _repository.GetBTODeliveryOrderById(id, BTONumber);
-                if (deleteBTODeliveryOrder == null)
+                var bTODeliveryOrderDetailById = await _repository.GetBTODeliveryOrderById(id);
+                if (bTODeliveryOrderDetailById == null)
                 {
                     _logger.LogError($"Delete BTODeliveryOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -259,7 +277,7 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.DeleteBTODeliveryOrder(deleteBTODeliveryOrder);
+                string result = await _repository.DeleteBTODeliveryOrder(bTODeliveryOrderDetailById);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
 
