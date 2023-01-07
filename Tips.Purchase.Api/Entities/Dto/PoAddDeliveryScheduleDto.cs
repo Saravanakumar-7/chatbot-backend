@@ -18,7 +18,7 @@
     }
     public class PoAddDeliveryScheduleDtoUpdate
     {
-        public int Id { get; set; }
+        
         public DateTime PODeliveryDate { get; set; }
         public decimal PODeliveryQty { get; set; }
         public string? CreatedBy { get; set; }

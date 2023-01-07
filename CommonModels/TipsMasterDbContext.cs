@@ -40,7 +40,7 @@ namespace Entities
         public DbSet<PackingInstruction> PackingInstructions { get; set; }
 
         public DbSet<Process> Processes { get; set; }
-        public DbSet<HeadCounting>? HeadCountings { get; set; }
+        public DbSet<VendorHeadCounting>? HeadCountings { get; set; }
         public DbSet<CompanyMasterHeadCounting>? CompanyMasterHeadCountings { get; set; }
 
         public DbSet<CustomerMasterHeadCounting>? CustomerMasterHeadCountings { get; set; }

@@ -11,7 +11,6 @@ namespace Entities
         public string? WareHouse { get; set; }
         [DefaultValue(true)]
         public bool IsActive { get; set; }
-        public string Unit { get; set; }
 
         public long ItemMasterId { get; set; }
         public ItemMaster? ItemMaster { get; set; }

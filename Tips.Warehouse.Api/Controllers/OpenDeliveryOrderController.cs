@@ -34,22 +34,22 @@ namespace Tips.Warehouse.Api.Controllers
 
             try
             { 
-                var listOfOpenDeliveryOrders = await _repository.GetAllOpenDeliveryOrders(pagingParameter);
+                var allOpenDeliveryOrderDetails = await _repository.GetAllOpenDeliveryOrders(pagingParameter);
 
                 var metadata = new
                 {
-                    listOfOpenDeliveryOrders.TotalCount,
-                    listOfOpenDeliveryOrders.PageSize,
-                    listOfOpenDeliveryOrders.CurrentPage,
-                    listOfOpenDeliveryOrders.HasNext,
-                    listOfOpenDeliveryOrders.HasPreviuos
+                    allOpenDeliveryOrderDetails.TotalCount,
+                    allOpenDeliveryOrderDetails.PageSize,
+                    allOpenDeliveryOrderDetails.CurrentPage,
+                    allOpenDeliveryOrderDetails.HasNext,
+                    allOpenDeliveryOrderDetails.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
 
                 _logger.LogInfo("Returned all OpenDeliveryOrders");
-                var result = _mapper.Map<IEnumerable<OpenDeliveryOrderDto>>(listOfOpenDeliveryOrders);
+                var result = _mapper.Map<IEnumerable<OpenDeliveryOrderDto>>(allOpenDeliveryOrderDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all OpenDeliveryOrders Successfully";
                 serviceResponse.Success = true;
@@ -68,7 +68,7 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
 
-        // GET api/<OpenDeliveryOrderController>/5
+        
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOpenDeliveryOrderById(int id)
         {
@@ -76,9 +76,9 @@ namespace Tips.Warehouse.Api.Controllers
 
             try
             {
-                var OpenDeliveryOrdersDetails = await _repository.GetOpenDeliveryOrderById(id);
+                var openDeliveryOrdersDetailsById = await _repository.GetOpenDeliveryOrderById(id);
 
-                if (OpenDeliveryOrdersDetails == null)
+                if (openDeliveryOrdersDetailsById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"OpenDeliveryOrdersDetails with id: {id}, hasn't been found in db.";
@@ -90,7 +90,7 @@ namespace Tips.Warehouse.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned OpenDeliveryOrdersDetails with id: {id}");
-                    var result = _mapper.Map<OpenDeliveryOrderDto>(OpenDeliveryOrdersDetails);
+                    var result = _mapper.Map<OpenDeliveryOrderDto>(openDeliveryOrdersDetailsById);
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned OpenDeliveryOrdersDetails with id: {id}";
                     serviceResponse.Success = true;
@@ -109,7 +109,6 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        // POST api/<OpenDeliveryOrderController>
         [HttpPost]
         public async Task<IActionResult> CreateOpenDeliveryOrder([FromBody] OpenDeliveryOrderDtoPost openDeliveryOrderDtoPost)
         {
@@ -136,13 +135,13 @@ namespace Tips.Warehouse.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var parts = _mapper.Map<IEnumerable<OpenDeliveryOrderParts>>(openDeliveryOrderDtoPost.OpenDeliveryOrderParts);
+                var openDeliveryOrderparts = _mapper.Map<IEnumerable<OpenDeliveryOrderParts>>(openDeliveryOrderDtoPost.OpenDeliveryOrderParts);
 
                 var opendeliveryorder = _mapper.Map<OpenDeliveryOrder>(openDeliveryOrderDtoPost);
 
-                opendeliveryorder.OpenDeliveryOrderParts = parts.ToList();
+                opendeliveryorder.OpenDeliveryOrderParts = openDeliveryOrderparts.ToList();
 
-                _repository.CreateOpenDeliveryOrder(opendeliveryorder);
+                await _repository.CreateOpenDeliveryOrder(opendeliveryorder);
 
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -163,7 +162,6 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        // PUT api/<OpenDeliveryOrderController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOpenDeliveryOrder(int id, [FromBody] OpenDeliveryOrderDto OpenDeliveryOrderDtoUpdate)
         {
@@ -189,8 +187,8 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var updateOpenDeliveryOrder = await _repository.GetOpenDeliveryOrderById(id);
-                if (updateOpenDeliveryOrder is null)
+                var openDeliveryOrderDetailbyId = await _repository.GetOpenDeliveryOrderById(id);
+                if (openDeliveryOrderDetailbyId is null)
                 {
                     _logger.LogError($"Update OpenDeliveryOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -202,13 +200,13 @@ namespace Tips.Warehouse.Api.Controllers
 
 
 
-                var parts = _mapper.Map<IEnumerable<OpenDeliveryOrderParts>>(OpenDeliveryOrderDtoUpdate.OpenDeliveryOrderParts);
+                var openDelivaryOrderparts = _mapper.Map<IEnumerable<OpenDeliveryOrderParts>>(OpenDeliveryOrderDtoUpdate.OpenDeliveryOrderParts);
 
 
-                var data = _mapper.Map(OpenDeliveryOrderDtoUpdate, updateOpenDeliveryOrder);
+                var data = _mapper.Map(OpenDeliveryOrderDtoUpdate, openDeliveryOrderDetailbyId);
 
 
-                data.OpenDeliveryOrderParts = parts.ToList();
+                data.OpenDeliveryOrderParts = openDelivaryOrderparts.ToList();
 
                 string result = await _repository.UpdateOpenDeliveryOrder(data);
                 _logger.LogInfo(result);
@@ -230,7 +228,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        // DELETE api/<OpenDeliveryOrderController>/5
+        
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOpenDeliveryOrder(int id)
         {
@@ -238,8 +236,8 @@ namespace Tips.Warehouse.Api.Controllers
 
             try
             {
-                var deleteOpenDeliveryOrder = await _repository.GetOpenDeliveryOrderById(id);
-                if (deleteOpenDeliveryOrder == null)
+                var openDeliveryOrderDetailbyId = await _repository.GetOpenDeliveryOrderById(id);
+                if (openDeliveryOrderDetailbyId == null)
                 {
                     _logger.LogError($"Delete OpenDeliveryOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -248,7 +246,7 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.DeleteOpenDeliveryOrder(deleteOpenDeliveryOrder);
+                string result = await _repository.DeleteOpenDeliveryOrder(openDeliveryOrderDetailbyId);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;

@@ -11,12 +11,12 @@ namespace Contracts
 {
     public interface ICompanyMasterRepository : IRepositoryBase<CompanyMaster>
     { 
-        Task<PagedList<CompanyMaster>> GetAllCompanyMaster(PagingParameter pagingParameter);
+        Task<PagedList<CompanyMaster>> GetAllCompanyMasters(PagingParameter pagingParameter);
         Task<CompanyMaster> GetCompanyMasterById(int id);
-        Task<IEnumerable<CompanyMaster>> GetAllActiveCompanyMaster();
+        Task<IEnumerable<CompanyMaster>> GetAllActiveCompanyMasters();
         Task<int?> CreateCompanyMaster(CompanyMaster companyMaster);
         Task<string> UpdateCompanyMaster(CompanyMaster companyMaster);
         Task<string> DeleteCompanyMaster(CompanyMaster companyMaster);
-        Task<IEnumerable<CompanyIdNameListDto>> GetAllActiveCompanyIdNameList();
+        Task<IEnumerable<CompanyIdNameListDto>> GetAllActiveCompanyMasterIdNameList();
     }
 }

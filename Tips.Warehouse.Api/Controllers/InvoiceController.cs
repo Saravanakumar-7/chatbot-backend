@@ -36,18 +36,18 @@ namespace Tips.Warehouse.Api.Controllers
 
             try
             {
-                var invoiceList = await _invoiceRepository.GetAllInvoice(pagingParameter);
+                var getAllInvoices = await _invoiceRepository.GetAllInvoice(pagingParameter);
                 var metadata = new
                 {
-                    invoiceList.TotalCount,
-                    invoiceList.PageSize,
-                    invoiceList.CurrentPage,
-                    invoiceList.HasNext,
-                    invoiceList.HasPreviuos
+                    getAllInvoices.TotalCount,
+                    getAllInvoices.PageSize,
+                    getAllInvoices.CurrentPage,
+                    getAllInvoices.HasNext,
+                    getAllInvoices.HasPreviuos
                 };
-                // _logger.LogInfo("Returned all Invoice()s");
+                
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-                var result = _mapper.Map<IEnumerable<InvoiceDto>>(invoiceList);
+                var result = _mapper.Map<IEnumerable<InvoiceDto>>(getAllInvoices);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Success";
                 serviceResponse.Success = true;
@@ -73,8 +73,8 @@ namespace Tips.Warehouse.Api.Controllers
 
             try
             {
-                var invoiceList = await _invoiceRepository.GetInvoiceById(id);
-                if (invoiceList == null)
+                var invoiceDetailById = await _invoiceRepository.GetInvoiceById(id);
+                if (invoiceDetailById == null)
                 {
                     _logger.LogError($"Invoice with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -86,7 +86,7 @@ namespace Tips.Warehouse.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Invoice with id: {id}");
-                    var result = _mapper.Map<InvoiceDto>(invoiceList);
+                    var result = _mapper.Map<InvoiceDto>(invoiceDetailById);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Success";
                     serviceResponse.Success = true;
@@ -119,7 +119,7 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.Message = "Invoice object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest();
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
@@ -135,13 +135,13 @@ namespace Tips.Warehouse.Api.Controllers
                 invoiceEntity.InvoiceChildItems = invoiveList.ToList();
 
 
-                _invoiceRepository.CreateInvoice(invoiceEntity);
+                await _invoiceRepository.CreateInvoice(invoiceEntity);
                 _invoiceRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetInvoiceById", "Successfully Created");
+                return Created("GetInvoiceById", serviceResponse);
             }
             catch (Exception ex)
             {
@@ -150,7 +150,7 @@ namespace Tips.Warehouse.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -180,14 +180,14 @@ namespace Tips.Warehouse.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var invoiceList = await _invoiceRepository.GetInvoiceById(id);
-                if (invoiceList is null)
+                var getinvoiceDetailById = await _invoiceRepository.GetInvoiceById(id);
+                if (getinvoiceDetailById is null)
                 {
                     _logger.LogError($"Invoice with id: {id}, hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
 
-                var invoiceEntity = _mapper.Map(InvoiceUpdateDto, invoiceList);
+                var invoiceEntity = _mapper.Map(InvoiceUpdateDto, getinvoiceDetailById);
 
                 string result = await _invoiceRepository.UpdateInvoice(invoiceEntity);
                 _logger.LogInfo(result);
@@ -215,8 +215,8 @@ namespace Tips.Warehouse.Api.Controllers
 
             try
             {
-                var deleteinvoice = await _invoiceRepository.GetInvoiceById(id);
-                if (deleteinvoice == null)
+                var getInvoiceDetailById = await _invoiceRepository.GetInvoiceById(id);
+                if (getInvoiceDetailById == null)
                 {
                     _logger.LogError($"Delete Invoice with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -225,7 +225,7 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _invoiceRepository.DeleteInvoice(deleteinvoice);
+                string result = await _invoiceRepository.DeleteInvoice(getInvoiceDetailById);
                 _logger.LogInfo(result);
                 _invoiceRepository.SaveAsync();
                 serviceResponse.Data = null;

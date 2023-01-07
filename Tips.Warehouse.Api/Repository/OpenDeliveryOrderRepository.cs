@@ -22,11 +22,9 @@ namespace Tips.Warehouse.Api.Repository
         {
             openDeliveryOrder.CreatedBy = "Admin";
             openDeliveryOrder.CreatedOn = DateTime.Now;
-            openDeliveryOrder.LastModifiedBy = "Admin";
-            openDeliveryOrder.LastModifiedOn = DateTime.Now;
-
-            var result = await Create(openDeliveryOrder);
             openDeliveryOrder.Unit = "Bangalore";
+            var result = await Create(openDeliveryOrder);
+           
             return result.Id;
         }
 
@@ -40,21 +38,21 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<PagedList<OpenDeliveryOrder>> GetAllOpenDeliveryOrders(PagingParameter pagingParameter)
         {
 
-            var OpenDeliveryOrderDetails = PagedList<OpenDeliveryOrder>.ToPagedList(FindAll()
+            var getAllOpenDeliveryOrderDetails = PagedList<OpenDeliveryOrder>.ToPagedList(FindAll()
                                 .Include(x => x.OpenDeliveryOrderParts)
                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return OpenDeliveryOrderDetails;
+            return getAllOpenDeliveryOrderDetails;
 
         }
 
         public async Task<OpenDeliveryOrder> GetOpenDeliveryOrderById(int id)
         {
-            var OpenDeliveryOrderDetails = await _tipsWarehouseDbContext.OpenDeliveryOrders.Where(x => x.Id == id)
+            var OpenDeliveryOrderDetailsById = await _tipsWarehouseDbContext.OpenDeliveryOrders.Where(x => x.Id == id)
                                .Include(x => x.OpenDeliveryOrderParts)
 
                                .FirstOrDefaultAsync();
 
-            return OpenDeliveryOrderDetails;
+            return OpenDeliveryOrderDetailsById;
         }
 
         public async Task<string> UpdateOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder)

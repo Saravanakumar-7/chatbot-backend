@@ -11,15 +11,15 @@ namespace Entities.DTOs
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "CustomerId is required")]
         public string? CustomerId { get; set; }
         
-        [Required]
+        [Required(ErrorMessage = "CustomerName is required")]
         public string? CustomerName { get; set; }
         
         public string? CustomerAliasName { get; set; }
         
-        [Required]
+        [Required(ErrorMessage = "CustomerType is required")]
         public string? CustomerType { get; set; }
         
         public string? Address { get; set; }
@@ -124,27 +124,28 @@ namespace Entities.DTOs
         public string? AuditFrequency { get; set; }
         public string? CustomerApprove { get; set; }
 
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<CustomerAddressesDto>? CustomerAddress { get; set; }
+        public List<CustomerAddressesDto>? CustomerAddresses { get; set; }
         public List<CustomerShippingAddressesDto>? CustomerShippingAddresses { get; set; }
         public List<CustomerContactsDto>? CustomerContacts { get; set; }
-        public List<CustomerBankingDto>? CustomerBankings { get; set; }
+        public List<CustomerBankingDto>? CustomerBanking { get; set; }
 
         public List<CustomerMasterHeadCountingDto>? CustomerMasterHeadCountings { get; set; }
     }
     public class CustomerMasterDtoPost
     {
-        [Required]
+        [Required(ErrorMessage = "CompanyId is required")]
         public string? CustomerId { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "CompanyId is required")]
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
-        [Required]
+        [Required(ErrorMessage = "CompanyId is required")]
         public string? CustomerType { get; set; }
         public string? Address { get; set; }
         public string? City { get; set; }
@@ -260,12 +261,12 @@ namespace Entities.DTOs
     {
 
     public int Id { get; set; }
-        [Required]
+        [Required(ErrorMessage = "CustomerId is required")]
         public string? CustomerId { get; set; }
-        [Required]
+        [Required(ErrorMessage = "CustomerName is required")]
         public string? CustomerName { get; set; }
     public string? CustomerAliasName { get; set; }
-        [Required]
+        [Required(ErrorMessage = "CustomerType is required")]
         public string? CustomerType { get; set; }
     public string? Address { get; set; }
     public string? City { get; set; }
@@ -372,7 +373,7 @@ namespace Entities.DTOs
         //public bool IsActive { get; set; } = true;
         [Required(ErrorMessage = "Unit is required")]
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
     public DateTime? CreatedOn { get; set; }
     public string? LastModifiedBy { get; set; }

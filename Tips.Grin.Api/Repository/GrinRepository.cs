@@ -25,14 +25,16 @@ namespace Tips.Grin.Api.Repository
         {
             grins.CreatedBy = "Admin";
             grins.CreatedOn = DateTime.Now;
-            grins.LastModifiedBy = "Admin";
+
             grins.Unit = "Bangalore";
-            grins.LastModifiedOn = DateTime.Now;
+            
 
             var result = await Create(grins);
             return result.Id;
-        }
-        
+        }        
+
+       
+         
         public async Task<string> DeleteGrin(Grins grins)
         {
             Delete(grins);
@@ -42,42 +44,42 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<IEnumerable<Grins>> GetAllActiveGrin()
         {
-            var GrinDetails = await FindAll().ToListAsync();
-            return GrinDetails;
+            var allActiveGrinDetails = await FindAll().ToListAsync();
+            return allActiveGrinDetails;
         }
 
         public async Task<IEnumerable<GrinNumberListDto>> GetAllActiveGrinNoList()
         {
-            IEnumerable<GrinNumberListDto> AllActiveGrinNoDetails = await _tipsGrinDbContext.Grins
+            IEnumerable<GrinNumberListDto> allActiveGrinNoList= await _tipsGrinDbContext.Grins
                                 .Select(x => new GrinNumberListDto()
                                 {                                  
 
                                     Id= x.Id,
-                                    grinNumber=x.grinNumber
+                                    GrinNumber=x.GrinNumber
                                 })
                               .ToListAsync();
 
-            return AllActiveGrinNoDetails;
+            return allActiveGrinNoList;
         }
 
         public async Task<PagedList<Grins>> GetAllGrin(PagingParameter pagingParameter)
         {
-            var GetallGrinDetails = PagedList<Grins>.ToPagedList(FindAll()
+            var getAllGrinDetails= PagedList<Grins>.ToPagedList (FindAll()
                                 .Include(t => t.GrinParts)
                                 .ThenInclude(t => t.ProjectNumbers)
                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return GetallGrinDetails;
+            return getAllGrinDetails;
         }
 
         public async Task<Grins> GetGrinById(int id)
         {
-            var GrinDetailsbyId = await _tipsGrinDbContext.Grins.Where(x => x.Id == id)
+            var grinDetailsbyId = await _tipsGrinDbContext.Grins.Where(x => x.Id == id)
                                .Include(x => x.GrinParts)
                                .ThenInclude(t => t.ProjectNumbers)
                                .FirstOrDefaultAsync();
 
-            return GrinDetailsbyId;
+            return grinDetailsbyId;
         }
          
 
@@ -93,4 +95,23 @@ namespace Tips.Grin.Api.Repository
        
 
     }
-}
+    public class UploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository
+    {
+        private TipsGrinDbContext _tipsGrinDbContext;
+        public UploadDocumentRepository(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
+        {
+            _tipsGrinDbContext = tipsGrinDbContext;
+        } 
+
+        public async Task<int?> CreateUploadDocumentGrin(DocumentUpload documentUpload)
+        {
+            documentUpload.CreatedBy = "Admin";
+            documentUpload.CreatedOn = DateTime.Now;
+            documentUpload.LastModifiedBy = "Admin";
+            documentUpload.LastModifiedOn = DateTime.Now;
+
+            var result = await Create(documentUpload);
+            return result.Id;
+        }
+    }
+  }

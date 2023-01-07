@@ -22,8 +22,7 @@ namespace Tips.Warehouse.Api.Repository
 
     public async Task<long?> CreateInvoice(Invoice invoice)
         {
-        invoice.LastModifiedBy = "Admin";
-        invoice.LastModifiedOn = DateTime.Now;
+        
         invoice.CreatedBy = "Admin";
         invoice.CreatedOn = DateTime.Now;
         invoice.Unit = "Bangalore";
@@ -33,11 +32,11 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<PagedList<Invoice>> GetAllInvoice(PagingParameter pagingParameter)
         {
-            var invoiceList = PagedList<Invoice>.ToPagedList(FindAll()
+            var allInvoiceList = PagedList<Invoice>.ToPagedList(FindAll()
                 .Include(k => k.InvoiceChildItems)
-                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);//await _tipsWarehouseDbContext.invoices.Include(t => t.InvoiceChildItems).ToListAsync();
+                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return (invoiceList);
+            return (allInvoiceList);
 
          }
 
@@ -46,11 +45,11 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<Invoice> GetInvoiceById(int id)
         {
-        var invoiceList = await _tipsWarehouseDbContext.invoices
+        var invoiceListById = await _tipsWarehouseDbContext.invoices
                         .Where(x => x.Id == id)
                         .Include(k => k.InvoiceChildItems)
                          .FirstOrDefaultAsync();
-        return invoiceList;
+        return invoiceListById;
         }
 
         public async Task<string> UpdateInvoice(Invoice invoice)

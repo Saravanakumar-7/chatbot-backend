@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface ICustomerBankingsRepository : IRepositoryBase<CustomerBanking>
     {
-        Task<IEnumerable<CustomerBanking>> GetAllCustomerBanking();
+        Task<IEnumerable<CustomerBanking>> GetAllCustomerBankings();
         Task<CustomerBanking> GetCustomerBankingById(int id);
-        Task<IEnumerable<CustomerBanking>> GetAllActiveCustomerBanking();
+        Task<IEnumerable<CustomerBanking>> GetAllActiveCustomerBankings();
         Task<int?> CreateCustomerBanking(CustomerBanking customerBanking);
         Task<string> UpdateCustomerBanking(CustomerBanking customerBanking);
         Task<string> DeleteCustomerBanking(CustomerBanking customerBanking);

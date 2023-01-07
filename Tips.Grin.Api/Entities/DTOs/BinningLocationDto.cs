@@ -8,7 +8,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         public int? Qty { get; set; }
-        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -18,10 +17,8 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class BinningLocationPostDto
     {
 
-        [StringLength(500, ErrorMessage = "BinningWarehouse can't be longer than 100 characters")]
         public string? Warehouse { get; set; }
-        [StringLength(500, ErrorMessage = "BinningLocation can't be longer than 100 characters")]
-
+ 
         public string? Location { get; set; }
 
         public int? Qty { get; set; }
@@ -30,15 +27,12 @@ namespace Tips.Grin.Api.Entities.DTOs
 
     public class BinningLocationUpdateDto
     {
-        public int Id { get; set; }
-        [StringLength(500, ErrorMessage = "BinningWarehouse can't be longer than 100 characters")]
+        
         public string? Warehouse { get; set; }
-        [StringLength(500, ErrorMessage = "BinningLocation can't be longer than 100 characters")]
-
+ 
         public string? Location { get; set; }
 
         public int? Qty { get; set; }
-        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

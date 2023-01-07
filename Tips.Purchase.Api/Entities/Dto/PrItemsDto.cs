@@ -45,7 +45,7 @@ namespace Tips.Purchase.Api.Entities.Dto
 
     public class PrItemsDtoUpdate
     {
-        public int Id { get; set; }
+
         public string? ItemNumber { get; set; }
 
         public string? MftrItemNumber { get; set; }
@@ -57,6 +57,8 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal? Qty { get; set; }
 
         public string? SpecialInstruction { get; set; }
+
+        public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

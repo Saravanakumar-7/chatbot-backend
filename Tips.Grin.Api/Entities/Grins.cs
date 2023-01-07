@@ -10,13 +10,19 @@ namespace Tips.Grin.Api.Entities
     public class Grins
     {
         public int Id { get; set; }
-        public string? grinNumber { get; set; }
+        public string? GrinNumber { get; set; }
 
-        public string? VendorName { get; set; }
+        [Required]
+        public string PONumber { get; set; }
 
-        public string? VendorId { get; set; }
+        [Required]
+        public string VendorName { get; set; } 
 
-        public string? InvoiceNumber { get; set; }
+        [Required]
+        public string VendorId { get; set; }
+
+        [Required]
+        public string InvoiceNumber { get; set; }
 
         public string? InvoiceValue { get; set; }
 
@@ -35,8 +41,8 @@ namespace Tips.Grin.Api.Entities
         public DateTime? BEDate { get; set; }
 
         public int? TotalInvoice { get; set; }
-
         public string? GrinDocuments { get; set; }
+
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
@@ -47,6 +53,7 @@ namespace Tips.Grin.Api.Entities
 
         public List<GrinParts>? GrinParts { get; set; }
         public List<ProjectNumbers>? ProjectNumbers { get; set; }
-         
+
+
     }
 }

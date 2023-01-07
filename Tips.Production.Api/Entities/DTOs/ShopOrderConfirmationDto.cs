@@ -11,7 +11,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Required]
         [MaxLength(100)]
-        public string? ShopOrderNo { get; set; }
+        public string? ShopOrderNumber { get; set; }
 
         [Required]
         [Precision(13, 2)]
@@ -34,19 +34,14 @@ namespace Tips.Production.Api.Entities.DTOs
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
 
-
-
     }
 
-
-    public class ShopOrderConfirmationDtoPost
+    public class ShopOrderConfirmationPostDto
     {
-
-
 
         [Required]
         [MaxLength(100)]
-        public string? ShopOrderNo { get; set; }
+        public string? ShopOrderNumber { get; set; }
 
         [Required]
         [Precision(13, 2)]
@@ -63,18 +58,16 @@ namespace Tips.Production.Api.Entities.DTOs
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
 
-
-
     }
 
-    public class ShopOrderConfirmationDtoUpdate
+    public class ShopOrderConfirmationUpdateDto
     {
         [Required]
         public int Id { get; set; }
 
         [Required]
         [MaxLength(100)]
-        public string? ShopOrderNo { get; set; }
+        public string? ShopOrderNumber { get; set; }
 
         [Required]
         [Precision(13, 2)]
@@ -84,6 +77,7 @@ namespace Tips.Production.Api.Entities.DTOs
         [Precision(13, 2)]
         public string? WipConfirmedQty { get; set; }
 
+        public string? Unit { get; set; }
 
         [DefaultValue(false)]
         public bool IsOQCDone { get; set; }

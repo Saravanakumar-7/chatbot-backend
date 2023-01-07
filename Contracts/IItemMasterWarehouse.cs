@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface IItemMasterWarehouse
     {
-        Task<IEnumerable<ItemMasterWarehouse>> GetAllItemMasterWarehouse();
+        Task<IEnumerable<ItemMasterWarehouse>> GetAllItemMasterWarehouses();
         Task<ItemMasterWarehouse> GetItemMasterWarehouseById(int id);
-        Task<IEnumerable<ItemMasterWarehouse>> GetAllActiveItemMasterWarehouse();
+        Task<IEnumerable<ItemMasterWarehouse>> GetAllActiveItemMasterWarehouses();
         Task<int?> CreateItemMasterWarehouse(ItemMasterWarehouse itemMasterWarehouse);
         Task<string> UpdateItemMasterWarehouse(ItemMasterWarehouse itemMasterWarehouse);
         Task<string> DeleteItemMasterWarehouse(ItemMasterWarehouse itemMasterWarehouse);

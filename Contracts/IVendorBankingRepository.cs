@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface IVendorBankingRepository
     {
-        Task<IEnumerable<VendorBanking>> GetAllVendorsBanking();
+        Task<IEnumerable<VendorBanking>> GetAllVendorBankings();
         Task<VendorBanking> GetVendorBankingById(int id);
-        Task<IEnumerable<VendorBanking>> GetAllActiveVendorsBanking();
+        Task<IEnumerable<VendorBanking>> GetAllActiveVendorBankings();
         Task<int?> CreateVendorBanking(VendorBanking vendorBanking);
         Task<string> UpdateVendorBanking(VendorBanking vendorBanking);
         Task<string> DeleteVendorBanking(VendorBanking vendorBanking);

@@ -13,36 +13,36 @@ namespace Tips.Production.Api
         public MappingProfile()
         {
             CreateMap<ShopOrder, ShopOrderDto>().ReverseMap();
-            CreateMap<ShopOrder, ShopOrderDtoPost>().ReverseMap();
-            CreateMap<ShopOrder, ShopOrderDtoUpdate>().ReverseMap();
+            CreateMap<ShopOrder, ShopOrderPostDto>().ReverseMap();
+            CreateMap<ShopOrder, ShopOrderUpdateDto>().ReverseMap();
 
             CreateMap<ShopOrderItem, ShopOrderItemDto>().ReverseMap();
             CreateMap<ShopOrderItem, ShopOrderItemDtoPost>().ReverseMap();
             CreateMap<ShopOrderItem, ShopOrderItemDtoUpdate>().ReverseMap();
 
             CreateMap<ShopOrderConfirmation, ShopOrderConfirmationDto>().ReverseMap();
-            CreateMap<ShopOrderConfirmation, ShopOrderConfirmationDtoPost>().ReverseMap();
-            CreateMap<ShopOrderConfirmation, ShopOrderConfirmationDtoUpdate>().ReverseMap();
+            CreateMap<ShopOrderConfirmation, ShopOrderConfirmationPostDto>().ReverseMap();
+            CreateMap<ShopOrderConfirmation, ShopOrderConfirmationUpdateDto>().ReverseMap();
 
             CreateMap<SAShopOrder, SAShopOrderDto>().ReverseMap();
-            CreateMap<SAShopOrder, SAShopOrderDtoPost>().ReverseMap();
-            CreateMap<SAShopOrder, SAShopOrderDtoUpdate>().ReverseMap();
+            CreateMap<SAShopOrder, SAShopOrderPostDto>().ReverseMap();
+            CreateMap<SAShopOrder, SAShopOrderUpdateDto>().ReverseMap();
 
             CreateMap<SAShopOrderMaterialIssue, SAShopOrderMaterialIssueDto>().ReverseMap();
-            CreateMap<SAShopOrderMaterialIssue, SAShopOrderMaterialIssueDtoPost>().ReverseMap();
-            CreateMap<SAShopOrderMaterialIssue, SAShopOrderMaterialIssueDtoUpdate>().ReverseMap();
+            CreateMap<SAShopOrderMaterialIssue, SAShopOrderMaterialIssuePostDto>().ReverseMap();
+            CreateMap<SAShopOrderMaterialIssue, SAShopOrderMaterialIssueUpdateDto>().ReverseMap();
 
             CreateMap<SAShopOrderMaterialIssueGeneral, SAShopOrderMaterialIssueGeneralDto>().ReverseMap();
-            CreateMap<SAShopOrderMaterialIssueGeneral, SAShopOrderMaterialIssueGeneralDtoPost>().ReverseMap();
-            CreateMap<SAShopOrderMaterialIssueGeneral, SAShopOrderMaterialIssueGeneralDtoUpdate>().ReverseMap();
+            CreateMap<SAShopOrderMaterialIssueGeneral, SAShopOrderMaterialIssueGeneralPostDto>().ReverseMap();
+            CreateMap<SAShopOrderMaterialIssueGeneral, SAShopOrderMaterialIssueGeneralUpdateDto>().ReverseMap();
 
             CreateMap<FGShopOrderMaterialIssue, FGShopOrderMaterialIssueDto>().ReverseMap();
-            CreateMap<FGShopOrderMaterialIssue, FGShopOrderMaterialIssueDtoPost>().ReverseMap();
-            CreateMap<FGShopOrderMaterialIssue, FGShopOrderMaterialIssueDtoUpdate>().ReverseMap();
+            CreateMap<FGShopOrderMaterialIssue, FGShopOrderMaterialIssuePostDto>().ReverseMap();
+            CreateMap<FGShopOrderMaterialIssue, FGShopOrderMaterialIssueUpdateDto>().ReverseMap();
 
             CreateMap<FGShopOrderMaterialIssueGeneral, FGShopOrderMaterialIssueGeneralDto>().ReverseMap();
-            CreateMap<FGShopOrderMaterialIssueGeneral, FGShopOrderMaterialIssueGeneralDtoPost>().ReverseMap();
-            CreateMap<FGShopOrderMaterialIssueGeneral, FGShopOrderMaterialIssueGeneralDtoUpdate>().ReverseMap();
+            CreateMap<FGShopOrderMaterialIssueGeneral, FGShopOrderMaterialIssueGeneralPostDto>().ReverseMap();
+            CreateMap<FGShopOrderMaterialIssueGeneral, FGShopOrderMaterialIssueGeneralUpdateDto>().ReverseMap();
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class BinningDto
     {
         public int Id { get; set; }
-        public string? SelectGrinNumber { get; set; }
+        public string? GrinNumber { get; set; }
         public string? InvoiceNumber { get; set; }
         public string? PONumber { get; set; }
         public string? VendorName { get; set; }
@@ -16,6 +16,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+      
 
         public List<BinningItemsDto>? BinningItems { get; set; }
        
@@ -25,7 +26,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class BinningPostDto
     {
 
-        public string? SelectGrinNumber { get; set; }
+        public string? GrinNumber { get; set; }
         public string? InvoiceNumber { get; set; }
         public string? PONumber { get; set; }
         public string? VendorName { get; set; }
@@ -41,7 +42,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
 
         public int Id { get; set; }
-        public string? SelectGrinNumber { get; set; }
+        public string? GrinNumber { get; set; }
         public string? InvoiceNumber { get; set; }
         public string? PONumber { get; set; }
         public string? VendorName { get; set; }

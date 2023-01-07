@@ -31,13 +31,13 @@ namespace Repository
         public async Task<string> DeleteCustomerMaster(CustomerMaster customerMaster)
         {
             Delete(customerMaster);
-            string result = $"customerMaster details are deleted successfully!";
+            string result = $"CustomerMaster details are deleted successfully!";
             return result;
         }
 
-        public async Task<IEnumerable<CustomerIdNameListDto>> GetAllActiveCustomerIdNameList()
+        public async Task<IEnumerable<CustomerIdNameListDto>> GetAllActiveCustomerMasterIdNameList()
         {
-            IEnumerable<CustomerIdNameListDto> AllActiveCustomerIDName = await TipsMasterDbContext.CustomerMasters
+            IEnumerable<CustomerIdNameListDto> getAllActiveCustomerIdNameList = await TipsMasterDbContext.CustomerMasters
                                 .Select(x => new CustomerIdNameListDto() 
                                 {
                                     Id = x.Id,
@@ -46,18 +46,18 @@ namespace Repository
                                 })
                               .ToListAsync();   
 
-            return AllActiveCustomerIDName;
+            return getAllActiveCustomerIdNameList;
         }
 
-        public async Task<IEnumerable<CustomerMaster>> GetAllActiveCustomerMaster()
+        public async Task<IEnumerable<CustomerMaster>> GetAllActiveCustomerMasters()
         {
-            var AllActiveCustomermaster = await FindAll().ToListAsync();
-            return AllActiveCustomermaster;
+            var getAllActiveCustomermasterList = await FindAll().ToListAsync();
+            return getAllActiveCustomermasterList;
         }
 
-        public async Task<PagedList<CustomerMaster>> GetAllCustomerMaster(PagingParameter pagingParameter)
+        public async Task<PagedList<CustomerMaster>> GetAllCustomerMasters(PagingParameter pagingParameter)
         {
-            var GetallCustomerDetails = PagedList<CustomerMaster>.ToPagedList(FindAll()
+            var getAllCustomerMasterList = PagedList<CustomerMaster>.ToPagedList(FindAll()
                                 .Include(t => t.CustomerAddresses)
                                 .Include(x => x.CustomerShippingAddresses)
                                 .Include(m => m.CustomerContacts)
@@ -66,12 +66,12 @@ namespace Repository
                                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
-            return GetallCustomerDetails;
+            return getAllCustomerMasterList;
         }         
 
         public async Task<CustomerMaster> GetCustomerMasterById(int id)
         {
-            var CustomerDetailsbyId = await TipsMasterDbContext.CustomerMasters.Where(x => x.Id == id)
+            var getCustomerMasterById = await TipsMasterDbContext.CustomerMasters.Where(x => x.Id == id)
                               .Include(x => x.CustomerAddresses)
                               .Include(x => x.CustomerShippingAddresses)
                               .Include(m => m.CustomerContacts)
@@ -79,7 +79,7 @@ namespace Repository
                               .Include(v => v.CustomerMasterHeadCountings)
                               .FirstOrDefaultAsync();
 
-            return CustomerDetailsbyId;
+            return getCustomerMasterById;
         }
 
         public async Task<string> UpdateCustomerMaster(CustomerMaster customerMaster)
@@ -87,7 +87,7 @@ namespace Repository
             customerMaster.LastModifiedBy = "Admin";
             customerMaster.LastModifiedOn = DateTime.Now;
             Update(customerMaster);
-            string result = $"customer details are updated successfully!";
+            string result = $"CustomerMaster details are updated successfully!";
             return result;
         }
     }

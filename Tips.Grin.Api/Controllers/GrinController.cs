@@ -10,6 +10,14 @@ using Entities;
 using Newtonsoft.Json;
 using Entities.DTOs;
 using Tips.Grin.Api.Repository;
+using System.IO;
+using System.Web;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.Extensions.Hosting.Internal;
+using Microsoft.Extensions.Hosting;
+using System;
+using Microsoft.AspNetCore.Http;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -23,15 +31,17 @@ namespace Tips.Grin.Api.Controllers
         private IGrinRepository _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-
-
-        public GrinController(IGrinRepository repository, ILoggerManager logger, IMapper mapper)
+        private IDocumentUploadRepository _documentUploadRepository;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+ 
+        public GrinController(IGrinRepository repository, IDocumentUploadRepository documentUploadRepository, IWebHostEnvironment webHostEnvironment, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _webHostEnvironment = webHostEnvironment;
+            _documentUploadRepository = documentUploadRepository;
         }
-
         // GET: api/<GrinController>
         [HttpGet]
 
@@ -98,10 +108,9 @@ namespace Tips.Grin.Api.Controllers
 
                 {
                     _logger.LogInfo($"Returned GrinDetailsById with id: {id}");
-                    GrinDto grinDto = _mapper.Map<GrinDto>(GrinDetailsbyId);//Main model mapping
+                    GrinDto grinDto = _mapper.Map<GrinDto>(GrinDetailsbyId);
 
-                    //below mapping is child under child  
-
+                    
                     List<GrinPartsDto> grinPartsDtos = new List<GrinPartsDto>();
 
                     foreach (var GrinpartsDetails in GrinDetailsbyId.GrinParts)
@@ -131,7 +140,7 @@ namespace Tips.Grin.Api.Controllers
         }
 
 
-        // POST api/<GrinController>
+   
         [HttpPost]
         public async Task<IActionResult> CreateGrin([FromBody] GrinPostDto grinPostDto)
         {
@@ -158,27 +167,59 @@ namespace Tips.Grin.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-               //var grin = _mapper.Map<IEnumerable<GrinParts>>(grinPostDto.GrinParts);
-                var grinsList = _mapper.Map<Grins>(grinPostDto);
-                var grinpartsDto = grinPostDto.GrinParts;
+                var grins = _mapper.Map<Grins>(grinPostDto);
+                var grinPartsDto = grinPostDto.GrinParts;
 
-                var GrinpartsList = new List<GrinParts>();
-                for (int i = 0; i < grinpartsDto.Count; i++)
+                var grinPartsList = new List<GrinParts>();
+                if (grinPartsDto != null)
                 {
-                    GrinParts grinPartsList = _mapper.Map<GrinParts>(grinpartsDto[i]);
-                    grinPartsList.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinpartsDto[i].ProjectNumbers);
-                    GrinpartsList.Add(grinPartsList);
-                    grinPartsList.Unit = "Bangalore";
-                    grinPartsList.ProjectNumbers[i].Unit = "Bangalore";
+                    for (int i = 0; i < grinPartsDto.Count; i++)
+                    {
+                        GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
+                        grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
+                        grinPartsList.Add(grinParts);
+                    }
+                }
+
+
+                grins.GrinParts = grinPartsList;
+                await _repository.CreateGrin(grins);
+                // grin upload
+
+                var grinUploadDetails = grinPostDto.GrinDocuments;
+                foreach (var grinUploadDetail in grinUploadDetails)
+                {
+                    var fileContent = grinUploadDetail.FileByte;
+                    var grinNumber = grins.GrinNumber;
+                    string fileName = grinUploadDetail.FileName + "." + grinUploadDetail.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                    Guid guid = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", guid.ToString() + "_" + fileName);
+                    //string data = Convert.FromBase64String(fileContent);
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                        var uploadedFile = new DocumentUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            ParentId = grinNumber,
+                            DocumentFrom = "GrinDocument",
+                        };
+
+                        _documentUploadRepository.CreateUploadDocumentGrin(uploadedFile);
+                        _documentUploadRepository.SaveAsync();
+
+                    }
 
                 }
-                //grins.GrinParts = GrinpartsList;
-
-                grinsList.GrinParts = GrinpartsList;
-                //grins.GrinParts = grin.ToList();
-
-                _repository.CreateGrin(grinsList);
-
+                 
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Grin Successfully Created";
@@ -198,7 +239,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-        // PUT api/<GrinController>/5
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateGrin(int id, [FromBody] GrinDto grinDto)
         {
@@ -250,7 +291,10 @@ namespace Tips.Grin.Api.Controllers
 
                     GrinpartsList.Add(grinPartsDetail);
 
+
                 }
+
+
 
                 var data = _mapper.Map(grinDto, updategrin);
 
