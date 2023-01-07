@@ -35,16 +35,16 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<MaterialRequest>> GetAllMaterialRequest(PagingParameter pagingParameter)
         {
-            var AllMR = PagedList<MaterialRequest>.ToPagedList(FindAll()
+            var getAllMR = PagedList<MaterialRequest>.ToPagedList(FindAll()
             .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return AllMR;
+            return getAllMR;
         }
 
         public async Task<MaterialRequest> GetMaterialRequestById(int id)
         {
-            var MatReqId = await _tipsSalesServiceDbContext.materialRequests.Where(x => x.Id == id)
-                               .Include(t => t.MaterialRequestItemList).FirstOrDefaultAsync();
-            return MatReqId;
+            var getMRbyId = await _tipsSalesServiceDbContext.materialRequests.Where(x => x.Id == id)
+                               .Include(t => t.MaterialRequestItems).FirstOrDefaultAsync();
+            return getMRbyId;
         }
 
         public async Task<string> UpdateMaterialRequest(MaterialRequest request)
@@ -62,20 +62,21 @@ namespace Tips.SalesService.Api.Repository
                                 .Select(x => new MaterialRequestIdNoDto()
                                 {
                                     Id = x.Id,
-                                    MRNo = x.MRNo
+                                    MRNumber = x.MRNumber
                                 })
                               .ToListAsync();
 
             return MrNoDetails;
         }
 
-        public async Task<MaterialRequest> GetMRNoDetailsById(string MRnumber)
+        public async Task<MaterialRequest> GetMaterialReqByMRNumber(string MRnumber)
         {
 
-            var Mrnumber = await _tipsSalesServiceDbContext.materialRequests
-            .Include(t => t.MaterialRequestItemList).Where(x => x.MRNo == MRnumber)
+            var getMaterialReqbyMRNo = await _tipsSalesServiceDbContext.materialRequests
+
+            .Include(t => t.MaterialRequestItems).Where(x => x.MRNumber == MRnumber)
                     .FirstOrDefaultAsync();
-            return Mrnumber;
+            return getMaterialReqbyMRNo;
         }
     }
 }

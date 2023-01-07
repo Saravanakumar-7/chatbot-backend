@@ -41,20 +41,20 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var listOfmaterials = await _materialRequestRepository.GetAllMaterialRequest(pagingParameter);
+                var getAllMaterialRequest = await _materialRequestRepository.GetAllMaterialRequest(pagingParameter);
                 var metadata = new
                 {
-                    listOfmaterials.TotalCount,
-                    listOfmaterials.PageSize,
-                    listOfmaterials.CurrentPage,
-                    listOfmaterials.HasNext,
-                    listOfmaterials.HasPreviuos
+                    getAllMaterialRequest.TotalCount,
+                    getAllMaterialRequest.PageSize,
+                    getAllMaterialRequest.CurrentPage,
+                    getAllMaterialRequest.HasNext,
+                    getAllMaterialRequest.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogError("Returned all listOfmaterials");
-                var result = _mapper.Map<IEnumerable<MaterialRequestDto>>(listOfmaterials);
+                var result = _mapper.Map<IEnumerable<MaterialRequestDto>>(getAllMaterialRequest);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all MaterialRequest Successfully";
                 serviceResponse.Success = true;
@@ -79,9 +79,9 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var matreq = await _materialRequestRepository.GetMaterialRequestById(id);
+                var materialRequestbyId = await _materialRequestRepository.GetMaterialRequestById(id);
 
-                if (matreq == null)
+                if (materialRequestbyId == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"materialrequest with id: {id}, hasn't been found in db.";
@@ -93,13 +93,12 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogError($"Returned materialrequest with id: {id}");
-                    MaterialRequestDto materialRequestDto = _mapper.Map<MaterialRequestDto>(matreq);//Main model mapping
-
-                    //below mapping is child under child  
+                    MaterialRequestDto materialRequestDto = _mapper.Map<MaterialRequestDto>(materialRequestbyId);
+                   
 
                     List<MaterialRequestItemDto> materialRequestItemDtos = new List<MaterialRequestItemDto>();
 
-                    foreach (var materialitemDetails in matreq.MaterialRequestItemList)
+                    foreach (var materialitemDetails in materialRequestbyId.MaterialRequestItems)
                     {
                         MaterialRequestItemDto materialRequestItemDto = _mapper.Map<MaterialRequestItemDto>(materialitemDetails);
                         materialRequestItemDtos.Add(materialRequestItemDto);
@@ -150,23 +149,23 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var materialReq = _mapper.Map<MaterialRequest>(materialRequestDtoPost);
-                var materialdto = materialRequestDtoPost.MaterialRequestItems;
+                var createMaterialReq = _mapper.Map<MaterialRequest>(materialRequestDtoPost);
+                var materialReqDto = materialRequestDtoPost.MaterialRequestItems;
 
-                var materialItemList = new List<MaterialRequestItem>();
-                for (int i = 0; i < materialdto.Count; i++)
+                var materialReqItemList = new List<MaterialRequestItem>();
+                for (int i = 0; i < materialReqDto.Count; i++)
                 {
-                    MaterialRequestItem materialItemListDetail = _mapper.Map<MaterialRequestItem>(materialdto[i]);
-                    materialItemList.Add(materialItemListDetail);
+                    MaterialRequestItem materialItemListDetail = _mapper.Map<MaterialRequestItem>(materialReqDto[i]);
+                    materialReqItemList.Add(materialItemListDetail);
 
                 }
-                materialReq.MaterialRequestItemList = materialItemList;
+                createMaterialReq.MaterialRequestItems = materialReqItemList;
 
-                _materialRequestRepository.CreateMaterialRequest(materialReq);
+               await _materialRequestRepository.CreateMaterialRequest(createMaterialReq);
 
                 _materialRequestRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "MaterialRequest Created Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetMaterialRequestById", serviceResponse);
@@ -210,8 +209,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var materialReq = await _materialRequestRepository.GetMaterialRequestById(id);
-                if (materialReq is null)
+                var getMaterialRequestById = await _materialRequestRepository.GetMaterialRequestById(id);
+                if (getMaterialRequestById is null)
                 {
                     _logger.LogError($"materialReq with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -220,22 +219,21 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                var MaterialReqList = _mapper.Map<MaterialRequest>(materialReq);
+                var updateMaterialReqquest = _mapper.Map<MaterialRequest>(getMaterialRequestById);
 
-                var MaterialItemDto = materialRequestDtoUpdate.MaterialRequestItems;
+                var materialReqItemDto = materialRequestDtoUpdate.MaterialRequestItems;
 
-                var MaterialItemList = new List<MaterialRequestItem>();
-                for (int i = 0; i < MaterialItemDto.Count; i++)
+                var materialReqItemList = new List<MaterialRequestItem>();
+                for (int i = 0; i < materialReqItemDto.Count; i++)
                 {
-                    MaterialRequestItem materialItemDetail = _mapper.Map<MaterialRequestItem>(MaterialItemDto[i]);
-                    MaterialItemList.Add(materialItemDetail);
+                    MaterialRequestItem materialItemDetail = _mapper.Map<MaterialRequestItem>(materialReqItemDto[i]);
+                    materialReqItemList.Add(materialItemDetail);
 
                 }
 
-                MaterialReqList.MaterialRequestItemList = MaterialItemList;
-                var data = _mapper.Map(materialRequestDtoUpdate, MaterialReqList);
-
-                string result = await _materialRequestRepository.UpdateMaterialRequest(data);
+                var updateMaterialReq = _mapper.Map(materialRequestDtoUpdate, getMaterialRequestById);
+                updateMaterialReq.MaterialRequestItems = materialReqItemList;
+                string result = await _materialRequestRepository.UpdateMaterialRequest(updateMaterialReq);
                 _materialRequestRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Updated Successfully";
@@ -261,8 +259,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var materialReq = await _materialRequestRepository.GetMaterialRequestById(id);
-                if (materialReq == null)
+                var deleteMaterialReq = await _materialRequestRepository.GetMaterialRequestById(id);
+                if (deleteMaterialReq == null)
                 {
                     _logger.LogError($"materialReq with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -271,7 +269,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _materialRequestRepository.DeleteMaterialRequest(materialReq);
+                string result = await _materialRequestRepository.DeleteMaterialRequest(deleteMaterialReq);
                 _logger.LogError(result);
                 _materialRequestRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -297,10 +295,10 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<MaterialRequestIdNoDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestIdNoDto>>();
             try
             {
-                var Mrnumbers = await _materialRequestRepository.GetAllOpenMRIdNoList();
-                var result = _mapper.Map<IEnumerable<MaterialRequestIdNoDto>>(Mrnumbers);
+                var getAllMaterialReq = await _materialRequestRepository.GetAllOpenMRIdNoList();
+                var result = _mapper.Map<IEnumerable<MaterialRequestIdNoDto>>(getAllMaterialReq);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned All MaterialRequests";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -317,15 +315,15 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet("{MRNumber}")]
-        public async Task<IActionResult> GetMRNoDetailsById(string MRNumber)
+        public async Task<IActionResult> GetMaterialReqByMRNumber(string MRNumber)
         {
             ServiceResponse<MaterialRequestDto> serviceResponse = new ServiceResponse<MaterialRequestDto>();
 
             try
             {
-                var GetMrNo = await _materialRequestRepository.GetMRNoDetailsById(MRNumber);
+                var getMRbyMRNo = await _materialRequestRepository.GetMaterialReqByMRNumber(MRNumber);
 
-                if (GetMrNo == null)
+                if (getMRbyMRNo == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"GetMRNoDetailsById with id: {MRNumber}, hasn't been found in db.";
@@ -338,12 +336,12 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogInfo($"Returned GetMRNoDetailsById with id: {MRNumber}");
 
-                    MaterialRequestDto materialRequestDto = _mapper.Map<MaterialRequestDto>(GetMrNo);
+                    MaterialRequestDto materialRequestDto = _mapper.Map<MaterialRequestDto>(getMRbyMRNo);
 
                     List<MaterialRequestItemDto> materialRequestItemDtos = new List<MaterialRequestItemDto>();
-                    foreach (var MrNoDetails in GetMrNo.MaterialRequestItemList)
+                    foreach (var materialReqbyMRNo in getMRbyMRNo.MaterialRequestItems)
                     {
-                        MaterialRequestItemDto materialRequestItemDto = _mapper.Map<MaterialRequestItemDto>(MrNoDetails);
+                        MaterialRequestItemDto materialRequestItemDto = _mapper.Map<MaterialRequestItemDto>(materialReqbyMRNo);
                         materialRequestItemDtos.Add(materialRequestItemDto);
                     }
                     materialRequestDto.MaterialRequestItems = materialRequestItemDtos;

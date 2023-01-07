@@ -35,28 +35,32 @@ namespace Tips.SalesService.Api.Repository
         public async Task<string> DeleteRfqSourcing(RfqSourcing rfqSourcing)
         {
             Delete(rfqSourcing);
-            string result = $"rfqSourcing details of {rfqSourcing.Id} is deleted successfully!";
-            return result;
-        }
+            string result = $"rfqSourcing details of {rfqSourcing.Id} is deleted successfully!";   
+             return result;
+            
+        }        
 
-        public async Task<PagedList<RfqSourcing>> GetAllRfqSourcing(PagingParameter pagingParameter)
+            public async Task<PagedList<RfqSourcing>> GetAllRfqSourcing(PagingParameter pagingParameter)
+
+
         {
-            var rfqsourcing = PagedList<RfqSourcing>.ToPagedList(FindAll()
-           .Include(t => t.rfqSourcingItems)
-           .ThenInclude(x => x.rfqSourcingVendors)
+            var getAllRfqSourcing =PagedList<RfqSourcing>.ToPagedList(FindAll()
+           .Include(t => t.RfqSourcingItems)
+           .ThenInclude(x => x.RfqSourcingVendors)
            .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return rfqsourcing;
+            return getAllRfqSourcing;
 
         }
 
         public async Task<RfqSourcing> GetRfqSourcingById(int id)
+
         {
-            var rfqsourcing = await _tipsSalesServiceDbContext.RfqSourcings.Where(x => x.Id == id)
-                               .Include(t => t.rfqSourcingItems)
-                               .ThenInclude(x => x.rfqSourcingVendors)
+            var rfqSourcingById = await _tipsSalesServiceDbContext.RfqSourcings.Where(x => x.Id == id)
+                               .Include(t => t.RfqSourcingItems)
+                               .ThenInclude(x => x.RfqSourcingVendors)
                             .FirstOrDefaultAsync();
 
-            return rfqsourcing;
+            return rfqSourcingById;
         }
 
         public async Task<string> UpdateRfqSourcing(RfqSourcing rfqSourcing)
@@ -64,11 +68,9 @@ namespace Tips.SalesService.Api.Repository
             rfqSourcing.LastModifiedBy = "Admin";
             rfqSourcing.LastModifiedOn = DateTime.Now;
             Update(rfqSourcing);
-            string result = $"rfqSourcing of Detail {rfqSourcing.Id} is updated successfully!";
+            string result =$"rfqSourcing of Detail {rfqSourcing.Id} is updated successfully!";
             return result;
         }
     }
 
-  
-
-    }
+}

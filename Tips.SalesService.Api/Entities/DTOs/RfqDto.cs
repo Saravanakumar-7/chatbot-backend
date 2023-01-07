@@ -27,34 +27,33 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public string? CustomerName { get; set; }
         public string? RevisionNumber { get; set; }
+
+        [Required]
         public string RfqNumber { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceivedate { get; set; }
-        public DateTime? QuoteExpectdate { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public DateTime? QuoteExpectdate { get; set; }       
+        
     }
     public class RfqUpdateDto
     {
         public int Id { get; set; }
         public string? CustomerName { get; set; }
         public string? RevisionNumber { get; set; }
+
+        [Required]
         public string RfqNumber { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+       
     }
     public class RfqNumberListDto
     {
         public int Id { get; set; }
+
+        [Required]
         public string RfqNumber { get; set; }
         public string? CustomerName { get; set; }
     }

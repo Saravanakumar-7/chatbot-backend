@@ -37,24 +37,24 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var listOflocationsTrans = await _locationTransferRepository.GetAllLocationTransfer(pagingParameter);
+                var getAllLocationTransfers = await _locationTransferRepository.GetAllLocationTransfer(pagingParameter);
 
                 var metadata = new
                 {
-                    listOflocationsTrans.TotalCount,
-                    listOflocationsTrans.PageSize,
-                    listOflocationsTrans.CurrentPage,
-                    listOflocationsTrans.HasNext,
-                    listOflocationsTrans.HasPreviuos
+                    getAllLocationTransfers.TotalCount,
+                    getAllLocationTransfers.PageSize,
+                    getAllLocationTransfers.CurrentPage,
+                    getAllLocationTransfers.HasNext,
+                    getAllLocationTransfers.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
 
                 _logger.LogError("Returned all LocationTransferdetails");
-                var result = _mapper.Map<IEnumerable<LocationTransferDto>>(listOflocationsTrans);
+                var result = _mapper.Map<IEnumerable<LocationTransferDto>>(getAllLocationTransfers);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all LocationTransfer Successfully";
+                serviceResponse.Message = "Returned all LocationTransfers Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -77,9 +77,9 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var locationTransId = await _locationTransferRepository.GetLocationTransferById(id);
+                var locationTransbyId = await _locationTransferRepository.GetLocationTransferById(id);
 
-                if (locationTransId == null)
+                if (locationTransbyId == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"locationDetails with id: {id}, hasn't been found in db.";
@@ -91,7 +91,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogError($"Returned LocationTransfer with id: {id}");
-                    var result = _mapper.Map<LocationTransferDto>(locationTransId);
+                    var result = _mapper.Map<LocationTransferDto>(locationTransbyId);
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned LocationTransfer with id: {id}";
                     serviceResponse.Success = true;
@@ -135,9 +135,9 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var locationTransfer = _mapper.Map<LocationTransfer>(locationTransferDtoPost);
+                var createLocationTransfer = _mapper.Map<LocationTransfer>(locationTransferDtoPost);
 
-                _locationTransferRepository.CreateLocationTransfer(locationTransfer);
+                await _locationTransferRepository.CreateLocationTransfer(createLocationTransfer);
                 _locationTransferRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
@@ -182,8 +182,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var locations = await _locationTransferRepository.GetLocationTransferById(id);
-                if (locations is null)
+                var getLocationTransferById = await _locationTransferRepository.GetLocationTransferById(id);
+                if (getLocationTransferById is null)
                 {
                     _logger.LogError($"locationTransfer with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -193,13 +193,13 @@ namespace Tips.SalesService.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                var data = _mapper.Map(locationTransferDtoUpdate, locations);
+                var updateData = _mapper.Map(locationTransferDtoUpdate, getLocationTransferById);
 
-                string result = await _locationTransferRepository.UpdateLocationTransfer(data);
+                string result = await _locationTransferRepository.UpdateLocationTransfer(updateData);
                 _logger.LogError(result);
                 _locationTransferRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = "LocationTransfers Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -222,8 +222,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var deletelocation = await _locationTransferRepository.GetLocationTransferById(id);
-                if (deletelocation == null)
+                var getLocationTransferById = await _locationTransferRepository.GetLocationTransferById(id);
+                if (getLocationTransferById == null)
                 {
                     _logger.LogError($"Delete LocationTransfer with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -232,11 +232,11 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _locationTransferRepository.DeleteLocationTransfer(deletelocation);
+                string result = await _locationTransferRepository.DeleteLocationTransfer(getLocationTransferById);
                 _logger.LogError(result);
                 _locationTransferRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Delete Successfully";
+                serviceResponse.Message = "LocationTransfer Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

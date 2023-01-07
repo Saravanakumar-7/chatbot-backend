@@ -1,4 +1,5 @@
-﻿using Tips.Purchase.Api.Entities.Dto;
+﻿using System.ComponentModel;
+using Tips.Purchase.Api.Entities.Dto;
 
 namespace Tips.Purchase.Api.Entities.DTOs
 {
@@ -31,7 +32,13 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string RetentionPeriod { get; set; }
         public string SpecialTermsAndConditions { get; set; }
 
+        [DefaultValue(false)]
+        public bool IsShortClosed { get; set; }
 
+        public string? ShortClosedBy { get; set; }
+
+        public DateTime? ShortClosedOn { get; set; }
+        public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -104,7 +111,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string RetentionPeriod { get; set; }
         public string SpecialTermsAndConditions { get; set; }
 
-        
+
+        public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

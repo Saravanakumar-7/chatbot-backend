@@ -486,6 +486,44 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> ShortClosePurchaseOrder(int id)
+        {
+            ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
 
+            try
+            {
+                var purchaseOrderShortCloseById = await _repository.GetPurchaseOrderById(id);
+                if (purchaseOrderShortCloseById == null)
+                {
+                    _logger.LogError($"PurchaseOrder with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+
+                purchaseOrderShortCloseById.IsShortClosed = true;
+                purchaseOrderShortCloseById.ShortClosedBy = "Admin";
+                purchaseOrderShortCloseById.ShortClosedOn = DateTime.Now;
+                string result = await _repository.UpdatePurchaseOrder(purchaseOrderShortCloseById);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "PurchaseOrder have been closed";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside Purchaseorderclosed action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

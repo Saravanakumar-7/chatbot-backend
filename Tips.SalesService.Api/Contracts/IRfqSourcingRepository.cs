@@ -10,7 +10,7 @@ using Tips.SalesService.Api.Entities;
 
 namespace Tips.SalesService.Api.Contracts
 {
-    public interface IRfqSourcingRepository //: IRepositoryBase<RfqSourcing>
+    public interface IRfqSourcingRepository 
     {
         Task<PagedList<RfqSourcing>> GetAllRfqSourcing(PagingParameter pagingParameter);
         Task<RfqSourcing> GetRfqSourcingById(int id);

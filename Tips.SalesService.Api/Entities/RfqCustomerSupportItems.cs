@@ -13,19 +13,18 @@ namespace Tips.SalesService.Api.Entities
         public int Id { get; set; }
         public string RfqNumber { get; set; }
         public string? ItemNumber { get; set; }
-        public int? Quantity { get; set; }
+
+        [Precision(13,3)]
+        public decimal Qty { get; set; }
         public string? Description { get; set; }
-        public bool ReleaseStatus { get; set; } = false;
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
+        public bool ReleaseStatus { get; set; } = false;      
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
         public int RfqCustomerSupportId { get; set; }
-        public RfqCustomerSupport? rfqCustomerSupport { get; set; }
+        public RfqCustomerSupport? RfqCustomerSupport { get; set; }
 
-        public List<RfqCSDeliverySchedule>? rfqCSDeliverySchedule { get; set; }
+        public List<RfqCSDeliverySchedule>? RfqCSDeliverySchedule { get; set; }
 
     }
 }

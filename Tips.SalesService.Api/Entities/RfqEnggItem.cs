@@ -16,14 +16,9 @@ namespace Tips.SalesService.Api.Entities
         public bool ReleaseStatus { get; set; } = false;
         public int? Quantity { get;set;}
         public string? CostingBomVersionNo { get;}
-        public string? ItemNumber { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public string? ItemNumber { get; set; }       
         public int RfqEnggId { get; set; }
-        public RfqEngg? rfqEngg { get; set; }
+        public RfqEngg? RfqEngg { get; set; }
       
 
     }

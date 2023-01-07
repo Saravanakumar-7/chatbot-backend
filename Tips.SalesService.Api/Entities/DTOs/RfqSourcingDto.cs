@@ -19,22 +19,19 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<RfqSourcingItemsDto>? rfqSourcingItems { get; set; }
+        public List<RfqSourcingItemsDto>? RfqSourcingItems { get; set; }
         
 
     }
     public class RfqSourcingDtoPost
     {
         [StringLength(500, ErrorMessage = "RFQNumber can't be longer than 100 characters")]
-
         public string? RFQNumber { get; set; }
-        [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
 
-        public string? CustomerName { get; set; }
+        [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
+        public string? CustomerName { get; set; }      
        
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
-        public List<RfqSourcingItemsDtoPost>? rfqSourcingItems { get; set; }
+        public List<RfqSourcingItemsDtoPost>? RfqSourcingItems { get; set; }
        
 
 
@@ -43,17 +40,15 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class RfqSourcingDtoUpdate
     {
         public int Id { get; set; }
+
         [StringLength(500, ErrorMessage = "RFQNumber can't be longer than 100 characters")]
-
         public string? RFQNumber { get; set; }
+
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
+        public string? CustomerName { get; set; }        
+        public List<RfqSourcingItemsDtoUpdate>? RfqSourcingItems { get; set; }
 
-        public string? CustomerName { get; set; }
-
-        [Required(ErrorMessage = "Unit is required")]
+        [Required]
         public string Unit { get; set; }
-        public List<RfqSourcingItemsDtoUpdate>? rfqSourcingItems { get; set; }
-       
-
     }
 }

@@ -7,84 +7,56 @@ namespace Tips.Production.Api.Entities
 {
     public class ShopOrder
     {
-        [Key]
-        [Required]
-        public int Id { get; set; }
+        [Key]      
+        public int Id { get; set; }       
+        public string ShopOrderNumber { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string ProjectType { get; set; }      
+        public string ItemType { get; set; }
+        public string ItemNumber { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        public string? ShopOrderNo { get; set; }
+        [Precision(13,3)]
+        public decimal? TotalSOReleaseQty { get; set; }
+        public DateTime SOClosedDate { get; set; }
+        public string? SAItemNumber { get; set; }
+
+        [Precision(13,3)]
+        public decimal? ProductName { get; set; }
+
+        [Precision(13,3)]
+        public decimal? CanCreateQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? WipQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? OqcQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? Scrapqty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? SOReleaseQty { get; set; }
+        [DefaultValue(0)]
+        public OrderStatus FgDoneStatus { get; set; }
         
-
-        [Required]
-        [MaxLength(50)]
-        public string? ProjectType { get; set; }
-
-        [Required]
-        [MaxLength(50)]
-        public string? ProjectNo { get; set; }
-
-        [Required]
-        [MaxLength(100)]
-        public string? FGItemNo { get; set; }
-
-        [Required]
-        [MaxLength(200)]
-        public string? Description { get; set; }
-
-        [Required]
-        [MaxLength(50)]
-        public string? SalesOrderNo { get; set; }
-       
-
-        [Precision(13,2)]
-        [Required]
-        public decimal SalesOrderQty { get; set; }
-
-        [Precision(13, 2)]
-        [Required]
-        public decimal ShopOrderReleaseQty { get; set; }
-
-        [Required]
-        public DateTime? ShopOrderCloseDate { get; set; }
-
-        [MaxLength(100)]
-        public string? SalesOrderPoNo { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         [DefaultValue(0)]
         public OrderStatus Status { get; set; }
 
-        [Precision(13, 2)]
-        public decimal WipQty { get; set; }
-        [Precision(13, 2)]
-        public decimal OqcQty { get; set; }
-        [Precision(13, 2)]
-        public decimal ScrapQty { get; set; }
-        [DefaultValue(0)]
-        public OrderStatus FgDoneStatus { get; set; }
-
-        [DefaultValue(false)]
-        public bool IsDeleted { get; set; }
-
-
         [DefaultValue(false)]
         public bool IsShortClosed { get; set; }
 
-        public DateTime? ShortClosedOn { get; set; }
+        public string? ShortClosedBy { get; set; }
 
-        [MaxLength(100)]
-        public string? ShorClosedBy { get; set; }
-
-        [DefaultValue(0)]
-        public IssueStatus MaterialIssueStatus { get; set; }
-
+        public DateTime? ShortClosedOn { get; set; }     
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public List<ShopOrderItem>? ShopOrderItems { get; set; }
 
-        public string? Unit { get; set; }
-
-        
     }
 }

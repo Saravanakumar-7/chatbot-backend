@@ -26,9 +26,8 @@ namespace Tips.SalesService.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<RfqCustomerSupportItems>? rfqCustomerSupportItems { get; set; }
-        public List<RfqCustomerSupportNotes>? rfqCustomerSupportNotes { get; set; }
-        //public List<RfqCSDeliverySchedule>? rfqCSDeliverySchedules { get; set; }
+        public List<RfqCustomerSupportItems>? RfqCustomerSupportItems { get; set; }
+        public List<RfqCustomerSupportNotes>? RfqCustomerSupportNotes { get; set; }
 
 
 

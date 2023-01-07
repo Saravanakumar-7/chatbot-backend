@@ -10,7 +10,7 @@ namespace Tips.SalesService.Api.Contracts
     {
         Task<PagedList<MaterialRequest>> GetAllMaterialRequest(PagingParameter pagingParameter);
         Task<MaterialRequest> GetMaterialRequestById(int id);
-        Task<MaterialRequest> GetMRNoDetailsById(string MRnumber);
+        Task<MaterialRequest> GetMaterialReqByMRNumber(string MRnumber);
         Task<int?> CreateMaterialRequest(MaterialRequest request);
         Task<string> UpdateMaterialRequest(MaterialRequest request);
         Task<string> DeleteMaterialRequest(MaterialRequest request);

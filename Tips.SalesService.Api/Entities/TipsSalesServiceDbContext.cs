@@ -10,16 +10,16 @@ namespace Tips.SalesService.Api.Entities
 
         }
 
-        public DbSet<Rfq> rfqs { get; set; }
+        public DbSet<Rfq> Rfqs { get; set; }
 
         public DbSet<RfqNumber> rfqNumbers { get ;set;}
-        public DbSet<RfqCustomerSupport> rfqCustomerSupports { get; set; }
+        public DbSet<RfqCustomerSupport> RfqCustomerSupports { get; set; }
 
-        public DbSet<RfqCSDeliverySchedule> rfqCSDeliverySchedules { get; set; }
+        public DbSet<RfqCSDeliverySchedule> RfqCSDeliverySchedules { get; set; }
 
-        public DbSet<RfqCustomerSupportItems> rfqCustomerSupportItems { get; set; }
+        public DbSet<RfqCustomerSupportItems> RfqCustomerSupportItems { get; set; }
 
-        public DbSet<RfqCustomerSupportNotes> rfqCustomerSupportNotes { get; set; }
+        public DbSet<RfqCustomerSupportNotes> RfqCustomerSupportNotes { get; set; }
 
         public DbSet<RfqCustomGroup> RfqCustomGroups { get; set; }
 
@@ -38,7 +38,7 @@ namespace Tips.SalesService.Api.Entities
 
         public DbSet<RfqLPCosting> RfqLPCostings { get; set; }
 
-        public DbSet<SalesOrder> salesOrders { get; set; }
+        public DbSet<SalesOrder> SalesOrders { get; set; }
 
         public DbSet<Quote> quotes { get; set; }
 

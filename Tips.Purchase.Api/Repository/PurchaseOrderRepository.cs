@@ -23,8 +23,7 @@ namespace Tips.Purchase.Api.Repository
         {
             purchaseOrder.CreatedBy = "Admin";
             purchaseOrder.CreatedOn = DateTime.Now;
-            purchaseOrder.LastModifiedBy = "Admin";
-            purchaseOrder.LastModifiedOn = DateTime.Now;
+            purchaseOrder.Unit = "Banglore";
             var result = await Create(purchaseOrder);
             return result.Id;
         }

@@ -17,6 +17,6 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> CreateRfqLPCosting(RfqLPCosting rfqLPCosting);
         Task<string> UpdateRfqLPCosting(RfqLPCosting rfqLPCosting);
         Task<string> DeleteRfqLPCosting(RfqLPCosting rfqLPCosting);
-        Task<RfqLPCosting> RfqLPCostingByRfqNumber(string RfqNumber);
+        Task<RfqLPCosting> GetRfqLPCostingByRfqNumber(string RfqNumber);
     }
 }

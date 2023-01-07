@@ -2,6 +2,8 @@
 using System.Security.Cryptography.X509Certificates;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
+using Entities;
+using Entities.Helper;
 
 
 
@@ -18,32 +20,33 @@ namespace Tips.Production.Api.Repository
             _tipsProductionDbContext = repositoryContext;
         }
 
-        public async Task<long> CreateShopOrder(ShopOrder shopOrder)
+        
+        public async Task<int?> CreateShopOrder(ShopOrder shopOrder)
         {
-            shopOrder.LastModifiedBy = "Admin";
-            shopOrder.LastModifiedOn = DateTime.Now;
             shopOrder.CreatedBy = "Admin";
             shopOrder.CreatedOn = DateTime.Now;
+            shopOrder.Unit = "Bangalore";
             var result = await Create(shopOrder);
             return result.Id;
         }
 
-      
 
-        public async Task<IEnumerable<ShopOrder>> GetAllShopOrders()
+        public async Task<PagedList<ShopOrder>> GetAllShopOrders(PagingParameter pagingParameter)
         {
-            var shopOrderList = await _tipsProductionDbContext.shopOrders.ToListAsync();
-
-            return (shopOrderList);
+            var getAllShopOrders =  PagedList<ShopOrder>.ToPagedList(FindAll()
+            .Include(t => t.ShopOrderItems)
+            .OrderBy(on => on.Id),pagingParameter.PageNumber,pagingParameter.PageSize);
+            return getAllShopOrders;
 
         }
 
         public async Task<ShopOrder> GetShopOrderById(int id)
         {
-            var shopOrderList = await _tipsProductionDbContext.shopOrders
+            var shopOrderById = await _tipsProductionDbContext.ShopOrders
                             .Where(x => x.Id == id)
+                            .Include(y => y.ShopOrderItems)
                              .FirstOrDefaultAsync();
-            return shopOrderList;
+            return shopOrderById;
         }
 
         public async Task<string> UpdateShopOrder(ShopOrder shopOrder)
@@ -57,27 +60,31 @@ namespace Tips.Production.Api.Repository
 
         public async Task<ShopOrder> GetShopOrderBySalesOrderNo(string salesOrderNo)
         {
-            var shopOrderList = await FindByCondition(x => x.SalesOrderNo == salesOrderNo)
-                
+            var getShopOrderBySalesOrderNo = await _tipsProductionDbContext.ShopOrders
+                .Include (x => x.ShopOrderItems)
+                .Where (z => z.SalesOrderNumber == salesOrderNo)
                              .FirstOrDefaultAsync();
-            return shopOrderList;
+            return getShopOrderBySalesOrderNo;
         }
 
-        public async Task<ShopOrder> GetShopOrderShopOrderNo(string ShopOrderNo)
+        public async Task<ShopOrder> GetShopOrderByShopOrderNo(string ShopOrderNo)
         {
-            var shopOrderList = await
-                            FindByCondition(x => x.ShopOrderNo == ShopOrderNo)
+            var getShopOrderByShopOrderNo = await _tipsProductionDbContext.ShopOrders
+                            .Include(x => x.ShopOrderItems)
+                            .Where(x => x.ShopOrderNumber == ShopOrderNo)
                              .FirstOrDefaultAsync();
-            return shopOrderList;
+            return getShopOrderByShopOrderNo;
         }
 
         public async Task<IEnumerable<ShopOrder>> GetAllOpenShopOrders()
         {
-            var shopOrderList = await FindByCondition(x => x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2 )
+            var getAllShopOrder = await FindByCondition(x => x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2)
                 .ToListAsync();
 
-            return (shopOrderList);
+            return (getAllShopOrder);
 
         }
+
+        
     }
 }

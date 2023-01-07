@@ -14,10 +14,7 @@
         public decimal UTGST { get; set; }
         public DateTime RequestedDate { get; set; }
         public string Remarks { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+       
     }
 
     public class SalesOrderItemsDtoPost
@@ -33,14 +30,11 @@
         public decimal UTGST { get; set; }
         public DateTime RequestedDate { get; set; }
         public string Remarks { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+       
     }
     public class SalesOrderItemsDtoUpdate
     {
-        public int Id { get; set; }
+     
         public string? SAItemNo { get; set; }
         public string? Description { get; set; }
         public decimal UOM { get; set; }
@@ -52,10 +46,7 @@
         public decimal UTGST { get; set; }
         public DateTime RequestedDate { get; set; }
         public string Remarks { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        
     }
 
 }

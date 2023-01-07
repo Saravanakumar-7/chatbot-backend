@@ -20,18 +20,14 @@ namespace Tips.SalesService.Api.Entities
         [Precision(13, 3)]
         public decimal? MaterialCost { get; set; }
         [Precision(13, 3)]
-        public decimal? MarkUpForMaterial { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
+        public decimal? MarkUpForMaterial { get; set; }       
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
         public int RfqLPCostingId { get; set; }
-        public RfqLPCosting? rfqLPCosting { get; set; }
-        public List<RfqLPCostingProcess>? rfqLPCostingProcesses { get; set; }
-        public List<RfqLPCostingNREConsumable>? rfqLPCostingNREConsumables { get; set; }
-        public List<RfqLPCostingOtherCharges>? rfqLPCostingOtherCharges { get; set; }
+        public RfqLPCosting? RfqLPCosting { get; set; }
+        public List<RfqLPCostingProcess>? RfqLPCostingProcesses { get; set; }
+        public List<RfqLPCostingNREConsumable>? RfqLPCostingNREConsumables { get; set; }
+        public List<RfqLPCostingOtherCharges>? RfqLPCostingOtherCharges { get; set; }
 
     }
 }

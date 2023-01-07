@@ -1,4 +1,6 @@
-﻿namespace Tips.SalesService.Api.Entities
+﻿using System.ComponentModel;
+
+namespace Tips.SalesService.Api.Entities
 {
     public class SalesOrder
     {
@@ -23,13 +25,21 @@
         public int ShipToId { get; set; }
         public string? PaymentTerms { get; set; }
         public string? Remarks { get; set; }
+        public string Unit { get; set; }      
+
+        [DefaultValue(false)]
+        public bool IsShortClosed { get; set; }
+
+        public string? ShortClosedBy { get; set; }
+
+        public DateTime? ShortClosedOn { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<SalesOrderItems>? salesOrdersItems { get; set; }
+        public List<SalesOrderItems>? SalesOrdersItems { get; set; }
 
 
     }

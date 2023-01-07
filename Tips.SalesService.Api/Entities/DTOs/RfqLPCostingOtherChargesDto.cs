@@ -16,10 +16,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? NameOfLable { get; set; }      
 
         [Precision(13, 8)]
-        public decimal? CostOfLable { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
+        public decimal? CostOfLable { get; set; }       
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
@@ -31,9 +28,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         
         [Precision(13, 8)]
         public decimal? CostOfLable { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-
-        public string Unit { get; set; }
+       
       
     }
     public class RfqLPCostingOtherChargesDtoUpdate
@@ -43,9 +38,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? NameOfLable { get; set; }      
        
         [Precision(13, 8)]
-        public decimal? CostOfLable { get; set; }
-
-        public string Unit { get; set; }
+        public decimal? CostOfLable { get; set; }   
 
 
     }

@@ -19,8 +19,7 @@ namespace Tips.SalesService.Api.Repository
 
             salesOrder.CreatedBy = "Admin";
             salesOrder.CreatedOn = DateTime.Now;
-            salesOrder.LastModifiedBy = "Admin";
-            salesOrder.LastModifiedOn = DateTime.Now;
+            salesOrder.Unit = "Banglore";
             var result = await Create(salesOrder);
             return result.Id;
         }
@@ -34,27 +33,27 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<SalesOrder>> GetAllActiveSalesOrder()
         {
-            var salesOrderDetails = await FindAll().ToListAsync();
-            return salesOrderDetails;
+            var getAllActiveSalesOrder = await FindAll().ToListAsync();
+            return getAllActiveSalesOrder;
         }
 
         public async Task<PagedList<SalesOrder>> GetAllSalesOrder(PagingParameter pagingParameter)
         {
 
-            var salesOrderDetails = PagedList<SalesOrder>.ToPagedList(FindAll()
-                                .Include(t => t.salesOrdersItems)
+            var getAllSalesOrders = PagedList<SalesOrder>.ToPagedList(FindAll()
+                                .Include(t => t.SalesOrdersItems)
                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return salesOrderDetails;
+            return getAllSalesOrders;
         }
 
         public async Task<SalesOrder> GetSalesOrderById(int id)
         {
-            var salesOrderDetails = await _tipsSalesServiceDbContext.salesOrders.Where(x => x.Id == id)
-                                  .Include(t => t.salesOrdersItems)
+            var getSalesOrderbyId = await _tipsSalesServiceDbContext.SalesOrders.Where(x => x.Id == id)
+                                  .Include(t => t.SalesOrdersItems)
                                  .FirstOrDefaultAsync();
 
-            return salesOrderDetails;
+            return getSalesOrderbyId;
         }
 
         public async Task<string> UpdateSalesOrder(SalesOrder salesOrder)

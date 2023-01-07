@@ -37,7 +37,15 @@ namespace Tips.Purchase.Api.Entities
         public bool POApprovalII { get; set; }=false;
         public string? POApprovedIIBy { get; set; }
         public DateTime POApprovedIIDate { get; set; }
+        public bool IsDeleted { get; set; } = false;      
 
+        [DefaultValue(false)]
+        public bool IsShortClosed { get; set; }
+
+        public string? ShortClosedBy { get; set; }
+
+        public DateTime? ShortClosedOn { get; set; }
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

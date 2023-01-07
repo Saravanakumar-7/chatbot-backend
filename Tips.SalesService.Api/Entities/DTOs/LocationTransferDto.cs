@@ -40,10 +40,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [StringLength(500, ErrorMessage = "FromLocation can't be longer than 500 characters")]
         public string FromLocation { get; set; }
         public string? FromDescription { get; set; }
-        public string? ToDescription { get; set; }
-
-        // [Required(ErrorMessage = "AvailableStockInLocation is required")]
-        //[StringLength(500, ErrorMessage = "AvailableStockInLocation can't be longer than 500 characters")]
+        public string? ToDescription { get; set; }      
 
         [Precision(13, 3)]
         public decimal AvailableStockInLocation { get; set; }
@@ -52,16 +49,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string ToLocation { get; set; }
         public string? FromPartType { get; set; }
         public string? ToPartType { get; set; }
-        [Precision(13, 3)]
 
-        //[Required(ErrorMessage = "TransferQuantity is required")]
-        //[StringLength(500, ErrorMessage = "TransferQuantity can't be longer than 500 characters")]
+        [Precision(13, 3)]       
         public decimal TransferQty { get; set; }
         public string? Remarks { get; set; }
 
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(500, ErrorMessage = "Unit can't be longer than 500 characters")]
-        public string Unit { get; set; }
+       
     }
 
     public class LocationTransferDtoUpdate
@@ -83,12 +76,17 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? FromDescription { get; set; }
         public string? ToDescription { get; set; }
 
-        //[Required(ErrorMessage = "AvailableStockInLocation is required")]
         [Precision(13, 3)]
         public decimal AvailableStockInLocation { get; set; }
         public string? FromUOM { get; set; }
         public string? ToUOM { get; set; }
         public string ToLocation { get; set; }
         public string? FromPartType { get; set; }
+        public string? ToPartType { get; set; }
+
+        [Precision(13, 3)]
+        public decimal TransferQty { get; set; }
+        public string? Remarks { get; set; }
+        public string Unit { get; set; }
     }
 }

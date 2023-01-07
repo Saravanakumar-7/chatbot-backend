@@ -20,16 +20,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? LeadTime { get; set; }
         public string? Freight { get; set; }
         public string? Duties { get; set; }
-        public int? QuoteQuantity { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? QuoteQuantity { get; set; }
         public DateTime? QuoteDate { get; set; }
-        public DateTime? QuoteValidity { get; set; }
-        public string? UploadFile { get; set; }
-        public bool IsActive { get; set; } = true;
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public DateTime? QuoteValidity { get; set; }       
+        public bool IsActive { get; set; } = true;       
+       
     }
     public class RfqSourcingVendorDtoPost
     {
@@ -55,19 +52,17 @@ namespace Tips.SalesService.Api.Entities.DTOs
        [StringLength(500, ErrorMessage = "Duties can't be longer than 500 characters")]
 
         public string? Duties { get; set; }
-        public int? QuoteQuantity { get; set; }
-        public DateTime? QuoteDate { get; set; }
-        public DateTime? QuoteValidity { get; set; }
-        public string? UploadFile { get; set; }
-        public bool IsActive { get; set; } = true;
 
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
+        [Precision(13, 3)]
+        public decimal? QuoteQuantity { get; set; }
+        public DateTime? QuoteDate { get; set; }
+        public DateTime? QuoteValidity { get; set; }       
+        public bool IsActive { get; set; } = true;
+         
     }
     public class RfqSourcingVendorDtoUpdate
     {
-        //public int Id { get; set; }
-
+       
         [StringLength(500, ErrorMessage = "Vendor can't be longer than 500 characters")]
 
         public string? Vendor { get; set; }
@@ -90,12 +85,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [StringLength(500, ErrorMessage = "Duties can't be longer than 500 characters")]
 
         public string? Duties { get; set; }
-        public int? QuoteQuantity { get; set; }
-        public DateTime? QuoteDate { get; set; }
-        public DateTime? QuoteValidity { get; set; }
-        public string? UploadFile { get; set; }
 
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
+        [Precision(13, 3)]
+        public decimal? QuoteQuantity { get; set; }
+        public DateTime? QuoteDate { get; set; }
+        public DateTime? QuoteValidity { get; set; }        
     }
 }

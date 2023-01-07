@@ -55,20 +55,20 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var listOfRfq = await _rfqRepository.GetAllRfq(pagingParameter);
+                var getAllRfq = await _rfqRepository.GetAllRfq(pagingParameter);
                 var metadata = new
                 {
-                    listOfRfq.TotalCount,
-                    listOfRfq.PageSize,
-                    listOfRfq.CurrentPage,
-                    listOfRfq.HasNext,
-                    listOfRfq.HasPreviuos
+                    getAllRfq.TotalCount,
+                    getAllRfq.PageSize,
+                    getAllRfq.CurrentPage,
+                    getAllRfq.HasNext,
+                    getAllRfq.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all rfq");
-                var result = _mapper.Map<IEnumerable<RfqDto>>(listOfRfq);
+                var result = _mapper.Map<IEnumerable<RfqDto>>(getAllRfq);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Rfqs Successfully";
                 serviceResponse.Success = true;
@@ -96,20 +96,20 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var listOfRfq = await _repository.GetAllRfqCustomerSupport(pagingParameter);
+                var getAllRfqCS = await _repository.GetAllRfqCustomerSupport(pagingParameter);
                 var metadata = new
                 {
-                    listOfRfq.TotalCount,
-                    listOfRfq.PageSize,
-                    listOfRfq.CurrentPage,
-                    listOfRfq.HasNext,
-                    listOfRfq.HasPreviuos
+                    getAllRfqCS.TotalCount,
+                    getAllRfqCS.PageSize,
+                    getAllRfqCS.CurrentPage,
+                    getAllRfqCS.HasNext,
+                    getAllRfqCS.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all RfqCustomerSupport");
-                var result = _mapper.Map<IEnumerable<RfqCustomerSupportDto>>(listOfRfq);
+                var result = _mapper.Map<IEnumerable<RfqCustomerSupportDto>>(getAllRfqCS);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all RfqCustomerSupport Successfully";
                 serviceResponse.Success = true;
@@ -133,9 +133,9 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<RfqNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqNumberListDto>>();
             try
             {
-                var listOfrfqnumber = await _rfqRepository.GetAllActiveRfqNumberList();
-                //_logger.LogInfo("Returned all CustomerMaster");
-                var result = _mapper.Map<IEnumerable<RfqNumberListDto>>(listOfrfqnumber);
+                var getAllActiveRfqNos = await _rfqRepository.GetAllActiveRfqNumberList();
+                
+                var result = _mapper.Map<IEnumerable<RfqNumberListDto>>(getAllActiveRfqNos);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Success";
                 serviceResponse.Success = true;
@@ -161,20 +161,20 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var listOfRfqLPCosting = await _rfqlpcostingRepository.GetAllRfqLPCosting(pagingParameter);
+                var getAllRfqLPCosting = await _rfqlpcostingRepository.GetAllRfqLPCosting(pagingParameter);
                 var metadata = new
                 {
-                    listOfRfqLPCosting.TotalCount,
-                    listOfRfqLPCosting.PageSize,
-                    listOfRfqLPCosting.CurrentPage,
-                    listOfRfqLPCosting.HasNext,
-                    listOfRfqLPCosting.HasPreviuos
+                    getAllRfqLPCosting.TotalCount,
+                    getAllRfqLPCosting.PageSize,
+                    getAllRfqLPCosting.CurrentPage,
+                    getAllRfqLPCosting.HasNext,
+                    getAllRfqLPCosting.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all Rfqlpcosting");
-                var result = _mapper.Map<IEnumerable<RfqLPCostingDto>>(listOfRfqLPCosting);
+                var result = _mapper.Map<IEnumerable<RfqLPCostingDto>>(getAllRfqLPCosting);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all RfqLPCosting Successfully";
                 serviceResponse.Success = true;
@@ -200,20 +200,20 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var listOfRfqengg = await _rfqenggRepository.GetAllRfqEngg(pagingParameter);
+                var getAllRfqengg = await _rfqenggRepository.GetAllRfqEngg(pagingParameter);
                 var metadata = new
                 {
-                    listOfRfqengg.TotalCount,
-                    listOfRfqengg.PageSize,
-                    listOfRfqengg.CurrentPage,
-                    listOfRfqengg.HasNext,
-                    listOfRfqengg.HasPreviuos
+                    getAllRfqengg.TotalCount,
+                    getAllRfqengg.PageSize,
+                    getAllRfqengg.CurrentPage,
+                    getAllRfqengg.HasNext,
+                    getAllRfqengg.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all RfqEngg");
-                var result = _mapper.Map<IEnumerable<RfqEnggDto>>(listOfRfqengg);
+                var result = _mapper.Map<IEnumerable<RfqEnggDto>>(getAllRfqengg);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all RfqEngg Successfully";
                 serviceResponse.Success = true;
@@ -240,9 +240,9 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var rfq = await _repository.RfqCustomerSupportByRfqNumber(RfqNumber);
+                var getRfqCSByRfqNO = await _repository.GetRfqCustomerSupportByRfqNumber(RfqNumber);
 
-                if (rfq == null)
+                if (getRfqCSByRfqNO == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"RfqCustomerSupportByRfqNumber with id: {RfqNumber}, hasn't been found in db.";
@@ -255,19 +255,18 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogInfo($"Returned RfqCustomerSupportByRfqNumber with id: {RfqNumber}");
 
-                    RfqCustomerSupportDto rfqDto = _mapper.Map<RfqCustomerSupportDto>(rfq);
+                    RfqCustomerSupportDto rfqCSDto = _mapper.Map<RfqCustomerSupportDto>(getRfqCSByRfqNO);
 
                     List<RfqCustomerSupportItemDto> rfqItemsDtos = new List<RfqCustomerSupportItemDto>();
-                    foreach (var itemDetails in rfq.rfqCustomerSupportItems)
+                    foreach (var rfqCSItemDetail in getRfqCSByRfqNO.RfqCustomerSupportItems)
                     {
-                        RfqCustomerSupportItemDto rfqItemDto = _mapper.Map<RfqCustomerSupportItemDto>(itemDetails);
-                        rfqItemDto.rfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliveryScheduleDto>>(itemDetails.rfqCSDeliverySchedule);
+                        RfqCustomerSupportItemDto rfqItemDto = _mapper.Map<RfqCustomerSupportItemDto>(rfqCSItemDetail);
+                        rfqItemDto.RfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliveryScheduleDto>>(rfqCSItemDetail.RfqCSDeliverySchedule);
                         rfqItemsDtos.Add(rfqItemDto);
                     }
-                    rfqDto.rfqCustomerSupportItems = rfqItemsDtos;
+                    rfqCSDto.RfqCustomerSupportItems = rfqItemsDtos;
 
-                    //var result = _mapper.Map<RfqCustomerSupportDto>(rfq);
-                    serviceResponse.Data = rfqDto;
+                    serviceResponse.Data = rfqCSDto;
                     serviceResponse.Message = $"Returned RfqCustomerSupportByRfqNumber with id: {RfqNumber}";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -293,9 +292,8 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<RfqCustomerSupportItemDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqCustomerSupportItemDto>>();
             try
             {
-                var listOfRfqCustomerSupport = await _itemRepository.GetAllActiveRfqCustomerSupportItemsByRfqNumber(RfqNumber);
-                //_logger.LogInfo("Returned all PurchaseOrder");
-                var result = _mapper.Map<IEnumerable<RfqCustomerSupportItemDto>>(listOfRfqCustomerSupport);
+                var getAllActiveRfqCSItemsByRfqNo = await _itemRepository.GetAllActiveRfqCustomerSupportItemsByRfqNumber(RfqNumber);
+                var result = _mapper.Map<IEnumerable<RfqCustomerSupportItemDto>>(getAllActiveRfqCSItemsByRfqNo);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ActiveRfqCustomerSupportItems";
                 serviceResponse.Success = true;
@@ -319,9 +317,8 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<RfqEnggItemDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqEnggItemDto>>();
             try
             {
-                var listOfRfqItem = await _rfqenggItemRepository.GetAllActiveRfqEnggItemByRfqNumber(RfqNumber);
-                //_logger.LogInfo("Returned all RfqEnggItem");
-                var result = _mapper.Map<IEnumerable<RfqEnggItemDto>>(listOfRfqItem);
+                var getAllActiveRfqEnggByRfqNo = await _rfqenggItemRepository.GetAllActiveRfqEnggItemByRfqNumber(RfqNumber);               
+                var result = _mapper.Map<IEnumerable<RfqEnggItemDto>>(getAllActiveRfqEnggByRfqNo);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ActiveRfqEnggItem";
                 serviceResponse.Success = true;
@@ -342,15 +339,15 @@ namespace Tips.SalesService.Api.Controllers
         //get RfqLPCosting by Rfqnumber
 
         [HttpGet("{RfqNumber}")]
-        public async Task<IActionResult> RfqLPCostingByRfqNumber(string RfqNumber)
+        public async Task<IActionResult> GetRfqLPCostingByRfqNumber(string RfqNumber)
         {
             ServiceResponse<RfqLPCostingDto> serviceResponse = new ServiceResponse<RfqLPCostingDto>();
 
             try
             {
-                var rfqlpcosting = await _rfqlpcostingRepository.RfqLPCostingByRfqNumber(RfqNumber);
+                var getRfqLPCostingByRfqNumber = await _rfqlpcostingRepository.GetRfqLPCostingByRfqNumber(RfqNumber);
 
-                if (rfqlpcosting == null)
+                if (getRfqLPCostingByRfqNumber == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"RfqlpcostingByRfqNumber with id: {RfqNumber}, hasn't been found in db.";
@@ -361,24 +358,24 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned RfqlpcostingByRfqNumber with id: {rfqlpcosting}");
+                    _logger.LogInfo($"Returned RfqlpcostingByRfqNumber with id: {getRfqLPCostingByRfqNumber}");
 
-                    RfqLPCostingDto rfqlpcostingDto = _mapper.Map<RfqLPCostingDto>(rfqlpcosting);
+                    RfqLPCostingDto rfqLpCostingDto = _mapper.Map<RfqLPCostingDto>(getRfqLPCostingByRfqNumber);
 
-                    List<RfqLPCostingItemDto> rfqlpcostingItemsDtos = new List<RfqLPCostingItemDto>();
-                    foreach (var itemDetails in rfqlpcosting.rfqLPCostingItems)
+                    List<RfqLPCostingItemDto> rfqLpCostingItemsDtos = new List<RfqLPCostingItemDto>();
+
+                    foreach (var lpCostingitemDetail in getRfqLPCostingByRfqNumber.RfqLPCostingItems)
                     {
-                        RfqLPCostingItemDto rfqlpcostingItemDto = _mapper.Map<RfqLPCostingItemDto>(itemDetails);
-                        rfqlpcostingItemDto.rfqLPCostingProcesses = _mapper.Map<List<RfqLPCostingProcessDto>>(itemDetails.rfqLPCostingProcesses);
-                        rfqlpcostingItemDto.rfqLPCostingNREConsumables = _mapper.Map<List<RfqLPCostingNREConsumableDto>>(itemDetails.rfqLPCostingNREConsumables);
-                        rfqlpcostingItemDto.rfqLPCostingOtherCharges = _mapper.Map<List<RfqLPCostingOtherChargesDto>>(rfqlpcostingItemDto.rfqLPCostingOtherCharges);
+                        RfqLPCostingItemDto rfqlpcostingItemDto = _mapper.Map<RfqLPCostingItemDto>(lpCostingitemDetail);
+                        rfqlpcostingItemDto.RfqLPCostingProcesses = _mapper.Map<List<RfqLPCostingProcessDto>>(lpCostingitemDetail.RfqLPCostingProcesses);
+                        rfqlpcostingItemDto.RfqLPCostingNREConsumables = _mapper.Map<List<RfqLPCostingNREConsumableDto>>(lpCostingitemDetail.RfqLPCostingNREConsumables);
+                        rfqlpcostingItemDto.RfqLPCostingOtherCharges = _mapper.Map<List<RfqLPCostingOtherChargesDto>>(rfqlpcostingItemDto.RfqLPCostingOtherCharges);
 
-                        rfqlpcostingItemsDtos.Add(rfqlpcostingItemDto);
+                        rfqLpCostingItemsDtos.Add(rfqlpcostingItemDto);
                     }
-                    rfqlpcostingDto.rfqLPCostingItems = rfqlpcostingItemsDtos;
-
-                    //var result = _mapper.Map<RfqCustomerSupportDto>(rfq);
-                    serviceResponse.Data = rfqlpcostingDto;
+                    rfqLpCostingDto.RfqLPCostingItems = rfqLpCostingItemsDtos;
+                 
+                    serviceResponse.Data = rfqLpCostingDto;
                     serviceResponse.Message = $"Returned RfqEnggByRfqNumber with id: {RfqNumber}";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -399,39 +396,39 @@ namespace Tips.SalesService.Api.Controllers
 
         //get RfqEngg by Rfqnumber
         [HttpGet("{RfqNumber}")]
-        public async Task<IActionResult> RfqEnggByRfqNumber(string RfqNumber)
+        public async Task<IActionResult> GetRfqEnggByRfqNumber(string RfqNumber)
         {
             ServiceResponse<RfqEnggDto> serviceResponse = new ServiceResponse<RfqEnggDto>();
 
             try
             {
-                var rfqEngg = await _rfqenggRepository.RfqEnggByRfqNumber(RfqNumber);
+                var getRfqEnggByRfqNo = await _rfqenggRepository.GetRfqEnggByRfqNumber(RfqNumber);
 
-                if (rfqEngg == null)
+                if (getRfqEnggByRfqNo == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"RfqEnggByRfqNumber with id: {RfqNumber}, hasn't been found in db.";
+                    serviceResponse.Message = $"GetRfqEnggByRfqNumber with id: {RfqNumber}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"RfqEnggByRfqNumber with id: {RfqNumber}, hasn't been found in db.");
+                    _logger.LogError($"GetRfqEnggByRfqNumber with id: {RfqNumber}, hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned RfqEnggByRfqNumber with id: {RfqNumber}");
 
-                    RfqEnggDto rfqenggDto = _mapper.Map<RfqEnggDto>(rfqEngg);
+                    RfqEnggDto rfqEnggDto = _mapper.Map<RfqEnggDto>(getRfqEnggByRfqNo);
 
-                    List<RfqEnggItemDto> rfqenggItemsDtos = new List<RfqEnggItemDto>();
-                    foreach (var itemDetails in rfqEngg.rfqEnggItems)
+                    List<RfqEnggItemDto> rfqEnggItemsDtos = new List<RfqEnggItemDto>();
+                  
+                    foreach (var itemDetails in getRfqEnggByRfqNo.RfqEnggItems)
                     {
                         RfqEnggItemDto rfqenggItemDto = _mapper.Map<RfqEnggItemDto>(itemDetails);
-                        rfqenggItemsDtos.Add(rfqenggItemDto);
+                        rfqEnggItemsDtos.Add(rfqenggItemDto);
                     }
-                    rfqenggDto.rfqEnggItems = rfqenggItemsDtos;
+                    rfqEnggDto.RfqEnggItems = rfqEnggItemsDtos;
 
-                    //var result = _mapper.Map<RfqCustomerSupportDto>(rfq);
-                    serviceResponse.Data = rfqenggDto;
+                    serviceResponse.Data = rfqEnggDto;
                     serviceResponse.Message = $"Returned RfqEnggByRfqNumber with id: {RfqNumber}";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -460,9 +457,9 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var rfq = await _rfqRepository.GetRfqById(id);
+                var getRfqById = await _rfqRepository.GetRfqById(id);
 
-                if (rfq == null)
+                if (getRfqById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"Rfq with id: {id}, hasn't been found in db.";
@@ -474,7 +471,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    var result = _mapper.Map<RfqDto>(rfq);
+                    var result = _mapper.Map<RfqDto>(getRfqById);
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned Rfq with id: {id}";
                     serviceResponse.Success = true;
@@ -501,9 +498,9 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var rfqengg = await _rfqenggRepository.GetRfqEnggById(id);
+                var getRfqEnggById = await _rfqenggRepository.GetRfqEnggById(id);
 
-                if (rfqengg == null)
+                if (getRfqEnggById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"RfqEngg with id: {id}, hasn't been found in db.";
@@ -515,7 +512,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned RfqEngg with id: {id}");
-                    var result = _mapper.Map<RfqEnggDto>(rfqengg);
+                    var result = _mapper.Map<RfqEnggDto>(getRfqEnggById);
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned RfqEngg with id: {id}";
                     serviceResponse.Success = true;
@@ -542,9 +539,9 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var rfqlpcosting = await _rfqlpcostingRepository.GetRfqLPCostingById(id);
+                var getRfqlpcostingById = await _rfqlpcostingRepository.GetRfqLPCostingById(id);
 
-                if (rfqlpcosting == null)
+                if (getRfqlpcostingById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"RfqLPCosting with id: {id}, hasn't been found in db.";
@@ -556,25 +553,25 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned RfqLPCosting with id: {id}");
-                    //var result = _mapper.Map<RfqLPCostingDto>(rfqlpcosting);
-                    RfqLPCostingDto rfqlpcostingDto = _mapper.Map<RfqLPCostingDto>(rfqlpcosting);//Main model mapping
+                    
+                    RfqLPCostingDto rfqLpCostingDto = _mapper.Map<RfqLPCostingDto>(getRfqlpcostingById);
 
-                    //below mapping is child under child  
+                   
 
-                    List<RfqLPCostingItemDto> rfqlpcostingItemDtos = new List<RfqLPCostingItemDto>();
+                    List<RfqLPCostingItemDto> rfqLpCostingItemDtos = new List<RfqLPCostingItemDto>();
 
-                    foreach (var lpcostingitemDetails in rfqlpcosting.rfqLPCostingItems)
+                    foreach (var lpCostingItemDetail in getRfqlpcostingById.RfqLPCostingItems)
                     {
-                        RfqLPCostingItemDto rfqlpcostingItemDto = _mapper.Map<RfqLPCostingItemDto>(lpcostingitemDetails);
-                        rfqlpcostingItemDto.rfqLPCostingProcesses = _mapper.Map<List<RfqLPCostingProcessDto>>(rfqlpcostingItemDto.rfqLPCostingProcesses);
-                        rfqlpcostingItemDto.rfqLPCostingNREConsumables = _mapper.Map<List<RfqLPCostingNREConsumableDto>>(rfqlpcostingItemDto.rfqLPCostingNREConsumables);
-                        rfqlpcostingItemDto.rfqLPCostingOtherCharges = _mapper.Map<List<RfqLPCostingOtherChargesDto>>(rfqlpcostingItemDto.rfqLPCostingOtherCharges);
+                        RfqLPCostingItemDto rfqLpCostingItemDto = _mapper.Map<RfqLPCostingItemDto>(lpCostingItemDetail);
+                        rfqLpCostingItemDto.RfqLPCostingProcesses = _mapper.Map<List<RfqLPCostingProcessDto>>(rfqLpCostingItemDto.RfqLPCostingProcesses);
+                        rfqLpCostingItemDto.RfqLPCostingNREConsumables = _mapper.Map<List<RfqLPCostingNREConsumableDto>>(rfqLpCostingItemDto.RfqLPCostingNREConsumables);
+                        rfqLpCostingItemDto.RfqLPCostingOtherCharges = _mapper.Map<List<RfqLPCostingOtherChargesDto>>(rfqLpCostingItemDto.RfqLPCostingOtherCharges);
 
-                        rfqlpcostingItemDtos.Add(rfqlpcostingItemDto);
+                        rfqLpCostingItemDtos.Add(rfqLpCostingItemDto);
                     }
 
-                    rfqlpcostingDto.rfqLPCostingItems = rfqlpcostingItemDtos;
-                    serviceResponse.Data = rfqlpcostingDto;
+                    rfqLpCostingDto.RfqLPCostingItems = rfqLpCostingItemDtos;
+                    serviceResponse.Data = rfqLpCostingDto;
                     serviceResponse.Message = $"Returned RfqLPCosting with id: {id}";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -600,9 +597,9 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var rfq = await _repository.GetRfqCustomerSupportById(id);
+                var getRfqCSById = await _repository.GetRfqCustomerSupportById(id);
 
-                if (rfq == null)
+                if (getRfqCSById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"RfqCustomerSupport with id: {id}, hasn't been found in db.";
@@ -615,19 +612,18 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogInfo($"Returned RfqCustomerSupport with id: {id}");
                     
-                    RfqCustomerSupportDto rfqDto = _mapper.Map<RfqCustomerSupportDto>(rfq);
+                    RfqCustomerSupportDto rfCSqDto = _mapper.Map<RfqCustomerSupportDto>(getRfqCSById);
 
                     List<RfqCustomerSupportItemDto> rfqItemsDtos = new List<RfqCustomerSupportItemDto>();
-                    foreach (var itemDetails in rfq.rfqCustomerSupportItems)
+                    foreach (var rfqCSItemDetail in getRfqCSById.RfqCustomerSupportItems)
                     {
-                        RfqCustomerSupportItemDto rfqItemDto = _mapper.Map<RfqCustomerSupportItemDto>(itemDetails);
-                        rfqItemDto.rfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliveryScheduleDto>>(itemDetails.rfqCSDeliverySchedule);
-                        rfqItemsDtos.Add(rfqItemDto);
+                        RfqCustomerSupportItemDto rfqCSItemDto = _mapper.Map<RfqCustomerSupportItemDto>(rfqCSItemDetail);
+                        rfqCSItemDto.RfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliveryScheduleDto>>(rfqCSItemDetail.RfqCSDeliverySchedule);
+                        rfqItemsDtos.Add(rfqCSItemDto);
                     }
-                    rfqDto.rfqCustomerSupportItems = rfqItemsDtos;
+                    rfCSqDto.RfqCustomerSupportItems = rfqItemsDtos;
 
-                    //var result = _mapper.Map<RfqCustomerSupportDto>(rfq);
-                    serviceResponse.Data = rfqDto;
+                    serviceResponse.Data = rfCSqDto;
                     serviceResponse.Message = $"Returned RfqCustomerSupport with id: {id}";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -677,9 +673,9 @@ namespace Tips.SalesService.Api.Controllers
                         return NotFound(serviceResponse);
                     }
 
-                    var rfqCustomerSupport = await _itemRepository.GetRfqCustomerSupportItemById(id);
-                    rfqCustomerSupport.ReleaseStatus = true;
-                    string result = await _itemRepository.ActivateRfqCustomerSupportItemById(rfqCustomerSupport);
+                    var getRfqCSItemById = await _itemRepository.GetRfqCustomerSupportItemById(id);
+                    getRfqCSItemById.ReleaseStatus = true;
+                    string result = await _itemRepository.ActivateRfqCustomerSupportItemById(getRfqCSItemById);
                     _logger.LogInfo(result);
                     _repository.SaveAsync();
                 }
@@ -732,9 +728,9 @@ namespace Tips.SalesService.Api.Controllers
                         return NotFound(serviceResponse);
                     }
 
-                    var rfqCustomerSupport = await _rfqenggItemRepository.GetRfqEnggItemById(id);
-                    rfqCustomerSupport.ReleaseStatus = true;
-                    string result = await _rfqenggItemRepository.ActivateRfqEnggItemById(rfqCustomerSupport);
+                    var getRfqEnggItemById = await _rfqenggItemRepository.GetRfqEnggItemById(id);
+                    getRfqEnggItemById.ReleaseStatus = true;
+                    string result = await _rfqenggItemRepository.ActivateRfqEnggItemById(getRfqEnggItemById);
                     _logger.LogInfo(result);
                     _repository.SaveAsync();
                 }
@@ -783,22 +779,22 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse);
                 }               
 
-                var rfqCustomerSupportList = _mapper.Map<RfqCustomerSupport>(rfqCustomerSupportDto);
+                var createRfqCS = _mapper.Map<RfqCustomerSupport>(rfqCustomerSupportDto);
 
 
-                var rfqCustomerSupportItemDto = rfqCustomerSupportDto.rfqCustomerSupportItems;
+                var rfqCSItemDto = rfqCustomerSupportDto.RfqCustomerSupportItems;
 
                 var rfqCustomerSupportLists = new List<RfqCustomerSupportItems>();
-                for (int i = 0; i < rfqCustomerSupportItemDto.Count; i++)
+                for (int i = 0; i < rfqCSItemDto.Count; i++)
                 {
-                    RfqCustomerSupportItems rfqCSItems = _mapper.Map<RfqCustomerSupportItems>(rfqCustomerSupportItemDto[i]);
-                    rfqCSItems.rfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqCustomerSupportItemDto[i].rfqCSDeliverySchedule);
+                    RfqCustomerSupportItems rfqCSItems = _mapper.Map<RfqCustomerSupportItems>(rfqCSItemDto[i]);
+                    rfqCSItems.RfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqCSItemDto[i].RfqCSDeliverySchedule);
                     rfqCustomerSupportLists.Add(rfqCSItems);
 
                 }
-                rfqCustomerSupportList.rfqCustomerSupportItems = rfqCustomerSupportLists;
+                createRfqCS.RfqCustomerSupportItems = rfqCustomerSupportLists;
 
-                _repository.CreateRfqCustomerSupport(rfqCustomerSupportList);
+                _repository.CreateRfqCustomerSupport(createRfqCS);
 
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -848,13 +844,8 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 
-                 var rfqs = _mapper.Map<Rfq>(rfqPostDto);
-               // rfqs.IsSourcing = true;
-
-                //var notes = _mapper.Map<IEnumerable<RfqNotes>>(rfq.rfqNotes);
-
-                _rfqRepository.CreateRfq(rfqs);
-
+                 var createRfq = _mapper.Map<Rfq>(rfqPostDto);
+               await _rfqRepository.CreateRfq(createRfq);
                 _rfqRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
@@ -899,27 +890,30 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse); 
                 }
-                var rfqLPCosting = _mapper.Map<RfqLPCosting>(rfqLPCostingDtoPost);
-                var data = rfqLPCosting.RfqNumber;
-                var rfqlpcostiningss = await _rfqRepository.RfqLpcostingByRfqNumberss(data);
-                rfqlpcostiningss.IsLpCosting = true;
-                var rfqLPCostingDto = rfqLPCostingDtoPost.rfqLPCostingItems;
+                var createRfqLPCosting = _mapper.Map<RfqLPCosting>(rfqLPCostingDtoPost);
+                var rfqUpdate = createRfqLPCosting.RfqNumber;
+                var updateRfqIsLpCosting = await _rfqRepository.RfqLpcostingByRfqNumbers(rfqUpdate);
+                updateRfqIsLpCosting.IsLpCosting = true;
+                var rfqLPCostingDto = rfqLPCostingDtoPost.RfqLPCostingItems;
 
-                var lpcostingItemList = new List<RfqLPCostingItem>();
-                for (int i = 0; i < rfqLPCostingDto.Count; i++)
+                var lpCostingItemList = new List<RfqLPCostingItem>();
+                if (rfqLPCostingDto != null)
                 {
-                    RfqLPCostingItem lpcostingItemListDetail = _mapper.Map<RfqLPCostingItem>(rfqLPCostingDto[i]);
-                    lpcostingItemListDetail.rfqLPCostingProcesses = _mapper.Map<List<RfqLPCostingProcess>>(rfqLPCostingDto[i].rfqLPCostingProcesses);
-                    lpcostingItemListDetail.rfqLPCostingNREConsumables = _mapper.Map<List<RfqLPCostingNREConsumable>>(rfqLPCostingDto[i].rfqLPCostingNREConsumables);
-                    lpcostingItemListDetail.rfqLPCostingOtherCharges = _mapper.Map<List<RfqLPCostingOtherCharges>>(rfqLPCostingDto[i].rfqLPCostingOtherCharges);
-                    lpcostingItemList.Add(lpcostingItemListDetail);
+                    for (int i = 0; i < rfqLPCostingDto.Count; i++)
+                    {
+                        RfqLPCostingItem lpcostingItemListDetail = _mapper.Map<RfqLPCostingItem>(rfqLPCostingDto[i]);
+                        lpcostingItemListDetail.RfqLPCostingProcesses = _mapper.Map<List<RfqLPCostingProcess>>(rfqLPCostingDto[i].RfqLPCostingProcesses);
+                        lpcostingItemListDetail.RfqLPCostingNREConsumables = _mapper.Map<List<RfqLPCostingNREConsumable>>(rfqLPCostingDto[i].RfqLPCostingNREConsumables);
+                        lpcostingItemListDetail.RfqLPCostingOtherCharges = _mapper.Map<List<RfqLPCostingOtherCharges>>(rfqLPCostingDto[i].RfqLPCostingOtherCharges);
+                        lpCostingItemList.Add(lpcostingItemListDetail);
 
+                    }
                 }
-                rfqLPCosting.rfqLPCostingItems = lpcostingItemList;
+                createRfqLPCosting.RfqLPCostingItems = lpCostingItemList;
                
 
-                _rfqlpcostingRepository.CreateRfqLPCosting(rfqLPCosting);
-                _rfqRepository.Update(rfqlpcostiningss);
+                await _rfqlpcostingRepository.CreateRfqLPCosting(createRfqLPCosting);
+                _rfqRepository.Update(updateRfqIsLpCosting);
                 _rfqlpcostingRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
@@ -987,6 +981,7 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         //update rfq function
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRfq(int id, [FromBody] RfqUpdateDto rfqUpdateDto)
@@ -1013,8 +1008,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var rfq = await _rfqRepository.GetRfqById(id);
-                if (rfq is null)
+                var getRfqById = await _rfqRepository.GetRfqById(id);
+                if (getRfqById is null)
                 {
                     _logger.LogError($"Rfq with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1024,12 +1019,8 @@ namespace Tips.SalesService.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                 var data = _mapper.Map(rfqUpdateDto, rfq);
-
- 
-                //var notes = _mapper.Map<IEnumerable<RfqNotes>>(rfq.rfqNotes);
-
-                string result = await _rfqRepository.UpdateRfq(data);
+                 var updaterfq = _mapper.Map(rfqUpdateDto, getRfqById);                
+                string result = await _rfqRepository.UpdateRfq(updaterfq);
                 _logger.LogInfo(result);
                 _rfqRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1075,8 +1066,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var rfqengg = await _rfqenggRepository.GetRfqEnggById(id);
-                if (rfqengg is null)
+                var getRfqEnggById = await _rfqenggRepository.GetRfqEnggById(id);
+                if (getRfqEnggById is null)
                 {
                     _logger.LogError($"RfqEngg with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1086,12 +1077,9 @@ namespace Tips.SalesService.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                var data = _mapper.Map(rfqEnggDtoUpdate, rfqengg);
+                var updateRfqEngg = _mapper.Map(rfqEnggDtoUpdate, getRfqEnggById);        
 
-
-                //var notes = _mapper.Map<IEnumerable<RfqNotes>>(rfq.rfqNotes);
-
-                string result = await _rfqenggRepository.UpdateRfqEngg(data);
+                string result = await _rfqenggRepository.UpdateRfqEngg(updateRfqEngg);
                 _logger.LogInfo(result);
                 _rfqenggRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1136,8 +1124,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var rfqlpcosting = await _rfqlpcostingRepository.GetRfqLPCostingById(id);
-                if (rfqlpcosting is null)
+                var getRfqLpCostingByid = await _rfqlpcostingRepository.GetRfqLPCostingById(id);
+                if (getRfqLpCostingByid is null)
                 {
                     _logger.LogError($"RfqLPCosting with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1146,24 +1134,27 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                var rfqlpcostingList = _mapper.Map<RfqLPCosting>(rfqLPCostingDtoUpdate);
+                var updateRfqlpCosting = _mapper.Map<RfqLPCosting>(rfqLPCostingDtoUpdate);
 
-                var lpcostingitemtemDto = rfqLPCostingDtoUpdate.rfqLPCostingItems;
+                var lpCostingItemtemDto = rfqLPCostingDtoUpdate.RfqLPCostingItems;
 
                 var rfqlpcostingitemList = new List<RfqLPCostingItem>();
-                for (int i = 0; i < lpcostingitemtemDto.Count; i++)
+                if (lpCostingItemtemDto != null) 
                 {
-                    RfqLPCostingItem lpcostingItemDetail = _mapper.Map<RfqLPCostingItem>(lpcostingitemtemDto[i]);
-                    lpcostingItemDetail.rfqLPCostingProcesses = _mapper.Map<List<RfqLPCostingProcess>>(lpcostingitemtemDto[i].rfqLPCostingProcesses);
-                    lpcostingItemDetail.rfqLPCostingNREConsumables = _mapper.Map<List<RfqLPCostingNREConsumable>>(lpcostingitemtemDto[i].rfqLPCostingNREConsumables);
-                    lpcostingItemDetail.rfqLPCostingOtherCharges = _mapper.Map<List<RfqLPCostingOtherCharges>>(lpcostingitemtemDto[i].rfqLPCostingOtherCharges);
+                    for (int i = 0; i < lpCostingItemtemDto.Count; i++)
+                    {
+                        RfqLPCostingItem lpCostingItemDetail = _mapper.Map<RfqLPCostingItem>(lpCostingItemtemDto[i]);
+                        lpCostingItemDetail.RfqLPCostingProcesses = _mapper.Map<List<RfqLPCostingProcess>>(lpCostingItemtemDto[i].RfqLPCostingProcesses);
+                        lpCostingItemDetail.RfqLPCostingNREConsumables = _mapper.Map<List<RfqLPCostingNREConsumable>>(lpCostingItemtemDto[i].RfqLPCostingNREConsumables);
+                        lpCostingItemDetail.RfqLPCostingOtherCharges = _mapper.Map<List<RfqLPCostingOtherCharges>>(lpCostingItemtemDto[i].RfqLPCostingOtherCharges);
 
-                    rfqlpcostingitemList.Add(lpcostingItemDetail);
+                        rfqlpcostingitemList.Add(lpCostingItemDetail);
 
+                    }
                 }
-                var data = _mapper.Map(rfqLPCostingDtoUpdate, rfqlpcosting);               
+                var updateData = _mapper.Map(rfqLPCostingDtoUpdate, updateRfqlpCosting);               
 
-                string result = await _rfqlpcostingRepository.UpdateRfqLPCosting(data);
+                string result = await _rfqlpcostingRepository.UpdateRfqLPCosting(updateData);
                 _logger.LogInfo(result);
                 _rfqlpcostingRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1208,8 +1199,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var rfqcs = await _repository.GetRfqCustomerSupportById(id);
-                if (rfqcs is null)
+                var GetRfqCSById = await _repository.GetRfqCustomerSupportById(id);
+                if (GetRfqCSById is null)
                 {
                     _logger.LogError($"RfqCustomerSupport with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1217,24 +1208,25 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
-                }
+                }               
 
-                
+                var updateRfqCS = _mapper.Map<RfqCustomerSupport>(GetRfqCSById);
 
-                var rfqcustomerlist = _mapper.Map<RfqCustomerSupport>(rfqcs);
-
-                var rfqItemDto = rfqCustomerSupportUpdateDto.rfqCustomerSupportItems;
+                var rfqCSItemDto = rfqCustomerSupportUpdateDto.RfqCustomerSupportItems;
 
                 var rfqCsItemList = new List<RfqCustomerSupportItems>();
-                for (int i = 0; i < rfqItemDto.Count; i++)
+                if (rfqCSItemDto != null) 
                 {
-                    RfqCustomerSupportItems rfqItemDetail = _mapper.Map<RfqCustomerSupportItems>(rfqItemDto[i]);
-                    rfqItemDetail.rfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqItemDto[i].rfqCSDeliverySchedule);
-                    rfqCsItemList.Add(rfqItemDetail);
+                    for (int i = 0; i < rfqCSItemDto.Count; i++)
+                    {
+                        RfqCustomerSupportItems rfqCSItemDetail = _mapper.Map<RfqCustomerSupportItems>(rfqCSItemDto[i]);
+                        rfqCSItemDetail.RfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqCSItemDto[i].RfqCSDeliverySchedule);
+                        rfqCsItemList.Add(rfqCSItemDetail);
 
+                    }
                 }
-                rfqcustomerlist.rfqCustomerSupportItems = rfqCsItemList;
-                var data = _mapper.Map(rfqCustomerSupportUpdateDto, rfqcustomerlist);
+                updateRfqCS.RfqCustomerSupportItems = rfqCsItemList;
+                var data = _mapper.Map(rfqCustomerSupportUpdateDto, updateRfqCS);
 
                 string result = await _repository.UpdateRfqCustomerSupport(data);
                 _logger.LogInfo(result);
@@ -1264,8 +1256,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var rfq = await _rfqRepository.GetRfqById(id);
-                if (rfq == null)
+                var getRfqById = await _rfqRepository.GetRfqById(id);
+                if (getRfqById == null)
                 {
                     _logger.LogError($"Rfq with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1274,7 +1266,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _rfqRepository.DeleteRfq(rfq);
+                string result = await _rfqRepository.DeleteRfq(getRfqById);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1301,8 +1293,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var rfqengg = await _rfqenggRepository.GetRfqEnggById(id);
-                if (rfqengg == null)
+                var getRfqEnggById = await _rfqenggRepository.GetRfqEnggById(id);
+                if (getRfqEnggById == null)
                 {
                     _logger.LogError($"Rfqengg with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1311,7 +1303,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _rfqenggRepository.DeleteRfqEngg(rfqengg);
+                string result = await _rfqenggRepository.DeleteRfqEngg(getRfqEnggById);
                 _logger.LogInfo(result);
                 _rfqenggRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1339,8 +1331,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var rfqlpcosting = await _rfqlpcostingRepository.GetRfqLPCostingById(id);
-                if (rfqlpcosting == null)
+                var getRfqLPCostingById = await _rfqlpcostingRepository.GetRfqLPCostingById(id);
+                if (getRfqLPCostingById == null)
                 {
                     _logger.LogError($"RfqLPCosting with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1349,7 +1341,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _rfqlpcostingRepository.DeleteRfqLPCosting(rfqlpcosting);
+                string result = await _rfqlpcostingRepository.DeleteRfqLPCosting(getRfqLPCostingById);
                 _logger.LogInfo(result);
                 _rfqlpcostingRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1376,8 +1368,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var rfq = await _repository.GetRfqCustomerSupportById(id);
-                if (rfq == null)
+                var getRfqCSById = await _repository.GetRfqCustomerSupportById(id);
+                if (getRfqCSById == null)
                 {
                     _logger.LogError($"RfqCustomerSupport with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1386,7 +1378,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.DeleteRfqCustomerSupport(rfq);
+                string result = await _repository.DeleteRfqCustomerSupport(getRfqCSById);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1432,12 +1424,10 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 var bulklist = _mapper.Map<List<ReleaseLp>>(releaseLpDtoPosts);
 
-                // for(int i=0;i<=bulklist.Count();i++)
-                //{
-                    var data = bulklist[0].RfqNumber;
-                    
-                //}
-                var lpreleases = await _rfqRepository.RfqLpCostingReleaseByRfqNumberss(data);
+               
+                    var bulkData = bulklist[0].RfqNumber;
+              
+                var lpreleases = await _rfqRepository.RfqLpCostingReleaseByRfqNumbers(bulkData);
                 lpreleases.IsLpCostingRelease = true;
 
                 foreach (var releaseLpdetails in bulklist)
@@ -1525,9 +1515,9 @@ namespace Tips.SalesService.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                var RfqCustomerSupportItem = await _itemRepository.GetRfqCustomerSupportItemById(id);
-                RfqCustomerSupportItem.ReleaseStatus = false;
-                string result = await _itemRepository.DeactivateRfqCustomerSupportItemById(RfqCustomerSupportItem);
+                var getRfqCSItemById = await _itemRepository.GetRfqCustomerSupportItemById(id);
+                getRfqCSItemById.ReleaseStatus = false;
+                string result = await _itemRepository.DeactivateRfqCustomerSupportItemById(getRfqCSItemById);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
 
@@ -1556,20 +1546,20 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<RfqCustomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqCustomGroupDto>>();
             try
             {
-                var listOfRfqCustomGroup = await _rfqCustomGroupRepository.GetAllRfqCustomGroup(pagingParameter);
+                var getAllRfqCustomGroup = await _rfqCustomGroupRepository.GetAllRfqCustomGroup(pagingParameter);
                 var metadata = new
                 {
-                    listOfRfqCustomGroup.TotalCount,
-                    listOfRfqCustomGroup.PageSize,
-                    listOfRfqCustomGroup.CurrentPage,
-                    listOfRfqCustomGroup.HasNext,
-                    listOfRfqCustomGroup.HasPreviuos
+                    getAllRfqCustomGroup.TotalCount,
+                    getAllRfqCustomGroup.PageSize,
+                    getAllRfqCustomGroup.CurrentPage,
+                    getAllRfqCustomGroup.HasNext,
+                    getAllRfqCustomGroup.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all BomGroup");
-                var rfqCustomGroupEntity = _mapper.Map<IEnumerable<RfqCustomGroupDto>>(listOfRfqCustomGroup);
+                var rfqCustomGroupEntity = _mapper.Map<IEnumerable<RfqCustomGroupDto>>(getAllRfqCustomGroup);
                 serviceResponse.Data = rfqCustomGroupEntity;
                 serviceResponse.Message = "Returned all RfqCustomGroup";
                 serviceResponse.Success = true;
@@ -1595,8 +1585,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var rfqCustomGroupList = await _rfqCustomGroupRepository.GetRfqCustomGroupById(id);
-                if (rfqCustomGroupList == null)
+                var getRfqCustomGroupById = await _rfqCustomGroupRepository.GetRfqCustomGroupById(id);
+                if (getRfqCustomGroupById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"RfqCustomGroup hasn't been found in db.";
@@ -1608,7 +1598,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    var rfqCustomGroupEntity = _mapper.Map<RfqCustomGroupDto>(rfqCustomGroupList);
+                    var rfqCustomGroupEntity = _mapper.Map<RfqCustomGroupDto>(getRfqCustomGroupById);
                     serviceResponse.Data = rfqCustomGroupEntity;
                     serviceResponse.Message = "Returned RfqCustomGroup Successfully";
                     serviceResponse.Success = true;
@@ -1653,8 +1643,8 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogError("Invalid RfqCustomGroup object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var rfqCustomGroupEntity = _mapper.Map<RfqCustomGroup>(rfqCustomGroupPostDto);
-                _rfqCustomGroupRepository.CreateRfqCustomGroup(rfqCustomGroupEntity);
+                var cteateRfqCustomGroup = _mapper.Map<RfqCustomGroup>(rfqCustomGroupPostDto);
+                _rfqCustomGroupRepository.CreateRfqCustomGroup(cteateRfqCustomGroup);
                 _rfqCustomGroupRepository.SaveAsync();
                 serviceResponse.Message = "RfqCustomGroup Successfully Created";
                 serviceResponse.Success = true;
@@ -1698,8 +1688,8 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogError("Invalid Update RfqCustomGroup object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var rfqCustomGroupEntity = await _rfqCustomGroupRepository.GetRfqCustomGroupById(id);
-                if (rfqCustomGroupEntity is null)
+                var getRfqCustomGroupById = await _rfqCustomGroupRepository.GetRfqCustomGroupById(id);
+                if (getRfqCustomGroupById is null)
                 {
                     _logger.LogError($"Update RfqCustomGroup with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1708,8 +1698,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(rfqCustomGroupUpdateDto, rfqCustomGroupEntity);
-                string result = await _rfqCustomGroupRepository.UpdateRfqCustomGroup(rfqCustomGroupEntity);
+                _mapper.Map(rfqCustomGroupUpdateDto, getRfqCustomGroupById);
+                string result = await _rfqCustomGroupRepository.UpdateRfqCustomGroup(getRfqCustomGroupById);
                 _logger.LogInfo(result);
                 _rfqCustomGroupRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1738,8 +1728,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var rfqCustomGroupList = await _rfqCustomGroupRepository.GetRfqCustomGroupById(id);
-                if (rfqCustomGroupList == null)
+                var getRfqCustomGroupById = await _rfqCustomGroupRepository.GetRfqCustomGroupById(id);
+                if (getRfqCustomGroupById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Delete RfqCustomGroup object sent from client is null";
@@ -1748,7 +1738,7 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogError($"Delete RfqCustomGroup with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                string result = await _rfqCustomGroupRepository.DeleteRfqCustomGroup(rfqCustomGroupList);
+                string result = await _rfqCustomGroupRepository.DeleteRfqCustomGroup(getRfqCustomGroupById);
                 _logger.LogInfo(result);
                 _rfqCustomGroupRepository.SaveAsync();
                 serviceResponse.Message = "RfqCustomGroup Deleted Successfully";
@@ -1774,20 +1764,20 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<RfqCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqCustomFieldDto>>();
             try
             {
-                var listOfRfqCustomField = await _rfqCustomFieldRepository.GetAllRfqCustomField(pagingParameter);
+                var getAllRfqCustomField = await _rfqCustomFieldRepository.GetAllRfqCustomField(pagingParameter);
                 var metadata = new
                 {
-                    listOfRfqCustomField.TotalCount,
-                    listOfRfqCustomField.PageSize,
-                    listOfRfqCustomField.CurrentPage,
-                    listOfRfqCustomField.HasNext,
-                    listOfRfqCustomField.HasPreviuos
+                    getAllRfqCustomField.TotalCount,
+                    getAllRfqCustomField.PageSize,
+                    getAllRfqCustomField.CurrentPage,
+                    getAllRfqCustomField.HasNext,
+                    getAllRfqCustomField.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all RfqCustomField");
-                var rfqCustomFieldEntity = _mapper.Map<IEnumerable<RfqCustomFieldDto>>(listOfRfqCustomField);
+                var rfqCustomFieldEntity = _mapper.Map<IEnumerable<RfqCustomFieldDto>>(getAllRfqCustomField);
                 serviceResponse.Data = rfqCustomFieldEntity;
                 serviceResponse.Message = "Returned all RfqCustomField";
                 serviceResponse.Success = true;
@@ -1808,14 +1798,14 @@ namespace Tips.SalesService.Api.Controllers
 
         // GET: api/<RfqCustomFieldController>
         [HttpGet("{id}")]
-                public async Task<IActionResult> GetRfqCustomFieldById(int id)
+        public async Task<IActionResult> GetRfqCustomFieldById(int id)
                 {
                     ServiceResponse<RfqCustomFieldDto> serviceResponse = new ServiceResponse<RfqCustomFieldDto>();
 
                     try
                     {
-                        var rfqCustomFieldList = await _rfqCustomFieldRepository.GetRfqCustomFieldById(id);
-                        if (rfqCustomFieldList == null)
+                        var getRfqCustomFieldById = await _rfqCustomFieldRepository.GetRfqCustomFieldById(id);
+                        if (getRfqCustomFieldById == null)
                         {
                             serviceResponse.Data = null;
                             serviceResponse.Message = $"RfqCustomField hasn't been found in db.";
@@ -1827,7 +1817,7 @@ namespace Tips.SalesService.Api.Controllers
                         else
                         {
                             _logger.LogInfo($"Returned RfqCustomField with id: {id}");
-                            var rfqCustomFieldEntity = _mapper.Map<RfqCustomFieldDto>(rfqCustomFieldList);
+                            var rfqCustomFieldEntity = _mapper.Map<RfqCustomFieldDto>(getRfqCustomFieldById);
                             serviceResponse.Data = rfqCustomFieldEntity;
                             serviceResponse.Message = "Returned RfqCustomField Successfully";
                             serviceResponse.Success = true;
@@ -1847,8 +1837,8 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
                 // POST: api/<RfqCustomFieldController>
-                [HttpPost]
-                public IActionResult CreateRfqCustomField([FromBody] RfqCustomFieldDtoPost rfqCustomFieldDtoPost)
+        [HttpPost]
+        public IActionResult CreateRfqCustomField([FromBody] RfqCustomFieldDtoPost rfqCustomFieldDtoPost)
                 {
                     ServiceResponse<RfqCustomFieldDtoPost> serviceResponse = new ServiceResponse<RfqCustomFieldDtoPost>();
 
@@ -1872,8 +1862,8 @@ namespace Tips.SalesService.Api.Controllers
                             _logger.LogError("Invalid RfqCustomField object sent from client.");
                             return BadRequest(serviceResponse);
                         }
-                        var rfqCustomFieldEntity = _mapper.Map<RfqCustomField>(rfqCustomFieldDtoPost);
-                        _rfqCustomFieldRepository.CreateRfqCustomField(rfqCustomFieldEntity);
+                        var createRfqCustomField = _mapper.Map<RfqCustomField>(rfqCustomFieldDtoPost);
+                        _rfqCustomFieldRepository.CreateRfqCustomField(createRfqCustomField);
                         _rfqCustomFieldRepository.SaveAsync();
                         serviceResponse.Message = "RfqCustomField Successfully Created";
                         serviceResponse.Success = true;
@@ -1892,8 +1882,8 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
                 // PUT: api/<RfqCustomFieldController>
-                [HttpPut("{id}")]
-                public async Task<IActionResult> UpdateRfqCustomField(int id, [FromBody] RfqCustomFieldDtoUpdate rfqCustomFieldDtoUpdate)
+         [HttpPut("{id}")]
+         public async Task<IActionResult> UpdateRfqCustomField(int id, [FromBody] RfqCustomFieldDtoUpdate rfqCustomFieldDtoUpdate)
                 {
                     ServiceResponse<RfqCustomFieldDtoUpdate> serviceResponse = new ServiceResponse<RfqCustomFieldDtoUpdate>();
 
@@ -1917,8 +1907,8 @@ namespace Tips.SalesService.Api.Controllers
                             _logger.LogError("Invalid Update RfqCustomField object sent from client.");
                             return BadRequest(serviceResponse);
                         }
-                        var rfqCustomFieldEntity = await _rfqCustomFieldRepository.GetRfqCustomFieldById(id);
-                        if (rfqCustomFieldEntity is null)
+                        var getRfqCustomFieldById = await _rfqCustomFieldRepository.GetRfqCustomFieldById(id);
+                        if (getRfqCustomFieldById is null)
                         {
                             _logger.LogError($"Update RfqCustomField with id: {id}, hasn't been found in db.");
                             serviceResponse.Data = null;
@@ -1927,8 +1917,8 @@ namespace Tips.SalesService.Api.Controllers
                             serviceResponse.StatusCode = HttpStatusCode.NotFound;
                             return NotFound(serviceResponse);
                         }
-                        _mapper.Map(rfqCustomFieldDtoUpdate, rfqCustomFieldEntity);
-                        string result = await _rfqCustomFieldRepository.UpdateRfqCustomField(rfqCustomFieldEntity);
+                        _mapper.Map(rfqCustomFieldDtoUpdate, getRfqCustomFieldById);
+                        string result = await _rfqCustomFieldRepository.UpdateRfqCustomField(getRfqCustomFieldById);
                         _logger.LogInfo(result);
                         _rfqCustomFieldRepository.SaveAsync();
                         serviceResponse.Data = null;
@@ -1949,15 +1939,15 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
                 // DELETE: api/<RfqCustomFieldController>
-                [HttpDelete("{id}")]
-                public async Task<IActionResult> DeleteRfqCustomField(int id)
+          [HttpDelete("{id}")]
+          public async Task<IActionResult> DeleteRfqCustomField(int id)
                 {
                     ServiceResponse<RfqCustomFieldDto> serviceResponse = new ServiceResponse<RfqCustomFieldDto>();
 
                     try
                     {
-                        var rfqCustomFieldList = await _rfqCustomFieldRepository.GetRfqCustomFieldById(id);
-                        if (rfqCustomFieldList == null)
+                        var getRfqCustomFieldById = await _rfqCustomFieldRepository.GetRfqCustomFieldById(id);
+                        if (getRfqCustomFieldById == null)
                         {
                             serviceResponse.Data = null;
                             serviceResponse.Message = "Delete RfqCustomField object sent from client is null";
@@ -1966,7 +1956,7 @@ namespace Tips.SalesService.Api.Controllers
                             _logger.LogError($"Delete RfqCustomField with id: {id}, hasn't been found in db.");
                             return BadRequest(serviceResponse);
                         }
-                        string result = await _rfqCustomFieldRepository.DeleteRfqCustomField(rfqCustomFieldList);
+                        string result = await _rfqCustomFieldRepository.DeleteRfqCustomField(getRfqCustomFieldById);
                         _logger.LogInfo(result);
                         _rfqCustomFieldRepository.SaveAsync();
                         serviceResponse.Message = "RfqCustomField Deleted Successfully";

@@ -11,11 +11,11 @@ namespace Tips.SalesService.Api.Entities
     public class MaterialRequest
     {
         public int Id { get; set; }
-        public string MRNo { get; set; }
-        public string? ProjectNo { get; set; }
-        public string? FGItemNo { get; set; }
+        public string MRNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? FGItemNumber { get; set; }
         public string? ShopOrderType { get; set; }
-        public string? ShopOrderNo { get; set; }
+        public string? ShopOrderNumber { get; set; }
         public string? IssuedBy { get; set; }
         public DateTime? IssuedOn { get; set; }
         public bool IssuedStatus { get; set; }
@@ -27,7 +27,7 @@ namespace Tips.SalesService.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<MaterialRequestItem>? MaterialRequestItemList { get; set; }
+        public List<MaterialRequestItem>? MaterialRequestItems { get; set; }
 
     }
 }

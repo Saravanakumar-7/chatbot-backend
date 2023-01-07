@@ -5,8 +5,8 @@ namespace Tips.SalesService.Api.Entities
 {
     public class LocationTransfer
     {
+       
         [Key]
-
         public int Id { get; set; }
         public string FromPartNo { get; set; }
         public string ToPartNo { get; set; }
@@ -20,6 +20,7 @@ namespace Tips.SalesService.Api.Entities
         public string ToLocation { get; set; }
         public string? FromPartType { get; set; }
         public string? ToPartType { get; set; }
+
         [Precision(13, 3)]
         public decimal TransferQty { get; set; }
         public string? Remarks { get; set; }

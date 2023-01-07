@@ -19,8 +19,6 @@ namespace Tips.SalesService.Api.Repository
         {
             locationTransfer.CreatedBy = "Admin";
             locationTransfer.CreatedOn = DateTime.Now;
-            locationTransfer.LastModifiedBy = "Admin";
-            locationTransfer.LastModifiedOn = DateTime.Now;
             locationTransfer.Unit = "Bangalore";
 
             var result = await Create(locationTransfer);
@@ -36,16 +34,16 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<LocationTransfer>> GetAllLocationTransfer(PagingParameter pagingParameter)
         {
-            var AllLocationTransDetails = PagedList<LocationTransfer>.ToPagedList(FindAll()
+            var getAllLocationTransfers = PagedList<LocationTransfer>.ToPagedList(FindAll()
                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return AllLocationTransDetails;
+            return getAllLocationTransfers;
         }
 
         public async Task<LocationTransfer> GetLocationTransferById(int id)
         {
-            var LocationTransDetailsId = await _tipsSalesServiceDbContext.locationTransfers.Where(x => x.Id == id).FirstOrDefaultAsync();
-            return LocationTransDetailsId;
+            var LocationTransferbyId = await _tipsSalesServiceDbContext.locationTransfers.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return LocationTransferbyId;
         }
 
         public async Task<string> UpdateLocationTransfer(LocationTransfer locationTransfer)

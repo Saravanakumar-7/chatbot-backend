@@ -19,16 +19,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> CreateRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport);
         Task<string> UpdateRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport);
         Task<string> DeleteRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport);
-        Task<RfqCustomerSupport> RfqCustomerSupportByRfqNumber(string RfqNumber);
- 
-
-
-        //Task<List<RfqCustomerSupportItems>> RfqCustomerSupportRelease(RfqCustomerSupportItems rfqCustomerSupportItems);
-
-        //Task<RfqCustomerSupportItems> RfqCustomerSupportReleases(int id);
-
-        //Task<RfqCustomerSupportItems> RfqCustomerSupportRelease(RfqCustomerSupportReleaseDto rfqCustomerSupportReleaseDto);
-
+        Task<RfqCustomerSupport> GetRfqCustomerSupportByRfqNumber(string RfqNumber);
 
     }
 
