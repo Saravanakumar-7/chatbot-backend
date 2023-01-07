@@ -3,7 +3,7 @@
     public class BTODeliveryOrderItemsDto
     {
         public int Id { get; set; }
-        public string FGItemNo { get; set; }
+        public string FGItemNumber { get; set; }
         public string Description { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal UOC { get; set; }
@@ -24,7 +24,7 @@
     }
     public class BTODeliveryOrderItemsDtoPost
     {
-        public string FGItemNo { get; set; }
+        public string FGItemNumber { get; set; }
         public string Description { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal UOC { get; set; }
@@ -43,7 +43,7 @@
     public class BTODeliveryOrderItemsDtoUpdate
     {
         
-        public string FGItemNo { get; set; }
+        public string FGItemNumber { get; set; }
         public string Description { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal UOC { get; set; }

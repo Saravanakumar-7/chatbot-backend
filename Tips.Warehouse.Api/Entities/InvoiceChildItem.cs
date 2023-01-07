@@ -9,8 +9,8 @@ namespace Tips.Warehouse.Api.Entities
     {
         [Key]
         public int Id { get; set; }
-        public string? DONo { get; set; }
-        public string? FGItemNo { get; set; }
+        public string? DONumber { get; set; }
+        public string? FGItemNoumber { get; set; }
         public string? Qty { get; set; }
         public string? UOM { get; set; }
 

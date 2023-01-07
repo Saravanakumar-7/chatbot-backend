@@ -30,13 +30,13 @@ namespace Tips.Warehouse.Api.Repository
         return result.Id;
         }
 
-        public async Task<PagedList<Invoice>> GetAllInvoice(PagingParameter pagingParameter)
+        public async Task<PagedList<Invoice>> GetAllInvoices(PagingParameter pagingParameter)
         {
-            var allInvoiceList = PagedList<Invoice>.ToPagedList(FindAll()
+            var getAllInvoiceList = PagedList<Invoice>.ToPagedList(FindAll()
                 .Include(k => k.InvoiceChildItems)
                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return (allInvoiceList);
+            return (getAllInvoiceList);
 
          }
 
@@ -45,11 +45,11 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<Invoice> GetInvoiceById(int id)
         {
-        var invoiceListById = await _tipsWarehouseDbContext.invoices
+        var getInvoiceListById = await _tipsWarehouseDbContext.invoices
                         .Where(x => x.Id == id)
                         .Include(k => k.InvoiceChildItems)
                          .FirstOrDefaultAsync();
-        return invoiceListById;
+        return getInvoiceListById;
         }
 
         public async Task<string> UpdateInvoice(Invoice invoice)
@@ -57,14 +57,14 @@ namespace Tips.Warehouse.Api.Repository
         invoice.LastModifiedBy = "Admin";
         invoice.LastModifiedOn = DateTime.Now;
         Update(invoice);
-        string result = $"LeadTime details of {invoice.Id} is updated successfully!";
+        string result = $"Invoice details of {invoice.Id} is updated successfully!";
         return result;
         }
 
         public async Task<string> DeleteInvoice(Invoice invoice)
         {
             Delete(invoice);
-            string result = $"invoice details of {invoice.Id} is deleted successfully!";
+            string result = $"Invoice details of {invoice.Id} is deleted successfully!";
             return result;
         }
 

@@ -3,9 +3,9 @@
     public class DeliveryOrderItemsDto
     {
         public int Id { get; set; }
-        public string FGItemNo { get; set; }
+        public string FGItemNumber { get; set; }
         public string ItemDescription { get; set; }
-        public decimal ShopOrderNo { get; set; }
+        public decimal ShopOrderNumber { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal UOC { get; set; }
         public decimal UOM { get; set; }
@@ -19,9 +19,9 @@
     }
     public class DeliveryOrderItemsDtoPost
     {
-        public string FGItemNo { get; set; }
+        public string FGItemNumber { get; set; }
         public string ItemDescription { get; set; }
-        public decimal ShopOrderNo { get; set; }
+        public decimal ShopOrderNumber { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal UOC { get; set; }
         public decimal UOM { get; set; }
@@ -33,9 +33,9 @@
     public class DeliveryOrderItemsDtoUpdate
     {
         public int Id { get; set; }
-        public string FGItemNo { get; set; }
+        public string FGItemNumber { get; set; }
         public string ItemDescription { get; set; }
-        public decimal ShopOrderNo { get; set; }
+        public decimal ShopOrderNumber { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal UOC { get; set; }
         public decimal UOM { get; set; }
