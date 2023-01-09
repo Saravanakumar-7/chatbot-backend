@@ -30,29 +30,29 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<DeliveryOrder>> GetAllActiveDeliveryOrder()
+        public async Task<IEnumerable<DeliveryOrder>> GetAllActiveDeliveryOrders()
         {
-            var allActiveDeliveryOrderDetails = await FindAll().ToListAsync();
-            return allActiveDeliveryOrderDetails;
+            var getAllActiveDeliveryOrderDetails = await FindAll().ToListAsync();
+            return getAllActiveDeliveryOrderDetails;
         }
 
-        public async Task<PagedList<DeliveryOrder>> GetAllDeliveryOrder(PagingParameter pagingParameter)
+        public async Task<PagedList<DeliveryOrder>> GetAllDeliveryOrders(PagingParameter pagingParameter)
         {
-            var allDeliveryOrderDetails = PagedList<DeliveryOrder>.ToPagedList(FindAll()
-                                 .Include(t => t.deliveryOrderItems)
+            var getAllDeliveryOrderDetails = PagedList<DeliveryOrder>.ToPagedList(FindAll()
+                                 .Include(t => t.DeliveryOrderItems)
                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return allDeliveryOrderDetails;
+            return getAllDeliveryOrderDetails;
         }
 
         public async Task<DeliveryOrder> GetDeliveryOrderById(int id)
         {
-            var deliveryOrderDetailsbyId = await _tipsWarehouseDbContext.deliveryOrder.Where(x => x.Id == id)
-                              .Include(t => t.deliveryOrderItems)
+            var getDeliveryOrderDetailsbyId = await _tipsWarehouseDbContext.deliveryOrder.Where(x => x.Id == id)
+                              .Include(t => t.DeliveryOrderItems)
                               .FirstOrDefaultAsync();
 
 
-            return deliveryOrderDetailsbyId;
+            return getDeliveryOrderDetailsbyId;
         }
 
         public async Task<string> UpdateDeliveryOrder(DeliveryOrder deliveryOrder)

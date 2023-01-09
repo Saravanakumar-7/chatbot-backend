@@ -28,27 +28,27 @@ namespace Tips.Warehouse.Api.Controllers
 
         
         [HttpGet]
-        public async Task<IActionResult> GetAllDeliveryOrder([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllDeliveryOrders([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<DeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderDto>>();
             try
             {
-                var allDeliveryOrderDetails = await _repository.GetAllDeliveryOrder(pagingParameter);
+                var getAllDeliveryOrderDetails = await _repository.GetAllDeliveryOrders(pagingParameter);
                 var metadata = new
                 {
-                    allDeliveryOrderDetails.TotalCount,
-                    allDeliveryOrderDetails.PageSize,
-                    allDeliveryOrderDetails.CurrentPage,
-                    allDeliveryOrderDetails.HasNext,
-                    allDeliveryOrderDetails.HasPreviuos
+                    getAllDeliveryOrderDetails.TotalCount,
+                    getAllDeliveryOrderDetails.PageSize,
+                    getAllDeliveryOrderDetails.CurrentPage,
+                    getAllDeliveryOrderDetails.HasNext,
+                    getAllDeliveryOrderDetails.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all DeliveryOrder");
-                var result = _mapper.Map<IEnumerable<DeliveryOrderDto>>(allDeliveryOrderDetails);
+                var result = _mapper.Map<IEnumerable<DeliveryOrderDto>>(getAllDeliveryOrderDetails);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all DeliveryOrder";
+                serviceResponse.Message = "Returned all DeliveryOrders";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -70,9 +70,9 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<DeliveryOrderDto> serviceResponse = new ServiceResponse<DeliveryOrderDto>();
             try
             {
-                var deliveryOrderDetailById = await _repository.GetDeliveryOrderById(id);
+                var getDeliveryOrderDetailById = await _repository.GetDeliveryOrderById(id);
 
-                if (deliveryOrderDetailById == null)
+                if (getDeliveryOrderDetailById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"DeliveryOrder  hasn't been found in db.";
@@ -85,14 +85,14 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
 
-                    DeliveryOrderDto deliveryOrderDto = _mapper.Map<DeliveryOrderDto>(deliveryOrderDetailById);
+                    DeliveryOrderDto deliveryOrderDto = _mapper.Map<DeliveryOrderDto>(getDeliveryOrderDetailById);
 
                     List<DeliveryOrderItemsDto> deliveryOrderItemsDtoList = new List<DeliveryOrderItemsDto>();
 
-                    if (deliveryOrderDetailById.deliveryOrderItems != null)
+                    if (getDeliveryOrderDetailById.DeliveryOrderItems != null)
                     {
 
-                        foreach (var itemDetails in deliveryOrderDetailById.deliveryOrderItems)
+                        foreach (var itemDetails in getDeliveryOrderDetailById.DeliveryOrderItems)
                         {
                             DeliveryOrderItemsDto deliveryOrderItemsDtos = _mapper.Map<DeliveryOrderItemsDto>(itemDetails);
                             deliveryOrderItemsDtoList.Add(deliveryOrderItemsDtos);
@@ -102,7 +102,7 @@ namespace Tips.Warehouse.Api.Controllers
                     deliveryOrderDto.DeliveryOrderItemsDto = deliveryOrderItemsDtoList;
 
                     serviceResponse.Data = deliveryOrderDto;
-                    serviceResponse.Message = "Returned DeliveryOrder";
+                    serviceResponse.Message = "Returned DeliveryOrderById Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -159,7 +159,7 @@ namespace Tips.Warehouse.Api.Controllers
                     }
                 }
 
-                deliveryOrder.deliveryOrderItems = deliveryOrderItemsDtoList;
+                deliveryOrder.DeliveryOrderItems = deliveryOrderItemsDtoList;
 
                 await _repository.CreateDeliveryOrder(deliveryOrder);
                 _repository.SaveAsync();
@@ -172,7 +172,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateDeliveryOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong ,try again";
                 serviceResponse.Success = false;
@@ -183,9 +183,9 @@ namespace Tips.Warehouse.Api.Controllers
 
   
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDeliveryOrder(int id, [FromBody] DeliveryOrderDtoPost deliveryOrderDtoUpdate)
+        public async Task<IActionResult> UpdateDeliveryOrder(int id, [FromBody] DeliveryOrderDtoUpdate deliveryOrderDtoUpdate)
         {
-            ServiceResponse<DeliveryOrderDto> serviceResponse = new ServiceResponse<DeliveryOrderDto>();
+            ServiceResponse<DeliveryOrderDtoUpdate> serviceResponse = new ServiceResponse<DeliveryOrderDtoUpdate>();
             try
             {
                 if (deliveryOrderDtoUpdate is null)
@@ -220,7 +220,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var deliveryOrder = _mapper.Map<DeliveryOrder>(deliveryOrderDetailById);
 
-                var deliveryOrderitemsDto = deliveryOrderDtoUpdate.DeliveryOrderItemsDtoPost;
+                var deliveryOrderitemsDto = deliveryOrderDtoUpdate.DeliveryOrderItemsDtoUpdate;
 
                 var deliveryOrderitemsList = new List<DeliveryOrderItems>();
 
@@ -229,15 +229,15 @@ namespace Tips.Warehouse.Api.Controllers
                     for (int i = 0; i < deliveryOrderitemsDto.Count; i++)
                     {
                         DeliveryOrderItems deliveryOrderItemsDetails = _mapper.Map<DeliveryOrderItems>(deliveryOrderitemsDto[i]);
-
+                        deliveryOrderitemsList.Add(deliveryOrderItemsDetails);
                     }
                 }
 
-                deliveryOrder.deliveryOrderItems = deliveryOrderitemsList;
+                deliveryOrder.DeliveryOrderItems = deliveryOrderitemsList;
 
-                var data = _mapper.Map(deliveryOrderDtoUpdate, deliveryOrder);
+                var updateDeliveryOrder = _mapper.Map(deliveryOrderDtoUpdate, deliveryOrder);
 
-                string result = await _repository.UpdateDeliveryOrder(data);
+                string result = await _repository.UpdateDeliveryOrder(updateDeliveryOrder);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -264,8 +264,8 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<DeliveryOrderDto> serviceResponse = new ServiceResponse<DeliveryOrderDto>();
             try
             {
-                var deliveryOrderDetailById = await _repository.GetDeliveryOrderById(id);
-                if (deliveryOrderDetailById == null)
+                var deleteDeliveryOrderDetailById = await _repository.GetDeliveryOrderById(id);
+                if (deleteDeliveryOrderDetailById == null)
                 {
                     _logger.LogError($"Delete DeliveryOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -274,7 +274,7 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.DeleteDeliveryOrder(deliveryOrderDetailById);
+                string result = await _repository.DeleteDeliveryOrder(deleteDeliveryOrderDetailById);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
 
@@ -286,7 +286,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeleteDeliveryOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong,try again";
                 serviceResponse.Success = false;

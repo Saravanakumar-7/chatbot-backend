@@ -151,7 +151,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpPost]
         public IActionResult CreateIqc([FromBody] IQCConfirmationPostDto iQCConfirmationPostDto)
         {
-            ServiceResponse<IQCConfirmationPostDto> serviceResponse = new ServiceResponse<IQCConfirmationPostDto>();
+            ServiceResponse<IQCConfirmationDto> serviceResponse = new ServiceResponse<IQCConfirmationDto>();
 
             try
             {

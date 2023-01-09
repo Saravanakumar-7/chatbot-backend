@@ -10,8 +10,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
 {
     public class MaterialRequestDto
     {
+
         public int Id { get; set; }
-        public string MRNumber { get; set; }       
+
+
+        [Required(ErrorMessage = "MRNumber is required")]
+        public string MRNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public string? FGItemNumber { get; set; }
         public string? ShopOrderType { get; set; }
@@ -19,6 +23,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? IssuedBy { get; set; }
         public DateTime? IssuedOn { get; set; }
         public bool IssuedStatus { get; set; }
+
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
@@ -31,23 +36,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
     public class MaterialRequestDtoPost
     {
-        [Required(ErrorMessage = "MRNumber is required")]
-        public string MRNumber { get; set; }
-        public string? ProjectNumber { get; set; }
-        public string? FGItemNumber { get; set; }
-        public string? ShopOrderType { get; set; }
-        public string? ShopOrderNumber { get; set; }        
-        public string? IssuedBy { get; set; }
-        public DateTime? IssuedOn { get; set; }
-        public bool IssuedStatus { get; set; }
 
-       
-        public List<MaterialRequestItemDtoPost>? MaterialRequestItems { get; set; }
-    }
-
-    public class MaterialRequestDtoUpdate
-    {
-        public int Id { get; set; }
 
         [Required(ErrorMessage = "MRNumber is required")]
         public string MRNumber { get; set; }
@@ -55,13 +44,37 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? FGItemNumber { get; set; }
         public string? ShopOrderType { get; set; }
         public string? ShopOrderNumber { get; set; }
-
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
         public string? IssuedBy { get; set; }
         public DateTime? IssuedOn { get; set; }
-        public bool IssuedStatus { get; set; }        
-       
+        public bool IssuedStatus { get; set; }
+
+
+        public List<MaterialRequestItemDtoPost>? MaterialRequestItems { get; set; }
+    }
+
+    public class MaterialRequestDtoUpdate
+    {
+        public int Id { get; set; }
+
+
+        [Required(ErrorMessage = "MRNumber is required")]
+        public string MRNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? FGItemNumber { get; set; }
+        public string? ShopOrderType { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        public string? IssuedBy { get; set; }
+        public DateTime? IssuedOn { get; set; }
+        public bool IssuedStatus { get; set; }
+
+
+        public string Unit { get; set; }
+
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+
 
         public List<MaterialRequestItemDtoUpdate>? MaterialRequestItems { get; set; }
     }

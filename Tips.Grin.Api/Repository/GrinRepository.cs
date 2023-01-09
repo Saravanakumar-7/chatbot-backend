@@ -67,6 +67,7 @@ namespace Tips.Grin.Api.Repository
             var getAllGrinDetails= PagedList<Grins>.ToPagedList (FindAll()
                                 .Include(t => t.GrinParts)
                                 .ThenInclude(t => t.ProjectNumbers)
+                                .Include(y => y.GrinDocuments)
                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return getAllGrinDetails;

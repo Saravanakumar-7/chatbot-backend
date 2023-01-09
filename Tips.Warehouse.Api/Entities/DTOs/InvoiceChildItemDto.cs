@@ -7,8 +7,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         [Key]
         public int Id { get; set; }
-        public string? DONo { get; set; }
-        public string? FGItemNo { get; set; }
+        public string? DONumber { get; set; }
+        public string? FGItemNumber { get; set; }
         public string? Qty { get; set; }
         public string? UOM { get; set; }
 
@@ -42,8 +42,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
     public class InvoiceChildItemPostDto 
     {
-        public string? DONo { get; set; }
-        public string? FGItemNo { get; set; }
+        public string? DONumber { get; set; }
+        public string? FGItemNumber { get; set; }
         public string? Qty { get; set; }
         public string? UOM { get; set; }
 
@@ -76,8 +76,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class InvoiceChildItemUpdateDto
     {
         
-        public string? DONo { get; set; }
-        public string? FGItemNo { get; set; }
+        public string? DONumber { get; set; }
+        public string? FGItemNumber { get; set; }
         public string? Qty { get; set; }
         public string? UOM { get; set; }
 

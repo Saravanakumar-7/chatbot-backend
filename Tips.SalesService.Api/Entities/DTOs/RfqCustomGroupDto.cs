@@ -12,7 +12,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string? CustomGroupName { get; set; }
         public string? Remark { get; set; }
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -35,7 +35,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [StringLength(500, ErrorMessage = "CustomGroupName can't be longer than 500 characters")]
         public string? CustomGroupName { get; set; }
         public string? Remark { get; set; }
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
        
     }
 }
