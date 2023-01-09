@@ -454,6 +454,7 @@ namespace Tips.SalesService.Api.Repository
                 rfqCustomGroup.CreatedOn = DateTime.Now;
                 rfqCustomGroup.LastModifiedBy = "Admin";
                 rfqCustomGroup.LastModifiedOn = DateTime.Now;
+                rfqCustomGroup.Unit = "Bangalore";
                 var result = await Create(rfqCustomGroup);
                 return result.Id;
             }
@@ -503,6 +504,7 @@ namespace Tips.SalesService.Api.Repository
                 rfqCustomField.CreatedOn = DateTime.Now;
                 rfqCustomField.LastModifiedBy = "Admin";
                 rfqCustomField.LastModifiedOn = DateTime.Now;
+                rfqCustomField.Unit = "Bangalore";
                 var result = await Create(rfqCustomField);
                 return result.Id;
             }
