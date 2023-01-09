@@ -16,7 +16,7 @@
     }
     public class BTOSerialNumberDtoUpdate
     {
-        
+
         public string SerialNumber { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

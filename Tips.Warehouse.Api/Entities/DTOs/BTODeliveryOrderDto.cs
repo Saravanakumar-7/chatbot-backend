@@ -34,7 +34,6 @@
     public class BTODeliveryOrderDtoUpdate
     {
 
-        public int Id { get; set; }
         public string CustomerName { get; set; }
         public string CustomerAliasName { get; set; }
         public string CustomerLeadId { get; set; }

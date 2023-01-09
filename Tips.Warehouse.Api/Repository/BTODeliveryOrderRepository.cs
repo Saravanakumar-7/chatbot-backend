@@ -31,13 +31,13 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<BTODeliveryOrder>> GetAllActiveBTODeliveryOrder()
+        public async Task<IEnumerable<BTODeliveryOrder>> GetAllActiveBTODeliveryOrders()
         {
             var getAllActiveBTODetails = await FindAll().ToListAsync();
             return getAllActiveBTODetails;
         }
 
-        public async Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrder(PagingParameter pagingParameter)
+        public async Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrders(PagingParameter pagingParameter)
         {
             var getAllBTODetails = PagedList<BTODeliveryOrder>.ToPagedList(FindAll()
                                  .Include(t => t.BTODeliveryOrderItems)
@@ -51,13 +51,13 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<BTODeliveryOrder> GetBTODeliveryOrderById(int id)
         {
-            var bTODeliveryOrderDetailsbyId = await _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.Id == id)
+            var getBTODeliveryOrderDetailsbyId = await _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.Id == id)
                                 .Include(t => t.BTODeliveryOrderItems)
                                 .ThenInclude(s => s.BTOSerialNumbers)
                                 .FirstOrDefaultAsync();
 
 
-            return bTODeliveryOrderDetailsbyId;
+            return getBTODeliveryOrderDetailsbyId;
         }
 
     

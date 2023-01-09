@@ -114,7 +114,7 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.Message = "Returned all RfqCustomerSupport Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse); 
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
@@ -134,7 +134,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var getAllActiveRfqNos = await _rfqRepository.GetAllActiveRfqNumberList();
-                
+
                 var result = _mapper.Map<IEnumerable<RfqNumberListDto>>(getAllActiveRfqNos);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Success";
@@ -317,7 +317,7 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<RfqEnggItemDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqEnggItemDto>>();
             try
             {
-                var getAllActiveRfqEnggByRfqNo = await _rfqenggItemRepository.GetAllActiveRfqEnggItemByRfqNumber(RfqNumber);               
+                var getAllActiveRfqEnggByRfqNo = await _rfqenggItemRepository.GetAllActiveRfqEnggItemByRfqNumber(RfqNumber);
                 var result = _mapper.Map<IEnumerable<RfqEnggItemDto>>(getAllActiveRfqEnggByRfqNo);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ActiveRfqEnggItem";
@@ -374,7 +374,7 @@ namespace Tips.SalesService.Api.Controllers
                         rfqLpCostingItemsDtos.Add(rfqlpcostingItemDto);
                     }
                     rfqLpCostingDto.RfqLPCostingItems = rfqLpCostingItemsDtos;
-                 
+
                     serviceResponse.Data = rfqLpCostingDto;
                     serviceResponse.Message = $"Returned RfqEnggByRfqNumber with id: {RfqNumber}";
                     serviceResponse.Success = true;
@@ -420,7 +420,7 @@ namespace Tips.SalesService.Api.Controllers
                     RfqEnggDto rfqEnggDto = _mapper.Map<RfqEnggDto>(getRfqEnggByRfqNo);
 
                     List<RfqEnggItemDto> rfqEnggItemsDtos = new List<RfqEnggItemDto>();
-                  
+
                     foreach (var itemDetails in getRfqEnggByRfqNo.RfqEnggItems)
                     {
                         RfqEnggItemDto rfqenggItemDto = _mapper.Map<RfqEnggItemDto>(itemDetails);
@@ -553,10 +553,10 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned RfqLPCosting with id: {id}");
-                    
+
                     RfqLPCostingDto rfqLpCostingDto = _mapper.Map<RfqLPCostingDto>(getRfqlpcostingById);
 
-                   
+
 
                     List<RfqLPCostingItemDto> rfqLpCostingItemDtos = new List<RfqLPCostingItemDto>();
 
@@ -611,7 +611,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned RfqCustomerSupport with id: {id}");
-                    
+
                     RfqCustomerSupportDto rfCSqDto = _mapper.Map<RfqCustomerSupportDto>(getRfqCSById);
 
                     List<RfqCustomerSupportItemDto> rfqItemsDtos = new List<RfqCustomerSupportItemDto>();
@@ -627,7 +627,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Message = $"Returned RfqCustomerSupport with id: {id}";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse); 
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
@@ -639,7 +639,7 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
-             
+
         }
 
 
@@ -777,7 +777,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
-                }               
+                }
 
                 var createRfqCS = _mapper.Map<RfqCustomerSupport>(rfqCustomerSupportDto);
 
@@ -843,9 +843,9 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                
-                 var createRfq = _mapper.Map<Rfq>(rfqPostDto);
-               await _rfqRepository.CreateRfq(createRfq);
+
+                var createRfq = _mapper.Map<Rfq>(rfqPostDto);
+                await _rfqRepository.CreateRfq(createRfq);
                 _rfqRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
@@ -888,7 +888,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Message = "Invalid rfqLPCosting object sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(serviceResponse); 
+                    return BadRequest(serviceResponse);
                 }
                 var createRfqLPCosting = _mapper.Map<RfqLPCosting>(rfqLPCostingDtoPost);
                 var rfqUpdate = createRfqLPCosting.RfqNumber;
@@ -910,7 +910,7 @@ namespace Tips.SalesService.Api.Controllers
                     }
                 }
                 createRfqLPCosting.RfqLPCostingItems = lpCostingItemList;
-               
+
 
                 await _rfqlpcostingRepository.CreateRfqLPCosting(createRfqLPCosting);
                 _rfqRepository.Update(updateRfqIsLpCosting);
@@ -1019,7 +1019,7 @@ namespace Tips.SalesService.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                 var updaterfq = _mapper.Map(rfqUpdateDto, getRfqById);                
+                var updaterfq = _mapper.Map(rfqUpdateDto, getRfqById);
                 string result = await _rfqRepository.UpdateRfq(updaterfq);
                 _logger.LogInfo(result);
                 _rfqRepository.SaveAsync();
@@ -1077,7 +1077,7 @@ namespace Tips.SalesService.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                var updateRfqEngg = _mapper.Map(rfqEnggDtoUpdate, getRfqEnggById);        
+                var updateRfqEngg = _mapper.Map(rfqEnggDtoUpdate, getRfqEnggById);
 
                 string result = await _rfqenggRepository.UpdateRfqEngg(updateRfqEngg);
                 _logger.LogInfo(result);
@@ -1139,7 +1139,7 @@ namespace Tips.SalesService.Api.Controllers
                 var lpCostingItemtemDto = rfqLPCostingDtoUpdate.RfqLPCostingItems;
 
                 var rfqlpcostingitemList = new List<RfqLPCostingItem>();
-                if (lpCostingItemtemDto != null) 
+                if (lpCostingItemtemDto != null)
                 {
                     for (int i = 0; i < lpCostingItemtemDto.Count; i++)
                     {
@@ -1152,7 +1152,7 @@ namespace Tips.SalesService.Api.Controllers
 
                     }
                 }
-                var updateData = _mapper.Map(rfqLPCostingDtoUpdate, updateRfqlpCosting);               
+                var updateData = _mapper.Map(rfqLPCostingDtoUpdate, updateRfqlpCosting);
 
                 string result = await _rfqlpcostingRepository.UpdateRfqLPCosting(updateData);
                 _logger.LogInfo(result);
@@ -1208,14 +1208,14 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
-                }               
+                }
 
                 var updateRfqCS = _mapper.Map<RfqCustomerSupport>(GetRfqCSById);
 
                 var rfqCSItemDto = rfqCustomerSupportUpdateDto.RfqCustomerSupportItems;
 
                 var rfqCsItemList = new List<RfqCustomerSupportItems>();
-                if (rfqCSItemDto != null) 
+                if (rfqCSItemDto != null)
                 {
                     for (int i = 0; i < rfqCSItemDto.Count; i++)
                     {
@@ -1230,7 +1230,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 string result = await _repository.UpdateRfqCustomerSupport(data);
                 _logger.LogInfo(result);
-                 _repository.SaveAsync();
+                _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Update Successfully";
                 serviceResponse.Success = true;
@@ -1424,19 +1424,19 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 var bulklist = _mapper.Map<List<ReleaseLp>>(releaseLpDtoPosts);
 
-               
-                    var bulkData = bulklist[0].RfqNumber;
-              
+
+                var bulkData = bulklist[0].RfqNumber;
+
                 var lpreleases = await _rfqRepository.RfqLpCostingReleaseByRfqNumbers(bulkData);
                 lpreleases.IsLpCostingRelease = true;
 
                 foreach (var releaseLpdetails in bulklist)
                 {
-                    
+
                     _releaseLpRepository.BulkRelease(releaseLpdetails);
                 }
                 _rfqRepository.Update(lpreleases);
-                _releaseLpRepository.SaveAsync();               
+                _releaseLpRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
@@ -1456,8 +1456,8 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         //Unrelease active API
-        [HttpPut]
-        public async Task<IActionResult> UpdateRfqEnggItemUnRelease([FromBody] int id)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRfqEnggItemUnRelease(int id)
         {
             ServiceResponse<RfqEnggDto> serviceResponse = new ServiceResponse<RfqEnggDto>();
 
@@ -1481,7 +1481,7 @@ namespace Tips.SalesService.Api.Controllers
 
 
                 serviceResponse.Data = null;
-                serviceResponse.Message = "RfqEnggItem  UnRelease Activated Successfully ";
+                serviceResponse.Message = "RfqEnggItem  UnReleased Successfully ";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -1498,8 +1498,8 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         //Unrelease active API
-        [HttpPut]
-        public async Task<IActionResult> UpdateRfqRfqCustomerSupportItemUnRelease([FromBody] int id)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRfqRfqCustomerSupportItemUnRelease(int id)
         {
             ServiceResponse<RfqCustomerSupportDto> serviceResponse = new ServiceResponse<RfqCustomerSupportDto>();
 
@@ -1523,7 +1523,7 @@ namespace Tips.SalesService.Api.Controllers
 
 
                 serviceResponse.Data = null;
-                serviceResponse.Message = "RfqCustomerSupportItem  UnRelease Activated Successfully ";
+                serviceResponse.Message = "RfqCustomerSupportItem  UnReleased Successfully ";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

@@ -28,27 +28,27 @@ namespace Tips.Warehouse.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllBTODeliveryOrder([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllBTODeliveryOrders([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<BTODeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderDto>>();
             try
             {
-                var allBTODeliveryOrdersDetails = await _repository.GetAllBTODeliveryOrder(pagingParameter);
+                var getAllBTODeliveryOrdersDetails = await _repository.GetAllBTODeliveryOrders(pagingParameter);
                 var metadata = new
                 {
-                    allBTODeliveryOrdersDetails.TotalCount,
-                    allBTODeliveryOrdersDetails.PageSize,
-                    allBTODeliveryOrdersDetails.CurrentPage,
-                    allBTODeliveryOrdersDetails.HasNext,
-                    allBTODeliveryOrdersDetails.HasPreviuos
+                    getAllBTODeliveryOrdersDetails.TotalCount,
+                    getAllBTODeliveryOrdersDetails.PageSize,
+                    getAllBTODeliveryOrdersDetails.CurrentPage,
+                    getAllBTODeliveryOrdersDetails.HasNext,
+                    getAllBTODeliveryOrdersDetails.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all BTODeliveryOrder");
-                var result = _mapper.Map<IEnumerable<BTODeliveryOrderDto>>(allBTODeliveryOrdersDetails);
+                var result = _mapper.Map<IEnumerable<BTODeliveryOrderDto>>(getAllBTODeliveryOrdersDetails);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all BTODeliveryOrder";
+                serviceResponse.Message = "Returned all BTODeliveryOrders";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -71,9 +71,9 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<BTODeliveryOrderDto> serviceResponse = new ServiceResponse<BTODeliveryOrderDto>();
             try
             {
-                var bTODeliveryOrderDetailById = await _repository.GetBTODeliveryOrderById(id);
+                var getBTODeliveryOrderDetailById = await _repository.GetBTODeliveryOrderById(id);
 
-                if (bTODeliveryOrderDetailById == null)
+                if (getBTODeliveryOrderDetailById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"BTODeliveryOrder  hasn't been found in db.";
@@ -86,25 +86,25 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
 
-                    BTODeliveryOrderDto bTODeliveryOrderDto = _mapper.Map<BTODeliveryOrderDto>(bTODeliveryOrderDetailById);
+                    BTODeliveryOrderDto bTODeliveryOrderDto = _mapper.Map<BTODeliveryOrderDto>(getBTODeliveryOrderDetailById);
 
-                    List<BTODeliveryOrderItemsDto> BTODeliveryOrderItemsDtoList = new List<BTODeliveryOrderItemsDto>();
+                    List<BTODeliveryOrderItemsDto> bTODeliveryOrderItemsDtoList = new List<BTODeliveryOrderItemsDto>();
 
-                    if (bTODeliveryOrderDetailById.BTODeliveryOrderItems != null)
+                    if (getBTODeliveryOrderDetailById.BTODeliveryOrderItems != null)
                     {
 
-                        foreach (var deliveryOrderitemDetails in bTODeliveryOrderDetailById.BTODeliveryOrderItems)
+                        foreach (var deliveryOrderitemDetails in getBTODeliveryOrderDetailById.BTODeliveryOrderItems)
                         {
-                            BTODeliveryOrderItemsDto BTODeliveryOrderItemsDtos = _mapper.Map<BTODeliveryOrderItemsDto>(deliveryOrderitemDetails);
-                            BTODeliveryOrderItemsDtos.BTOSerialNumberDto = _mapper.Map<List<BTOSerialNumberDto>>(deliveryOrderitemDetails.BTOSerialNumbers);
-                            BTODeliveryOrderItemsDtoList.Add(BTODeliveryOrderItemsDtos);
+                            BTODeliveryOrderItemsDto bTODeliveryOrderItemsDtos = _mapper.Map<BTODeliveryOrderItemsDto>(deliveryOrderitemDetails);
+                            bTODeliveryOrderItemsDtos.BTOSerialNumberDto = _mapper.Map<List<BTOSerialNumberDto>>(deliveryOrderitemDetails.BTOSerialNumbers);
+                            bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDtos);
                         }
                     }
 
-                    bTODeliveryOrderDto.BTODeliveryOrderItemsDto = BTODeliveryOrderItemsDtoList;
+                    bTODeliveryOrderDto.BTODeliveryOrderItemsDto = bTODeliveryOrderItemsDtoList;
 
                     serviceResponse.Data = bTODeliveryOrderDto;
-                    serviceResponse.Message = "Returned BTODeliveryOrder";
+                    serviceResponse.Message = "Returned BTODeliveryOrderById Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -176,7 +176,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside BtoDelivaryOrder action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateBTODelivaryOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong ,try again";
                 serviceResponse.Success = false;
@@ -187,12 +187,12 @@ namespace Tips.Warehouse.Api.Controllers
 
         
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBTODeliveryOrder(int id, [FromBody] BTODeliveryOrderDto bTODeliveryOrderDto)
+        public async Task<IActionResult> UpdateBTODeliveryOrder(int id, [FromBody] BTODeliveryOrderDtoUpdate bTODeliveryOrderDtoUpdate)
         {
-            ServiceResponse<BTODeliveryOrderDto> serviceResponse = new ServiceResponse<BTODeliveryOrderDto>();
+            ServiceResponse<BTODeliveryOrderDtoUpdate> serviceResponse = new ServiceResponse<BTODeliveryOrderDtoUpdate>();
             try
             {
-                if (bTODeliveryOrderDto is null)
+                if (bTODeliveryOrderDtoUpdate is null)
                 {
                     _logger.LogError("Update BTODeliveryOrder object sent from client is null.");
                     serviceResponse.Data = null;
@@ -222,10 +222,8 @@ namespace Tips.Warehouse.Api.Controllers
                 }
 
 
-                var bTODeliveryOrder = _mapper.Map<BTODeliveryOrder>(bTODeliveryOrderDto);
-
-                var bTODeliveryOrderitemsDto = bTODeliveryOrderDto.BTODeliveryOrderItemsDto;
-
+                var bTODeliveryOrder = _mapper.Map<BTODeliveryOrder>(bTODeliveryOrderbyId);
+                var bTODeliveryOrderitemsDto = bTODeliveryOrderDtoUpdate.BTODeliveryOrderItemsDtoUpdate;
                 var bTODeliveryOrderitemsList = new List<BTODeliveryOrderItems>();
 
                 if (bTODeliveryOrderitemsDto != null)
@@ -233,16 +231,15 @@ namespace Tips.Warehouse.Api.Controllers
                     for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
                     {
                         BTODeliveryOrderItems bTODeliveryOrderItems = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);
-                        bTODeliveryOrderItems.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDto);
+                        bTODeliveryOrderItems.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDtoUpdate);
                         bTODeliveryOrderitemsList.Add(bTODeliveryOrderItems);
-
                     }
                 }
 
                 bTODeliveryOrder.BTODeliveryOrderItems = bTODeliveryOrderitemsList;
-                var data = _mapper.Map(bTODeliveryOrderDto, bTODeliveryOrder);
+                var updateBTODeliveryOrder = _mapper.Map(bTODeliveryOrderDtoUpdate, bTODeliveryOrder);
 
-                string result = await _repository.UpdateBTODeliveryOrder(data);
+                string result = await _repository.UpdateBTODeliveryOrder(updateBTODeliveryOrder);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -268,8 +265,8 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<BTODeliveryOrderDto> serviceResponse = new ServiceResponse<BTODeliveryOrderDto>();
             try
             {
-                var bTODeliveryOrderDetailById = await _repository.GetBTODeliveryOrderById(id);
-                if (bTODeliveryOrderDetailById == null)
+                var deleteBTODeliveryOrder = await _repository.GetBTODeliveryOrderById(id);
+                if (deleteBTODeliveryOrder == null)
                 {
                     _logger.LogError($"Delete BTODeliveryOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -278,7 +275,7 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.DeleteBTODeliveryOrder(bTODeliveryOrderDetailById);
+                string result = await _repository.DeleteBTODeliveryOrder(deleteBTODeliveryOrder);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
 
@@ -290,7 +287,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeleteBTODeliveryOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong,try again";
                 serviceResponse.Success = false;

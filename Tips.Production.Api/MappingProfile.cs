@@ -13,8 +13,8 @@ namespace Tips.Production.Api
         public MappingProfile()
         {
             CreateMap<ShopOrder, ShopOrderDto>().ReverseMap();
-            CreateMap<ShopOrder, ShopOrderPostDto>().ReverseMap();
-            CreateMap<ShopOrder, ShopOrderUpdateDto>().ReverseMap();
+            CreateMap<ShopOrder, ShopOrderDtoPost>().ReverseMap();
+            CreateMap<ShopOrder, ShopOrderDtoUpdate>().ReverseMap();
 
             CreateMap<ShopOrderItem, ShopOrderItemDto>().ReverseMap();
             CreateMap<ShopOrderItem, ShopOrderItemDtoPost>().ReverseMap();

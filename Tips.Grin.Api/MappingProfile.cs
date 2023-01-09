@@ -40,6 +40,8 @@ namespace Tips.Grin.Api
             CreateMap<BinningItems, BinningItemsUpdateDto>().ReverseMap();
 
             CreateMap<DocumentUpload, DocumentUploadDto>().ReverseMap();
+            CreateMap<DocumentUpload, DocumentUploadPostDto>().ReverseMap();
+            CreateMap<DocumentUpload, DocumentUploadUpdateDto>().ReverseMap();
 
 
         }

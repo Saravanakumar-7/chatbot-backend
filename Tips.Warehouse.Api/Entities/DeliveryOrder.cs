@@ -15,7 +15,7 @@
        public DateTime? CreatedOn { get; set; }
        public string? LastModifiedBy { get; set; }
        public DateTime? LastModifiedOn { get; set; }
-       public List<DeliveryOrderItems>? deliveryOrderItems { get; set; }
+       public List<DeliveryOrderItems>? DeliveryOrderItems { get; set; }
 
     }
 }
