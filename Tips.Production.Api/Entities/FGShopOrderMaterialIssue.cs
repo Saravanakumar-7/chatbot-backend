@@ -13,6 +13,7 @@ namespace Tips.Production.Api.Entities
         public decimal ShopOrderQty { get; set; }
         public string ShopOrderType { get; set; }
         public string Description { get; set; }
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

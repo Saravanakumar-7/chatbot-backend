@@ -30,8 +30,7 @@ namespace Entities
 
         [DefaultValue(true)]
         public bool IsActive { get; set; }
-
-        public string Unit { get; set; }
+         
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
