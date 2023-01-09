@@ -15,15 +15,14 @@ namespace Tips.SalesService.Api.Entities
         public string? CustomerItemNumber { get; set; }
         public string Description { get; set; }
         [Precision(13, 8)]
-        public decimal? Quantity { get; set; }
-        public string? CostingBomVersionNo { get; }
+        public decimal? Qty { get; set; }
+        public string? CostingBomVersionNumber { get; }
         public string? ItemNumber { get; set; }
-        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public int ForeCastEnggId { get; set; }
-        public ForeCastEngg? foreCastEngg { get; set; }
+        public ForeCastEngg? ForeCastEngg { get; set; }
     }
 }

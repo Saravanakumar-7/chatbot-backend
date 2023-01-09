@@ -3,12 +3,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Tips.SalesService.Api.Entities.DTOs
 {
-    public class SaOqcDto
+    public class FinalOqcDto
     {
 
         public int? Id { get; set; }
         public string? ProjectNumber { get; set; }
         public string? FGItemNumber { get; set; }
+
+        [Required]
+        public string ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
 
         [Precision(18, 3)]
@@ -18,11 +21,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? SAShopOrderQty { get; set; }
         [Precision(18, 3)]
-        public decimal? SAPendingQty { get; set; }
+        public decimal? PendingQty { get; set; }
         [Precision(18, 3)]
-        public decimal? SAAcceptedQty { get; set; }
+        public decimal? AcceptedQty { get; set; }
         [Precision(18, 3)]
-        public decimal? SARejectedQty { get; set; }
+        public decimal? RejectedQty { get; set; }
 
         public string Unit { get; set; }
 
@@ -33,7 +36,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
     }
 
-    public class SaOqcDtoPost
+    public class FinalOqcDtoPost
     {
 
 
@@ -53,22 +56,17 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? SAAcceptedQty { get; set; }
         [Precision(18, 3)]
-        public decimal? SARejectedQty { get; set; }
-
-        public string Unit { get; set; }
-
-
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public decimal? SARejectedQty { get; set; }        
 
     }
-    public class SaOqcDtoUpdate
+    public class FinalOqcDtoUpdate
     {
         public int? Id { get; set; }
         public string? ProjectNumber { get; set; }
         public string? FGItemNumber { get; set; }
+
+        [Required]
+        public string ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
 
         [Precision(18, 3)]
@@ -78,18 +76,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? SAShopOrderQty { get; set; }
         [Precision(18, 3)]
-        public decimal? SAPendingQty { get; set; }
+        public decimal? PendingQty { get; set; }
         [Precision(18, 3)]
-        public decimal? SAAcceptedQty { get; set; }
+        public decimal? AcceptedQty { get; set; }
         [Precision(18, 3)]
-        public decimal? SARejectedQty { get; set; }
+        public decimal? RejectedQty { get; set; }
 
         public string Unit { get; set; }
 
-
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
     }
 }

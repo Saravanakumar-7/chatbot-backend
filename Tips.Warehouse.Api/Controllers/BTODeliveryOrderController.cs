@@ -224,7 +224,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var bTODeliveryOrder = _mapper.Map<BTODeliveryOrder>(bTODeliveryOrderDtoUpdate);
 
-                var bTODeliveryOrderitemsDto = bTODeliveryOrderDtoUpdate.BTODeliveryOrderItemsDto;
+                var bTODeliveryOrderitemsDto = bTODeliveryOrderDtoUpdate.BTODeliveryOrderItemsDtoUpdate;
 
                 var bTODeliveryOrderitemsList = new List<BTODeliveryOrderItems>();
 
@@ -233,13 +233,13 @@ namespace Tips.Warehouse.Api.Controllers
                     for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
                     {
                         BTODeliveryOrderItems bTODeliveryOrderItems = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);
-                        bTODeliveryOrderItems.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDto);
+                        bTODeliveryOrderItems.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDtoUpdate);
 
                     }
                 }
 
                 bTODeliveryOrder.BTODeliveryOrderItems = bTODeliveryOrderitemsList;
-                var data = _mapper.Map(bTODeliveryOrderDto, bTODeliveryOrder);
+                var data = _mapper.Map(bTODeliveryOrderDtoUpdate, bTODeliveryOrder);
 
                 string result = await _repository.UpdateBTODeliveryOrder(data);
                 _logger.LogInfo(result);

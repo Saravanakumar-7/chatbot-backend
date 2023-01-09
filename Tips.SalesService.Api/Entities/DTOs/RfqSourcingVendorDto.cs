@@ -22,35 +22,34 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? Duties { get; set; }
 
         [Precision(13, 3)]
-        public decimal? QuoteQuantity { get; set; }
+        public decimal? QuoteQty { get; set; }
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }       
-        public bool IsActive { get; set; } = true;       
        
     }
     public class RfqSourcingVendorDtoPost
     {
         [StringLength(500, ErrorMessage = "Vendor can't be longer than 500 characters")]
-
         public string? Vendor { get; set; }
+
         [Required(ErrorMessage = "UnitPrice is required")]
         [Precision(13, 3)]
         public decimal? UnitPrice { get; set; }
         public string? UnitPricePer { get; set; }
+
         [StringLength(500, ErrorMessage = "Currency can't be longer than 500 characters")]
-
         public string? Currency { get; set; }
+
         [StringLength(500, ErrorMessage = "MOQ can't be longer than 500 characters")]
-
         public string? MOQ { get; set; }
+
         [StringLength(500, ErrorMessage = "LeadTime can't be longer than 500 characters")]
-
         public string? LeadTime { get; set; }
+
         [StringLength(500, ErrorMessage = "Freight can't be longer than 500 characters")]
-
         public string? Freight { get; set; }
-       [StringLength(500, ErrorMessage = "Duties can't be longer than 500 characters")]
 
+       [StringLength(500, ErrorMessage = "Duties can't be longer than 500 characters")]
         public string? Duties { get; set; }
 
         [Precision(13, 3)]
@@ -64,26 +63,26 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
        
         [StringLength(500, ErrorMessage = "Vendor can't be longer than 500 characters")]
-
         public string? Vendor { get; set; }
+
         [Required(ErrorMessage = "UnitPrice is required")]
         [Precision(13, 3)]
         public decimal? UnitPrice { get; set; }
         public string? UnitPricePer { get; set; }
+
         [StringLength(500, ErrorMessage = "Currency can't be longer than 500 characters")]
-
         public string? Currency { get; set; }
+
         [StringLength(500, ErrorMessage = "MOQ can't be longer than 500 characters")]
-
         public string? MOQ { get; set; }
+
         [StringLength(500, ErrorMessage = "LeadTime can't be longer than 500 characters")]
-
         public string? LeadTime { get; set; }
+
         [StringLength(500, ErrorMessage = "Freight can't be longer than 500 characters")]
-
         public string? Freight { get; set; }
-        [StringLength(500, ErrorMessage = "Duties can't be longer than 500 characters")]
 
+        [StringLength(500, ErrorMessage = "Duties can't be longer than 500 characters")]
         public string? Duties { get; set; }
 
         [Precision(13, 3)]

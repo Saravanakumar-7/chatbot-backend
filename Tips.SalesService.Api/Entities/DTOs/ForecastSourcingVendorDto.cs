@@ -23,13 +23,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int? QuoteQuantity { get; set; }
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }
-        public string? UploadFile { get; set; }
-        public bool IsActive { get; set; } = true;
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+      
     }
     public class ForecastSourcingVendorDtoPost
     {
@@ -55,12 +49,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [StringLength(500, ErrorMessage = "Duties can't be longer than 500 characters")]
 
         public string? Duties { get; set; }
-        public int? QuoteQuantity { get; set; }
+        public int? QuoteQty { get; set; }
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }
-        public string? UploadFile { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
     }
     public class ForecastSourcingVendorDtoUpdate
     {
@@ -88,11 +79,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [StringLength(500, ErrorMessage = "Duties can't be longer than 500 characters")]
 
         public string? Duties { get; set; }
-        public int? QuoteQuantity { get; set; }
+        public int? QuoteQty { get; set; }
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }
-        public string? UploadFile { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
+
+       
     }
 }

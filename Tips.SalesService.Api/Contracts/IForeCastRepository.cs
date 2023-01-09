@@ -20,5 +20,8 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> UpdateForeCast(ForeCast foreCast);
         Task<string> DeleteForeCast(ForeCast foreCast);
         Task<IEnumerable<ForeCastNumberListDto>> GetAllActiveForeCastNumberList();
+        Task<ForeCast> ForeCastSourcingByForecasrNumbers(string id);
+        Task<ForeCast> ForeCastLpcostingByForeCastNumbers(string id);
+        Task<ForeCast> ForeCastLpCostingReleaseByForeCastNumbers(string id);
     }
 }

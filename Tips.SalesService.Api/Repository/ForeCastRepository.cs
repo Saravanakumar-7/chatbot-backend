@@ -52,7 +52,27 @@ namespace Tips.SalesService.Api.Repository
 
             return forecastlistDetails;
         }
-
+        public async Task<ForeCast>  ForeCastSourcingByForecasrNumbers(string ForecastNumber)
+        {
+            var SourcingByForeCastNumber = await _tipsSalesServiceDbContext.ForeCasts
+              .Where(x => x.ForeCastNumber == ForecastNumber)
+                        .FirstOrDefaultAsync();
+            return SourcingByForeCastNumber;
+        }
+        public async Task<ForeCast> ForeCastLpcostingByForeCastNumbers(string ForecastNumber)
+        {
+            var lpcostingByForeCastNumber = await _tipsSalesServiceDbContext.ForeCasts
+              .Where(x => x.ForeCastNumber == ForecastNumber)
+                        .FirstOrDefaultAsync();
+            return lpcostingByForeCastNumber;
+        }
+        public async Task<ForeCast> ForeCastLpCostingReleaseByForeCastNumbers(string ForecastNumber)
+        {
+            var lpcostingReleaseByForeCastNumber = await _tipsSalesServiceDbContext.ForeCasts
+              .Where(x => x.ForeCastNumber == ForecastNumber)
+                        .FirstOrDefaultAsync();
+            return lpcostingReleaseByForeCastNumber;
+        }
         public async Task<PagedList<ForeCast>> GetAllForeCast(PagingParameter pagingParameter)
         {
             var forecast = PagedList<ForeCast>.ToPagedList(FindAll()
@@ -75,7 +95,8 @@ namespace Tips.SalesService.Api.Repository
             Update(foreCast);
             string result = $"ForeCast of Detail {foreCast.Id} is updated successfully!";
             return result;
-        }
+        }      
+       
     }
     public class ForeCastCustomerSupportRepository : RepositoryBase<ForeCastCustomerSupport>, IForeCastCustomerSupportRepository
     {
@@ -106,24 +127,24 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<ForeCastCustomerSupport>> GetAllForeCastCustomerSupports(PagingParameter pagingParameter)
         {
-            var foreCastCustomerSupport = PagedList<ForeCastCustomerSupport>.ToPagedList(FindAll()
-            .Include(t => t.foreCastCustomerSupportItems)
-            .ThenInclude(u => u.foreCastCSDeliverySchedule)
-            .Include(x => x.foreCastCustomerSupportNotes)
+            var getAllForeCastCS= PagedList<ForeCastCustomerSupport>.ToPagedList(FindAll()
+            .Include(t => t.ForeCastCustomerSupportItems)
+            .ThenInclude(u => u.ForeCastCSDeliverySchedule)
+            .Include(x => x.ForeCastCustomerSupportNotes)
             .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return foreCastCustomerSupport;
+            return getAllForeCastCS;
         }
 
 
         public async Task<ForeCastCustomerSupport> GetForeCastCustomerSupportById(int id)
         {
-            var forecastCustomerSupport = await _tipsSalesServiceDbContext.ForeCastCustomerSupports.Where(x => x.Id == id)
-                              .Include(t => t.foreCastCustomerSupportItems)
-                              .ThenInclude(n => n.foreCastCSDeliverySchedule)
-                           .Include(m => m.foreCastCustomerSupportNotes)
+            var getForeCastCSById = await _tipsSalesServiceDbContext.ForeCastCustomerSupports.Where(x => x.Id == id)
+                              .Include(t => t.ForeCastCustomerSupportItems)
+                              .ThenInclude(n => n.ForeCastCSDeliverySchedule)
+                           .Include(m => m.ForeCastCustomerSupportNotes)
                            .FirstOrDefaultAsync();
 
-            return forecastCustomerSupport;
+            return getForeCastCSById;
         }
 
 
@@ -131,9 +152,9 @@ namespace Tips.SalesService.Api.Repository
         public async Task<ForeCastCustomerSupport> ForeCastCustomerSupportByForeCastNumber(string ForeCastNumber)
         {
             var csByForeCastNumber = await _tipsSalesServiceDbContext.ForeCastCustomerSupports
-                .Include(t => t.foreCastCustomerSupportItems)
-                .ThenInclude(n => n.foreCastCSDeliverySchedule)
-                .Include(m => m.foreCastCustomerSupportNotes)
+                .Include(t => t.ForeCastCustomerSupportItems)
+                .ThenInclude(n => n.ForeCastCSDeliverySchedule)
+                .Include(m => m.ForeCastCustomerSupportNotes)
               .Where(x => x.ForecastNumber == ForeCastNumber)
                         .FirstOrDefaultAsync();
             return csByForeCastNumber;
@@ -225,29 +246,30 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<ForeCastEngg>> GetAllForeCastEngg(PagingParameter pagingParameter)
         {
-            var foreCastEngg = PagedList<ForeCastEngg>.ToPagedList(FindAll()
-            .Include(t => t.foreCastEnggItems)
-            .Include(x => x.foreCastEnggRiskIdentifications)
+            var getAllForeCastEngg = PagedList<ForeCastEngg>.ToPagedList(FindAll()
+            .Include(t => t.ForeCastEnggItems)
+            .Include(x => x.ForeCastEnggRiskIdentifications)
             .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return foreCastEngg;
+            return getAllForeCastEngg;
         }
 
         public async Task<ForeCastEngg> GetForeCastEnggById(int id)
         {
-            var foreCastEngg = await _tipsSalesServiceDbContext.ForeCastEnggs.Where(x => x.Id == id)
-                              .Include(t => t.foreCastEnggItems)
-                           .Include(m => m.foreCastEnggRiskIdentifications)
+            var GetForeCastEnggById = await _tipsSalesServiceDbContext.ForeCastEnggs.Where(x => x.Id == id)
+                              .Include(t => t.ForeCastEnggItems)
+                           .Include(m => m.ForeCastEnggRiskIdentifications)
                            .FirstOrDefaultAsync();
 
-            return foreCastEngg;
+            return GetForeCastEnggById;
         }
         public async Task<ForeCastEngg> ForeCastEnggByForeCastNumber(string ForeCastNumber)
         {
             var EnggByForeCastNumber = await _tipsSalesServiceDbContext.ForeCastEnggs
-                .Include(t => t.foreCastEnggItems)
-                .Include(m => m.foreCastEnggRiskIdentifications)
+                .Include(t => t.ForeCastEnggItems)
+                .Include(m => m.ForeCastEnggRiskIdentifications)
               .Where(x => x.ForecastNumber == ForeCastNumber)
                         .FirstOrDefaultAsync();
+
             return EnggByForeCastNumber;
         }
 
@@ -276,8 +298,8 @@ namespace Tips.SalesService.Api.Repository
         {
             forecastSourcing.CreatedBy = "Admin";
             forecastSourcing.CreatedOn = DateTime.Now;
-            var result = await Create(forecastSourcing);
             forecastSourcing.Unit = "Bangalore";
+            var result = await Create(forecastSourcing);
             return result.Id;
         }
 
@@ -291,8 +313,8 @@ namespace Tips.SalesService.Api.Repository
         public async Task<PagedList<ForecastSourcing>> GetAllForeCastSourcing(PagingParameter pagingParameter)
         {
             var forecastsourcing = PagedList<ForecastSourcing>.ToPagedList(FindAll()
-           .Include(t => t.forecastSourcingItems)
-           .ThenInclude(x => x.forecastSourcingVendors)
+           .Include(t => t.ForecastSourcingItems)
+           .ThenInclude(x => x.ForecastSourcingVendors)
            .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
             return forecastsourcing;
 
@@ -301,8 +323,8 @@ namespace Tips.SalesService.Api.Repository
         public async Task<ForecastSourcing> GetForeCastSourcingById(int id)
         {
             var forecastsourcing = await _tipsSalesServiceDbContext.ForecastSourcings.Where(x => x.Id == id)
-                               .Include(t => t.forecastSourcingItems)
-                               .ThenInclude(x => x.forecastSourcingVendors)
+                               .Include(t => t.ForecastSourcingItems)
+                               .ThenInclude(x => x.ForecastSourcingVendors)
                             .FirstOrDefaultAsync();
 
             return forecastsourcing;
@@ -402,8 +424,7 @@ namespace Tips.SalesService.Api.Repository
         {
             foreCastCustomGroup.CreatedBy = "Admin";
             foreCastCustomGroup.CreatedOn = DateTime.Now;
-            foreCastCustomGroup.LastModifiedBy = "Admin";
-            foreCastCustomGroup.LastModifiedOn = DateTime.Now;
+            foreCastCustomGroup.Unit = "Banglore";
             var result = await Create(foreCastCustomGroup);
             return result.Id;
         }
@@ -417,15 +438,15 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<ForeCastCustomGroup>> GetAllForeCastCustomGroup(PagingParameter pagingParameter)
         {
-            var foreCastCustomGroupDetails = PagedList<ForeCastCustomGroup>.ToPagedList(FindAll()
+            var getAllForeCastCustomGroup = PagedList<ForeCastCustomGroup>.ToPagedList(FindAll()
                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return foreCastCustomGroupDetails;
+            return getAllForeCastCustomGroup;
         }
 
         public async Task<ForeCastCustomGroup> GetForeCastCustomGroupById(int id)
         {
-            var foreCastCustomGroupDetails = await _tipsSalesServiceDbContext.ForeCastCustomGroups.Where(x => x.Id == id).FirstOrDefaultAsync();
-            return foreCastCustomGroupDetails;
+            var getForeCastCustomGroupById = await _tipsSalesServiceDbContext.ForeCastCustomGroups.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return getForeCastCustomGroupById;
         }
 
         public async Task<string> UpdateForeCastCustomGroup(ForeCastCustomGroup foreCastCustomGroup)
@@ -451,8 +472,7 @@ namespace Tips.SalesService.Api.Repository
         {
             foreCastCustomField.CreatedBy = "Admin";
             foreCastCustomField.CreatedOn = DateTime.Now;
-            foreCastCustomField.LastModifiedBy = "Admin";
-            foreCastCustomField.LastModifiedOn = DateTime.Now;
+            foreCastCustomField.Unit = "Banglore";
             var result = await Create(foreCastCustomField);
             return result.Id;
         }
@@ -466,15 +486,15 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<ForeCastCustomField>> GetAllForeCastCustomField(PagingParameter pagingParameter)
         {
-            var foreCastCustomFieldDetails = PagedList<ForeCastCustomField>.ToPagedList(FindAll()
+            var getAllForeCastCustomField = PagedList<ForeCastCustomField>.ToPagedList(FindAll()
                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return foreCastCustomFieldDetails;
+            return getAllForeCastCustomField;
         }
 
         public async Task<ForeCastCustomField> GetForeCastCustomFieldById(int id)
         {
-            var foreCastCustomFieldDetails = await _tipsSalesServiceDbContext.ForeCastCustomFields.Where(x => x.Id == id).FirstOrDefaultAsync();
-            return foreCastCustomFieldDetails;
+            var getForeCastCustomFieldById = await _tipsSalesServiceDbContext.ForeCastCustomFields.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return getForeCastCustomFieldById;
         }
 
         public async Task<string> UpdateForeCastCustomField(ForeCastCustomField foreCastCustomField)

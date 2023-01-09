@@ -3,11 +3,12 @@ using System.Reflection;
 
 namespace Tips.SalesService.Api.Entities
 {
-    public class SaOqc
+    public class FinalOqc
     {
         public int? Id { get; set; }
         public string? ProjectNumber { get; set; }
         public string? FGItemNumber { get; set; }
+        public string ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
 
         [Precision(18, 3)]
@@ -17,11 +18,11 @@ namespace Tips.SalesService.Api.Entities
         [Precision(18, 3)]
         public decimal? SAShopOrderQty { get; set; }
         [Precision(18, 3)]
-        public decimal? SAPendingQty { get; set; }
+        public decimal? PendingQty { get; set; }
         [Precision(18, 3)]
-        public decimal? SAAcceptedQty { get; set; }
+        public decimal? AcceptedQty { get; set; }
         [Precision(18, 3)]
-        public decimal? SARejectedQty { get; set; }
+        public decimal? RejectedQty { get; set; }
 
         public string Unit { get; set; }
 

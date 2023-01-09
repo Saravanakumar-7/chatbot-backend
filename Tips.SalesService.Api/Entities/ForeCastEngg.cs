@@ -23,7 +23,7 @@ namespace Tips.SalesService.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<ForeCastEnggItems>? foreCastEnggItems { get; set; }
-        public List<ForeCastEnggRiskIdentification>? foreCastEnggRiskIdentifications { get; set; }
+        public List<ForeCastEnggItems>? ForeCastEnggItems { get; set; }
+        public List<ForeCastEnggRiskIdentification>? ForeCastEnggRiskIdentifications { get; set; }
     }
 }

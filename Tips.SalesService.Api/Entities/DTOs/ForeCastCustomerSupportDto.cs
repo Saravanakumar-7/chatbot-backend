@@ -24,9 +24,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<ForeCastCustomerSupportItemDto>? foreCastCustomerSupportItems { get; set; }
+        public List<ForeCastCustomerSupportItemDto>? ForeCastCustomerSupportItems { get; set; }
 
-        public List<ForeCastCustomerSupportNotesDto>? foreCastCustomerSupportNotes { get; set; }
+        public List<ForeCastCustomerSupportNotesDto>? ForeCastCustomerSupportNotes { get; set; }
     }
     public class ForeCastCustomerSupportPostDto
     {
@@ -42,8 +42,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<ForeCastCustomerSupportItemPostDto>? foreCastCustomerSupportItems { get; set; }
-        public List<ForeCastCustomerSupportNotesPostDto>? foreCastCustomerSupportNotes { get; set; }
+        public List<ForeCastCustomerSupportItemPostDto>? ForeCastCustomerSupportItems { get; set; }
+        public List<ForeCastCustomerSupportNotesPostDto>? ForeCastCustomerSupportNotes { get; set; }
     }
     public class ForeCastCustomerSupportUpdateDto
     {
@@ -60,8 +60,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<ForeCastCustomerSupportItemUpdateDto>? foreCastCustomerSupportItems { get; set; }
-        public List<ForeCastCustomerSupportNotesUpdateDto>? foreCastCustomerSupportNotes { get; set; }
+        public List<ForeCastCustomerSupportItemUpdateDto>? ForeCastCustomerSupportItems { get; set; }
+        public List<ForeCastCustomerSupportNotesUpdateDto>? ForeCastCustomerSupportNotes { get; set; }
     }
     public class ForeCAstCustomerSupportUpdateReleaseDto
     {
@@ -81,8 +81,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<FpreCastCustomerSupportItemUpdateReleaseDto>? foreCastCustomerSupportItems { get; set; }
-        public List<ForeCastCustomerSupportNotesUpdateDto>? forecastCustomerSupportNotes { get; set; }
+        public List<FpreCastCustomerSupportItemUpdateReleaseDto>? ForeCastCustomerSupportItems { get; set; }
+        public List<ForeCastCustomerSupportNotesUpdateDto>? ForecastCustomerSupportNotes { get; set; }
 
     }
 }
