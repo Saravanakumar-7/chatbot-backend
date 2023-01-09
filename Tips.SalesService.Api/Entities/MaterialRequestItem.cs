@@ -11,6 +11,8 @@ namespace Tips.SalesService.Api.Entities
     public class MaterialRequestItem
     {
         public int Id { get; set; }
+
+        [Required(ErrorMessage = "MRNumber is required")]
         public string MRNumber { get; set; }
         public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
@@ -23,6 +25,10 @@ namespace Tips.SalesService.Api.Entities
         public bool IssueStatus { get; set; }
         [Precision(18,3)]
         public decimal? RequiredQty { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
         public int? MaterialRequestId { get; set; }
         public MaterialRequest? MaterialRequest { get; set; }
 

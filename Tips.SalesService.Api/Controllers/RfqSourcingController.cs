@@ -161,11 +161,13 @@ namespace Tips.SalesService.Api.Controllers
 
                 var rfqSourceData = createRfqSource.RFQNumber;
                 
-                    var rfqIsSourcingUpdate = await _rfqRepository.RfqSourcingByRfqNumbers(rfqSourceData);
+                var rfqIsSourcingUpdate = await _rfqRepository.RfqSourcingByRfqNumbers(rfqSourceData);
 
                 rfqIsSourcingUpdate.IsSourcing = true;
-                    var rfqSourceDto = rfqSourcingDtoPost.RfqSourcingItems;
-                    var sourceItemList = new List<RfqSourcingItems>();
+
+                var rfqSourceDto = rfqSourcingDtoPost.RfqSourcingItems;
+
+                var sourceItemList = new List<RfqSourcingItems>();
 
                     if (rfqSourceDto != null)
                     {

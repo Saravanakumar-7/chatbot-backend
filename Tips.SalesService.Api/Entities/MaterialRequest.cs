@@ -11,6 +11,9 @@ namespace Tips.SalesService.Api.Entities
     public class MaterialRequest
     {
         public int Id { get; set; }
+
+
+        [Required(ErrorMessage = "MRNumber is required")]
         public string MRNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public string? FGItemNumber { get; set; }

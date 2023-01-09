@@ -153,6 +153,7 @@ namespace Tips.SalesService.Api.Controllers
                 var materialReqDto = materialRequestDtoPost.MaterialRequestItems;
 
                 var materialReqItemList = new List<MaterialRequestItem>();
+
                 for (int i = 0; i < materialReqDto.Count; i++)
                 {
                     MaterialRequestItem materialItemListDetail = _mapper.Map<MaterialRequestItem>(materialReqDto[i]);

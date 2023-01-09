@@ -131,7 +131,7 @@ namespace Tips.Grin.Api.Controllers
                 }
 
 
-                //var binningItem = _mapper.Map<IEnumerable<BinningItems>>(binningDto.BinningItems);
+                var binningItem = _mapper.Map<IEnumerable<BinningItems>>(binningDto.BinningItems);
 
                 var BinningDetail = _mapper.Map<Binning>(binningDto);
 

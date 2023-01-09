@@ -187,12 +187,12 @@ namespace Tips.Warehouse.Api.Controllers
 
         
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBTODeliveryOrder(int id, [FromBody] BTODeliveryOrderDtoUpdate bTODeliveryOrderDtoUpdate)
+        public async Task<IActionResult> UpdateBTODeliveryOrder(int id, [FromBody] BTODeliveryOrderDto bTODeliveryOrderDto)
         {
             ServiceResponse<BTODeliveryOrderDto> serviceResponse = new ServiceResponse<BTODeliveryOrderDto>();
             try
             {
-                if (bTODeliveryOrderDtoUpdate is null)
+                if (bTODeliveryOrderDto is null)
                 {
                     _logger.LogError("Update BTODeliveryOrder object sent from client is null.");
                     serviceResponse.Data = null;
@@ -222,9 +222,9 @@ namespace Tips.Warehouse.Api.Controllers
                 }
 
 
-                var bTODeliveryOrder = _mapper.Map<BTODeliveryOrder>(bTODeliveryOrderDtoUpdate);
+                var bTODeliveryOrder = _mapper.Map<BTODeliveryOrder>(bTODeliveryOrderDto);
 
-                var bTODeliveryOrderitemsDto = bTODeliveryOrderDtoUpdate.BTODeliveryOrderItemsDto;
+                var bTODeliveryOrderitemsDto = bTODeliveryOrderDto.BTODeliveryOrderItemsDto;
 
                 var bTODeliveryOrderitemsList = new List<BTODeliveryOrderItems>();
 
@@ -234,6 +234,7 @@ namespace Tips.Warehouse.Api.Controllers
                     {
                         BTODeliveryOrderItems bTODeliveryOrderItems = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);
                         bTODeliveryOrderItems.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDto);
+                        bTODeliveryOrderitemsList.Add(bTODeliveryOrderItems);
 
                     }
                 }
