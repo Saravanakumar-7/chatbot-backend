@@ -5,7 +5,7 @@ namespace Tips.Warehouse.Api.Entities
     public class OpenDeliveryOrderParts
     {
         public int Id { get; set; }
-        public string ItemNo { get; set; }
+        public string ItemNumber { get; set; }
         public string ItemType { get; set; }
         public Decimal UnitPrice { get; set; }
         public string UOC { get; set; }

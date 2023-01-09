@@ -7,7 +7,7 @@ namespace Tips.Warehouse.Api.Contracts
 {
     public interface IInvoiceRepository : IRepositoryBase<Invoice>
     {
-        Task<PagedList<Invoice>> GetAllInvoice(PagingParameter pagingParameter);
+        Task<PagedList<Invoice>> GetAllInvoices(PagingParameter pagingParameter);
 
         Task<long?> CreateInvoice(Invoice invoice);
         Task<string> UpdateInvoice(Invoice invoice);

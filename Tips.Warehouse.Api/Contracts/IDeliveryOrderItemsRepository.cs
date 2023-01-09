@@ -7,12 +7,12 @@ namespace Tips.Warehouse.Api.Contracts
     public interface IDeliveryOrderItemsRepository : IRepositoryBase<DeliveryOrderItems>
     {
         Task<PagedList<DeliveryOrderItems>> GetAllDeliveryOrderItems(PagingParameter pagingParameter);
-        Task<DeliveryOrderItems> GetDeliveryOrderItemsById(int id);
-        //Task<DeliveryOrderItems> GetDeliveryOrderByPONumber(string PONumber);
+        Task<DeliveryOrderItems> GetDeliveryOrderItemById(int id);
+       
         Task<IEnumerable<DeliveryOrderItems>> GetAllActiveDeliveryOrderItems();
-        Task<long> CreateDeliveryOrderItems(DeliveryOrderItems deliveryOrderItems);
-        Task<string> UpdateDeliveryOrderItems(DeliveryOrderItems deliveryOrderItems);
-        Task<string> DeleteDeliveryOrderItems(DeliveryOrderItems deliveryOrderItems);
-        //Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllActiveBTODeliveryOrderNameList();
+        Task<long> CreateDeliveryOrderItem(DeliveryOrderItems deliveryOrderItems);
+        Task<string> UpdateDeliveryOrderItem(DeliveryOrderItems deliveryOrderItems);
+        Task<string> DeleteDeliveryOrderItem(DeliveryOrderItems deliveryOrderItems);
+        
     }
 }

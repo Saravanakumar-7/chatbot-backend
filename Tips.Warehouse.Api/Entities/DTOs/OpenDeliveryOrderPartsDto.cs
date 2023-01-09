@@ -11,7 +11,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class OpenDeliveryOrderPartsDto
     {
         public int Id { get; set; }
-        public string ItemNo { get; set; }
+        public string ItemNumber { get; set; }
         public string ItemType { get; set; }
 
         [Precision(13, 3)]
@@ -36,7 +36,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
 
         [Required(ErrorMessage = "ItemNo is required")]
-        public string ItemNo { get; set; }
+        public string ItemNumber { get; set; }
 
         [Required(ErrorMessage = "ItemType is required")]
         public string ItemType { get; set; }
@@ -76,7 +76,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
 
         [Required(ErrorMessage = "ItemNo is required")]
-        public string ItemNo { get; set; }
+        public string ItemNumber { get; set; }
 
         [Required(ErrorMessage = "ItemType is required")]
         public string ItemType { get; set; }
