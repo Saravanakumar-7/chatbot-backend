@@ -12,16 +12,12 @@ namespace Tips.Production.Api.Entities
         public string ShopOrderNumber { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string ProjectType { get; set; }      
-        public string ItemType { get; set; }
-        public string ItemNumber { get; set; }
+        public string ItemType { get; set; }        
 
         [Precision(13,3)]
         public decimal? TotalSOReleaseQty { get; set; }
         public DateTime SOClosedDate { get; set; }
-        public string? SAItemNumber { get; set; }
-
-        [Precision(13,3)]
-        public decimal? ProductName { get; set; }
+        public string? SAItemNumber { get; set; }       
 
         [Precision(13,3)]
         public decimal? CanCreateQty { get; set; }
