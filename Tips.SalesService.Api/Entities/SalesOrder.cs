@@ -5,6 +5,7 @@ namespace Tips.SalesService.Api.Entities
     public class SalesOrder
     {
         public int Id { get; set; }
+        public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public string? QuoteNumber { get; set; }
         public DateTime OrderDate { get; set; }

@@ -22,6 +22,8 @@ namespace Tips.Warehouse.Api.Repository
         {
             openDeliveryOrder.CreatedBy = "Admin";
             openDeliveryOrder.CreatedOn = DateTime.Now;
+            Guid openDeliveryOrderNumber = Guid.NewGuid();
+            openDeliveryOrder.OpenDONumber = " ODO-" + openDeliveryOrderNumber.ToString();
             openDeliveryOrder.Unit = "Bangalore";
             var result = await Create(openDeliveryOrder);
            

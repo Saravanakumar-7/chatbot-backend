@@ -16,7 +16,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             inventory.CreatedBy = "Admin";
             inventory.CreatedOn = DateTime.Now;
-            inventory.Unit = "Bangalore";
+            inventory.Unit = "Bangalore"; 
             var result = await Create(inventory);
 
             return result.Id;

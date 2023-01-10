@@ -19,6 +19,8 @@ namespace Tips.Warehouse.Api.Repository
             deliveryOrder.CreatedBy = "Admin";
             deliveryOrder.CreatedOn = DateTime.Now;
             deliveryOrder.Unit = "Bangalore";
+            Guid deliveryOrderNumber = Guid.NewGuid();
+            deliveryOrder.DeliveryOrderNumber = " DO-" + deliveryOrderNumber.ToString();
             var result = await Create(deliveryOrder);
             return result.Id;
         }

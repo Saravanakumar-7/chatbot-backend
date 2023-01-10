@@ -25,6 +25,8 @@ namespace Tips.Production.Api.Repository
         {
             shopOrder.CreatedBy = "Admin";
             shopOrder.CreatedOn = DateTime.Now;
+            Guid shopOrderNumber = Guid.NewGuid();
+            shopOrder.ShopOrderNumber = "SH-" + shopOrderNumber.ToString();
             shopOrder.Unit = "Bangalore";
             var result = await Create(shopOrder);
             return result.Id;
