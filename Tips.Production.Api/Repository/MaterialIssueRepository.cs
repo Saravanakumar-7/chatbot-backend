@@ -1,17 +1,17 @@
 ﻿using Entities;
 using Entities.Helper;
 using Microsoft.EntityFrameworkCore;
-using Tips.Warehouse.Api.Contracts;
-using Tips.Warehouse.Api.Entities;
+using Tips.Production.Api.Contracts;
+using Tips.Production.Api.Entities;
 
-namespace Tips.Warehouse.Api.Repository
+namespace Tips.Production.Api.Repository
 {
     public class MaterialIssueRepository : RepositoryBase<MaterialIssue>, IMaterialIssueRepository
     {
-        private TipsWarehouseDbContext _tipsWarehouseDbContext;
-        public MaterialIssueRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        private TipsProductionDbContext _tipsProductionDbContext;
+        public MaterialIssueRepository(TipsProductionDbContext repositoryContext) : base(repositoryContext)
         {
-            _tipsWarehouseDbContext = repositoryContext;
+            _tipsProductionDbContext = repositoryContext;
         }
 
         public async Task<int> CreateMaterialIssue(MaterialIssue materialIssue)
@@ -41,7 +41,7 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<MaterialIssue> GetMaterialIssueById(int id)
         {
-            var getMaterialIssueById = await _tipsWarehouseDbContext.MaterialIssue.Where(x => x.Id == id)                           
+            var getMaterialIssueById = await _tipsProductionDbContext.MaterialIssue.Where(x => x.Id == id)                           
 
                               .FirstOrDefaultAsync();
 

@@ -24,5 +24,7 @@ namespace Tips.Production.Api.Entities
 
         public DbSet<FGShopOrderMaterialIssue> FGShopOrderMaterialIssues { get; set; }
         public DbSet<MaterialReturnNote> MaterialReturnNotes { get; set; }
+        public DbSet<MaterialIssue> MaterialIssue { get; set; }
+
     }
 }

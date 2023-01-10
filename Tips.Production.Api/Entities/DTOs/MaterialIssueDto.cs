@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace Tips.Warehouse.Api.Entities.DTOs
+namespace Tips.Production.Api.Entities.DTOs
 {
     public class MaterialIssueDto
     {

@@ -25,6 +25,8 @@ builder.Services.AddTransient<ISAShopOrderRepository, SAShopOrderRepository>();
 builder.Services.AddTransient<ISAShopOrderMaterialIssueRepository, SAShopOrderMaterialIssueRepository>();
 builder.Services.AddTransient<IFGShopOrderMaterialIssueRepository, FGShopOrderMaterialIssueRepository>();
 builder.Services.AddTransient<IMaterialReturnNoteRepository, MaterialReturnNoteRepository>();
+builder.Services.AddScoped<IMaterialIssueRepository, MaterialIssueRepository>();
+
 //builder.Services.AddTransient<IMaterialReturnNoteItemRepository, Mater>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

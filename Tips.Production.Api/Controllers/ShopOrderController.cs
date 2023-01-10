@@ -17,12 +17,14 @@ namespace Tips.Production.Api.Controllers
         private IShopOrderRepository _shopOrderRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
+        private IMaterialIssueRepository _materialIssueRepository;
 
-        public ShopOrderController(IShopOrderRepository shopOrderRepository, ILoggerManager logger, IMapper mapper)
+        public ShopOrderController(IShopOrderRepository shopOrderRepository, IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IMapper mapper)
         {
             _logger = logger;
             _shopOrderRepository = shopOrderRepository;
             _mapper = mapper;
+            _materialIssueRepository = materialIssueRepository;
         }
 
         [HttpGet]
