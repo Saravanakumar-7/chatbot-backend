@@ -24,8 +24,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string ItemDescription { get; set; }
         public string? PONumber { get; set; }
 
-        [Required]
-        public string? ProjectNumber { get; set; }
+        //[Required]
+        //public string? ProjectNumber { get; set; }
 
         [Required]
         public string MftrItemNumber { get; set; }
@@ -56,7 +56,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
 
-        public List<DocumentUploadDto> COCUpload { get; set; }
+        //public List<DocumentUploadDto> COCUpload { get; set;
+        public string? COCUpload { get; set; }
+
 
         [Precision(13, 3)]
         public decimal? SGST { get; set; }
@@ -96,8 +98,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Required(ErrorMessage = "MftrItemNumber is required")]
         public string MftrItemNumber { get; set; }
 
-        [Required(ErrorMessage = "ProjectNumber is required")]
-        public string? ProjectNumber { get; set; }
+        //[Required(ErrorMessage = "ProjectNumber is required")]
+        //public string? ProjectNumber { get; set; }
 
         [Required(ErrorMessage = "ManufactureBatchNumber is required")]
         public string ManufactureBatchNumber { get; set; }
@@ -126,7 +128,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
 
-        public List<DocumentUploadPostDto> COCUpload { get; set; }
+        //public List<DocumentUploadPostDto> COCUpload { get; set; }
+
+        public string? COCUpload { get; set; }
         public decimal? SGST { get; set; }
 
         public decimal? IGST { get; set; }
@@ -158,8 +162,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Required(ErrorMessage = "MftrItemNumber is required")]
         public string MftrItemNumber { get; set; }
 
-        [Required(ErrorMessage = "ProjectNumber is required")]
-        public string? ProjectNumber { get; set; }
+        //[Required(ErrorMessage = "ProjectNumber is required")]
+        //public string? ProjectNumber { get; set; }
 
         [Required(ErrorMessage = "ManufactureBatchNumber is required")]
         public string ManufactureBatchNumber { get; set; }
@@ -187,7 +191,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
 
-        public List<DocumentUploadDto> COCUpload { get; set; }
+        //public List<DocumentUploadDto> COCUpload { get; set; }
+        public string? COCUpload { get; set; }
         public decimal? SGST { get; set; }
 
         public decimal? IGST { get; set; }

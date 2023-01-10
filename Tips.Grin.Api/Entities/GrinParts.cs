@@ -25,9 +25,6 @@ namespace Tips.Grin.Api.Entities
         public string? PONumber { get; set; }
 
         [Required]
-        public string? ProjectNumber { get; set; }
-
-        [Required]
         public string MftrItemNumber { get; set; }
 
         [Required]
@@ -55,6 +52,8 @@ namespace Tips.Grin.Api.Entities
 
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
+
+        //public List<DocumentUpload> COCUpload { get; set; }
 
         public string? COCUpload { get; set; }
 

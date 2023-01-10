@@ -184,42 +184,84 @@ namespace Tips.Grin.Api.Controllers
 
                 grins.GrinParts = grinPartsList;
                 await _repository.CreateGrin(grins);
-                // grin upload
+                //// grin upload
 
-                var grinUploadDetails = grinPostDto.GrinDocuments;
-                foreach (var grinUploadDetail in grinUploadDetails)
-                {
-                    var fileContent = grinUploadDetail.FileByte;
-                    var grinNumber = grins.GrinNumber;
-                    string fileName = grinUploadDetail.FileName + "." + grinUploadDetail.FileExtension;
-                    string FileExt = Path.GetExtension(fileName).ToUpper();
+                //var grinUploadDetails = grinPostDto.GrinDocuments;
+                //foreach (var grinUploadDetail in grinUploadDetails)
+                //{
+                //    var fileContent = grinUploadDetail.FileByte;
+                //    var grinNumber = grins.GrinNumber;
+                //    string fileName = grinUploadDetail.FileName + "." + grinUploadDetail.FileExtension;
+                //    string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                    Guid guid = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", guid.ToString() + "_" + fileName);
-                    //string data = Convert.FromBase64String(fileContent);
-                    using (MemoryStream ms = new MemoryStream(fileContent))
-                    {
-                        ms.Position = 0;
-                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                        {
-                            ms.WriteTo(fileStream);
-                        }
-                        var uploadedFile = new DocumentUpload
-                        {
-                            FileName = fileName,
-                            FileExtension = FileExt,
-                            FilePath = filePath,
-                            ParentId = grinNumber,
-                            DocumentFrom = "GrinDocument",
-                        };
+                //    Guid guid = Guid.NewGuid();
+                //    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", guid.ToString() + "_" + fileName);
+                //     using (MemoryStream ms = new MemoryStream(fileContent))
+                //    {
+                //        ms.Position = 0;
+                //        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                //        {
+                //            ms.WriteTo(fileStream);
+                //        }
+                //        var uploadedFile = new DocumentUpload
+                //        {
+                //            FileName = fileName,
+                //            FileExtension = FileExt,
+                //            FilePath = filePath,
+                //            ParentId = grinNumber,
+                //            DocumentFrom = "GrinDocument",
+                //        };
 
-                        _documentUploadRepository.CreateUploadDocumentGrin(uploadedFile);
-                        _documentUploadRepository.SaveAsync();
+                //        _documentUploadRepository.CreateUploadDocumentGrin(uploadedFile);
+                //        _documentUploadRepository.SaveAsync();
 
-                    }
+                //    } 
 
-                }
-                 
+                //}
+                ////parts coc upload
+
+                //var grinPartsDetails = grinPostDto.GrinParts;
+                //foreach (var grinCoCUpload in grinPartsDetails)
+                //{
+  
+                //    var cocUploadDocs = grinCoCUpload.COCUpload;
+                    
+                //    foreach (var cocUpload in cocUploadDocs)
+                //    {
+                //        var fileContent = cocUpload.FileByte;
+                //        var grinNumber = grins.GrinNumber;
+                //        string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
+                //        string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                //        Guid guid = Guid.NewGuid();
+                //        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload", guid.ToString() + "_" + fileName);
+                //         using (MemoryStream ms = new MemoryStream(fileContent))
+                //        {
+                //            ms.Position = 0;
+                //            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                //            {
+                //                ms.WriteTo(fileStream);
+                //            }
+                //            var uploadedFile = new DocumentUpload
+                //            {
+                //                FileName = fileName,
+                //                FileExtension = FileExt,
+                //                FilePath = filePath,
+                //                ParentId = grinNumber,
+                //                DocumentFrom = "GrinCoCDocument",
+                //            };
+
+                //            _documentUploadRepository.CreateUploadDocumentGrin(uploadedFile);
+                //            _documentUploadRepository.SaveAsync();
+
+                //        }
+                        
+                //    }
+                    
+                //}
+
+                //end cocupload
+                //
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Grin Successfully Created";
