@@ -11,7 +11,9 @@ namespace Tips.Warehouse.Api.Entities
         public int Id { get; set; }
         public string? DONumber { get; set; }
         public string? FGItemNoumber { get; set; }
-        public string? Qty { get; set; }
+
+        [Precision(13,3)]
+        public decimal? Qty { get; set; }
         public string? UOM { get; set; }
 
         [Precision(13, 3)]

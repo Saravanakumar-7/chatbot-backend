@@ -8,10 +8,10 @@
         public string? PriceList { get; set; }
         public decimal Quantity { get; set; }
         public decimal UnitPrice { get; set; }
-        public decimal DiscountType { get; set; }
+        public string DiscountType { get; set; }
         public decimal DiscountAmount { get; set; }
         public decimal DiscountedUnitPrice { get; set; }
-        public decimal SpecialDiscountType { get; set; }
+        public string SpecialDiscountType { get; set; }
         public decimal SpecialDiscountAmount { get; set; }
         public decimal TotalDiscountedUnitPrice { get; set; }
         public decimal BasicAmount { get; set; }

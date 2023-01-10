@@ -14,6 +14,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ItemNumber { get; set; }
         public string ItemType { get; set; }
 
+        [Required]
+        public string ItemDescription { get; set; }
+
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
         public string UOC { get; set; }
@@ -40,6 +43,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Required(ErrorMessage = "ItemType is required")]
         public string ItemType { get; set; }
+
+        [Required]
+        public string ItemDescription { get; set; }
 
         [Required(ErrorMessage = "UnitPrice is required")]
         [Precision(13, 3)]
@@ -80,6 +86,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Required(ErrorMessage = "ItemType is required")]
         public string ItemType { get; set; }
+
+        [Required]
+        public string ItemDescription { get; set; }
 
         [Required(ErrorMessage = "UnitPrice is required")]
         [Precision(13, 3)]
