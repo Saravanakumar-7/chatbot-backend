@@ -317,16 +317,16 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        public Task<IActionResult> UpdateSOBasedOnCreatingDO()
-        {
-            return null;
-        }
+        //public Task<IActionResult> UpdateSOBasedOnCreatingDO()
+        //{
+        //    return null;
+        //}
 
-        public Task<IActionResult> UpdateSOBasedOnCreatingShopOrder()
-        {
-            return null;
+        //public Task<IActionResult> UpdateSOBasedOnCreatingShopOrder()
+        //{
+        //    return null;
 
-        }
+        //}
          
 
 

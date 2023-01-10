@@ -65,14 +65,14 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-        public Task<string> UpdateSOBasedOnCreatingDO()
-        {
-            throw new NotImplementedException();
-        }
+        //public Task<string> UpdateSOBasedOnCreatingDO()
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public Task<string> UpdateSOBasedOnCreatingShopOrder()
-        {
-            throw new NotImplementedException();
-        }
+        //public Task<string> UpdateSOBasedOnCreatingShopOrder()
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
