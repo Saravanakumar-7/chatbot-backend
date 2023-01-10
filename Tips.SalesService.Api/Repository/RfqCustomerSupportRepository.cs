@@ -29,6 +29,8 @@ namespace Tips.SalesService.Api.Repository
             rfqCustomerSupport.CreatedBy = "Admin";
             rfqCustomerSupport.CreatedOn = DateTime.Now;
             rfqCustomerSupport.Unit = "Bangalore";
+            Guid rfqNumber = Guid.NewGuid();
+            rfqCustomerSupport.RfqNumber = "RFQ-" + rfqNumber.ToString();
             var result = await Create(rfqCustomerSupport);
             return result.Id;
         } 
@@ -106,7 +108,7 @@ namespace Tips.SalesService.Api.Repository
             rfqCustomerSupportItems.LastModifiedBy = "Admin";
             rfqCustomerSupportItems.LastModifiedOn = DateTime.Now;
             Update(rfqCustomerSupportItems);
-            string result = $"CostCenter details of {rfqCustomerSupportItems.Id} is updated successfully!";
+            string result = $"CustomerSupport details of {rfqCustomerSupportItems.Id} is updated successfully!";
             return result;
         }
 
@@ -250,7 +252,7 @@ namespace Tips.SalesService.Api.Repository
         {
             rfqEngg.CreatedBy = "Admin";
             rfqEngg.CreatedOn = DateTime.Now;
-            rfqEngg.Unit = "Bangalore";
+            rfqEngg.Unit = "Bangalore";            
             var result = await Create(rfqEngg);
             return result.Id;
         }

@@ -60,6 +60,8 @@ namespace Tips.SalesService.Api.Repository
         {
             salesOrder.LastModifiedBy = "Admin";
             salesOrder.LastModifiedOn = DateTime.Now;
+            Guid salesOrderNO = Guid.NewGuid();
+            salesOrder.SalesOrderNumber = "SO-" + salesOrderNO.ToString();
             Update(salesOrder);
             string result = $"SalesOrder of Detail {salesOrder.Id} is updated successfully!";
             return result;

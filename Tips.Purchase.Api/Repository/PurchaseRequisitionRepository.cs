@@ -21,6 +21,8 @@ namespace Tips.Purchase.Api.Repository
         {
             purchaseRequisitions.CreatedBy = "Admin";
             purchaseRequisitions.CreatedOn = DateTime.Now;
+            Guid purchaseRequisitionsNumber = Guid.NewGuid();
+            purchaseRequisitions.PRNumber = "PR-" + purchaseRequisitionsNumber.ToString();
             purchaseRequisitions.Unit = "Bangalore";
             var result = await Create(purchaseRequisitions);
             return result.Id;

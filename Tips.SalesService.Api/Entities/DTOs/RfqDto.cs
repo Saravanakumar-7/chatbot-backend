@@ -15,6 +15,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? RevisionNumber { get; set; }
         public string RfqNumber { get; set; }
         public string? CustomerRfqNumber { get; set; }
+        public string? CustomerId { get; set; }
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public string Unit { get; set; }
@@ -30,6 +31,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Required]
         public string RfqNumber { get; set; }
+        public string? CustomerId { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }       
@@ -43,6 +45,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Required]
         public string RfqNumber { get; set; }
+        public string? CustomerId { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }

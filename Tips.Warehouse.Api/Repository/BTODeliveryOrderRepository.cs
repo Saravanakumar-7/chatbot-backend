@@ -20,6 +20,8 @@ namespace Tips.Warehouse.Api.Repository
             bTODeliveryOrder.CreatedBy = "Admin";
             bTODeliveryOrder.CreatedOn = DateTime.Now;
             bTODeliveryOrder.Unit = "Bangalore";
+            Guid btoDeliveryOrderNumber = Guid.NewGuid();
+            bTODeliveryOrder.BTONumber = " BTO-" + btoDeliveryOrderNumber.ToString();
             var result = await Create(bTODeliveryOrder);
             return result.Id;
         }

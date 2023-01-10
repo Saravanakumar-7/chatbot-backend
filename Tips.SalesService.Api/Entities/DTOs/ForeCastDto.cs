@@ -16,8 +16,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? RevisionNumber { get; set; }
         public string ForeCastNumber { get; set; }
         public string? CustomerForeCastRefrence { get; set; }
-        public DateTime? RequestReceivedate { get; set; }
-        public DateTime? QuoteExpectdate { get; set; }
+        public DateTime? RequestReceivedDate { get; set; }
+        public DateTime? QuoteExpectedDate { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -32,8 +32,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Required]
         public string ForeCastNumber { get; set; }
         public string? CustomerForeCastRefrence { get; set; }
-        public DateTime? RequestReceivedate { get; set; }
-        public DateTime? QuoteExpectdate { get; set; }
+        public DateTime? RequestReceivedDate { get; set; }
+        public DateTime? QuoteExpectedDate { get; set; }
        
     }
     public class ForeCastUpdateDto
@@ -43,8 +43,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? RevisionNumber { get; set; }
         public string ForeCastNumber { get; set; }
         public string? CustomerForeCastRefrence { get; set; }
-        public DateTime? RequestReceivedate { get; set; }
-        public DateTime? QuoteExpectdate { get; set; }
+        public DateTime? RequestReceivedDate { get; set; }
+        public DateTime? QuoteExpectedDate { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
