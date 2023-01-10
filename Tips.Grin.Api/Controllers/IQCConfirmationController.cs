@@ -157,7 +157,7 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpPost]
-        public async IActionResult CreateIqc([FromBody] IQCConfirmationPostDto iQCConfirmationPostDto)
+        public async Task<IActionResult> CreateIqc([FromBody] IQCConfirmationPostDto iQCConfirmationPostDto)
         {
             ServiceResponse<IQCConfirmationDto> serviceResponse = new ServiceResponse<IQCConfirmationDto>();
 
