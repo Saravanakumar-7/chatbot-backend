@@ -16,8 +16,8 @@ namespace Tips.SalesService.Api.Entities
         public string? RevisionNumber { get; set; }
         public string ForeCastNumber { get; set; }
         public string? CustomerForeCastRefrence { get; set; }
-        public DateTime? RequestReceivedate { get; set; }
-        public DateTime? QuoteExpectdate { get; set; }
+        public DateTime? RequestReceivedDate { get; set; }
+        public DateTime? QuoteExpectedDate { get; set; }
         public bool? IsSourcing { get; set; } = false;
         public bool? IsLpCosting { get; set; } = false;
         public bool? IsLpCostingRelease { get; set; } = false;

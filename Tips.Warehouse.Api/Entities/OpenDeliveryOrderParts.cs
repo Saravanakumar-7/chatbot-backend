@@ -6,6 +6,7 @@ namespace Tips.Warehouse.Api.Entities
     {
         public int Id { get; set; }
         public string ItemNumber { get; set; }
+        public string ItemDescription { get; set; }
         public string ItemType { get; set; }
         public Decimal UnitPrice { get; set; }
         public string UOC { get; set; }

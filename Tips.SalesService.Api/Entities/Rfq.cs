@@ -16,6 +16,7 @@ namespace Tips.SalesService.Api.Entities
         public string? RevisionNumber { get; set; }
         public string RfqNumber { get; set; }
         public string? CustomerRfqNumber { get; set; }
+        public string? CustomerId { get; set; }
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public bool? IsSourcing { get; set; } = false;
