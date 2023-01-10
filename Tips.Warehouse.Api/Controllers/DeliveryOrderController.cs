@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
+using Tips.Warehouse.Api.Repository;
 
 namespace Tips.Warehouse.Api.Controllers
 {
@@ -16,12 +17,14 @@ namespace Tips.Warehouse.Api.Controllers
     public class DeliveryOrderController : ControllerBase
     {
         private IDeliveryOrderRepository _repository;
+        private IInventoryRepository _inventoryRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
 
-        public DeliveryOrderController(IDeliveryOrderRepository repository, ILoggerManager logger, IMapper mapper)
+        public DeliveryOrderController(IDeliveryOrderRepository repository,IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
+            _inventoryRepository = inventoryRepository;
             _logger = logger;
             _mapper = mapper;
         }
