@@ -28,16 +28,16 @@ builder.Services.AddScoped<IIQCConfirmationRepository, IQCConfirmationRepository
 builder.Services.AddScoped<IBinningRepository, BinningRepository>();
 
 builder.Services.AddScoped<IDocumentUploadRepository, UploadDocumentRepository>();
-
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseHttpsRedirection();
 
