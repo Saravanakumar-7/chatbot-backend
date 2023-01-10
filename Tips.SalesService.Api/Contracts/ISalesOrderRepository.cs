@@ -12,9 +12,9 @@ namespace Tips.SalesService.Api.Contracts
         Task<long> CreateSalesOrder(SalesOrder salesOrder);
         Task<string> UpdateSalesOrder(SalesOrder salesOrder);
         Task<string> DeleteSalesOrder(SalesOrder salesOrder);
-        Task<string> UpdateSOBasedOnCreatingDO();
+        //Task<string> UpdateSOBasedOnCreatingDO();
 
-        Task<string> UpdateSOBasedOnCreatingShopOrder();
+        //Task<string> UpdateSOBasedOnCreatingShopOrder();
 
         
 
