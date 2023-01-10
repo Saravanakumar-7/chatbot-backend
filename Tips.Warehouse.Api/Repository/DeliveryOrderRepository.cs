@@ -32,27 +32,27 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<IEnumerable<DeliveryOrder>> GetAllActiveDeliveryOrders()
         {
-            var getAllActiveDeliveryOrderDetails = await FindAll().ToListAsync();
-            return getAllActiveDeliveryOrderDetails;
+            var allActiveDeliveryOrderDetails = await FindAll().ToListAsync();
+            return allActiveDeliveryOrderDetails;
         }
 
         public async Task<PagedList<DeliveryOrder>> GetAllDeliveryOrders(PagingParameter pagingParameter)
         {
-            var getAllDeliveryOrderDetails = PagedList<DeliveryOrder>.ToPagedList(FindAll()
-                                 .Include(t => t.DeliveryOrderItems)
-                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var allDeliveryOrderDetails = PagedList<DeliveryOrder>.ToPagedList(FindAll()
+                                .Include(t => t.DeliveryOrderItems)
+               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return getAllDeliveryOrderDetails;
+            return allDeliveryOrderDetails;
         }
 
         public async Task<DeliveryOrder> GetDeliveryOrderById(int id)
         {
-            var getDeliveryOrderDetailsbyId = await _tipsWarehouseDbContext.deliveryOrder.Where(x => x.Id == id)
+            var deliveryOrderDetailsbyId = await _tipsWarehouseDbContext.DeliveryOrder.Where(x => x.Id == id)
                               .Include(t => t.DeliveryOrderItems)
                               .FirstOrDefaultAsync();
 
 
-            return getDeliveryOrderDetailsbyId;
+            return deliveryOrderDetailsbyId;
         }
 
         public async Task<string> UpdateDeliveryOrder(DeliveryOrder deliveryOrder)
@@ -63,5 +63,6 @@ namespace Tips.Warehouse.Api.Repository
             string result = $"DeliveryOrder of Detail {deliveryOrder.Id} is updated successfully!";
             return result;
         }
+
     }
 }
