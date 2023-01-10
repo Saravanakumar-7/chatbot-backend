@@ -15,5 +15,9 @@ namespace Tips.Warehouse.Api.Contracts
 
         Task<Inventory> GetInventoryById(int id);
 
+        Task<Inventory> GetInventoryDetailsByGrinNo(string GrinNo, string ItemNumber, string ProjectNumber);
+
+        
+
     }
 }
