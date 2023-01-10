@@ -58,6 +58,18 @@ namespace Repository
             return GetallEnggbomDetails;
         }
 
+        public async Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber)
+        {
+            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber)
+                              .Include(t => t.EnggChildItems)
+                                .ThenInclude(x => x.EnggAlternates)
+                                .Include(m => m.EnggChildItems)
+                                .ThenInclude(i => i.NREConsumable)
+                              .FirstOrDefaultAsync();
+
+            return EnggBomDetailsbyId;
+        }
+
         public async Task<EnggBom> GetEnggBomById(int id)
         {
             var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.BOMId == id)
