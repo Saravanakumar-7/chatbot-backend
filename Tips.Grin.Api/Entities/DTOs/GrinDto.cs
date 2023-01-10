@@ -13,8 +13,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public int Id { get; set; }
         public string? GrinNumber { get; set; }
 
-        [Required]
-        public string PONumber { get; set; }
+        //[Required]
+        //public string PONumber { get; set; }
 
         [Required]
         public string VendorName { get; set; }
@@ -43,7 +43,9 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public int? TotalInvoice { get; set; }
 
-        public List<DocumentUploadDto> GrinDocuments { get; set; }
+        //public List<DocumentUploadDto> GrinDocuments { get; set; }
+
+        public string? GrinDocuments { get; set; }
 
         public string Unit { get; set; }
 
@@ -61,9 +63,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? GrinNumber { get; set; }
 
 
-        [Required(ErrorMessage = "PONumber is required")]
-        [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
-        public string PONumber { get; set; }
+        //[Required(ErrorMessage = "PONumber is required")]
+        //[StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
+        //public string PONumber { get; set; }
 
         [Required(ErrorMessage = "VendorName is required")]
         [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
@@ -96,8 +98,9 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public int? TotalInvoice { get; set; }
 
-        public List<DocumentUploadPostDto> GrinDocuments { get; set; }
+        //public List<DocumentUploadPostDto> GrinDocuments { get; set; }
 
+        public string? GrinDocuments { get; set; }
 
 
         public List<GrinPartsPostDto>? GrinParts { get; set; }
@@ -109,8 +112,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public int Id { get; set; }
         public string? GrinNumber { get; set; }
 
-        [Required(ErrorMessage = "PONumber is required")]
-        public string PONumber { get; set; }
+        //[Required(ErrorMessage = "PONumber is required")]
+        //public string PONumber { get; set; }
 
         [Required(ErrorMessage = "VendorName is required")]
         public string VendorName { get; set; }
@@ -139,7 +142,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? BEDate { get; set; }
 
         public int? TotalInvoice { get; set; }
-        public List<DocumentUploadUpdateDto> GrinDocuments { get; set; }
+        //public List<DocumentUploadUpdateDto> GrinDocuments { get; set; }
+
+        public string? GrinDocuments { get; set; }
 
         public string Unit { get; set; }
 

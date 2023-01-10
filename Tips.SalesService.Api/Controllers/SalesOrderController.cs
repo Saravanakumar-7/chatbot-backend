@@ -2,6 +2,7 @@
 using AutoMapper;
 using Contracts;
 using Entities;
+using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Tips.SalesService.Api.Contracts;
@@ -316,6 +317,22 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-    }
+        public Task<IActionResult> UpdateSOBasedOnCreatingDO()
+        {
+            return null;
+        }
+
+        public Task<IActionResult> UpdateSOBasedOnCreatingShopOrder()
+        {
+            return null;
+
+        }
+         
+
+
+
+}
+
+
 }
 

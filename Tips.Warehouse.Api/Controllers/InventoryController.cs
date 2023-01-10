@@ -187,8 +187,7 @@ namespace Tips.Warehouse.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                 var updateInventory = _mapper.Map(inventoryDtoUpdate, getInventoryById);
-                _mapper.Map(inventoryDtoUpdate, getInventoryById);
-                string result = await _inventoryRepository.GetInventoryById(updateInventory);
+                 string result = await _inventoryRepository.UpdateInventory(updateInventory);
                 _logger.LogInfo(result);
                 _inventoryRepository.SaveAsync();
                 serviceResponse.Data = null;

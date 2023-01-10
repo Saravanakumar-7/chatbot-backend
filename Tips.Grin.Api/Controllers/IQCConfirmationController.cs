@@ -4,7 +4,11 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Dynamic;
+using System.IO;
 using System.Net;
+using System.Text;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
 using Tips.Grin.Api.Entities.DTOs;
@@ -19,12 +23,16 @@ namespace Tips.Grin.Api.Controllers
         private IIQCConfirmationRepository _iQCConfirmationRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
 
-        public IQCConfirmationController(IIQCConfirmationRepository iQCConfirmationRepository,ILoggerManager logger, IMapper mapper) 
+        public IQCConfirmationController(IIQCConfirmationRepository iQCConfirmationRepository,ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config) 
         {
             _logger = logger;
             _iQCConfirmationRepository = iQCConfirmationRepository;
             _mapper = mapper;
+            _httpClient = httpClient;
+            _config = config;
         }
 
         [HttpGet]
@@ -149,7 +157,7 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateIqc([FromBody] IQCConfirmationPostDto iQCConfirmationPostDto)
+        public async IActionResult CreateIqc([FromBody] IQCConfirmationPostDto iQCConfirmationPostDto)
         {
             ServiceResponse<IQCConfirmationDto> serviceResponse = new ServiceResponse<IQCConfirmationDto>();
 
@@ -179,6 +187,19 @@ namespace Tips.Grin.Api.Controllers
                 
                 _iQCConfirmationRepository.CreateIqc(iQCCreate);
                 _iQCConfirmationRepository.SaveAsync();
+
+
+                dynamic inventoryObject = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByGrinNo", iQCCreate.GrinNumber,"/",iQCCreate.ItemNumber,"/",iQCCreate.ProjectNumber));
+
+                inventoryObject.Balance_Quantity = iQCCreate.AcceptedQty;
+                inventoryObject.Warehouse = "IQC";
+                inventoryObject.Location = "IQC";
+                inventoryObject.ReferenceIDFrom = "IQC";
+
+                var json = JsonConvert.SerializeObject(inventoryObject);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"], "UpdateInventory/", inventoryObject.Id), data);
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "IQCConfirmation Successfully Created";
                 serviceResponse.Success = true;

@@ -64,5 +64,15 @@ namespace Tips.SalesService.Api.Repository
             string result = $"SalesOrder of Detail {salesOrder.Id} is updated successfully!";
             return result;
         }
+
+        public Task<string> UpdateSOBasedOnCreatingDO()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> UpdateSOBasedOnCreatingShopOrder()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

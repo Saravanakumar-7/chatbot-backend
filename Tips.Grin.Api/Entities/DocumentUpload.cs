@@ -20,6 +20,7 @@ namespace Tips.Grin.Api.Entities
             public string DocumentFrom { get; set; }
 
             public string ParentId { get; set; }
+
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
