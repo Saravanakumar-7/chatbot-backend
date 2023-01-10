@@ -28,7 +28,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 //builder.Services.AddScoped<IRfqRepository, RfqRepository>();
 
 builder.Services.AddScoped<IFgOqcRepository, FgOqcRepository>();
-builder.Services.AddScoped<ISaOqcRepository, SaOqcRepository>();
+builder.Services.AddScoped<IFinalOqcRepository, FinalOqcRepository>();
 
 builder.Services.AddScoped<IRfqLPCostingRepository,RfqLPCostingRepository>();
 builder.Services.AddScoped<IRfqSourcingRepository, RfqSourcingRepository>();

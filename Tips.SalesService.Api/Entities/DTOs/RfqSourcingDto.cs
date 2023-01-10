@@ -45,10 +45,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? RFQNumber { get; set; }
 
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
-        public string? CustomerName { get; set; }        
-        public List<RfqSourcingItemsDtoUpdate>? RfqSourcingItems { get; set; }
+        public string? CustomerName { get; set; }      
 
         [Required]
         public string Unit { get; set; }
+
+        public List<RfqSourcingItemsDtoUpdate>? RfqSourcingItems { get; set; }
     }
 }

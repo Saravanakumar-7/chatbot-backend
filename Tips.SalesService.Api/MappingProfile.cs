@@ -128,9 +128,9 @@ namespace Tips.SalesService.Api
             CreateMap<FgOqc, FgOqcDtoUpdate>().ReverseMap();
 
 
-            CreateMap<SaOqc, SaOqcDto>().ReverseMap();
-            CreateMap<SaOqc, SaOqcDtoPost>().ReverseMap();
-            CreateMap<SaOqc, SaOqcDtoUpdate>().ReverseMap();
+            CreateMap<FinalOqc, FinalOqcDto>().ReverseMap();
+            CreateMap<FinalOqc, FinalOqcDtoPost>().ReverseMap();
+            CreateMap<FinalOqc, FinalOqcDtoUpdate>().ReverseMap();
 
             CreateMap<ForeCast, ForeCastDto>().ReverseMap();
             CreateMap<ForeCast, ForeCastPostDto>().ReverseMap();

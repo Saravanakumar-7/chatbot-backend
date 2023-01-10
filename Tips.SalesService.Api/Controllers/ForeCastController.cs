@@ -52,20 +52,20 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var listOfforecast = await _Forecastrepository.GetAllForeCast(pagingParameter);
+                var getAllForeCast = await _Forecastrepository.GetAllForeCast(pagingParameter);
                 var metadata = new
                 {
-                    listOfforecast.TotalCount,
-                    listOfforecast.PageSize,
-                    listOfforecast.CurrentPage,
-                    listOfforecast.HasNext,
-                    listOfforecast.HasPreviuos
+                    getAllForeCast.TotalCount,
+                    getAllForeCast.PageSize,
+                    getAllForeCast.CurrentPage,
+                    getAllForeCast.HasNext,
+                    getAllForeCast.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all ForeCast");
-                var result = _mapper.Map<IEnumerable<ForeCastDto>>(listOfforecast);
+                var result = _mapper.Map<IEnumerable<ForeCastDto>>(getAllForeCast);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all forecasts Successfully";
                 serviceResponse.Success = true;
@@ -128,20 +128,20 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var listOfforecastengg = await _forecastenggRepository.GetAllForeCastEngg(pagingParameter);
+                var getAllForeCastEngg = await _forecastenggRepository.GetAllForeCastEngg(pagingParameter);
                 var metadata = new
                 {
-                    listOfforecastengg.TotalCount,
-                    listOfforecastengg.PageSize,
-                    listOfforecastengg.CurrentPage,
-                    listOfforecastengg.HasNext,
-                    listOfforecastengg.HasPreviuos
+                    getAllForeCastEngg.TotalCount,
+                    getAllForeCastEngg.PageSize,
+                    getAllForeCastEngg.CurrentPage,
+                    getAllForeCastEngg.HasNext,
+                    getAllForeCastEngg.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all ForeCastEngg");
-                var result = _mapper.Map<IEnumerable<ForeCastEnggDto>>(listOfforecastengg);
+                var result = _mapper.Map<IEnumerable<ForeCastEnggDto>>(getAllForeCastEngg);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ForeCastEngg Successfully";
                 serviceResponse.Success = true;
@@ -167,20 +167,20 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var listOfforecastSourcing = await _sourcingrepository.GetAllForeCastSourcing(pagingParameter);
+                var getAllForeCastSourcing = await _sourcingrepository.GetAllForeCastSourcing(pagingParameter);
                 var metadata = new
                 {
-                    listOfforecastSourcing.TotalCount,
-                    listOfforecastSourcing.PageSize,
-                    listOfforecastSourcing.CurrentPage,
-                    listOfforecastSourcing.HasNext,
-                    listOfforecastSourcing.HasPreviuos
+                    getAllForeCastSourcing.TotalCount,
+                    getAllForeCastSourcing.PageSize,
+                    getAllForeCastSourcing.CurrentPage,
+                    getAllForeCastSourcing.HasNext,
+                    getAllForeCastSourcing.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                _logger.LogInfo("Returned all listOfforecastSourcing");
-                var result = _mapper.Map<IEnumerable<ForecastSourcingDto>>(listOfforecastSourcing);
+                _logger.LogInfo("Returned all GetAllForeCastSourcings");
+                var result = _mapper.Map<IEnumerable<ForecastSourcingDto>>(getAllForeCastSourcing);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ForeCastSourcing Successfully";
                 serviceResponse.Success = true;
@@ -205,20 +205,20 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var listOfforecast = await _repository.GetAllForeCastCustomerSupports(pagingParameter);
+                var getAllForeCastCustomerSupports = await _repository.GetAllForeCastCustomerSupports(pagingParameter);
                 var metadata = new
                 {
-                    listOfforecast.TotalCount,
-                    listOfforecast.PageSize,
-                    listOfforecast.CurrentPage,
-                    listOfforecast.HasNext,
-                    listOfforecast.HasPreviuos
+                    getAllForeCastCustomerSupports.TotalCount,
+                    getAllForeCastCustomerSupports.PageSize,
+                    getAllForeCastCustomerSupports.CurrentPage,
+                    getAllForeCastCustomerSupports.HasNext,
+                    getAllForeCastCustomerSupports.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all ForeCastCustomerSupport");
-                var result = _mapper.Map<IEnumerable<ForeCastCustomerSupportDto>>(listOfforecast);
+                var result = _mapper.Map<IEnumerable<ForeCastCustomerSupportDto>>(getAllForeCastCustomerSupports);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ForeCastCustomerSupport Successfully";
                 serviceResponse.Success = true;
@@ -244,9 +244,9 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var forecastEngg = await _forecastenggRepository.ForeCastEnggByForeCastNumber(ForeCastNumber);
+                var foreCastEnggByForeCastNumber = await _forecastenggRepository.ForeCastEnggByForeCastNumber(ForeCastNumber);
 
-                if (forecastEngg == null)
+                if (foreCastEnggByForeCastNumber == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"ForecastEnggByForeCastNumber with id: {ForeCastNumber}, hasn't been found in db.";
@@ -259,17 +259,17 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogInfo($"Returned ForecastEnggByForeCastNumber with id: {ForeCastNumber}");
 
-                    ForeCastEnggDto forecstenggDto = _mapper.Map<ForeCastEnggDto>(forecastEngg);
+                    ForeCastEnggDto forecstenggDto = _mapper.Map<ForeCastEnggDto>(foreCastEnggByForeCastNumber);
 
                     List<ForeCastEnggItemsDto> forecastenggItemsDtos = new List<ForeCastEnggItemsDto>();
-                    foreach (var itemDetails in forecastEngg.foreCastEnggItems)
+
+                    foreach (var ForecastItemDetail in foreCastEnggByForeCastNumber.ForeCastEnggItems)
                     {
-                        ForeCastEnggItemsDto forecastenggItemDto = _mapper.Map<ForeCastEnggItemsDto>(itemDetails);
+                        ForeCastEnggItemsDto forecastenggItemDto = _mapper.Map<ForeCastEnggItemsDto>(ForecastItemDetail);
                         forecastenggItemsDtos.Add(forecastenggItemDto);
                     }
-                    forecstenggDto.foreCastEnggItems = forecastenggItemsDtos;
+                    forecstenggDto.ForeCastEnggItems = forecastenggItemsDtos;
 
-                    //var result = _mapper.Map<RfqCustomerSupportDto>(rfq);
                     serviceResponse.Data = forecstenggDto;
                     serviceResponse.Message = $"Returned ForecastEnggByForeCastNumber with id: {ForeCastNumber}";
                     serviceResponse.Success = true;
@@ -351,9 +351,9 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var forecast = await _repository.ForeCastCustomerSupportByForeCastNumber(ForeCastNumber);
+                var foreCastCSByForeCastNumber = await _repository.ForeCastCustomerSupportByForeCastNumber(ForeCastNumber);
 
-                if (forecast == null)
+                if (foreCastCSByForeCastNumber == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"ForecastCustomerSupportByForeCastNumber with id: {ForeCastNumber}, hasn't been found in db.";
@@ -366,18 +366,17 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogInfo($"Returned ForecastCustomerSupportByForeCastNumber with id: {ForeCastNumber}");
 
-                    ForeCastCustomerSupportDto forecastDto = _mapper.Map<ForeCastCustomerSupportDto>(forecast);
+                    ForeCastCustomerSupportDto forecastDto = _mapper.Map<ForeCastCustomerSupportDto>(foreCastCSByForeCastNumber);
 
                     List<ForeCastCustomerSupportItemDto> forecastItemsDtos = new List<ForeCastCustomerSupportItemDto>();
-                    foreach (var itemDetails in forecast.foreCastCustomerSupportItems)
+                    foreach (var itemDetails in foreCastCSByForeCastNumber.ForeCastCustomerSupportItems)
                     {
                         ForeCastCustomerSupportItemDto forecastItemDto = _mapper.Map<ForeCastCustomerSupportItemDto>(itemDetails);
-                        forecastItemDto.foreCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliveryScheduleDto>>(itemDetails.foreCastCSDeliverySchedule);
+                        forecastItemDto.ForeCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliveryScheduleDto>>(itemDetails.ForeCastCSDeliverySchedule);
                         forecastItemsDtos.Add(forecastItemDto);
                     }
-                    forecastDto.foreCastCustomerSupportItems = forecastItemsDtos;
+                    forecastDto.ForeCastCustomerSupportItems = forecastItemsDtos;
 
-                    //var result = _mapper.Map<RfqCustomerSupportDto>(rfq);
                     serviceResponse.Data = forecastDto;
                     serviceResponse.Message = $"Returned ForecastCustomerSupportByForeCastNumber with id: {ForeCastNumber}";
                     serviceResponse.Success = true;
@@ -405,9 +404,9 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var forecastengg = await _forecastenggRepository.GetForeCastEnggById(id);
+                var getForeCastEnggById = await _forecastenggRepository.GetForeCastEnggById(id);
 
-                if (forecastengg == null)
+                if (getForeCastEnggById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"ForecastEngg with id: {id}, hasn't been found in db.";
@@ -419,7 +418,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned ForecastEngg with id: {id}");
-                    var result = _mapper.Map<ForeCastEnggDto>(forecastengg);
+                    var result = _mapper.Map<ForeCastEnggDto>(getForeCastEnggById);
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned ForecastEngg with id: {id}";
                     serviceResponse.Success = true;
@@ -446,9 +445,9 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var forecastsourcing = await _sourcingrepository.GetForeCastSourcingById(id);
+                var getForeCastSourcingById = await _sourcingrepository.GetForeCastSourcingById(id);
 
-                if (forecastsourcing == null)
+                if (getForeCastSourcingById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"ForeCastsourcing with id: {id}, hasn't been found in db.";
@@ -461,20 +460,20 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogInfo($"Returned ForeCastsourcing with id: {id}");
                     //var result = _mapper.Map<RfqSourcingDto>(rfqsourcing);
-                    ForecastSourcingDto forecastSourceDto = _mapper.Map<ForecastSourcingDto>(forecastsourcing);//Main model mapping
+                    ForecastSourcingDto forecastSourceDto = _mapper.Map<ForecastSourcingDto>(getForeCastSourcingById);//Main model mapping
 
                     //below mapping is child under child  
 
                     List<ForecastSourcingItemsDto> forecastSourseItemDtos = new List<ForecastSourcingItemsDto>();
 
-                    foreach (var sourceitemDetails in forecastsourcing.forecastSourcingItems)
+                    foreach (var sourceitemDetails in getForeCastSourcingById.ForecastSourcingItems)
                     {
                         ForecastSourcingItemsDto forecastSourceItemDto = _mapper.Map<ForecastSourcingItemsDto>(sourceitemDetails);
-                        forecastSourceItemDto.forecastSourcingVendors = _mapper.Map<List<ForecastSourcingVendorDto>>(sourceitemDetails.forecastSourcingVendors);
+                        forecastSourceItemDto.ForecastSourcingVendors = _mapper.Map<List<ForecastSourcingVendorDto>>(sourceitemDetails.ForecastSourcingVendors);
                         forecastSourseItemDtos.Add(forecastSourceItemDto);
                     }
 
-                    forecastSourceDto.forecastSourcingItems = forecastSourseItemDtos;
+                    forecastSourceDto.ForecastSourcingItems = forecastSourseItemDtos;
                     serviceResponse.Data = forecastSourceDto;
                     serviceResponse.Message = $"Returned ForeCastsourcing with id: {id}";
                     serviceResponse.Success = true;
@@ -558,9 +557,9 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var forecast = await _Forecastrepository.GetForeCastById(id);
+                var getForeCastById = await _Forecastrepository.GetForeCastById(id);
 
-                if (forecast == null)
+                if (getForeCastById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"Forecast with id: {id}, hasn't been found in db.";
@@ -572,7 +571,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned forecast with id: {id}");
-                    var result = _mapper.Map<ForeCastDto>(forecast);
+                    var result = _mapper.Map<ForeCastDto>(getForeCastById);
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned Forecast with id: {id}";
                     serviceResponse.Success = true;
@@ -616,13 +615,13 @@ namespace Tips.SalesService.Api.Controllers
                     ForeCastCustomerSupportDto forecastDto = _mapper.Map<ForeCastCustomerSupportDto>(forecast);
 
                     List<ForeCastCustomerSupportItemDto> forecastItemsDtos = new List<ForeCastCustomerSupportItemDto>();
-                    foreach (var itemDetails in forecast.foreCastCustomerSupportItems)
+                    foreach (var itemDetails in forecast.ForeCastCustomerSupportItems)
                     {
                         ForeCastCustomerSupportItemDto forecastItemDto = _mapper.Map<ForeCastCustomerSupportItemDto>(itemDetails);
-                        forecastItemDto.foreCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliveryScheduleDto>>(itemDetails.foreCastCSDeliverySchedule);
+                        forecastItemDto.ForeCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliveryScheduleDto>>(itemDetails.ForeCastCSDeliverySchedule);
                         forecastItemsDtos.Add(forecastItemDto);
                     }
-                    forecastDto.foreCastCustomerSupportItems = forecastItemsDtos;
+                    forecastDto.ForeCastCustomerSupportItems = forecastItemsDtos;
 
                     //var result = _mapper.Map<RfqCustomerSupportDto>(rfq);
                     serviceResponse.Data = forecastDto;
@@ -721,24 +720,26 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                //var sourceitems = _mapper.Map<IEnumerable<RfqSourcingItems>>(rfqSourcingDtoPost.rfqSourcingItems);
-                var forecastsource = _mapper.Map<ForecastSourcing>(forecastSourcingDtoPost);
-                var forecastSourceDto = forecastSourcingDtoPost.forecastSourcingItems;
+                var createForecastSource = _mapper.Map<ForecastSourcing>(forecastSourcingDtoPost);
+                var forecastSourceData = createForecastSource.ForeCastNumber;
+
+                var forecastSourceUpdate = await _Forecastrepository.ForeCastSourcingByForecasrNumbers(forecastSourceData);
+
+                forecastSourceUpdate.IsSourcing = true;
+
+                var forecastSourceDto = forecastSourcingDtoPost.ForecastSourcingItems;
 
                 var sourceItemList = new List<ForecastSourcingItems>();
                 for (int i = 0; i < forecastSourceDto.Count; i++)
                 {
                     ForecastSourcingItems sourceItemListDetail = _mapper.Map<ForecastSourcingItems>(forecastSourceDto[i]);
-                    sourceItemListDetail.forecastSourcingVendors = _mapper.Map<List<ForecastSourcingVendor>>(forecastSourceDto[i].forecastSourcingVendors);
+                    sourceItemListDetail.ForecastSourcingVendors = _mapper.Map<List<ForecastSourcingVendor>>(forecastSourceDto[i].ForecastSourcingVendors);
                     sourceItemList.Add(sourceItemListDetail);
 
                 }
-                forecastsource.forecastSourcingItems = sourceItemList;
+                createForecastSource.ForecastSourcingItems = sourceItemList;
 
-                //var notes = _mapper.Map<IEnumerable<RfqNotes>>(rfq.rfqNotes);
-
-                _sourcingrepository.CreateForeCastSourcing(forecastsource);
-
+                await _sourcingrepository.CreateForeCastSourcing(createForecastSource);
                 _sourcingrepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
@@ -846,12 +847,9 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var forecasts = _mapper.Map<ForeCast>(foreCastPostDto);
+                var createForecast = _mapper.Map<ForeCast>(foreCastPostDto);
 
-                //var notes = _mapper.Map<IEnumerable<RfqNotes>>(rfq.rfqNotes);
-
-                _Forecastrepository.CreateForeCast(forecasts);
-
+                await _Forecastrepository.CreateForeCast(createForecast);
                 _Forecastrepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
@@ -896,11 +894,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var forecastenggs = _mapper.Map<ForeCastEngg>(foreCastEnggPost);
-
-                //var notes = _mapper.Map<IEnumerable<RfqNotes>>(rfq.rfqNotes);
-
-                _forecastenggRepository.CreateForeCastEngg(forecastenggs);
+                var createForecast =  _mapper.Map<ForeCastEngg>(foreCastEnggPost);
+                _forecastenggRepository.CreateForeCastEngg(createForecast);
                 _forecastenggRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
@@ -948,19 +943,19 @@ namespace Tips.SalesService.Api.Controllers
                 var forecastCustomerSupportList = _mapper.Map<ForeCastCustomerSupport>(foreCastCustomerSupportPostDto);
 
 
-                var forecastCustomerSupportItemDto = foreCastCustomerSupportPostDto.foreCastCustomerSupportItems;
+                var forecastCustomerSupportItemDto = foreCastCustomerSupportPostDto.ForeCastCustomerSupportItems;
 
                 var forecastCustomerSupportLists = new List<ForeCastCustomerSupportItem>();
                 for (int i = 0; i < forecastCustomerSupportItemDto.Count; i++)
                 {
                     ForeCastCustomerSupportItem forecastCSItems = _mapper.Map<ForeCastCustomerSupportItem>(forecastCustomerSupportItemDto[i]);
-                    forecastCSItems.foreCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliverySchedule>>(forecastCustomerSupportItemDto[i].foreCastCSDeliverySchedule);
+                    forecastCSItems.ForeCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliverySchedule>>(forecastCustomerSupportItemDto[i].ForeCastCSDeliverySchedule);
                     forecastCustomerSupportLists.Add(forecastCSItems);
 
                 }
-                forecastCustomerSupportList.foreCastCustomerSupportItems = forecastCustomerSupportLists;
+                forecastCustomerSupportList.ForeCastCustomerSupportItems = forecastCustomerSupportLists;
 
-                _repository.CreateForeCastCustomerSupport(forecastCustomerSupportList);
+               await _repository.CreateForeCastCustomerSupport(forecastCustomerSupportList);
 
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1079,8 +1074,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var forecast = await _Forecastrepository.GetForeCastById(id);
-                if (forecast is null)
+                var getForeCastById = await _Forecastrepository.GetForeCastById(id);
+                if (getForeCastById is null)
                 {
                     _logger.LogError($"Forecast with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1090,12 +1085,9 @@ namespace Tips.SalesService.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                var data = _mapper.Map(foreCastUpdateDto, forecast);
+                var updateforeCast = _mapper.Map(foreCastUpdateDto, getForeCastById);
 
-
-                //var notes = _mapper.Map<IEnumerable<RfqNotes>>(rfq.rfqNotes);
-
-                string result = await _Forecastrepository.UpdateForeCast(data);
+                string result = await _Forecastrepository.UpdateForeCast(updateforeCast);
                 _logger.LogInfo(result);
                 _Forecastrepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1140,8 +1132,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var forecastsource = await _sourcingrepository.GetForeCastSourcingById(id);
-                if (forecastsource is null)
+                var getForeCastSourcingById = await _sourcingrepository.GetForeCastSourcingById(id);
+                if (getForeCastSourcingById is null)
                 {
                     _logger.LogError($"ForeCastSource with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1150,28 +1142,29 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                //_mapper.Map(rfqUpdateDto, rfq);
-                //var rfqsourceing = _mapper.Map<IEnumerable<RfqSourcingItems>>(rfqsource.rfqSourcingItems);
                 var forecastsourceList = _mapper.Map<ForecastSourcing>(forecastSourcingDtoUpdate);
 
-                var sourceitemtemDto = forecastSourcingDtoUpdate.forecastSourcingItems;
+                var sourceitemtemDto = forecastSourcingDtoUpdate.ForecastSourcingItems;
 
                 var sourceItemList = new List<ForecastSourcingItems>();
-                for (int i = 0; i < sourceitemtemDto.Count; i++)
+
+                if (sourceitemtemDto != null)
                 {
-                    ForecastSourcingItems sourceItemDetail = _mapper.Map<ForecastSourcingItems>(sourceitemtemDto[i]);
-                    sourceItemDetail.forecastSourcingVendors = _mapper.Map<List<ForecastSourcingVendor>>(sourceitemtemDto[i].forecastSourcingVendors);
+                    for (int i = 0; i < sourceitemtemDto.Count; i++)
+                    {
+                        ForecastSourcingItems sourceItemDetail = _mapper.Map<ForecastSourcingItems>(sourceitemtemDto[i]);
+                        sourceItemDetail.ForecastSourcingVendors = _mapper.Map<List<ForecastSourcingVendor>>(sourceitemtemDto[i].ForecastSourcingVendors);
 
-                    sourceItemList.Add(sourceItemDetail);
+                        sourceItemList.Add(sourceItemDetail);
 
+                    }
                 }
-                var data = _mapper.Map(forecastSourcingDtoUpdate, forecastsource);
+                var updateForeCastSource = _mapper.Map(forecastSourcingDtoUpdate, getForeCastSourcingById);
 
-                data.forecastSourcingItems = sourceItemList;
+                updateForeCastSource.ForecastSourcingItems = sourceItemList;
 
-                //var notes = _mapper.Map<IEnumerable<RfqNotes>>(rfq.rfqNotes);
 
-                string result = await _sourcingrepository.UpdateForeCastSourcing(data);
+                string result = await _sourcingrepository.UpdateForeCastSourcing(updateForeCastSource);
                 _logger.LogInfo(result);
                 _sourcingrepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1217,8 +1210,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var forecastengg = await _forecastenggRepository.GetForeCastEnggById(id);
-                if (forecastengg is null)
+                var getForeCastEnggById = await _forecastenggRepository.GetForeCastEnggById(id);
+                if (getForeCastEnggById is null)
                 {
                     _logger.LogError($"forecastengg with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1228,12 +1221,11 @@ namespace Tips.SalesService.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                var data = _mapper.Map(foreCastEnggUpdate, forecastengg);
+                var updateForecastEngg = _mapper.Map(foreCastEnggUpdate, getForeCastEnggById);
 
 
-                //var notes = _mapper.Map<IEnumerable<RfqNotes>>(rfq.rfqNotes);
 
-                string result = await _forecastenggRepository.UpdateForeCastEngg(data);
+                string result = await _forecastenggRepository.UpdateForeCastEngg(updateForecastEngg);
                 _logger.LogInfo(result);
                 _forecastenggRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1277,8 +1269,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var forecast = await _repository.GetForeCastCustomerSupportById(id);
-                if (forecast is null)
+                var GetForeCastCSById = await _repository.GetForeCastCustomerSupportById(id);
+                if (GetForeCastCSById is null)
                 {
                     _logger.LogError($"ForeCastCustomerSupport with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1288,21 +1280,25 @@ namespace Tips.SalesService.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                
-                var forecastcustomerlist = _mapper.Map<ForeCastCustomerSupport>(forecast);
+                var updateForeCastCS = _mapper.Map<ForeCastCustomerSupport>(GetForeCastCSById);
 
-                var forecastItemDto = foreCastCustomerSupportUpdateDto.foreCastCustomerSupportItems;
+                var forecastItemDto = foreCastCustomerSupportUpdateDto.ForeCastCustomerSupportItems;
 
                 var forecastCsItemList = new List<ForeCastCustomerSupportItem>();
-                for (int i = 0; i < forecastItemDto.Count; i++)
+
+                if (forecastItemDto != null)
                 {
-                    ForeCastCustomerSupportItem forecastItemDetail = _mapper.Map<ForeCastCustomerSupportItem>(forecastItemDto[i]);
-                    forecastItemDetail.foreCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliverySchedule>>(forecastItemDto[i].foreCastCSDeliverySchedule);
-                    forecastCsItemList.Add(forecastItemDetail);
+                    for (int i = 0; i < forecastItemDto.Count; i++)
+                    {
+                        ForeCastCustomerSupportItem forecastItemDetail = _mapper.Map<ForeCastCustomerSupportItem>(forecastItemDto[i]);
+                        forecastItemDetail.ForeCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliverySchedule>>(forecastItemDto[i].ForeCastCSDeliverySchedule);
+                        forecastCsItemList.Add(forecastItemDetail);
 
+                    }
                 }
-                forecastcustomerlist.foreCastCustomerSupportItems = forecastCsItemList;
+                updateForeCastCS.ForeCastCustomerSupportItems = forecastCsItemList;
 
-                var data = _mapper.Map(foreCastCustomerSupportUpdateDto, forecastcustomerlist);
+                var data = _mapper.Map(foreCastCustomerSupportUpdateDto, updateForeCastCS);
 
                 string result = await _repository.UpdateForeCastCustomerSupport(data);
                 _logger.LogInfo(result);
@@ -1369,8 +1365,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var forecast = await _Forecastrepository.GetForeCastById(id);
-                if (forecast == null)
+                var getForeCastById = await _Forecastrepository.GetForeCastById(id);
+                if (getForeCastById == null)
                 {
                     _logger.LogError($"Forecast with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1379,7 +1375,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _Forecastrepository.DeleteForeCast(forecast);
+                string result = await _Forecastrepository.DeleteForeCast(getForeCastById );
                 _logger.LogInfo(result);
                 _Forecastrepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1405,8 +1401,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var forecastengg = await _forecastenggRepository.GetForeCastEnggById(id);
-                if (forecastengg == null)
+                var foreCastenggById = await _forecastenggRepository.GetForeCastEnggById(id);
+                if (foreCastenggById == null)
                 {
                     _logger.LogError($"forecastengg with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1415,7 +1411,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _forecastenggRepository.DeleteForeCastEngg(forecastengg);
+                string result = await _forecastenggRepository.DeleteForeCastEngg(foreCastenggById);
                 _logger.LogInfo(result);
                 _forecastenggRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1442,8 +1438,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var forecastsource = await _sourcingrepository.GetForeCastSourcingById(id);
-                if (forecastsource == null)
+                var getForeCastSourcingById = await _sourcingrepository.GetForeCastSourcingById(id);
+                if (getForeCastSourcingById == null)
                 {
                     _logger.LogError($"ForeCastSource with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1452,7 +1448,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _sourcingrepository.DeleteForeCastSourcing(forecastsource);
+                string result = await _sourcingrepository.DeleteForeCastSourcing(getForeCastSourcingById);
                 _logger.LogInfo(result);
                 _sourcingrepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1480,8 +1476,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var forecast = await _repository.GetForeCastCustomerSupportById(id);
-                if (forecast == null)
+                var getForeCastCSById = await _repository.GetForeCastCustomerSupportById(id);
+                if (getForeCastCSById == null)
                 {
                     _logger.LogError($"ForecastCustomerSupport with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1490,7 +1486,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.DeleteForeCastCustomerSupport(forecast);
+                string result = await _repository.DeleteForeCastCustomerSupport(getForeCastCSById);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1510,27 +1506,27 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        // GET: api/<ForeCastCustomGroupController>
+        // GET: api/<ForeCastCustomGroupController> 
         [HttpGet]
         public async Task<IActionResult> GetAllForeCastCustomGroup([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<ForeCastCustomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<ForeCastCustomGroupDto>>();
             try
             {
-                var listOfForeCastCustomGroup = await _forecastcustomgroupRepository.GetAllForeCastCustomGroup(pagingParameter);
+                var getAllForeCastCustomGroup = await _forecastcustomgroupRepository.GetAllForeCastCustomGroup(pagingParameter);
                 var metadata = new
                 {
-                    listOfForeCastCustomGroup.TotalCount,
-                    listOfForeCastCustomGroup.PageSize,
-                    listOfForeCastCustomGroup.CurrentPage,
-                    listOfForeCastCustomGroup.HasNext,
-                    listOfForeCastCustomGroup.HasPreviuos
+                    getAllForeCastCustomGroup.TotalCount,
+                    getAllForeCastCustomGroup.PageSize,
+                    getAllForeCastCustomGroup.CurrentPage,
+                    getAllForeCastCustomGroup.HasNext,
+                    getAllForeCastCustomGroup.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all ForeCastCustomGroup");
-                var foreCastCustomGroupEntity = _mapper.Map<IEnumerable<ForeCastCustomGroupDto>>(listOfForeCastCustomGroup);
+                var foreCastCustomGroupEntity = _mapper.Map<IEnumerable<ForeCastCustomGroupDto>>(getAllForeCastCustomGroup);
                 serviceResponse.Data = foreCastCustomGroupEntity;
                 serviceResponse.Message = "Returned all ForeCastCustomGroup";
                 serviceResponse.Success = true;
@@ -1556,8 +1552,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var foreCastCustomGroupList = await _forecastcustomgroupRepository.GetForeCastCustomGroupById(id);
-                if (foreCastCustomGroupList == null)
+                var getForeCastCustomGroupById = await _forecastcustomgroupRepository.GetForeCastCustomGroupById(id);
+                if (getForeCastCustomGroupById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"ForeCastCustomGroup hasn't been found in db.";
@@ -1569,7 +1565,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    var foreCastCustomGroupEntity = _mapper.Map<ForeCastCustomGroupDto>(foreCastCustomGroupList);
+                    var foreCastCustomGroupEntity = _mapper.Map<ForeCastCustomGroupDto>(getForeCastCustomGroupById);
                     serviceResponse.Data = foreCastCustomGroupEntity;
                     serviceResponse.Message = "Returned ForeCastCustomGroup Successfully";
                     serviceResponse.Success = true;
@@ -1614,8 +1610,8 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogError("Invalid ForeCastCustomGroup object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var foreCastCustomGroupEntity = _mapper.Map<ForeCastCustomGroup>(foreCastCustomGroupDtoPost);
-                _forecastcustomgroupRepository.CreateForeCastCustomGroup(foreCastCustomGroupEntity);
+                var createForeCastCustomGroup = _mapper.Map<ForeCastCustomGroup>(foreCastCustomGroupDtoPost);
+                _forecastcustomgroupRepository.CreateForeCastCustomGroup(createForeCastCustomGroup);
                 _forecastcustomgroupRepository.SaveAsync();
                 serviceResponse.Message = "ForeCastCustomGroup Successfully Created";
                 serviceResponse.Success = true;
@@ -1659,8 +1655,8 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogError("Invalid Update ForeCastCustomGroup object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var foreCastCustomGroupEntity = await _forecastcustomgroupRepository.GetForeCastCustomGroupById(id);
-                if (foreCastCustomGroupEntity is null)
+                var getForeCastCustomGroupById = await _forecastcustomgroupRepository.GetForeCastCustomGroupById(id);
+                if (getForeCastCustomGroupById is null)
                 {
                     _logger.LogError($"Update ForeCastCustomGroup with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1669,8 +1665,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(foreCastCustomGroupDtoUpdate, foreCastCustomGroupEntity);
-                string result = await _forecastcustomgroupRepository.UpdateForeCastCustomGroup(foreCastCustomGroupEntity);
+                _mapper.Map(foreCastCustomGroupDtoUpdate, getForeCastCustomGroupById);
+                string result = await _forecastcustomgroupRepository.UpdateForeCastCustomGroup(getForeCastCustomGroupById);
                 _logger.LogInfo(result);
                 _forecastcustomgroupRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1698,8 +1694,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var foreCastCustomGroupList = await _forecastcustomgroupRepository.GetForeCastCustomGroupById(id);
-                if (foreCastCustomGroupList == null)
+                var getForeCastCustomGroupById = await _forecastcustomgroupRepository.GetForeCastCustomGroupById(id);
+                if (getForeCastCustomGroupById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Delete ForeCastCustomGroup object sent from client is null";
@@ -1708,7 +1704,7 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogError($"Delete ForeCastCustomGroup with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                string result = await _forecastcustomgroupRepository.DeleteForeCastCustomGroup(foreCastCustomGroupList);
+                string result = await _forecastcustomgroupRepository.DeleteForeCastCustomGroup(getForeCastCustomGroupById);
                 _logger.LogInfo(result);
                 _forecastcustomgroupRepository.SaveAsync();
                 serviceResponse.Message = "ForeCastCustomGroup Deleted Successfully";
@@ -1734,20 +1730,20 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<ForeCastCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<ForeCastCustomFieldDto>>();
             try
             {
-                var listOfForeCastCustomField = await _forecastcustomfieldRepository.GetAllForeCastCustomField(pagingParameter);
+                var getAllForeCastCustomField = await _forecastcustomfieldRepository.GetAllForeCastCustomField(pagingParameter);
                 var metadata = new
                 {
-                    listOfForeCastCustomField.TotalCount,
-                    listOfForeCastCustomField.PageSize,
-                    listOfForeCastCustomField.CurrentPage,
-                    listOfForeCastCustomField.HasNext,
-                    listOfForeCastCustomField.HasPreviuos
+                    getAllForeCastCustomField.TotalCount,
+                    getAllForeCastCustomField.PageSize,
+                    getAllForeCastCustomField.CurrentPage,
+                    getAllForeCastCustomField.HasNext,
+                    getAllForeCastCustomField.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all ForeCastCustomField");
-                var foreCastCustomFieldEntity = _mapper.Map<IEnumerable<ForeCastCustomFieldDto>>(listOfForeCastCustomField);
+                var foreCastCustomFieldEntity = _mapper.Map<IEnumerable<ForeCastCustomFieldDto>>(getAllForeCastCustomField);
                 serviceResponse.Data = foreCastCustomFieldEntity;
                 serviceResponse.Message = "Returned all ForeCastCustomField";
                 serviceResponse.Success = true;
@@ -1773,8 +1769,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var foreCastCustomFieldList = await _forecastcustomfieldRepository.GetForeCastCustomFieldById(id);
-                if (foreCastCustomFieldList == null)
+                var getForeCastCustomFieldById = await _forecastcustomfieldRepository.GetForeCastCustomFieldById(id);
+                if (getForeCastCustomFieldById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"ForeCastCustomField hasn't been found in db.";
@@ -1786,7 +1782,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned ForeCastCustomField with id: {id}");
-                    var foreCastCustomFieldEntity = _mapper.Map<ForeCastCustomFieldDto>(foreCastCustomFieldList);
+                    var foreCastCustomFieldEntity = _mapper.Map<ForeCastCustomFieldDto>(getForeCastCustomFieldById);
                     serviceResponse.Data = foreCastCustomFieldEntity;
                     serviceResponse.Message = "Returned ForeCastCustomField Successfully";
                     serviceResponse.Success = true;
@@ -1871,13 +1867,13 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Invalid Update ForeCastCustomField object sent from client";
-                    serviceResponse.Success = false;
+                       serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid Update ForeCastCustomField object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var foreCastCustomFieldEntity = await _forecastcustomfieldRepository.GetForeCastCustomFieldById(id);
-                if (foreCastCustomFieldEntity is null)
+                var getForeCastCustomFieldById = await _forecastcustomfieldRepository.GetForeCastCustomFieldById(id);
+                if (getForeCastCustomFieldById is null)
                 {
                     _logger.LogError($"Update ForeCastCustomField with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -1886,8 +1882,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(foreCastCustomFieldDtoUpdate, foreCastCustomFieldEntity);
-                string result = await _forecastcustomfieldRepository.UpdateForeCastCustomField(foreCastCustomFieldEntity);
+                _mapper.Map(foreCastCustomFieldDtoUpdate, getForeCastCustomFieldById);
+                string result = await _forecastcustomfieldRepository.UpdateForeCastCustomField(getForeCastCustomFieldById);
                 _logger.LogInfo(result);
                 _forecastcustomfieldRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1915,8 +1911,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var foreCastCustomFieldList = await _forecastcustomfieldRepository.GetForeCastCustomFieldById(id);
-                if (foreCastCustomFieldList == null)
+                var getForeCastCustomFieldById = await _forecastcustomfieldRepository.GetForeCastCustomFieldById(id);
+                if (getForeCastCustomFieldById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Delete ForeCastCustomField object sent from client is null";
@@ -1925,7 +1921,7 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogError($"Delete ForeCastCustomField with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                string result = await _forecastcustomfieldRepository.DeleteForeCastCustomField(foreCastCustomFieldList);
+                string result = await _forecastcustomfieldRepository.DeleteForeCastCustomField(getForeCastCustomFieldById);
                 _logger.LogInfo(result);
                 _forecastcustomfieldRepository.SaveAsync();
                 serviceResponse.Message = "ForeCastCustomField Deleted Successfully";

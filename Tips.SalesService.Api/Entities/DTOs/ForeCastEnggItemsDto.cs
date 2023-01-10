@@ -14,8 +14,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string? CustomerItemNumber { get; set; }
         public string Description { get; set; }
+
         [Precision(13, 8)]
-        public decimal? Quantity { get; set; }
+        public decimal? Qty { get; set; }
         public string? CostingBomVersionNo { get; }
         public string? ItemNumber { get; set; }
         public string Unit { get; set; }
@@ -30,14 +31,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerItemNumber { get; set; }
         public string Description { get; set; }
         [Precision(13, 8)]
-        public decimal? Quantity { get; set; }
+        public decimal? Qty { get; set; }
         public string? CostingBomVersionNo { get; }
         public string? ItemNumber { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+     
     }
     public class ForeCastEnggItemsUpdateDto
     {
@@ -49,9 +46,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CostingBomVersionNo { get; }
         public string? ItemNumber { get; set; }
         public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        
     }
 }

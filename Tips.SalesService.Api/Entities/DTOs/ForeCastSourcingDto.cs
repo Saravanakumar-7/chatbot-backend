@@ -19,7 +19,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<ForecastSourcingItemsDto>? forecastSourcingItems { get; set; }
+        public List<ForecastSourcingItemsDto>? ForecastSourcingItems { get; set; }
        
 
     }
@@ -32,9 +32,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         public string? CustomerName { get; set; }
 
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
-        public List<ForecastSourcingItemsDtoPost>? forecastSourcingItems { get; set; }
+   
+        public List<ForecastSourcingItemsDtoPost>? ForecastSourcingItems { get; set; }
        
 
 
@@ -51,7 +50,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Required(ErrorMessage = "Unit is required")]
         public string Unit { get; set; }
-        public List<ForecastSourcingItemsDtoUpdate>? forecastSourcingItems { get; set; }
+        public List<ForecastSourcingItemsDtoUpdate>? ForecastSourcingItems { get; set; }
         
 
     }

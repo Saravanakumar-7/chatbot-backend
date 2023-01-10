@@ -19,6 +19,9 @@ namespace Tips.Production.Api.Entities
         public string? ShopOrderNumber { get; set; }
 
         [Required]
+        public string ItemType { get; set; }
+
+        [Required]
         [Precision(13, 2)]
         public string? ShopOrderReleaseQty { get; set; }
 

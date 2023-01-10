@@ -958,11 +958,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var rfqenggs = _mapper.Map<RfqEngg>(rfqEnggDtoPost);
-
-                //var notes = _mapper.Map<IEnumerable<RfqNotes>>(rfq.rfqNotes);
-
-                _rfqenggRepository.CreateRfqEngg(rfqenggs);
+                var createRfqEngg =  _mapper.Map<RfqEngg>(rfqEnggDtoPost);
+                _rfqenggRepository.CreateRfqEngg(createRfqEngg);
                 _rfqenggRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";

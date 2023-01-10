@@ -60,7 +60,7 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<RfqLPCostingNREConsumable> RfqLPCostingNREConsumables { get; set; }
         public DbSet<RfqLPCostingOtherCharges> RfqLPCostingOtherCharges { get; set; }
         public DbSet<FgOqc> FgOqcs { get; set; }
-        public DbSet<SaOqc> SaOqcs { get; set; }
+        public DbSet<FinalOqc> FinalOqcs { get; set; }
         public DbSet<ForecastLpCosting> ForecastLpCostings { get; set; }
         public DbSet<ForecastLpCostingItem> ForecastLpCostingItems { get; set; }
         public DbSet<ForecastLpCostingProcess> ForecastLpCostingProcesses { get; set; }

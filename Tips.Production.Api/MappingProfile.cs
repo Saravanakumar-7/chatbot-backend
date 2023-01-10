@@ -1,6 +1,4 @@
-﻿
-
-using AutoMapper;
+﻿using AutoMapper;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities;
 using Entities.DTOs;

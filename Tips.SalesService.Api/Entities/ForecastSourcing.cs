@@ -12,7 +12,7 @@
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<ForecastSourcingItems>? forecastSourcingItems { get; set; }
+        public List<ForecastSourcingItems>? ForecastSourcingItems { get; set; }
 
     }
 }

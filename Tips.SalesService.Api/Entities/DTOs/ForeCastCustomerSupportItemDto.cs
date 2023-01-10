@@ -13,28 +13,32 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
-        public int? Quantity { get; set; }
-        public string? Description { get; set; }
-        public string Unit { get; set; }
+        public string ForecastNumber { get; set; }
 
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
+
+        [Precision(13,3)]
+        public decimal? Qty { get; set; }
+        public string? Description { get; set; }
+        public bool ReleaseStatus { get; set; }       
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<ForeCastCSDeliveryScheduleDto>? foreCastCSDeliverySchedule { get; set; }
+        public List<ForeCastCSDeliveryScheduleDto>? ForeCastCSDeliverySchedule { get; set; }
     }
     public class ForeCastCustomerSupportItemPostDto
     {
-        public string? ItemNumber { get; set; }
-        public int? Quantity { get; set; }
-        public string? Description { get; set; }
-        public string Unit { get; set; }
+        [Required]
+        public string ForecastNumber { get; set; }
 
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-        public List<ForeCastCSDeliverySchedulePostDto>? foreCastCSDeliverySchedule { get; set; }
+        public string? ItemNumber { get; set; }
+
+        [Precision(13,3)]
+        public decimal? Qty { get; set; }
+
+        [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
+        public string? Description { get; set; }
+      
+
+        public List<ForeCastCSDeliverySchedulePostDto>? ForeCastCSDeliverySchedule { get; set; }
 
     }
     public class ForeCastCustomerSupportItemUpdateDto
@@ -42,14 +46,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public int? Quantity { get; set; }
-        public string? Description { get; set; }
-        public string Unit { get; set; }
 
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-        public List<ForeCastCSDeliveryScheduleUpdateDto>? foreCastCSDeliverySchedule { get; set; }
+        [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
+        public string? Description { get; set; }      
+        public List<ForeCastCSDeliveryScheduleUpdateDto>? ForeCastCSDeliverySchedule { get; set; }
 
     }
     public class FpreCastCustomerSupportItemUpdateReleaseDto
@@ -72,7 +72,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<ForeCastCSDeliveryScheduleUpdateDto>? foreCastCSDeliverySchedules { get; set; }
+        public List<ForeCastCSDeliveryScheduleUpdateDto>? ForeCastCSDeliverySchedules { get; set; }
 
     }
 }
