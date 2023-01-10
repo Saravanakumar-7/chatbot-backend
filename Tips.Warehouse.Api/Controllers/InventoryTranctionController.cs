@@ -110,7 +110,7 @@ namespace Tips.Warehouse.Api.Controllers
             [HttpPost]
             public IActionResult CreateInventoryTranction([FromBody] InventoryTranctionDtoPost inventoryTranctionDtoPost)
             {
-                ServiceResponse<MaterialIssueDto> serviceResponse = new ServiceResponse<MaterialIssueDto>();
+                ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
 
                 try
                 {
