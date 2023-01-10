@@ -15,10 +15,10 @@ namespace Tips.Production.Api.Repository
 
         public async Task<long> CreateShopOrderConfirmation(ShopOrderConfirmation shopOrderConfirmation)
         {
-            shopOrderConfirmation.LastModifiedBy = "Admin";
-            shopOrderConfirmation.LastModifiedOn = DateTime.Now;
+        
             shopOrderConfirmation.CreatedBy = "Admin";
             shopOrderConfirmation.CreatedOn = DateTime.Now;
+            shopOrderConfirmation.Unit = "Banglore";
             var result = await Create(shopOrderConfirmation);
             return result.Id;
         }

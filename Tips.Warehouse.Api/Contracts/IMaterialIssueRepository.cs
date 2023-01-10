@@ -1,0 +1,15 @@
+﻿using Entities.Helper;
+using Entities;
+using Tips.Warehouse.Api.Entities;
+
+namespace Tips.Warehouse.Api.Contracts
+{
+    public interface IMaterialIssueRepository : IRepositoryBase<MaterialIssue>
+    {
+        Task<PagedList<MaterialIssue>> GetAllMaterialIssue(PagingParameter pagingParameter);
+        Task<MaterialIssue> GetMaterialIssueById(int id);
+        Task<int> CreateMaterialIssue(MaterialIssue materialIssue);
+        Task<string> UpdateMaterialIssue(MaterialIssue materialIssue);
+        Task<string> DeleteMaterialIssue(MaterialIssue materialIssue);
+    }
+}

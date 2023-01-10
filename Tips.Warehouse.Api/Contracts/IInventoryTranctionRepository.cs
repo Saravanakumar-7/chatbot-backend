@@ -1,0 +1,18 @@
+﻿using Entities.Helper;
+using Entities;
+using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Repository;
+
+namespace Tips.Warehouse.Api.Contracts
+{
+    public interface IInventoryTranctionRepository : IRepositoryBase<InventoryTranction>
+    {
+        Task<PagedList<InventoryTranction>> GetAllInventoryTranction(PagingParameter pagingParameter);
+
+        Task<int?> CreateInventoryTranction(InventoryTranction inventoryTranction);
+        Task<string> UpdateInventoryTraction(InventoryTranction inventoryTranction);
+        Task<string> DeleteInventoryTranction(InventoryTranction inventoryTranction);
+
+        Task<InventoryTranction> GetInventoryTranctionById(int id);
+    }
+}

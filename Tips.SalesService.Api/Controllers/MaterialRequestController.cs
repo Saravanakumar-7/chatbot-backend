@@ -93,15 +93,20 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogError($"Returned materialrequest with id: {id}");
+
                     MaterialRequestDto materialRequestDto = _mapper.Map<MaterialRequestDto>(materialRequestbyId);
                    
 
                     List<MaterialRequestItemDto> materialRequestItemDtos = new List<MaterialRequestItemDto>();
 
-                    foreach (var materialitemDetails in materialRequestbyId.MaterialRequestItems)
+                    if (materialRequestbyId.MaterialRequestItems != null)
                     {
-                        MaterialRequestItemDto materialRequestItemDto = _mapper.Map<MaterialRequestItemDto>(materialitemDetails);
-                        materialRequestItemDtos.Add(materialRequestItemDto);
+
+                        foreach (var materialitemDetails in materialRequestbyId.MaterialRequestItems)
+                        {
+                            MaterialRequestItemDto materialRequestItemDto = _mapper.Map<MaterialRequestItemDto>(materialitemDetails);
+                            materialRequestItemDtos.Add(materialRequestItemDto);
+                        }
                     }
 
                     materialRequestDto.MaterialRequestItems = materialRequestItemDtos;
@@ -149,17 +154,23 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
+
                 var createMaterialReq = _mapper.Map<MaterialRequest>(materialRequestDtoPost);
                 var materialReqDto = materialRequestDtoPost.MaterialRequestItems;
 
                 var materialReqItemList = new List<MaterialRequestItem>();
 
-                for (int i = 0; i < materialReqDto.Count; i++)
+                if (materialReqDto != null)
                 {
-                    MaterialRequestItem materialItemListDetail = _mapper.Map<MaterialRequestItem>(materialReqDto[i]);
-                    materialReqItemList.Add(materialItemListDetail);
 
+                    for (int i = 0; i < materialReqDto.Count; i++)
+                    {
+                        MaterialRequestItem materialItemListDetail = _mapper.Map<MaterialRequestItem>(materialReqDto[i]);
+                        materialReqItemList.Add(materialItemListDetail);
+
+                    }
                 }
+
                 createMaterialReq.MaterialRequestItems = materialReqItemList;
 
                await _materialRequestRepository.CreateMaterialRequest(createMaterialReq);
@@ -225,6 +236,7 @@ namespace Tips.SalesService.Api.Controllers
                 var materialReqItemDto = materialRequestDtoUpdate.MaterialRequestItems;
 
                 var materialReqItemList = new List<MaterialRequestItem>();
+
                 for (int i = 0; i < materialReqItemDto.Count; i++)
                 {
                     MaterialRequestItem materialItemDetail = _mapper.Map<MaterialRequestItem>(materialReqItemDto[i]);

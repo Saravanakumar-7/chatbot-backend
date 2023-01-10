@@ -40,9 +40,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
 
 
-       
         public string? ProjectNumber { get; set; }
         public string? FGItemNumber { get; set; }
+
+        [Required]
+        public string ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
 
         [Precision(18, 3)]
@@ -52,11 +54,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? SAShopOrderQty { get; set; }
         [Precision(18, 3)]
-        public decimal? SAPendingQty { get; set; }
+        public decimal? PendingQty { get; set; }
         [Precision(18, 3)]
-        public decimal? SAAcceptedQty { get; set; }
+        public decimal? AcceptedQty { get; set; }
         [Precision(18, 3)]
-        public decimal? SARejectedQty { get; set; }        
+        public decimal? RejectedQty { get; set; }
+
 
     }
     public class FinalOqcDtoUpdate

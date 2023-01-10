@@ -3,6 +3,7 @@ using NLog;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Extensions;
 using Tips.Production.Api.Repository;
+//using Tips.Warehouse.Api.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,8 @@ builder.Services.AddTransient<IShopOrderConfirmationRepository, ShopOrderConfirm
 builder.Services.AddTransient<ISAShopOrderRepository, SAShopOrderRepository>();
 builder.Services.AddTransient<ISAShopOrderMaterialIssueRepository, SAShopOrderMaterialIssueRepository>();
 builder.Services.AddTransient<IFGShopOrderMaterialIssueRepository, FGShopOrderMaterialIssueRepository>();
+builder.Services.AddTransient<IMaterialReturnNoteRepository, MaterialReturnNoteRepository>();
+//builder.Services.AddTransient<IMaterialReturnNoteItemRepository, Mater>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
