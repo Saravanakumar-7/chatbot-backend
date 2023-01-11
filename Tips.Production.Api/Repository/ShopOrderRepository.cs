@@ -4,8 +4,7 @@ using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Entities;
 using Entities.Helper;
-
-
+using Tips.Production.Api.Entities.DTOs;
 
 namespace Tips.Production.Api.Repository
 {
@@ -76,6 +75,47 @@ namespace Tips.Production.Api.Repository
             return getShopOrderByShopOrderNo;
         }
 
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByItemType(string itemType)
+        {
+            IEnumerable<ListOfShopOrderDto> getShopOrderByItemType = await _tipsProductionDbContext.ShopOrders
+                           .Where(x => x.ItemType == itemType).Select(x => new ListOfShopOrderDto()
+                           {
+                               Id = x.Id,
+                               ShopOrderNumber = x.ShopOrderNumber,
+                           }).ToListAsync();
+
+
+            return getShopOrderByItemType;
+
+        }
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFgNo(string FgNumber)
+        {
+            IEnumerable<ListOfShopOrderDto> getShopOrderByFgNo = await _tipsProductionDbContext.ShopOrders
+                           .Where(x => x.ItemNumber == FgNumber && x.ItemType == "Fg").Select(x => new ListOfShopOrderDto()
+                           {
+                               Id = x.Id,
+                               ShopOrderNumber = x.ShopOrderNumber,
+                           }).ToListAsync();
+
+
+            return getShopOrderByFgNo;
+
+        }
+
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFgNoAndSaNo(string FgNumber, string SaNumber)
+        {
+            IEnumerable<ListOfShopOrderDto> getShopOrderByFgNoAndSaNo = await _tipsProductionDbContext.ShopOrders
+                           .Where(x => x.ItemNumber == FgNumber && x.SAItemNumber == SaNumber && x.ItemType == "Sa").Select(x => new ListOfShopOrderDto()
+                           {
+                               Id = x.Id,
+                               ShopOrderNumber = x.ShopOrderNumber,
+                           }).ToListAsync();
+
+
+            return getShopOrderByFgNoAndSaNo;
+
+        }
+
         public async Task<IEnumerable<ShopOrder>> GetAllOpenShopOrders()
         {
             var getAllShopOrder = await FindByCondition(x => x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2)
@@ -83,8 +123,6 @@ namespace Tips.Production.Api.Repository
 
             return (getAllShopOrder);
 
-        }
-
-        
+        }     
     }
 }

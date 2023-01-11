@@ -10,12 +10,15 @@ using Tips.SalesService.Api.Entities;
 
 namespace Tips.SalesService.Api.Contracts
 {
-    public interface IForeCastEnggItemsRepository
+    public interface IForeCastEnggItemsRepository : IRepositoryBase<ForeCastEnggItems>
     {
         Task<IEnumerable<ForeCastEnggItems>> GetAllForeCastEnggItems();
         Task<ForeCastEnggItems> GetForeCastEnggItemsById(int id);
         Task<int?> CreateForeCastEnggItems(ForeCastEnggItems foreCastEnggItems);
         Task<string> UpdateForeCastEnggItems(ForeCastEnggItems foreCastEnggItems);
         Task<string> DeleteForeCastEnggItems(ForeCastEnggItems foreCastEnggItems);
+        Task<IEnumerable<ForeCastEnggItems>> GetAllActiveForeCastEnggItemByForeCastNumber(string foreCastNumber);
+        Task<string> ActivateForeCastEnggItemById(ForeCastEnggItems foreCastEnggItems);
+        Task<string> DeactivateForeCastEnggItemById(ForeCastEnggItems foreCastEnggItems);
     }
 }

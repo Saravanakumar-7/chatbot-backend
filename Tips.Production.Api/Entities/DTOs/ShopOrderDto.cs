@@ -11,6 +11,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string ShopOrderNumber { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string ProjectType { get; set; }
+        public string? ItemNumber { get; set; }
         public string ItemType { get; set; }
 
         [Precision(13, 3)]
@@ -63,6 +64,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Required]
         public string ProjectType { get; set; }
+        public string? ItemNumber { get; set; }
 
         [Required]
         public string ItemType { get; set; }
@@ -92,6 +94,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Required]
         public string ProjectType { get; set; }
+        public string? ItemNumber { get; set; }
 
         [Required]
         public string ItemType { get; set; }
@@ -106,7 +109,11 @@ namespace Tips.Production.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? CanCreateQty { get; set; }
         public List<ShopOrderItemDtoUpdate>? ShopOrderItems { get; set; }
-
-
     }
+    public class ListOfShopOrderDto
+    {
+       public int Id { get; set; }
+        public string ShopOrderNumber { get; set; }
+    }
+
 }

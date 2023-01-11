@@ -19,7 +19,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<ForecastLpCostingItemDto>? forecastLpCostingItems { get; set; }
+        public List<ForecastLpCostingItemDto>? ForecastLpCostingItems { get; set; }
 
 
     }
@@ -30,9 +30,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
 
         public string? CustomerName { get; set; }
-
-        public string Unit { get; set; }
-        public List<ForecastLPCostingItemDtoPost>? forecastLPCostingItems { get; set; }
+       
+        public List<ForecastLPCostingItemDtoPost>? ForecastLPCostingItems { get; set; }
 
     }
     public class ForecastLPCostingDtoUpdate
@@ -44,6 +43,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
 
         public string Unit { get; set; }
-        public List<ForecastLPCostingItemDtoUpdate>? forecastLPCostingItems { get; set; }
+        public List<ForecastLPCostingItemDtoUpdate>? ForecastLPCostingItems { get; set; }
     }
 }

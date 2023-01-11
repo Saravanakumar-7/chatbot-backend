@@ -16,6 +16,7 @@ namespace Tips.SalesService.Api.Entities
         public string Description { get; set; }
         [Precision(13, 8)]
         public decimal? Qty { get; set; }
+        public bool ReleaseStatus { get; set; } = false;
         public string? CostingBomVersionNumber { get; }
         public string? ItemNumber { get; set; }
         public string? CreatedBy { get; set; }

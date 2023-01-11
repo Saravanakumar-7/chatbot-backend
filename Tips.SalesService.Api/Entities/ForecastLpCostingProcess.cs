@@ -19,13 +19,10 @@ namespace Tips.SalesService.Api.Entities
         public string? LabourHrs { get; set; }
         [Precision(13, 3)]
         public decimal? LabourHrsCost { get; set; }
-        public string? MarkUpForProcessSteps { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
+        public string? MarkUpForProcessSteps { get; set; }   
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public int ForeCastLPCostingItemId { get; set; }
-        public ForecastLpCostingItem? forecastLpCostingItem { get; set; }
+        public ForecastLpCostingItem? ForecastLpCostingItem { get; set; }
     }
 }
