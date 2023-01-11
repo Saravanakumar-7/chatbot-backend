@@ -12,7 +12,8 @@ namespace Tips.Production.Api.Entities
         public string ShopOrderNumber { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string ProjectType { get; set; }      
-        public string ItemType { get; set; }        
+        public string ItemType { get; set; }
+        public string? ItemNumber { get; set; }
 
         [Precision(13,3)]
         public decimal? TotalSOReleaseQty { get; set; }

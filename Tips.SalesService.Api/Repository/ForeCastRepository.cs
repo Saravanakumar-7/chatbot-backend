@@ -365,40 +365,40 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-        public async Task<ForecastLpCosting> ForecastLpCostingByForeCastNumber(string ForeCastNumber)
+        public async Task<ForecastLpCosting> GetForecastLpCostingByForeCastNumber(string ForeCastNumber)
         {
-            var LpCostingByForeCastNumber = await _tipsSalesServiceDbContext.ForecastLpCostings
-                .Include(t => t.forecastLpCostingItems)
+            var getLpCostingByForeCastNumber = await _tipsSalesServiceDbContext.ForecastLpCostings
+                .Include(t => t.ForecastLpCostingItems)
               .Where(x => x.ForeCastNumber == ForeCastNumber)
                         .FirstOrDefaultAsync();
-            return LpCostingByForeCastNumber;
+            return getLpCostingByForeCastNumber;
         }
 
         public async Task<PagedList<ForecastLpCosting>> GetAllForecastLpCosting(PagingParameter pagingParameter)
         {
-            var forecastlpCosting = PagedList<ForecastLpCosting>.ToPagedList(FindAll()
-               .Include(x => x.forecastLpCostingItems)
-               .ThenInclude(u => u.forecastLpCostingProcesses)
-                .Include(x => x.forecastLpCostingItems)
-                .ThenInclude(v => v.forecastLPCostingNREConsumables)
-                .Include(x => x.forecastLpCostingItems)
-                .ThenInclude(w => w.forecastLpCostingOtherCharges)
+            var getAllLpCosting = PagedList<ForecastLpCosting>.ToPagedList(FindAll()
+               .Include(x => x.ForecastLpCostingItems)
+               .ThenInclude(u => u.ForecastLpCostingProcesses)
+                .Include(x => x.ForecastLpCostingItems)
+                .ThenInclude(v => v.ForecastLPCostingNREConsumables)
+                .Include(x => x.ForecastLpCostingItems)
+                .ThenInclude(w => w.ForecastLpCostingOtherCharges)
           .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return forecastlpCosting;
+            return getAllLpCosting;
         }
 
         public async Task<ForecastLpCosting> GetForecastLpCostingById(int id)
         {
-            var forecastLPCosting = await _tipsSalesServiceDbContext.ForecastLpCostings.Where(x => x.Id == id)
-                 .Include(x => x.forecastLpCostingItems)
-                 .ThenInclude(u => u.forecastLpCostingProcesses)
-                 .Include(x => x.forecastLpCostingItems)
-                 .ThenInclude(v => v.forecastLPCostingNREConsumables)
-                 .Include(x => x.forecastLpCostingItems)
-                 .ThenInclude(w => w.forecastLpCostingOtherCharges)
+            var getLpCostingById = await _tipsSalesServiceDbContext.ForecastLpCostings.Where(x => x.Id == id)
+                 .Include(x => x.ForecastLpCostingItems)
+                 .ThenInclude(u => u.ForecastLpCostingProcesses)
+                 .Include(x => x.ForecastLpCostingItems)
+                 .ThenInclude(v => v.ForecastLPCostingNREConsumables)
+                 .Include(x => x.ForecastLpCostingItems)
+                 .ThenInclude(w => w.ForecastLpCostingOtherCharges)
                           .FirstOrDefaultAsync();
 
-            return forecastLPCosting;
+            return getLpCostingById;
         }
 
         public async Task<string> UpdateForecastLpCosting(ForecastLpCosting forecastLpCosting)
@@ -506,4 +506,91 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
     }
+
+    public class ForeCastLPReleaseRepository : RepositoryBase<ForeCastReleaseLp>, IForeCastReleaseLpRepository
+    {
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+
+        public ForeCastLPReleaseRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        {
+            _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+        }
+
+        public async Task<ForeCastReleaseLp> BulkRelease(ForeCastReleaseLp foreCastReleaseLp)
+        {
+            foreCastReleaseLp.CreatedBy = "Admin";
+            foreCastReleaseLp.CreatedOn = DateTime.Now;
+            foreCastReleaseLp.Unit = "Bangalore";
+            var result = await Create(foreCastReleaseLp);
+            return result;
+        }
+    }
+
+    public class ForeCastEnggItemRepository : RepositoryBase<ForeCastEnggItems>, IForeCastEnggItemsRepository
+    {
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+        public ForeCastEnggItemRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        {
+            _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+        }
+
+        public async Task<string> ActivateForeCastEnggItemById(ForeCastEnggItems foreCastEnggItems)
+        {
+            Update(foreCastEnggItems);
+            string result = $"CostCenter details of {foreCastEnggItems.Id} is updated successfully!";
+            return result;
+        }
+
+        public Task<int?> CreateForeCastEnggItems(ForeCastEnggItems foreCastEnggItems)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<string> DeactivateForeCastEnggItemById(ForeCastEnggItems foreCastEnggItems)
+        {
+         
+            Update(foreCastEnggItems);
+            string result = $"CostCenter details of {foreCastEnggItems.Id} is updated successfully!";
+            return result;
+        }
+
+        public Task<string> DeleteForeCastEnggItems(ForeCastEnggItems foreCastEnggItems)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<ForeCastEnggItems>> GetAllActiveForeCastEnggItemByForeCastNumber(string forecastNumber)
+        {
+            int poId = await _tipsSalesServiceDbContext.ForeCastEnggs
+              .Where(s => s.ForecastNumber == forecastNumber).Select(x => x.Id).FirstOrDefaultAsync();
+
+            IEnumerable<ForeCastEnggItems> foreCastEnggItems = await _tipsSalesServiceDbContext.ForeCastEnggItems
+                 .Where(x => x.ForeCastEnggId == poId)
+             .Where(x => x.ReleaseStatus == true).ToListAsync();
+
+            return foreCastEnggItems;
+        }
+
+        public Task<IEnumerable<ForeCastEnggItems>> GetAllForeCastEnggItems()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<ForeCastEnggItems> GetForeCastEnggItemById(int id)
+        {
+            var foreCastEnggItems = await _tipsSalesServiceDbContext.ForeCastEnggItems.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return foreCastEnggItems;
+        }
+
+        public Task<ForeCastEnggItems> GetForeCastEnggItemsById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> UpdateForeCastEnggItems(ForeCastEnggItems foreCastEnggItems)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }

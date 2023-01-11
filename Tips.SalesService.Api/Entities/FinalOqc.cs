@@ -9,7 +9,7 @@ namespace Tips.SalesService.Api.Entities
         [Key]
         public int? Id { get; set; }
         public string? ProjectNumber { get; set; }
-        public string? FGItemNumber { get; set; }
+        public string? FGItemNumber { get; set; } //partnumber
         public string ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
 

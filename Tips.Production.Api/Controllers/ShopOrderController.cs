@@ -1,12 +1,13 @@
-﻿using AutoMapper;
-using Tips.Production.Api.Contracts;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using Tips.Production.Api.Entities.DTOs;
-using Tips.Production.Api.Entities;
+﻿using System.Net;
+using AutoMapper;
 using Contracts;
-using System.Collections.Generic;
 using Entities;
+using Entities.DTOs;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Tips.Production.Api.Contracts;
+using Tips.Production.Api.Entities;
+using Tips.Production.Api.Entities.DTOs;
 
 namespace Tips.Production.Api.Controllers
 {
@@ -252,6 +253,7 @@ namespace Tips.Production.Api.Controllers
 
                 getShopOrderById.IsDeleted = true;
                 string result = await _shopOrderRepository.UpdateShopOrder(getShopOrderById);
+                _shopOrderRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Delete Successfully";
                 serviceResponse.Success = true;
@@ -349,6 +351,121 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetShopOrderByItemType(string itemType)
+        {
+            ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
+
+            try
+            {
+                var getShopOrderByItemType = await _shopOrderRepository.GetShopOrderByItemType(itemType);
+                if (getShopOrderByItemType == null)
+                {
+                    _logger.LogError($"ShopOrder with id: {itemType}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ShopOrder with id: {itemType}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned ShopOrder with id: {itemType}");
+                    var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(getShopOrderByItemType);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetShopOrderByItemType action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetShopOrderByFgNo(string FgNumber)
+        {
+            ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
+
+            try
+            {
+                var getShopOrderByFgNo = await _shopOrderRepository.GetShopOrderByFgNo(FgNumber);
+                if (getShopOrderByFgNo == null)
+                {
+                    _logger.LogError($"ShopOrder with id: {FgNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ShopOrder with id: {FgNumber}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned ShopOrder with id: {FgNumber}");
+                    var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(getShopOrderByFgNo);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetShopOrderByFgNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetShopOrderByFgNoAndSaNo(string FgNumber, string SaNumber)
+        {
+            ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
+
+            try
+            {
+                var getShopOrderByFgNoAndSaNo = await _shopOrderRepository.GetShopOrderByFgNoAndSaNo(FgNumber, SaNumber);
+                if (getShopOrderByFgNoAndSaNo == null)
+                {
+                    _logger.LogError($"ShopOrder with id: {FgNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ShopOrder with id: {FgNumber}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned ShopOrder with id: {FgNumber}");
+                    var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(getShopOrderByFgNoAndSaNo);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetShopOrderByFgNoAndSaNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 

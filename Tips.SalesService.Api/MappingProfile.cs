@@ -240,6 +240,10 @@ namespace Tips.SalesService.Api
             CreateMap<ForeCastCustomGroup, ForeCastCustomGroupDto>().ReverseMap();
             CreateMap<ForeCastCustomGroup, ForeCastCustomGroupDtoPost>().ReverseMap();
             CreateMap<ForeCastCustomGroup, ForeCastCustomGroupDtoUpdate>().ReverseMap();
+
+            CreateMap<ForeCastReleaseLp, ForecastReleaseLpDto>().ReverseMap();
+            CreateMap<ForeCastReleaseLp, ForecastReleaseLpDtoPost>().ReverseMap();
+            CreateMap<ForeCastReleaseLp, ForecastReleaseLpDtoUpdate>().ReverseMap();
         }
     }
 }

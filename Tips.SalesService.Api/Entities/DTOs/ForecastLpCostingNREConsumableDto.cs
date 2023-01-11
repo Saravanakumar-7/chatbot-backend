@@ -16,9 +16,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? NREQty { get; set; }
         [Precision(13, 3)]
         public decimal? NRECost { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
@@ -29,17 +26,14 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? NREQty { get; set; }
         [Precision(13, 3)]
         public decimal? NRECost { get; set; }
-        public string Unit { get; set; }
 
     }
     public class ForecastLPCostingNREConsumableDtoUpdate
     {
-        public int Id { get; set; }
         [Precision(13, 3)]
         public decimal? NREQty { get; set; }
         [Precision(13, 3)]
         public decimal? NRECost { get; set; }
-        public string Unit { get; set; }
 
     }
 }

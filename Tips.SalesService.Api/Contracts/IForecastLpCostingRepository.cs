@@ -17,6 +17,6 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> CreateForecastLpCosting(ForecastLpCosting forecastLpCosting);
         Task<string> UpdateForecastLpCosting(ForecastLpCosting forecastLpCosting);
         Task<string> DeleteForecastLpCosting(ForecastLpCosting forecastLpCosting);
-        Task<ForecastLpCosting> ForecastLpCostingByForeCastNumber(string ForeCastNumber);
+        Task<ForecastLpCosting> GetForecastLpCostingByForeCastNumber(string ForeCastNumber);
     }
 }
