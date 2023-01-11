@@ -5,14 +5,14 @@ using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
-using Tips.Warehouse.Api.Contracts;
-using Tips.Warehouse.Api.Entities;
-using Tips.Warehouse.Api.Entities.DTOs;
-using Tips.Warehouse.Api.Repository;
+using Tips.Production.Api.Contracts;
+using Tips.Production.Api.Entities;
+using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Repository;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace Tips.Warehouse.Api.Controllers
+namespace Tips.Production.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]

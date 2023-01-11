@@ -25,9 +25,9 @@ namespace Tips.Grin.Api.Repository
         {
             grins.CreatedBy = "Admin";
             grins.CreatedOn = DateTime.Now;
-
-            grins.Unit = "Bangalore";
-            
+            Guid grinId = Guid.NewGuid();
+            grins.GrinNumber = "GR-" + grinId.ToString();
+            grins.Unit = "Bangalore";       
 
             var result = await Create(grins);
             return result.Id;

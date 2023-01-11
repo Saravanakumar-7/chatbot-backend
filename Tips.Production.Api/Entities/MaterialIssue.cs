@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace Tips.Warehouse.Api.Entities
+namespace Tips.Production.Api.Entities
 {
     public class MaterialIssue
     {

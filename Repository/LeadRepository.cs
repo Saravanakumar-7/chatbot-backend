@@ -18,7 +18,7 @@ namespace Repository
         {
         }
 
-        public async Task<int?> CreateLead(Lead lead)
+        public async Task<Lead> CreateLead(Lead lead)
         {
             lead.CreatedBy = "Admin";
             lead.CreatedOn = DateTime.Now;
@@ -27,7 +27,7 @@ namespace Repository
             lead.Unit = "Bangalore";
             var result = await Create(lead);
             
-            return result.Id;
+            return result;
 
         }
 

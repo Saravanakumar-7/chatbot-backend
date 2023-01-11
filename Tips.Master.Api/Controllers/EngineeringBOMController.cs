@@ -132,6 +132,57 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+
+
+        [HttpGet("{fgPartNumber}")]
+        public async Task<IActionResult> GetEnggBomByFgPartNumber(string fgPartNumber)
+        {
+            ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
+
+            try
+            {
+                var bom = await _repository.EnggBomRepository.GetEnggBomByFgPartNumber(fgPartNumber);
+                if (bom == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Engineering Bom with fgPartNumber: {fgPartNumber}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Engineering Bom with fgPartNumber: {fgPartNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Engineering Bom with fgPartNumber: {fgPartNumber}");
+                    EnggBomDto enggBomDto = _mapper.Map<EnggBomDto>(bom);
+                    List<EnggChildItemDto> childItemsDtos = new List<EnggChildItemDto>();
+                    foreach (var itemDetails in bom.EnggChildItems)
+                    {
+                        EnggChildItemDto enggChildItemDto = _mapper.Map<EnggChildItemDto>(itemDetails);
+                        enggChildItemDto.EnggAlternatesDtos = _mapper.Map<List<EnggAlternatesDto>>(itemDetails.EnggAlternates);
+                        enggChildItemDto.BomNREConsumableDto = _mapper.Map<BomNREConsumableDto>(itemDetails.NREConsumable);
+                        childItemsDtos.Add(enggChildItemDto);
+                    }
+                    enggBomDto.EnggChildItemDtos = childItemsDtos;
+                    serviceResponse.Data = enggBomDto;
+                    serviceResponse.Message = $"Returned Engineering Bom with fgPartNumber: {fgPartNumber}";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetEngineeringBomById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         // POST api/<EngineeringBOMController>
         [HttpPost]
         public async Task<IActionResult> CreateEnggBom([FromBody] EnggBomPostDto enggBomPostDto)

@@ -192,12 +192,12 @@ namespace Tips.Grin.Api.Controllers
                     }
                 }
 
-
+              
+                
                 grins.GrinParts = grinPartsList;
+
                 await _repository.CreateGrin(grins);
 
-
-               
                 //// grin upload
 
                 //var grinUploadDetails = grinPostDto.GrinDocuments;

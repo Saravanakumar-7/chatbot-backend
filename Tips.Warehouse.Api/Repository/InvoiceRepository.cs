@@ -25,6 +25,8 @@ namespace Tips.Warehouse.Api.Repository
         
         invoice.CreatedBy = "Admin";
         invoice.CreatedOn = DateTime.Now;
+        Guid invoiceNumber = Guid.NewGuid();
+        invoice.InvoiceNo = " IN-" + invoiceNumber.ToString();
         invoice.Unit = "Bangalore";
         var result = await Create(invoice);
         return result.Id;

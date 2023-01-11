@@ -16,14 +16,14 @@ namespace Tips.Grin.Api.Repository
 
         }
 
-        public async Task<int?> CreateBinning(Binning binning)
+        public async Task<Binning> CreateBinning(Binning binning)
         {
            
             binning.CreatedBy = "Admin";
             binning.CreatedOn = DateTime.Now;
             binning.Unit = "Bangalore";
             var result = await Create(binning);
-            return result.Id;
+            return result;
         }
         public async Task<IEnumerable<Binning>> GetAllBinningDetails()
         {

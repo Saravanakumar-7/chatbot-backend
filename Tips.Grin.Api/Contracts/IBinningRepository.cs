@@ -9,7 +9,7 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<Binning>> GetBinningDetailsByGrinNo(string grinNo);
         Task<string> UpdateBinning(Binning binning);
         Task<Binning> GetBinningDetailsbyId(int id);
-        Task<int?> CreateBinning(Binning binning);
+        Task<Binning> CreateBinning(Binning binning);
         Task<string> DeleteBinning(Binning binning);
 
 

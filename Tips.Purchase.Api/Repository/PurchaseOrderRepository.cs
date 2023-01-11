@@ -23,6 +23,8 @@ namespace Tips.Purchase.Api.Repository
         {
             purchaseOrder.CreatedBy = "Admin";
             purchaseOrder.CreatedOn = DateTime.Now;
+            Guid purchaseOrderNumber = Guid.NewGuid();
+            purchaseOrder.PONumber = "PO-" + purchaseOrderNumber.ToString();
             purchaseOrder.Unit = "Banglore";
             var result = await Create(purchaseOrder);
             return result.Id;

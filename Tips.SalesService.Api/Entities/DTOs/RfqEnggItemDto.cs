@@ -14,6 +14,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerItemNumber { get; set; }
         public string Description { get; set; }
         public int? Quantity { get; set; }
+        public bool ReleaseStatus { get; set; }
+
         public string? CostingBomVersionNo { get; set; }
         public string? ItemNumber { get; set; }
        

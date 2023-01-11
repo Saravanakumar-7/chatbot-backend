@@ -1,8 +1,8 @@
 ﻿using Entities.Helper;
 using Entities;
-using Tips.Warehouse.Api.Entities;
+using Tips.Production.Api.Entities;
 
-namespace Tips.Warehouse.Api.Contracts
+namespace Tips.Production.Api.Contracts
 {
     public interface IMaterialIssueRepository : IRepositoryBase<MaterialIssue>
     {

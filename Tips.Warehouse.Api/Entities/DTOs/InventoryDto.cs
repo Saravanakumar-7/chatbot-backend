@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {
@@ -21,7 +22,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? GrinMaterialType { get; set; } = "Bought Out";
         public string? ReferenceID { get; set; }
         public string? ReferenceIDFrom { get; set; }
-        public string? shopOrderNo { get; set; }
+        public string? ShopOrderNo { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -41,18 +42,25 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Required]
         public string ProjectNumber { get; set; }
+        [Required]
         public decimal Balance_Quantity { get; set; }
+        [Required]
         public string? UOM { get; set; }
+        [DefaultValue(false)]
         public bool IsStockAvailable { get; set; }
-        public string Warehouse { get; set; }
+        [Required]
+        public string? Warehouse { get; set; }
+        [Required]
         public string? Location { get; set; }
         public string? GrinNo { get; set; }
         public int? GrinPartId { get; set; }
         public string? PartType { get; set; }
-        public string? GrinMaterialType { get; set; } = "Bought Out";
+        public string? GrinMaterialType { get; set; }
+        [Required]
         public string? ReferenceID { get; set; }
+        [Required]
         public string? ReferenceIDFrom { get; set; }
-        public string? shopOrderNo { get; set; }
+        public string? ShopOrderNo { get; set; }
       
     }
     public class InventoryDtoUpdate
@@ -79,7 +87,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? GrinMaterialType { get; set; } = "Bought Out";
         public string? ReferenceID { get; set; }
         public string? ReferenceIDFrom { get; set; }
-        public string? shopOrderNo { get; set; }
+        public string? ShopOrderNo { get; set; }
         public string Unit { get; set; }
     }
 }

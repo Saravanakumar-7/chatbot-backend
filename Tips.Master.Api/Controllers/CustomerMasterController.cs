@@ -105,7 +105,7 @@ namespace Tips.Master.Api.Controllers
          [HttpPost]
         public async Task<IActionResult> CreateCustomerMaster([FromBody] CustomerMasterDtoPost customerMasterDtoPost)
         {
-            ServiceResponse<CustomerMasterDtoPost> serviceResponse = new ServiceResponse<CustomerMasterDtoPost>();
+            ServiceResponse<CustomerMaster> serviceResponse = new ServiceResponse<CustomerMaster>();
             try
             {
                 if (customerMasterDtoPost is null)
@@ -142,11 +142,14 @@ namespace Tips.Master.Api.Controllers
                 customerMaster.CustomerBanking = banking.ToList();
                 customerMaster.CustomerMasterHeadCountings= headcount.ToList();
 
-                await _repository.CustomerMasterRepository.CreateCustomerMaster(customerMaster);
+                
                 _repository.SaveAsync();
 
-                serviceResponse.Data = null;
-                serviceResponse.Message = " CustomerMaster Successfully Created";
+                CustomerMaster customerMasterDetail = await _repository.CustomerMasterRepository.CreateCustomerMaster(customerMaster);
+               // var customerMasterDetailDto = _mapper.Map<CustomerMasterDto>(customerMaster);
+
+                serviceResponse.Data = customerMaster;
+                serviceResponse.Message = "CustomerMaster Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.Created;
                 return Created("GetCustomerMasterById", serviceResponse);

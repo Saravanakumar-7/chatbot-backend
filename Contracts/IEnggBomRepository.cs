@@ -13,6 +13,7 @@ namespace Contracts
     {
         Task<PagedList<EnggBom>> GetAllEnggBOM(PagingParameter pagingParameter);
         Task<EnggBom> GetEnggBomById(int id);
+        Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber);
         Task<IEnumerable<EnggBom>> GetAllActiveEnggBom();
         Task<int?> CreateEnggBom(EnggBom enggBom);
         Task<string> UpdateEnggBom(EnggBom enggBom);

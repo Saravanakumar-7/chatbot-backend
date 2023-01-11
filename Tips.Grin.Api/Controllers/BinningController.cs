@@ -8,6 +8,10 @@ using Tips.Grin.Api.Entities.DTOs;
 using Tips.Grin.Api.Entities;
 using Entities;
 using Newtonsoft.Json;
+using System.Net.Http;
+using System.Text;
+using System.Dynamic;
+using System.IO;
 
 namespace Tips.Grin.Api.Controllers
 {
@@ -18,12 +22,16 @@ namespace Tips.Grin.Api.Controllers
         private IBinningRepository _binningRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
 
-        public BinningController(IBinningRepository binningRepository, ILoggerManager logger, IMapper mapper)
+        public BinningController(IBinningRepository binningRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _logger = logger;
             _binningRepository = binningRepository;
             _mapper = mapper;
+            _httpClient = httpClient;
+            _config = config;
         }
 
         [HttpGet]
@@ -179,8 +187,8 @@ namespace Tips.Grin.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBinning([FromBody] BinningPostDto binningPostDto)
         {
-            ServiceResponse<BinningPostDto> serviceResponse = new ServiceResponse<BinningPostDto>();
-
+            ServiceResponse<Binning> serviceResponse = new ServiceResponse<Binning>();
+            Binning binningDetails = null; 
             try
             {
                 if (binningPostDto == null)
@@ -220,11 +228,63 @@ namespace Tips.Grin.Api.Controllers
                 }
                 binningCreation.BinningItems = binningItemList;
 
-               await  _binningRepository.CreateBinning(binningCreation);
+              binningDetails = await  _binningRepository.CreateBinning(binningCreation);
 
 
                 _binningRepository.SaveAsync();
-                serviceResponse.Data = null;
+
+                // Inventory Update Code
+                string grinPartId = "";
+               
+                if (binningsDto != null)
+                {
+                    for (int i = 0; i < binningsDto.Count; i++)
+                    {
+                        var binningLocations = binningsDto[i].BinningLocations;
+                        for (int j = 0; j < binningLocations.Count; j++)
+                        {
+                            if (j == 0)
+                            {
+                                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByGrinNo?", "GrinNo=", binningCreation.GrinNumber, "&ItemNumber=", binningsDto[i].ItemNumber, "&ProjectNumber=", binningsDto[i].ProjectNumber));
+                                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                                dynamic inventoryObject = inventoryObjectData.data;
+                                inventoryObject.Balance_Quantity = binningLocations[j].Qty;
+                                inventoryObject.Warehouse = binningLocations[j].Warehouse;
+                                inventoryObject.Location = binningLocations[j].Location;
+                                inventoryObject.ReferenceIDFrom = "GRIN";
+                                grinPartId =  inventoryObject.referenceID;
+                                var json = JsonConvert.SerializeObject(inventoryObject);
+                                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                                var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"], "UpdateInventory/", inventoryObject.id), data);
+                            }
+                            else
+                            {
+                                dynamic inventoryObject = new ExpandoObject();
+                                inventoryObject.PartNumber = binningsDto[i].ItemNumber;
+                                inventoryObject.MftrPartNumber = binningsDto[i].MftrItemNumber;
+                                inventoryObject.Description = binningsDto[i].Description;
+                                inventoryObject.ProjectNumber = binningsDto[i].ProjectNumber;
+                                inventoryObject.Balance_Quantity = binningLocations[j].Qty;
+                                inventoryObject.UOM = binningsDto[i].UOM;
+                                inventoryObject.IsStockAvailable = true;
+                                inventoryObject.Warehouse = binningLocations[j].Warehouse;
+                                inventoryObject.Location = binningLocations[j].Location;
+                                inventoryObject.GrinNo = binningCreation.GrinNumber;
+                                inventoryObject.GrinPartId = Convert.ToInt32(grinPartId);
+                                inventoryObject.PartType = "PurchasePart";
+                                inventoryObject.ReferenceID = grinPartId;
+                                inventoryObject.ReferenceIDFrom = "GRIN";
+
+                                var json = JsonConvert.SerializeObject(inventoryObject);
+                                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                                var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+                            }
+                        }
+                    }
+                }
+
+                serviceResponse.Data = binningDetails;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;

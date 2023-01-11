@@ -144,10 +144,10 @@ namespace Tips.Master.Api.Controllers
                 lead.LeadAddress = address.ToList();
                
 
-                _repository.LeadRepository.CreateLead(lead);
-
+                var leadDetails = await _repository.LeadRepository.CreateLead(lead);
+                var leadDetailsDto = _mapper.Map<LeadDto>(leadDetails);
                 _repository.SaveAsync();
-                serviceResponse.Data = null;
+                serviceResponse.Data = leadDetailsDto;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;

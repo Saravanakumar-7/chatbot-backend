@@ -185,20 +185,22 @@ namespace Tips.Grin.Api.Controllers
 
                 var iQCCreate = _mapper.Map<IQCConfirmation>(iQCConfirmationPostDto);
                 
-                _iQCConfirmationRepository.CreateIqc(iQCCreate);
+                await _iQCConfirmationRepository.CreateIqc(iQCCreate);
                 _iQCConfirmationRepository.SaveAsync();
 
-
-                dynamic inventoryObject = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByGrinNo", iQCCreate.GrinNumber,"/",iQCCreate.ItemNumber,"/",iQCCreate.ProjectNumber));
-
+                // Inventory Update Code
+                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByGrinNo?", "GrinNo=",iQCCreate.GrinNumber, "&ItemNumber=", iQCCreate.ItemNumber, "&ProjectNumber=", iQCCreate.ProjectNumber));
+                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                dynamic inventoryObject = inventoryObjectData.data;
                 inventoryObject.Balance_Quantity = iQCCreate.AcceptedQty;
                 inventoryObject.Warehouse = "IQC";
                 inventoryObject.Location = "IQC";
-                inventoryObject.ReferenceIDFrom = "IQC";
+                inventoryObject.ReferenceIDFrom = "GRIN";
 
                 var json = JsonConvert.SerializeObject(inventoryObject);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"], "UpdateInventory/", inventoryObject.Id), data);
+                var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"], "UpdateInventory/", inventoryObject.id), data);
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "IQCConfirmation Successfully Created";

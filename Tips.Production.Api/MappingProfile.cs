@@ -43,6 +43,12 @@ namespace Tips.Production.Api
             CreateMap<FGShopOrderMaterialIssueGeneral, FGShopOrderMaterialIssueGeneralDto>().ReverseMap();
             CreateMap<FGShopOrderMaterialIssueGeneral, FGShopOrderMaterialIssueGeneralPostDto>().ReverseMap();
             CreateMap<FGShopOrderMaterialIssueGeneral, FGShopOrderMaterialIssueGeneralUpdateDto>().ReverseMap();
+
+
+            CreateMap<MaterialIssue, MaterialIssueDto>().ReverseMap();
+            CreateMap<MaterialIssue, MaterialIssueDtoPost>().ReverseMap();
+            CreateMap<MaterialIssue, MaterialIssueDtoUpdate>().ReverseMap();
+
         }
     }
 }
