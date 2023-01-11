@@ -10,6 +10,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class MaterialRequestItem
     {
+        [Key]
         public int Id { get; set; }
 
         [Required(ErrorMessage = "MRNumber is required")]

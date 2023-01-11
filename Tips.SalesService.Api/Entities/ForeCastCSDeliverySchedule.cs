@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.SalesService.Api.Entities
 {
     public class ForeCastCSDeliverySchedule
     {
+        [Key]
         public int Id { get; set; }
         public DateTime Date { get; set; }
 

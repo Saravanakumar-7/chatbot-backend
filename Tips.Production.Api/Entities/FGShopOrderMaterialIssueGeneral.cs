@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Production.Api.Entities
 {
     public class FGShopOrderMaterialIssueGeneral
     {
+        [Key]
         public int Id { get; set; }
         public string PartNumber { get; set; }
         public string Description { get; set; }

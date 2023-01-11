@@ -9,6 +9,7 @@ namespace Entities
 {
     public class ScopeOfSupply
     {
+        [Key]
         public int Id { get; set; }
         public string? ScopeOfSupplyName { get; set; }
         public string? Description { get; set; }

@@ -9,6 +9,7 @@ namespace Entities
 {
     public class QuoteTerms
     {
+        [Key]
         public int Id { get; set; }
         [Required]
         public string QuoteTermsName { get; set; }

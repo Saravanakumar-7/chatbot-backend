@@ -5,6 +5,7 @@ namespace Tips.Production.Api.Entities
 {
     public class SAShopOrderMaterialIssueGeneral
     {
+        [Key]
         public int Id { get; set; }
         public string PartNumber { get; set; }
         [MinLength(500)]

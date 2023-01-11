@@ -1,7 +1,10 @@
-﻿namespace Tips.SalesService.Api.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Tips.SalesService.Api.Entities
 {
     public class QuoteGeneral
     {
+        [Key]
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }

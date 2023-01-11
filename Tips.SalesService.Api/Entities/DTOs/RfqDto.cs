@@ -1,4 +1,5 @@
 ﻿using Entities.DTOs;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -12,10 +13,16 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? CustomerName { get; set; }
-        public string? RevisionNumber { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
         public string RfqNumber { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public string? CustomerId { get; set; }
+
+        public bool? IsSourcing { get; set; }
+        public bool? IsLpCosting { get; set; }
+
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public string Unit { get; set; }
@@ -27,10 +34,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class RfqPostDto
     {
         public string? CustomerName { get; set; }
-        public string? RevisionNumber { get; set; }
-
-        [Required]
-        public string RfqNumber { get; set; }
+        //[Required]
+        //public string RfqNumber { get; set; }
         public string? CustomerId { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceivedate { get; set; }
@@ -41,10 +46,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? CustomerName { get; set; }
-        public string? RevisionNumber { get; set; }
-
-        [Required]
-        public string RfqNumber { get; set; }
+        //[Required]
+        //public string RfqNumber { get; set; }
         public string? CustomerId { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceivedate { get; set; }

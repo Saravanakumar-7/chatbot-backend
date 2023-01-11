@@ -1,8 +1,11 @@
-﻿namespace Tips.Warehouse.Api.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Tips.Warehouse.Api.Entities
 {
     public class DeliveryOrder
     {
-       public int Id { get; set; }
+        [Key]
+        public int Id { get; set; }
        public string ProjectNumber { get; set; }
        public string CustomerName { get; set; }
        public string CustomerId { get; set; }

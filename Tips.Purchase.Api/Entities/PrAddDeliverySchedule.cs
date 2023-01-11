@@ -11,6 +11,7 @@ namespace Tips.Purchase.Api.Entities
 {
     public class PrAddDeliverySchedule
     {
+        [Key]
         public int Id { get; set; }
         public DateTime PrDeliveryDate { get; set; }
 

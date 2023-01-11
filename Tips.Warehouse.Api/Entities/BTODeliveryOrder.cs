@@ -1,7 +1,10 @@
-﻿namespace Tips.Warehouse.Api.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Tips.Warehouse.Api.Entities
 {
     public class BTODeliveryOrder
     {
+        [Key]
         public int Id { get; set; }
         public string CustomerName { get; set; }
         public string CustomerAliasName { get; set; }

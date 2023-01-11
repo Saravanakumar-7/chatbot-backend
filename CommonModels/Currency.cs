@@ -9,6 +9,7 @@ namespace Entities
 {
     public class Currency
     {
+        [Key]
         public int Id { get; set; }
         public string? CurrencyNames { get; set; }
         public string? Description { get; set; }

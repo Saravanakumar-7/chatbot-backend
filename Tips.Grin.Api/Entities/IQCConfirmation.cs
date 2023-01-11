@@ -12,6 +12,7 @@ namespace Tips.Grin.Api.Entities
 {
     public class IQCConfirmation
     {
+        [Key]
         public int Id { get; set; }
 
         public string? GrinNumber { get; set; }

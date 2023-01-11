@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqCSDeliverySchedule
     {
+        [Key]
         public int Id { get; set; }
         public DateTime Date { get; set; }
 

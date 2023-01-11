@@ -1,9 +1,11 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices;
 
 namespace Tips.SalesService.Api.Entities
 {
     public class QuoteAdditionalCharges
     {
+        [Key]
         public int Id { get; set; }
         public string? AdditionalChargesLabelName { get; set; }
         public decimal AddtionalChargesValueType { get; set; }

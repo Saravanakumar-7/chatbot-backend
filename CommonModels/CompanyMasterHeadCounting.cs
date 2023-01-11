@@ -9,6 +9,7 @@ namespace Entities
 {
     public class CompanyMasterHeadCounting
     {
+        [Key]
         public int Id { get; set; }
         public string? DepartmentSkill { get; set; }
 

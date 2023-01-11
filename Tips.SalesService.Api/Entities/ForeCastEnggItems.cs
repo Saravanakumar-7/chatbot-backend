@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class ForeCastEnggItems
     {
+        [Key]
         public int Id { get; set; }
         public string? CustomerItemNumber { get; set; }
         public string Description { get; set; }

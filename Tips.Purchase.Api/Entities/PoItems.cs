@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using Tips.Purchase.Api.Entities.DTOs;
 
 namespace Tips.Purchase.Api.Entities
 {
     public class PoItem
     {
+        [Key]
         public int Id { get; set; }
         public string ItemNumber { get; set; }
         public string MftrItemNumber { get; set; }

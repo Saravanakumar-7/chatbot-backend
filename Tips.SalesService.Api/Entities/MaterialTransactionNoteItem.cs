@@ -12,6 +12,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class MaterialTransactionNoteItem
     {
+        [Key]
         public int? Id { get; set; }
         public string? FromPartNo { get; set; }
         public string? FromLocation { get; set; }

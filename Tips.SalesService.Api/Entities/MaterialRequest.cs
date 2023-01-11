@@ -10,6 +10,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class MaterialRequest
     {
+        [Key]
         public int Id { get; set; }
 
 

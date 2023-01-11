@@ -1,7 +1,10 @@
-﻿namespace Tips.Warehouse.Api.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Tips.Warehouse.Api.Entities
 {
     public class Inventory
     {
+        [Key]
         public int Id { get; set; }
         public string PartNumber { get; set; }
         public string MftrPartNumber { get; set; }

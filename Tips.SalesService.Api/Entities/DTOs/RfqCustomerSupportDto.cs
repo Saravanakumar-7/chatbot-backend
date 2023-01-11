@@ -1,4 +1,5 @@
 ﻿using Entities.DTOs;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -14,7 +15,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string RFQNumber { get; set; }
         public string? CustomerRfqNumber { get; set; }
-        public string? RevisionNumber { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
         public DateTime? RequestReceiveDate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public string Unit { get; set; }
@@ -39,7 +42,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
         public string? CustomerRfqNumber { get; set; }
-        public string? RevisionNumber { get; set; }
+
+        [Precision(13,1)]
+        public decimal? RevisionNumber { get; set; }
 
         public DateTime? RequestReceiveDate { get; set; }
         public DateTime? QuoteExpectDate { get; set; }       
@@ -59,7 +64,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
         public string? CustomerRfqNumber { get; set; }
-        public string? RevisionNumber { get; set; }
+
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
+         
         public DateTime? RequestReceiveDate { get; set; }
         public DateTime? QuoteExpectDate { get; set; }
         public string Unit { get; set; }
@@ -77,7 +86,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
  
         [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
         public string? CustomerRfqNumber { get; set; }
-        public string? RevisionNumber { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; } 
         public DateTime? RequestReceiveDate { get; set; }
         public DateTime? QuoteExpectDate { get; set; }
 

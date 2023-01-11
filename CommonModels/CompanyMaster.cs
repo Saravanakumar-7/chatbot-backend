@@ -9,6 +9,7 @@ namespace Entities
 {
     public class CompanyMaster
     {
+        [Key]
         public int Id { get; set; }
         [Required(ErrorMessage = "CompanyId is required")]
         public string? CompanyId { get; set; }

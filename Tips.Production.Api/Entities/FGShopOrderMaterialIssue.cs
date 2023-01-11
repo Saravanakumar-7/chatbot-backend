@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Production.Api.Entities
 {
     public class FGShopOrderMaterialIssue
     {
+        [Key]
         public int Id { get; set; }
         public string ShopOrderNo { get; set; }
         public DateTime ShopOrderDate { get; set; }

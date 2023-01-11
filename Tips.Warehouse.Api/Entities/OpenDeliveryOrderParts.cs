@@ -1,9 +1,11 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Warehouse.Api.Entities
 {
     public class OpenDeliveryOrderParts
     {
+        [Key]
         public int Id { get; set; }
         public string ItemNumber { get; set; }
         public string ItemDescription { get; set; }

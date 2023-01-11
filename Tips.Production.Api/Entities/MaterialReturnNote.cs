@@ -8,6 +8,7 @@ namespace Tips.Production.Api.Entities
 {
     public class MaterialReturnNote
     {
+        [Key]
         public int? Id { get; set; }
 
         public string? MRNNumber { get; set; }

@@ -9,6 +9,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqCustomerSupportNotes
     {
+        [Key]
         public int Id { get; set; }
         public string? CustomerSupportCategory { get; set; } 
          public string? CustomerSupportNotes { get; set; }       

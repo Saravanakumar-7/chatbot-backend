@@ -9,6 +9,7 @@ namespace Entities
 {
     public class Inventory1
     {
+        [Key]
         public int Id { get; set; }
         public string PartNumber { get; set; }
         public string MftrPartNumber { get; set; }

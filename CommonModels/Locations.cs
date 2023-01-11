@@ -9,6 +9,7 @@ namespace Entities
 {
     public class Locations
     {
+        [Key]
         public int Id { get; set; }
         public string WarehouseId { get; set; }
 

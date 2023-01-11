@@ -9,6 +9,7 @@ namespace Entities
 {
     public class VolumeUom
     {
+        [Key]
         public int Id { get; set; }
         public string? VolumeUomName { get; set; }
         public string? Description { get; set; }

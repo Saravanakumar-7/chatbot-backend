@@ -10,7 +10,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class ForeCastCustomerSupportNotes
     {
-
+        [Key]
         public int Id { get; set; }
         public string? CustomerSupportCategory { get; set; }
         public string? CustomerSupportNotes { get; set; }

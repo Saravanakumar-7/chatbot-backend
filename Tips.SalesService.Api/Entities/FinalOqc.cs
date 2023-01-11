@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
 namespace Tips.SalesService.Api.Entities
 {
     public class FinalOqc
     {
+        [Key]
         public int? Id { get; set; }
         public string? ProjectNumber { get; set; }
         public string? FGItemNumber { get; set; }

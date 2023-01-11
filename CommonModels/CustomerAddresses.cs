@@ -9,7 +9,7 @@ namespace Entities
 {
     public class CustomerAddresses
     {
-      
+        [Key]
         public int Id { get; set; }
 
         public string? InvoiceAddress { get; set; }

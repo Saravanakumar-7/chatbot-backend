@@ -9,6 +9,7 @@ namespace Entities
 {
     public class ShipmentInstructions
     {
+        [Key]
         public int Id { get; set; }
         [Required]
         public string ShipmentInstructionsName { get; set; }

@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class EnggBom
     {
+        [Key]
         public int Id { get; set; }
 
         public string ItemNumber { get; set; }

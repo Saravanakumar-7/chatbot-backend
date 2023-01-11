@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Purchase.Api.Entities
 {
     public class PoAddProject
     {
+        [Key]
         public int Id { get; set; }
         public string POProjectNumber { get; set; }
 

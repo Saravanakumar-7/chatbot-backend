@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class SourcingVendor
     {
+        [Key]
         public int Id { get; set; }
 
         public string? SourcingVendors { get; set; }

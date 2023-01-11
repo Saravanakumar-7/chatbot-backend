@@ -9,6 +9,7 @@ namespace Entities
 {
     public class VendorAddress
     {
+        [Key]
         public int Id { get; set; }
 
         public string? POAddress { get; set; }

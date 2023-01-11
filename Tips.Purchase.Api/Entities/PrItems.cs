@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Purchase.Api.Entities
 {
     public class PrItem
     {
+        [Key]
         public int Id { get; set; } 
         public string? ItemNumber { get; set; }
         public string? MftrItemNumber { get; set; }

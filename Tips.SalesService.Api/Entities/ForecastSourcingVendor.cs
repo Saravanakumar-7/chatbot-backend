@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.SalesService.Api.Entities
 {
     public class ForecastSourcingVendor
     {
+        [Key]
         public int Id { get; set; }
         public string? Vendor { get; set; }
         [Precision(13, 3)]

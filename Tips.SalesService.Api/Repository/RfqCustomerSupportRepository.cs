@@ -29,8 +29,7 @@ namespace Tips.SalesService.Api.Repository
             rfqCustomerSupport.CreatedBy = "Admin";
             rfqCustomerSupport.CreatedOn = DateTime.Now;
             rfqCustomerSupport.Unit = "Bangalore";
-            Guid rfqNumber = Guid.NewGuid();
-            rfqCustomerSupport.RfqNumber = "RFQ-" + rfqNumber.ToString();
+           
             var result = await Create(rfqCustomerSupport);
             return result.Id;
         } 
@@ -83,7 +82,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<string> UpdateRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport)
         {
             rfqCustomerSupport.LastModifiedBy = "Admin";
-            rfqCustomerSupport.LastModifiedOn = DateTime.Now;
+            rfqCustomerSupport.LastModifiedOn = DateTime.Now;            
             Update(rfqCustomerSupport);
             string result = $"RFQ of Detail {rfqCustomerSupport.Id} is updated successfully!";
             return result;
@@ -172,6 +171,13 @@ namespace Tips.SalesService.Api.Repository
                         .FirstOrDefaultAsync();
             return SourcingByRfqNumber;
         }
+        public async Task<Rfq> RfqDetailsByRfqNumbers(string rfqNumber)
+        {
+            var rfqDetailsByRfqNumber = await _tipsSalesServiceDbContext.Rfqs
+              .Where(x => x.RfqNumber == rfqNumber)
+                        .FirstOrDefaultAsync();
+            return rfqDetailsByRfqNumber;
+        }
         public async Task<Rfq> RfqLpCostingReleaseByRfqNumbers(string RfqNumber)
         {
             var lpcostingByRfqNumber = await _tipsSalesServiceDbContext.Rfqs
@@ -190,6 +196,10 @@ namespace Tips.SalesService.Api.Repository
         {
             rfq.CreatedBy = "Admin";
             rfq.CreatedOn = DateTime.Now;
+            var version = 1.0;
+            rfq.RevisionNumber = Convert.ToDecimal(version);
+            Guid rfqNumber = Guid.NewGuid();
+            rfq.RfqNumber = "RFQ-" + rfqNumber.ToString();
             rfq.Unit = "Bangalore";
             var result = await Create(rfq);
             return result.Id;
@@ -235,6 +245,7 @@ namespace Tips.SalesService.Api.Repository
         {
             rfq.LastModifiedBy = "Admin";
             rfq.LastModifiedOn = DateTime.Now;
+            
             Update(rfq);
             string result = $"RFQ of Detail {rfq.Id} is updated successfully!";
             return result;

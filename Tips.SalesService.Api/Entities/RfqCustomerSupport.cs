@@ -11,10 +11,13 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqCustomerSupport
     {
-        
+        [Key]
         public int Id { get; set; }
         public string? CustomerName { get; set; }
-        public string? RevisionNumber { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; } 
+
         public string RfqNumber { get; set; } 
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceiveDate { get; set; }

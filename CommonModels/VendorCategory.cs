@@ -9,6 +9,7 @@ namespace Entities
 {
     public class VendorCategory
     {
+        [Key]
         public int Id { get; set; }
         public string? VendorCategoryName { get; set; }
         public string? Description { get; set; }

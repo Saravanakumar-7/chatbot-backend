@@ -9,7 +9,7 @@ namespace Entities
 {
     public class CustomerMaster
     {
-
+        [Key]
         public int Id { get; set; }
 
         [Required(ErrorMessage = "CustomerId is required")]

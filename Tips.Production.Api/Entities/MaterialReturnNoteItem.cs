@@ -6,6 +6,7 @@ namespace Tips.Production.Api.Entities
 {
     public class MaterialReturnNoteItem
     {
+        [Key]
         public int? Id { get; set; }
         public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }

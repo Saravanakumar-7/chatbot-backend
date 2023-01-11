@@ -1,9 +1,11 @@
 ﻿using Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Warehouse.Api.Entities
 {
     public class BTODeliveryOrderItems
     {
+        [Key]
         public int Id { get; set; }
         public string FGItemNumber { get; set; }
         public string Description { get; set; } 

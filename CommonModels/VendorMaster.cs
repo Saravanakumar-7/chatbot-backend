@@ -9,7 +9,7 @@ namespace Entities
 {
     public class VendorMaster
     {
-
+        [Key]
         public int Id { get; set; }
         [Required(ErrorMessage = "VendorId is required")]
         public string? VendorId { get; set; }

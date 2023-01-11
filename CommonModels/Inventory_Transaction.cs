@@ -11,6 +11,7 @@ namespace Entities
 {
     public class Inventory_Transaction
     {
+        [Key]
         public int Id { get; set; }
          
         [Display(Name = "Part Number")]

@@ -1209,6 +1209,20 @@ namespace Tips.SalesService.Api.Controllers
 
                 var updateRfqCS = _mapper.Map<RfqCustomerSupport>(GetRfqCSById);
 
+                //tets
+
+
+                var rfqNumber = updateRfqCS.RfqNumber;
+
+                var rfqDetailsByRfqNumber = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
+
+                var version = Convert.ToDecimal(0.1);
+
+                rfqDetailsByRfqNumber.RevisionNumber = rfqDetailsByRfqNumber.RevisionNumber + version;
+
+                //test
+
+
                 var rfqCSItemDto = rfqCustomerSupportUpdateDto.RfqCustomerSupportItems;
 
                 var rfqCsItemList = new List<RfqCustomerSupportItems>();
@@ -1224,9 +1238,10 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 updateRfqCS.RfqCustomerSupportItems = rfqCsItemList;
                 var data = _mapper.Map(rfqCustomerSupportUpdateDto, updateRfqCS);
-
+                 
                 string result = await _repository.UpdateRfqCustomerSupport(data);
                 _logger.LogInfo(result);
+                _rfqRepository.Update(rfqDetailsByRfqNumber);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Update Successfully";

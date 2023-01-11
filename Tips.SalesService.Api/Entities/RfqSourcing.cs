@@ -11,7 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqSourcing
     {
-       
+        [Key]
         public int Id { get; set; }
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }      

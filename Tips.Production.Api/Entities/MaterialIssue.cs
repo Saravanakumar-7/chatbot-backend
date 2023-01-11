@@ -5,6 +5,7 @@ namespace Tips.Production.Api.Entities
 {
     public class MaterialIssue
     {
+        [Key]
         public int Id { get; set; }
         public string? ShopOrderNumber { get; set; }
         public DateTime ShopOrderDate { get; set; }

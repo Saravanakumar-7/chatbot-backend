@@ -9,6 +9,7 @@ namespace Entities
 {
     public class UOM
     {
+        [Key]
         public int Id { get; set; }
         [Required]
         public string UOMName { get; set; }

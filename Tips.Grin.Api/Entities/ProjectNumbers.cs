@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Grin.Api.Entities
 {
     public class ProjectNumbers
     {
+        [Key]
         public int Id { get; set; }
         public string? ProjectNumber { get; set; }
        

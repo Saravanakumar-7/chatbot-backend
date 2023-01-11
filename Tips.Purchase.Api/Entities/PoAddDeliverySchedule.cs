@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Purchase.Api.Entities
 {
     public class PoAddDeliverySchedule
     {
+        [Key]
         public int Id { get; set; }
         public DateTime PODeliveryDate { get; set; }
 

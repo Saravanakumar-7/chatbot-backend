@@ -1,7 +1,10 @@
-﻿namespace Tips.SalesService.Api.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Tips.SalesService.Api.Entities
 {
     public class ForeCastCustomField
     {
+        [Key]
         public int Id { get; set; }
         public string CustomGroupName { get; set; }
         public string LabelName { get; set; }

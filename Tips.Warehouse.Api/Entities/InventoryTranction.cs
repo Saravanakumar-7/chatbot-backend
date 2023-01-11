@@ -5,6 +5,7 @@ namespace Tips.Warehouse.Api.Entities
 {
     public class InventoryTranction
     {
+        [Key]
         public int Id { get; set; }
 
         [Display(Name = "Part Number")]

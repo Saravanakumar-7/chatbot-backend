@@ -9,6 +9,7 @@ namespace Entities
 {
     public class VendorBanking
     {
+        [Key]
         public int Id { get; set; }
         public string? BankName { get; set; }
         public string? Branch { get; set; }

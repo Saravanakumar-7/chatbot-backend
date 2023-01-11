@@ -9,6 +9,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqCustomGroup
     {
+        [Key]
         public int Id { get; set; }
         public string? CustomGroupName { get; set; }
         public string? Remark { get; set; }

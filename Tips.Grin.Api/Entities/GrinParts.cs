@@ -11,7 +11,9 @@ namespace Tips.Grin.Api.Entities
 {
     public class GrinParts
     {
+        [Key]
         public int Id { get; set; }
+
         [Required]
 
         public string? ItemNumber { get; set; }

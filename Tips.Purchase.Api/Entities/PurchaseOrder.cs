@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Purchase.Api.Entities
 {
     public class PurchaseOrder
     {
+        [Key]
         public int Id { get; set; }
         public string PONumber { get; set; }
         public DateTime PODate { get; set; }

@@ -1,7 +1,10 @@
-﻿namespace Tips.Warehouse.Api.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Tips.Warehouse.Api.Entities
 {
     public class BTOSerialNumber
     {
+        [Key]
         public int Id { get; set; }
         public string SerialNumber { get; set; }
         public string? CreatedBy { get; set; }

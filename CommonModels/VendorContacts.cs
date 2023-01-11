@@ -9,6 +9,7 @@ namespace Entities
 {
     public class VendorContacts
     {
+        [Key]
         public int Id { get; set; } 
 
         public string? Salutation { get; set; }
