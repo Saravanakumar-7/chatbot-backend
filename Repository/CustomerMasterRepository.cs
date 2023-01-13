@@ -18,14 +18,14 @@ namespace Repository
         {
         }
 
-        public async Task<int?> CreateCustomerMaster(CustomerMaster customerMaster)
+        public async Task<CustomerMaster> CreateCustomerMaster(CustomerMaster customerMaster)
         {
             customerMaster.CreatedBy = "Admin";
             customerMaster.CreatedOn = DateTime.Now;
             customerMaster.Unit = "Bangalore";
             var result = await Create(customerMaster);
             
-            return result.Id;
+            return result;
         }
 
         public async Task<string> DeleteCustomerMaster(CustomerMaster customerMaster)
