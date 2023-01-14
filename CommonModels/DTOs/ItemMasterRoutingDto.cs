@@ -51,5 +51,12 @@ namespace Entities.DTOs
         public bool IsRoutingActive { get; set; }
 
     }
+    public class ItemMasterRoutingIdNoListDto
+    {
+        public int id { get; set; }
+
+        //public List<ItemMasterRouting>? itemMasterRoutings { get; set; }
+
+    }
 
 }

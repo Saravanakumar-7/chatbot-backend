@@ -4,9 +4,11 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Repository;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -15,7 +17,7 @@ namespace Tips.Master.Api.Controllers
     public class ItemMasterController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
-        private ILoggerManager _logger;
+          private ILoggerManager _logger;
         private IMapper _mapper;
 
         public ItemMasterController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
@@ -101,6 +103,11 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //passing items number and get process records
+
+      
+
+
         //GET All Sa items
         [HttpGet]
         public async Task<IActionResult> GetAllSAItems([FromQuery] PagingParameter pagingParameter)

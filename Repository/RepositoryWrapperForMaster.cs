@@ -17,6 +17,9 @@ namespace Repository
         private IProcurementTypeRepository _procurementTypeRepo;
         private IItemMasterRepository _itemMasterRepo;
         private IEnggBomRepository? _enggBomRepository;
+        private IEnggBomNREConsumableRepository? _enggBomNREConsumableRepository;
+
+        private IItemMasterRoutingRepository? _itemmasterRoutingRepository;
 
         private IDeliveryTermRepository? _deliveryTermRepo;
         private IVolumeUomRepository? _volumeUomRepo;
@@ -98,8 +101,32 @@ namespace Repository
                 return _enggBomRepository;
             }
         }
+
+        public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository
+        {
+            get
+            {
+                if (_enggBomNREConsumableRepository == null)
+                {
+                    _enggBomNREConsumableRepository = new EngineeringNREConsumableRepository(_tipsMasterDbContext);
+                }
+                return _enggBomNREConsumableRepository;
+            }
+        }
+
+        public IItemMasterRoutingRepository ItemMasterRoutingRepository
+        {
+            get
+            {
+                if (_itemmasterRoutingRepository == null)
+                {
+                    _itemmasterRoutingRepository = new ItemMasterRoutingRepository(_tipsMasterDbContext);
+                }
+                return _itemmasterRoutingRepository;
+            }
+        }
+
  
-         
         public ISourceRepository sourceRepository
         {
             get
@@ -810,17 +837,21 @@ namespace Repository
 
         public IItemMasterFileUpload ItemMasterFileUploadRepository => throw new NotImplementedException();
 
-        public IItemMasterRouting ItemMasterRoutingRepository => throw new NotImplementedException();
-
+ 
         public IItemMasterWarehouse ItemMasterWarehouseRepository => throw new NotImplementedException();
 
         public IEnggBomAlternatesRepository EnggBomAlternatesRepository => throw new NotImplementedException();
 
         public IEnggBomChildItemRepository EnggBomChildItemRepository => throw new NotImplementedException();
 
-        public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
+        //add new
+        //public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
 
-       
+
+        //public IItemMasterRoutingRepository ItemMasterRoutingRepository => throw new NotImplementedException();
+
+
+
 
         //public ICustomerInfoRepository CustomerInfoRepository => throw new NotImplementedException();
 

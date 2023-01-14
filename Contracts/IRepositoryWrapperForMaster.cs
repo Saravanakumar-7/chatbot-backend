@@ -8,8 +8,9 @@ namespace Contracts
 {
     public interface IRepositoryWrapperForMaster
     {
+ 
         ILeadTimeRepository leadTimeRepository { get; }
-        ICustomerTypeRepository CustomerTypeRepository { get; }
+         ICustomerTypeRepository CustomerTypeRepository { get; }
         IPurchaseGroupRepository PurchaseGroupRepository { get; }
         ICostCenterRepository CostCenterRepository { get; }
         ICostingMethodRepository CostingMethodRepository { get; }
@@ -44,7 +45,7 @@ namespace Contracts
         IItemmasterAlternate ItemmasterAlternateRepository { get; }
         IItemMasterApprovedVendor ItemMasterApprovedVendorRepository { get; }
         IItemMasterFileUpload ItemMasterFileUploadRepository { get; }
-        IItemMasterRouting ItemMasterRoutingRepository { get; }
+        IItemMasterRoutingRepository ItemMasterRoutingRepository { get; }
         IItemMasterWarehouse ItemMasterWarehouseRepository { get; }
         IVolumeUomRepository VolumeUomRepo { get; }
         IWeightUomRepository WeightUomRepository { get; }
