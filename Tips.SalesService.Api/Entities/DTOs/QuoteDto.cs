@@ -1,4 +1,6 @@
-﻿namespace Tips.SalesService.Api.Entities.DTOs
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Tips.SalesService.Api.Entities.DTOs
 {
     public class QuoteDto
     {
@@ -13,6 +15,13 @@
         public decimal SpecialDiscountAmount { get; set; }
         public decimal TotalFinalAmount { get; set; }
         public string? PaymentTerms { get; set; }
+        public string? QuoteType { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? GeneralDiscount { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -35,6 +44,13 @@
         public decimal SpecialDiscountAmount { get; set; }
         public decimal TotalFinalAmount { get; set; }
         public string? PaymentTerms { get; set; }
+        public string? QuoteType { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? GeneralDiscount { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -58,6 +74,13 @@
         public decimal SpecialDiscountAmount { get; set; }
         public decimal TotalFinalAmount { get; set; }
         public string? PaymentTerms { get; set; }
+        public string? QuoteType { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? GeneralDiscount { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

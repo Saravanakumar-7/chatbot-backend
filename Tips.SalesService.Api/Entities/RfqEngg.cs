@@ -18,7 +18,9 @@ namespace Tips.SalesService.Api.Entities
         public string? CustomerRFQNumber { get;}
         public DateTime? RequestReceiveDate { get; set; }
         public DateTime? QuoteExpectDate { get; set;}
-        public string? RevisionNumber { get; set; }
+
+        [Precision(13,1)]
+        public decimal? RevisionNumber { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
