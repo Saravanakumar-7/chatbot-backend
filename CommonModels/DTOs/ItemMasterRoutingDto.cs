@@ -56,7 +56,8 @@ namespace Entities.DTOs
         public string? ProcessStep { get; set; }
         public string? Process { get; set; }
         public string? MachineHours { get; set; }
-        public string? LaborHours { get; set; } 
+        public string? LaborHours { get; set; }
+        public string? ItemNumber { get; set; }
 
     }
 
