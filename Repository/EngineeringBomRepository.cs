@@ -60,11 +60,10 @@ namespace Repository
 
         public async Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber)
         {
-            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber)
-                              .Include(t => t.EnggChildItems)
+            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber)                              
+                                .Include(m => m.NREConsumable)
+                                .Include(t => t.EnggChildItems)
                                 .ThenInclude(x => x.EnggAlternates)
-                                .Include(m => m.EnggChildItems)
-                                .ThenInclude(i => i.NREConsumable)
                               .FirstOrDefaultAsync();
 
             return EnggBomDetailsbyId;
@@ -72,11 +71,10 @@ namespace Repository
 
         public async Task<EnggBom> GetEnggBomById(int id)
         {
-            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.BOMId == id)
-                              .Include(t => t.EnggChildItems)
+            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.BOMId == id)                                                           
+                                .Include(m => m.NREConsumable)
+                                .Include(t => t.EnggChildItems)
                                 .ThenInclude(x => x.EnggAlternates)
-                                .Include(m => m.EnggChildItems)
-                                .ThenInclude(i => i.NREConsumable)
                               .FirstOrDefaultAsync();
 
             return EnggBomDetailsbyId;

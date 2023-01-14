@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         public bool? IsSourcing { get; set; }
         public bool? IsLpCosting { get; set; }
+
+        [DefaultValue(0)]
+        public CsRelease ReleaseStatus { get; set; }
 
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }

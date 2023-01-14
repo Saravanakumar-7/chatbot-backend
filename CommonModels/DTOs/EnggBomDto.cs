@@ -31,6 +31,8 @@ namespace Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
         public List<EnggChildItemDto>? EnggChildItemDtos { get; set; }
+        public List<BomNREConsumableDto>? BomNREConsumableDto { get; set; }
+
 
     }
     public class EnggBomPostDto
@@ -51,6 +53,9 @@ namespace Entities.DTOs
     
 
         public List<EnggChildItemPostDto>? EnggChildItemPosts { get; set; }
+
+        public List<BomNREConsumablePostDto>? BomNREConsumablePostDto { get; set; }
+
 
 
     }
@@ -80,6 +85,9 @@ namespace Entities.DTOs
 
         public List<EnggChildItemUpdateDto>? EnggChildItemUpdates { get; set; }
 
-    }   
+        public List<BomNREConsumableUpdateDto>? BomNREConsumableUpdateDto { get; set; }
+
+
+    }
 
 }

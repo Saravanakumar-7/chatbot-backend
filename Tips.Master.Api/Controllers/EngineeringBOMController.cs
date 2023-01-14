@@ -108,8 +108,7 @@ namespace Tips.Master.Api.Controllers
                     foreach (var itemDetails in bom.EnggChildItems)
                     {
                         EnggChildItemDto enggChildItemDto = _mapper.Map<EnggChildItemDto>(itemDetails);
-                        enggChildItemDto.EnggAlternatesDtos = _mapper.Map<List<EnggAlternatesDto>>(itemDetails.EnggAlternates);
-                        enggChildItemDto.BomNREConsumableDto = _mapper.Map<BomNREConsumableDto>(itemDetails.NREConsumable);
+                        enggChildItemDto.EnggAlternatesDtos = _mapper.Map<List<EnggAlternatesDto>>(itemDetails.EnggAlternates);                       
                         childItemsDtos.Add(enggChildItemDto);
                     }
                     enggBomDto.EnggChildItemDtos = childItemsDtos;
@@ -160,7 +159,6 @@ namespace Tips.Master.Api.Controllers
                     {
                         EnggChildItemDto enggChildItemDto = _mapper.Map<EnggChildItemDto>(itemDetails);
                         enggChildItemDto.EnggAlternatesDtos = _mapper.Map<List<EnggAlternatesDto>>(itemDetails.EnggAlternates);
-                        enggChildItemDto.BomNREConsumableDto = _mapper.Map<BomNREConsumableDto>(itemDetails.NREConsumable);
                         childItemsDtos.Add(enggChildItemDto);
                     }
                     enggBomDto.EnggChildItemDtos = childItemsDtos;
@@ -211,7 +209,15 @@ namespace Tips.Master.Api.Controllers
                 }
 
                 var enggBomList = _mapper.Map<EnggBom>(enggBomPostDto);
+                var enggnre = enggBomPostDto.BomNREConsumablePostDto;
+                var nreList = new List<NREConsumable>();
+                for (int i = 0; i < enggnre.Count; i++)
+                {
+                    NREConsumable enggChildItemDetails = _mapper.Map<NREConsumable>(enggnre[i]);
+                    nreList.Add(enggChildItemDetails);
 
+                }
+                enggBomList.NREConsumable = nreList;
 
                 var enggChildItemDto = enggBomPostDto.EnggChildItemPosts;
 
@@ -220,7 +226,6 @@ namespace Tips.Master.Api.Controllers
                 {
                     EnggChildItem enggChildItemDetail = _mapper.Map<EnggChildItem>(enggChildItemDto[i]);
                     enggChildItemDetail.EnggAlternates = _mapper.Map<List<EnggAlternates>>(enggChildItemDto[i].EnggAlternatesPostDtos);
-                    enggChildItemDetail.NREConsumable = _mapper.Map<NREConsumable>(enggChildItemDto[i].BomNREConsumablePostDto);
                     enggChildItemList.Add(enggChildItemDetail);
 
                 }
@@ -298,7 +303,6 @@ namespace Tips.Master.Api.Controllers
                 {
                     EnggChildItem enggChildItemDetail = _mapper.Map<EnggChildItem>(enggChildItemDto[i]);
                     enggChildItemDetail.EnggAlternates = _mapper.Map<List<EnggAlternates>>(enggChildItemDto[i].EnggAlternatesUpdateDtos);
-                    enggChildItemDetail.NREConsumable = _mapper.Map<NREConsumable>(enggChildItemDto[i].BomNREConsumableUpdateDto);
                     enggChildItemList.Add(enggChildItemDetail);
 
                 }
