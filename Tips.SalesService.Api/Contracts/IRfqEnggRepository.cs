@@ -17,7 +17,8 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> CreateRfqEngg(RfqEngg rfqEngg);
         Task<string> UpdateRfqEngg(RfqEngg rfqEngg);
         Task<string> DeleteRfqEngg(RfqEngg rfqEngg);
-        Task<RfqEngg> GetRfqEnggByRfqNumber(string RfqNumber);
+        Task<RfqEngg> GetRfqEnggByRfqNumber(string rfqNumber);
+        Task<IEnumerable<RfqEnggItem>> GetRfqEnggItemsByRfqNumber(string rfqNumber);
     }
 }
 
