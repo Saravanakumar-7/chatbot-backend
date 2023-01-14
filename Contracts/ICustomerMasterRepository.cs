@@ -14,9 +14,6 @@ namespace Contracts
         Task<PagedList<CustomerMaster>> GetAllCustomerMasters(PagingParameter pagingParameter);
         Task<CustomerMaster> GetCustomerMasterById(int id);
         Task<IEnumerable<CustomerMaster>> GetAllActiveCustomerMasters();
-
-        Task<CustomerMaster> GetLatestCustomerMasterDetail();
-
         Task<CustomerMaster> CreateCustomerMaster(CustomerMaster customerMaster);
         Task<string> UpdateCustomerMaster(CustomerMaster customerMaster);
         Task<string> DeleteCustomerMaster(CustomerMaster customerMaster);

@@ -14,7 +14,6 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> CreateMaterialRequest(MaterialRequest request);
         Task<string> UpdateMaterialRequest(MaterialRequest request);
         Task<string> DeleteMaterialRequest(MaterialRequest request);
-
         Task<IEnumerable<MaterialRequestIdNoDto>> GetAllOpenMRIdNoList();
         public void SaveAsync();
     }
