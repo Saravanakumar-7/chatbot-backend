@@ -336,6 +336,7 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+
         //get RfqLPCosting by Rfqnumber
 
         [HttpGet("{RfqNumber}")]

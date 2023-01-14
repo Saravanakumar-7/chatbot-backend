@@ -292,4 +292,52 @@ namespace Repository
             return result;
         }
     }
+
+    public class EngineeringNREConsumableRepository : RepositoryBase<NREConsumable>, IEnggBomNREConsumableRepository
+    {
+        private TipsMasterDbContext _tipsMasterDbContext;
+        public EngineeringNREConsumableRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        {
+            _tipsMasterDbContext = repositoryContext;
+        }
+
+        public Task<int?> CreateEnggNREConsumable(NREConsumable bomNREConsumable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> DeleteEnggNREConsumable(NREConsumable bomNREConsumable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<NREConsumable>> GetAllActiveEnggNREConsumable()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<NREConsumable>> GetAllEnggNREConsumable()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<NREConsumable> GetAllNREConsumableLists(int id)
+        {
+            var getRountingList = await _tipsMasterDbContext.BomNREConsumables
+                                   .Where(x => x.EnggBomId == id).FirstOrDefaultAsync();
+            return getRountingList;
+        }
+         
+
+        public Task<NREConsumable> GetEnggNREConsumableById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> UpdateEnggNREConsumable(NREConsumable bomNREConsumable)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }

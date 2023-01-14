@@ -11,12 +11,8 @@ namespace Contracts
 {
     public interface IItemMasterRoutingRepository
     {
-        Task<IEnumerable<ItemMasterRouting>> GetAllItemMasterRoutings();
-        Task<ItemMasterRouting> GetItemMasterRoutingById(int id);
-        Task<IEnumerable<ItemMasterRouting>> GetAllActiveItemMasterRoutings();
-        Task<ItemMasterRouting> GetAllItemsProcessList(int id); 
-        Task<int?> CreateItemMasterRouting(ItemMasterRouting itemMasterRouting);
-        Task<string> UpdateItemMasterRouting(ItemMasterRouting itemMasterRouting);
-        Task<string> DeleteItemMasterRouting(ItemMasterRouting itemMasterRouting);
+        
+        Task<List<ItemMasterRoutingListDto>> GetItemsRoutingDetailsForLpCosting(List<string> itemNumberList); 
+        
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts;
@@ -18,31 +19,27 @@ namespace Repository
 
         }
 
-        public Task<int?> CreateItemMasterRouting(ItemMasterRouting itemMasterRouting)
+        
+        public async Task<List<ItemMasterRoutingListDto>> GetItemsRoutingDetailsForLpCosting(List<string> itemNumberList)
         {
-            throw new NotImplementedException();
-        }
+            List<long> itemIds = await TipsMasterDbContext.ItemMasters
+                .Where(im => itemNumberList.Contains(im.ItemNumber))
+                .Select(x=> x.Id).ToListAsync();
 
-        public Task<string> DeleteItemMasterRouting(ItemMasterRouting itemMasterRouting)
-        {
-            throw new NotImplementedException();
-        }
+            var getItemsRoutingDetailsForLpCosting = await TipsMasterDbContext.ItemMasterRoutings
+                               .Select(c => new ItemMasterRoutingListDto()
+                               {
+                                   
+                                   Process = c.Process,
+                                   ProcessStep = c.ProcessStep,
+                                   MachineHours = c.MachineHours,
+                                   LaborHours = c.LaborHours
 
-        public Task<IEnumerable<ItemMasterRouting>> GetAllActiveItemMasterRoutings()
-        {
-            throw new NotImplementedException();
-        }
+                               }).Where(x => itemIds.Contains(x.Id))
+                             .ToListAsync();
 
-        public Task<IEnumerable<ItemMasterRouting>> GetAllItemMasterRoutings()
-        {
-            throw new NotImplementedException();
-        }
+            return getItemsRoutingDetailsForLpCosting;
 
-        public async Task<ItemMasterRouting> GetAllItemsProcessList(int id)
-        {
-            var getRountingList = await TipsMasterDbContext.ItemMasterRoutings
-                                   .Where(x => x.ItemMasterId == id).FirstOrDefaultAsync();
-            return getRountingList;
 
         } 
 

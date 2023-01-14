@@ -18,6 +18,7 @@ namespace Repository
         private IItemMasterRepository _itemMasterRepo;
         private IEnggBomRepository? _enggBomRepository;
         private IEnggBomNREConsumableRepository? _enggBomNREConsumableRepository;
+         
 
         private IItemMasterRoutingRepository? _itemmasterRoutingRepository;
 
@@ -843,6 +844,8 @@ namespace Repository
         public IEnggBomAlternatesRepository EnggBomAlternatesRepository => throw new NotImplementedException();
 
         public IEnggBomChildItemRepository EnggBomChildItemRepository => throw new NotImplementedException();
+
+        //public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
 
         //add new
         //public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();

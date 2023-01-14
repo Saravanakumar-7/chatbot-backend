@@ -89,5 +89,13 @@ namespace Entities.DTOs
 
 
     }
+    public class ItemMasterNREDetailsListDto
+    {
+        public int id { get; set; }
+
+        //public List<ItemMasterRouting>? itemMasterRoutings { get; set; }
+
+    }
+
 
 }

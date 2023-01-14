@@ -51,11 +51,12 @@ namespace Entities.DTOs
         public bool IsRoutingActive { get; set; }
 
     }
-    public class ItemMasterRoutingIdNoListDto
+    public class ItemMasterRoutingListDto
     {
-        public int id { get; set; }
-
-        //public List<ItemMasterRouting>? itemMasterRoutings { get; set; }
+        public string? ProcessStep { get; set; }
+        public string? Process { get; set; }
+        public string? MachineHours { get; set; }
+        public string? LaborHours { get; set; } 
 
     }
 
