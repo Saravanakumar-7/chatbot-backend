@@ -21,7 +21,8 @@ namespace Tips.SalesService.Api.Entities
         [Precision(13, 3)]
         public decimal? MaterialCost { get; set; }
         [Precision(13, 3)]
-        public decimal? MarkUpForMaterial { get; set; }       
+        public decimal? MarkUpForMaterial { get; set; }
+        public string? MarkUpForProcessSteps { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public int RfqLPCostingId { get; set; }

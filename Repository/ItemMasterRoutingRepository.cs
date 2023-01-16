@@ -26,23 +26,23 @@ namespace Repository
                 .Where(im => itemNumberList.Contains(im.ItemNumber))
                 .Select(x => new { x.Id,x.ItemNumber}).ToListAsync();
 
-            List<long> itemIds = itemIdNoList.Select(x=>x.Id).ToList(); 
+            List<long> itemIds = itemIdNoList.Select(x=>x.Id).ToList();
+
+            IEnumerable<ItemMasterRouting> itemMasterRoutings = await TipsMasterDbContext.ItemMasterRoutings
+                               .Where(x => itemIds.Contains(x.ItemMasterId)).ToListAsync();
 
 
-
-            var getItemsRoutingDetailsForLpCosting = await TipsMasterDbContext.ItemMasterRoutings
+            var getItemsRoutingDetailsForLpCosting = itemMasterRoutings
                                .Select(c => new ItemMasterRoutingListDto()
                                {
-                                   
                                    Process = c.Process,
                                    ProcessStep = c.ProcessStep,
                                    MachineHours = c.MachineHours,
                                    LaborHours = c.LaborHours,
-                                   ItemNumber = itemIdNoList.Where(x=>x.Id == c.ItemMasterId)
-                                   .Select(x=>x.ItemNumber).FirstOrDefault()
-
-                               }).Where(x => itemIds.Contains(x.Id))
-                             .ToListAsync();
+                                   ItemNumber = itemIdNoList.Where(x => x.Id == c.ItemMasterId)
+                                   .Select(x => x.ItemNumber).FirstOrDefault()
+                               })
+                               .ToList();
 
             return getItemsRoutingDetailsForLpCosting;
 

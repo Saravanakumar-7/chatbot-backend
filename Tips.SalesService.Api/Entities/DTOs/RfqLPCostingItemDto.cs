@@ -20,7 +20,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? MaterialCost { get; set; }
         [Precision(13, 3)]
-        public decimal? MarkUpForMaterial { get; set; }      
+        public decimal? MarkUpForMaterial { get; set; }
+
+        public string? MarkUpForProcessSteps { get; set; }       
+
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public List<RfqLPCostingProcessDto>? RfqLPCostingProcesses { get; set; }
@@ -43,7 +46,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? MaterialCost { get; set; }
         [Precision(13, 3)]       
         public decimal? MarkUpForMaterial { get; set; }
-        
+        public string? MarkUpForProcessSteps { get; set; }
+
+
         public List<RfqLPCostingProcessDtoPost>? RfqLPCostingProcesses { get; set; }
         public List<RfqLPCostingNREConsumableDtoPost>? RfqLPCostingNREConsumables { get; set; }
         public List<RfqLPCostingOtherChargesDtoPost>? RfqLPCostingOtherCharges { get; set; }
@@ -64,7 +69,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? MaterialCost { get; set; }
         [Precision(13, 3)]
         public decimal? MarkUpForMaterial { get; set; }
-       
+
+        public string? MarkUpForProcessSteps { get; set; }
+
         public List<RfqLPCostingProcessDtoUpdate>? RfqLPCostingProcesses { get; set; }
         public List<RfqLPCostingNREConsumableDtoUpdate>? RfqLPCostingNREConsumables { get; set; }
         public List<RfqLPCostingOtherChargesDtoUpdate>? RfqLPCostingOtherCharges { get; set; }
