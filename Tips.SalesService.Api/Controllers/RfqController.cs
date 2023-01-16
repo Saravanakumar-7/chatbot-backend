@@ -1409,6 +1409,33 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //Get BulkReleaseData By RfqNumber
+        [HttpGet("{RfqNumber}")]
+        public async Task<IActionResult> GetRfqReleaseLpByRfqNumber(string RfqNumber)
+        {
+            ServiceResponse<ReleaseLpDto> serviceResponse = new ServiceResponse<ReleaseLpDto>();
+            try
+            {
+                var getRfqReleaseLpByRfqNumber = await _releaseLpRepository.GetRfqReleaseLpByRfqNumber(RfqNumber);
+                var result = _mapper.Map<ReleaseLpDto>(getRfqReleaseLpByRfqNumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all BulkRelease Data";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqReleaseLpByRfqNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> BulkRelease([FromBody] List<ReleaseLpDtoPost> releaseLpDtoPosts)
         {
@@ -1450,7 +1477,7 @@ namespace Tips.SalesService.Api.Controllers
                 _rfqRepository.Update(lpreleases);
                 _releaseLpRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "Successfully Released Bulkdata";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("ReleaseLpById", serviceResponse);

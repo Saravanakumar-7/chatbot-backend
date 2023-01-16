@@ -570,5 +570,13 @@ namespace Tips.SalesService.Api.Repository
             var result = await Create(releaseLp);
             return result;
         }
+        public async Task<ReleaseLp> GetRfqReleaseLpByRfqNumber(string RfqNumber)
+        {
+            var getRfqReleaseLpByRfqNumber = await _tipsSalesServiceDbContext.ReleaseLps
+              .Where(x => x.RfqNumber == RfqNumber )
+                        .FirstOrDefaultAsync();
+            return getRfqReleaseLpByRfqNumber;
+        }
+
     }
 }

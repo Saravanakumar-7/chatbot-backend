@@ -1,4 +1,6 @@
-﻿using Tips.SalesService.Api.Entities;
+﻿using Entities.Helper;
+using Entities;
+using Tips.SalesService.Api.Entities;
 
 namespace Tips.SalesService.Api.Contracts
 {
@@ -6,6 +8,6 @@ namespace Tips.SalesService.Api.Contracts
     {
         Task<ReleaseLp> BulkRelease(ReleaseLp releaseLp);
 
-
+        Task<ReleaseLp> GetRfqReleaseLpByRfqNumber(string RfqNumber);
     }
 }
