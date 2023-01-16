@@ -55,6 +55,14 @@ namespace Repository
             return getAllActiveCustomermasterList;
         }
 
+        public async Task<CustomerMaster> GetLatestCustomerMasterDetail()
+        {
+            var getLatestCustomermasterList = TipsMasterDbContext.CustomerMasters.OrderByDescending(x => x.Id).FirstOrDefault();
+            return getLatestCustomermasterList;
+        }
+
+        
+
         public async Task<PagedList<CustomerMaster>> GetAllCustomerMasters(PagingParameter pagingParameter)
         {
             var getAllCustomerMasterList = PagedList<CustomerMaster>.ToPagedList(FindAll()

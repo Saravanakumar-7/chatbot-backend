@@ -56,6 +56,9 @@ namespace Entities
 
         public DbSet<ItemMaster> ItemMasters { get; set; }
 
+        public DbSet<ItemMasterRouting> ItemMasterRoutings { get; set; }
+
+
         public DbSet<CustomerMaster> CustomerMasters { get; set; }
         public DbSet<CustomerContacts> CustomerContacts { get; set; }
         public DbSet<CustomerAddresses> CustomerAddresses{ get; set; }

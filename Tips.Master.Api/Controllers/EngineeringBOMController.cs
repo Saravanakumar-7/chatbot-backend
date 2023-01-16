@@ -181,6 +181,44 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        ////get nre details passing item id
+        //[HttpPost]
+        //public async Task<IActionResult> GetAllNREConsumableList([FromBody] List<long> itemNumber)
+        //{
+        //    ServiceResponse<List<NREConsumable>> serviceResponse = new ServiceResponse<List<NREConsumable>>();
+        //    List<NREConsumable> nreConsumables = null;
+        //    try
+        //    {
+        //        if (itemNumber is null)
+        //        {
+        //            _logger.LogError("NREConsumable object sent from client is null.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "NREConsumable object is null";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+
+        //        nreConsumables = await _repository.EnggBomNREConsumableRepository.GetAllItemsProcessList(itemNumber);
+        //        List<ItemMasterRouting> rfqCSDto = _mapper.Map<List<ItemMasterRouting>>(itemMasterRouting);
+        //        rfqCSDto = itemMasterRouting;
+        //        serviceResponse.Data = rfqCSDto;
+        //        serviceResponse.Message = "List Of ItemNumber ";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside UpdateRfq action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
         // POST api/<EngineeringBOMController>
         [HttpPost]
         public async Task<IActionResult> CreateEnggBom([FromBody] EnggBomPostDto enggBomPostDto)

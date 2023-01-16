@@ -46,4 +46,17 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? LabourHrsCost { get; set; }
         public string? MarkUpForProcessSteps { get; set; }        
     }
+
+    public class RfqLpCostingItemProcessStepsDto
+    {
+        public string? ProcessSteps { get; set; }
+        public string? MachineHrs { get; set; }
+        [Precision(13, 3)]
+        public decimal? MachineHrsCost { get; set; }
+        public string? LabourHrs { get; set; }
+        [Precision(13, 3)]
+        public decimal? LabourHrsCost { get; set; }
+    }
+
+
 }
