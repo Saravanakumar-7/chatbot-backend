@@ -45,6 +45,9 @@ builder.Services.AddScoped<IForeCastRepository, ForeCastRepository>();
 builder.Services.AddScoped<IForeCastCustomerSupportRepository, ForeCastCustomerSupportRepository>();
 builder.Services.AddScoped<IForeCastCustomerSupportItemRepository, ForeCastCustomerSupportItemsRepository>();
 builder.Services.AddScoped<IForeCastEnggRepository, ForeCastEnggRepository>();
+builder.Services.AddScoped<IForeCastEnggItemsRepository, ForeCastEnggItemRepository>();
+builder.Services.AddScoped<IForeCastReleaseLpRepository, ForeCastLPReleaseRepository>();
+
 builder.Services.AddScoped<IForecastSourcingRepository, ForeCastSourcingRepository>();
 builder.Services.AddScoped<IForecastLpCostingRepository, ForecastLpCostingRepository>();
 builder.Services.AddScoped<IMaterialRequestRepository, MaterialRequestRepository>();
