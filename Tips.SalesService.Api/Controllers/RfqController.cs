@@ -14,6 +14,8 @@ using Microsoft.Build.Framework;
 using RfqCSDeliveryScheduleDto = Tips.SalesService.Api.Entities.DTOs.RfqCSDeliveryScheduleDto;
 using System.Net.Http;
 using System.Text;
+using Newtonsoft.Json.Linq;
+using System.Dynamic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -345,9 +347,9 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //nayagam
 
-
-        [HttpGet("{RfqNumber}")]
+        [HttpGet]
         public async Task<IActionResult> GetDetailsForLPCostingByRfqNumber(string rfqNumber)
         {
             ServiceResponse<RfqLPCostingDto> serviceResponse = new ServiceResponse<RfqLPCostingDto>();
@@ -363,11 +365,11 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     var itemDetailsString = JsonConvert.SerializeObject(itemDetails);
                     var content = new StringContent(itemDetailsString, Encoding.UTF8, "application/json");
-                    var inventoryObjectResult = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByGrinNo"), content);
+                    var inventoryObjectResult = await _httpClient.PostAsync(string.Concat(_config["ItemMasterAPI"], "GetItemsRoutingDetailsForLpCosting"), content);
                     var itemsRoutingDetailsJsonString = await inventoryObjectResult.Content.ReadAsStringAsync();
                     dynamic itemsRoutingDetailsJson = JsonConvert.DeserializeObject(itemsRoutingDetailsJsonString);
-                    itemsRoutingDetailsDynamic = itemsRoutingDetailsJson?.data;
-                    
+                    var data = itemsRoutingDetailsJson.data;
+                    itemsRoutingDetailsDynamic = data.ToObject<List<ItemMasterRoutingListDto>>();
                 }
 
 

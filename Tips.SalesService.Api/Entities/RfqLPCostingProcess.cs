@@ -21,7 +21,6 @@ namespace Tips.SalesService.Api.Entities
         public string? LabourHrs { get; set; }
         [Precision(13, 3)]
         public decimal? LabourHrsCost { get; set; }
-        public string? MarkUpForProcessSteps { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public int RfqLPCostingItemId { get; set; }

@@ -305,6 +305,11 @@ namespace Tips.SalesService.Api.Repository
             return getRfqEnggByRfqNumber;
         }
 
+        public Task<IEnumerable<RfqEnggItem>> GetRfqEnggItemsByRfqNumber(string rfqNumber)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<string> UpdateRfqEngg(RfqEngg rfqEngg)
         {
             rfqEngg.LastModifiedBy = "Admin";
