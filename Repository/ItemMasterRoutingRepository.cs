@@ -35,10 +35,9 @@ namespace Repository
             var getItemsRoutingDetailsForLpCosting = itemMasterRoutings
                                .Select(c => new ItemMasterRoutingListDto()
                                {
-                                   Process = c.Process,
-                                   ProcessStep = c.ProcessStep,
-                                   MachineHours = c.MachineHours,
-                                   LaborHours = c.LaborHours,
+                                   ProcessSteps = c.ProcessStep,
+                                   MachineHrs = c.MachineHours,
+                                   LabourHrs = c.LaborHours,
                                    ItemNumber = itemIdNoList.Where(x => x.Id == c.ItemMasterId)
                                    .Select(x => x.ItemNumber).FirstOrDefault()
                                })
