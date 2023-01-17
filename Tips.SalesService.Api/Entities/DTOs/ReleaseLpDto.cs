@@ -75,12 +75,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? DiscountMinus { get; set; }
-        public string Unit { get; set; }
-
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+     
     }
 
     public class ReleaseLpDtoUpdate
@@ -117,9 +112,5 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? DiscountMinus { get; set; }
         public string Unit { get; set; }
 
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
     }
 }
