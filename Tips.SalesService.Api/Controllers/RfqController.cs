@@ -323,6 +323,31 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet("{CustomerName}")]
+        public async Task<IActionResult> GetAllActiveRfqNumberListByCustomerName(string CustomerName)
+        {
+            ServiceResponse<IEnumerable<RfqNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqNumberListDto>>();
+            try
+            {
+                var getAllActiveRfqNumberListByCustomerName = await _rfqRepository.GetAllActiveRfqNumberListByCustomerName(CustomerName);
+                var result = _mapper.Map<IEnumerable<RfqNumberListDto>>(getAllActiveRfqNumberListByCustomerName);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ActiveRfqNumberListByCustomerName";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveRfqNumberListByCustomerName action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet("{RfqNumber}")]
         public async Task<IActionResult> GetAllActiveRfqEnggItemByRfqNumber(string RfqNumber)
         {

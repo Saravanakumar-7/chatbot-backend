@@ -2,7 +2,7 @@
 {
     public enum CsRelease
     {
-        OpenRelease,
+        NotYetReleased,
         PartiallyRelease,
         FullyRelease
     }

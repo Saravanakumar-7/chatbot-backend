@@ -61,9 +61,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqNumberListDto
     {
-        public int Id { get; set; }
-
-        [Required]
+        public int Id { get; set; }       
         public string RfqNumber { get; set; }
         public string? CustomerName { get; set; }
     }

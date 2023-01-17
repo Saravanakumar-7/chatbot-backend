@@ -250,6 +250,29 @@ namespace Tips.SalesService.Api.Repository
             string result = $"RFQ of Detail {rfq.Id} is updated successfully!";
             return result;
         }
+
+        public async Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberListByCustomerName(string CustomerName)
+        {           
+
+            IEnumerable<RfqNumberListDto> getAllActiveRfqNumberList = await _tipsSalesServiceDbContext.Rfqs
+                                .Select(x => new RfqNumberListDto()
+                                {
+                                    Id = x.Id,
+                                    RfqNumber = x.RfqNumber,
+                                    CustomerName = x.CustomerName                                  
+
+                                })
+                               .Where(b => b.CustomerName == CustomerName)                                
+                              .ToListAsync();
+
+            return getAllActiveRfqNumberList;
+
+
+           
+        }
+
+
+
     }
     public class RfqEnggRepository : RepositoryBase<RfqEngg>, IRfqEnggRepository
     {
