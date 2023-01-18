@@ -598,11 +598,11 @@ namespace Tips.SalesService.Api.Repository
             var result = await Create(releaseLp);
             return result;
         }
-        public async Task<ReleaseLp> GetRfqReleaseLpByRfqNumber(string RfqNumber)
+        public async Task<IEnumerable<ReleaseLp>> GetRfqReleaseLpByRfqNumber(string RfqNumber)
         {
             var getRfqReleaseLpByRfqNumber = await _tipsSalesServiceDbContext.ReleaseLps
               .Where(x => x.RfqNumber == RfqNumber )
-                        .FirstOrDefaultAsync();
+                        .ToListAsync();
             return getRfqReleaseLpByRfqNumber;
         }
 

@@ -1522,11 +1522,11 @@ namespace Tips.SalesService.Api.Controllers
         [HttpGet("{RfqNumber}")]
         public async Task<IActionResult> GetRfqReleaseLpByRfqNumber(string RfqNumber)
         {
-            ServiceResponse<ReleaseLpDto> serviceResponse = new ServiceResponse<ReleaseLpDto>();
+            ServiceResponse<IEnumerable<ReleaseLpDto>> serviceResponse = new ServiceResponse<IEnumerable<ReleaseLpDto>>();
             try
             {
                 var getRfqReleaseLpByRfqNumber = await _releaseLpRepository.GetRfqReleaseLpByRfqNumber(RfqNumber);
-                var result = _mapper.Map<ReleaseLpDto>(getRfqReleaseLpByRfqNumber);
+                var result = _mapper.Map<IEnumerable<ReleaseLpDto>>(getRfqReleaseLpByRfqNumber);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all BulkRelease Data";
                 serviceResponse.Success = true;
