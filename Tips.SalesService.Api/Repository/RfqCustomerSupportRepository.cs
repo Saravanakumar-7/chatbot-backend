@@ -70,10 +70,10 @@ namespace Tips.SalesService.Api.Repository
         public async Task<RfqCustomerSupport> GetRfqCustomerSupportByRfqNumber(string RfqNumber)
         {
             var getRfqCSByRfqNumber = await _tipsSalesServiceDbContext.RfqCustomerSupports
+                .Where(x => x.RfqNumber == RfqNumber)
                 .Include(t => t.RfqCustomerSupportItems)
                 .ThenInclude(n => n.RfqCSDeliverySchedule)
-                .Include(m => m.RfqCustomerSupportNotes)
-              .Where(x => x.RfqNumber == RfqNumber)
+                .Include(m => m.RfqCustomerSupportNotes)              
                         .FirstOrDefaultAsync();
 
             return getRfqCSByRfqNumber;

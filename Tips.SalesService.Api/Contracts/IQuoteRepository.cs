@@ -10,7 +10,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<Quote> GetQuoteById(int id);
         Task<IEnumerable<Quote>> GetAllActiveQuote();
         Task<long> CreateQuote(Quote quote);
-        Task<string> UpdateQuote(Quote quote);
+         Task<string> UpdateQuote(Quote quote);
         Task<string> DeleteQuote(Quote quote);
     }
 }

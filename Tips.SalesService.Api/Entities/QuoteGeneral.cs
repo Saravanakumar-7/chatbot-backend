@@ -24,8 +24,6 @@ namespace Tips.SalesService.Api.Entities
         public decimal UTGST { get; set; }
         public decimal SGST { get; set; }
         public decimal Total { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public int QuoteId { get; set; }

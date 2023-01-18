@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Entities.Helper;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Ocsp;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 
@@ -18,12 +19,13 @@ namespace Tips.SalesService.Api.Repository
         {
             quote.CreatedBy = "Admin";
             quote.CreatedOn = DateTime.Now;
-            quote.LastModifiedBy = "Admin";
-            quote.LastModifiedOn = DateTime.Now;
+            quote.Unit = "Bangalore";
+            var version = 1.0;
+            quote.RevisionNumber = Convert.ToDecimal(version);
             var result = await Create(quote);
             return result.Id;
         }
-
+         
         public async Task<string> DeleteQuote(Quote quote)
         {
             Delete(quote);

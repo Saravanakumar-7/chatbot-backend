@@ -10,6 +10,7 @@ using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
+using Tips.SalesService.Api.Repository;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -227,7 +228,14 @@ namespace Tips.SalesService.Api.Controllers
                 quote.quoteRFQNotes = quoteRFQNotesList.ToList();
                 quote.quoteSpecialTerms = quoteSpecialTermslist.ToList();
 
+
+                var version = Convert.ToDecimal(0.1);
+
+                quote.RevisionNumber = quote.RevisionNumber + version;
+
                 string result = await _repository.UpdateQuote(quote);
+
+
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
