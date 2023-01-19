@@ -59,7 +59,7 @@ builder.Services.AddScoped<IRfqCustomGroupRepository, RfqCustomGroupRepository>(
 builder.Services.AddScoped<IRfqCustomFieldRepository, RfqCustomFieldRepository>();
 builder.Services.AddScoped<IForeCastCustomGroupRepository, ForeCastCustomGroupRepository>();
 builder.Services.AddScoped<IForeCastCustomFieldRepository, ForeCastCustomFieldRepository>();
-
+ 
 //builder.Services.AddScoped<IRfqCustomerSupportNotesRepository, RfqCustomerSupportNotes>();
 
 

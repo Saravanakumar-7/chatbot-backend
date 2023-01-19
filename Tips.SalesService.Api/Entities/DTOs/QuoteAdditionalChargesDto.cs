@@ -23,7 +23,7 @@
     }
     public class QuoteAdditionalChargesDtoUpdate
     {
-         public string? AdditionalChargesLabelName { get; set; }
+        public string? AdditionalChargesLabelName { get; set; }
         public string AddtionalChargesValueType { get; set; }
         public decimal AddtionalChargesValueAmount { get; set; }
         public decimal IGST { get; set; }

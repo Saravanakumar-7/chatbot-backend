@@ -11,7 +11,7 @@
     }
     public class QuoteOtherTermsDtoUpdate
     {
-         public string? OtherTerms { get; set; } 
+        public string? OtherTerms { get; set; } 
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
