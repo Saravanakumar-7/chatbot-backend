@@ -10,6 +10,9 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? SAItemNo { get; set; }
         public string? Description { get; set; }
         public decimal UOM { get; set; }
+        public decimal? BalanceQty { get; set; }
+        public decimal? DispatchQty { get; set; }
+        public decimal? ShopOrderQty { get; set; }
         public decimal Currency { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal OrderQty { get; set; }
@@ -42,6 +45,9 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? SAItemNo { get; set; }
         public string? Description { get; set; }
         public decimal UOM { get; set; }
+        public decimal? BalanceQty { get; set; }
+        public decimal? DispatchQty { get; set; }
+        public decimal? ShopOrderQty { get; set; }
         public decimal Currency { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal OrderQty { get; set; }
