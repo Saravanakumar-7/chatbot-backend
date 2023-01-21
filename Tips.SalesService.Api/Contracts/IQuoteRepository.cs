@@ -11,7 +11,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<Quote>> GetAllActiveQuote();
         Task<long> CreateQuote(Quote quote);       
         Task<Quote> ChangeQuoteVersion(Quote quote);
-        Task<string> UpdateQuote(Quote quote);
+         Task<string> UpdateQuote(Quote quote);
         Task<string> DeleteQuote(Quote quote);
     }
 }

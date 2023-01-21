@@ -17,13 +17,15 @@ namespace Tips.SalesService.Api.Controllers
     public class SalesOrderController : ControllerBase
     {
         private ISalesOrderRepository _repository;
+        private ISalesOrderItemsRepository _salesOrderItemsRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        public SalesOrderController(ISalesOrderRepository repository, ILoggerManager logger, IMapper mapper)
+        public SalesOrderController(ISalesOrderRepository repository, ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _salesOrderItemsRepository = salesOrderItemsRepository;
         }
 
         // GET: api/<SalesOrderController>
@@ -317,6 +319,92 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+
+        [HttpGet("ItemNo")]
+        public async Task<IActionResult> GetprojectNoByItemNo(string itemNo)
+        {
+            ServiceResponse<ListOfProjectNoDto> serviceResponse = new ServiceResponse<ListOfProjectNoDto>();
+
+            try
+            {
+                var getProjectByItemNo = await _salesOrderItemsRepository.GetprojectNoByItemNo(itemNo);
+                if (getProjectByItemNo == null)
+                {
+                    _logger.LogError($"ProjectNo with id: {itemNo}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ProjectNo with id: {itemNo}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned ProjectNumber with id: {itemNo}");
+                    var result = _mapper.Map<ListOfProjectNoDto>(getProjectByItemNo);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ProjectNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        //getprojectnumberbyitemnumber
+
+        //getsalesorderDetailByprojectNoanditemNo --
+        [HttpGet]
+        public async Task<IActionResult> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo)
+         {
+            ServiceResponse<GetSalesOrderDetailsDto> serviceResponse = new ServiceResponse<GetSalesOrderDetailsDto>();
+
+            try
+            {
+                var getSalesDetail = await _salesOrderItemsRepository.getSalesOrderDetailByProjectNoandItemNo(ItemNo, ProjectNo);
+                if (getSalesDetail == null)
+                {
+                    _logger.LogError($"SalesOrderDetail with id: {ItemNo}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderDetail with id: {ItemNo}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned SalesOrderDetail with id: {ItemNo}");
+                    var result = _mapper.Map<GetSalesOrderDetailsDto>(getSalesDetail);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
+        //bom api
+
+        //
+
+
         //public Task<IActionResult> UpdateSOBasedOnCreatingDO()
         //{
         //    return null;
@@ -327,11 +415,11 @@ namespace Tips.SalesService.Api.Controllers
         //    return null;
 
         //}
-         
 
 
 
-}
+
+    }
 
 
 }

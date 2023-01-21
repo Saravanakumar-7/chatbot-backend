@@ -97,6 +97,7 @@ namespace Tips.Production.Api.Repository
                            {
                                Id = x.Id,
                                ShopOrderNumber = x.ShopOrderNumber,
+                               
                            }).ToListAsync();
 
 

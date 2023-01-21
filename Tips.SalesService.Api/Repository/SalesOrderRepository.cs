@@ -3,6 +3,8 @@ using Entities.Helper;
 using Microsoft.EntityFrameworkCore;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
+using Tips.SalesService.Api.Entities.Dto;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -47,6 +49,8 @@ namespace Tips.SalesService.Api.Repository
             return getAllSalesOrders;
         }
 
+      
+
         public async Task<SalesOrder> GetSalesOrderById(int id)
         {
             var getSalesOrderbyId = await _tipsSalesServiceDbContext.SalesOrders.Where(x => x.Id == id)
@@ -55,6 +59,8 @@ namespace Tips.SalesService.Api.Repository
 
             return getSalesOrderbyId;
         }
+
+  
 
         public async Task<string> UpdateSalesOrder(SalesOrder salesOrder)
         {
@@ -76,5 +82,48 @@ namespace Tips.SalesService.Api.Repository
         //{
         //    throw new NotImplementedException();
         //}
+    }
+    public class SalesOrderItemRepository : RepositoryBase<SalesOrderItems>, ISalesOrderItemsRepository
+    {
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContexts;
+        public SalesOrderItemRepository(TipsSalesServiceDbContext repositoryContext) : base(repositoryContext)
+        {
+            _tipsSalesServiceDbContexts = repositoryContext;
+        }
+
+        public async Task<IEnumerable<ListOfProjectNoDto>> GetprojectNoByItemNo(string itemNo)
+        {
+
+            IEnumerable<ListOfProjectNoDto> getProjectNumberList = await _tipsSalesServiceDbContexts.SalesOrdersItems
+                                 .Where(b => b.SAItemNo == itemNo && b.SOPartStatus != true)
+                                 .Select(x => new ListOfProjectNoDto()
+                                 {
+                                     Id = x.Id,
+                                     ProjectNumber = x.ProjectNumber
+
+                                 })                                
+                               .ToListAsync();
+
+            return getProjectNumberList;
+
+
+
+        }
+        public async Task<IEnumerable<GetSalesOrderDetailsDto>> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo)
+        {
+
+            IEnumerable<GetSalesOrderDetailsDto> getSalesorderList = await _tipsSalesServiceDbContexts.SalesOrdersItems
+                                .Where(b => b.SAItemNo == ItemNo && b.ProjectNumber == ProjectNo)
+                                .Select(x => new GetSalesOrderDetailsDto()
+                                {
+                                    Id = x.Id,
+                                    SalesOrderNumber = x.SalesOrderNumber,
+                                    OrderQty = x.OrderQty
+                                })
+                              .ToListAsync();
+
+            return getSalesorderList;
+        }
+         
     }
 }

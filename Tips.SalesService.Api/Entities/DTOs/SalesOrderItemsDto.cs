@@ -1,4 +1,8 @@
-﻿namespace Tips.SalesService.Api.Entities.Dto
+﻿using Microsoft.Build.Framework;
+using System.ComponentModel;
+using Tips.SalesService.Api.Entities.Dto;
+
+namespace Tips.SalesService.Api.Entities.Dto
 {
     public class SalesOrderItemsDto
     {
@@ -48,5 +52,16 @@
         public string Remarks { get; set; }
         
     }
+    public class ListOfProjectNoDto
+    {
+        public int Id { get; set; }
+        public string ProjectNumber { get; set; }
+    }
 
+    public class GetSalesOrderDetailsDto
+    {
+        public int Id { get; set; }
+        public string SalesOrderNumber { get; set; }
+        public decimal OrderQty { get; set; }
+    }
 }

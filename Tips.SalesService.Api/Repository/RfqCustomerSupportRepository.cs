@@ -271,8 +271,13 @@ namespace Tips.SalesService.Api.Repository
            
         }
 
-
-
+        public async Task<Rfq> GetCustomerIdByRfqNumber(string rfqnumber)
+        {
+            var getCustomerId = await _tipsSalesServiceDbContext.Rfqs
+                        .Where(x => x.RfqNumber == rfqnumber)
+                                  .FirstOrDefaultAsync();
+            return getCustomerId;
+        }
     }
     public class RfqEnggRepository : RepositoryBase<RfqEngg>, IRfqEnggRepository
     {

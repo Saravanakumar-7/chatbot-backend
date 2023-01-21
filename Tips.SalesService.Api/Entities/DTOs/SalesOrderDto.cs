@@ -98,5 +98,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         public List<SalesOrderItemsDtoUpdate>? SalesOrderItems { get; set; }
     }
+   
+
 
 }

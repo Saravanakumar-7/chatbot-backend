@@ -8,6 +8,10 @@ namespace Tips.SalesService.Api.Entities
         public int Id { get; set; } 
         public string? SAItemNo { get; set; }
         public string? Description { get; set; }
+        public string? SalesOrderNumber { get; set; }
+
+        public string? ProjectNumber { get; set; }
+        public bool? SOPartStatus { get; set; } = false;
         public decimal UOM { get; set; }
         public decimal Currency { get; set; }
         public decimal UnitPrice { get; set; }

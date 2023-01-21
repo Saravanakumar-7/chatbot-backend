@@ -11,6 +11,8 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<SalesOrder>> GetAllActiveSalesOrder();
         Task<long> CreateSalesOrder(SalesOrder salesOrder);
         Task<string> UpdateSalesOrder(SalesOrder salesOrder);
+        
+
         Task<string> DeleteSalesOrder(SalesOrder salesOrder);
         //Task<string> UpdateSOBasedOnCreatingDO();
 

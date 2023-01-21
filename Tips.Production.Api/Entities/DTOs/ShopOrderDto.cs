@@ -116,4 +116,6 @@ namespace Tips.Production.Api.Entities.DTOs
         public string ShopOrderNumber { get; set; }
     }
 
+   
+
 }

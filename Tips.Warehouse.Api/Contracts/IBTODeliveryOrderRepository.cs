@@ -11,6 +11,8 @@ namespace Tips.Warehouse.Api.Contracts
 
         Task<IEnumerable<BTODeliveryOrder>> GetAllActiveBTODeliveryOrders();
         Task<long> CreateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder);
+        Task<int?> GetBTONumberAutoIncrementCount(DateTime date);
+
         Task<string> UpdateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder);
         Task<string> DeleteBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder);
         

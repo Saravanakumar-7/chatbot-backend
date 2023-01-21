@@ -19,14 +19,16 @@ namespace Tips.SalesService.Api.Controllers
     public class QuoteController : ControllerBase
     {
         private IQuoteRepository _repository;
+        private IRfqRepository _rfqRepository;        
         private ILoggerManager _logger;
         private IMapper _mapper;
  
-        public QuoteController(IQuoteRepository repository,ILoggerManager logger, IMapper mapper)
+        public QuoteController(IQuoteRepository repository, IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _rfqRepository = rfqRepository;
          }
 
         // GET: api/<QuoteController>
@@ -75,6 +77,8 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var quoteDetails = await _repository.GetQuoteById(id);
+                var rfqnumber = quoteDetails.RFQNumber;
+                var customerId = await _rfqRepository.GetCustomerIdByRfqNumber(rfqnumber);
 
                 if (quoteDetails == null)
                 {
@@ -95,7 +99,7 @@ namespace Tips.SalesService.Api.Controllers
                     var quoteRFQNotesList = _mapper.Map<IEnumerable<QuoteRFQNotesDto>>(quoteDetails.quoteRFQNotes);
                     var quoteSpecialTermslist = _mapper.Map<IEnumerable<QuoteSpecialTermsDto>>(quoteDetails.quoteSpecialTerms);
                     var quote = _mapper.Map<QuoteDto>(quoteDetails);
-
+                    quote.CustomerId = customerId.CustomerId;
                     quote.quoteGeneralDtos = quoteGeneralList.ToList();
                     quote.quoteAdditionalChargesDtos = quoteAdditionalChargesList.ToList();
                     quote.quoteOtherTermsDtos = quoteOtherTermsList.ToList();

@@ -16,6 +16,9 @@ namespace Tips.SalesService.Api.Entities
         public int CustomerId { get; set; }
         public string? RevNo { get; set; }
 
+        public bool? SOStatus { get; set; } = false;
+
+
         //PO Details
         public string? PONumber { get; set; }
         public DateTime PODate { get; set; }

@@ -7,6 +7,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
+        public string? CustomerId { get; set; }
         public string? QuoteRef { get; set; }
         public decimal TotalAmount { get; set; }
         public bool IsTheseRequiredToBePrintedInQuote { get; set; }

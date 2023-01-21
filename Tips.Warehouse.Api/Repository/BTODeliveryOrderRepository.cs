@@ -17,15 +17,21 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<long> CreateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder)
         {
+            var date = DateTime.Now;
             bTODeliveryOrder.CreatedBy = "Admin";
-            bTODeliveryOrder.CreatedOn = DateTime.Now;
+            bTODeliveryOrder.CreatedOn = date.Date;
             bTODeliveryOrder.Unit = "Bangalore";
             Guid btoDeliveryOrderNumber = Guid.NewGuid();
             bTODeliveryOrder.BTONumber = " BTO-" + btoDeliveryOrderNumber.ToString();
             var result = await Create(bTODeliveryOrder);
             return result.Id;
         }
+        public async Task<int?> GetBTONumberAutoIncrementCount(DateTime date)
+        {
+            var getBTODeliveryOrderDetailsByIds = _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.CreatedOn == date.Date).Count();
 
+            return getBTODeliveryOrderDetailsByIds;
+        }
         public async Task<string> DeleteBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder)
         {
             Delete(bTODeliveryOrder);
