@@ -99,6 +99,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public List<SalesOrderItemsDtoUpdate>? SalesOrderItems { get; set; }
     }
    
+    public class ListofSalesOrderDetails
+    {
+        public int SalesOrderId { get; set; }
+        public string? PONumber { get; set; }
+        public string? SalesOrderNumber { get; set; }        
 
-
+    }
 }

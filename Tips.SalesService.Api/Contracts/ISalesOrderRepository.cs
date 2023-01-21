@@ -1,6 +1,8 @@
 ﻿using Entities.Helper;
 using Entities;
 using Tips.SalesService.Api.Entities;
+using Tips.SalesService.Api.Entities.Dto;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Contracts
 {
@@ -11,9 +13,10 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<SalesOrder>> GetAllActiveSalesOrder();
         Task<long> CreateSalesOrder(SalesOrder salesOrder);
         Task<string> UpdateSalesOrder(SalesOrder salesOrder);
-        
 
+        Task<IEnumerable<ListofSalesOrderDetails>> GetSalesOrderDetailsByCustomerId(int Customerid);
         Task<string> DeleteSalesOrder(SalesOrder salesOrder);
+
         //Task<string> UpdateSOBasedOnCreatingDO();
 
         //Task<string> UpdateSOBasedOnCreatingShopOrder();

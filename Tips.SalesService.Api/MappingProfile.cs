@@ -248,10 +248,16 @@ namespace Tips.SalesService.Api
 
             CreateMap<RfqLPCostingProcess, ItemMasterRoutingListDto>().ReverseMap();
 
-            CreateMap<SalesOrder, ListOfProjectNoDto>().ReverseMap();
+            CreateMap<SalesOrderItems, ListOfProjectNoDto>().ReverseMap();
 
+            CreateMap<SalesOrder, ListofSalesOrderDetails>().ReverseMap();
+
+            CreateMap<SalesOrderItems, GetSalesOrderDetailsDto>().ReverseMap();
 
             
+
+
+
         }
     }
 }
