@@ -125,14 +125,14 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
-        public async Task<IEnumerable<ListOfProjectNoDto>> getSOBySalesOrderIdNoandItemNo(string itemNo, string SalesOrderId)
-         {
-            var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventory.Where(x => x.GrinNo == GrinNo && x.PartNumber == ItemNumber && x.ProjectNumber == ProjectNumber)
+        //public async Task<IEnumerable<ListOfProjectNoDto>> getSOBySalesOrderIdNoandItemNo(string itemNo, string SalesOrderId)
+        // {
+        //    var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventory.Where(x => x.GrinNo == GrinNo && x.PartNumber == ItemNumber && x.ProjectNumber == ProjectNumber)
 
-                          .FirstOrDefaultAsync();
+        //                  .FirstOrDefaultAsync();
 
-            return getInventoryDetailsById;
-        }
+        //    return getInventoryDetailsById;
+        //}
 
         public async Task<IEnumerable<GetSalesOrderDetailsDto>> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo)
         {
