@@ -21,7 +21,7 @@ namespace Tips.SalesService.Api.Entities
 
         //PO Details
         public string? PONumber { get; set; }
-        public DateTime PODate { get; set; }
+        public DateTime? PODate { get; set; }
         public DateTime ReceivedDate { get; set; }
 
         //Billing&Shipping
