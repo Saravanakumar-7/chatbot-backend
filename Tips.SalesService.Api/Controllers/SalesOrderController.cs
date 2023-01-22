@@ -442,44 +442,44 @@ namespace Tips.SalesService.Api.Controllers
         //getsalesorderdetailbyitemnoandsalesorderId
 
 
-        [HttpGet]
-        public async Task<IActionResult> getSalesOrderDetailBySalesOrderIdNoandItemNo(string ItemNo, string SalesOrderId)
-        {
-            ServiceResponse<GetSalesOrderGSTListDto> serviceResponse = new ServiceResponse<GetSalesOrderGSTListDto>();
+        //[HttpGet]
+        //public async Task<IActionResult> getSalesOrderDetailBySalesOrderIdNoandItemNo(string ItemNo, string SalesOrderId)
+        //{
+        //    ServiceResponse<GetSalesOrderGSTListDto> serviceResponse = new ServiceResponse<GetSalesOrderGSTListDto>();
 
-            try
-            {
-                var getSalesDetail = await _salesOrderItemsRepository.getSOBySalesOrderIdNoandItemNo(ItemNo, SalesOrderId);
-                if (getSalesDetail == null)
-                {
-                    _logger.LogError($"SalesOrderDetail with id: {ItemNo}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"SalesOrderDetail with id: {ItemNo}, hasn't been found in db.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
-                }
-                else
-                {
-                    _logger.LogInfo($"Returned SalesOrderDetail with id: {ItemNo}");
-                    var result = _mapper.Map<GetSalesOrderDetailsDto>(getSalesDetail);
-                    serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
-            }
-        }
+        //    try
+        //    {
+        //        var getSalesDetail = await _salesOrderItemsRepository.getSOBySalesOrderIdNoandItemNo(ItemNo, SalesOrderId);
+        //        if (getSalesDetail == null)
+        //        {
+        //            _logger.LogError($"SalesOrderDetail with id: {ItemNo}, hasn't been found in db.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"SalesOrderDetail with id: {ItemNo}, hasn't been found in db.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            _logger.LogInfo($"Returned SalesOrderDetail with id: {ItemNo}");
+        //            var result = _mapper.Map<GetSalesOrderDetailsDto>(getSalesDetail);
+        //            serviceResponse.Data = result;
+        //            serviceResponse.Message = "Success";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(result);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Inter server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, "Internal server error");
+        //    }
+        //}
 
 
         //public Task<IActionResult> UpdateSOBasedOnCreatingDO()
