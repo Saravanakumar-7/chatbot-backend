@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -55,7 +56,22 @@ namespace Tips.Warehouse.Api.Repository
             return getAllBTODetails;
         }
 
-        
+        public async Task<IEnumerable<ListofBtoDeliveryOrderDetails>> GetDeliveryOrderdetailsByProjectNo(string ProjectNo)
+        {
+
+            IEnumerable<ListofBtoDeliveryOrderDetails> getBtoDeliveryOrderList = await _tipsWarehouseDbContext.bTODeliveryOrder
+                                .Where(b => b.ProjectNumber == ProjectNo)
+                                .Select(x => new ListofBtoDeliveryOrderDetails()
+                                {
+                                    BtoDeliveryOrderId = x.Id,
+                                    BTONumber = x.BTONumber,
+                                   
+
+                                })
+                              .ToListAsync();
+
+            return getBtoDeliveryOrderList;
+        }
 
         public async Task<BTODeliveryOrder> GetBTODeliveryOrderById(int id)
         {

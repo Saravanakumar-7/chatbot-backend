@@ -326,7 +326,44 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetDeliveryOrderdetailsByProjectNo(string ProjectNo)
+        {
+            ServiceResponse<IEnumerable<ListofBtoDeliveryOrderDetails>> serviceResponse = new ServiceResponse<IEnumerable<ListofBtoDeliveryOrderDetails>>();
 
+            try
+            {
+                var getDeliveryOrderdetailsByProjectNo = await _repository.GetDeliveryOrderdetailsByProjectNo(ProjectNo);
+                if (getDeliveryOrderdetailsByProjectNo == null)
+                {
+                    _logger.LogError($"DeliveryOrderDetail with id: {ProjectNo}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DeliveryOrderDetail with id: {ProjectNo}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned DeliveryOrderDetail with id: {ProjectNo}");
+                    var result = _mapper.Map<IEnumerable<ListofBtoDeliveryOrderDetails>>(getDeliveryOrderdetailsByProjectNo);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 
 }
