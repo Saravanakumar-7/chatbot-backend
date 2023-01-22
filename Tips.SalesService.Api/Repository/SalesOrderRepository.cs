@@ -107,9 +107,10 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<ListOfProjectNoDto>> GetprojectNoByItemNo(string itemNo)
         {
+            OrderStatus[] status = { OrderStatus.Open, OrderStatus.PartiallyClosed };
 
             IEnumerable<ListOfProjectNoDto> getProjectNumberList = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                                 .Where(b => b.ItemNo == itemNo /*&& b.StatusEnum != true*/)
+                                 .Where(b => b.ItemNo == itemNo && status.Contains(b.StatusEnum))
                                  .Select(x => new ListOfProjectNoDto()
                                  {
                                      Id = x.Id,
