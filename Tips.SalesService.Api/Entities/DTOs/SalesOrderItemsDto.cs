@@ -19,6 +19,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal SGST { get; set; }
         public decimal CGST { get; set; }
         public decimal UTGST { get; set; }
+        public decimal IGST { get; set; }
         public DateTime RequestedDate { get; set; }
         public string Remarks { get; set; }
        
@@ -38,6 +39,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal SGST { get; set; }
         public decimal CGST { get; set; }
         public decimal UTGST { get; set; }
+        public decimal IGST { get; set; }
         public DateTime RequestedDate { get; set; }
         public string Remarks { get; set; }
        
@@ -54,6 +56,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal SGST { get; set; }
         public decimal CGST { get; set; }
         public decimal UTGST { get; set; }
+        public decimal IGST { get; set; }
         public DateTime RequestedDate { get; set; }
         public string Remarks { get; set; }
         
@@ -69,5 +72,16 @@ namespace Tips.SalesService.Api.Entities.Dto
         public int Id { get; set; }
         public string SalesOrderNumber { get; set; }
         public decimal OrderQty { get; set; }
+    }
+
+    public class GetSalesOrderGSTListDto
+    {
+        public int SalesOrderId { get; set; }
+        public string? ItemNo { get; set; }
+        public string SalesOrderNumber { get; set; }
+        public decimal SGST { get; set; }
+        public decimal CGST { get; set; }
+        public decimal UTGST { get; set; }
+        public decimal IGST { get; set; }
     }
 }

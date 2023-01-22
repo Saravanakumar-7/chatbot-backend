@@ -21,6 +21,7 @@ namespace Tips.SalesService.Api.Entities
         public decimal SGST { get; set; }
         public decimal CGST { get; set; }
         public decimal UTGST { get; set; }
+        public decimal IGST { get; set; }
         public DateTime RequestedDate { get; set; }
         public string Remarks { get; set; }       
         public int SalesOrderId { get; set; }
