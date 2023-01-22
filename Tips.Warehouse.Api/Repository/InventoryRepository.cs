@@ -3,6 +3,7 @@ using Entities.Helper;
 using Microsoft.EntityFrameworkCore;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -46,7 +47,24 @@ namespace Tips.Warehouse.Api.Repository
             return getInventoryDetailsById;
         }
 
+        public async Task<IEnumerable<GetInventoryListByItemNo>> GetInventoryListByItemNo( string ItemNumber)
+        {
 
+            IEnumerable<GetInventoryListByItemNo> getInventoryListByItemNo = await _tipsWarehouseDbContext.Inventory
+                .Where(x =>x.PartNumber == ItemNumber && x.IsStockAvailable == true)
+                                .Select(x => new GetInventoryListByItemNo()
+                                {
+                                    InventoryId = x.Id,
+                                    ItemNumber = x.PartNumber,
+                                    Balance_Quantity = x.Balance_Quantity
+
+                                })
+                                .OrderBy(on => on.InventoryId)
+                              
+                              .ToListAsync();
+
+            return getInventoryListByItemNo;
+        }
         public async Task<Inventory> GetInventoryById(int id)
         {
             var getInventoryById = await _tipsWarehouseDbContext.Inventory.Where(x => x.Id == id)

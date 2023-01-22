@@ -18,12 +18,14 @@ namespace Tips.Warehouse.Api.Controllers
         private IBTODeliveryOrderRepository _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
+        private IInventoryRepository _inventoryRepository;
 
-        public BTODeliveryOrderController(IBTODeliveryOrderRepository repository, ILoggerManager logger, IMapper mapper)
+        public BTODeliveryOrderController(IBTODeliveryOrderRepository repository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _inventoryRepository = inventoryRepository;
         }
 
 
@@ -362,6 +364,44 @@ namespace Tips.Warehouse.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong BtoDeliveryOrder Details: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetInventoryListByItemNo(string ItemNumber)
+        {
+            ServiceResponse<IEnumerable<GetInventoryListByItemNo>> serviceResponse = new ServiceResponse<IEnumerable<GetInventoryListByItemNo>>();
+
+            try
+            {
+                var getInventoryListByItemNo = await _inventoryRepository.GetInventoryListByItemNo(ItemNumber);
+                if (getInventoryListByItemNo == null)
+                {
+                    _logger.LogError($"InventoryDetails with id: {ItemNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventoryDetails with id: {ItemNumber}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned InventoryDetails with id: {ItemNumber}");
+                    var result = _mapper.Map<IEnumerable<GetInventoryListByItemNo>>(getInventoryListByItemNo);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
