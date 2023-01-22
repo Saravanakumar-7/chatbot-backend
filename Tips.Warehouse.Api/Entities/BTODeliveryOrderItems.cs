@@ -20,7 +20,9 @@ namespace Tips.Warehouse.Api.Entities
         public decimal Discount { get; set; }
         public decimal NetValue { get; set; }
         public decimal DispatchQty { get; set; }
+        public decimal InvoicedQty { get; set; }       
         public string SerialNo { get; set; }
+        //public int MyProperty { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
