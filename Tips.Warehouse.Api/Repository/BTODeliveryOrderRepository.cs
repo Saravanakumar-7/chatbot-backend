@@ -56,19 +56,18 @@ namespace Tips.Warehouse.Api.Repository
             return getAllBTODetails;
         }
 
-        public async Task<IEnumerable<ListofBtoDeliveryOrderDetails>> GetDeliveryOrderdetailsByProjectNo(string ProjectNo)
+        public async Task<IEnumerable<ListofBtoDeliveryOrderDetails>> GetBtoDeliveryOrderNumberList()
         {
 
-            IEnumerable<ListofBtoDeliveryOrderDetails> getBtoDeliveryOrderList = await _tipsWarehouseDbContext.bTODeliveryOrder
-                                .Where(b => b.ProjectNumber == ProjectNo)
+            IEnumerable<ListofBtoDeliveryOrderDetails> getBtoDeliveryOrderList = await _tipsWarehouseDbContext.bTODeliveryOrder                                
                                 .Select(x => new ListofBtoDeliveryOrderDetails()
                                 {
                                     BtoDeliveryOrderId = x.Id,
-                                    BTONumber = x.BTONumber,
-                                   
+                                    BTONumber = x.BTONumber,                                 
 
                                 })
-                              .ToListAsync();
+                                .OrderBy(on => on.BtoDeliveryOrderId)
+                              .ToListAsync();             
 
             return getBtoDeliveryOrderList;
         }

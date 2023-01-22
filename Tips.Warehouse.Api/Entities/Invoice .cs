@@ -10,6 +10,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CompanyName { get; set; }
+        public string? DOType { get; set; }
         public string? Remarks { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }

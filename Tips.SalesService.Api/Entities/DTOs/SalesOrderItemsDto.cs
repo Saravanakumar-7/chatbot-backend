@@ -7,7 +7,7 @@ namespace Tips.SalesService.Api.Entities.Dto
     public class SalesOrderItemsDto
     {
         public int Id { get; set; }
-        public string? SAItemNo { get; set; }
+        public string? ItemNo { get; set; }
         public string? Description { get; set; }
         public decimal UOM { get; set; }
         public decimal? BalanceQty { get; set; }
@@ -29,7 +29,7 @@ namespace Tips.SalesService.Api.Entities.Dto
 
     public class SalesOrderItemsDtoPost
     {
-        public string? SAItemNo { get; set; }
+        public string? ItemNo { get; set; }
         public string? Description { get; set; }
         public decimal UOM { get; set; }
         public decimal Currency { get; set; }
@@ -48,7 +48,7 @@ namespace Tips.SalesService.Api.Entities.Dto
     public class SalesOrderItemsDtoUpdate
     {
      
-        public string? SAItemNo { get; set; }
+        public string? ItemNo { get; set; }
         public string? Description { get; set; }
         public decimal UOM { get; set; }
         public decimal? BalanceQty { get; set; }
