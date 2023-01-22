@@ -11,7 +11,7 @@ namespace Tips.Warehouse.Api.Entities
         public int SalesOrderId { get; set; }
         public string Description { get; set; } 
         public decimal UnitPrice { get; set; }
-        public decimal UOC { get; set; }
+        public string UOC { get; set; }
         public decimal UOM { get; set; }
         public decimal FGOrderQty { get; set; }
         public decimal OrderBalanceQty { get; set; }
@@ -20,7 +20,7 @@ namespace Tips.Warehouse.Api.Entities
         public decimal NetValue { get; set; }
         public decimal DispatchQty { get; set; }
         public decimal InvoicedQty { get; set; }       
-        public string SerialNo { get; set; }
+        public string? SerialNo { get; set; }
         //public int MyProperty { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
