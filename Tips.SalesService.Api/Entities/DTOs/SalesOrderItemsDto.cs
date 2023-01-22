@@ -12,10 +12,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal UOM { get; set; }
         public decimal? BalanceQty { get; set; }
         public decimal? DispatchQty { get; set; }
-        public decimal? ShopOrderQty { get; set; }
-        public decimal? BalanceQunatity { get; set; }
-        public decimal? DispachedQunatity { get; set; }
-        public decimal? ShopOrderQunatity { get; set; }
+        public decimal? ShopOrderQty { get; set; } 
         public decimal Currency { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal OrderQty { get; set; }
@@ -35,9 +32,9 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal Currency { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal OrderQty { get; set; }
-        public decimal? BalanceQunatity { get; set; }
-        public decimal? DispachedQunatity { get; set; }
-        public decimal? ShopOrderQunatity { get; set; }
+        public decimal? BalanceQty { get; set; }
+        public decimal? DispatchQty { get; set; }
+        public decimal? ShopOrderQty { get; set; }
         public decimal SGST { get; set; }
         public decimal CGST { get; set; }
         public decimal UTGST { get; set; }
@@ -50,10 +47,7 @@ namespace Tips.SalesService.Api.Entities.Dto
      
         public string? ItemNo { get; set; }
         public string? Description { get; set; }
-        public decimal UOM { get; set; }
-        public decimal? BalanceQty { get; set; }
-        public decimal? DispatchQty { get; set; }
-        public decimal? ShopOrderQty { get; set; }
+        public decimal UOM { get; set; } 
         public decimal Currency { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal OrderQty { get; set; }

@@ -109,7 +109,7 @@ namespace Tips.SalesService.Api.Repository
         {
 
             IEnumerable<ListOfProjectNoDto> getProjectNumberList = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                                 .Where(b => b.ItemNo == itemNo && b.SOPartStatus != true)
+                                 .Where(b => b.ItemNo == itemNo /*&& b.StatusEnum != true*/)
                                  .Select(x => new ListOfProjectNoDto()
                                  {
                                      Id = x.Id,
