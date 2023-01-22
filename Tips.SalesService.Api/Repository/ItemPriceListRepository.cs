@@ -55,9 +55,9 @@ namespace Tips.SalesService.Api.Repository
 
             return getItemPriceListByItemNo;
         }
-        public async Task<ItemPriceList> GetItemPriceListByItemNoAndPriceListName(string itemNo, string priceListName)
+        public async Task<IEnumerable<ItemPriceList>> GetItemPriceListByItemNoAndPriceListName(string itemNo, string priceListName)
         {
-            var getItemPriceListByItemNo = await FindByCondition(x => x.ItemNo == itemNo && x.PriceListName == priceListName).FirstOrDefaultAsync();
+            var getItemPriceListByItemNo = await FindByCondition(x => x.ItemNo == itemNo && x.PriceListName == priceListName).ToListAsync();
 
             return getItemPriceListByItemNo;
         }

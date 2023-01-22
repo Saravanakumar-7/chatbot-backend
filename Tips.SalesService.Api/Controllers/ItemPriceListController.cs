@@ -198,7 +198,7 @@ namespace Tips.SalesService.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetItemPriceListByItemNoAndPriceListName(string ItemNo, string priceListName)
         {
-            ServiceResponse<ItemPriceListDto> serviceResponse = new ServiceResponse<ItemPriceListDto>();
+            ServiceResponse<IEnumerable<ItemPriceListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemPriceListDto>>();
 
             try
             {
@@ -215,7 +215,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned ItemPriceListdetail with id: {ItemNo}");
-                    var result = _mapper.Map<ItemPriceListDto>(getItemPriceListByItemNoAndPriceListName);
+                    var result = _mapper.Map<IEnumerable<ItemPriceListDto>>(getItemPriceListByItemNoAndPriceListName);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Success";
                     serviceResponse.Success = true;

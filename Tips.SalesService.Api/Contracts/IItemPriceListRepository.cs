@@ -10,7 +10,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<PagedList<ItemPriceList>> GetAllItemPriceList(PagingParameter pagingParameter);
         Task<ItemPriceList> GetItemPriceListById(int id);
         Task<IEnumerable<ItemPriceList>> GetItemPriceListByItemNo(string itemNo);
-        Task<ItemPriceList> GetItemPriceListByItemNoAndPriceListName(string itemNo,string priceListName);
+        Task<IEnumerable<ItemPriceList>> GetItemPriceListByItemNoAndPriceListName(string itemNo,string priceListName);
 
         
         Task<long> CreateItemPriceList(ItemPriceList itemPriceList);
