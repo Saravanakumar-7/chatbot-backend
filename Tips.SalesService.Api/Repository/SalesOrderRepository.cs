@@ -109,7 +109,7 @@ namespace Tips.SalesService.Api.Repository
         {
 
             IEnumerable<ListOfProjectNoDto> getProjectNumberList = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                                 .Where(b => b.SAItemNo == itemNo && b.SOPartStatus != true)
+                                 .Where(b => b.ItemNo == itemNo && b.SOPartStatus != true)
                                  .Select(x => new ListOfProjectNoDto()
                                  {
                                      Id = x.Id,
@@ -127,7 +127,7 @@ namespace Tips.SalesService.Api.Repository
         {
 
             IEnumerable<GetSalesOrderDetailsDto> getSalesorderList = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                                .Where(b => b.SAItemNo == ItemNo && b.ProjectNumber == ProjectNo)
+                                .Where(b => b.ItemNo == ItemNo && b.ProjectNumber == ProjectNo)
                                 .Select(x => new GetSalesOrderDetailsDto()
                                 {
                                     Id = x.Id,

@@ -182,6 +182,8 @@ namespace Tips.Warehouse.Api.Controllers
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
 
+                
+
                 var newcount = await _repository.GetBTONumberAutoIncrementCount(date);
 
                 if (newcount > 0)
@@ -326,27 +328,30 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+
         [HttpGet]
-        public async Task<IActionResult> GetDeliveryOrderdetailsByProjectNo(string ProjectNo)
+        public async Task<IActionResult> GetBtoDeliveryOrderNumberList()
         {
             ServiceResponse<IEnumerable<ListofBtoDeliveryOrderDetails>> serviceResponse = new ServiceResponse<IEnumerable<ListofBtoDeliveryOrderDetails>>();
 
             try
             {
-                var getDeliveryOrderdetailsByProjectNo = await _repository.GetDeliveryOrderdetailsByProjectNo(ProjectNo);
-                if (getDeliveryOrderdetailsByProjectNo == null)
+                var getBtoDeliveryOrderNumberList = await _repository.GetBtoDeliveryOrderNumberList();
+                if (getBtoDeliveryOrderNumberList == null)
                 {
-                    _logger.LogError($"DeliveryOrderDetail with id: {ProjectNo}, hasn't been found in db.");
+                    _logger.LogError("BtoDeliveryOrderDetail Not Found");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"DeliveryOrderDetail with id: {ProjectNo}, hasn't been found in db.";
+                    serviceResponse.Message = "BtoDeliveryOrderDetail Not Found";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned DeliveryOrderDetail with id: {ProjectNo}");
-                    var result = _mapper.Map<IEnumerable<ListofBtoDeliveryOrderDetails>>(getDeliveryOrderdetailsByProjectNo);
+                    _logger.LogInfo("Return BtoDeliveryOrderDetail");
+                    var result = _mapper.Map<IEnumerable<ListofBtoDeliveryOrderDetails>>(getBtoDeliveryOrderNumberList);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Success";
                     serviceResponse.Success = true;
@@ -356,7 +361,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
+                _logger.LogError($"Something went wrong BtoDeliveryOrder Details: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;

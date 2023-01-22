@@ -6,7 +6,7 @@ namespace Tips.SalesService.Api.Entities
     {
         [Key]
         public int Id { get; set; } 
-        public string? SAItemNo { get; set; }
+        public string? ItemNo { get; set; }
         public string? Description { get; set; }
         public string? SalesOrderNumber { get; set; }
 
