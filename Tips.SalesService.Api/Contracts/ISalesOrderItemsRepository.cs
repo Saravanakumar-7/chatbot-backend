@@ -12,6 +12,8 @@ namespace Tips.SalesService.Api.Contracts
         //Task<SalesOrderItems> GetSalesOrderItemsById(int id);
         Task<IEnumerable<GetSalesOrderDetailsDto>> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo);
 
+        //Task<IEnumerable<SalesOrderItems>> GetSalesOrderDetailsByIdandItemNo(string ItemNumber, int SalesOrderId);
+
         Task<IEnumerable<ListOfProjectNoDto>> GetprojectNoByItemNo(string itemNo);
         //Task<IEnumerable<SalesOrderItems>> GetAllActiveSalesOrderItems();
         //Task<long> CreateSalesOrderItems(SalesOrderItems salesOrderItems);

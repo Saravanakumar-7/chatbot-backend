@@ -18,9 +18,9 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<long> CreateSalesOrder(SalesOrder salesOrder)
         {
-
+            var date = DateTime.Now;
             salesOrder.CreatedBy = "Admin";
-            salesOrder.CreatedOn = DateTime.Now;
+            salesOrder.CreatedOn = date.Date;
             salesOrder.Unit = "Banglore";
             var result = await Create(salesOrder);
             return result.Id;
@@ -58,8 +58,7 @@ namespace Tips.SalesService.Api.Repository
                                  .FirstOrDefaultAsync();
 
             return getSalesOrderbyId;
-        }
-                
+        } 
 
         public async Task<IEnumerable<ListofSalesOrderDetails>> GetSalesOrderDetailsByCustomerId(int Customerid)
         {
@@ -75,6 +74,12 @@ namespace Tips.SalesService.Api.Repository
                               .ToListAsync();
 
             return getSalesorderList;
+        }
+        public async Task<int?> GetSONumberAutoIncrementCount(DateTime date)
+        {
+            var getSOOrderDetailsCount = _tipsSalesServiceDbContext.SalesOrders.Where(x => x.CreatedOn == date.Date).Count();
+
+            return getSOOrderDetailsCount;
         }
         public async Task<string> UpdateSalesOrder(SalesOrder salesOrder)
         {
@@ -125,14 +130,15 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
-        //public async Task<IEnumerable<ListOfProjectNoDto>> getSOBySalesOrderIdNoandItemNo(string itemNo, string SalesOrderId)
-        // {
-        //    var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventory.Where(x => x.GrinNo == GrinNo && x.PartNumber == ItemNumber && x.ProjectNumber == ProjectNumber)
+        //public async Task<IEnumerable<SalesOrderItems>> GetSalesOrderDetailsByIdandItemNo(string ItemNumber, int SalesOrderId)
+        //{
+        //    var getSalesOrderDetailsBySOandItemNo = await _tipsSalesServiceDbContexts.SalesOrdersItems
+        //         .Where(x => x.ItemNo == ItemNumber && x.SalesOrderId == SalesOrderId)
+        //                  .ToListAsync();
 
-        //                  .FirstOrDefaultAsync();
-
-        //    return getInventoryDetailsById;
+        //    return getSalesOrderDetailsBySOandItemNo;
         //}
+         
 
         public async Task<IEnumerable<GetSalesOrderDetailsDto>> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo)
         {
@@ -148,7 +154,7 @@ namespace Tips.SalesService.Api.Repository
                               .ToListAsync();
 
             return getSalesorderList;
+        } 
+
         }
-         
-    }
 }

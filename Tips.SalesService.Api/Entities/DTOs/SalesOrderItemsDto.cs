@@ -9,6 +9,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public int Id { get; set; }
         public string? ItemNo { get; set; }
         public string? Description { get; set; }
+        public string? SalesOrderNO { get; set; }
         public decimal UOM { get; set; }
         public decimal? BalanceQty { get; set; }
         public decimal? DispatchQty { get; set; }
@@ -28,7 +29,7 @@ namespace Tips.SalesService.Api.Entities.Dto
     public class SalesOrderItemsDtoPost
     {
         public string? ItemNo { get; set; }
-        public string? Description { get; set; }
+        public string? Description { get; set; } 
         public decimal UOM { get; set; }
         public decimal Currency { get; set; }
         public decimal UnitPrice { get; set; }

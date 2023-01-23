@@ -143,17 +143,46 @@ namespace Tips.SalesService.Api.Controllers
                 var createSalesOrder = _mapper.Map<SalesOrder>(salesOrderDtoPost);
                 var salesOrderItemsDto = salesOrderDtoPost.SalesOrderItems;
                 var salesOrderItemsList = new List<SalesOrderItems>();
+
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
+
+
+
+                var newcount = await _repository.GetSONumberAutoIncrementCount(date);
+
+                if (newcount > 0)
+                {
+                    var number = newcount + 1;
+                    string e = String.Format("{0:D4}", number);
+                    createSalesOrder.SalesOrderNumber = days + months + years + "SO" + (e);
+                }
+                else
+                {
+                    var count = 1;
+                    var e = count.ToString("D4");
+                    createSalesOrder.SalesOrderNumber = days + months + years + "SO" + (e);
+                }
+
                 if (salesOrderItemsDto != null) 
                 {
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
                     {
                         SalesOrderItems salesOrderItems = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
+                        salesOrderItems.SalesOrderNumber = createSalesOrder.SalesOrderNumber;
+                        //salesOrderItemsDto[i].sa = createSalesOrder.SalesOrderNumber;
                         salesOrderItemsList.Add(salesOrderItems);
                     }
                 }
+                
                 createSalesOrder.SalesOrdersItems = salesOrderItemsList;
+                
+
                 await _repository.CreateSalesOrder(createSalesOrder);
-                _repository.SaveAsync();
+                _repository.SaveAsync(); 
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = " SalesOrder Successfully Created";
                 serviceResponse.Success = true;
@@ -439,6 +468,53 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        //pass data from btodeliveryorder using _httpclient warehoouse service to salesservice
+
+        //[HttpGet]
+        //public async Task<IActionResult> GetBtoDeliveryOrderDetailsBySOandItemNo(string ItemNumber, int SalesOrderId)
+
+        //{
+        //    ServiceResponse<SalesOrderDto> serviceResponse = new ServiceResponse<SalesOrderDto>();
+
+        //    try
+        //    {
+        //        var getBtoDeliveryOrderDetailsBySOandItemNo = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(ItemNumber, SalesOrderId);
+        //        if (getBtoDeliveryOrderDetailsBySOandItemNo == null)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"SalesOrderDetails with id: {SalesOrderId}, hasn't been found in db.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            _logger.LogError($"SalesOrderDetails with id: {SalesOrderId}, hasn't been found in db.");
+        //            return NotFound(serviceResponse);
+        //        }
+        //        else
+        //        {
+        //            _logger.LogInfo($"Returned SalesOrderDetails with id: {SalesOrderId}");
+        //            var result = _mapper.Map<SalesOrderDto>(getBtoDeliveryOrderDetailsBySOandItemNo);
+        //            serviceResponse.Data = result;
+        //            serviceResponse.Message = "Returned SalesOrderDetails with id Successfully";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(serviceResponse);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside SalesOrderDetails action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Something went wrong. Please try again!";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
+
+
+
+
         //getsalesorderdetailbyitemnoandsalesorderId
 
 

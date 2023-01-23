@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using System.Net.Http;
+using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
@@ -19,13 +21,20 @@ namespace Tips.Warehouse.Api.Controllers
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IInventoryRepository _inventoryRepository;
+        //private readonly HttpClient _httpClient;
+        //private readonly IConfiguration _config;
 
-        public BTODeliveryOrderController(IBTODeliveryOrderRepository repository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
+
+
+        public BTODeliveryOrderController(IBTODeliveryOrderRepository repository, /*HttpClient httpClient, IConfiguration config,*/ IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            //_httpClient = httpClient;
             _inventoryRepository = inventoryRepository;
+            //_config = config;
+
         }
 
 
@@ -202,7 +211,29 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 await _repository.CreateBTODeliveryOrder(bTODeliveryOrder);
                 _repository.SaveAsync();
-                serviceResponse.Data = null;
+
+                //update balance qty and dispatch qty in salesorder table
+
+
+                //if (bTODeliveryOrderitemsDto != null)
+                //{
+                //    for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
+                //    {
+                //        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["SalesOrderAPI"], "GetBtoDeliveryOrderDetailsBySOandItemNo?", "ItemNumber=", bTODeliveryOrderitemsDto[i].FGItemNumber, "&SalesOrderId=", bTODeliveryOrderitemsDto[i].SalesOrderId));
+                //        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                //        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                //        dynamic inventoryObject = inventoryObjectData.data;
+                //        inventoryObject.BalanceQty = inventoryObject.BalanceQty - bTODeliveryOrderitemsDto[i].DispatchQty;
+                //        inventoryObject.DispatchQty = inventoryObject.DispatchQty + bTODeliveryOrderitemsDto[i].DispatchQty;
+                //        var json = JsonConvert.SerializeObject(inventoryObject);
+                //        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                //        var response = await _httpClient.PutAsync(string.Concat(_config["SalesOrderAPI"], "UpdateSalesOrder/", inventoryObject.id), data);
+
+                //    }
+                //}
+
+
+                        serviceResponse.Data = null;
                 serviceResponse.Message = " BTODeliveryOrder Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
