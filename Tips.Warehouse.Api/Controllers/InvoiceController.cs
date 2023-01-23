@@ -108,7 +108,7 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpPost]
         public async Task< IActionResult> CreateInvoice([FromBody] InvoicePostDto invoicePostDto)
         {
-            ServiceResponse<InvoiceDto> serviceResponse = new ServiceResponse<InvoiceDto>();
+            ServiceResponse<InvoicePostDto> serviceResponse = new ServiceResponse<InvoicePostDto>();
 
             try
             {
@@ -130,12 +130,48 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var invoiceChild = _mapper.Map<IEnumerable<InvoiceChildItem>>(invoicePostDto.InvoiceChildItems);
-                var invoiceEntity = _mapper.Map<Invoice>(invoicePostDto);
-                invoiceEntity.InvoiceChildItems = invoiceChild.ToList();
+                //var invoiceChild = _mapper.Map<IEnumerable<InvoiceChildItem>>(invoicePostDto.InvoiceChildItems);
+                //var invoice = _mapper.Map<Invoice>(invoicePostDto);
+                //invoice.InvoiceChildItems = invoiceChild.ToList();
+
+                var invoice = _mapper.Map<Invoice>(invoicePostDto);
+                var invoiceitemsDto = invoicePostDto.InvoiceChildItems;
+
+                var invoiceChildItemsDtoList = new List<InvoiceChildItem>();
+
+                if (invoiceitemsDto != null)
+                {
+                    for (int i = 0; i < invoiceitemsDto.Count; i++)
+                    {
+                        InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
+                        invoiceChildItemsDtoList.Add(invoiceChildItem);
+                    }
+                }
+
+                invoice.InvoiceChildItems = invoiceChildItemsDtoList;
+
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
 
 
-                await _invoiceRepository.CreateInvoice(invoiceEntity);
+
+                var newcount = await _invoiceRepository.GetInvoiceNumberAutoIncrementCount(date);
+
+                if (newcount > 0)
+                {
+                    var number = newcount + 1;
+                    string e = String.Format("{0:D4}", number);
+                    invoice.InvoiceNumber = days + months + years + "IN" + (e);
+                }
+                else
+                {
+                    var count = 1;
+                    var e = count.ToString("D4");
+                    invoice.InvoiceNumber = days + months + years + "IN" + (e);
+                }
+                await _invoiceRepository.CreateInvoice(invoice);
                 _invoiceRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Invoice Successfully Created";

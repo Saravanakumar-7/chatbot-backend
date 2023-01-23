@@ -23,6 +23,7 @@
         public string ProjectNumber { get; set; }
         public string CustomerName { get; set; }
         public string CustomerId { get; set; }
+        public string SalesOrdetrId { get; set; }
         public string DeliveryOrderNumber { get; set; }
         public string PONumber { get; set; }
         public DateTime DODate { get; set; }

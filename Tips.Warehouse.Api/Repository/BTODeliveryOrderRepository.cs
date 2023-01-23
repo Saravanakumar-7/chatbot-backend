@@ -29,9 +29,9 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<int?> GetBTONumberAutoIncrementCount(DateTime date)
         {
-            var getBTODeliveryOrderDetailsByIds = _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.CreatedOn == date.Date).Count();
+            var getBTONumberAutoIncrementCount = _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.CreatedOn == date.Date).Count();
 
-            return getBTODeliveryOrderDetailsByIds;
+            return getBTONumberAutoIncrementCount;
         }
         public async Task<string> DeleteBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder)
         {
