@@ -22,14 +22,20 @@ namespace Tips.Warehouse.Api.Repository
 
     public async Task<long?> CreateInvoice(Invoice invoice)
         {
-        
+            var date = DateTime.Now;
         invoice.CreatedBy = "Admin";
-        invoice.CreatedOn = DateTime.Now;
-        Guid invoiceNumber = Guid.NewGuid();
-        invoice.InvoiceNo = " IN-" + invoiceNumber.ToString();
+        invoice.CreatedOn = date.Date;
+        //Guid invoiceNumber = Guid.NewGuid();
+        //invoice.InvoiceNo = " IN-" + invoiceNumber.ToString();
         invoice.Unit = "Bangalore";
         var result = await Create(invoice);
         return result.Id;
+        }
+        public async Task<int?> GetInvoiceNumberAutoIncrementCount(DateTime date)
+        {
+            var getInvoiceNumberAutoIncrementCount = _tipsWarehouseDbContext.invoices.Where(x => x.CreatedOn == date.Date).Count();
+
+            return getInvoiceNumberAutoIncrementCount;
         }
 
         public async Task<PagedList<Invoice>> GetAllInvoices(PagingParameter pagingParameter)

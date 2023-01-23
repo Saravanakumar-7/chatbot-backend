@@ -163,7 +163,27 @@ namespace Tips.Warehouse.Api.Controllers
                 }
 
                 deliveryOrder.DeliveryOrderItems = deliveryOrderItemsDtoList;
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
 
+
+
+                var newcount = await _repository.GetDONumberAutoIncrementCount(date);
+
+                if (newcount > 0)
+                {
+                    var number = newcount + 1;
+                    string e = String.Format("{0:D4}", number);
+                    deliveryOrder.DeliveryOrderNumber = days + months + years + "DO" + (e);
+                }
+                else
+                {
+                    var count = 1;
+                    var e = count.ToString("D4");
+                    deliveryOrder.DeliveryOrderNumber = days + months + years + "DO" + (e);
+                }
                 await _repository.CreateDeliveryOrder(deliveryOrder);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;

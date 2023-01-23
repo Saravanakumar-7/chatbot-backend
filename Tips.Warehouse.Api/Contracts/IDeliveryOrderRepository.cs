@@ -8,7 +8,7 @@ namespace Tips.Warehouse.Api.Contracts
     {
         Task<PagedList<DeliveryOrder>> GetAllDeliveryOrders(PagingParameter pagingParameter);
         Task<DeliveryOrder> GetDeliveryOrderById(int id);
-        
+        Task<int?> GetDONumberAutoIncrementCount(DateTime date);
         Task<IEnumerable<DeliveryOrder>> GetAllActiveDeliveryOrders();
         Task<long> CreateDeliveryOrder(DeliveryOrder deliveryOrder);
         Task<string> UpdateDeliveryOrder(DeliveryOrder deliveryOrder);
