@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Entities.DTOs
 {
@@ -49,6 +50,18 @@ namespace Entities.DTOs
         public string? LaborHours { get; set; }
         [DefaultValue(false)]
         public bool IsRoutingActive { get; set; }
+
+    }
+    public class ItemMasterRoutingListDto
+    {
+        public int Id { get; set; }
+         public string? ProcessSteps { get; set; }     
+        public string? MachineHrs { get; set; }
+        public string? LabourHrs { get; set; }
+        public string? ItemNumber { get; set; }
+        public decimal? MachineHrsCost { get; set; }
+        public decimal? LabourHrsCost { get; set; }
+
 
     }
 

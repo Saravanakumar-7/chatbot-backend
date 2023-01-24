@@ -140,6 +140,25 @@ namespace Tips.Warehouse.Api.Controllers
                 var openDeliveryorder = _mapper.Map<OpenDeliveryOrder>(openDeliveryOrderDtoPost);
 
                 openDeliveryorder.OpenDeliveryOrderParts = openDeliveryOrderparts.ToList();
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
+ 
+                var newcount = await _repository.GetODONumberAutoIncrementCount(date);
+
+                if (newcount > 0)
+                {
+                    var number = newcount + 1; 
+                    string e = String.Format("{0:D4}", number);                    
+                    openDeliveryorder.OpenDONumber = days + months + years + "ODO" + (e);
+                }
+                else
+                {
+                    var count = 1;
+                    var e = count.ToString("D4");
+                    openDeliveryorder.OpenDONumber = days + months + years + "ODO" + (e);
+                }
 
                 await _repository.CreateOpenDeliveryOrder(openDeliveryorder);
 

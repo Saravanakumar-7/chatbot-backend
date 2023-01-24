@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -17,15 +18,21 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<long> CreateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder)
         {
+            var date = DateTime.Now;
             bTODeliveryOrder.CreatedBy = "Admin";
-            bTODeliveryOrder.CreatedOn = DateTime.Now;
+            bTODeliveryOrder.CreatedOn = date.Date;
             bTODeliveryOrder.Unit = "Bangalore";
-            Guid btoDeliveryOrderNumber = Guid.NewGuid();
-            bTODeliveryOrder.BTONumber = " BTO-" + btoDeliveryOrderNumber.ToString();
+            //Guid btoDeliveryOrderNumber = Guid.NewGuid();
+            //bTODeliveryOrder.BTONumber = " BTO-" + btoDeliveryOrderNumber.ToString();
             var result = await Create(bTODeliveryOrder);
             return result.Id;
         }
+        public async Task<int?> GetBTONumberAutoIncrementCount(DateTime date)
+        {
+            var getBTONumberAutoIncrementCount = _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.CreatedOn == date.Date).Count();
 
+            return getBTONumberAutoIncrementCount;
+        }
         public async Task<string> DeleteBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder)
         {
             Delete(bTODeliveryOrder);
@@ -49,7 +56,21 @@ namespace Tips.Warehouse.Api.Repository
             return getAllBTODetails;
         }
 
-        
+        public async Task<IEnumerable<ListofBtoDeliveryOrderDetails>> GetBtoDeliveryOrderNumberList()
+        {
+
+            IEnumerable<ListofBtoDeliveryOrderDetails> getBtoDeliveryOrderList = await _tipsWarehouseDbContext.bTODeliveryOrder                                
+                                .Select(x => new ListofBtoDeliveryOrderDetails()
+                                {
+                                    BtoDeliveryOrderId = x.Id,
+                                    BTONumber = x.BTONumber,                                 
+
+                                })
+                                .OrderBy(on => on.BtoDeliveryOrderId)
+                              .ToListAsync();             
+
+            return getBtoDeliveryOrderList;
+        }
 
         public async Task<BTODeliveryOrder> GetBTODeliveryOrderById(int id)
         {

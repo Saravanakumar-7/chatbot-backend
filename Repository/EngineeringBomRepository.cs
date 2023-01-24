@@ -60,11 +60,10 @@ namespace Repository
 
         public async Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber)
         {
-            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber)
-                              .Include(t => t.EnggChildItems)
+            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber)                              
+                                .Include(m => m.NREConsumable)
+                                .Include(t => t.EnggChildItems)
                                 .ThenInclude(x => x.EnggAlternates)
-                                .Include(m => m.EnggChildItems)
-                                .ThenInclude(i => i.NREConsumable)
                               .FirstOrDefaultAsync();
 
             return EnggBomDetailsbyId;
@@ -72,11 +71,10 @@ namespace Repository
 
         public async Task<EnggBom> GetEnggBomById(int id)
         {
-            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.BOMId == id)
-                              .Include(t => t.EnggChildItems)
+            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.BOMId == id)                                                           
+                                .Include(m => m.NREConsumable)
+                                .Include(t => t.EnggChildItems)
                                 .ThenInclude(x => x.EnggAlternates)
-                                .Include(m => m.EnggChildItems)
-                                .ThenInclude(i => i.NREConsumable)
                               .FirstOrDefaultAsync();
 
             return EnggBomDetailsbyId;
@@ -294,4 +292,52 @@ namespace Repository
             return result;
         }
     }
+
+    public class EngineeringNREConsumableRepository : RepositoryBase<NREConsumable>, IEnggBomNREConsumableRepository
+    {
+        private TipsMasterDbContext _tipsMasterDbContext;
+        public EngineeringNREConsumableRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        {
+            _tipsMasterDbContext = repositoryContext;
+        }
+
+        public Task<int?> CreateEnggNREConsumable(NREConsumable bomNREConsumable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> DeleteEnggNREConsumable(NREConsumable bomNREConsumable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<NREConsumable>> GetAllActiveEnggNREConsumable()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<NREConsumable>> GetAllEnggNREConsumable()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<NREConsumable> GetAllNREConsumableLists(int id)
+        {
+            var getRountingList = await _tipsMasterDbContext.BomNREConsumables
+                                   .Where(x => x.EnggBomId == id).FirstOrDefaultAsync();
+            return getRountingList;
+        }
+         
+
+        public Task<NREConsumable> GetEnggNREConsumableById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> UpdateEnggNREConsumable(NREConsumable bomNREConsumable)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }

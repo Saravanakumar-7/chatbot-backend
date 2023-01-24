@@ -70,10 +70,10 @@ namespace Tips.SalesService.Api.Repository
         public async Task<RfqCustomerSupport> GetRfqCustomerSupportByRfqNumber(string RfqNumber)
         {
             var getRfqCSByRfqNumber = await _tipsSalesServiceDbContext.RfqCustomerSupports
+                .Where(x => x.RfqNumber == RfqNumber)
                 .Include(t => t.RfqCustomerSupportItems)
                 .ThenInclude(n => n.RfqCSDeliverySchedule)
-                .Include(m => m.RfqCustomerSupportNotes)
-              .Where(x => x.RfqNumber == RfqNumber)
+                .Include(m => m.RfqCustomerSupportNotes)              
                         .FirstOrDefaultAsync();
 
             return getRfqCSByRfqNumber;
@@ -250,6 +250,34 @@ namespace Tips.SalesService.Api.Repository
             string result = $"RFQ of Detail {rfq.Id} is updated successfully!";
             return result;
         }
+
+        public async Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberListByCustomerName(string CustomerName)
+        {           
+
+            IEnumerable<RfqNumberListDto> getAllActiveRfqNumberList = await _tipsSalesServiceDbContext.Rfqs
+                                .Select(x => new RfqNumberListDto()
+                                {
+                                    Id = x.Id,
+                                    RfqNumber = x.RfqNumber,
+                                    CustomerName = x.CustomerName                                  
+
+                                })
+                               .Where(b => b.CustomerName == CustomerName)                                
+                              .ToListAsync();
+
+            return getAllActiveRfqNumberList;
+
+
+           
+        }
+
+        public async Task<Rfq> GetCustomerIdByRfqNumber(string rfqnumber)
+        {
+            var getCustomerId = await _tipsSalesServiceDbContext.Rfqs
+                        .Where(x => x.RfqNumber == rfqnumber)
+                                  .FirstOrDefaultAsync();
+            return getCustomerId;
+        }
     }
     public class RfqEnggRepository : RepositoryBase<RfqEngg>, IRfqEnggRepository
     {
@@ -303,6 +331,11 @@ namespace Tips.SalesService.Api.Repository
               .Where(x => x.RFQNumber == RfqNumber)
                         .FirstOrDefaultAsync();
             return getRfqEnggByRfqNumber;
+        }
+
+        public Task<IEnumerable<RfqEnggItem>> GetRfqEnggItemsByRfqNumber(string rfqNumber)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<string> UpdateRfqEngg(RfqEngg rfqEngg)
@@ -570,5 +603,13 @@ namespace Tips.SalesService.Api.Repository
             var result = await Create(releaseLp);
             return result;
         }
+        public async Task<IEnumerable<ReleaseLp>> GetRfqReleaseLpByRfqNumber(string RfqNumber)
+        {
+            var getRfqReleaseLpByRfqNumber = await _tipsSalesServiceDbContext.ReleaseLps
+              .Where(x => x.RfqNumber == RfqNumber )
+                        .ToListAsync();
+            return getRfqReleaseLpByRfqNumber;
+        }
+
     }
 }

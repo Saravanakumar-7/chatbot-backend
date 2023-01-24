@@ -8,8 +8,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
 
         public int Id { get; set; }
-        public DateTime? OpenDODate { get; set; }
-        public string OpenDONumber { get; set; }
+        public DateTime? OpenDODate { get; set; } 
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerId { get; set; }
@@ -28,10 +27,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class OpenDeliveryOrderDtoPost
     {
 
-        public DateTime? OpenDODate { get; set; }
-
-        [Required(ErrorMessage = "DONumber is required")]
-        public string OpenDoNumber { get; set; }
+        public DateTime? OpenDODate { get; set; } 
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerId { get; set; }
@@ -48,10 +44,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class OpenDeliveryOrderDtoUpdate
     {
         public int Id { get; set; }
-        public DateTime? OpenDODate { get; set; }
-
-        [Required(ErrorMessage = "DONumber is required")]
-        public string OpenDoNumber { get; set; }
+        public DateTime? OpenDODate { get; set; }         
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerId { get; set; }

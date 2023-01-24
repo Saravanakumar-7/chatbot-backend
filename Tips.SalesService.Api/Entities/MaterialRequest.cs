@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,9 @@ namespace Tips.SalesService.Api.Entities
         public string? IssuedBy { get; set; }
         public DateTime? IssuedOn { get; set; }
         public Enum IssuedStatus { get; set; }
+
+        [DefaultValue(0)]
+        public ShortStatus StatusOfShort { get; set; }  
 
         public string Unit { get; set; }
 

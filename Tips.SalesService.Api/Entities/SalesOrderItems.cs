@@ -6,8 +6,14 @@ namespace Tips.SalesService.Api.Entities
     {
         [Key]
         public int Id { get; set; } 
-        public string? SAItemNo { get; set; }
+        public string? ItemNo { get; set; }
         public string? Description { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public OrderStatus StatusEnum { get; set; }
+        public decimal? BalanceQty { get; set; }
+        public decimal? DispatchQty { get; set; }
+        public decimal? ShopOrderQty { get; set; }
         public decimal UOM { get; set; }
         public decimal Currency { get; set; }
         public decimal UnitPrice { get; set; }
@@ -15,6 +21,7 @@ namespace Tips.SalesService.Api.Entities
         public decimal SGST { get; set; }
         public decimal CGST { get; set; }
         public decimal UTGST { get; set; }
+        public decimal IGST { get; set; }
         public DateTime RequestedDate { get; set; }
         public string Remarks { get; set; }       
         public int SalesOrderId { get; set; }

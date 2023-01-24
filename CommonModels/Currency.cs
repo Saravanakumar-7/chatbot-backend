@@ -11,7 +11,7 @@ namespace Entities
     {
         [Key]
         public int Id { get; set; }
-        public string? CurrencyNames { get; set; }
+        public string? CurrencyName { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool IsActive { get; set; } = true;

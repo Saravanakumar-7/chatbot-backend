@@ -39,6 +39,8 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<RfqLPCosting> RfqLPCostings { get; set; }
 
         public DbSet<SalesOrder> SalesOrders { get; set; }
+        public DbSet<SalesOrderItems> SalesOrdersItems { get; set; }
+
 
         public DbSet<Quote> quotes { get; set; }
 
@@ -77,7 +79,11 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<LocationTransfer> locationTransfers { get; set; }
         public DbSet<ReleaseLp> ReleaseLps { get; set; }
 
+        public DbSet<ItemPriceList> ItemPriceLists { get; set; }
+
         public DbSet<ForeCastReleaseLp> ForeCastReleaseLps { get; set; }
+         
+
 
     }
 }

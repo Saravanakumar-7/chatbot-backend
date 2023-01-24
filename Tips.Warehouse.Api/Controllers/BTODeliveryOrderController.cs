@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using System.Net.Http;
+using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
@@ -18,12 +20,21 @@ namespace Tips.Warehouse.Api.Controllers
         private IBTODeliveryOrderRepository _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
+        private IInventoryRepository _inventoryRepository;
+        //private readonly HttpClient _httpClient;
+        //private readonly IConfiguration _config;
 
-        public BTODeliveryOrderController(IBTODeliveryOrderRepository repository, ILoggerManager logger, IMapper mapper)
+
+
+        public BTODeliveryOrderController(IBTODeliveryOrderRepository repository, /*HttpClient httpClient, IConfiguration config,*/ IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            //_httpClient = httpClient;
+            _inventoryRepository = inventoryRepository;
+            //_config = config;
+
         }
 
 
@@ -153,10 +164,23 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var bTODeliveryOrderItemsDtoList = new List<BTODeliveryOrderItems>();
 
+                 
+
+                
                 if (bTODeliveryOrderitemsDto != null)
                 {
+                    string cps = "";
                     for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
                     {
+                        var data = bTODeliveryOrderitemsDto[i].BTOSerialNumberDtoPost.ToList();
+                        if (data.Count() != 0)
+                        { 
+                            for (int j = 0; j < data.Count(); j++)
+                            {
+                                cps += data[j].SerialNumber.Trim() + ",";
+                            }
+                            bTODeliveryOrderitemsDto[i].SerialNo = cps;
+                        }
                         BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);
                         bTODeliveryOrderItemsDetails.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDtoPost);
                         bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDetails);
@@ -164,10 +188,52 @@ namespace Tips.Warehouse.Api.Controllers
                 }
 
                 bTODeliveryOrder.BTODeliveryOrderItems = bTODeliveryOrderItemsDtoList;
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
 
+                
+
+                var newcount = await _repository.GetBTONumberAutoIncrementCount(date);
+
+                if (newcount > 0)
+                {
+                    var number = newcount + 1;
+                    string e = String.Format("{0:D4}", number);
+                    bTODeliveryOrder.BTONumber = days + months + years + "BTO" + (e);
+                }
+                else
+                {
+                    var count = 1;
+                    var e = count.ToString("D4");
+                    bTODeliveryOrder.BTONumber = days + months + years + "BTO" + (e);
+                }
                 await _repository.CreateBTODeliveryOrder(bTODeliveryOrder);
                 _repository.SaveAsync();
-                serviceResponse.Data = null;
+
+                //update balance qty and dispatch qty in salesorder table
+
+
+                //if (bTODeliveryOrderitemsDto != null)
+                //{
+                //    for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
+                //    {
+                //        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["SalesOrderAPI"], "GetBtoDeliveryOrderDetailsBySOandItemNo?", "ItemNumber=", bTODeliveryOrderitemsDto[i].FGItemNumber, "&SalesOrderId=", bTODeliveryOrderitemsDto[i].SalesOrderId));
+                //        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                //        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                //        dynamic inventoryObject = inventoryObjectData.data;
+                //        inventoryObject.BalanceQty = inventoryObject.BalanceQty - bTODeliveryOrderitemsDto[i].DispatchQty;
+                //        inventoryObject.DispatchQty = inventoryObject.DispatchQty + bTODeliveryOrderitemsDto[i].DispatchQty;
+                //        var json = JsonConvert.SerializeObject(inventoryObject);
+                //        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                //        var response = await _httpClient.PutAsync(string.Concat(_config["SalesOrderAPI"], "UpdateSalesOrder/", inventoryObject.id), data);
+
+                //    }
+                //}
+
+
+                        serviceResponse.Data = null;
                 serviceResponse.Message = " BTODeliveryOrder Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -296,6 +362,84 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetBtoDeliveryOrderNumberList()
+        {
+            ServiceResponse<IEnumerable<ListofBtoDeliveryOrderDetails>> serviceResponse = new ServiceResponse<IEnumerable<ListofBtoDeliveryOrderDetails>>();
+
+            try
+            {
+                var getBtoDeliveryOrderNumberList = await _repository.GetBtoDeliveryOrderNumberList();
+                if (getBtoDeliveryOrderNumberList == null)
+                {
+                    _logger.LogError("BtoDeliveryOrderDetail Not Found");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "BtoDeliveryOrderDetail Not Found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo("Return BtoDeliveryOrderDetail");
+                    var result = _mapper.Map<IEnumerable<ListofBtoDeliveryOrderDetails>>(getBtoDeliveryOrderNumberList);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong BtoDeliveryOrder Details: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetInventoryListByItemNo(string ItemNumber)
+        {
+            ServiceResponse<IEnumerable<GetInventoryListByItemNo>> serviceResponse = new ServiceResponse<IEnumerable<GetInventoryListByItemNo>>();
+
+            try
+            {
+                var getInventoryListByItemNo = await _inventoryRepository.GetInventoryListByItemNo(ItemNumber);
+                if (getInventoryListByItemNo == null)
+                {
+                    _logger.LogError($"InventoryDetails with id: {ItemNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventoryDetails with id: {ItemNumber}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned InventoryDetails with id: {ItemNumber}");
+                    var result = _mapper.Map<IEnumerable<GetInventoryListByItemNo>>(getInventoryListByItemNo);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 
 }

@@ -45,6 +45,9 @@ builder.Services.AddScoped<IForeCastRepository, ForeCastRepository>();
 builder.Services.AddScoped<IForeCastCustomerSupportRepository, ForeCastCustomerSupportRepository>();
 builder.Services.AddScoped<IForeCastCustomerSupportItemRepository, ForeCastCustomerSupportItemsRepository>();
 builder.Services.AddScoped<IForeCastEnggRepository, ForeCastEnggRepository>();
+builder.Services.AddScoped<IForeCastEnggItemsRepository, ForeCastEnggItemRepository>();
+builder.Services.AddScoped<IForeCastReleaseLpRepository, ForeCastLPReleaseRepository>();
+
 builder.Services.AddScoped<IForecastSourcingRepository, ForeCastSourcingRepository>();
 builder.Services.AddScoped<IForecastLpCostingRepository, ForecastLpCostingRepository>();
 builder.Services.AddScoped<IMaterialRequestRepository, MaterialRequestRepository>();
@@ -56,6 +59,9 @@ builder.Services.AddScoped<IRfqCustomGroupRepository, RfqCustomGroupRepository>(
 builder.Services.AddScoped<IRfqCustomFieldRepository, RfqCustomFieldRepository>();
 builder.Services.AddScoped<IForeCastCustomGroupRepository, ForeCastCustomGroupRepository>();
 builder.Services.AddScoped<IForeCastCustomFieldRepository, ForeCastCustomFieldRepository>();
+builder.Services.AddScoped<ISalesOrderItemsRepository, SalesOrderItemRepository>();
+builder.Services.AddScoped<IItemPriceListRepository, ItemPriceListRepository>();
+
 
 //builder.Services.AddScoped<IRfqCustomerSupportNotesRepository, RfqCustomerSupportNotes>();
 
@@ -65,7 +71,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddHttpClient(); 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -45,9 +45,6 @@ namespace Entities
 
         public List<EnggAlternates>? EnggAlternates { get; set; }
 
-        public NREConsumable? NREConsumable { get; set; }
-
-
-
+       
     }
 }

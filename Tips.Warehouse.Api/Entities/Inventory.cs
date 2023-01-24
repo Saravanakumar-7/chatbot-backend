@@ -12,7 +12,7 @@ namespace Tips.Warehouse.Api.Entities
         public string ProjectNumber { get; set; }
         public decimal Balance_Quantity { get; set; }
         public string? UOM { get; set; }
-        public bool IsStockAvailable { get; set; }
+        public bool IsStockAvailable { get; set; } = true;
         public string Warehouse { get; set; }
         public string? Location { get; set; }
         public string Unit { get; set; }

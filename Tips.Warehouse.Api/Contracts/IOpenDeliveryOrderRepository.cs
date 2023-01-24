@@ -13,6 +13,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<OpenDeliveryOrder> GetOpenDeliveryOrderById(int id);
         Task<int?> CreateOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder);
         Task<string> UpdateOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder);
+        Task<int?> GetODONumberAutoIncrementCount(DateTime date);
+
         Task<string> DeleteOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder);
     }
 

@@ -42,7 +42,6 @@ namespace Entities.DTOs
 
         public List<EnggAlternatesDto>? EnggAlternatesDtos { get; set; }
 
-        public BomNREConsumableDto? BomNREConsumableDto { get; set; }
 
 
     }
@@ -73,7 +72,6 @@ namespace Entities.DTOs
         public bool IsActive { get; set; }
 
         public List<EnggAlternatesPostDto>? EnggAlternatesPostDtos { get; set; }
-        public BomNREConsumablePostDto? BomNREConsumablePostDto { get; set; }
 
     }
     public class EnggChildItemUpdateDto
@@ -113,7 +111,6 @@ namespace Entities.DTOs
 
         public List<EnggAlternatesUpdateDto>? EnggAlternatesUpdateDtos { get; set; }
 
-        public BomNREConsumableUpdateDto? BomNREConsumableUpdateDto { get; set; }
 
 
     }

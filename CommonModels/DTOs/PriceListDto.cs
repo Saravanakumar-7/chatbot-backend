@@ -15,6 +15,8 @@ namespace Entities.DTOs
         public string? Remarks { get; set; }
         public bool IsActive { get; set; } = true;
         public string Unit { get; set; }
+        public DateTime? ValidFrom { get; set; }
+        public DateTime? ValidTo { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -30,7 +32,9 @@ namespace Entities.DTOs
         [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]
         public string? Remarks { get; set; }
         public bool IsActive { get; set; }
-       
+        public DateTime? ValidFrom { get; set; }
+        public DateTime? ValidTo { get; set; }
+
     }
     public class PriceListDtoUpdate
     {
@@ -46,5 +50,7 @@ namespace Entities.DTOs
         [Required(ErrorMessage = "Unit is required")]
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
         public string Unit { get; set; }
+        public DateTime? ValidFrom { get; set; }
+        public DateTime? ValidTo { get; set; }
     }
 }

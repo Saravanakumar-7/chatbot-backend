@@ -32,7 +32,7 @@ namespace Entities
         public DateTime? LastModifiedOn { get; set; }
 
         public List<EnggChildItem>? EnggChildItems { get; set; }
-
+        public List<NREConsumable>? NREConsumable { get; set; }
 
     }
 }

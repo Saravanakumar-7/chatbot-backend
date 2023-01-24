@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
-    public class ItemMasterRepository:RepositoryBase<ItemMaster>,IItemMasterRepository
+    public class ItemMasterRepository : RepositoryBase<ItemMaster>, IItemMasterRepository
     {
         public ItemMasterRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
         {
@@ -24,7 +24,7 @@ namespace Repository
             itemMaster.CreatedOn = DateTime.Now;
             itemMaster.Unit = "Bangalore";
             var result = await Create(itemMaster);
-            
+
             return result.Id;
         }
 
@@ -37,22 +37,25 @@ namespace Repository
 
         public async Task<IEnumerable<ItemMaster>> GetAllActiveItemMasters()
         {
-            var getAllActiveItemMasters= await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var getAllActiveItemMasters = await FindByCondition(x => x.IsActive == true).ToListAsync();
             return getAllActiveItemMasters;
         }
 
         public async Task<PagedList<ItemMaster>> GetAllItemMasters(PagingParameter pagingParameter)
         {
-            var getAllItemMasters= PagedList<ItemMaster>.ToPagedList(FindAll()
+            var getAllItemMasters = PagedList<ItemMaster>.ToPagedList(FindAll()
                                 .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(m => m.ItemMasterFileUpload)
                                 .Include(s => s.ItemMasterRouting)
                                 .Include(f => f.ItemMasterWarehouse)
                                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-                                 
+
             return getAllItemMasters;
         }
+
+
+
         public async Task<PagedList<ItemMaster>> GetAllFGItems(PagingParameter pagingParameter)
         {
             var getAllFGItems = PagedList<ItemMaster>.ToPagedList(FindAll().Where(a => a.ItemType == "Fg")
@@ -89,7 +92,7 @@ namespace Repository
 
             return getAllFGSAItems;
         }
-
+     
         public async Task<ItemMaster> GetItemMasterById(int id)
         {
             var getItemMasterById = await TipsMasterDbContext.ItemMasters
@@ -100,13 +103,13 @@ namespace Repository
                                 .Include(s => s.ItemMasterRouting)
                                 .Include(p => p.ItemMasterWarehouse)
                              .FirstOrDefaultAsync();
-           
+
 
             return getItemMasterById;
         }
 
         public async Task<string> UpdateItemMaster(ItemMaster itemMaster)
-     {
+        {
             itemMaster.LastModifiedBy = "Admin";
             itemMaster.LastModifiedOn = DateTime.Now;
             Update(itemMaster);
@@ -120,8 +123,8 @@ namespace Repository
                                 {
                                     id = c.Id,
                                     ItemNumber = c.ItemNumber,
-                                    Description= c.Description,
-                                        
+                                    Description = c.Description,
+
                                 })
                               .ToListAsync();
 
@@ -133,7 +136,8 @@ namespace Repository
 
                              .FirstOrDefaultAsync();
             return getItemMasterByItemNo;
-        }       
-         
+        }
+
+    } 
+
     }
-}

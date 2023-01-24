@@ -1,13 +1,6 @@
-﻿using Entities.Helper;
-using Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Entities;
+using Entities.Helper;
 using Tips.SalesService.Api.Entities;
-using Entities.DTOs;
 using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Contracts
@@ -20,11 +13,10 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> UpdateRfq(Rfq rfq);
         Task<string> DeleteRfq(Rfq rfq);
         Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberList();
+        Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberListByCustomerName(string CustomerName);
         Task<Rfq> RfqSourcingByRfqNumbers(string id);
-
         Task<Rfq> RfqDetailsByRfqNumbers(string rfqNumber);
-
-        
+        Task<Rfq> GetCustomerIdByRfqNumber(string rfqnumber);
 
         Task<Rfq> RfqLpcostingByRfqNumbers(string id);
         Task<Rfq> RfqLpCostingReleaseByRfqNumbers(string id);

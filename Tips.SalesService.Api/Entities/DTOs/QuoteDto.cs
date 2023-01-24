@@ -1,18 +1,29 @@
-﻿namespace Tips.SalesService.Api.Entities.DTOs
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Tips.SalesService.Api.Entities.DTOs
 {
     public class QuoteDto
     {
         public int Id { get; set; }
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
+        public string? CustomerId { get; set; }
         public string? QuoteRef { get; set; }
         public decimal TotalAmount { get; set; }
         public bool IsTheseRequiredToBePrintedInQuote { get; set; }
         public decimal TotalAdditionalCharges { get; set; }
-        public decimal SpecialDiscountType { get; set; }
+        public string SpecialDiscountType { get; set; }
         public decimal SpecialDiscountAmount { get; set; }
         public decimal TotalFinalAmount { get; set; }
         public string? PaymentTerms { get; set; }
+        public string? QuoteType { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? GeneralDiscount { get; set; }
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -31,14 +42,14 @@
         public decimal TotalAmount { get; set; }
         public bool IsTheseRequiredToBePrintedInQuote { get; set; }
         public decimal TotalAdditionalCharges { get; set; }
-        public decimal SpecialDiscountType { get; set; }
+        public string SpecialDiscountType { get; set; }
         public decimal SpecialDiscountAmount { get; set; }
         public decimal TotalFinalAmount { get; set; }
         public string? PaymentTerms { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public string? QuoteType { get; set; } 
+
+        [Precision(13, 3)]
+        public decimal? GeneralDiscount { get; set; } 
         public List<QuoteGeneralDtoPost>? quoteGeneralDtoPost { get; set; }
         public List<QuoteAdditionalChargesDtoPost>? quoteAdditionalChargesDtoPost { get; set; }
         public List<QuoteRFQNotesDtoPost>? quoteRFQNotesDtoPost { get; set; }
@@ -54,14 +65,14 @@
         public decimal TotalAmount { get; set; }
         public bool IsTheseRequiredToBePrintedInQuote { get; set; }
         public decimal TotalAdditionalCharges { get; set; }
-        public decimal SpecialDiscountType { get; set; }
+        public string SpecialDiscountType { get; set; }
         public decimal SpecialDiscountAmount { get; set; }
         public decimal TotalFinalAmount { get; set; }
         public string? PaymentTerms { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public string? QuoteType { get; set; } 
+
+        [Precision(13, 3)]
+        public decimal? GeneralDiscount { get; set; }  
         public List<QuoteGeneralDtoUpdate>? quoteGeneralDtoUpdate { get; set; }
         public List<QuoteAdditionalChargesDtoUpdate>? quoteAdditionalChargesDtoUpdate { get; set; }
         public List<QuoteRFQNotesDtoUpdate>? quoteRFQNotesDtoUpdate { get; set; }

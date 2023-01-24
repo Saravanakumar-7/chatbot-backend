@@ -1,4 +1,5 @@
 ﻿using Entities.DTOs;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -11,8 +12,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class RfqEnggDto
     {
         public int Id { get; set; }
-        public string? CustomerName { get; set; }
-        public string? RevisionNumber { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
         public String? RfqNumber { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceivedate { get; set; }
@@ -30,7 +32,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
         public string? CustomerName { get; set; }
-        public string? RevisionNumber { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
         public string? RfqNumber { get; set; }
 
         [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
@@ -49,7 +53,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
         public string? CustomerName { get; set; }
-        public string? RevisionNumber { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
         public string? RfqNumber { get; set; }
 
         [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Entities.DTOs;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
@@ -244,6 +245,21 @@ namespace Tips.SalesService.Api
             CreateMap<ForeCastReleaseLp, ForecastReleaseLpDto>().ReverseMap();
             CreateMap<ForeCastReleaseLp, ForecastReleaseLpDtoPost>().ReverseMap();
             CreateMap<ForeCastReleaseLp, ForecastReleaseLpDtoUpdate>().ReverseMap();
+
+            CreateMap<RfqLPCostingProcess, ItemMasterRoutingListDto>().ReverseMap();
+
+            CreateMap<SalesOrderItems, ListOfProjectNoDto>().ReverseMap();
+
+            CreateMap<SalesOrder, ListofSalesOrderDetails>().ReverseMap();
+
+            CreateMap<SalesOrderItems, GetSalesOrderDetailsDto>().ReverseMap();
+
+
+            CreateMap<ItemPriceList, ItemPriceListDto>().ReverseMap();
+            CreateMap<ItemPriceList, ItemPriceListDtoPost>().ReverseMap();
+            CreateMap<ItemPriceList, ItemPriceListDtoUpdate>().ReverseMap();
+
+
         }
     }
 }

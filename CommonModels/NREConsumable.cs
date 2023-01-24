@@ -22,8 +22,7 @@ namespace Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
-        public int EnggChildItemId { get; set; }
-        public EnggChildItem? EnggChildItem { get; set; }
+        public int EnggBomId { get; set; }
+        public EnggBom? EnggBom { get; set; }
     }
 }

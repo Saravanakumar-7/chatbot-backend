@@ -71,5 +71,5 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         public List<RfqCSDeliveryScheduleUpdateDto>? RfqCSDeliverySchedule { get; set; }
 
-    }
+    }   
 }

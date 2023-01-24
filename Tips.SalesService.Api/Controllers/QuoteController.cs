@@ -10,6 +10,7 @@ using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
+using Tips.SalesService.Api.Repository;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -18,15 +19,17 @@ namespace Tips.SalesService.Api.Controllers
     public class QuoteController : ControllerBase
     {
         private IQuoteRepository _repository;
+        private IRfqRepository _rfqRepository;        
         private ILoggerManager _logger;
         private IMapper _mapper;
-
-        public QuoteController(IQuoteRepository repository, ILoggerManager logger, IMapper mapper)
+ 
+        public QuoteController(IQuoteRepository repository, IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
-        }
+            _rfqRepository = rfqRepository;
+         }
 
         // GET: api/<QuoteController>
         [HttpGet]
@@ -74,6 +77,8 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var quoteDetails = await _repository.GetQuoteById(id);
+                var rfqnumber = quoteDetails.RFQNumber;
+                var customerId = await _rfqRepository.GetCustomerIdByRfqNumber(rfqnumber);
 
                 if (quoteDetails == null)
                 {
@@ -94,7 +99,7 @@ namespace Tips.SalesService.Api.Controllers
                     var quoteRFQNotesList = _mapper.Map<IEnumerable<QuoteRFQNotesDto>>(quoteDetails.quoteRFQNotes);
                     var quoteSpecialTermslist = _mapper.Map<IEnumerable<QuoteSpecialTermsDto>>(quoteDetails.quoteSpecialTerms);
                     var quote = _mapper.Map<QuoteDto>(quoteDetails);
-
+                    quote.CustomerId = customerId.CustomerId;
                     quote.quoteGeneralDtos = quoteGeneralList.ToList();
                     quote.quoteAdditionalChargesDtos = quoteAdditionalChargesList.ToList();
                     quote.quoteOtherTermsDtos = quoteOtherTermsList.ToList();
@@ -124,7 +129,7 @@ namespace Tips.SalesService.Api.Controllers
         public async Task<IActionResult> CreateQuote([FromBody] QuoteDtoPost quoteDtoPost)
         {
             ServiceResponse<QuoteDto> serviceResponse = new ServiceResponse<QuoteDto>();
-
+             
             try
             {
                 if (quoteDtoPost is null)
@@ -177,49 +182,40 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //change versionnumber
 
-        // PUT api/<QuoteController>/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateQuote(int id, [FromBody] QuoteDtoUpdate quoteDtoUpdate)
+        [HttpPost]
+        public async Task<IActionResult> ChangeRevisionNumber([FromBody] QuoteDtoPost quoteDtoPost)
         {
-            ServiceResponse<QuoteDtoUpdate> serviceResponse = new ServiceResponse<QuoteDtoUpdate>();
+            ServiceResponse<QuoteDto> serviceResponse = new ServiceResponse<QuoteDto>();
 
             try
             {
-                if (quoteDtoUpdate is null)
+                if (quoteDtoPost is null)
                 {
-                    _logger.LogError("Update Quote object sent from client is null.");
+                    _logger.LogError("QuoteDetails object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Update Quote object is null";
+                    serviceResponse.Message = "QuoteDetails object sent from client is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid Update Quote object sent from client.");
+                    _logger.LogError("Invalid QuoteDetails object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Update Quote object sent from client.";
+                    serviceResponse.Message = "Invalid QuoteDetails object sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var updateQuote = await _repository.GetQuoteById(id);
-                if (updateQuote is null)
-                {
-                    _logger.LogError($"Update Quote with id: {id}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"UpdateQuote hasn't been found in db.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
-                }
-                var quoteGeneralList = _mapper.Map<IEnumerable<QuoteGeneral>>(quoteDtoUpdate.quoteGeneralDtoUpdate);
-                var quoteAdditionalChargesList = _mapper.Map<IEnumerable<QuoteAdditionalCharges>>(quoteDtoUpdate.quoteAdditionalChargesDtoUpdate);
-                var quoteOtherTermsList = _mapper.Map<IEnumerable<QuoteOtherTerms>>(quoteDtoUpdate.quoteOtherTermsDtoUpdate);
-                var quoteRFQNotesList = _mapper.Map<IEnumerable<QuoteRFQNotes>>(quoteDtoUpdate.quoteRFQNotesDtoUpdate);
-                var quoteSpecialTermslist = _mapper.Map<IEnumerable<QuoteSpecialTerms>>(quoteDtoUpdate.quoteSpecialTermsDtoUpdate);
-                var quote = _mapper.Map(quoteDtoUpdate, updateQuote);
+
+                var quoteGeneralList = _mapper.Map<IEnumerable<QuoteGeneral>>(quoteDtoPost.quoteGeneralDtoPost);
+                var quoteAdditionalChargesList = _mapper.Map<IEnumerable<QuoteAdditionalCharges>>(quoteDtoPost.quoteAdditionalChargesDtoPost);
+                var quoteOtherTermsList = _mapper.Map<IEnumerable<QuoteOtherTerms>>(quoteDtoPost.quoteOtherTermsDtoPost);
+                var quoteRFQNotesList = _mapper.Map<IEnumerable<QuoteRFQNotes>>(quoteDtoPost.quoteRFQNotesDtoPost);
+                var quoteSpecialTermslist = _mapper.Map<IEnumerable<QuoteSpecialTerms>>(quoteDtoPost.quoteSpecialTermsDtoPost);
+                var quote = _mapper.Map<Quote>(quoteDtoPost);
 
                 quote.quoteGenerals = quoteGeneralList.ToList();
                 quote.quoteAdditionalCharges = quoteAdditionalChargesList.ToList();
@@ -227,18 +223,17 @@ namespace Tips.SalesService.Api.Controllers
                 quote.quoteRFQNotes = quoteRFQNotesList.ToList();
                 quote.quoteSpecialTerms = quoteSpecialTermslist.ToList();
 
-                string result = await _repository.UpdateQuote(quote);
-                _logger.LogInfo(result);
+                _repository.ChangeQuoteVersion(quote);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Updated Quote Successfully";
+                serviceResponse.Message = "Quote Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateQuote action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateQuote action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -246,6 +241,93 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+
+
+        // PUT api/<QuoteController>/5
+
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> UpdateQuote(int id, [FromBody] QuoteDtoUpdate quoteDtoUpdate)
+        //{
+            
+        //    ServiceResponse<QuoteDtoUpdate> serviceResponse = new ServiceResponse<QuoteDtoUpdate>();
+
+        //    try
+        //    {
+        //        if (quoteDtoUpdate is null)
+        //        {
+        //            _logger.LogError("Update Quote object sent from client is null.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Update Quote object is null";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _logger.LogError("Invalid Update Quote object sent from client.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid Update Quote object sent from client.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        var updateQuote = await _repository.GetQuoteById(id);
+        //        if (updateQuote is null)
+        //        {
+        //            _logger.LogError($"Update Quote with id: {id}, hasn't been found in db.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"UpdateQuote hasn't been found in db.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            return NotFound(serviceResponse);
+        //        }
+        //        var quoteGeneralList = _mapper.Map<IEnumerable<QuoteGeneral>>(quoteDtoUpdate.quoteGeneralDtoUpdate);
+        //        var quoteAdditionalChargesList = _mapper.Map<IEnumerable<QuoteAdditionalCharges>>(quoteDtoUpdate.quoteAdditionalChargesDtoUpdate);
+        //        var quoteOtherTermsList = _mapper.Map<IEnumerable<QuoteOtherTerms>>(quoteDtoUpdate.quoteOtherTermsDtoUpdate);
+        //        var quoteRFQNotesList = _mapper.Map<IEnumerable<QuoteRFQNotes>>(quoteDtoUpdate.quoteRFQNotesDtoUpdate);
+        //        var quoteSpecialTermslist = _mapper.Map<IEnumerable<QuoteSpecialTerms>>(quoteDtoUpdate.quoteSpecialTermsDtoUpdate);
+
+
+        //        var quote = _mapper.Map(quoteDtoUpdate, updateQuote);
+
+        //        quote.quoteGenerals = quoteGeneralList.ToList();
+        //        quote.quoteAdditionalCharges = quoteAdditionalChargesList.ToList();
+        //        quote.quoteOtherTerms = quoteOtherTermsList.ToList();
+        //        quote.quoteRFQNotes = quoteRFQNotesList.ToList();
+        //        quote.quoteSpecialTerms = quoteSpecialTermslist.ToList();
+
+
+        //        var version = Convert.ToDecimal(0.1);
+
+        //        quote.RevisionNumber = quote.RevisionNumber + version;
+
+        //        var quoteDetails = await _repository.GetQuoteById(id);
+
+        //         string result = await _repository.UpdateQuote(quote);
+                 
+        //         _repository.SaveAsync();
+
+        //        _logger.LogInfo(result);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Updated Quote Successfully";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside UpdateQuote action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
+
         // DELETE api/<VendorController>/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteQuote(int id)

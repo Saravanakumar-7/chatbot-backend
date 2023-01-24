@@ -13,7 +13,7 @@ namespace Tips.Model
         [DefaultValue(false)]
         public bool IsDefault { get; set; }
 
-        [ForeignKey(nameof(ItemMaster))]
+         
         public long ItemMasterId { get; set; }
         public ItemMaster? ItemMaster { get; set; }
     }

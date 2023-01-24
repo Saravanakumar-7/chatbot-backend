@@ -20,17 +20,24 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<int?> CreateOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder)
         {
+            var date = DateTime.Now;
             openDeliveryOrder.CreatedBy = "Admin";
-            openDeliveryOrder.CreatedOn = DateTime.Now;
-            Guid openDeliveryOrderNumber = Guid.NewGuid();
-            openDeliveryOrder.OpenDONumber = " ODO-" + openDeliveryOrderNumber.ToString();
+            openDeliveryOrder.CreatedOn = date.Date;          
+          
             openDeliveryOrder.Unit = "Bangalore";
             var result = await Create(openDeliveryOrder);
            
             return result.Id;
+        }        
+
+        public async Task<int?> GetODONumberAutoIncrementCount(DateTime date)
+        {
+            var getOpenDeliveryOrderDetailsByIds = _tipsWarehouseDbContext.OpenDeliveryOrders.Where(x => x.CreatedOn == date.Date).Count();
+
+            return getOpenDeliveryOrderDetailsByIds;
         }
 
-            public async Task<string> DeleteOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder)
+        public async Task<string> DeleteOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder)
         {
             Delete(openDeliveryOrder);
             string result = $"OpenDeliveryOrder details of {openDeliveryOrder.Id} is deleted successfully!";

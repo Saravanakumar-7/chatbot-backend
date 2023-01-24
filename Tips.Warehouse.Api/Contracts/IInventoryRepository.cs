@@ -2,6 +2,7 @@
 using Entities;
 using Entities.Helper;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Contracts
 {
@@ -16,8 +17,9 @@ namespace Tips.Warehouse.Api.Contracts
         Task<Inventory> GetInventoryById(int id);
 
         Task<Inventory> GetInventoryDetailsByGrinNo(string GrinNo, string ItemNumber, string ProjectNumber);
+        Task<IEnumerable<GetInventoryListByItemNo>> GetInventoryListByItemNo(string ItemNumber );
 
-        
+
 
     }
 }

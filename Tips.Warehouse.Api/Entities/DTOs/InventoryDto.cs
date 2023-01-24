@@ -46,8 +46,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal Balance_Quantity { get; set; }
         [Required]
         public string? UOM { get; set; }
-        [DefaultValue(false)]
-        public bool IsStockAvailable { get; set; }
+        
         [Required]
         public string? Warehouse { get; set; }
         [Required]
@@ -77,8 +76,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         [Required]
         public string ProjectNumber { get; set; }
         public decimal Balance_Quantity { get; set; }
-        public string? UOM { get; set; }
-        public bool IsStockAvailable { get; set; }
+        public string? UOM { get; set; }       
         public string Warehouse { get; set; }
         public string? Location { get; set; }
         public string? GrinNo { get; set; }
@@ -89,5 +87,12 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ReferenceIDFrom { get; set; }
         public string? ShopOrderNo { get; set; }
         public string Unit { get; set; }
+    }
+
+    public class GetInventoryListByItemNo
+    {
+        public int InventoryId { get; set; }
+        public string ItemNumber { get; set; }
+        public decimal Balance_Quantity { get; set; }
     }
 }

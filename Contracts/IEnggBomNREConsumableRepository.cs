@@ -11,6 +11,7 @@ namespace Contracts
     {
         Task<IEnumerable<NREConsumable>> GetAllEnggNREConsumable();
         Task<NREConsumable> GetEnggNREConsumableById(int id);
+        Task<NREConsumable> GetAllNREConsumableLists(int id);
         Task<IEnumerable<NREConsumable>> GetAllActiveEnggNREConsumable();
         Task<int?> CreateEnggNREConsumable(NREConsumable bomNREConsumable);
         Task<string> UpdateEnggNREConsumable(NREConsumable bomNREConsumable);

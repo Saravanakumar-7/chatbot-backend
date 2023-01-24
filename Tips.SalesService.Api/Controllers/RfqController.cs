@@ -12,6 +12,10 @@ using System.Net;
 using Newtonsoft.Json;
 using Microsoft.Build.Framework;
 using RfqCSDeliveryScheduleDto = Tips.SalesService.Api.Entities.DTOs.RfqCSDeliveryScheduleDto;
+using System.Net.Http;
+using System.Text;
+using Newtonsoft.Json.Linq;
+using System.Dynamic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,7 +36,13 @@ namespace Tips.SalesService.Api.Controllers
         private IReleaseLpRepository _releaseLpRepository;
         private IRfqCustomFieldRepository _rfqCustomFieldRepository;
         private IRfqCustomGroupRepository _rfqCustomGroupRepository;
-        public RfqController(IRfqCustomGroupRepository rfqCustomGroupRepository, IRfqCustomFieldRepository rfqCustomFieldRepository, IRfqEnggItemRepository rfqenggItemRepository, IReleaseLpRepository releaseLpRepository, IRfqCustomerSupportRepository repository, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, IRfqLPCostingRepository rfqLPCostingRepository, IRfqEnggRepository rfqEnggRepository, ILoggerManager logger, IMapper mapper)
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
+        public RfqController(IRfqCustomGroupRepository rfqCustomGroupRepository, IRfqCustomFieldRepository rfqCustomFieldRepository
+            , IRfqEnggItemRepository rfqenggItemRepository, IReleaseLpRepository releaseLpRepository, 
+            IRfqCustomerSupportRepository repository, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository,
+            IRfqRepository rfqRepository, IRfqLPCostingRepository rfqLPCostingRepository, IRfqEnggRepository rfqEnggRepository,
+            ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _repository = repository;
             _logger = logger;
@@ -45,6 +55,8 @@ namespace Tips.SalesService.Api.Controllers
             _releaseLpRepository = releaseLpRepository;
             _rfqCustomFieldRepository = rfqCustomFieldRepository;
             _rfqCustomGroupRepository = rfqCustomGroupRepository;
+            _httpClient = httpClient;
+            _config = config;
         }
 
         //rfq getall 
@@ -311,6 +323,31 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet("{CustomerName}")]
+        public async Task<IActionResult> GetAllActiveRfqNumberListByCustomerName(string CustomerName)
+        {
+            ServiceResponse<IEnumerable<RfqNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqNumberListDto>>();
+            try
+            {
+                var getAllActiveRfqNumberListByCustomerName = await _rfqRepository.GetAllActiveRfqNumberListByCustomerName(CustomerName);
+                var result = _mapper.Map<IEnumerable<RfqNumberListDto>>(getAllActiveRfqNumberListByCustomerName);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ActiveRfqNumberListByCustomerName";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveRfqNumberListByCustomerName action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet("{RfqNumber}")]
         public async Task<IActionResult> GetAllActiveRfqEnggItemByRfqNumber(string RfqNumber)
         {
@@ -335,6 +372,77 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //nayagam
+
+        [HttpGet]
+        public async Task<IActionResult> GetDetailsForLPCostingByRfqNumber(string rfqNumber)
+        {
+            ServiceResponse<RfqLPCostingDto> serviceResponse = new ServiceResponse<RfqLPCostingDto>();
+
+            try
+            {   
+                var rfqEnggDetails = await _rfqenggRepository.GetRfqEnggByRfqNumber(rfqNumber);
+
+                List<string?>? itemDetails = rfqEnggDetails?.RfqEnggItems?.Select(x => x.ItemNumber).ToList();
+                
+                List<ItemMasterRoutingListDto>? itemsRoutingDetailsDynamic = new List<ItemMasterRoutingListDto>();
+                if (itemDetails != null)
+                {
+                    var itemDetailsString = JsonConvert.SerializeObject(itemDetails);
+                    var content = new StringContent(itemDetailsString, Encoding.UTF8, "application/json");
+                    var inventoryObjectResult = await _httpClient.PostAsync(string.Concat(_config["ItemMasterAPI"], "GetItemsRoutingDetailsForLpCosting"), content);
+                    var itemsRoutingDetailsJsonString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                    dynamic itemsRoutingDetailsJson = JsonConvert.DeserializeObject(itemsRoutingDetailsJsonString);
+                    var data = itemsRoutingDetailsJson.data;
+                    itemsRoutingDetailsDynamic = data.ToObject<List<ItemMasterRoutingListDto>>();
+                }
+
+
+                List<RfqLPCostingItem> rfqLPCostingItems = new List<RfqLPCostingItem>();
+
+                foreach (var item in rfqEnggDetails.RfqEnggItems)
+                {
+                    var itemProcessList = itemsRoutingDetailsDynamic.Where(i => i.ItemNumber == item.ItemNumber).ToList();
+                    List<RfqLPCostingProcess> processStepsList = _mapper.Map<List<RfqLPCostingProcess>>(itemProcessList);
+                    RfqLPCostingItem rfqLPCostingItem = new RfqLPCostingItem
+                    {
+                        ItemNumber = item.ItemNumber,
+                        Description = item.Description,
+                        TotalCost = 0,
+                        MaterialCost =0,
+                        MarkUpForMaterial =0,
+                        RfqLPCostingProcesses = processStepsList,
+                        RfqLPCostingNREConsumables =null,
+                        RfqLPCostingOtherCharges =null
+                    };
+                    rfqLPCostingItems.Add(rfqLPCostingItem);
+                }
+
+                var rfqLPCostingDetail = new RfqLPCosting();
+                rfqLPCostingDetail.RfqNumber = rfqEnggDetails.RFQNumber;
+                rfqLPCostingDetail.CustomerName = rfqEnggDetails.CustomerName;
+                rfqLPCostingDetail.RfqLPCostingItems = rfqLPCostingItems;
+
+                RfqLPCostingDto rfqLPCostingDto = _mapper.Map<RfqLPCostingDto>(rfqLPCostingDetail);
+                
+                serviceResponse.Data = rfqLPCostingDto;
+                serviceResponse.Message = $"Returned RfqEnggByRfqNumber with rfqNumber: {rfqNumber}";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside RfqCustomerSupportByRfqNumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
 
         //get RfqLPCosting by Rfqnumber
 
@@ -1409,6 +1517,33 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //Get BulkReleaseData By RfqNumber
+        [HttpGet("{RfqNumber}")]
+        public async Task<IActionResult> GetRfqReleaseLpByRfqNumber(string RfqNumber)
+        {
+            ServiceResponse<IEnumerable<ReleaseLpDto>> serviceResponse = new ServiceResponse<IEnumerable<ReleaseLpDto>>();
+            try
+            {
+                var getRfqReleaseLpByRfqNumber = await _releaseLpRepository.GetRfqReleaseLpByRfqNumber(RfqNumber);
+                var result = _mapper.Map<IEnumerable<ReleaseLpDto>>(getRfqReleaseLpByRfqNumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all BulkRelease Data";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqReleaseLpByRfqNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> BulkRelease([FromBody] List<ReleaseLpDtoPost> releaseLpDtoPosts)
         {
@@ -1450,7 +1585,7 @@ namespace Tips.SalesService.Api.Controllers
                 _rfqRepository.Update(lpreleases);
                 _releaseLpRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "Successfully Released Bulkdata";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("ReleaseLpById", serviceResponse);

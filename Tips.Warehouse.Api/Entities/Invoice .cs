@@ -6,10 +6,11 @@ namespace Tips.Warehouse.Api.Entities
     {
         [Key]
         public int Id { get; set; }
-        public string? InvoiceNo { get; set; }
+        public string? InvoiceNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CompanyName { get; set; }
+        public string? DOType { get; set; }
         public string? Remarks { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }

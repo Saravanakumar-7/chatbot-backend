@@ -17,13 +17,15 @@ namespace Tips.SalesService.Api.Controllers
     public class SalesOrderController : ControllerBase
     {
         private ISalesOrderRepository _repository;
+        private ISalesOrderItemsRepository _salesOrderItemsRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        public SalesOrderController(ISalesOrderRepository repository, ILoggerManager logger, IMapper mapper)
+        public SalesOrderController(ISalesOrderRepository repository, ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _salesOrderItemsRepository = salesOrderItemsRepository;
         }
 
         // GET: api/<SalesOrderController>
@@ -141,17 +143,46 @@ namespace Tips.SalesService.Api.Controllers
                 var createSalesOrder = _mapper.Map<SalesOrder>(salesOrderDtoPost);
                 var salesOrderItemsDto = salesOrderDtoPost.SalesOrderItems;
                 var salesOrderItemsList = new List<SalesOrderItems>();
+
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
+
+
+
+                var newcount = await _repository.GetSONumberAutoIncrementCount(date);
+
+                if (newcount > 0)
+                {
+                    var number = newcount + 1;
+                    string e = String.Format("{0:D4}", number);
+                    createSalesOrder.SalesOrderNumber = days + months + years + "SO" + (e);
+                }
+                else
+                {
+                    var count = 1;
+                    var e = count.ToString("D4");
+                    createSalesOrder.SalesOrderNumber = days + months + years + "SO" + (e);
+                }
+
                 if (salesOrderItemsDto != null) 
                 {
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
                     {
                         SalesOrderItems salesOrderItems = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
+                        salesOrderItems.SalesOrderNumber = createSalesOrder.SalesOrderNumber;
+                        //salesOrderItemsDto[i].sa = createSalesOrder.SalesOrderNumber;
                         salesOrderItemsList.Add(salesOrderItems);
                     }
                 }
+                
                 createSalesOrder.SalesOrdersItems = salesOrderItemsList;
+                
+
                 await _repository.CreateSalesOrder(createSalesOrder);
-                _repository.SaveAsync();
+                _repository.SaveAsync(); 
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = " SalesOrder Successfully Created";
                 serviceResponse.Success = true;
@@ -317,6 +348,216 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+
+        [HttpGet("ItemNo")]
+        public async Task<IActionResult> GetprojectNoByItemNo(string itemNo)
+        {
+            ServiceResponse<ListOfProjectNoDto> serviceResponse = new ServiceResponse<ListOfProjectNoDto>();
+
+            try
+            {
+                var getProjectByItemNo = await _salesOrderItemsRepository.GetprojectNoByItemNo(itemNo);
+                if (getProjectByItemNo == null)
+                {
+                    _logger.LogError($"ProjectNo with id: {itemNo}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ProjectNo with id: {itemNo}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned ProjectNumber with id: {itemNo}");
+                    var result = _mapper.Map<ListOfProjectNoDto>(getProjectByItemNo);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ProjectNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
+        //get salesorder Detais by CustomerId
+
+        [HttpGet]
+        public async Task<IActionResult> GetSalesOrderDetailsByCustomerId(int Customerid)
+        {
+            ServiceResponse<IEnumerable<ListofSalesOrderDetails>> serviceResponse = new ServiceResponse<IEnumerable<ListofSalesOrderDetails>>();
+
+            try
+            {
+                var getSalesDetailByCustomerId = await _repository.GetSalesOrderDetailsByCustomerId(Customerid);
+                if (getSalesDetailByCustomerId == null)
+                {
+                    _logger.LogError($"SalesOrderDetail with id: {Customerid}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderDetail with id: {Customerid}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned SalesOrderDetail with id: {Customerid}");
+                    var result =  _mapper.Map<IEnumerable<ListofSalesOrderDetails>>(getSalesDetailByCustomerId);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        //getprojectnumberbyitemnumber
+
+        //getsalesorderDetailByprojectNoanditemNo --
+        [HttpGet]
+        public async Task<IActionResult> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo)
+         {
+            ServiceResponse<GetSalesOrderDetailsDto> serviceResponse = new ServiceResponse<GetSalesOrderDetailsDto>();
+
+            try
+            {
+                var getSalesDetail = await _salesOrderItemsRepository.getSalesOrderDetailByProjectNoandItemNo(ItemNo, ProjectNo);
+                if (getSalesDetail == null)
+                {
+                    _logger.LogError($"SalesOrderDetail with id: {ItemNo}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderDetail with id: {ItemNo}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned SalesOrderDetail with id: {ItemNo}");
+                    var result = _mapper.Map<GetSalesOrderDetailsDto>(getSalesDetail);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        //pass data from btodeliveryorder using _httpclient warehoouse service to salesservice
+
+        //[HttpGet]
+        //public async Task<IActionResult> GetBtoDeliveryOrderDetailsBySOandItemNo(string ItemNumber, int SalesOrderId)
+
+        //{
+        //    ServiceResponse<SalesOrderDto> serviceResponse = new ServiceResponse<SalesOrderDto>();
+
+        //    try
+        //    {
+        //        var getBtoDeliveryOrderDetailsBySOandItemNo = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(ItemNumber, SalesOrderId);
+        //        if (getBtoDeliveryOrderDetailsBySOandItemNo == null)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"SalesOrderDetails with id: {SalesOrderId}, hasn't been found in db.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            _logger.LogError($"SalesOrderDetails with id: {SalesOrderId}, hasn't been found in db.");
+        //            return NotFound(serviceResponse);
+        //        }
+        //        else
+        //        {
+        //            _logger.LogInfo($"Returned SalesOrderDetails with id: {SalesOrderId}");
+        //            var result = _mapper.Map<SalesOrderDto>(getBtoDeliveryOrderDetailsBySOandItemNo);
+        //            serviceResponse.Data = result;
+        //            serviceResponse.Message = "Returned SalesOrderDetails with id Successfully";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(serviceResponse);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside SalesOrderDetails action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Something went wrong. Please try again!";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
+
+
+
+
+        //getsalesorderdetailbyitemnoandsalesorderId
+
+
+        //[HttpGet]
+        //public async Task<IActionResult> getSalesOrderDetailBySalesOrderIdNoandItemNo(string ItemNo, string SalesOrderId)
+        //{
+        //    ServiceResponse<GetSalesOrderGSTListDto> serviceResponse = new ServiceResponse<GetSalesOrderGSTListDto>();
+
+        //    try
+        //    {
+        //        var getSalesDetail = await _salesOrderItemsRepository.getSOBySalesOrderIdNoandItemNo(ItemNo, SalesOrderId);
+        //        if (getSalesDetail == null)
+        //        {
+        //            _logger.LogError($"SalesOrderDetail with id: {ItemNo}, hasn't been found in db.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"SalesOrderDetail with id: {ItemNo}, hasn't been found in db.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            _logger.LogInfo($"Returned SalesOrderDetail with id: {ItemNo}");
+        //            var result = _mapper.Map<GetSalesOrderDetailsDto>(getSalesDetail);
+        //            serviceResponse.Data = result;
+        //            serviceResponse.Message = "Success";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(result);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Inter server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, "Internal server error");
+        //    }
+        //}
+
+
         //public Task<IActionResult> UpdateSOBasedOnCreatingDO()
         //{
         //    return null;
@@ -327,11 +568,11 @@ namespace Tips.SalesService.Api.Controllers
         //    return null;
 
         //}
-         
 
 
 
-}
+
+    }
 
 
 }

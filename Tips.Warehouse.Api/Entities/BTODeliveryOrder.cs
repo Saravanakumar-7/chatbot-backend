@@ -9,7 +9,8 @@ namespace Tips.Warehouse.Api.Entities
         public string CustomerName { get; set; }
         public string CustomerAliasName { get; set; }
         public string CustomerLeadId { get; set; }
-        public string BTONumber { get; set; }
+        public string BTONumber { get; set; }        
+        public int SalesOrderId { get; set; }
         public string PONumber { get; set; }
         public string IssuedTo { get; set; }
         public DateTime DODate { get; set; }
