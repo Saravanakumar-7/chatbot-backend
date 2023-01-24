@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
@@ -29,12 +30,17 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<Inventory>> GetAllInventory(PagingParameter pagingParameter)
+        public async Task<PagedList<Inventory>> GetAllInventory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var getAllInventory = PagedList<Inventory>.ToPagedList(FindAll()
-             .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var getAllInventory = FindAll()
+                   .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProjectNumber.Contains(searchParams.SearchValue) ||
+                   inv.PartNumber.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue)
+                   || inv.MftrPartNumber.Contains(searchParams.SearchValue) || inv.Warehouse.Contains(searchParams.SearchValue) || inv.PartType.Contains(searchParams.SearchValue)
+                   || inv.Location.Contains(searchParams.SearchValue))));
 
-            return getAllInventory;
+            return PagedList<Inventory>.ToPagedList(getAllInventory, pagingParameter.PageNumber, pagingParameter.PageSize);
+           
+
         }
 
         public async Task<Inventory> GetInventoryDetailsByGrinNo(string GrinNo, string ItemNumber, string ProjectNumber)

@@ -22,7 +22,7 @@ namespace Tips.SalesService.Api.Entities
         public string? ShopOrderNumber { get; set; }
         public string? IssuedBy { get; set; }
         public DateTime? IssuedOn { get; set; }
-        public bool IssuedStatus { get; set; }
+        public Enum IssuedStatus { get; set; }
 
         public string Unit { get; set; }
 
