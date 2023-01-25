@@ -10,11 +10,11 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? ItemNo { get; set; }
         public string? Description { get; set; }
         public string? SalesOrderNO { get; set; }
-        public decimal UOM { get; set; }
+        public string? UOM { get; set; }
         public decimal? BalanceQty { get; set; }
         public decimal? DispatchQty { get; set; }
         public decimal? ShopOrderQty { get; set; } 
-        public decimal Currency { get; set; }
+        public string? Currency { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal OrderQty { get; set; }
         public decimal SGST { get; set; }
@@ -30,8 +30,8 @@ namespace Tips.SalesService.Api.Entities.Dto
     {
         public string? ItemNo { get; set; }
         public string? Description { get; set; } 
-        public decimal UOM { get; set; }
-        public decimal Currency { get; set; }
+        public string? UOM { get; set; }
+        public string? Currency { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal OrderQty { get; set; }
         public decimal? BalanceQty { get; set; }
@@ -50,8 +50,8 @@ namespace Tips.SalesService.Api.Entities.Dto
      
         public string? ItemNo { get; set; }
         public string? Description { get; set; }
-        public decimal UOM { get; set; } 
-        public decimal Currency { get; set; }
+        public string? UOM { get; set; } 
+        public string? Currency { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal OrderQty { get; set; }
         public decimal SGST { get; set; }

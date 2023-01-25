@@ -11,8 +11,8 @@ namespace Tips.Warehouse.Api.Entities
         public int SalesOrderId { get; set; }
         public string Description { get; set; } 
         public decimal UnitPrice { get; set; }
-        public string UOC { get; set; }
-        public decimal UOM { get; set; }
+        public string? UOC { get; set; }
+        public string? UOM { get; set; }
         public decimal FGOrderQty { get; set; }
         public decimal OrderBalanceQty { get; set; }
         public decimal FGStock { get; set; }

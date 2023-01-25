@@ -25,7 +25,9 @@ builder.Services.AddScoped<IReleaseCostBomRepository, ReleaseCostBomRepository>(
 builder.Services.AddScoped<IReleaseEnggBomRepository, ReleaseEnggBomRepository>();
 builder.Services.AddScoped<IEnggBomGroupRepository, EnggBomGroupRepository>();
 builder.Services.AddScoped<IReleaseEnggBomRepository, ReleaseEnggBomRepository>();
- 
+builder.Services.AddScoped<ILeadRepository, LeadRepository>();
+
+
 
 
 var app = builder.Build();

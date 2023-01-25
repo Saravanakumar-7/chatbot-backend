@@ -22,10 +22,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Required]
         public string ItemDescription { get; set; }
-        public string? PONumber { get; set; }
-
-        //[Required]
-        //public string? ProjectNumber { get; set; }
+        public string? PONumber { get; set; } 
 
         [Required]
         public string MftrItemNumber { get; set; }
@@ -49,14 +46,18 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
 
+        [Precision(13, 3)]
+        public decimal AcceptedQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal RejectedQty { get; set; }
 
         [Required]
         public string UOM { get; set; }
 
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
-
-        //public List<DocumentUploadDto> COCUpload { get; set;
+         
         public string? COCUpload { get; set; }
 
 
@@ -94,6 +95,11 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? Qty { get; set; }
 
+        [Precision(13, 3)]
+        public decimal AcceptedQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal RejectedQty { get; set; }
 
         [Required(ErrorMessage = "MftrItemNumber is required")]
         public string MftrItemNumber { get; set; }

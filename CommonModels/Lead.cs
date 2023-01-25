@@ -12,6 +12,8 @@ namespace Entities
         [Key]
         public int Id { get; set; }
 
+        public string? LeadID { get; set; }
+
         public string? ContactName { get; set; }
 
         public string? CustomerFirstName { get; set; }

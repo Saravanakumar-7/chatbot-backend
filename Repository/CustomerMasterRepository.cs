@@ -44,6 +44,7 @@ namespace Repository
                                     CustomerAliasName = x.CustomerAliasName,
                                     CustomerName = x.CustomerName 
                                 })
+                                .OrderByDescending(x => x.Id)
                               .ToListAsync();   
 
             return getAllActiveCustomerIdNameList;
@@ -51,7 +52,7 @@ namespace Repository
 
         public async Task<IEnumerable<CustomerMaster>> GetAllActiveCustomerMasters()
         {
-            var getAllActiveCustomermasterList = await FindAll().ToListAsync();
+            var getAllActiveCustomermasterList = await FindAll().OrderByDescending(x=>x.Id).ToListAsync();
             return getAllActiveCustomermasterList;
         }
 
@@ -71,7 +72,7 @@ namespace Repository
                                 .Include(m => m.CustomerContacts)
                                 .Include(s => s.CustomerBanking)
                                 .Include(v => v.CustomerMasterHeadCountings)
-                                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+                                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
             return getAllCustomerMasterList;

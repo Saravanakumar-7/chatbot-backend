@@ -26,6 +26,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IGrinRepository, GrinRepository>();
 builder.Services.AddScoped<IIQCConfirmationRepository, IQCConfirmationRepository>();
 builder.Services.AddScoped<IBinningRepository, BinningRepository>();
+builder.Services.AddScoped<IGrinPartsRepository, GrinPartsRepository>();
+
 
 builder.Services.AddScoped<IDocumentUploadRepository, UploadDocumentRepository>();
 builder.Services.AddHttpClient();

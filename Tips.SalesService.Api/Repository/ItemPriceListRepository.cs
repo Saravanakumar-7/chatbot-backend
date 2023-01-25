@@ -26,6 +26,15 @@ namespace Tips.SalesService.Api.Repository
             return result.Id;
         }
 
+        public async Task<ItemPriceList> CreateFromReleaseLp(ItemPriceList itemPriceList)
+        {
+            itemPriceList.CreatedBy = "Admin";
+            itemPriceList.CreatedOn = DateTime.Now;
+            itemPriceList.Unit = "Bangalore";
+            var result = await Create(itemPriceList);
+            return result;
+        }
+
         public async Task<string> DeleteItemPriceList(ItemPriceList itemPriceList)
         {
             Delete(itemPriceList);
@@ -36,7 +45,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<PagedList<ItemPriceList>> GetAllItemPriceList(PagingParameter pagingParameter)
         {
 
-            var getAllItemPriceList = PagedList<ItemPriceList>.ToPagedList(FindAll()                                
+            var getAllItemPriceList = PagedList<ItemPriceList>.ToPagedList(FindAll().OrderByDescending(x => x.Id)                                
                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return getAllItemPriceList;

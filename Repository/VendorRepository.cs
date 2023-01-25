@@ -34,7 +34,7 @@ namespace Repository
 
         public async Task<IEnumerable<VendorMaster>> GetAllActiveVendorMasters()
         {
-            var getAllActiveVendorMastersList = await FindAll().ToListAsync();
+            var getAllActiveVendorMastersList = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
             return getAllActiveVendorMastersList;
             
 
@@ -48,7 +48,7 @@ namespace Repository
                                 .Include(x => x.Addresses)
                                 .Include(m => m.Contacts)
                                 .Include(v => v.HeadCountings)
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+               .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
 

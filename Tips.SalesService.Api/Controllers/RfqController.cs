@@ -27,6 +27,7 @@ namespace Tips.SalesService.Api.Controllers
     {
         private IRfqCustomerSupportRepository _repository;
         private IRfqCustomerSupportItemRepository _itemRepository;
+        private IItemPriceListRepository _itemPriceListRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IRfqRepository _rfqRepository;
@@ -38,7 +39,7 @@ namespace Tips.SalesService.Api.Controllers
         private IRfqCustomGroupRepository _rfqCustomGroupRepository;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        public RfqController(IRfqCustomGroupRepository rfqCustomGroupRepository, IRfqCustomFieldRepository rfqCustomFieldRepository
+        public RfqController(IRfqCustomGroupRepository rfqCustomGroupRepository, IItemPriceListRepository itemPriceListRepository, IRfqCustomFieldRepository rfqCustomFieldRepository
             , IRfqEnggItemRepository rfqenggItemRepository, IReleaseLpRepository releaseLpRepository, 
             IRfqCustomerSupportRepository repository, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository,
             IRfqRepository rfqRepository, IRfqLPCostingRepository rfqLPCostingRepository, IRfqEnggRepository rfqEnggRepository,
@@ -55,6 +56,7 @@ namespace Tips.SalesService.Api.Controllers
             _releaseLpRepository = releaseLpRepository;
             _rfqCustomFieldRepository = rfqCustomFieldRepository;
             _rfqCustomGroupRepository = rfqCustomGroupRepository;
+            _itemPriceListRepository = itemPriceListRepository;
             _httpClient = httpClient;
             _config = config;
         }
@@ -1569,21 +1571,41 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var bulklist = _mapper.Map<List<ReleaseLp>>(releaseLpDtoPosts);
+                var releasseLpListEntity = _mapper.Map<List<ReleaseLp>>(releaseLpDtoPosts);
 
+                var rfqNumber = releasseLpListEntity[0].RfqNumber;
 
-                var bulkData = bulklist[0].RfqNumber;
-
-                var lpreleases = await _rfqRepository.RfqLpCostingReleaseByRfqNumbers(bulkData);
-                lpreleases.IsLpCostingRelease = true;
-
-                foreach (var releaseLpdetails in bulklist)
+                
+                foreach (var releaseLpdetails in releasseLpListEntity)
                 {
 
                     _releaseLpRepository.BulkRelease(releaseLpdetails);
+ 
                 }
-                _rfqRepository.Update(lpreleases);
+                
                 _releaseLpRepository.SaveAsync();
+
+                var lpReleases = await _rfqRepository.RfqLpCostingReleaseByRfqNumbers(rfqNumber);
+                lpReleases.IsLpCostingRelease = true;
+                _rfqRepository.Update(lpReleases);
+                _rfqRepository.SaveAsync();
+
+                //create data to itempricelist table
+
+                var itemPriceLists = _mapper.Map<List<ItemPriceList>>(releaseLpDtoPosts);
+                //await _itemPriceListRepository.CreateFromReleaseLp(bulklists);
+
+                foreach (var item in itemPriceLists)
+                {
+                    //item.ReleaseLpId = need to work on this storing the LpId.
+                    await _itemPriceListRepository.CreateFromReleaseLp(item);
+                    
+                }
+
+                _itemPriceListRepository.SaveAsync();
+                //var createRfq = _mapper.Map<Rfq>(rfqPostDto);
+                //aravind
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Released Bulkdata";
                 serviceResponse.Success = true;

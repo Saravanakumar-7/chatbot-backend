@@ -19,9 +19,10 @@ namespace Repository
         }
 
         public async Task<Lead> CreateLead(Lead lead)
-        {
+        { 
+            var date = DateTime.Now;
             lead.CreatedBy = "Admin";
-            lead.CreatedOn = DateTime.Now;
+            lead.CreatedOn = date.Date;
             lead.LastModifiedBy = "Admin";
             lead.LastModifiedOn = DateTime.Now;
             lead.Unit = "Bangalore";
@@ -38,11 +39,18 @@ namespace Repository
             return result;
         }
 
+        public async Task<int?> GetLeadIDIncrementCount(DateTime date)
+        {
+            var getBTONumberAutoIncrementCount = TipsMasterDbContext.Leads.Where(x => x.CreatedOn == date.Date).Count();
+
+            return getBTONumberAutoIncrementCount;
+        }
+
         public async Task<PagedList<Lead>> GetAllLeads(PagingParameter pagingParameter)
         {
             var GetallleadDetails = PagedList<Lead>.ToPagedList(FindAll()
                                 .Include(x => x.LeadAddress)
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+                                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
             return GetallleadDetails;
         }      
 

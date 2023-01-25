@@ -48,6 +48,11 @@ namespace Tips.Grin.Api.Entities
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
 
+        [Precision(13, 3)]
+        public decimal AcceptedQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal RejectedQty { get; set; }
 
         [Required]
         public string UOM { get; set; }

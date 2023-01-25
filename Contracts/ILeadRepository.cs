@@ -12,7 +12,7 @@ namespace Contracts
     {
         Task<PagedList<Lead>> GetAllLeads(PagingParameter pagingParameter);
         Task<Lead> GetLeadById(int id);
-        //Task<IEnumerable<CustomerInfo>> GetAllActiveVendors();
+        Task<int?> GetLeadIDIncrementCount(DateTime date);
         Task<Lead> CreateLead(Lead lead);
         Task<string> UpdateLead(Lead lead);
         Task<string> DeleteLead(Lead lead);

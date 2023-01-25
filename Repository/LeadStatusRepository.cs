@@ -44,7 +44,7 @@ namespace Repository
         public async Task<IEnumerable<LeadStatus>> GetAllLeadStatus()
         {
 
-            var GetallLeadStatus = await FindAll().ToListAsync();
+            var GetallLeadStatus = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
 
             return GetallLeadStatus;
         }

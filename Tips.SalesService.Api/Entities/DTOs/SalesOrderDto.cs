@@ -9,6 +9,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string ProjectNumber { get; set; }
         public string QuoteNumber { get; set; }
+        public string SalesOrderNumber { get; set; }
         public DateTime OrderDate { get; set; }
         public string OrderType { get; set; }
         public string CustomerName { get; set; }

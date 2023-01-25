@@ -47,22 +47,7 @@ namespace Tips.SalesService.Api.Repository
             quote.RevisionNumber = Convert.ToDecimal(version);
             var result = await Create(quote);
             return result;
-        } 
-        //public async Task<Quote> GetVendorMasterById(int id)
-        //{
-        //    var getVendorMasterbyId = await _tipsSalesServiceDbContext.quotes.Where(x => x.Id == id)
-        //                        .Include(x => x.quoteGenerals)
-        //                        .Include(x => x.quoteAdditionalCharges)
-        //                        .Include(m => m.quoteRFQNotes)
-        //                        .Include(v => v.quoteOtherTerms)
-        //                        .Include(v => v.quoteSpecialTerms)
-
-        //                        .FirstOrDefaultAsync();
-
-        //    return getVendorMasterbyId;
-
-        //}
-
+        }  
 
         public async Task<string> DeleteQuote(Quote quote)
         {
@@ -73,7 +58,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<Quote>> GetAllActiveQuote()
         {
-            var quoteDetails = await FindAll().ToListAsync();
+            var quoteDetails = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
             return quoteDetails;
         }
 
@@ -85,8 +70,7 @@ namespace Tips.SalesService.Api.Repository
                                .Include(m => m.quoteOtherTerms)
                                .Include(i => i.quoteRFQNotes)
                                .Include(i => i.quoteSpecialTerms)
-
-              .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+              .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return quoteDetails;
         }

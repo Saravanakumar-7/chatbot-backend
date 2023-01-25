@@ -21,6 +21,8 @@ namespace Tips.Grin.Api.Entities
 
         public string? ItemId { get; set; }
 
+        public int GrinPartId { get; set; }
+
         public string? ProjectNumber { get; set; }
 
         [Precision(13,3)]

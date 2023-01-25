@@ -21,18 +21,20 @@ namespace Tips.Grin.Api.Controllers
     public class IQCConfirmationController : ControllerBase
     {
         private IIQCConfirmationRepository _iQCConfirmationRepository;
+        private IGrinPartsRepository _grinPartsRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public IQCConfirmationController(IIQCConfirmationRepository iQCConfirmationRepository,ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config) 
+        public IQCConfirmationController(IIQCConfirmationRepository iQCConfirmationRepository, IGrinPartsRepository grinPartsRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config) 
         {
             _logger = logger;
             _iQCConfirmationRepository = iQCConfirmationRepository;
             _mapper = mapper;
             _httpClient = httpClient;
             _config = config;
+            _grinPartsRepository = grinPartsRepository;
         }
 
         [HttpGet]
@@ -186,6 +188,7 @@ namespace Tips.Grin.Api.Controllers
                 var iQCCreate = _mapper.Map<IQCConfirmation>(iQCConfirmationPostDto);
                 
                 await _iQCConfirmationRepository.CreateIqc(iQCCreate);
+
                 _iQCConfirmationRepository.SaveAsync();
 
                 // Inventory Update Code
@@ -201,6 +204,16 @@ namespace Tips.Grin.Api.Controllers
                 var json = JsonConvert.SerializeObject(inventoryObject);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"], "UpdateInventory/", inventoryObject.id), data);
+                
+                //update accepted qty and rejected qty in grin model 
+                
+                var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iQCCreate.GrinPartId, iQCCreate.AcceptedQty.ToString(), iQCCreate.RejectedQty.ToString());
+
+                var iQCCreates = _mapper.Map<GrinParts>(updatedGrinPartsQty);
+
+                string result = await _grinPartsRepository.UpdateGrinQty(iQCCreates);
+
+                _grinPartsRepository.SaveAsync();
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "IQCConfirmation Successfully Created";

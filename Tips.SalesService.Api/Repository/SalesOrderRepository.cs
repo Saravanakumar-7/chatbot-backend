@@ -35,7 +35,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<SalesOrder>> GetAllActiveSalesOrder()
         {
-            var getAllActiveSalesOrder = await FindAll().ToListAsync();
+            var getAllActiveSalesOrder = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
             return getAllActiveSalesOrder;
         }
 
@@ -44,7 +44,7 @@ namespace Tips.SalesService.Api.Repository
 
             var getAllSalesOrders = PagedList<SalesOrder>.ToPagedList(FindAll()
                                 .Include(t => t.SalesOrdersItems)
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+               .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return getAllSalesOrders;
         }
@@ -91,16 +91,7 @@ namespace Tips.SalesService.Api.Repository
             string result = $"SalesOrder of Detail {salesOrder.Id} is updated successfully!";
             return result;
         }
-
-        //public Task<string> UpdateSOBasedOnCreatingDO()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public Task<string> UpdateSOBasedOnCreatingShopOrder()
-        //{
-        //    throw new NotImplementedException();
-        //}
+         
     }
     public class SalesOrderItemRepository : RepositoryBase<SalesOrderItems>, ISalesOrderItemsRepository
     {
@@ -130,16 +121,15 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
-        //public async Task<IEnumerable<SalesOrderItems>> GetSalesOrderDetailsByIdandItemNo(string ItemNumber, int SalesOrderId)
-        //{
-        //    var getSalesOrderDetailsBySOandItemNo = await _tipsSalesServiceDbContexts.SalesOrdersItems
-        //         .Where(x => x.ItemNo == ItemNumber && x.SalesOrderId == SalesOrderId)
-        //                  .ToListAsync();
+        public async Task<IEnumerable<SalesOrderItems>> GetSalesOrderDetailsByIdandItemNo(string ItemNumber, int SalesOrderId)
+        {
+            var getSalesOrderDetailsBySOandItemNo = await _tipsSalesServiceDbContexts.SalesOrdersItems
+                 .Where(x => x.ItemNo == ItemNumber && x.SalesOrderId == SalesOrderId)
+                          .ToListAsync();
 
-        //    return getSalesOrderDetailsBySOandItemNo;
-        //}
+            return getSalesOrderDetailsBySOandItemNo;
+        }
          
-
         public async Task<IEnumerable<GetSalesOrderDetailsDto>> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo)
         {
 
