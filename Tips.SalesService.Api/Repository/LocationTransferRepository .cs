@@ -20,7 +20,6 @@ namespace Tips.SalesService.Api.Repository
             locationTransfer.CreatedBy = "Admin";
             locationTransfer.CreatedOn = DateTime.Now;
             locationTransfer.Unit = "Bangalore";
-
             var result = await Create(locationTransfer);
             return result.Id;
         }
@@ -34,7 +33,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<LocationTransfer>> GetAllLocationTransfer(PagingParameter pagingParameter)
         {
-            var getAllLocationTransfers = PagedList<LocationTransfer>.ToPagedList(FindAll()
+            var getAllLocationTransfers = PagedList<LocationTransfer>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return getAllLocationTransfers;

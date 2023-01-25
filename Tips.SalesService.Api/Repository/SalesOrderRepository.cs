@@ -25,7 +25,12 @@ namespace Tips.SalesService.Api.Repository
             var result = await Create(salesOrder);
             return result.Id;
         }
+        public async Task<int?> GetSONumberAutoIncrementCount(DateTime date)
+        {
+            var getSONumberAutoIncrementCount = _tipsSalesServiceDbContext.SalesOrders.Where(x => x.CreatedOn == date.Date).Count();
 
+            return getSONumberAutoIncrementCount;
+        }
         public async Task<string> DeleteSalesOrder(SalesOrder salesOrder)
         {
             Delete(salesOrder);
@@ -35,7 +40,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<SalesOrder>> GetAllActiveSalesOrder()
         {
-            var getAllActiveSalesOrder = await FindAll().ToListAsync();
+            var getAllActiveSalesOrder = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
             return getAllActiveSalesOrder;
         }
 
@@ -110,7 +115,7 @@ namespace Tips.SalesService.Api.Repository
             OrderStatus[] status = { OrderStatus.Open, OrderStatus.PartiallyClosed };
 
             IEnumerable<ListOfProjectNoDto> getProjectNumberList = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                                 .Where(b => b.ItemNo == itemNo && status.Contains(b.StatusEnum))
+                                 .Where(b => b.ItemNumber == itemNo && status.Contains(b.StatusEnum))
                                  .Select(x => new ListOfProjectNoDto()
                                  {
                                      Id = x.Id,
@@ -138,7 +143,7 @@ namespace Tips.SalesService.Api.Repository
         {
 
             IEnumerable<GetSalesOrderDetailsDto> getSalesorderList = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                                .Where(b => b.ItemNo == ItemNo && b.ProjectNumber == ProjectNo)
+                                .Where(b => b.ItemNumber == ItemNo && b.ProjectNumber == ProjectNo)
                                 .Select(x => new GetSalesOrderDetailsDto()
                                 {
                                     Id = x.Id,

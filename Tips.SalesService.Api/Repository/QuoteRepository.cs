@@ -32,12 +32,12 @@ namespace Tips.SalesService.Api.Repository
             quote.CreatedBy = "Admin";
             quote.CreatedOn = DateTime.Now;            
             quote.Unit = "Bangalore";
-            var getIdByRfqNumber = _tipsSalesServiceDbContext.quotes
+            var getIdByRfqNumber = _tipsSalesServiceDbContext.Quotes
                 .Where(x => x.RFQNumber == quote.RFQNumber)
                 .OrderByDescending(x => x.Id)
                 .Select(x => x.Id)
                 .FirstOrDefault();
-            var getOldRevisionNumber = _tipsSalesServiceDbContext.quotes
+            var getOldRevisionNumber = _tipsSalesServiceDbContext.Quotes
                 .Where(x => x.Id == getIdByRfqNumber)
                 .Select(x => x.RevisionNumber)
                 .FirstOrDefault();
@@ -73,18 +73,18 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<Quote>> GetAllActiveQuote()
         {
-            var quoteDetails = await FindAll().ToListAsync();
+            var quoteDetails = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
             return quoteDetails;
         }
 
         public async Task<PagedList<Quote>> GetAllQuote(PagingParameter pagingParameter)
         {
             var quoteDetails = PagedList<Quote>.ToPagedList(FindAll()
-                               .Include(t => t.quoteGenerals)
-                               .Include(x => x.quoteAdditionalCharges)
-                               .Include(m => m.quoteOtherTerms)
-                               .Include(i => i.quoteRFQNotes)
-                               .Include(i => i.quoteSpecialTerms)
+                               .Include(t => t.QuoteGenerals)
+                               .Include(x => x.QuoteAdditionalCharges)
+                               .Include(m => m.QuoteOtherTerms)
+                               .Include(i => i.QuoteRFQNotes)
+                               .Include(i => i.QuoteSpecialTerms)
 
               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
@@ -93,12 +93,12 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<Quote> GetQuoteById(int id)
         {
-            var quoteDetails = await _tipsSalesServiceDbContext.quotes.Where(x => x.Id == id)
-                               .Include(t => t.quoteGenerals)
-                               .Include(x => x.quoteAdditionalCharges)
-                               .Include(m => m.quoteOtherTerms)
-                               .Include(i => i.quoteRFQNotes)
-                               .Include(i => i.quoteSpecialTerms)
+            var quoteDetails = await _tipsSalesServiceDbContext.Quotes.Where(x => x.Id == id)
+                               .Include(t => t.QuoteGenerals)
+                               .Include(x => x.QuoteAdditionalCharges)
+                               .Include(m => m.QuoteOtherTerms)
+                               .Include(i => i.QuoteRFQNotes)
+                               .Include(i => i.QuoteSpecialTerms)
                                .FirstOrDefaultAsync();
 
             return quoteDetails;

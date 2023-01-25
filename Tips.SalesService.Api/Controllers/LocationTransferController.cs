@@ -77,21 +77,21 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var locationTransbyId = await _locationTransferRepository.GetLocationTransferById(id);
+                var locationTransFerDetails = await _locationTransferRepository.GetLocationTransferById(id);
 
-                if (locationTransbyId == null)
+                if (locationTransFerDetails == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"locationDetails with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"locationDetails with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"locationDetails with id: {id}, hasn't been found.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogError($"Returned LocationTransfer with id: {id}");
-                    var result = _mapper.Map<LocationTransferDto>(locationTransbyId);
+                    var result = _mapper.Map<LocationTransferDto>(locationTransFerDetails);
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned LocationTransfer with id: {id}";
                     serviceResponse.Success = true;
@@ -111,13 +111,13 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateLocationTransfer([FromBody] LocationTransferDtoPost locationTransferDtoPost)
+        public async Task<IActionResult> CreateLocationTransfer([FromBody] LocationTransferPostDto locationTransferPostDto)
         {
             ServiceResponse<LocationTransferDto> serviceResponse = new ServiceResponse<LocationTransferDto>();
 
             try
             {
-                if (locationTransferDtoPost is null)
+                if (locationTransferPostDto is null)
                 {
                     _logger.LogError("locationTransfer object sent from client is null.");
                     serviceResponse.Data = null;
@@ -135,12 +135,12 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var createLocationTransfer = _mapper.Map<LocationTransfer>(locationTransferDtoPost);
+                var createLocationTransfer = _mapper.Map<LocationTransfer>(locationTransferPostDto);
 
                 await _locationTransferRepository.CreateLocationTransfer(createLocationTransfer);
                 _locationTransferRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "locationTransfer Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetLocationTransferId", serviceResponse);
@@ -158,13 +158,13 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateLocationTransfer(int id, [FromBody] LocationTransferDtoUpdate locationTransferDtoUpdate)
+        public async Task<IActionResult> UpdateLocationTransfer(int id, [FromBody] LocationTransferUpdateDto locationTransferUpdateDto)
         {
             ServiceResponse<LocationTransferDto> serviceResponse = new ServiceResponse<LocationTransferDto>();
 
             try
             {
-                if (locationTransferDtoUpdate is null)
+                if (locationTransferUpdateDto is null)
                 {
                     _logger.LogError("locationTransfer object sent from client is null.");
                     serviceResponse.Data = null;
@@ -187,13 +187,13 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogError($"locationTransfer with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update locationTransfer with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Update locationTransfer with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
-                var updateData = _mapper.Map(locationTransferDtoUpdate, getLocationTransferById);
+                var updateData = _mapper.Map(locationTransferUpdateDto, getLocationTransferById);
 
                 string result = await _locationTransferRepository.UpdateLocationTransfer(updateData);
                 _logger.LogError(result);
@@ -222,17 +222,17 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var getLocationTransferById = await _locationTransferRepository.GetLocationTransferById(id);
-                if (getLocationTransferById == null)
+                var getLocationTransfer = await _locationTransferRepository.GetLocationTransferById(id);
+                if (getLocationTransfer == null)
                 {
                     _logger.LogError($"Delete LocationTransfer with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Delete LocationTransfer with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Delete LocationTransfer with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _locationTransferRepository.DeleteLocationTransfer(getLocationTransferById);
+                string result = await _locationTransferRepository.DeleteLocationTransfer(getLocationTransfer);
                 _logger.LogError(result);
                 _locationTransferRepository.SaveAsync();
                 serviceResponse.Data = null;

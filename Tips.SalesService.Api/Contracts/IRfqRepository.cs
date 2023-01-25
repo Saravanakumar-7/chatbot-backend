@@ -12,6 +12,8 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> CreateRfq(Rfq rfq);
         Task<string> UpdateRfq(Rfq rfq);
         Task<string> DeleteRfq(Rfq rfq);
+        Task<int?> GetRfqNumberAutoIncrementCount(DateTime date);
+
         Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberList();
         Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberListByCustomerName(string CustomerName);
         Task<Rfq> RfqSourcingByRfqNumbers(string id);

@@ -35,12 +35,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
     }
 
-    public class FgOqcDtoPost
+    public class FgOqcPostDto
     {
 
         public string? ProjectNumber { get; set; }
 
-        public string? ItemNumber { get; set; }
+        public string? FGItemNumber { get; set; }
 
         public string? ShopOrderNumber { get; set; }
 
@@ -53,21 +53,16 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? RejectedQty { get; set; }
 
-        public string Unit { get; set; }
-
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+       
     }
-    public class FgOqcDtoUpdate
+    public class FgOqcUpdateDto
     {
         public int? Id { get; set; }
         
         [StringLength(100, ErrorMessage = "FgQoc can't be longer than 100 characters")]
         public string? ProjectNumber { get; set; }
 
-        public string? ItemNumber { get; set; }
+        public string? FGItemNumber { get; set; }
 
         public string? ShopOrderNumber { get; set; }
 
@@ -79,12 +74,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? AcceptedQty { get; set; }
         [Precision(18, 3)]
         public decimal? RejectedQty { get; set; }
-
-        public string Unit { get; set; }
-
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public string Unit { get; set; }      
+       
     }
 }

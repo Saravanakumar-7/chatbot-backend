@@ -1,4 +1,6 @@
-﻿namespace Tips.SalesService.Api.Entities.DTOs
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Tips.SalesService.Api.Entities.DTOs
 {
     public class QuoteGeneralDto
     {
@@ -6,65 +8,143 @@
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
         public string? PriceList { get; set; }
-        public decimal Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
-        public string DiscountType { get; set; }
-        public decimal DiscountAmount { get; set; }
-        public decimal DiscountedUnitPrice { get; set; }
-        public string SpecialDiscountType { get; set; }
-        public decimal SpecialDiscountAmount { get; set; }
-        public decimal TotalDiscountedUnitPrice { get; set; }
-        public decimal BasicAmount { get; set; }
-        public decimal HSNNo { get; set; }
-        public decimal IGST { get; set; }
-        public decimal CGST { get; set; }
-        public decimal UTGST { get; set; }
-        public decimal SGST { get; set; }
-        public decimal Total { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? Qty { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? UnitPrice { get; set; }
+        public string? DiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? DiscountAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? DiscountedUnitPrice { get; set; }
+        public string? SpecialDiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SpecialDiscountAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalDiscountedUnitPrice { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? BasicAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? HSNNo { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? IGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? CGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? UTGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Total { get; set; }
 
     }
-    public class QuoteGeneralDtoPost
+    public class QuoteGeneralPostDto
     {
+      
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
         public string? PriceList { get; set; }
-        public decimal Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
-        public string DiscountType { get; set; }
-        public decimal DiscountAmount { get; set; }
-        public decimal DiscountedUnitPrice { get; set; }
-        public string SpecialDiscountType { get; set; }
-        public decimal SpecialDiscountAmount { get; set; }
-        public decimal TotalDiscountedUnitPrice { get; set; }
-        public decimal BasicAmount { get; set; }
-        public decimal HSNNo { get; set; }
-        public decimal IGST { get; set; }
-        public decimal CGST { get; set; }
-        public decimal UTGST { get; set; }
-        public decimal SGST { get; set; }
-        public decimal Total { get; set; } 
+
+        [Precision(13, 3)]
+        public decimal? Qty { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? UnitPrice { get; set; }
+        public string? DiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? DiscountAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? DiscountedUnitPrice { get; set; }
+        public string? SpecialDiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SpecialDiscountAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalDiscountedUnitPrice { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? BasicAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? HSNNo { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? IGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? CGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? UTGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Total { get; set; }
     }
-    public class QuoteGeneralDtoUpdate
+    public class QuoteGeneralUpdateDto
     {
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
         public string? PriceList { get; set; }
-        public decimal Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
-        public string DiscountType { get; set; }
-        public decimal DiscountAmount { get; set; }
-        public decimal DiscountedUnitPrice { get; set; }
-        public string SpecialDiscountType { get; set; }
-        public decimal SpecialDiscountAmount { get; set; }
-        public decimal TotalDiscountedUnitPrice { get; set; }
-        public decimal BasicAmount { get; set; }
-        public decimal HSNNo { get; set; }
-        public decimal IGST { get; set; }
-        public decimal CGST { get; set; }
-        public decimal UTGST { get; set; }
-        public decimal SGST { get; set; }
-        public decimal Total { get; set; } 
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? Qty { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? UnitPrice { get; set; }
+        public string? DiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? DiscountAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? DiscountedUnitPrice { get; set; }
+        public string? SpecialDiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SpecialDiscountAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalDiscountedUnitPrice { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? BasicAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? HSNNo { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? IGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? CGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? UTGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Total { get; set; }
+        
     }
 }

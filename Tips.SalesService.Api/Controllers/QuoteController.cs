@@ -53,7 +53,7 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogInfo("Returned all Quote");
                 var result = _mapper.Map<IEnumerable<QuoteDto>>(listOfQuote);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all Quote";
+                serviceResponse.Message = "Returned all Quotes Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -86,25 +86,25 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Message = $"Quote  hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"Quote with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Quote with id: {id}, hasn't been found.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned owner with id: {id}");
+                    _logger.LogInfo($"Returned Quote with id: {id}");
                     
-                    var quoteGeneralList=_mapper.Map<IEnumerable<QuoteGeneralDto>>(quoteDetails.quoteGenerals);
-                    var quoteAdditionalChargesList = _mapper.Map<IEnumerable<QuoteAdditionalChargesDto>>(quoteDetails.quoteAdditionalCharges);
-                    var quoteOtherTermsList = _mapper.Map<IEnumerable<QuoteOtherTermsDto>>(quoteDetails.quoteOtherTerms);
-                    var quoteRFQNotesList = _mapper.Map<IEnumerable<QuoteRFQNotesDto>>(quoteDetails.quoteRFQNotes);
-                    var quoteSpecialTermslist = _mapper.Map<IEnumerable<QuoteSpecialTermsDto>>(quoteDetails.quoteSpecialTerms);
+                    var quoteGeneralList=_mapper.Map<IEnumerable<QuoteGeneralDto>>(quoteDetails.QuoteGenerals);
+                    var quoteAdditionalChargesList = _mapper.Map<IEnumerable<QuoteAdditionalChargesDto>>(quoteDetails.QuoteAdditionalCharges);
+                    var quoteOtherTermsList = _mapper.Map<IEnumerable<QuoteOtherTermsDto>>(quoteDetails.QuoteOtherTerms);
+                    var quoteRFQNotesList = _mapper.Map<IEnumerable<QuoteRFQNotesDto>>(quoteDetails.QuoteRFQNotes);
+                    var quoteSpecialTermslist = _mapper.Map<IEnumerable<QuoteSpecialTermsDto>>(quoteDetails.QuoteSpecialTerms);
                     var quote = _mapper.Map<QuoteDto>(quoteDetails);
                     quote.CustomerId = customerId.CustomerId;
-                    quote.quoteGeneralDtos = quoteGeneralList.ToList();
-                    quote.quoteAdditionalChargesDtos = quoteAdditionalChargesList.ToList();
-                    quote.quoteOtherTermsDtos = quoteOtherTermsList.ToList();
-                    quote.quoteRFQNotesDtos = quoteRFQNotesList.ToList();
-                    quote.quoteSpecialTermsDtos = quoteSpecialTermslist.ToList();
+                    quote.QuoteGeneralDtos = quoteGeneralList.ToList();
+                    quote.QuoteAdditionalChargesDtos = quoteAdditionalChargesList.ToList();
+                    quote.QuoteOtherTermsDtos = quoteOtherTermsList.ToList();
+                    quote.QuoteRFQNotesDtos = quoteRFQNotesList.ToList();
+                    quote.QuoteSpecialTermsDtos = quoteSpecialTermslist.ToList();
 
                     serviceResponse.Data = quote;
                     serviceResponse.Message = "Returned Quote";
@@ -126,13 +126,13 @@ namespace Tips.SalesService.Api.Controllers
 
         // POST api/<QuoteController>
         [HttpPost]
-        public async Task<IActionResult> CreateQuote([FromBody] QuoteDtoPost quoteDtoPost)
+        public async Task<IActionResult> CreateQuote([FromBody] QuotePostDto quotePostDto)
         {
             ServiceResponse<QuoteDto> serviceResponse = new ServiceResponse<QuoteDto>();
              
             try
             {
-                if (quoteDtoPost is null)
+                if (quotePostDto is null)
                 {
                     _logger.LogError("QuoteDetails object sent from client is null.");
                     serviceResponse.Data = null;
@@ -151,23 +151,23 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var quoteGeneralList = _mapper.Map<IEnumerable<QuoteGeneral>>(quoteDtoPost.quoteGeneralDtoPost);
-                var quoteAdditionalChargesList = _mapper.Map<IEnumerable<QuoteAdditionalCharges>>(quoteDtoPost.quoteAdditionalChargesDtoPost);
-                var quoteOtherTermsList = _mapper.Map<IEnumerable<QuoteOtherTerms>>(quoteDtoPost.quoteOtherTermsDtoPost);
-                var quoteRFQNotesList = _mapper.Map<IEnumerable<QuoteRFQNotes>>(quoteDtoPost.quoteRFQNotesDtoPost);
-                var quoteSpecialTermslist = _mapper.Map<IEnumerable<QuoteSpecialTerms>>(quoteDtoPost.quoteSpecialTermsDtoPost);
-                var quote = _mapper.Map<Quote>(quoteDtoPost);
+                var quoteGeneralList = _mapper.Map<IEnumerable<QuoteGeneral>>(quotePostDto.QuoteGeneralPostDtos);
+                var quoteAdditionalChargesList = _mapper.Map<IEnumerable<QuoteAdditionalCharges>>(quotePostDto.QuoteAdditionalChargesPostDtos);
+                var quoteOtherTermsList = _mapper.Map<IEnumerable<QuoteOtherTerms>>(quotePostDto.QuoteOtherTermsPostDtos);
+                var quoteRFQNotesList = _mapper.Map<IEnumerable<QuoteRFQNotes>>(quotePostDto.QuoteRFQNotesPostDtos);
+                var quoteSpecialTermslist = _mapper.Map<IEnumerable<QuoteSpecialTerms>>(quotePostDto.QuoteSpecialTermsPostDtos);
+                var quote = _mapper.Map<Quote>(quotePostDto);
 
-                quote.quoteGenerals = quoteGeneralList.ToList();
-                quote.quoteAdditionalCharges = quoteAdditionalChargesList.ToList();
-                quote.quoteOtherTerms = quoteOtherTermsList.ToList();
-                quote.quoteRFQNotes = quoteRFQNotesList.ToList();
-                quote.quoteSpecialTerms = quoteSpecialTermslist.ToList();
+                quote.QuoteGenerals = quoteGeneralList.ToList();
+                quote.QuoteAdditionalCharges = quoteAdditionalChargesList.ToList();
+                quote.QuoteOtherTerms = quoteOtherTermsList.ToList();
+                quote.QuoteRFQNotes = quoteRFQNotesList.ToList();
+                quote.QuoteSpecialTerms = quoteSpecialTermslist.ToList();
 
                 _repository.CreateQuote(quote);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Quote Successfully Created";
+                serviceResponse.Message = "Quote Created Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -185,13 +185,13 @@ namespace Tips.SalesService.Api.Controllers
         //change versionnumber
 
         [HttpPost]
-        public async Task<IActionResult> ChangeRevisionNumber([FromBody] QuoteDtoPost quoteDtoPost)
+        public async Task<IActionResult> ChangeRevisionNumber([FromBody] QuotePostDto quotePostDto)
         {
             ServiceResponse<QuoteDto> serviceResponse = new ServiceResponse<QuoteDto>();
 
             try
             {
-                if (quoteDtoPost is null)
+                if (quotePostDto is null)
                 {
                     _logger.LogError("QuoteDetails object sent from client is null.");
                     serviceResponse.Data = null;
@@ -210,23 +210,23 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var quoteGeneralList = _mapper.Map<IEnumerable<QuoteGeneral>>(quoteDtoPost.quoteGeneralDtoPost);
-                var quoteAdditionalChargesList = _mapper.Map<IEnumerable<QuoteAdditionalCharges>>(quoteDtoPost.quoteAdditionalChargesDtoPost);
-                var quoteOtherTermsList = _mapper.Map<IEnumerable<QuoteOtherTerms>>(quoteDtoPost.quoteOtherTermsDtoPost);
-                var quoteRFQNotesList = _mapper.Map<IEnumerable<QuoteRFQNotes>>(quoteDtoPost.quoteRFQNotesDtoPost);
-                var quoteSpecialTermslist = _mapper.Map<IEnumerable<QuoteSpecialTerms>>(quoteDtoPost.quoteSpecialTermsDtoPost);
-                var quote = _mapper.Map<Quote>(quoteDtoPost);
+                var quoteGeneralList = _mapper.Map<IEnumerable<QuoteGeneral>>(quotePostDto.QuoteGeneralPostDtos);
+                var quoteAdditionalChargesList = _mapper.Map<IEnumerable<QuoteAdditionalCharges>>(quotePostDto.QuoteAdditionalChargesPostDtos);
+                var quoteOtherTermsList = _mapper.Map<IEnumerable<QuoteOtherTerms>>(quotePostDto.QuoteOtherTermsPostDtos);
+                var quoteRFQNotesList = _mapper.Map<IEnumerable<QuoteRFQNotes>>(quotePostDto.QuoteRFQNotesPostDtos);
+                var quoteSpecialTermslist = _mapper.Map<IEnumerable<QuoteSpecialTerms>>(quotePostDto.QuoteSpecialTermsPostDtos);
+                var quote = _mapper.Map<Quote>(quotePostDto);
 
-                quote.quoteGenerals = quoteGeneralList.ToList();
-                quote.quoteAdditionalCharges = quoteAdditionalChargesList.ToList();
-                quote.quoteOtherTerms = quoteOtherTermsList.ToList();
-                quote.quoteRFQNotes = quoteRFQNotesList.ToList();
-                quote.quoteSpecialTerms = quoteSpecialTermslist.ToList();
+                quote.QuoteGenerals = quoteGeneralList.ToList();
+                quote.QuoteAdditionalCharges = quoteAdditionalChargesList.ToList();
+                quote.QuoteOtherTerms = quoteOtherTermsList.ToList();
+                quote.QuoteRFQNotes = quoteRFQNotesList.ToList();
+                quote.QuoteSpecialTerms = quoteSpecialTermslist.ToList();
 
                 _repository.ChangeQuoteVersion(quote);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Quote Successfully Created";
+                serviceResponse.Message = "Quote Created Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -357,7 +357,7 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeleteQuote action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;

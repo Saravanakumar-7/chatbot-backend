@@ -46,6 +46,10 @@ namespace Tips.Warehouse.Api
             CreateMap<DeliveryOrderItems, DeliveryOrderItemsDtoPost>().ReverseMap();
             CreateMap<DeliveryOrderItems, DeliveryOrderItemsDtoUpdate>().ReverseMap();
 
+            CreateMap<DoSerialNumber, DoSerialNumberDto>().ReverseMap();
+            CreateMap<DoSerialNumber, DoSerialNumberDtoPost>().ReverseMap();
+            CreateMap<DoSerialNumber, DoSerialNumberDtoUpdate>().ReverseMap();
+
             CreateMap<Inventory, InventoryDto>().ReverseMap();
             CreateMap<Inventory, InventoryDtoPost>().ReverseMap();
             CreateMap<Inventory, InventoryDtoUpdate>().ReverseMap();

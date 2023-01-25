@@ -73,33 +73,32 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var mtnId = await _materialTransactionNoteRepository.GetMaterialTransactionNoteById(id);
+                var MTNDetails = await _materialTransactionNoteRepository.GetMaterialTransactionNoteById(id);
 
-                if (mtnId == null)
+                if (MTNDetails == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"materialtransaction with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"materialtransaction with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"materialtransaction with id: {id}, hasn't been found.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogError($"Returned materialtransaction with id: {id}");
-                    MaterialTransactionNoteDto materialTransactionNoteDto = _mapper.Map<MaterialTransactionNoteDto>(mtnId);//Main model mapping
+                    MaterialTransactionNoteDto materialTransactionNoteDto = _mapper.Map<MaterialTransactionNoteDto>(MTNDetails);//Main model mapping
 
-                    //below mapping is child under child  
 
                     List<MaterialTransactionNoteItemDto> materialTransactionNoteItemDtos = new List<MaterialTransactionNoteItemDto>();
 
-                    foreach (var materialitemDetails in materialTransactionNoteDto.MaterialTransactionNoteItems)
+                    foreach (var materialitemDetails in materialTransactionNoteDto.MaterialTransactionNoteItemDtos)
                     {
                         MaterialTransactionNoteItemDto materialTransactionNoteItemDto = _mapper.Map<MaterialTransactionNoteItemDto>(materialitemDetails);
                         materialTransactionNoteItemDtos.Add(materialTransactionNoteItemDto);
                     }
 
-                    materialTransactionNoteDto.MaterialTransactionNoteItems = materialTransactionNoteItemDtos;
+                    materialTransactionNoteDto.MaterialTransactionNoteItemDtos = materialTransactionNoteItemDtos;
                     serviceResponse.Data = materialTransactionNoteDto;
                     serviceResponse.Message = $"Returned materialtransactionnotes with id: {id}";
                     serviceResponse.Success = true;
@@ -120,13 +119,13 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateMaterialTransactionNote([FromBody] MaterialTransactionNoteDtoPost materialTransactionNoteDtoPost)
+        public async Task<IActionResult> CreateMaterialTransactionNote([FromBody] MaterialTransactionNotePostDto materialTransactionNotePost)
         {
             ServiceResponse<MaterialTransactionNoteDto> serviceResponse = new ServiceResponse<MaterialTransactionNoteDto>();
 
             try
             {
-                if (materialTransactionNoteDtoPost is null)
+                if (materialTransactionNotePost is null)
                 {
                     _logger.LogError("MaterialTransactionNote object sent from client is null.");
                     serviceResponse.Data = null;
@@ -144,8 +143,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var mtn = _mapper.Map<MaterialTransactionNote>(materialTransactionNoteDtoPost);
-                var mtndto = materialTransactionNoteDtoPost.MaterialTransactionNoteItems;
+                var mtn = _mapper.Map<MaterialTransactionNote>(materialTransactionNotePost);
+                var mtndto = materialTransactionNotePost.MaterialTransactionNoteItemPostDtos;
 
                 var MtnItemList = new List<MaterialTransactionNoteItem>();
                 for (int i = 0; i < mtndto.Count; i++)
@@ -160,7 +159,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 _materialTransactionNoteRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "MaterialTransactionNote Created Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetMaterialTransactionNoteById", serviceResponse);
@@ -180,13 +179,13 @@ namespace Tips.SalesService.Api.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMaterialTransactionNote(int id, [FromBody] MaterialTransactionNoteDtoUpdate materialTransactionNoteDtoUpdate)
+        public async Task<IActionResult> UpdateMaterialTransactionNote(int id, [FromBody] MaterialTransactionNoteUpdateDto materialTransactionNoteUpdateDto)
         {
             ServiceResponse<MaterialTransactionNoteDto> serviceResponse = new ServiceResponse<MaterialTransactionNoteDto>();
 
             try
             {
-                if (materialTransactionNoteDtoUpdate is null)
+                if (materialTransactionNoteUpdateDto is null)
                 {
                     _logger.LogError("MaterialTransactionNote object sent from client is null.");
                     serviceResponse.Data = null;
@@ -209,7 +208,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogError($"MaterialTransactionNote with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update MaterialTransactionNote with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Update MaterialTransactionNote with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
@@ -228,12 +227,12 @@ namespace Tips.SalesService.Api.Controllers
 
                 MtnList.MaterialTransactionNoteItems = MattransList;
 
-                var data = _mapper.Map(materialTransactionNoteDtoUpdate, MtnList);
+                var updateMTN = _mapper.Map(materialTransactionNoteUpdateDto, MtnList);
 
-                string result = await _materialTransactionNoteRepository.UpdateMaterialTransactionNote(data);
+                string result = await _materialTransactionNoteRepository.UpdateMaterialTransactionNote(updateMTN);
                 _materialTransactionNoteRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = "MaterialTransactionNote Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -270,7 +269,7 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError(result);
                 _materialTransactionNoteRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Delete Successfully";
+                serviceResponse.Message = "MaterialTransactionNote Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

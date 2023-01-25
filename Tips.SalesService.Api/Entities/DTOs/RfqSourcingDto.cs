@@ -19,11 +19,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<RfqSourcingItemsDto>? RfqSourcingItems { get; set; }
+        public List<RfqSourcingItemsDto>? RfqSourcingItemsDtos { get; set; }
         
 
     }
-    public class RfqSourcingDtoPost
+    public class RfqSourcingPostDto
     {
         [StringLength(500, ErrorMessage = "RFQNumber can't be longer than 100 characters")]
         public string? RFQNumber { get; set; }
@@ -31,13 +31,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
         public string? CustomerName { get; set; }      
        
-        public List<RfqSourcingItemsDtoPost>? RfqSourcingItems { get; set; }
+        public List<RfqSourcingItemsPostDto>? RfqSourcingItemsPostDtos { get; set; }
        
 
 
 
     }
-    public class RfqSourcingDtoUpdate
+    public class RfqSourcingUpdateDto
     {
         public int Id { get; set; }
 
@@ -50,6 +50,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Required]
         public string Unit { get; set; }
 
-        public List<RfqSourcingItemsDtoUpdate>? RfqSourcingItems { get; set; }
+        public List<RfqSourcingItemsUpdateDto>? RfqSourcingItemsUpdateDtos { get; set; }
     }
 }

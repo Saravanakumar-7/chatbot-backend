@@ -17,14 +17,12 @@ namespace Tips.SalesService.Api.Controllers
     [ApiController]
     public class FinalOqcController : ControllerBase
     {
-        private IFinalOqcRepository _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IFinalOqcRepository _finalOqcRepository;
 
-        public FinalOqcController(IFinalOqcRepository repository, IFinalOqcRepository finalOqcRepository, ILoggerManager logger, IMapper mapper)
+        public FinalOqcController(IFinalOqcRepository finalOqcRepository, ILoggerManager logger, IMapper mapper)
         {
-            _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _finalOqcRepository = finalOqcRepository;
@@ -78,21 +76,21 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var getFinalOqcById = await _finalOqcRepository.GetFinalOqcById(id);
+                var getFinalOqcDetails = await _finalOqcRepository.GetFinalOqcById(id);
 
-                if (getFinalOqcById == null)
+                if (getFinalOqcDetails == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"FinalOqc with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"FinalOqc with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"FinalOqc with id: {id}, hasn't been found .");
                     return NotFound();
                 }
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    var result = _mapper.Map<FinalOqcDto>(getFinalOqcById);
+                    var result = _mapper.Map<FinalOqcDto>(getFinalOqcDetails);
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned FinaloQc with id: {id}";
                     serviceResponse.Success = true;
@@ -114,13 +112,13 @@ namespace Tips.SalesService.Api.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> CreateFinalOqc([FromBody] FinalOqcDtoPost finalOqcDtoPost)
+        public async Task<IActionResult> CreateFinalOqc([FromBody] FinalOqcPostDto finalOqcPostDto)
         {
             ServiceResponse<FinalOqcDto> serviceResponse = new ServiceResponse<FinalOqcDto>();
 
             try
             {
-                if (finalOqcDtoPost is null)
+                if (finalOqcPostDto is null)
                 {
                     _logger.LogError("FinalOqc object sent from client is null.");
                     serviceResponse.Data = null;
@@ -138,12 +136,12 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var createFinalOqc = _mapper.Map<FinalOqc>(finalOqcDtoPost);
+                var createFinalOqc = _mapper.Map<FinalOqc>(finalOqcPostDto);
 
                await _finalOqcRepository.CreateFinalOqc(createFinalOqc);
                 _finalOqcRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "FinalOqc Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetFinalOqcId", serviceResponse);
@@ -161,13 +159,13 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateFinalOqc(int id, [FromBody] FinalOqcDtoUpdate finalOqcDtoUpdate)
+        public async Task<IActionResult> UpdateFinalOqc(int id, [FromBody] FinalOqcUpdateDto finalOqcUpdateDto)
         {
             ServiceResponse<FinalOqcDto> serviceResponse = new ServiceResponse<FinalOqcDto>();
 
             try
             {
-                if (finalOqcDtoUpdate is null)
+                if (finalOqcUpdateDto is null)
                 {
                     _logger.LogError("FinalOqc object sent from client is null.");
                     serviceResponse.Data = null;
@@ -185,18 +183,18 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var getFinalOqcById = await _finalOqcRepository.GetFinalOqcById(id);
-                if (getFinalOqcById is null)
+                var getFinalOqcDetails = await _finalOqcRepository.GetFinalOqcById(id);
+                if (getFinalOqcDetails is null)
                 {
                     _logger.LogError($"FinalOqc with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update FinalOqc with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Update FinalOqc with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
-                var updateFinalOqc = _mapper.Map(finalOqcDtoUpdate, getFinalOqcById);
+                var updateFinalOqc = _mapper.Map(finalOqcUpdateDto, getFinalOqcDetails);
 
                 string result = await _finalOqcRepository.UpdateFinalOqc(updateFinalOqc);
                 _logger.LogInfo(result);
@@ -231,14 +229,14 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogError($"FinalOqc with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Delete FinalOqc with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Delete FinalOqc with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
                 string result = await _finalOqcRepository.DeleteFinalOqc(getFinalOqcById);
                 _logger.LogInfo(result);
-                _repository.SaveAsync();
+                _finalOqcRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "FinalOqc Deleted Successfully";
                 serviceResponse.Success = true;

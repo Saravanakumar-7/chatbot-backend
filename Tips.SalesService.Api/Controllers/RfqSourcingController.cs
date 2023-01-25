@@ -78,15 +78,15 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var rfqSourcingById = await _repository.GetRfqSourcingById(id);
+                var rfqSourcings = await _repository.GetRfqSourcingById(id);
 
-                if (rfqSourcingById == null)
+                if (rfqSourcings == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"rfqsourcing with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"rfqsourcing with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"rfqsourcing with id: {id}, hasn't been found.");
                     return NotFound(serviceResponse);
                 }
                 else
@@ -95,21 +95,21 @@ namespace Tips.SalesService.Api.Controllers
 
                    
 
-                    RfqSourcingDto rfqSourceDto = _mapper.Map<RfqSourcingDto>(rfqSourcingById);
+                    RfqSourcingDto rfqSourceDto = _mapper.Map<RfqSourcingDto>(rfqSourcings);
                    
                     
                     List<RfqSourcingItemsDto> rfqSourseItemDtos = new List<RfqSourcingItemsDto>();            
 
 
-                        foreach (var rfqSourceItemDetails in rfqSourcingById.RfqSourcingItems)
+                        foreach (var rfqSourceItemDetails in rfqSourcings.RfqSourcingItems)
                         {
                             RfqSourcingItemsDto rfqSourceItemDto = _mapper.Map<RfqSourcingItemsDto>(rfqSourceItemDetails);
-                            rfqSourceItemDto.RfqSourcingVendors = _mapper.Map<List<RfqSourcingVendorDto>>(rfqSourceItemDetails.RfqSourcingVendors);
+                            rfqSourceItemDto.RfqSourcingVendorDtos = _mapper.Map<List<RfqSourcingVendorDto>>(rfqSourceItemDetails.RfqSourcingVendors);
                             rfqSourseItemDtos.Add(rfqSourceItemDto);
                         }
                     
 
-                    rfqSourceDto.RfqSourcingItems = rfqSourseItemDtos;
+                    rfqSourceDto.RfqSourcingItemsDtos = rfqSourseItemDtos;
                     serviceResponse.Data = rfqSourceDto;
                     serviceResponse.Message = $"Returned rfqsourcing with id: {id}";
                     serviceResponse.Success = true;
@@ -130,13 +130,13 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateRfqSourcing([FromBody] RfqSourcingDtoPost rfqSourcingDtoPost)
+        public async Task<IActionResult> CreateRfqSourcing([FromBody] RfqSourcingPostDto rfqSourcingPostDto)
         {
             ServiceResponse<RfqSourcingDto> serviceResponse = new ServiceResponse<RfqSourcingDto>();
 
             try
             {
-                if (rfqSourcingDtoPost is null)
+                if (rfqSourcingPostDto is null)
                 {
                     _logger.LogError("RfqSourcing object sent from client is null.");
                     serviceResponse.Data = null;
@@ -157,7 +157,7 @@ namespace Tips.SalesService.Api.Controllers
 
 
 
-                var createRfqSource = _mapper.Map<RfqSourcing>(rfqSourcingDtoPost);
+                var createRfqSource = _mapper.Map<RfqSourcing>(rfqSourcingPostDto);
 
                 var rfqSourceData = createRfqSource.RFQNumber;
                 
@@ -165,7 +165,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 rfqIsSourcingUpdate.IsSourcing = true;
 
-                var rfqSourceDto = rfqSourcingDtoPost.RfqSourcingItems;
+                var rfqSourceDto = rfqSourcingPostDto.RfqSourcingItemsPostDtos;
 
                 var sourceItemList = new List<RfqSourcingItems>();
 
@@ -174,7 +174,7 @@ namespace Tips.SalesService.Api.Controllers
                         for (int i = 0; i < rfqSourceDto.Count; i++)
                         {
                             RfqSourcingItems rfqSourcingItems = _mapper.Map<RfqSourcingItems>(rfqSourceDto[i]);
-                            rfqSourcingItems.RfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(rfqSourceDto[i].RfqSourcingVendors);
+                            rfqSourcingItems.RfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(rfqSourceDto[i].RfqSourcingVendorPostDtos);
                             sourceItemList.Add(rfqSourcingItems);
                         }
                     }
@@ -184,7 +184,7 @@ namespace Tips.SalesService.Api.Controllers
                     _rfqRepository.Update(rfqIsSourcingUpdate);
                     _repository.SaveAsync();
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "RfqSourcing Successfully Created";
+                    serviceResponse.Message = "RfqSourcing Created Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Created("GetRfqSourceById", serviceResponse);
@@ -203,13 +203,13 @@ namespace Tips.SalesService.Api.Controllers
 
         // PUT api/<RfqSourcingController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRfqSourcing(int id, [FromBody] RfqSourcingDtoUpdate rfqSourcingDtoUpdate)
+        public async Task<IActionResult> UpdateRfqSourcing(int id, [FromBody] RfqSourcingUpdateDto rfqSourcingUpdateDto)
         {
             ServiceResponse<RfqSourcingDto> serviceResponse = new ServiceResponse<RfqSourcingDto>();
 
             try
             {
-                if (rfqSourcingDtoUpdate is null)
+                if (rfqSourcingUpdateDto is null)
                 {
                     _logger.LogError("RfqSourcing object sent from client is null.");
                     serviceResponse.Data = null;
@@ -227,20 +227,20 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var getRfqSourcingById = await _repository.GetRfqSourcingById(id);
-                if (getRfqSourcingById is null)
+                var getRfqSourcings = await _repository.GetRfqSourcingById(id);
+                if (getRfqSourcings is null)
                 {
                     _logger.LogError($"RfqSource with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update RfqSource with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Update RfqSource with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
                 
-                var updateRfqSourcing = _mapper.Map<RfqSourcing>(rfqSourcingDtoUpdate);
+                var updateRfqSourcing = _mapper.Map<RfqSourcing>(rfqSourcingUpdateDto);
 
-                var sourceItemtemDto = rfqSourcingDtoUpdate.RfqSourcingItems;
+                var sourceItemtemDto = rfqSourcingUpdateDto.RfqSourcingItemsUpdateDtos;
 
                 var rfqSourceItemList = new List<RfqSourcingItems>();
 
@@ -249,13 +249,13 @@ namespace Tips.SalesService.Api.Controllers
                     for (int i = 0; i < sourceItemtemDto.Count; i++)
                     {
                         RfqSourcingItems sourceItemDetail = _mapper.Map<RfqSourcingItems>(sourceItemtemDto[i]);
-                        sourceItemDetail.RfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(sourceItemtemDto[i].RfqSourcingVendors);
+                        sourceItemDetail.RfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(sourceItemtemDto[i].RfqSourcingVendorUpdateDtos);
 
                         rfqSourceItemList.Add(sourceItemDetail);
 
                     }
                 }
-                var updateData = _mapper.Map(rfqSourcingDtoUpdate, getRfqSourcingById);
+                var updateData = _mapper.Map(rfqSourcingUpdateDto, getRfqSourcings);
 
                 updateData.RfqSourcingItems = rfqSourceItemList;          
 
@@ -287,17 +287,17 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var getRfqSourcingById = await _repository.GetRfqSourcingById(id);
-                if (getRfqSourcingById == null)
+                var deleteRfqSourcing = await _repository.GetRfqSourcingById(id);
+                if (deleteRfqSourcing == null)
                 {
                     _logger.LogError($"RfqSource with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Delete RfqSource with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Delete RfqSource with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.DeleteRfqSourcing(getRfqSourcingById);
+                string result = await _repository.DeleteRfqSourcing(deleteRfqSourcing);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;

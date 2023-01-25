@@ -10,7 +10,7 @@ namespace Tips.SalesService.Api.Entities
         public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public string? QuoteNumber { get; set; }
-        public DateTime OrderDate { get; set; }
+        public DateTime? OrderDate { get; set; }
         public string? OrderType { get; set; }
         public string? CustomerName { get; set; }
         public int CustomerId { get; set; }
@@ -22,13 +22,13 @@ namespace Tips.SalesService.Api.Entities
         //PO Details
         public string? PONumber { get; set; }
         public DateTime? PODate { get; set; }
-        public DateTime ReceivedDate { get; set; }
+        public DateTime? ReceivedDate { get; set; }
 
         //Billing&Shipping
         public string? BillTo { get; set; }
-        public int BillToId { get; set; }
+        public int? BillToId { get; set; }
         public string? ShipTo { get; set; }
-        public int ShipToId { get; set; }
+        public int? ShipToId { get; set; }
         public string? PaymentTerms { get; set; }
         public string? Remarks { get; set; }
         public string Unit { get; set; }      

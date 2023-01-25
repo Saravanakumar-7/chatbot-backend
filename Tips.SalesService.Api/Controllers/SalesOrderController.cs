@@ -9,6 +9,7 @@ using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
+using Tips.SalesService.Api.Repository;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -72,31 +73,31 @@ namespace Tips.SalesService.Api.Controllers
                 ServiceResponse<SalesOrderDto> serviceResponse = new ServiceResponse<SalesOrderDto>();
                 try
                 {
-                    var salesOrderById = await _repository.GetSalesOrderById(id);
+                    var salesOrder = await _repository.GetSalesOrderById(id);
 
-                    if (salesOrderById == null)
+                    if (salesOrder == null)
                     {
                         serviceResponse.Data = null;
                         serviceResponse.Message = $"SalesOrder  hasn't been found in db.";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                        _logger.LogError($"SalesOrder with id: {id}, hasn't been found in db.");
+                        _logger.LogError($"SalesOrder with id: {id}, hasn't been found.");
                         return NotFound(serviceResponse);
                     }
                     else
                     {
                         _logger.LogInfo($"Returned owner with id: {id}");
-                        SalesOrderDto salesOrderDto = _mapper.Map<SalesOrderDto>(salesOrderById);
+                        SalesOrderDto salesOrderDto = _mapper.Map<SalesOrderDto>(salesOrder);
 
                         List<SalesOrderItemsDto> salesOrderItemsDtoList = new List<SalesOrderItemsDto>();
 
-                        foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
+                        foreach (var salesOrderItemDetails in salesOrder.SalesOrdersItems)
                         {
                             SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
                             salesOrderItemsDtoList.Add(salesOrderItemsDtos);
                         }
 
-                        salesOrderDto.SalesOrderItems = salesOrderItemsDtoList;
+                        salesOrderDto.SalesOrderItemsDtos = salesOrderItemsDtoList;
                         serviceResponse.Data = salesOrderDto;
                         serviceResponse.Message = $"Returned SalesOrder with id: {id}";
                         serviceResponse.Success = true;
@@ -117,12 +118,12 @@ namespace Tips.SalesService.Api.Controllers
 
         // POST api/<PurchaseOrderController>
         [HttpPost]
-        public async Task<IActionResult> CreateSalesOrder([FromBody] SalesOrderDtoPost salesOrderDtoPost)
+        public async Task<IActionResult> CreateSalesOrder([FromBody] SalesOrderPostDto salesOrderPostDto)
         {
-            ServiceResponse<SalesOrderDtoPost> serviceResponse = new ServiceResponse<SalesOrderDtoPost>();
+            ServiceResponse<SalesOrderPostDto> serviceResponse = new ServiceResponse<SalesOrderPostDto>();
             try
             {
-                if (salesOrderDtoPost is null)
+                if (salesOrderPostDto is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "SalesOrder object sent from client is null.";
@@ -140,8 +141,8 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogError("Invalid SalesOrder object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var createSalesOrder = _mapper.Map<SalesOrder>(salesOrderDtoPost);
-                var salesOrderItemsDto = salesOrderDtoPost.SalesOrderItems;
+                var createSalesOrder = _mapper.Map<SalesOrder>(salesOrderPostDto);
+                var salesOrderItemsDto = salesOrderPostDto.SalesOrderItemsPostDtos;
                 var salesOrderItemsList = new List<SalesOrderItems>();
                 if (salesOrderItemsDto != null) 
                 {
@@ -152,10 +153,31 @@ namespace Tips.SalesService.Api.Controllers
                     }
                 }
                 createSalesOrder.SalesOrdersItems = salesOrderItemsList;
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
+
+
+
+                var newcount = await _repository.GetSONumberAutoIncrementCount(date);
+
+                if (newcount > 0)
+                {
+                    var number = newcount + 1;
+                    string e = String.Format("{0:D4}", number);
+                    createSalesOrder.SalesOrderNumber = days + months + years + "SO" + (e);
+                }
+                else
+                {
+                    var count = 1;
+                    var e = count.ToString("D4");
+                    createSalesOrder.SalesOrderNumber = days + months + years + "SO" + (e);
+                }
                 await _repository.CreateSalesOrder(createSalesOrder);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = " SalesOrder Successfully Created";
+                serviceResponse.Message = " SalesOrder Created Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -174,12 +196,12 @@ namespace Tips.SalesService.Api.Controllers
 
         // PUT api/<PurchaseOrderController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSalesOrder(int id, [FromBody] SalesOrderDtoUpdate salesOrderDtoUpdate)
+        public async Task<IActionResult> UpdateSalesOrder(int id, [FromBody] SalesOrderUpdateDto salesOrderUpdateDto)
         {
-            ServiceResponse<SalesOrderDtoUpdate> serviceResponse = new ServiceResponse<SalesOrderDtoUpdate>();
+            ServiceResponse<SalesOrderUpdateDto> serviceResponse = new ServiceResponse<SalesOrderUpdateDto>();
             try
             {
-                if (salesOrderDtoUpdate is null)
+                if (salesOrderUpdateDto is null)
                 {
                     _logger.LogError("Update SalesOrder object sent from client is null.");
                     serviceResponse.Data = null;
@@ -197,19 +219,19 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var getSalesOrderById = await _repository.GetSalesOrderById(id);
-                if (getSalesOrderById is null)
+                var getSalesOrders = await _repository.GetSalesOrderById(id);
+                if (getSalesOrders is null)
                 {
                     _logger.LogError($"Update SalesOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update SalesOrder hasn't been found in db.";
+                    serviceResponse.Message = $"Update SalesOrder hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
-                var updateSalesOrders = _mapper.Map<SalesOrder>(salesOrderDtoUpdate);
-                var salesOrderItemsDto = salesOrderDtoUpdate.SalesOrderItems;
+                var updateSalesOrders = _mapper.Map<SalesOrder>(salesOrderUpdateDto);
+                var salesOrderItemsDto = salesOrderUpdateDto.SalesOrderItemsUpdateDtos;
                 var salesOrderItemsList = new List<SalesOrderItems>();
                 if (salesOrderItemsDto != null) 
                 {
@@ -220,13 +242,13 @@ namespace Tips.SalesService.Api.Controllers
                     }
                 }
               
-                var updateData = _mapper.Map(salesOrderDtoUpdate, getSalesOrderById);
+                var updateData = _mapper.Map(salesOrderUpdateDto, getSalesOrders);
                 updateData.SalesOrdersItems = salesOrderItemsList;    
                 string result = await _repository.UpdateSalesOrder(updateData);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = " SalesOrder Successfully Updated";
+                serviceResponse.Message = " SalesOrder Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -264,7 +286,7 @@ namespace Tips.SalesService.Api.Controllers
                 _repository.SaveAsync();
 
                 serviceResponse.Data = null;
-                serviceResponse.Message = " SalesOrder Successfully Deleted";
+                serviceResponse.Message = " SalesOrder Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -323,7 +345,7 @@ namespace Tips.SalesService.Api.Controllers
         [HttpGet("ItemNo")]
         public async Task<IActionResult> GetprojectNoByItemNo(string itemNo)
         {
-            ServiceResponse<ListOfProjectNoDto> serviceResponse = new ServiceResponse<ListOfProjectNoDto>();
+            ServiceResponse<IEnumerable<ListOfProjectNoDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfProjectNoDto>>();
 
             try
             {
@@ -335,14 +357,14 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Message = $"ProjectNo with id: {itemNo}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned ProjectNumber with id: {itemNo}");
-                    var result = _mapper.Map<ListOfProjectNoDto>(getProjectByItemNo);
+                    var result = _mapper.Map<IEnumerable<ListOfProjectNoDto>>(getProjectByItemNo);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "ProjectNumber Returned Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);
@@ -350,12 +372,12 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside ProjectNo action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetProjectNo action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
         //get salesorder Detais by CustomerId
@@ -382,7 +404,7 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogInfo($"Returned SalesOrderDetail with id: {Customerid}");
                     var result =  _mapper.Map<IEnumerable<ListofSalesOrderDetails>>(getSalesDetailByCustomerId);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Returned SalesOrder Details Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -404,7 +426,7 @@ namespace Tips.SalesService.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo)
          {
-            ServiceResponse<GetSalesOrderDetailsDto> serviceResponse = new ServiceResponse<GetSalesOrderDetailsDto>();
+            ServiceResponse<IEnumerable<GetSalesOrderDetailsDto>> serviceResponse = new ServiceResponse<IEnumerable<GetSalesOrderDetailsDto>>();
 
             try
             {
@@ -416,17 +438,17 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Message = $"SalesOrderDetail with id: {ItemNo}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned SalesOrderDetail with id: {ItemNo}");
-                    var result = _mapper.Map<GetSalesOrderDetailsDto>(getSalesDetail);
+                    var result = _mapper.Map<IEnumerable<GetSalesOrderDetailsDto>>(getSalesDetail);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Returned SalesOrder Details Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
@@ -436,7 +458,7 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
         //getsalesorderdetailbyitemnoandsalesorderId

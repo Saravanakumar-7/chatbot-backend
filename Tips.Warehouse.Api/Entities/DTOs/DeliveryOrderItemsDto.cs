@@ -12,10 +12,12 @@
         public decimal FGOrderQty { get; set; }
         public decimal FGStock { get; set; }
         public decimal DispatchQty { get; set; }
+        public string SerialNo { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public List<DoSerialNumberDto> DoSerialNumberDto { get; set; }public List<BTOSerialNumberDto> BTOSerialNumberDto { get; set; }
     }
     public class DeliveryOrderItemsDtoPost
     {
@@ -28,7 +30,8 @@
         public decimal FGOrderQty { get; set; }
         public decimal FGStock { get; set; }
         public decimal DispatchQty { get; set; }
-        
+        public string SerialNo { get; set; }
+        public List<DoSerialNumberDtoPost> DoSerialNumberDtoPost { get; set; }
     }
     public class DeliveryOrderItemsDtoUpdate
     {
@@ -42,9 +45,12 @@
         public decimal FGOrderQty { get; set; }
         public decimal FGStock { get; set; }
         public decimal DispatchQty { get; set; }
+        public string SerialNo { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public List<DoSerialNumberDtoUpdate> DoSerialNumberDtoUpdate { get; set; }
+
     }
 }

@@ -5,14 +5,12 @@
         public int Id { get; set; }
         public string? OtherTerms { get; set; } 
     }
-    public class QuoteOtherTermsDtoPost
+    public class QuoteOtherTermsPostDto
     {
         public string? OtherTerms { get; set; } 
     }
-    public class QuoteOtherTermsDtoUpdate
+    public class QuoteOtherTermsUpdateDto
     {
         public string? OtherTerms { get; set; } 
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
     }
 }

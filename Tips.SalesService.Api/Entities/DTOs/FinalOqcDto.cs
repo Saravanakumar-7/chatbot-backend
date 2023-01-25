@@ -11,13 +11,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? FGItemNumber { get; set; }
 
         [Required]
-        public string ItemType { get; set; }
+        public string? ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
 
         [Precision(18, 3)]
         public decimal? ShopOrderQty { get; set; }
         public string? SubAssemblyItemNumber { get; set; }
-        public string? SAShopOrderNumber { get; }
+        public string? SAShopOrderNumber { get; set; }
         [Precision(18, 3)]
         public decimal? SAShopOrderQty { get; set; }
         [Precision(18, 3)]
@@ -36,7 +36,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
     }
 
-    public class FinalOqcDtoPost
+    public class FinalOqcPostDto
     {
 
 
@@ -44,13 +44,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? FGItemNumber { get; set; }
 
         [Required]
-        public string ItemType { get; set; }
+        public string? ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
 
         [Precision(18, 3)]
         public decimal? ShopOrderQty { get; set; }
         public string? SubAssemblyItemNumber { get; set; }
-        public string? SAShopOrderNumber { get; }
+        public string? SAShopOrderNumber { get; set; }
         [Precision(18, 3)]
         public decimal? SAShopOrderQty { get; set; }
         [Precision(18, 3)]
@@ -62,20 +62,20 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
 
     }
-    public class FinalOqcDtoUpdate
+    public class FinalOqcUpdateDto
     {
         public int? Id { get; set; }
         public string? ProjectNumber { get; set; }
         public string? FGItemNumber { get; set; }
 
         [Required]
-        public string ItemType { get; set; }
+        public string? ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
 
         [Precision(18, 3)]
         public decimal? ShopOrderQty { get; set; }
         public string? SubAssemblyItemNumber { get; set; }
-        public string? SAShopOrderNumber { get; }
+        public string? SAShopOrderNumber { get; set; }
         [Precision(18, 3)]
         public decimal? SAShopOrderQty { get; set; }
         [Precision(18, 3)]

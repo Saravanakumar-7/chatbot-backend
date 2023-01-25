@@ -98,6 +98,7 @@ namespace Tips.Warehouse.Api.Controllers
                         foreach (var itemDetails in getDeliveryOrderDetailById.DeliveryOrderItems)
                         {
                             DeliveryOrderItemsDto deliveryOrderItemsDtos = _mapper.Map<DeliveryOrderItemsDto>(itemDetails);
+                            deliveryOrderItemsDtos.DoSerialNumberDto = _mapper.Map<List<DoSerialNumberDto>>(itemDetails.DoSerialNumbers);
                             deliveryOrderItemsDtoList.Add(deliveryOrderItemsDtos);
                         }
                     }
@@ -155,9 +156,21 @@ namespace Tips.Warehouse.Api.Controllers
 
                 if (deliveryOrderitemsDto != null)
                 {
+                  
                     for (int i = 0; i < deliveryOrderitemsDto.Count; i++)
-                    {
+                    {    string csv = "";
+                        var data = deliveryOrderitemsDto[i].DoSerialNumberDtoPost.ToList();
+                        if (data.Count() != 0)
+                        {
+                            for (int j = 0; j < data.Count(); j++)
+                            {
+                                csv += data[j].SerialNumber.Trim() + ",";
+                            }
+                            csv = csv.TrimEnd(',');
+                            deliveryOrderitemsDto[i].SerialNo = csv;
+                        }
                         DeliveryOrderItems deliveryOrderItems = _mapper.Map<DeliveryOrderItems>(deliveryOrderitemsDto[i]);
+                        deliveryOrderItems.DoSerialNumbers = _mapper.Map<List<DoSerialNumber>>(deliveryOrderitemsDto[i].DoSerialNumberDtoPost);
                         deliveryOrderItemsDtoList.Add(deliveryOrderItems);
                     }
                 }
