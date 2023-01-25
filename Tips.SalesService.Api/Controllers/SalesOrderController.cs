@@ -97,7 +97,7 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderItemsDtoList.Add(salesOrderItemsDtos);
                     }
 
-                    salesOrderDto.SalesOrderItems = salesOrderItemsDtoList;
+                    salesOrderDto.SalesOrderItemsDtos = salesOrderItemsDtoList;
                     serviceResponse.Data = salesOrderDto;
                     serviceResponse.Message = $"Returned SalesOrder with id: {id}";
                     serviceResponse.Success = true;
@@ -118,9 +118,9 @@ namespace Tips.SalesService.Api.Controllers
 
         // POST api/<PurchaseOrderController>
         [HttpPost]
-        public async Task<IActionResult> CreateSalesOrder([FromBody] SalesOrderDtoPost salesOrderDtoPost)
+        public async Task<IActionResult> CreateSalesOrder([FromBody] SalesOrderPostDto salesOrderDtoPost)
         {
-            ServiceResponse<SalesOrderDtoPost> serviceResponse = new ServiceResponse<SalesOrderDtoPost>();
+            ServiceResponse<SalesOrderPostDto> serviceResponse = new ServiceResponse<SalesOrderPostDto>();
             try
             {
                 if (salesOrderDtoPost is null)
@@ -142,8 +142,19 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var createSalesOrder = _mapper.Map<SalesOrder>(salesOrderDtoPost);
-                var salesOrderItemsDto = salesOrderDtoPost.SalesOrderItems;
+                var salesOrderItemsDto = salesOrderDtoPost.SalesOrderItemsPostDtos;
                 var salesOrderItemsList = new List<SalesOrderItems>();
+
+                if (salesOrderItemsDto != null)
+                {
+                    for (int i = 0; i < salesOrderItemsDto.Count; i++)
+                    {
+                        SalesOrderItems salesOrderItems = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
+                        salesOrderItemsList.Add(salesOrderItems);
+                    }
+                }
+                createSalesOrder.SalesOrdersItems = salesOrderItemsList;
+
 
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
@@ -204,9 +215,9 @@ namespace Tips.SalesService.Api.Controllers
 
         // PUT api/<PurchaseOrderController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSalesOrder(int id, [FromBody] SalesOrderDtoUpdate salesOrderDtoUpdate)
+        public async Task<IActionResult> UpdateSalesOrder(int id, [FromBody] SalesOrderUpdateDto salesOrderDtoUpdate)
         {
-            ServiceResponse<SalesOrderDtoUpdate> serviceResponse = new ServiceResponse<SalesOrderDtoUpdate>();
+            ServiceResponse<SalesOrderUpdateDto> serviceResponse = new ServiceResponse<SalesOrderUpdateDto>();
             try
             {
                 if (salesOrderDtoUpdate is null)
@@ -239,7 +250,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
                 var updateSalesOrders = _mapper.Map<SalesOrder>(salesOrderDtoUpdate);
-                var salesOrderItemsDto = salesOrderDtoUpdate.SalesOrderItems;
+                var salesOrderItemsDto = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos;
                 var salesOrderItemsList = new List<SalesOrderItems>();
                 if (salesOrderItemsDto != null)
                 {

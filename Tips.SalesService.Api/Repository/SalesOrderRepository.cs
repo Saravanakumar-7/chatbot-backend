@@ -79,13 +79,7 @@ namespace Tips.SalesService.Api.Repository
                               .ToListAsync();
 
             return getSalesorderList;
-        }
-        public async Task<int?> GetSONumberAutoIncrementCount(DateTime date)
-        {
-            var getSOOrderDetailsCount = _tipsSalesServiceDbContext.SalesOrders.Where(x => x.CreatedOn == date.Date).Count();
-
-            return getSOOrderDetailsCount;
-        }
+        } 
         public async Task<string> UpdateSalesOrder(SalesOrder salesOrder)
         {
             salesOrder.LastModifiedBy = "Admin";
@@ -129,7 +123,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<IEnumerable<SalesOrderItems>> GetSalesOrderDetailsByIdandItemNo(string ItemNumber, int SalesOrderId)
         {
             var getSalesOrderDetailsBySOandItemNo = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                 .Where(x => x.ItemNo == ItemNumber && x.SalesOrderId == SalesOrderId)
+                 .Where(x => x.ItemNumber == ItemNumber && x.SalesOrderId == SalesOrderId)
                           .ToListAsync();
 
             return getSalesOrderDetailsBySOandItemNo;
