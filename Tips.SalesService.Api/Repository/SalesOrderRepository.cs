@@ -54,7 +54,7 @@ namespace Tips.SalesService.Api.Repository
             return getAllSalesOrders;
         }
 
-      
+
 
         public async Task<SalesOrder> GetSalesOrderById(int id)
         {
@@ -63,7 +63,7 @@ namespace Tips.SalesService.Api.Repository
                                  .FirstOrDefaultAsync();
 
             return getSalesOrderbyId;
-        } 
+        }
 
         public async Task<IEnumerable<ListofSalesOrderDetails>> GetSalesOrderDetailsByCustomerId(int Customerid)
         {
@@ -79,13 +79,7 @@ namespace Tips.SalesService.Api.Repository
                               .ToListAsync();
 
             return getSalesorderList;
-        }
-        public async Task<int?> GetSONumberAutoIncrementCount(DateTime date)
-        {
-            var getSOOrderDetailsCount = _tipsSalesServiceDbContext.SalesOrders.Where(x => x.CreatedOn == date.Date).Count();
-
-            return getSOOrderDetailsCount;
-        }
+        } 
         public async Task<string> UpdateSalesOrder(SalesOrder salesOrder)
         {
             salesOrder.LastModifiedBy = "Admin";
@@ -96,7 +90,7 @@ namespace Tips.SalesService.Api.Repository
             string result = $"SalesOrder of Detail {salesOrder.Id} is updated successfully!";
             return result;
         }
-         
+
     }
     public class SalesOrderItemRepository : RepositoryBase<SalesOrderItems>, ISalesOrderItemsRepository
     {
@@ -117,7 +111,7 @@ namespace Tips.SalesService.Api.Repository
                                      Id = x.Id,
                                      ProjectNumber = x.ProjectNumber
 
-                                 })                                
+                                 })
                                .ToListAsync();
 
             return getProjectNumberList;
@@ -129,12 +123,12 @@ namespace Tips.SalesService.Api.Repository
         public async Task<IEnumerable<SalesOrderItems>> GetSalesOrderDetailsByIdandItemNo(string ItemNumber, int SalesOrderId)
         {
             var getSalesOrderDetailsBySOandItemNo = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                 .Where(x => x.ItemNo == ItemNumber && x.SalesOrderId == SalesOrderId)
+                 .Where(x => x.ItemNumber == ItemNumber && x.SalesOrderId == SalesOrderId)
                           .ToListAsync();
 
             return getSalesOrderDetailsBySOandItemNo;
         }
-         
+
         public async Task<IEnumerable<GetSalesOrderDetailsDto>> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo)
         {
 
@@ -149,7 +143,15 @@ namespace Tips.SalesService.Api.Repository
                               .ToListAsync();
 
             return getSalesorderList;
-        } 
-
         }
+
+        public async Task<string> UpdateSalesOrderItem(SalesOrderItems salesOrderItems)
+        {
+            Update(salesOrderItems);
+            string result = $"SalesOrderItem of Detail {salesOrderItems.Id} is updated successfully!";
+            return result;
+        }
+    }
 }
+
+

@@ -15,8 +15,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> UpdateSalesOrder(SalesOrder salesOrder);
         Task<int?> GetSONumberAutoIncrementCount(DateTime date);
 
-       
-
+ 
 
         Task<IEnumerable<ListofSalesOrderDetails>> GetSalesOrderDetailsByCustomerId(int Customerid);
         Task<string> DeleteSalesOrder(SalesOrder salesOrder);
