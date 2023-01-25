@@ -4,6 +4,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
@@ -65,55 +66,55 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-            // GET api/<PurchaseOrderController>/5
-            [HttpGet("{id}")]
-            public async Task<IActionResult> GetSalesOrderById(int id)
+        // GET api/<PurchaseOrderController>/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSalesOrderById(int id)
+        {
+            ServiceResponse<SalesOrderDto> serviceResponse = new ServiceResponse<SalesOrderDto>();
+            try
             {
-                ServiceResponse<SalesOrderDto> serviceResponse = new ServiceResponse<SalesOrderDto>();
-                try
+                var salesOrderById = await _repository.GetSalesOrderById(id);
+
+                if (salesOrderById == null)
                 {
-                    var salesOrderById = await _repository.GetSalesOrderById(id);
-
-                    if (salesOrderById == null)
-                    {
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = $"SalesOrder  hasn't been found in db.";
-                        serviceResponse.Success = false;
-                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                        _logger.LogError($"SalesOrder with id: {id}, hasn't been found in db.");
-                        return NotFound(serviceResponse);
-                    }
-                    else
-                    {
-                        _logger.LogInfo($"Returned owner with id: {id}");
-                        SalesOrderDto salesOrderDto = _mapper.Map<SalesOrderDto>(salesOrderById);
-
-                        List<SalesOrderItemsDto> salesOrderItemsDtoList = new List<SalesOrderItemsDto>();
-
-                        foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
-                        {
-                            SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
-                            salesOrderItemsDtoList.Add(salesOrderItemsDtos);
-                        }
-
-                        salesOrderDto.SalesOrderItems = salesOrderItemsDtoList;
-                        serviceResponse.Data = salesOrderDto;
-                        serviceResponse.Message = $"Returned SalesOrder with id: {id}";
-                        serviceResponse.Success = true;
-                        serviceResponse.StatusCode = HttpStatusCode.OK;
-                        return Ok(serviceResponse);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Something went wrong inside GetSalesOrderById action: {ex.Message}");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Something went wrong,try again ";
+                    serviceResponse.Message = $"SalesOrder  hasn't been found in db.";
                     serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500, serviceResponse);
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesOrder with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {id}");
+                    SalesOrderDto salesOrderDto = _mapper.Map<SalesOrderDto>(salesOrderById);
+
+                    List<SalesOrderItemsDto> salesOrderItemsDtoList = new List<SalesOrderItemsDto>();
+
+                    foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
+                    {
+                        SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
+                        salesOrderItemsDtoList.Add(salesOrderItemsDtos);
+                    }
+
+                    salesOrderDto.SalesOrderItems = salesOrderItemsDtoList;
+                    serviceResponse.Data = salesOrderDto;
+                    serviceResponse.Message = $"Returned SalesOrder with id: {id}";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetSalesOrderById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         // POST api/<PurchaseOrderController>
         [HttpPost]
@@ -166,7 +167,7 @@ namespace Tips.SalesService.Api.Controllers
                     createSalesOrder.SalesOrderNumber = days + months + years + "SO" + (e);
                 }
 
-                if (salesOrderItemsDto != null) 
+                if (salesOrderItemsDto != null)
                 {
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
                     {
@@ -176,12 +177,12 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderItemsList.Add(salesOrderItems);
                     }
                 }
-                
+
                 createSalesOrder.SalesOrdersItems = salesOrderItemsList;
-                
+
 
                 await _repository.CreateSalesOrder(createSalesOrder);
-                _repository.SaveAsync(); 
+                _repository.SaveAsync();
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = " SalesOrder Successfully Created";
@@ -240,7 +241,7 @@ namespace Tips.SalesService.Api.Controllers
                 var updateSalesOrders = _mapper.Map<SalesOrder>(salesOrderDtoUpdate);
                 var salesOrderItemsDto = salesOrderDtoUpdate.SalesOrderItems;
                 var salesOrderItemsList = new List<SalesOrderItems>();
-                if (salesOrderItemsDto != null) 
+                if (salesOrderItemsDto != null)
                 {
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
                     {
@@ -248,9 +249,9 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderItemsList.Add(salesOrderItemsDetail);
                     }
                 }
-              
+
                 var updateData = _mapper.Map(salesOrderDtoUpdate, getSalesOrderById);
-                updateData.SalesOrdersItems = salesOrderItemsList;    
+                updateData.SalesOrdersItems = salesOrderItemsList;
                 string result = await _repository.UpdateSalesOrder(updateData);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
@@ -409,7 +410,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned SalesOrderDetail with id: {Customerid}");
-                    var result =  _mapper.Map<IEnumerable<ListofSalesOrderDetails>>(getSalesDetailByCustomerId);
+                    var result = _mapper.Map<IEnumerable<ListofSalesOrderDetails>>(getSalesDetailByCustomerId);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Success";
                     serviceResponse.Success = true;
@@ -432,7 +433,7 @@ namespace Tips.SalesService.Api.Controllers
         //getsalesorderDetailByprojectNoanditemNo --
         [HttpGet]
         public async Task<IActionResult> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo)
-         {
+        {
             ServiceResponse<GetSalesOrderDetailsDto> serviceResponse = new ServiceResponse<GetSalesOrderDetailsDto>();
 
             try
@@ -471,27 +472,35 @@ namespace Tips.SalesService.Api.Controllers
 
         //pass data from btodeliveryorder using _httpclient warehoouse service to salesservice
 
-       
-        
-        //[HttpPost] 
-        //public async Task<IActionResult> UpdateDispatchDetails([FromBody] dynamic  dispatchDetials)
-        //{
-        //    //we have to write code for same itemnumber in multiple rows
 
-        //    // Deserialise and store it in dynamic varibale
-        //    //lopp thori=ug the dynamic variable an pass hte item number and so id to salesorderitemdetials, get 
-        //    //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
-        //    foreach (var item in dispatchDetials)
-        //    {
-        //        List<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
-        //        var orderItem = salesOrderItems.FirstOrDefault();
-        //        orderItem.BalanceQty = orderItem.BalanceQty - item.DispatchQty;
-        //        orderItem.DispatchQty += item.DispatchQty;
-        //        _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
-        //    }
 
-        //    _salesOrderItemsRepository.SaveAsync();
-        //}
+        [HttpPost]
+        public async Task<IActionResult> UpdateDispatchDetails([FromBody] dynamic dispatchDetials)
+        {
+            ServiceResponse<SalesOrderItemsDto> serviceResponse = new ServiceResponse<SalesOrderItemsDto>();
+
+            //we have to write code for same itemnumber in multiple rows
+
+            // Deserialise and store it in dynamic varibale
+            //lopp thori=ug the dynamic variable an pass hte item number and so id to salesorderitemdetials, get 
+            //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
+            foreach (var item in dispatchDetials)
+            {
+                List<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
+                var orderItem = salesOrderItems.FirstOrDefault();
+                orderItem.BalanceQty = orderItem.BalanceQty - item.DispatchQty;
+                orderItem.DispatchQty += item.DispatchQty;
+                _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+            }
+
+            _salesOrderItemsRepository.SaveAsync();
+
+            serviceResponse.Data = null;
+            serviceResponse.Message = "Success";
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = HttpStatusCode.OK;
+            return Ok();
+        }
 
         //getsalesorderdetailbyitemnoandsalesorderId
 
