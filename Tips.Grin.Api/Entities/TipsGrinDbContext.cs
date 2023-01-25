@@ -20,6 +20,9 @@ namespace Tips.Grin.Api.Entities
         public DbSet<BinningLocation> BinningLocations { get; set; }
 
         public DbSet<DocumentUpload> DocumentUploads { get; set; }
+        public DbSet<ReturnGrin> ReturnGrins { get; set; }
+        public DbSet<ReturnGrinParts> ReturnGrinParts { get; set; }
+        public DbSet<ReturnGrinDocumentUpload> ReturnGrinDocumentUploads { get; set; }
 
 
     }

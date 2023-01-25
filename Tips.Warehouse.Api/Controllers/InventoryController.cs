@@ -30,12 +30,12 @@ namespace Tips.Warehouse.Api.Controllers
 
         // GET: api/<InventoryController>
         [HttpGet]
-        public async Task<IActionResult> GetAllInventory([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllInventory([FromQuery] PagingParameter pagingParameter, [FromQuery]  SearchParams searchParams)
         {
             ServiceResponse<IEnumerable<InventoryDto>> serviceResponse = new ServiceResponse<IEnumerable<InventoryDto>>();
             try
             {
-                var getAllInventory = await _inventoryRepository.GetAllInventory(pagingParameter);
+                var getAllInventory = await _inventoryRepository.GetAllInventory(pagingParameter,searchParams);
                 var metadata = new
                 {
                     getAllInventory.TotalCount,

@@ -8,7 +8,7 @@ namespace Tips.Warehouse.Api.Contracts
 {
     public interface IInventoryRepository : IRepositoryBase<Inventory>
     {
-        Task<PagedList<Inventory>> GetAllInventory(PagingParameter pagingParameter);
+        Task<PagedList<Inventory>> GetAllInventory(PagingParameter pagingParameter, SearchParams searchParams);
 
         Task<int?> CreateInventory(Inventory inventory);
         Task<string> UpdateInventory(Inventory inventory);

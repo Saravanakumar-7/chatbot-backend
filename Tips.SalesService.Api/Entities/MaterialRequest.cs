@@ -23,7 +23,7 @@ namespace Tips.SalesService.Api.Entities
         public string? ShopOrderNumber { get; set; }
         public string? IssuedBy { get; set; }
         public DateTime? IssuedOn { get; set; }
-        public bool IssuedStatus { get; set; }
+        public Enum IssuedStatus { get; set; }
 
         [DefaultValue(0)]
         public ShortStatus StatusOfShort { get; set; }  
