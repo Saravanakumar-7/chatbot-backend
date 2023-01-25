@@ -46,10 +46,9 @@ namespace Tips.SalesService.Api.Entities.Dto
 
     public class SalesOrderItemsPostDto
     {
-        public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
-        public string? SalesOrderNumber { get; set; }
+        //public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public OrderStatus StatusEnum { get; set; }
 
@@ -86,7 +85,7 @@ namespace Tips.SalesService.Api.Entities.Dto
 
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
-        public string? SalesOrderNumber { get; set; }
+      //  public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public OrderStatus StatusEnum { get; set; }
 
@@ -135,7 +134,7 @@ namespace Tips.SalesService.Api.Entities.Dto
     public class GetSalesOrderGSTListDto
     {
         public int SalesOrderId { get; set; }
-        public string? ItemNo { get; set; }
+        public string? ItemNumber { get; set; }
         public string? SalesOrderNumber { get; set; }
         public decimal? SGST { get; set; }
         public decimal? CGST { get; set; }

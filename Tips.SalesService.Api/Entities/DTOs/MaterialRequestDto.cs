@@ -51,23 +51,21 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public bool IssuedStatus { get; set; }
 
 
+
         public List<MaterialRequestItemPostDto>? MaterialRequestItemPostDtos { get; set; }
     }
 
     public class MaterialRequestUpdateDto
     {
-        public int Id { get; set; }
-
-
-        [Required(ErrorMessage = "MRNumber is required")]
-        public string MRNumber { get; set; }
+        public int Id { get; set; }      
         public string? ProjectNumber { get; set; }
         public string? FGItemNumber { get; set; }
         public string? ShopOrderType { get; set; }
         public string? ShopOrderNumber { get; set; }
         public string? IssuedBy { get; set; }
         public DateTime? IssuedOn { get; set; }
-        public bool IssuedStatus { get; set; }    
+        public bool IssuedStatus { get; set; }
+        public string Unit { get; set; }
 
 
         public List<MaterialRequestItemUpdateDto>? MaterialRequestItemUpdateDtos { get; set; }
