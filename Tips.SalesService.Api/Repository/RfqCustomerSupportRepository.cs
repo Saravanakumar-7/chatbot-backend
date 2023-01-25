@@ -50,7 +50,7 @@ namespace Tips.SalesService.Api.Repository
            .Include(t => t.RfqCustomerSupportItems)
            .ThenInclude(u=>u.RfqCSDeliverySchedule)
            .Include(x=>x.RfqCustomerSupportNotes)
-           .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+           .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
             return getAllRfqCS;
         } 
 
@@ -133,7 +133,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<IEnumerable<RfqCustomerSupportItems>> GetAllActiveRfqCustomerSupportItemsByRfqNumber(string rfqNumber)
         {
             IEnumerable<RfqCustomerSupportItems> getAllActiveRfqCSItemsByRfqNumber = await _tipsSalesServiceDbContext.RfqCustomerSupportItems
-             .Where(x => x.RfqNumber == rfqNumber && x.ReleaseStatus == true).ToListAsync();
+             .Where(x => x.RfqNumber == rfqNumber && x.ReleaseStatus == true).OrderByDescending(x => x.Id).ToListAsync();
 
             return getAllActiveRfqCSItemsByRfqNumber;
         }
@@ -227,15 +227,15 @@ namespace Tips.SalesService.Api.Repository
                                     RfqNumber = x.RfqNumber,
                                     CustomerName = x.CustomerName
                                 })
-                              .ToListAsync();
+                              .OrderByDescending(x => x.Id).ToListAsync();
 
             return getAllActiveRfqNumberList;
         }
 
         public async Task<PagedList<Rfq>> GetAllRfq(PagingParameter pagingParameter)
         {
-            var getAllRfq = PagedList<Rfq>.ToPagedList(FindAll()
-           .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var getAllRfq = PagedList<Rfq>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
+           , pagingParameter.PageNumber, pagingParameter.PageSize);
             return getAllRfq;
         }
 
@@ -315,7 +315,7 @@ namespace Tips.SalesService.Api.Repository
             var getAllRfqEngg = PagedList<RfqEngg>.ToPagedList(FindAll()
             .Include(t => t.RfqEnggItems)            
             .Include(x => x.RfqEnggRiskIdentifications)
-            .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
             return getAllRfqEngg;
         }
 
@@ -453,7 +453,7 @@ namespace Tips.SalesService.Api.Repository
                      .ThenInclude(v => v.RfqLPCostingNREConsumables)
                      .Include(x => x.RfqLPCostingItems)
                      .ThenInclude(w => w.RfqLPCostingOtherCharges)
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+               .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
                 return rfqLPCosting;
             }
 
@@ -521,7 +521,7 @@ namespace Tips.SalesService.Api.Repository
             public async Task<PagedList<RfqCustomGroup>> GetAllRfqCustomGroup(PagingParameter pagingParameter)
             {
                 var getAllRfqCustomGroup = PagedList<RfqCustomGroup>.ToPagedList(FindAll()
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+               .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
                 return getAllRfqCustomGroup;
             }
 
@@ -571,7 +571,7 @@ namespace Tips.SalesService.Api.Repository
             public async Task<PagedList<RfqCustomField>> GetAllRfqCustomField(PagingParameter pagingParameter)
             {
                 var getAllRfqCustomField = PagedList<RfqCustomField>.ToPagedList(FindAll()
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+               .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
                 return getAllRfqCustomField;
             }
 
@@ -618,4 +618,6 @@ namespace Tips.SalesService.Api.Repository
         }
 
     }
-}
+
+ 
+    }

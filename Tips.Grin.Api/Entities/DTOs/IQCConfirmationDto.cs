@@ -20,6 +20,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public int ItemId { get; set; }
 
+        public int GrinPartId { get; set; }
 
         public string? ProjectNumber { get; set; }
 
@@ -49,6 +50,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
 
         public int ItemId { get; set; }
+        public int GrinPartId { get; set; }
 
         public string? ProjectNumber { get; set; }
 
@@ -75,6 +77,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     public string? ItemNumber { get; set; }
 
     public int ItemId { get; set; }
+    public int GrinPartId { get; set; }
 
     public string? ProjectNumber { get; set; }
 

@@ -3,6 +3,7 @@ using LoggerService;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
 using Tips.Grin.Api.Contracts;
+using Tips.Grin.Api.Entities;
 using Tips.Grin.Api.Extensions;
 using Tips.Grin.Api.Repository;
 
@@ -26,6 +27,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IGrinRepository, GrinRepository>();
 builder.Services.AddScoped<IIQCConfirmationRepository, IQCConfirmationRepository>();
 builder.Services.AddScoped<IBinningRepository, BinningRepository>();
+builder.Services.AddScoped<IReturnGrinRepository, ReturnGrinRepository>();
+//builder.Services.AddScoped<IReturnGrinDocumentUploadRepository, ReturnGrinDocumentUpload>();
 
 builder.Services.AddScoped<IDocumentUploadRepository, UploadDocumentRepository>();
 builder.Services.AddHttpClient();

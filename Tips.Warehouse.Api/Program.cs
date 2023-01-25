@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
+using System.Text.Json.Serialization;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Extensions;
 using Tips.Warehouse.Api.Repository;
@@ -17,7 +18,10 @@ builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureMSSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(opt =>
+{
+    opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();
 
@@ -27,14 +31,18 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();  
 builder.Services.AddScoped<IBTODeliveryOrderRepository, BTODeliveryOrderRepository>();
 builder.Services.AddScoped<IDeliveryOrderRepository, DeliveryOrderRepository>();
+builder.Services.AddScoped<IReturnDeliveryOrderRepository, ReturnDeliveryOrderRepository>();
 builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 builder.Services.AddScoped<IInventoryTranctionRepository, InventoryTranctionRepository>();
+builder.Services.AddScoped<IReturnInvoiceRepository, ReturnInvoiceRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient();
 
+//builder.Services.A
 
 var app = builder.Build();
 

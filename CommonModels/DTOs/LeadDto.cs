@@ -13,6 +13,8 @@ namespace Entities.DTOs
 
         public string? ContactName { get; set; }
 
+        public string? LeadID { get; set; }
+
         public string? CustomerFirstName { get; set; }
 
         public string? CustomerLastName { get; set; }

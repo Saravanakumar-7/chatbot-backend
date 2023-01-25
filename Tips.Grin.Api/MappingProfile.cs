@@ -43,6 +43,20 @@ namespace Tips.Grin.Api
             CreateMap<DocumentUpload, DocumentUploadPostDto>().ReverseMap();
             CreateMap<DocumentUpload, DocumentUploadUpdateDto>().ReverseMap();
 
+            CreateMap<ReturnGrin, ReturnGrinDto>().ReverseMap();
+            CreateMap<ReturnGrin, ReturnGrinDtoPost>().ReverseMap();
+
+            CreateMap<ReturnGrinParts, ReturnGrinPartsDto>().ReverseMap();
+            CreateMap<ReturnGrinParts, ReturnGrinPartsDtoPost>().ReverseMap();
+            CreateMap<ReturnGrinParts, ReturnGrinPartsListDto>().ReverseMap();
+        
+
+            CreateMap<ReturnGrinDocumentUpload, ReturnGrinDocumentUploadDto>().ReverseMap();
+            CreateMap<ReturnGrinDocumentUpload, ReturnGrinDocumentUploadDtoPost>().ReverseMap();
+
+
+
+
 
         }
     }

@@ -12,7 +12,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<ItemPriceList>> GetItemPriceListByItemNo(string itemNo);
         Task<IEnumerable<ItemPriceList>> GetItemPriceListByItemNoAndPriceListName(string itemNo,string priceListName);
 
-        
+        Task<ItemPriceList> CreateFromReleaseLp(ItemPriceList itemPriceList);
         Task<long> CreateItemPriceList(ItemPriceList itemPriceList);
         Task<string> UpdateItemPriceList(ItemPriceList itemPriceList);
 

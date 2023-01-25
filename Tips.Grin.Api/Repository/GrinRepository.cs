@@ -101,7 +101,15 @@ namespace Tips.Grin.Api.Repository
         public UploadDocumentRepository(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
         {
             _tipsGrinDbContext = tipsGrinDbContext;
-        } 
+        }
+
+        //public async Task<GrinParts> UpdateQty(int grinParts)
+        //{
+        //    var data = await _tipsGrinDbContext.GrinParts.Where(x => x.Id == grinParts).FirstOrDefaultAsync();
+        //    data.grin = grinParts;
+        //    Update(data);
+        //    return result;
+        //}
 
         public async Task<int?> CreateUploadDocumentGrin(DocumentUpload documentUpload)
         {
@@ -114,4 +122,30 @@ namespace Tips.Grin.Api.Repository
             return result.Id;
         }
     }
-  }
+    public class GrinPartsRepository : RepositoryBase<GrinParts>, IGrinPartsRepository
+    {
+        private TipsGrinDbContext _tipsGrinDbContexts;
+        public GrinPartsRepository(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
+        {
+            _tipsGrinDbContexts = tipsGrinDbContext;
+        }
+         
+        public async Task<GrinParts> UpdateGrinPartsQty(int GrinPartId, string AcceptedQty, string RejectedQty)
+        {
+            var data = await _tipsGrinDbContexts.GrinParts.Where(x => x.Id == GrinPartId).FirstOrDefaultAsync();
+            data.AcceptedQty = Convert.ToDecimal(AcceptedQty);
+            data.RejectedQty = Convert.ToDecimal(RejectedQty);             
+            return data; 
+        }
+
+        public async Task<string> UpdateGrinQty(GrinParts grinParts)
+        {
+            grinParts.LastModifiedBy = "Admin";
+            grinParts.LastModifiedOn = DateTime.Now;
+            Update(grinParts);
+            string result = $"Grin Detail {grinParts.Id} is updated successfully!";
+            return result;
+        }
+
+    }
+}

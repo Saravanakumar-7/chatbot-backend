@@ -27,7 +27,7 @@ namespace Tips.Grin.Api.Repository
         }
         public async Task<IEnumerable<Binning>> GetAllBinningDetails()
         {
-            var getAllBinnings = await FindAll().ToListAsync();
+            var getAllBinnings = await FindAll().OrderByDescending(x=>x.Id).ToListAsync();
             return getAllBinnings;
 
         }

@@ -26,6 +26,15 @@ namespace Tips.SalesService.Api.Repository
             return result.Id;
         }
 
+        public async Task<ItemPriceList> CreateFromReleaseLp(ItemPriceList itemPriceList)
+        {
+            itemPriceList.CreatedBy = "Admin";
+            itemPriceList.CreatedOn = DateTime.Now;
+            itemPriceList.Unit = "Bangalore";
+            var result = await Create(itemPriceList);
+            return result;
+        }
+
         public async Task<string> DeleteItemPriceList(ItemPriceList itemPriceList)
         {
             Delete(itemPriceList);

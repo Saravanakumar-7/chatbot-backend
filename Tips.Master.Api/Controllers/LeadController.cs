@@ -18,16 +18,20 @@ namespace Tips.Master.Api.Controllers
     public class LeadController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
+        private ILeadRepository _leadRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
 
-        public LeadController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        public LeadController(IRepositoryWrapperForMaster repository, ILeadRepository leadRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _leadRepository = leadRepository;
         }
+
         // GET: api/<CustomerInfoController>
+
         [HttpGet]
         public async Task<IActionResult> GetAllLeads([FromQuery] PagingParameter pagingParameter)
         {
@@ -90,8 +94,26 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned LeadDetails with id: {id}");
-                    var result = _mapper.Map<LeadDto>(LeadDetails);
-                    serviceResponse.Data = result;
+
+                    LeadDto leadDtos = _mapper.Map<LeadDto>(LeadDetails);
+
+                    List<LeadAddressDto> leadAddressDtoList = new List<LeadAddressDto>();
+
+                    if (LeadDetails.LeadAddress != null)
+                    {
+
+                        foreach (var leadAddressDetails in LeadDetails.LeadAddress)
+                        {
+                            LeadAddressDto leadAddressDtos = _mapper.Map<LeadAddressDto>(leadAddressDetails);
+                            leadAddressDtoList.Add(leadAddressDtos);
+                        }
+                    }
+
+                    leadDtos.LeadAddresses = leadAddressDtoList;
+
+
+                    //var result = _mapper.Map<LeadDto>(LeadDetails);
+                    serviceResponse.Data = leadDtos;
                     serviceResponse.Message = $"Returned LeadDetails with id: {id}";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -142,7 +164,24 @@ namespace Tips.Master.Api.Controllers
                 var lead = _mapper.Map<Lead>(leadDtoPost);
 
                 lead.LeadAddress = address.ToList();
-               
+
+                var date = DateTime.Now;
+
+                var leadcount = await _leadRepository.GetLeadIDIncrementCount(date);
+
+                if (leadcount > 0)
+                {
+                    var number = leadcount + 1;
+                    string e = String.Format("{0:D4}", number);
+                    lead.LeadID = "L" + (e);
+                }
+                else
+                {
+                    var count = 1;
+                    var e = count.ToString("D4");
+                    lead.LeadID = "L" + (e);
+                }
+
 
                 var leadDetails = await _repository.LeadRepository.CreateLead(lead);
                 var leadDetailsDto = _mapper.Map<LeadDto>(leadDetails);

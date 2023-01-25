@@ -10,13 +10,10 @@ using System.Threading.Tasks;
 
 namespace Tips.Grin.Api.Contracts
 {
-    public interface IGrinPartsRepository
-    {
-        Task<IEnumerable<GrinParts>> GetAllGrinParts();
-        Task<GrinParts> GetGrinPartsById(int id);
-        Task<IEnumerable<GrinParts>> GetAllActiveGrinParts();
-        Task<int?> CreateGrinParts(GrinParts grinParts);
-        Task<string> UpdateGrinParts(GrinParts grinParts);
-        Task<string> DeleteGrinParts(GrinParts grinParts);
+    public interface IGrinPartsRepository : IRepositoryBase<GrinParts>
+    { 
+        Task<GrinParts> UpdateGrinPartsQty(int GrinPartId, string AcceptedQty, string RejectedQty);
+        Task<string> UpdateGrinQty(GrinParts grinparts);
     }
 }
+
