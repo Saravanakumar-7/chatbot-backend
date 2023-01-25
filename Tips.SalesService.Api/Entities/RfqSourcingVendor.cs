@@ -15,7 +15,7 @@ namespace Tips.SalesService.Api.Entities
         public int Id { get; set; }
         public string? Vendor { get; set; }
 
-        [Precision(13, 3)]
+        [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
         public string? UnitPricePer { get; set; }
         public string? Currency { get; set; }
@@ -25,7 +25,7 @@ namespace Tips.SalesService.Api.Entities
         public string? Duties { get; set; }
 
         [Precision(13,3)]
-        public decimal? QuoteQuantity { get; set; }
+        public decimal? QuoteQty { get; set; }
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }       
         public bool IsActive { get; set; } = true;        

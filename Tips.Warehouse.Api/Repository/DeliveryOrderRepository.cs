@@ -48,6 +48,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var allDeliveryOrderDetails = PagedList<DeliveryOrder>.ToPagedList(FindAll()
                                 .Include(t => t.DeliveryOrderItems)
+                                .ThenInclude(y => y.DoSerialNumbers)
                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return allDeliveryOrderDetails;
@@ -57,6 +58,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var deliveryOrderDetailsbyId = await _tipsWarehouseDbContext.DeliveryOrder.Where(x => x.Id == id)
                               .Include(t => t.DeliveryOrderItems)
+                              .ThenInclude(y => y.DoSerialNumbers)
                               .FirstOrDefaultAsync();
 
 

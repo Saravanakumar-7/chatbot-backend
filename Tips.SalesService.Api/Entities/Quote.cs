@@ -11,11 +11,19 @@ namespace Tips.SalesService.Api.Entities
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? QuoteRef { get; set; }
-        public decimal TotalAmount { get; set; }
-        public bool IsTheseRequiredToBePrintedInQuote { get; set; }
-        public decimal TotalAdditionalCharges { get; set; }
-        public string SpecialDiscountType { get; set; }
-        public decimal SpecialDiscountAmount { get; set; }
+
+        [Precision(18,3)]
+        public decimal? TotalAmount { get; set; }
+        public bool? IsTheseRequiredToBePrintedInQuote { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAdditionalCharges { get; set; }
+        public string? SpecialDiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SpecialDiscountAmount { get; set; }
+
+        [Precision(18, 3)]
         public decimal TotalFinalAmount { get; set; }
         public string? PaymentTerms { get; set; }
         public string? QuoteType { get; set; }
@@ -32,10 +40,10 @@ namespace Tips.SalesService.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<QuoteGeneral>? quoteGenerals { get; set; }
-        public List<QuoteAdditionalCharges>? quoteAdditionalCharges { get; set; }
-        public List<QuoteRFQNotes>? quoteRFQNotes { get; set; }
-        public List<QuoteOtherTerms>? quoteOtherTerms { get; set; }
-        public List<QuoteSpecialTerms>? quoteSpecialTerms { get; set; }
+        public List<QuoteGeneral>? QuoteGenerals { get; set; }
+        public List<QuoteAdditionalCharges>? QuoteAdditionalCharges { get; set; }
+        public List<QuoteRFQNotes>? QuoteRFQNotes { get; set; }
+        public List<QuoteOtherTerms>? QuoteOtherTerms { get; set; }
+        public List<QuoteSpecialTerms>? QuoteSpecialTerms { get; set; }
     }
 }

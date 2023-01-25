@@ -9,11 +9,20 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? CustomerId { get; set; }
         public string? QuoteRef { get; set; }
-        public decimal TotalAmount { get; set; }
-        public bool IsTheseRequiredToBePrintedInQuote { get; set; }
-        public decimal TotalAdditionalCharges { get; set; }
-        public string SpecialDiscountType { get; set; }
-        public decimal SpecialDiscountAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAmount { get; set; }
+        public bool? IsTheseRequiredToBePrintedInQuote { get; set; }
+
+        [Precision(18, 3)]
+
+        public decimal? TotalAdditionalCharges { get; set; }
+        public string? SpecialDiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SpecialDiscountAmount { get; set; }
+
+        [Precision(18, 3)]
         public decimal TotalFinalAmount { get; set; }
         public string? PaymentTerms { get; set; }
         public string? QuoteType { get; set; }
@@ -23,60 +32,78 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? GeneralDiscount { get; set; }
+
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<QuoteGeneralDto>? quoteGeneralDtos { get; set; }
-        public List<QuoteAdditionalChargesDto>? quoteAdditionalChargesDtos { get; set; }
-        public List<QuoteRFQNotesDto>? quoteRFQNotesDtos { get; set; }
-        public List<QuoteOtherTermsDto>? quoteOtherTermsDtos { get; set; }
-        public List<QuoteSpecialTermsDto>? quoteSpecialTermsDtos { get; set; }
+        public List<QuoteGeneralDto>? QuoteGeneralDtos { get; set; }
+        public List<QuoteAdditionalChargesDto>? QuoteAdditionalChargesDtos { get; set; }
+        public List<QuoteRFQNotesDto>? QuoteRFQNotesDtos { get; set; }
+        public List<QuoteOtherTermsDto>? QuoteOtherTermsDtos { get; set; }
+        public List<QuoteSpecialTermsDto>? QuoteSpecialTermsDtos { get; set; }
     }
-    public class QuoteDtoPost
+    public class QuotePostDto
     {
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? QuoteRef { get; set; }
-        public decimal TotalAmount { get; set; }
-        public bool IsTheseRequiredToBePrintedInQuote { get; set; }
-        public decimal TotalAdditionalCharges { get; set; }
-        public string SpecialDiscountType { get; set; }
-        public decimal SpecialDiscountAmount { get; set; }
-        public decimal TotalFinalAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAmount { get; set; }
+        public bool? IsTheseRequiredToBePrintedInQuote { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAdditionalCharges { get; set; }
+        public string? SpecialDiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SpecialDiscountAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalFinalAmount { get; set; }
         public string? PaymentTerms { get; set; }
         public string? QuoteType { get; set; } 
 
         [Precision(13, 3)]
         public decimal? GeneralDiscount { get; set; } 
-        public List<QuoteGeneralDtoPost>? quoteGeneralDtoPost { get; set; }
-        public List<QuoteAdditionalChargesDtoPost>? quoteAdditionalChargesDtoPost { get; set; }
-        public List<QuoteRFQNotesDtoPost>? quoteRFQNotesDtoPost { get; set; }
-        public List<QuoteOtherTermsDtoPost>? quoteOtherTermsDtoPost { get; set; }
-        public List<QuoteSpecialTermsDtoPost>? quoteSpecialTermsDtoPost {get; set; } 
+        public List<QuoteGeneralPostDto>? QuoteGeneralPostDtos { get; set; }
+        public List<QuoteAdditionalChargesPostDto>? QuoteAdditionalChargesPostDtos { get; set; }
+        public List<QuoteRFQNotesPostDto>? QuoteRFQNotesPostDtos { get; set; }
+        public List<QuoteOtherTermsPostDto>? QuoteOtherTermsPostDtos { get; set; }
+        public List<QuoteSpecialTermsPostDto>? QuoteSpecialTermsPostDtos {get; set; } 
     }
-    public class QuoteDtoUpdate
+    public class QuoteUpdateDto
     {
         public int Id { get; set; }
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? QuoteRef { get; set; }
-        public decimal TotalAmount { get; set; }
-        public bool IsTheseRequiredToBePrintedInQuote { get; set; }
-        public decimal TotalAdditionalCharges { get; set; }
-        public string SpecialDiscountType { get; set; }
-        public decimal SpecialDiscountAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAmount { get; set; }
+        public bool? IsTheseRequiredToBePrintedInQuote { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAdditionalCharges { get; set; }
+        public string? SpecialDiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SpecialDiscountAmount { get; set; }
+
+        [Precision(18, 3)]
         public decimal TotalFinalAmount { get; set; }
         public string? PaymentTerms { get; set; }
-        public string? QuoteType { get; set; } 
+        public string? QuoteType { get; set; }     
 
         [Precision(13, 3)]
-        public decimal? GeneralDiscount { get; set; }  
-        public List<QuoteGeneralDtoUpdate>? quoteGeneralDtoUpdate { get; set; }
-        public List<QuoteAdditionalChargesDtoUpdate>? quoteAdditionalChargesDtoUpdate { get; set; }
-        public List<QuoteRFQNotesDtoUpdate>? quoteRFQNotesDtoUpdate { get; set; }
-        public List<QuoteOtherTermsDtoUpdate>? quoteOtherTermsDtoUpdate { get; set; }
-        public List<QuoteSpecialTermsDtoUpdate>? quoteSpecialTermsDtoUpdate { get; set; }
+        public decimal? GeneralDiscount { get; set; }
+
+        public List<QuoteGeneralUpdateDto>? QuoteGeneralUpdateDtos { get; set; }
+        public List<QuoteAdditionalChargesUpdateDto>? QuoteAdditionalChargesUpdateDtos { get; set; }
+        public List<QuoteRFQNotesUpdateDto>? QuoteRFQNotesUpdateDtos { get; set; }
+        public List<QuoteOtherTermsUpdateDto>? QuoteOtherTermsUpdateDtos { get; set; }
+        public List<QuoteSpecialTermsUpdateDto>? QuoteSpecialTermsUpdateDtos { get; set; }
     }
 }

@@ -16,6 +16,7 @@ namespace Tips.Warehouse.Api.Entities
         public decimal FGOrderQty { get; set; }
         public decimal FGStock { get; set; }
         public decimal DispatchQty { get; set; }
+        public string SerialNo { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -23,6 +24,6 @@ namespace Tips.Warehouse.Api.Entities
         public int DeliveryOrderId { get; set; }
         public DeliveryOrder? DeliveryOrder { get; set; }
 
-
+        public List<DoSerialNumber> DoSerialNumbers { get; set; }
     }
 }

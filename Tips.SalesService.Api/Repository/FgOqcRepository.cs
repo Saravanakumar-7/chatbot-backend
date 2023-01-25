@@ -22,8 +22,8 @@ namespace Tips.SalesService.Api.Repository
         {
             fgOqc.CreatedBy = "Admin";
             fgOqc.CreatedOn = DateTime.Now;
-            var result = await Create(fgOqc);
             fgOqc.Unit = "Bangalore";
+            var result = await Create(fgOqc);            
             return result.Id;
         }
 
@@ -36,23 +36,23 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<FgOqc>> GetAllFgOqcs(PagingParameter pagingParameter)
         {
-            var fgqoc = PagedList<FgOqc>.ToPagedList(FindAll()
+            var getAllFgOqcs = PagedList<FgOqc>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
            .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return fgqoc;
+            return getAllFgOqcs;
 
         }
 
 
         public async Task<FgOqc> GetFgOqcById(int id)
         {
-            var fgQocs = await _tipsSalesServiceDbContext.FgOqcs.Where(x => x.Id == id).FirstOrDefaultAsync();
-            return fgQocs;
+            var getFgOqcById = await _tipsSalesServiceDbContext.FgOqcs.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return getFgOqcById;
         }
 
         public async Task<string> UpdateFgOqc(FgOqc fgOqc)
         {
-            fgOqc.CreatedBy = "Admin";
-            fgOqc.CreatedOn = DateTime.Now;
+            fgOqc.LastModifiedBy = "Admin";
+            fgOqc.LastModifiedOn = DateTime.Now;
             Update(fgOqc);
             string result = $"fgOqc of Detail {fgOqc.Id} is updated successfully!";
             return result;

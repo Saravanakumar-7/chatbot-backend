@@ -25,6 +25,12 @@ namespace Tips.SalesService.Api.Repository
             var result = await Create(request);
             return result.Id;
         }
+        public async Task<int?> GetMRNumberAutoIncrementCount(DateTime date)
+        {
+            var getMRNumberAutoIncrementCount = _tipsSalesServiceDbContext.MaterialRequests.Where(x => x.CreatedOn == date.Date).Count();
+
+            return getMRNumberAutoIncrementCount;
+        }
 
         public async Task<string> DeleteMaterialRequest(MaterialRequest request)
         {
@@ -35,14 +41,14 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<MaterialRequest>> GetAllMaterialRequest(PagingParameter pagingParameter)
         {
-            var getAllMR = PagedList<MaterialRequest>.ToPagedList(FindAll()
+            var getAllMR = PagedList<MaterialRequest>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
             .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
             return getAllMR;
         }
 
         public async Task<MaterialRequest> GetMaterialRequestById(int id)
         {
-            var getMRbyId = await _tipsSalesServiceDbContext.materialRequests.Where(x => x.Id == id)
+            var getMRbyId = await _tipsSalesServiceDbContext.MaterialRequests.Where(x => x.Id == id)
                                .Include(t => t.MaterialRequestItems).FirstOrDefaultAsync();
             return getMRbyId;
         }
@@ -58,7 +64,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<MaterialRequestIdNoDto>> GetAllOpenMRIdNoList()
         {
-            IEnumerable<MaterialRequestIdNoDto> MrNoDetails = await _tipsSalesServiceDbContext.materialRequests
+            IEnumerable<MaterialRequestIdNoDto> MrNoDetails = await _tipsSalesServiceDbContext.MaterialRequests
                                 .Select(x => new MaterialRequestIdNoDto()
                                 {
                                     Id = x.Id,
@@ -72,7 +78,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<MaterialRequest> GetMaterialReqByMRNumber(string MRnumber)
         {
 
-            var getMaterialReqbyMRNo = await _tipsSalesServiceDbContext.materialRequests
+            var getMaterialReqbyMRNo = await _tipsSalesServiceDbContext.MaterialRequests
 
             .Include(t => t.MaterialRequestItems).Where(x => x.MRNumber == MRnumber)
                     .FirstOrDefaultAsync();

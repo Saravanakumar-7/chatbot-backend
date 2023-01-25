@@ -20,9 +20,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? Count { get; set; }
-        public List<RfqSourcingVendorDto>? RfqSourcingVendors { get; set; }
+        public List<RfqSourcingVendorDto>? RfqSourcingVendorDtos { get; set; }
     }
-    public class RfqSourcingItemsDtoPost
+    public class RfqSourcingItemsPostDto
     {
         [StringLength(500, ErrorMessage = "ItemNumber can't be longer than 100 characters")]
         public string? ItemNumber { get; set; }
@@ -36,10 +36,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? Count { get; set; }
 
-        public List<RfqSourcingVendorDtoPost>? RfqSourcingVendors { get; set; }
+        public List<RfqSourcingVendorPostDto>? RfqSourcingVendorPostDtos { get; set; }
 
     }
-    public class RfqSourcingItemsDtoUpdate
+    public class RfqSourcingItemsUpdateDto
     {
        
         [StringLength(500, ErrorMessage = "ItemNumber can't be longer than 100 characters")]
@@ -53,7 +53,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? Count { get; set; }
-        public List<RfqSourcingVendorDtoUpdate>? RfqSourcingVendors { get; set; }
+        public List<RfqSourcingVendorUpdateDto>? RfqSourcingVendorUpdateDtos { get; set; }
 
     }
 }

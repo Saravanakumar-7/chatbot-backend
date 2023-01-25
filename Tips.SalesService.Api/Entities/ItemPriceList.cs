@@ -8,25 +8,25 @@ namespace Tips.SalesService.Api.Entities
 
         [Key]
         public int Id { get; set; }  
-        public string? ItemNo { get; set; } 
+        public string? ItemNumber { get; set; } 
         public string? Description { get; set; }
 
-        [Precision(18, 3)]
+        [Precision(13, 3)]
         public decimal? Qty { get; set; }
         public string? UOC { get; set; }
         public string? LeastCost { get; set; }
 
-        [Precision(13, 3)]
+        [Precision(18, 3)]
         public decimal? LeastCostPlus { get; set; }
 
-        [Precision(13, 3)]
+        [Precision(18, 3)]
         public decimal? LeastCostminus { get; set; }
 
 
-        [Precision(13, 3)]
+        [Precision(18, 3)]
         public decimal? DiscountPlus { get; set; }
 
-        [Precision(13, 3)]
+        [Precision(18, 3)]
         public decimal? DiscountMinus { get; set; }
 
         [Precision(18, 3)]

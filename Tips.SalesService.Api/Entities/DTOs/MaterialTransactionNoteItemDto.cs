@@ -12,38 +12,43 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class MaterialTransactionNoteItemDto
     {
         public int? Id { get; set; }
-        public string? FromPartNo { get; set; }
+        public string? FromPartNumber { get; set; }
         public string? FromLocation { get; set; }
         public int? Stock { get; set; }
         public string? ToProject { get; set; }
-        public string? ToPartNo { get; set; }
+        public string? ToPartNumber { get; set; }
+
+        [Precision(13, 3)]
         public decimal? TransferQty { get; set; }
         public string Unit { get; set; }
         public bool IsApproved { get; set; }
         public bool IsClosed { get; set; }
     }
 
-    public class MaterialTransactionNoteItemDtoPost
+    public class MaterialTransactionNoteItemPostDto
     {
-        public string? FromPartNo { get; set; }
+        public string? FromPartNumber { get; set; }
         public string? FromLocation { get; set; }
         public int? Stock { get; set; }
         public string? ToProject { get; set; }
-        public string? ToPartNo { get; set; }
+        public string? ToPartNumber { get; set; }
+
+        [Precision(13, 3)]
         public decimal? TransferQty { get; set; }
         public string Unit { get; set; }
         public bool IsApproved { get; set; }
         public bool IsClosed { get; set; }
     }
 
-    public class MaterialTransactionNoteItemDtoUpdate
+    public class MaterialTransactionNoteItemUpdateDto
     {
-        public int? Id { get; set; }
-        public string? FromPartNo { get; set; }
+        public string? FromPartNumber { get; set; }
         public string? FromLocation { get; set; }
         public int? Stock { get; set; }
         public string? ToProject { get; set; }
-        public string? ToPartNo { get; set; }
+        public string? ToPartNumber { get; set; }
+
+        [Precision(13, 3)]
         public decimal? TransferQty { get; set; }
         public string Unit { get; set; }
         public bool IsApproved { get; set; }

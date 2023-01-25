@@ -42,7 +42,12 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<SalesOrderItems> SalesOrdersItems { get; set; }
 
 
-        public DbSet<Quote> quotes { get; set; }
+        public DbSet<Quote> Quotes { get; set; }
+        public DbSet<QuoteGeneral> QuoteGenerals { get; set; }
+        public DbSet<QuoteAdditionalCharges> QuoteAdditionalCharges { get; set; }
+        public DbSet<QuoteRFQNotes> QuoteRFQNotes { get; set; }
+        public DbSet<QuoteOtherTerms> QuoteOtherTerms { get; set; }
+        public DbSet<QuoteSpecialTerms> QuoteSpecialTerms { get; set; }
 
         public DbSet<ForeCast> ForeCasts { get; set; }
         public DbSet<ForeCastCustomerSupport> ForeCastCustomerSupports { get; set; }
@@ -63,6 +68,7 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<RfqLPCostingOtherCharges> RfqLPCostingOtherCharges { get; set; }
         public DbSet<FgOqc> FgOqcs { get; set; }
         public DbSet<FinalOqc> FinalOqcs { get; set; }
+        public DbSet<ItemPriceList> ItemPriceLists { get; set; }
         public DbSet<ForecastLpCosting> ForecastLpCostings { get; set; }
         public DbSet<ForecastLpCostingItem> ForecastLpCostingItems { get; set; }
         public DbSet<ForecastLpCostingProcess> ForecastLpCostingProcesses { get; set; }
@@ -72,10 +78,10 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<ForeCastCustomGroup> ForeCastCustomGroups { get; set; }
         public DbSet<ForeCastCustomField> ForeCastCustomFields { get; set; }
 
-        public DbSet<MaterialRequest> materialRequests { get; set; }
-        public DbSet<MaterialRequestItem> materialRequestItems { get; set; }
-        public DbSet<MaterialTransactionNote> materialTransactionNotes { get; set; }
-        public DbSet<MaterialTransactionNoteItem> materialTransactionNoteItems { get; set; }
+        public DbSet<MaterialRequest> MaterialRequests { get; set; }
+        public DbSet<MaterialRequestItem> MaterialRequestItems { get; set; }
+        public DbSet<MaterialTransactionNote> MaterialTransactionNotes { get; set; }
+        public DbSet<MaterialTransactionNoteItem> MaterialTransactionNoteItems { get; set; }
         public DbSet<LocationTransfer> locationTransfers { get; set; }
         public DbSet<ReleaseLp> ReleaseLps { get; set; }
 

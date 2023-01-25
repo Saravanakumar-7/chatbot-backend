@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 
 namespace Tips.SalesService.Api.Entities
@@ -8,14 +9,22 @@ namespace Tips.SalesService.Api.Entities
         [Key]
         public int Id { get; set; }
         public string? AdditionalChargesLabelName { get; set; }
-        public string AddtionalChargesValueType { get; set; }
-        public decimal AddtionalChargesValueAmount { get; set; }
-        public decimal IGST { get; set; }
-        public decimal CGST { get; set; }
-        public decimal UTGST { get; set; }
-        public decimal SGST { get; set; } 
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public string? AddtionalChargesValueType { get; set; }
+
+        [Precision(18,3)]
+        public decimal? AddtionalChargesValueAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? IGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? CGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? UTGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SGST { get; set; }        
         public int QuoteId { get; set; }
         public Quote? Quote { get; set; }
     }

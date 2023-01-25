@@ -169,9 +169,10 @@ namespace Tips.Warehouse.Api.Controllers
                 
                 if (bTODeliveryOrderitemsDto != null)
                 {
-                    string cps = "";
+                   
                     for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
                     {
+                        string cps = "";
                         var data = bTODeliveryOrderitemsDto[i].BTOSerialNumberDtoPost.ToList();
                         if (data.Count() != 0)
                         { 
@@ -179,6 +180,7 @@ namespace Tips.Warehouse.Api.Controllers
                             {
                                 cps += data[j].SerialNumber.Trim() + ",";
                             }
+                            cps = cps.TrimEnd(',');
                             bTODeliveryOrderitemsDto[i].SerialNo = cps;
                         }
                         BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);

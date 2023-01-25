@@ -60,15 +60,15 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<ItemPriceList>> GetItemPriceListByItemNo(string itemNo)
         {
-            var getItemPriceListByItemNo = await FindByCondition(x => x.ItemNo == itemNo).ToListAsync();
+            var getItemPriceListByItemNo = await FindByCondition(x => x.ItemNumber == itemNo).ToListAsync();
 
             return getItemPriceListByItemNo;
         }
         public async Task<IEnumerable<ItemPriceList>> GetItemPriceListByItemNoAndPriceListName(string itemNo, string priceListName)
         {
-            var getItemPriceListByItemNo = await FindByCondition(x => x.ItemNo == itemNo && x.PriceListName == priceListName).ToListAsync();
+            var getItemPriceListByItemNoAndPriceListName = await FindByCondition(x => x.ItemNumber == itemNo && x.PriceListName == priceListName).ToListAsync();
 
-            return getItemPriceListByItemNo;
+            return getItemPriceListByItemNoAndPriceListName;
         }
 
         
@@ -77,7 +77,7 @@ namespace Tips.SalesService.Api.Repository
             itemPriceList.LastModifiedBy = "Admin";
             itemPriceList.LastModifiedOn = DateTime.Now;
             Update(itemPriceList);
-            string result = $"AuditFrequency details of {itemPriceList.Id} is updated successfully!";
+            string result = $"ItemPriceList details of {itemPriceList.Id} is updated successfully!";
             return result;
         }
     }

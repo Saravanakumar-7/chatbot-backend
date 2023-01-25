@@ -7,27 +7,27 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class SalesOrderDto
     {
         public int Id { get; set; }
-        public string ProjectNumber { get; set; }
-        public string QuoteNumber { get; set; }
-        public string SalesOrderNumber { get; set; }
-        public DateTime OrderDate { get; set; }
-        public string OrderType { get; set; }
-        public string CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? QuoteNumber { get; set; }
+        public DateTime? OrderDate { get; set; }
+        public string? OrderType { get; set; }
+        public string? CustomerName { get; set; }
         public int CustomerId { get; set; }
-        public string RevNo { get; set; }
+        public string? RevNo { get; set; }
 
         //PO Details
-        public string PONumber { get; set; }
-        public DateTime PODate { get; set; }
-        public DateTime ReceivedDate { get; set; }
+        public string? PONumber { get; set; }
+        public DateTime? PODate { get; set; }
+        public DateTime? ReceivedDate { get; set; }
 
         //Billing&Shipping
-        public string BillTo { get; set; }
+        public string? BillTo { get; set; }
         public int BillToId { get; set; }
-        public string ShipTo { get; set; }
+        public string? ShipTo { get; set; }
         public int ShipToId { get; set; }
-        public string PaymentTerms { get; set; }
-        public string Remarks { get; set; }
+        public string? PaymentTerms { get; set; }
+        public string? Remarks { get; set; }
         public string Unit { get; set; }
 
         [DefaultValue(false)]
@@ -41,63 +41,63 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<SalesOrderItemsDto>? SalesOrderItems { get; set; }
+        public List<SalesOrderItemsDto>? SalesOrderItemsDtos { get; set; }
     }
 
-    public class SalesOrderDtoPost
+    public class SalesOrderPostDto
     {
-        public string ProjectNumber { get; set; }
-        public string QuoteNumber { get; set; }
-        public DateTime OrderDate { get; set; }
-        public string OrderType { get; set; }
-        public string CustomerName { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? QuoteNumber { get; set; }
+        public DateTime? OrderDate { get; set; }
+        public string? OrderType { get; set; }
+        public string? CustomerName { get; set; }
         public int CustomerId { get; set; }
-        public string RevNo { get; set; }
+        public string? RevNo { get; set; }
 
         //PO Details
-        public string PONumber { get; set; }
-        public DateTime PODate { get; set; }
-        public DateTime ReceivedDate { get; set; }
+        public string? PONumber { get; set; }
+        public DateTime? PODate { get; set; }
+        public DateTime? ReceivedDate { get; set; }
 
         //Billing&Shipping
-        public string BillTo { get; set; }
-        public int BillToId { get; set; }
-        public string ShipTo { get; set; }
-        public int ShipToId { get; set; }
-        public string PaymentTerms { get; set; }
-        public string Remarks { get; set; }      
+        public string? BillTo { get; set; }
+        public int? BillToId { get; set; }
+        public string? ShipTo { get; set; }
+        public int? ShipToId { get; set; }
+        public string? PaymentTerms { get; set; }
+        public string? Remarks { get; set; }      
 
-        public List<SalesOrderItemsDtoPost>? SalesOrderItems { get; set; }
+        public List<SalesOrderItemsPostDto>? SalesOrderItemsPostDtos { get; set; }
     }
 
-    public class SalesOrderDtoUpdate
+    public class SalesOrderUpdateDto
     {
         public int Id { get; set; }
-        public string ProjectNumber { get; set; }
-        public string QuoteNumber { get; set; }
-        public DateTime OrderDate { get; set; }
-        public string OrderType { get; set; }
-        public string CustomerName { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? QuoteNumber { get; set; }
+        public DateTime? OrderDate { get; set; }
+        public string? OrderType { get; set; }
+        public string? CustomerName { get; set; }
         public int CustomerId { get; set; }
-        public string RevNo { get; set; }
+        public string? RevNo { get; set; }
 
         //PO Details
-        public string PONumber { get; set; }
-        public DateTime PODate { get; set; }
-        public DateTime ReceivedDate { get; set; }
+        public string? PONumber { get; set; }
+        public DateTime? PODate { get; set; }
+        public DateTime? ReceivedDate { get; set; }
 
-        //Billing&Shipping
-        public string BillTo { get; set; }
-        public int BillToId { get; set; }
-        public string ShipTo { get; set; }
-        public int ShipToId { get; set; }
-        public string PaymentTerms { get; set; }
-        public string Remarks { get; set; }
+        //Billing&Shipping 
+        public string? BillTo { get; set; }
+        public int? BillToId { get; set; }
+        public string? ShipTo { get; set; }
+        public int? ShipToId { get; set; }
+        public string? PaymentTerms { get; set; }
+        public string? Remarks { get; set; }
 
         [Required]
         public string Unit { get; set; }
 
-        public List<SalesOrderItemsDtoUpdate>? SalesOrderItems { get; set; }
+        public List<SalesOrderItemsUpdateDto>? SalesOrderItemsUpdateDtos { get; set; }
     }
    
     public class ListofSalesOrderDetails

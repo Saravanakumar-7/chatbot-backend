@@ -5,14 +5,12 @@
         public int Id { get; set; }
         public string? RFQNotes { get; set; } 
     }
-    public class QuoteRFQNotesDtoPost
+    public class QuoteRFQNotesPostDto
     {
         public string? RFQNotes { get; set; } 
     }
-    public class QuoteRFQNotesDtoUpdate
+    public class QuoteRFQNotesUpdateDto
     {
         public string? RFQNotes { get; set; } 
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
     }
 }

@@ -198,11 +198,17 @@ namespace Tips.SalesService.Api.Repository
             rfq.CreatedOn = DateTime.Now;
             var version = 1.0;
             rfq.RevisionNumber = Convert.ToDecimal(version);
-            Guid rfqNumber = Guid.NewGuid();
-            rfq.RfqNumber = "RFQ-" + rfqNumber.ToString();
+            //Guid rfqNumber = Guid.NewGuid();
+            //rfq.RfqNumber = "RFQ-" + rfqNumber.ToString();
             rfq.Unit = "Bangalore";
             var result = await Create(rfq);
             return result.Id;
+        }
+        public async Task<int?> GetRfqNumberAutoIncrementCount(DateTime date)
+        {
+            var getRfqNumberAutoIncrementCount = _tipsSalesServiceDbContext.Rfqs.Where(x => x.CreatedOn == date.Date).Count();
+
+            return getRfqNumberAutoIncrementCount;
         }
 
         public async Task<string> DeleteRfq(Rfq rfq)

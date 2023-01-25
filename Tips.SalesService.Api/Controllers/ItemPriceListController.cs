@@ -82,7 +82,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Message = $"ItemPriceList with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"ItemPriceList with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"ItemPriceList with id: {id}, hasn't been found.");
                     return BadRequest(serviceResponse);
                 }
                 else
@@ -115,21 +115,21 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var getItemPriceListByItemNo = await _repository.GetItemPriceListByItemNo(itemNo);
-                if (getItemPriceListByItemNo == null)
+                var getItemPriceList = await _repository.GetItemPriceListByItemNo(itemNo);
+                if (getItemPriceList == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"ItemPriceList with id: {itemNo}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"ItemPriceList with id: {itemNo}, hasn't been found in db.");
+                    _logger.LogError($"ItemPriceList with id: {itemNo}, hasn't been found.");
                     return BadRequest(serviceResponse);
                 }
                 else
                 {
 
                     _logger.LogInfo($"Returned ItemPriceList with id: {itemNo}");
-                    var result = _mapper.Map<IEnumerable<ItemPriceListDto>>(getItemPriceListByItemNo);
+                    var result = _mapper.Map<IEnumerable<ItemPriceListDto>>(getItemPriceList);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned ItemPriceList with id successfully";
                     serviceResponse.Success = true;
@@ -150,13 +150,13 @@ namespace Tips.SalesService.Api.Controllers
 
         // POST api/<ItemPriceListController>
         [HttpPost]
-        public IActionResult CreateItemPriceList([FromBody] ItemPriceListDtoPost itemPriceListDtoPost)
+        public IActionResult CreateItemPriceList([FromBody] ItemPriceListPostDto itemPriceListPostDto)
         {
             ServiceResponse<ItemPriceListDto> serviceResponse = new ServiceResponse<ItemPriceListDto>();
 
             try
             {
-                if (itemPriceListDtoPost is null)
+                if (itemPriceListPostDto is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "ItemPriceList object sent from client is null";
@@ -175,7 +175,7 @@ namespace Tips.SalesService.Api.Controllers
 
                     return BadRequest(serviceResponse);
                 }
-                var itemPriceListCreate = _mapper.Map<ItemPriceList>(itemPriceListDtoPost);
+                var itemPriceListCreate = _mapper.Map<ItemPriceList>(itemPriceListPostDto);
                 _repository.CreateItemPriceList(itemPriceListCreate);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -202,8 +202,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var getItemPriceListByItemNoAndPriceListName = await _repository.GetItemPriceListByItemNoAndPriceListName(ItemNo, priceListName);
-                if (getItemPriceListByItemNoAndPriceListName == null)
+                var getItemPriceList = await _repository.GetItemPriceListByItemNoAndPriceListName(ItemNo, priceListName);
+                if (getItemPriceList == null)
                 {
                     _logger.LogError($"ItemPriceListdetail with id: {ItemNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -215,9 +215,9 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned ItemPriceListdetail with id: {ItemNo}");
-                    var result = _mapper.Map<IEnumerable<ItemPriceListDto>>(getItemPriceListByItemNoAndPriceListName);
+                    var result = _mapper.Map<IEnumerable<ItemPriceListDto>>(getItemPriceList);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Rryurned ItemPriceList Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);
@@ -227,7 +227,7 @@ namespace Tips.SalesService.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside ItemPriceListdetail action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");
@@ -235,13 +235,13 @@ namespace Tips.SalesService.Api.Controllers
         }
         // PUT api/<ItemPriceListController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateItemPriceList(int id, [FromBody] ItemPriceListDtoUpdate itemPriceListDtoUpdate)
+        public async Task<IActionResult> UpdateItemPriceList(int id, [FromBody] ItemPriceListUpdateDto itemPriceListUpdateDto)
         {
             ServiceResponse<ItemPriceListDto> serviceResponse = new ServiceResponse<ItemPriceListDto>();
 
             try
             {
-                if (itemPriceListDtoUpdate is null)
+                if (itemPriceListUpdateDto is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "update ItemPriceList object sent from client is null";
@@ -260,22 +260,22 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogError("Invalid Update ItemPriceList object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var getItemPriceListById = await _repository.GetItemPriceListById(id);
-                if (getItemPriceListById is null)
+                var getItemPriceListDetails = await _repository.GetItemPriceListById(id);
+                if (getItemPriceListDetails is null)
                 {
                     _logger.LogError($"Update ItemPriceList with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = " Update ItemPriceList with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = " Update ItemPriceList with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(itemPriceListDtoUpdate, getItemPriceListById);
-                string result = await _repository.UpdateItemPriceList(getItemPriceListById);
+                _mapper.Map(itemPriceListUpdateDto, getItemPriceListDetails);
+                string result = await _repository.UpdateItemPriceList(getItemPriceListDetails);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Message = "ItemPriceList Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -312,7 +312,7 @@ namespace Tips.SalesService.Api.Controllers
                 string result = await _repository.DeleteItemPriceList(deleteItemPriceList);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                serviceResponse.Message = "Deleted Successfully";
+                serviceResponse.Message = "ItemPriceList Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

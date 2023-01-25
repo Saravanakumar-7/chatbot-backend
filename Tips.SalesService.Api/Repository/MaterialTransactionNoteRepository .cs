@@ -38,7 +38,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<MaterialTransactionNote>> GetAllMaterialTransactionNote(PagingParameter pagingParameter)
         {
-            var AllMtn = PagedList<MaterialTransactionNote>.ToPagedList(FindAll()
+            var AllMtn = PagedList<MaterialTransactionNote>.ToPagedList(FindAll().OrderByDescending(c => c.Id)
            .Include(t => t.MaterialTransactionNoteItems)
            .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
             return AllMtn;
@@ -46,9 +46,9 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<MaterialTransactionNote> GetMaterialTransactionNoteById(int id)
         {
-            var MtnId = await _tipsSalesServiceDbContext.materialTransactionNotes.Where(x => x.Id == id)
+            var MtnById = await _tipsSalesServiceDbContext.MaterialTransactionNotes.Where(x => x.Id == id)
                                .Include(t => t.MaterialTransactionNoteItems).FirstOrDefaultAsync();
-            return MtnId;
+            return MtnById;
         }
 
         public async Task<string> UpdateMaterialTransactionNote(MaterialTransactionNote mtn)

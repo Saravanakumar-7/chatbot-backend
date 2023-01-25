@@ -17,16 +17,14 @@ namespace Tips.SalesService.Api.Controllers
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class FgOqcController : ControllerBase
-    {
-
-        private IFgOqcRepository _repository;
+    {       
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IFgOqcRepository _fgOqcRepository;
 
-        public FgOqcController(IFgOqcRepository repository, IFgOqcRepository fgOqcRepository, ILoggerManager logger, IMapper mapper)
+        public FgOqcController( IFgOqcRepository fgOqcRepository, ILoggerManager logger, IMapper mapper)
         {
-            _repository = repository;
+           
             _logger = logger;
             _mapper = mapper;
             _fgOqcRepository = fgOqcRepository;
@@ -41,20 +39,20 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var listOfFgoqcs = await _fgOqcRepository.GetAllFgOqcs(pagingParameter);
+                var getAllFgOqcs = await _fgOqcRepository.GetAllFgOqcs(pagingParameter);
                 var metadata = new
                 {
-                    listOfFgoqcs.TotalCount,
-                    listOfFgoqcs.PageSize,
-                    listOfFgoqcs.CurrentPage,
-                    listOfFgoqcs.HasNext,
-                    listOfFgoqcs.HasPreviuos
+                    getAllFgOqcs.TotalCount,
+                    getAllFgOqcs.PageSize,
+                    getAllFgOqcs.CurrentPage,
+                    getAllFgOqcs.HasNext,
+                    getAllFgOqcs.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all FgQoc");
-                var result = _mapper.Map<IEnumerable<FgOqcDto>>(listOfFgoqcs);
+                var result = _mapper.Map<IEnumerable<FgOqcDto>>(getAllFgOqcs);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all FgOqc Successfully";
                 serviceResponse.Success = true;
@@ -80,21 +78,21 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var fgQoc = await _fgOqcRepository.GetFgOqcById(id);
+                var getFgOqcDetail = await _fgOqcRepository.GetFgOqcById(id);
 
-                if (fgQoc == null)
+                if (getFgOqcDetail == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"fgOqc with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"fgOqc with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"fgOqc with id: {id}, hasn't been found.");
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned owner with id: {id}");
-                    var result = _mapper.Map<FgOqcDto>(fgQoc);
+                    _logger.LogInfo($"Returned fgOqc with id: {id}");
+                    var result = _mapper.Map<FgOqcDto>(getFgOqcDetail);
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned fgOqc with id: {id}";
                     serviceResponse.Success = true;
@@ -116,13 +114,13 @@ namespace Tips.SalesService.Api.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> CreateFgOqc([FromBody] FgOqcDtoPost fgOqcDtoPost)
+        public async Task<IActionResult> CreateFgOqc([FromBody] FgOqcPostDto fgOqcPostDto)
         {
             ServiceResponse<FgOqcDto> serviceResponse = new ServiceResponse<FgOqcDto>();
 
             try
             {
-                if (fgOqcDtoPost is null)
+                if (fgOqcPostDto is null)
                 {
                     _logger.LogError("fgOqc object sent from client is null.");
                     serviceResponse.Data = null;
@@ -140,14 +138,13 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var fgQocs = _mapper.Map<FgOqc>(fgOqcDtoPost);
+                var fgQocs = _mapper.Map<FgOqc>(fgOqcPostDto);
+               
+                   await _fgOqcRepository.CreateFgOqc(fgQocs);              
 
-                //var notes = _mapper.Map<IEnumerable<RfqNotes>>(rfq.rfqNotes);
-
-                _fgOqcRepository.CreateFgOqc(fgQocs);
                 _fgOqcRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "fgOqc Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetFgOqcId", serviceResponse);
@@ -165,13 +162,13 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateFgQoc(int id, [FromBody] FgOqcDtoUpdate fgOqcDtoUpdate)
+        public async Task<IActionResult> UpdateFgQoc(int id, [FromBody] FgOqcUpdateDto fgOqcUpdateDto)
         {
             ServiceResponse<FgOqcDto> serviceResponse = new ServiceResponse<FgOqcDto>();
 
             try
             {
-                if (fgOqcDtoUpdate is null)
+                if (fgOqcUpdateDto is null)
                 {
                     _logger.LogError("FgOqc object sent from client is null.");
                     serviceResponse.Data = null;
@@ -189,27 +186,24 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var fgQocs = await _fgOqcRepository.GetFgOqcById(id);
-                if (fgQocs is null)
+                var getFgOqcDetail = await _fgOqcRepository.GetFgOqcById(id);
+                if (getFgOqcDetail is null)
                 {
                     _logger.LogError($"fgQoc with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update fgQoc with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Update fgQoc with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
-                var data = _mapper.Map(fgOqcDtoUpdate, fgQocs);
-
-
-                //var notes = _mapper.Map<IEnumerable<RfqNotes>>(rfq.rfqNotes);
+                var data = _mapper.Map(fgOqcUpdateDto, getFgOqcDetail);             
 
                 string result = await _fgOqcRepository.UpdateFgOqc(data);
                 _logger.LogInfo(result);
                 _fgOqcRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = "fgQoc Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -233,21 +227,21 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var fgQoc = await _fgOqcRepository.GetFgOqcById(id);
-                if (fgQoc == null)
+                var getFgOqcDetails = await _fgOqcRepository.GetFgOqcById(id);
+                if (getFgOqcDetails == null)
                 {
                     _logger.LogError($"FgOqc with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Delete FgOqc with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Delete FgOqc with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _fgOqcRepository.DeleteFgOqc(fgQoc);
+                string result = await _fgOqcRepository.DeleteFgOqc(getFgOqcDetails);
                 _logger.LogInfo(result);
-                _repository.SaveAsync();
+                _fgOqcRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Delete Successfully";
+                serviceResponse.Message = "FgOqc Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

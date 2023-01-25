@@ -13,6 +13,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<SalesOrder>> GetAllActiveSalesOrder();
         Task<long> CreateSalesOrder(SalesOrder salesOrder);
         Task<string> UpdateSalesOrder(SalesOrder salesOrder);
+        Task<int?> GetSONumberAutoIncrementCount(DateTime date);
 
         Task<int?> GetSONumberAutoIncrementCount(DateTime date);
 

@@ -13,6 +13,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? Vendor { get; set; }
+
+        [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
         public string? UnitPricePer { get; set; }
         public string? Currency { get; set; }
@@ -24,10 +26,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? QuoteQty { get; set; }
         public DateTime? QuoteDate { get; set; }
-        public DateTime? QuoteValidity { get; set; }       
-       
+        public DateTime? QuoteValidity { get; set; }
+        public bool IsActive { get; set; }
+
     }
-    public class RfqSourcingVendorDtoPost
+    public class RfqSourcingVendorPostDto
     {
         [StringLength(500, ErrorMessage = "Vendor can't be longer than 500 characters")]
         public string? Vendor { get; set; }
@@ -53,13 +56,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? Duties { get; set; }
 
         [Precision(13, 3)]
-        public decimal? QuoteQuantity { get; set; }
+        public decimal? QuoteQty { get; set; }
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }       
         public bool IsActive { get; set; } = true;
          
     }
-    public class RfqSourcingVendorDtoUpdate
+    public class RfqSourcingVendorUpdateDto
     {
        
         [StringLength(500, ErrorMessage = "Vendor can't be longer than 500 characters")]
@@ -86,7 +89,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? Duties { get; set; }
 
         [Precision(13, 3)]
-        public decimal? QuoteQuantity { get; set; }
+        public decimal? QuoteQty { get; set; }
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }        
     }
