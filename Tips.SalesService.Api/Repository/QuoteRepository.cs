@@ -86,23 +86,29 @@ namespace Tips.SalesService.Api.Repository
                 .Where(x => x.RfqNumber == rfqNumber)
                 .FirstOrDefaultAsync();
 
+            var rfqCDetail = await _tipsSalesServiceDbContext.RfqCustomerSupports
+               .Where(x => x.RfqNumber == rfqNumber)
+               .FirstOrDefaultAsync();
+
             //var itemPriceLists = await _tipsSalesServiceDbContext.ItemPriceLists
             //    .GroupBy(x => x.ItemNumber).Select(g => g.OrderByDescending(x => x.CreatedOn).First())
             //    .ToListAsync();
-             
+
             var customersAndOrders = _tipsSalesServiceDbContext.RfqCustomerSupportItems
-                     .Where(c => c.RfqNumber == rfqNumber)
+                     .Where(c => c.RfqNumber == rfqNumber && c.ReleaseStatus == true)
                      .Join(_tipsSalesServiceDbContext.ItemPriceLists,                     
                      c => c.ItemNumber,
                      o => o.ItemNumber,
                      (c, o) => new { RfqCustomerSupportItems = c, ItemPriceLists = o })
                      .Select(co => new CsItemDetailsForQuoteDto
                      {
+
                          RFQNumber = co.RfqCustomerSupportItems.RfqNumber,
                          CustomerName = rfqDetail.CustomerName,
                          CustomerId = rfqDetail.CustomerId,
-                         ItemNumber = co.RfqCustomerSupportItems.ItemNumber,
+                         ItemNumber = co.RfqCustomerSupportItems.ItemNumber,                         
                          Description = co.RfqCustomerSupportItems.Description,
+                         CustomFields = rfqCDetail.CustomFields,
                          PriceListName = co.ItemPriceLists.PriceListName,
                          Qty = co.RfqCustomerSupportItems.Qty,
                          UnitPrice = co.ItemPriceLists.LeastCost,
