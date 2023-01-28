@@ -19,16 +19,17 @@ namespace Tips.SalesService.Api.Controllers
     public class QuoteController : ControllerBase
     {
         private IQuoteRepository _repository;
+        private IRfqCustomerSupportItemRepository _rfqCustomerSupportItemRepository;
         private IRfqRepository _rfqRepository;        
         private ILoggerManager _logger;
-        private IMapper _mapper;
- 
-        public QuoteController(IQuoteRepository repository, IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
+        private IMapper _mapper;        
+        public QuoteController(IQuoteRepository repository, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _rfqRepository = rfqRepository;
+            _rfqCustomerSupportItemRepository = rfqCustomerSupportItemRepository;
          }
 
         // GET: api/<QuoteController>
@@ -124,8 +125,52 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        // POST api/<QuoteController>
-        [HttpPost]
+
+        //getcsitemdetailsbyrfqnumberforquote
+
+        [HttpGet]
+        public async Task<IActionResult> GetCsItemDetailsForQuote(string rfqNumber)
+        {
+            ServiceResponse<IEnumerable<CsItemDetailsForQuoteDto>> serviceResponse = new ServiceResponse<IEnumerable<CsItemDetailsForQuoteDto>>();
+
+            try
+            {
+                var getItemPriceList = await _repository.GetCsItemDetailsForQuote(rfqNumber);
+
+                if (getItemPriceList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "itemPriceList not found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"itemPriceList with : {rfqNumber}, hasn't been found.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                { 
+                    serviceResponse.Data = getItemPriceList;
+                    serviceResponse.Message = "Returned priceList";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            } 
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ItemPricelist action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+    }
+}
+
+
+
+
+// POST api/<QuoteController>
+[HttpPost]
         public async Task<IActionResult> CreateQuote([FromBody] QuotePostDto quotePostDto)
         {
             ServiceResponse<QuoteDto> serviceResponse = new ServiceResponse<QuoteDto>();

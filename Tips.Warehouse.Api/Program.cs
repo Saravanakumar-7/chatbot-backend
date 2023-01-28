@@ -35,6 +35,9 @@ builder.Services.AddScoped<IReturnDeliveryOrderRepository, ReturnDeliveryOrderRe
 builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 builder.Services.AddScoped<IInventoryTranctionRepository, InventoryTranctionRepository>();
 builder.Services.AddScoped<IReturnInvoiceRepository, ReturnInvoiceRepository>();
+builder.Services.AddScoped<IBTODeliveryOrderItemsRepository, BTODeliveryOrderItemRepository>();
+
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

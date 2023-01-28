@@ -907,6 +907,33 @@ namespace Tips.SalesService.Api.Controllers
                 _repository.CreateRfqCustomerSupport(createRfqCS);
 
                 _repository.SaveAsync();
+                var rfqNumber = createRfqCS.RfqNumber;
+                var getIsSourcingAvailable = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
+
+                if (getIsSourcingAvailable.isSourcingAvailable == false)
+                {
+
+                    var rfqEnggDetail = _mapper.Map<RfqEngg>(rfqCustomerSupportDto);
+
+                    var rfqDetails = rfqCustomerSupportDto.RfqCustomerSupportItems;
+
+
+                    var rfqEnggItemList = new List<RfqEnggItem>();
+                    for (int i = 0; i < rfqDetails.Count; i++)
+                    {
+                        RfqEnggItem rfqenggItemDto = _mapper.Map<RfqEnggItem>(rfqDetails[i]);
+                        rfqenggItemDto.CustomerItemNumber = rfqCustomerSupportDto.CustomerRfqNumber;
+                        rfqenggItemDto.ReleaseStatus = true;
+                        rfqEnggItemList.Add(rfqenggItemDto);
+                    }
+                    rfqEnggDetail.RfqEnggItems = rfqEnggItemList;
+
+
+                    _rfqenggRepository.CreateRfqEngg(rfqEnggDetail);
+                    _rfqenggRepository.SaveAsync();
+                    //test
+                }
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
@@ -977,8 +1004,10 @@ namespace Tips.SalesService.Api.Controllers
                     createRfq.RfqNumber = days + months + years + "R" + (e);
                 }
                 await _rfqRepository.CreateRfq(createRfq);
+                var rfqDetails = _mapper.Map<RfqDto>(createRfq);
+
                 _rfqRepository.SaveAsync();
-                serviceResponse.Data = null;
+                serviceResponse.Data = rfqDetails;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -1566,6 +1595,9 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> BulkRelease([FromBody] List<ReleaseLpDtoPost> releaseLpDtoPosts)

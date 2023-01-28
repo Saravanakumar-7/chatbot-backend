@@ -27,7 +27,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         [Required]
         public string RfqNumber { get; set; }
-        public string? ItemNumber { get; set; }
+        public string? ItemNumber { get; set; } 
 
         [Precision(13,3)]
         public decimal Qty { get; set; }

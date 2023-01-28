@@ -37,6 +37,7 @@ namespace Tips.SalesService.Api
             CreateMap<Rfq, RfqNumberListDto>().ReverseMap();
 
 
+
             CreateMap<RfqCustomGroup, RfqCustomGroupDto>().ReverseMap();
             CreateMap<RfqCustomGroup, RfqCustomGroupPostDto>().ReverseMap();
             CreateMap<RfqCustomGroup, RfqCustomGroupUpdateDto>().ReverseMap();
@@ -62,10 +63,14 @@ namespace Tips.SalesService.Api
             CreateMap<RfqEngg, RfqEnggDto>().ReverseMap();
             CreateMap<RfqEngg, RfqEnggDtoPost>().ReverseMap();
             CreateMap<RfqEngg, RfqEnggDtoUpdate>().ReverseMap();
+            CreateMap<RfqEngg, RfqCustomerSupportPostDto>().ReverseMap();
+
 
             CreateMap<RfqEnggItem, RfqEnggItemDto>().ReverseMap();
             CreateMap<RfqEnggItem, RfqEnggItemDtoPost>().ReverseMap();
             CreateMap<RfqEnggItem, RfqEnggItemDtoUpdate>().ReverseMap();
+            CreateMap<RfqEnggItem, RfqCustomerSupportItemPostDto>().ReverseMap();
+
 
             CreateMap<RfqEnggRiskIdentification, RfqEnggRiskIdentificationDto>().ReverseMap();
             CreateMap<RfqEnggRiskIdentification, RfqEnggRiskIdentificationDtoPost>().ReverseMap();

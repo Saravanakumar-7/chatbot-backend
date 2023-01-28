@@ -35,7 +35,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class RfqCustomerSupportPostDto
     { 
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
-        public string? CustomerName { get; set; }
+        public string? CustomerName { get; set; }        
 
         [Required]
         public string RFQNumber { get; set; }

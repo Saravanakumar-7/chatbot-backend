@@ -164,9 +164,29 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var bTODeliveryOrderItemsDtoList = new List<BTODeliveryOrderItems>();
 
-                 
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
 
-                
+
+
+                var newcount = await _repository.GetBTONumberAutoIncrementCount(date);
+
+                if (newcount > 0)
+                {
+                    var number = newcount + 1;
+                    string e = String.Format("{0:D4}", number);
+                    bTODeliveryOrder.BTONumber = days + months + years + "BTO" + (e);
+                }
+                else
+                {
+                    var count = 1;
+                    var e = count.ToString("D4");
+                    bTODeliveryOrder.BTONumber = days + months + years + "BTO" + (e);
+                }
+
+
                 if (bTODeliveryOrderitemsDto != null)
                 {
                    
@@ -183,34 +203,16 @@ namespace Tips.Warehouse.Api.Controllers
                             cps = cps.TrimEnd(',');
                             bTODeliveryOrderitemsDto[i].SerialNo = cps;
                         }
-                        BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);
+                         BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);
                         bTODeliveryOrderItemsDetails.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDtoPost);
+                        bTODeliveryOrderItemsDetails.BalanceDoQty = bTODeliveryOrderItemsDetails.DispatchQty;
+                        bTODeliveryOrderItemsDetails.BTONumber = bTODeliveryOrder.BTONumber;
                         bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDetails);
                     }
                 }
 
                 bTODeliveryOrder.BTODeliveryOrderItems = bTODeliveryOrderItemsDtoList;
-                var date = DateTime.Now;
-                var days = Convert.ToString(date.Day.ToString("D2"));
-                var months = Convert.ToString(date.Month.ToString("D2"));
-                var years = Convert.ToString(date.ToString("yy"));
-
-                
-
-                var newcount = await _repository.GetBTONumberAutoIncrementCount(date);
-
-                if (newcount > 0)
-                {
-                    var number = newcount + 1;
-                    string e = String.Format("{0:D4}", number);
-                    bTODeliveryOrder.BTONumber = days + months + years + "BTO" + (e);
-                }
-                else
-                {
-                    var count = 1;
-                    var e = count.ToString("D4");
-                    bTODeliveryOrder.BTONumber = days + months + years + "BTO" + (e);
-                }
+              
                 await _repository.CreateBTODeliveryOrder(bTODeliveryOrder);
                 _repository.SaveAsync();
 

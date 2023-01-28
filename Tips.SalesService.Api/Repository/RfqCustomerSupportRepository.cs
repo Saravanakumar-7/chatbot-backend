@@ -148,6 +148,12 @@ namespace Tips.SalesService.Api.Repository
             var getRfqCSItemId = await _tipsSalesServiceDbContext.RfqCustomerSupportItems.Where(x => x.Id == id).FirstOrDefaultAsync();
             return getRfqCSItemId;
         }
+        //new
+        public async Task<IEnumerable<RfqCustomerSupportItems>> GetRfqCustomerSupportItemByRfqNumber(string rfqNumber)
+        {
+            var getRfqCSItemRfqnumber = await _tipsSalesServiceDbContext.RfqCustomerSupportItems.Where(x => x.RfqNumber == rfqNumber).ToListAsync();
+            return getRfqCSItemRfqnumber;
+        }
 
         public Task<string> UpdateRfqCustomerSupportItem(RfqCustomerSupportItems rfqCustomerSupportItems)
         {
@@ -171,6 +177,8 @@ namespace Tips.SalesService.Api.Repository
                         .FirstOrDefaultAsync();
             return SourcingByRfqNumber;
         }
+         
+
         public async Task<Rfq> RfqDetailsByRfqNumbers(string rfqNumber)
         {
             var rfqDetailsByRfqNumber = await _tipsSalesServiceDbContext.Rfqs
@@ -194,8 +202,9 @@ namespace Tips.SalesService.Api.Repository
         }
         public async Task<int?> CreateRfq(Rfq rfq)
         {
+            var date = DateTime.Now;
             rfq.CreatedBy = "Admin";
-            rfq.CreatedOn = DateTime.Now;
+            rfq.CreatedOn = date.Date;
             var version = 1.0;
             rfq.RevisionNumber = Convert.ToDecimal(version);
             //Guid rfqNumber = Guid.NewGuid();

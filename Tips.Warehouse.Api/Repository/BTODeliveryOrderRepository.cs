@@ -96,5 +96,24 @@ namespace Tips.Warehouse.Api.Repository
 
        
     }
+    public class BTODeliveryOrderItemRepository : RepositoryBase<BTODeliveryOrderItems>, IBTODeliveryOrderItemsRepository
+    {
+        private TipsWarehouseDbContext _tipsWarehouseDbContexts;
+        public BTODeliveryOrderItemRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        {
+            _tipsWarehouseDbContexts = repositoryContext;
         }
+        public async Task<BTODeliveryOrderItems> UpdateBtoDelieveryOrderBalanceQty(string itemNumber, string BtoDeliveryNumber, string Qty)
+        {
+            var getSalesOrderDetailsBySOandItemNo = await _tipsWarehouseDbContexts.bTODeliveryOrderItems
+                    .Where(x => x.FGItemNumber == itemNumber && x.BTONumber == BtoDeliveryNumber)
+                          .FirstOrDefaultAsync();
+            decimal Quantity = Convert.ToDecimal(Qty);
+            getSalesOrderDetailsBySOandItemNo.BalanceDoQty = getSalesOrderDetailsBySOandItemNo.DispatchQty - Quantity;
+            getSalesOrderDetailsBySOandItemNo.InvoicedQty = Quantity;
+            Update(getSalesOrderDetailsBySOandItemNo);
+            return getSalesOrderDetailsBySOandItemNo;
+        } 
+    }
+ }
  

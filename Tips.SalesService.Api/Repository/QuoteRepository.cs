@@ -1,10 +1,12 @@
 ﻿using Entities;
 using Entities.Helper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using Org.BouncyCastle.Ocsp;
 using System.Linq;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -77,6 +79,47 @@ namespace Tips.SalesService.Api.Repository
             return quoteDetails;
         }
 
+        public async Task<IEnumerable<CsItemDetailsForQuoteDto>> GetCsItemDetailsForQuote(string rfqNumber)
+        {
+
+            var rfqDetail = await _tipsSalesServiceDbContext.Rfqs
+                .Where(x => x.RfqNumber == rfqNumber)
+                .FirstOrDefaultAsync();
+
+            //var itemPriceLists = await _tipsSalesServiceDbContext.ItemPriceLists
+            //    .GroupBy(x => x.ItemNumber).Select(g => g.OrderByDescending(x => x.CreatedOn).First())
+            //    .ToListAsync();
+             
+            var customersAndOrders = _tipsSalesServiceDbContext.RfqCustomerSupportItems
+                     .Where(c => c.RfqNumber == rfqNumber)
+                     .Join(_tipsSalesServiceDbContext.ItemPriceLists,                     
+                     c => c.ItemNumber,
+                     o => o.ItemNumber,
+                     (c, o) => new { RfqCustomerSupportItems = c, ItemPriceLists = o })
+                     .Select(co => new CsItemDetailsForQuoteDto
+                     {
+                         RFQNumber = co.RfqCustomerSupportItems.RfqNumber,
+                         CustomerName = rfqDetail.CustomerName,
+                         CustomerId = rfqDetail.CustomerId,
+                         ItemNumber = co.RfqCustomerSupportItems.ItemNumber,
+                         Description = co.RfqCustomerSupportItems.Description,
+                         PriceListName = co.ItemPriceLists.PriceListName,
+                         Qty = co.RfqCustomerSupportItems.Qty,
+                         UnitPrice = co.ItemPriceLists.LeastCost,
+                         LeastCostPlus = co.ItemPriceLists.LeastCostPlus,
+                         LeastCostminus = co.ItemPriceLists.LeastCostminus,
+                         DiscountMinus = co.ItemPriceLists.DiscountMinus,
+                         DiscountPlus = co.ItemPriceLists.DiscountPlus,
+                         Markup = co.ItemPriceLists.Markup,
+                         CreatedOn = co.ItemPriceLists.CreatedOn,
+                         IsDiscountApplicable = co.ItemPriceLists.IsDiscountApplicable
+                     }).ToList();
+
+            return customersAndOrders;
+        }
+        
+
+
         public async Task<PagedList<Quote>> GetAllQuote(PagingParameter pagingParameter)
         {
             var quoteDetails = PagedList<Quote>.ToPagedList(FindAll()
@@ -90,6 +133,7 @@ namespace Tips.SalesService.Api.Repository
 
             return quoteDetails;
         }
+
 
         public async Task<Quote> GetQuoteById(int id)
         {
