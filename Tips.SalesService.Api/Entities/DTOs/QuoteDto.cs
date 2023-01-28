@@ -138,6 +138,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? Markup { get; set; }
 
+        public string? CustomFields { get; set; }
 
         public DateTime? ValidThrough { get; set; }
         public bool? IsDiscountApplicable { get; set; }
