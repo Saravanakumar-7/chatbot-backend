@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
@@ -485,33 +486,32 @@ namespace Tips.SalesService.Api.Controllers
 
 
 
-        [HttpPost]
-        public async Task<IActionResult> UpdateDispatchDetails([FromBody] dynamic dispatchDetials)
-        {
-            ServiceResponse<SalesOrderItemsDto> serviceResponse = new ServiceResponse<SalesOrderItemsDto>();
+        //[HttpPost]
+        //public async Task<IActionResult> UpdateDispatchDetails([FromBody] dynamic dispatchDetials)
+        //{
+        //    ServiceResponse<SalesOrderItemsDto> serviceResponse = new ServiceResponse<SalesOrderItemsDto>();
 
-            //we have to write code for same itemnumber in multiple rows
+        //    //we have to write code for same itemnumber in multiple rows
+        //      // Deserialise and store it in dynamic varibale
+        //    //lopp thori=ug the dynamic variable an pass hte item number and so id to salesorderitemdetials, get 
+        //    //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
+        //    foreach (dynamic item in dispatchDetials)
+        //    {
+        //        List<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
+        //        var orderItem = salesOrderItems.FirstOrDefault();
+        //        orderItem.BalanceQty = orderItem.BalanceQty - item.DispatchQty;
+        //        orderItem.DispatchQty += item.DispatchQty;
+        //        _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+        //    }
 
-            // Deserialise and store it in dynamic varibale
-            //lopp thori=ug the dynamic variable an pass hte item number and so id to salesorderitemdetials, get 
-            //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
-            foreach (var item in dispatchDetials)
-            {
-                List<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
-                var orderItem = salesOrderItems.FirstOrDefault();
-                orderItem.BalanceQty = orderItem.BalanceQty - item.DispatchQty;
-                orderItem.DispatchQty += item.DispatchQty;
-                _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
-            }
+        //    _salesOrderItemsRepository.SaveAsync();
 
-            _salesOrderItemsRepository.SaveAsync();
-
-            serviceResponse.Data = null;
-            serviceResponse.Message = "Success";
-            serviceResponse.Success = true;
-            serviceResponse.StatusCode = HttpStatusCode.OK;
-            return Ok();
-        }
+        //    serviceResponse.Data = null;
+        //    serviceResponse.Message = "Success";
+        //    serviceResponse.Success = true;
+        //    serviceResponse.StatusCode = HttpStatusCode.OK;
+        //    return Ok();
+        //}
 
         //getsalesorderdetailbyitemnoandsalesorderId
 

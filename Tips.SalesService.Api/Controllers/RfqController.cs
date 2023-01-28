@@ -752,7 +752,7 @@ namespace Tips.SalesService.Api.Controllers
 
         }
 
-
+        //aravind
         //release active API
         [HttpPut]
         public async Task<IActionResult> UpdateRfqCustomerSupportRelease([FromBody] List<int> itemIds)
@@ -771,6 +771,40 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
+
+                //if (getIsSourcingAvailable.isSourcingAvailable == false)
+                //{
+
+                //    var rfqEnggDetail = _mapper.Map<RfqEngg>(rfqCustomerSupportDto);
+
+                //    var rfqDetails = rfqCustomerSupportDto.RfqCustomerSupportItems;
+
+
+                //    var rfqEnggItemList = new List<RfqEnggItem>();
+                //    for (int i = 0; i < rfqDetails.Count; i++)
+                //    {
+                //        RfqEnggItem rfqenggItemDto = _mapper.Map<RfqEnggItem>(rfqDetails[i]);
+                //        rfqenggItemDto.CustomerItemNumber = rfqCustomerSupportDto.CustomerRfqNumber;
+                //        rfqenggItemDto.ReleaseStatus = true;
+                //        rfqEnggItemList.Add(rfqenggItemDto);
+                //    }
+                //    rfqEnggDetail.RfqEnggItems = rfqEnggItemList;
+
+
+                //    _rfqenggRepository.CreateRfqEngg(rfqEnggDetail);
+                //    _rfqenggRepository.SaveAsync();
+                //    //test
+                //}
+
+                var getCsId = itemIds.FirstOrDefault();
+                var getRfqCSItemByIds = await _itemRepository.GetRfqCustomerSupportItemById(getCsId);
+
+                var csfield = getRfqCSItemByIds.RfqCustomerSupportId;
+                var rfqCustomerSupportDetails = _repository.GetRfqCustomerSupportDetailsById(csfield);
+                 var rfqEnggDetail = _mapper.Map<RfqEngg>(rfqCustomerSupportDetails);
+                _rfqenggRepository.CreateRfqEngg(rfqEnggDetail);
+                _rfqenggRepository.SaveAsync();
+
                 foreach (var id in itemIds)
                 {
                     if (id == null)
@@ -788,6 +822,10 @@ namespace Tips.SalesService.Api.Controllers
                     string result = await _itemRepository.ActivateRfqCustomerSupportItemById(getRfqCSItemById);
                     _logger.LogInfo(result);
                     _repository.SaveAsync();
+                    
+                    
+                    //insert engg data
+
                 }
 
                 serviceResponse.Data = null;
@@ -862,7 +900,7 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-
+        //aravind
         [HttpPost]
         public async Task<IActionResult> CreateRfqCustomerSupport([FromBody] RfqCustomerSupportPostDto rfqCustomerSupportDto)
         {
@@ -910,29 +948,29 @@ namespace Tips.SalesService.Api.Controllers
                 var rfqNumber = createRfqCS.RfqNumber;
                 var getIsSourcingAvailable = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
 
-                if (getIsSourcingAvailable.isSourcingAvailable == false)
-                {
+                //if (getIsSourcingAvailable.isSourcingAvailable == false)
+                //{
 
-                    var rfqEnggDetail = _mapper.Map<RfqEngg>(rfqCustomerSupportDto);
+                //    var rfqEnggDetail = _mapper.Map<RfqEngg>(rfqCustomerSupportDto);
 
-                    var rfqDetails = rfqCustomerSupportDto.RfqCustomerSupportItems;
-
-
-                    var rfqEnggItemList = new List<RfqEnggItem>();
-                    for (int i = 0; i < rfqDetails.Count; i++)
-                    {
-                        RfqEnggItem rfqenggItemDto = _mapper.Map<RfqEnggItem>(rfqDetails[i]);
-                        rfqenggItemDto.CustomerItemNumber = rfqCustomerSupportDto.CustomerRfqNumber;
-                        rfqenggItemDto.ReleaseStatus = true;
-                        rfqEnggItemList.Add(rfqenggItemDto);
-                    }
-                    rfqEnggDetail.RfqEnggItems = rfqEnggItemList;
+                //    var rfqDetails = rfqCustomerSupportDto.RfqCustomerSupportItems;
 
 
-                    _rfqenggRepository.CreateRfqEngg(rfqEnggDetail);
-                    _rfqenggRepository.SaveAsync();
-                    //test
-                }
+                //    var rfqEnggItemList = new List<RfqEnggItem>();
+                //    for (int i = 0; i < rfqDetails.Count; i++)
+                //    {
+                //        RfqEnggItem rfqenggItemDto = _mapper.Map<RfqEnggItem>(rfqDetails[i]);
+                //        rfqenggItemDto.CustomerItemNumber = rfqCustomerSupportDto.CustomerRfqNumber;
+                //        rfqenggItemDto.ReleaseStatus = true;
+                //        rfqEnggItemList.Add(rfqenggItemDto);
+                //    }
+                //    rfqEnggDetail.RfqEnggItems = rfqEnggItemList;
+
+
+                //    _rfqenggRepository.CreateRfqEngg(rfqEnggDetail);
+                //    _rfqenggRepository.SaveAsync();
+                //    //test
+                //}
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
