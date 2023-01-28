@@ -39,7 +39,7 @@
         public decimal Discount { get; set; }
         public decimal NetValue { get; set; }
         public decimal DispatchQty { get; set; }
-        public string SerialNo { get; set; }
+                public string SerialNo { get; set; }
         
         public List<BTOSerialNumberDtoPost> BTOSerialNumberDtoPost { get; set; }
 
@@ -72,7 +72,9 @@
 
         public string FGItemNumber { get; set; }
         public int SalesOrderId { get; set; }
-        public decimal DispatchQty { get; set; }
+        public decimal DispatchQty { get; set; } 
+
+
 
     }
 
