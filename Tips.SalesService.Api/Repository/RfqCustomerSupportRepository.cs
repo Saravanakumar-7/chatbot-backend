@@ -519,8 +519,20 @@ namespace Tips.SalesService.Api.Repository
                 var result = await Create(rfqCustomGroup);
                 return result.Id;
             }
+        public async Task<IEnumerable<ListOfCustomGroupDto>> GetAllCustomGroupList()
+        {
+            IEnumerable<ListOfCustomGroupDto> getAllCustomGroupList = await _tipsSalesServiceDbContext.RfqCustomGroups
+                                .Select(c => new ListOfCustomGroupDto()
+                                {
+                                    Id = c.Id,
+                                    CustomGroupName = c.CustomGroupName,
 
-            public async Task<string> DeleteRfqCustomGroup(RfqCustomGroup rfqCustomGroup)
+                                })
+                              .ToListAsync();
+
+            return getAllCustomGroupList;
+        }
+        public async Task<string> DeleteRfqCustomGroup(RfqCustomGroup rfqCustomGroup)
             {
                 Delete(rfqCustomGroup);
                 string result = $"RfqCustomGroup details of {rfqCustomGroup.Id} is deleted successfully!";
@@ -576,8 +588,14 @@ namespace Tips.SalesService.Api.Repository
                 string result = $"RfqCustomField details of {rfqCustomField.Id} is deleted successfully!";
                 return result;
             }
+        public async Task<IEnumerable<RfqCustomField>> GetRfqCustomFieldByCustomGroup(string CustomGroup)
+        {
+            var getRfqCustomFieldByCustomGroupp = await FindByCondition(x => x.CustomGroupName == CustomGroup).ToListAsync();
 
-            public async Task<PagedList<RfqCustomField>> GetAllRfqCustomField(PagingParameter pagingParameter)
+            return getRfqCustomFieldByCustomGroupp;
+        }
+
+        public async Task<PagedList<RfqCustomField>> GetAllRfqCustomField(PagingParameter pagingParameter)
             {
                 var getAllRfqCustomField = PagedList<RfqCustomField>.ToPagedList(FindAll()
                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);

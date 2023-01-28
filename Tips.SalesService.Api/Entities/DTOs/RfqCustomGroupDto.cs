@@ -38,4 +38,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? Unit { get; set; }
        
     }
+    public class ListOfCustomGroupDto
+    {
+        public int Id { get; set; }
+        public string? CustomGroupName { get; set; }
+
+    }
 }
