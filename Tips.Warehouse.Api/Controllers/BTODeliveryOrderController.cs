@@ -160,7 +160,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var bTODeliveryOrder = _mapper.Map<BTODeliveryOrder>(bTODeliveryOrderDtoPost);
 
-                var bTODeliveryOrderitemsDto = bTODeliveryOrderDtoPost.BTODeliveryOrderItemsDtoPost;
+                var bTODeliveryOrderitemsList = bTODeliveryOrderDtoPost.BTODeliveryOrderItemsDtoPost;
 
                 var bTODeliveryOrderItemsDtoList = new List<BTODeliveryOrderItems>();
 
@@ -187,13 +187,13 @@ namespace Tips.Warehouse.Api.Controllers
                 }
 
 
-                if (bTODeliveryOrderitemsDto != null)
+                if (bTODeliveryOrderitemsList != null)
                 {
                    
-                    for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
+                    for (int i = 0; i < bTODeliveryOrderitemsList.Count; i++)
                     {
                         string cps = "";
-                        var data = bTODeliveryOrderitemsDto[i].BTOSerialNumberDtoPost.ToList();
+                        var data = bTODeliveryOrderitemsList[i].BTOSerialNumberDtoPost.ToList();
                         if (data.Count() != 0)
                         { 
                             for (int j = 0; j < data.Count(); j++)
@@ -201,10 +201,10 @@ namespace Tips.Warehouse.Api.Controllers
                                 cps += data[j].SerialNumber.Trim() + ",";
                             }
                             cps = cps.TrimEnd(',');
-                            bTODeliveryOrderitemsDto[i].SerialNo = cps;
+                            bTODeliveryOrderitemsList[i].SerialNo = cps;
                         }
-                         BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);
-                        bTODeliveryOrderItemsDetails.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDtoPost);
+                         BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsList[i]);
+                        bTODeliveryOrderItemsDetails.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsList[i].BTOSerialNumberDtoPost);
                         bTODeliveryOrderItemsDetails.BalanceDoQty = bTODeliveryOrderItemsDetails.DispatchQty;
                         bTODeliveryOrderItemsDetails.BTONumber = bTODeliveryOrder.BTONumber;
                         bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDetails);
@@ -212,31 +212,20 @@ namespace Tips.Warehouse.Api.Controllers
                 }
 
                 bTODeliveryOrder.BTODeliveryOrderItems = bTODeliveryOrderItemsDtoList;
-              
+
                 await _repository.CreateBTODeliveryOrder(bTODeliveryOrder);
                 _repository.SaveAsync();
 
                 //update balance qty and dispatch qty in salesorder table
-                var btoDeliveryDispatchDetails = _mapper.Map<BtoDeliveryOrderDispatchQtyDetailsDto>(bTODeliveryOrderitemsDto);
+                var btoDeliveryDispatchDetails = _mapper.Map<List<BtoDeliveryOrderDispatchQtyDetailsDto>>(bTODeliveryOrderitemsList);
 
                 if (btoDeliveryDispatchDetails != null)
                 {
-                    //for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
-                    //{
-                        ////var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["SalesOrderAPI"], "GetBtoDeliveryOrderDetailsBySOandItemNo?", "ItemNumber=", bTODeliveryOrderitemsDto[i].FGItemNumber, "&SalesOrderId=", bTODeliveryOrderitemsDto[i].SalesOrderId));
-                        ////var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                        ////dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        ////dynamic inventoryObject = inventoryObjectData.data;
-                        ////inventoryObject.BalanceQty = inventoryObject.BalanceQty - bTODeliveryOrderitemsDto[i].DispatchQty;
-                        ////inventoryObject.DispatchQty = inventoryObject.DispatchQty + bTODeliveryOrderitemsDto[i].DispatchQty;
                         var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
                         var data = new StringContent(json, Encoding.UTF8, "application/json");
                         var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchDetails"), data);
-
-                    //}
+                     
                 }
-
-
                 serviceResponse.Data = null;
                 serviceResponse.Message = " BTODeliveryOrder Successfully Created";
                 serviceResponse.Success = true;
