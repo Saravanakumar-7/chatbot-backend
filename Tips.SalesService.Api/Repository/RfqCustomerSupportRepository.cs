@@ -64,8 +64,15 @@ namespace Tips.SalesService.Api.Repository
                            .FirstOrDefaultAsync();
 
             return getRfqCSById; 
-        }          
+        }
 
+        public async Task<RfqCustomerSupport> GetRfqCustomerSupportDetailsById(int id)
+        {
+            var getRfqCSById = await _tipsSalesServiceDbContext.RfqCustomerSupports.Where(x => x.Id == id) 
+                           .FirstOrDefaultAsync();
+
+            return getRfqCSById;
+        }
 
         public async Task<RfqCustomerSupport> GetRfqCustomerSupportByRfqNumber(string RfqNumber)
         {
