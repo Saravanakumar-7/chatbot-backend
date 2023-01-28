@@ -794,16 +794,7 @@ namespace Tips.SalesService.Api.Controllers
                 //    _rfqenggRepository.CreateRfqEngg(rfqEnggDetail);
                 //    _rfqenggRepository.SaveAsync();
                 //    //test
-                //}
-
-                var getCsId = itemIds.FirstOrDefault();
-                var getRfqCSItemByIds = await _itemRepository.GetRfqCustomerSupportItemById(getCsId);
-
-                var csfield = getRfqCSItemByIds.RfqCustomerSupportId;
-                var rfqCustomerSupportDetails = _repository.GetRfqCustomerSupportDetailsById(csfield);
-                 var rfqEnggDetail = _mapper.Map<RfqEngg>(rfqCustomerSupportDetails);
-                _rfqenggRepository.CreateRfqEngg(rfqEnggDetail);
-                _rfqenggRepository.SaveAsync();
+                //} 
 
                 foreach (var id in itemIds)
                 {
@@ -822,10 +813,7 @@ namespace Tips.SalesService.Api.Controllers
                     string result = await _itemRepository.ActivateRfqCustomerSupportItemById(getRfqCSItemById);
                     _logger.LogInfo(result);
                     _repository.SaveAsync();
-                    
-                    
-                    //insert engg data
-
+                     
                 }
 
                 serviceResponse.Data = null;

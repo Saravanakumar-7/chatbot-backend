@@ -68,8 +68,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<RfqCustomerSupport> GetRfqCustomerSupportDetailsById(int id)
         {
-            var getRfqCSById = await _tipsSalesServiceDbContext.RfqCustomerSupports.Where(x => x.Id == id)
-                .Include(x=>x.RfqCustomerSupportItems)
+            var getRfqCSById = await _tipsSalesServiceDbContext.RfqCustomerSupports.Where(x => x.Id == id) 
                            .FirstOrDefaultAsync();
 
             return getRfqCSById;
