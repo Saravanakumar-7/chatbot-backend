@@ -108,7 +108,7 @@ namespace Tips.SalesService.Api.Repository
                          CustomerId = rfqDetail.CustomerId,
                          ItemNumber = co.RfqCustomerSupportItems.ItemNumber,                         
                          Description = co.RfqCustomerSupportItems.Description,
-                         CustomFields = rfqCDetail.CustomFields,
+                         CustomFields = co.RfqCustomerSupportItems.CustomFields,
                          PriceListName = co.ItemPriceLists.PriceListName,
                          Qty = co.RfqCustomerSupportItems.Qty,
                          UnitPrice = co.ItemPriceLists.LeastCost,

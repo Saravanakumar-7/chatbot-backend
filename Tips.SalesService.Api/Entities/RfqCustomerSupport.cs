@@ -20,7 +20,6 @@ namespace Tips.SalesService.Api.Entities
 
         public string RfqNumber { get; set; }
 
-        public string? CustomFields { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceiveDate { get; set; }
         public DateTime? QuoteExpectDate { get; set; }

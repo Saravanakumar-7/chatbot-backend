@@ -14,6 +14,8 @@ namespace Tips.SalesService.Api.Entities
         public int Id { get; set; }
         public string RfqNumber { get; set; }
         public string? ItemNumber { get; set; }
+        public string? CustomFields { get; set; }
+
 
         [Precision(13,3)]
         public decimal Qty { get; set; }
