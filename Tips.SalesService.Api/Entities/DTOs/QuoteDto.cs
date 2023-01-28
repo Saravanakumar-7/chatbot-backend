@@ -8,6 +8,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerId { get; set; }
+        public string? generalDiscountType { get; set; }
         public string? QuoteRef { get; set; }
 
         [Precision(18, 3)]
@@ -52,6 +53,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? TotalAmount { get; set; }
+        public string? generalDiscountType { get; set; }
         public bool? IsTheseRequiredToBePrintedInQuote { get; set; }
 
         [Precision(18, 3)]
@@ -83,6 +85,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? TotalAmount { get; set; }
+        public string? generalDiscountType { get; set; }
         public bool? IsTheseRequiredToBePrintedInQuote { get; set; }
 
         [Precision(18, 3)]

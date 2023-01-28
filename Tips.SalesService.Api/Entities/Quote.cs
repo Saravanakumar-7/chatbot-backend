@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Entities
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? QuoteRef { get; set; }
+        public string? generalDiscountType { get; set; }        
 
         [Precision(18,3)]
         public decimal? TotalAmount { get; set; }
