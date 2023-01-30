@@ -31,11 +31,11 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var gettAllAShopOrders = await _sashopOrderRepository.GetAllSAShopOrders();
-                _logger.LogInfo("Returned all SAShopOrders()s");
-                var result = _mapper.Map<IEnumerable<SAShopOrderDto>>(gettAllAShopOrders);
+                var sAShopOrderDetails = await _sashopOrderRepository.GetAllSAShopOrders();
+                _logger.LogInfo("Returned all SAShopOrders");
+                var result = _mapper.Map<IEnumerable<SAShopOrderDto>>(sAShopOrderDetails);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "SAShopOrder Successfully Returned";
+                serviceResponse.Message = "SAShopOrders Successfully Returned";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -47,7 +47,7 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
 
         }
@@ -59,25 +59,25 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getSAShopOrder = await _sashopOrderRepository.GetSAShopOrderById(id);
-                if (getSAShopOrder == null)
+                var sAShopOrderDetailById = await _sashopOrderRepository.GetSAShopOrderById(id);
+                if (sAShopOrderDetailById == null)
                 {
                     _logger.LogError($"SAShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"SAShopOrder with id hasn't been found in db.";
+                    serviceResponse.Message = $"SAShopOrder with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned SAShopOrder with id: {id}");
-                    var result = _mapper.Map<SAShopOrderDto>(getSAShopOrder);
+                    var result = _mapper.Map<SAShopOrderDto>(sAShopOrderDetailById);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "SAShopOrderById Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
@@ -87,14 +87,14 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPost]
         public IActionResult CreateSAShopOrder([FromBody] SAShopOrderPostDto sAShopOrderPostDto)
         {
-            ServiceResponse<SAShopOrderDto> serviceResponse = new ServiceResponse<SAShopOrderDto>();
+            ServiceResponse<SAShopOrderPostDto> serviceResponse = new ServiceResponse<SAShopOrderPostDto>();
 
             try
             {
@@ -105,13 +105,13 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.Message = "SAShopOrder object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest();
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
                     _logger.LogError("Invalid SAShopOrder object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Message = "Invalid SAShopOrder object";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -133,7 +133,7 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -146,7 +146,7 @@ namespace Tips.Production.Api.Controllers
             {
                 if (sAShopOrderUpdateDto is null)
                 {
-                    _logger.LogError("SAShopOrder object sent from client is null.");
+                    _logger.LogError("UpdateSAShopOrder object sent from client is null.");
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Update SAShopOrder object is null";
                     serviceResponse.Success = false;
@@ -157,20 +157,20 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError("Invalid SAShopOrder object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Message = "Invalid SAShopOrder object";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
 
-                var updateSAShopOrder = await _sashopOrderRepository.GetSAShopOrderById(id);
-                if (updateSAShopOrder is null)
+                var sAShopOrderDetailById = await _sashopOrderRepository.GetSAShopOrderById(id);
+                if (sAShopOrderDetailById is null)
                 {
                     _logger.LogError($"SAShopOrder with id: {id}, hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
 
-                var sAShopOrder = _mapper.Map(sAShopOrderUpdateDto, updateSAShopOrder);
+                var sAShopOrder = _mapper.Map(sAShopOrderUpdateDto, sAShopOrderDetailById);
 
                 string result = await _sashopOrderRepository.UpdateSAShopOrder(sAShopOrder);
                 _logger.LogInfo(result);
@@ -188,7 +188,7 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -199,19 +199,19 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var deleteSAShopOrder = await _sashopOrderRepository.GetSAShopOrderById(id);
-                if (deleteSAShopOrder == null)
+                var sAShopOrderDetailsById = await _sashopOrderRepository.GetSAShopOrderById(id);
+                if (sAShopOrderDetailsById == null)
                 {
                     _logger.LogError($"SAShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"SAShopOrder with id hasn't been found in db.";
+                    serviceResponse.Message = $"SAShopOrder with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
-                deleteSAShopOrder.IsDeleted = true;
-                string result = await _sashopOrderRepository.UpdateSAShopOrder(deleteSAShopOrder);
+                sAShopOrderDetailsById.IsDeleted = true;
+                string result = await _sashopOrderRepository.UpdateSAShopOrder(sAShopOrderDetailsById);
                 _sashopOrderRepository.SaveAsync();
                 serviceResponse.Message = "SAShopOrder Deleted Successfully";
                 serviceResponse.Success = true;
@@ -225,7 +225,7 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -237,35 +237,35 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getSAShopOrderBySalesOrderNo = await _sashopOrderRepository.GetSAShopOrderBySalesOrderNo(salesOrderNo);
-                if (getSAShopOrderBySalesOrderNo == null)
+                var sAShopOrderBySalesOrderNo = await _sashopOrderRepository.GetSAShopOrderBySalesOrderNo(salesOrderNo);
+                if (sAShopOrderBySalesOrderNo == null)
                 {
                     _logger.LogError($"SAShopOrder with salesOrderNo: {salesOrderNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"SAShopOrder with salesOrderNo hasn't been found in db.";
+                    serviceResponse.Message = $"SAShopOrder with salesOrderNo hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned SAShopOrder with salesOrderNo: {salesOrderNo}");
-                    var result = _mapper.Map<SAShopOrderDto>(getSAShopOrderBySalesOrderNo);
+                    var result = _mapper.Map<SAShopOrderDto>(sAShopOrderBySalesOrderNo);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "SAShopOrderBySalesOrderNumber Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetSAShopOrderBySalesOrderNo action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -276,35 +276,35 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getSAShopOrderByShopOrderNo = await _sashopOrderRepository.GetSAShopOrderBySAShopOrderNo(SAshopOrderNo);
-                if (getSAShopOrderByShopOrderNo == null)
+                var sAShopOrderByShopOrderNo = await _sashopOrderRepository.GetSAShopOrderBySAShopOrderNo(SAshopOrderNo);
+                if (sAShopOrderByShopOrderNo == null)
                 {
                     _logger.LogError($"SAShopOrder with SAshopOrderNo: {SAshopOrderNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"SAShopOrder with SAshopOrderNo hasn't been found in db.";
+                    serviceResponse.Message = $"SAShopOrder with SAshopOrderNo hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned SAShopOrder with SAshopOrderNo: {SAshopOrderNo}");
-                    var result = _mapper.Map<SAShopOrderDto>(getSAShopOrderByShopOrderNo);
+                    var result = _mapper.Map<SAShopOrderDto>(sAShopOrderByShopOrderNo);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "SAShopOrderByShopOrderNo Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetSAShopOrderByShopOrderNo action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -316,11 +316,11 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getAllOpenSAShopOrder = await _sashopOrderRepository.GetAllOpenSAShopOrders();
+                var openSAShopOrderDetails = await _sashopOrderRepository.GetAllOpenSAShopOrders();
                 _logger.LogInfo("Returned all SAShopOrders");
-                var result = _mapper.Map<IEnumerable<SAShopOrderDto>>(getAllOpenSAShopOrder);
+                var result = _mapper.Map<IEnumerable<SAShopOrderDto>>(openSAShopOrderDetails);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "SAShopOrders Successfully Returned";
+                serviceResponse.Message = "Returned all OpenSAShopOrders Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -329,10 +329,10 @@ namespace Tips.Production.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
 
         }
@@ -344,21 +344,21 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getShortCloseSAShopOrder = await _sashopOrderRepository.GetSAShopOrderById(id);
-                if (getShortCloseSAShopOrder == null)
+                var shortCloseSAShopOrder = await _sashopOrderRepository.GetSAShopOrderById(id);
+                if (shortCloseSAShopOrder == null)
                 {
                     _logger.LogError($"SAShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"SAShopOrder with id hasn't been found in db.";
+                    serviceResponse.Message = $"SAShopOrder with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
-                getShortCloseSAShopOrder.IsShortClosed = true;
-                getShortCloseSAShopOrder.ShorClosedBy = "Admin";
-                getShortCloseSAShopOrder.ShortClosedOn = DateTime.Now;
-                string result = await _sashopOrderRepository.UpdateSAShopOrder(getShortCloseSAShopOrder);
+                shortCloseSAShopOrder.IsShortClosed = true;
+                shortCloseSAShopOrder.ShorClosedBy = "Admin";
+                shortCloseSAShopOrder.ShortClosedOn = DateTime.Now;
+                string result = await _sashopOrderRepository.UpdateSAShopOrder(shortCloseSAShopOrder);
                 _sashopOrderRepository.SaveAsync();
                 serviceResponse.Message = "SAShopOrder have been closed";
                 serviceResponse.Success = true;
@@ -372,7 +372,7 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
     }

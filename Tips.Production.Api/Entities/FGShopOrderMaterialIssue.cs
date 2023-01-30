@@ -7,15 +7,15 @@ namespace Tips.Production.Api.Entities
     {
         [Key]
         public int Id { get; set; }
-        public string ShopOrderNo { get; set; }
+        public string? ShopOrderNumber { get; set; }
         public DateTime ShopOrderDate { get; set; }
-        public string ProjectNumber { get; set; }
-        public string FGPartNo { get; set; }
-        [Precision(13, 2)]
+        public string? ProjectNumber { get; set; }
+        public string? FGPartNumber { get; set; }
+        [Precision(13, 3)]
         public decimal ShopOrderQty { get; set; }
-        public string ShopOrderType { get; set; }
-        public string Description { get; set; }
-        public string Unit { get; set; }
+        public string? ShopOrderType { get; set; }
+        public string? Description { get; set; }
+        public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

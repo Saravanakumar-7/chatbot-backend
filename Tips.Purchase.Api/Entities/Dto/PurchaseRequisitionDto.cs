@@ -27,6 +27,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? DeliveryTerms { get; set; }
 
         public string? PaymentTerms { get; set; }
+
         public string? ShippingMode { get; set; }
 
         public string? ShipTo { get; set; }
@@ -37,15 +38,17 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public string? SpecialTermsConditions { get; set; }
 
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
+
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+
         public List<PrItemsDto>? PrItemsDtoList { get; set; }
     }
 
-    public class PurchaseRequisitionDtoPost
+    public class PurchaseRequisitionPostDto
     {
         public string? PRNumber { get; set; }
 
@@ -62,6 +65,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? DeliveryTerms { get; set; }
 
         public string? PaymentTerms { get; set; }
+
         public string? ShippingMode { get; set; }
 
         public string? ShipTo { get; set; }
@@ -71,17 +75,14 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? RetentionPeriod { get; set; }
 
         public string? SpecialTermsConditions { get; set; }
-
-        
-        public List<PrItemsDtoPost>? PrItemsDtoPostList { get; set; }
-
+     
+        public List<PrItemsPostDto>? PrItemsDtoPostList { get; set; }
 
     }
 
-
-    public class PurchaseRequisitionDtoUpdate
+    public class PurchaseRequisitionUpdateDto
     {
-
+        public int Id { get; set; }
 
         public string? PRNumber { get; set; }
 
@@ -98,6 +99,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? DeliveryTerms { get; set; }
 
         public string? PaymentTerms { get; set; }
+
         public string? ShippingMode { get; set; }
 
         public string? ShipTo { get; set; }
@@ -107,14 +109,13 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? RetentionPeriod { get; set; }
 
         public string? SpecialTermsConditions { get; set; }
+   
+        public string? Unit { get; set; }
 
-        public string Unit { get; set; }
-
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<PrItemsDtoUpdate>? PrItemsDtoUpdateList { get; set; }
+
+        public List<PrItemsUpdateDto>? PrItemsDtoUpdateList { get; set; }
 
     }
 

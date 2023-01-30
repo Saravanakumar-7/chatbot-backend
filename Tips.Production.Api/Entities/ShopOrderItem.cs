@@ -8,7 +8,7 @@ namespace Tips.Production.Api.Entities
         [Key]
         public int Id { get; set; }
 
-        public string? ItemNumber { get; set; }
+        public string? FGItemNumber { get; set; }
 
         public string? Description { get; set; }
 

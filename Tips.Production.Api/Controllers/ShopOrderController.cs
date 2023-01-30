@@ -35,9 +35,9 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getAllShopOrders = await _shopOrderRepository.GetAllShopOrders(pagingParameter);
+                var shopOrderDetails = await _shopOrderRepository.GetAllShopOrders(pagingParameter);
                 _logger.LogInfo("Returned all ShopOrders()s");
-                var result = _mapper.Map<IEnumerable<ShopOrderDto>>(getAllShopOrders);
+                var result = _mapper.Map<IEnumerable<ShopOrderDto>>(shopOrderDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ShopOrders Successfully";
                 serviceResponse.Success = true;
@@ -48,7 +48,7 @@ namespace Tips.Production.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -63,55 +63,57 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getShopOrderById = await _shopOrderRepository.GetShopOrderById(id);
-                if (getShopOrderById == null)
+                var shopOrderDetailById = await _shopOrderRepository.GetShopOrderById(id);
+                if (shopOrderDetailById == null)
                 {
                     _logger.LogError($"ShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrder with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrder with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned ShopOrder with id: {id}");
-                    ShopOrderDto shopOrderDto =  _mapper.Map<ShopOrderDto>(getShopOrderById);
+                    ShopOrderDto shopOrderDto =  _mapper.Map<ShopOrderDto>(shopOrderDetailById);
                      
                     List<ShopOrderItemDto> shopOrderItemDtos= new List<ShopOrderItemDto>();
-
-                    foreach(var shopOrderItemdetail in getShopOrderById.ShopOrderItems)
+                    if (shopOrderDetailById.ShopOrderItems != null)
                     {
-                        ShopOrderItemDto shopOrderItemDto = _mapper.Map<ShopOrderItemDto>(shopOrderItemdetail);
-                        shopOrderItemDtos.Add(shopOrderItemDto);
+                        foreach (var shopOrderItemdetail in shopOrderDetailById.ShopOrderItems)
+                        {
+                            ShopOrderItemDto shopOrderItemDto = _mapper.Map<ShopOrderItemDto>(shopOrderItemdetail);
+                            shopOrderItemDtos.Add(shopOrderItemDto);
+                        }
                     }
                     shopOrderDto.ShopOrderItems = shopOrderItemDtos;
                     serviceResponse.Data = shopOrderDto;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "GetShopOrderById Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(shopOrderDto);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetshopOrderById action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateShopOrder([FromBody] ShopOrderDtoPost shopOrderDtoPost)
+        public async Task<IActionResult> CreateShopOrder([FromBody] ShopOrderPostDto shopOrderPostDto)
         {
-            ServiceResponse<ShopOrderDto> serviceResponse = new ServiceResponse<ShopOrderDto>();
+            ServiceResponse<ShopOrderPostDto> serviceResponse = new ServiceResponse<ShopOrderPostDto>();
 
             try
             {
-                if (shopOrderDtoPost == null)
+                if (shopOrderPostDto == null)
                 {
                     _logger.LogError("ShopOrder object sent from client is null.");
                     serviceResponse.Data = null;
@@ -124,19 +126,16 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError("Invalid ShopOrder object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Message = "Invalid ShopOrder object";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var createShopOrder = _mapper.Map<ShopOrder>(shopOrderDtoPost);
-                var shopOrderDto = shopOrderDtoPost.ShopOrderItems;
-
+                var shopOrder = _mapper.Map<ShopOrder>(shopOrderPostDto);
+                var shopOrderDto = shopOrderPostDto.ShopOrderItems;
                 var ShoporderItemList = new List<ShopOrderItem>();
-
                 if (shopOrderDto != null)
                 {
-
                     for (int i = 0; i < shopOrderDto.Count; i++)
                     {
                         ShopOrderItem shopOrderItemDetail = _mapper.Map<ShopOrderItem>(shopOrderDto[i]);
@@ -144,31 +143,31 @@ namespace Tips.Production.Api.Controllers
 
                     }
                 }
-                createShopOrder.ShopOrderItems= ShoporderItemList;               
-                await _shopOrderRepository.CreateShopOrder(createShopOrder);
+                shopOrder.ShopOrderItems= ShoporderItemList;               
+                await _shopOrderRepository.CreateShopOrder(shopOrder);
 
                 _shopOrderRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "ShopOrder Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetShopOrderById", serviceResponse);
+                return Created("GetShopOrderItemById", serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateShopOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateShopOrder(int id, [FromBody] ShopOrderDtoUpdate ShopOrderDtoUpdate)
+        public async Task<IActionResult> UpdateShopOrder(int id, [FromBody] ShopOrderUpdateDto ShopOrderDtoUpdate)
         {
-            ServiceResponse<ShopOrderDto> serviceResponse = new ServiceResponse<ShopOrderDto>();
+            ServiceResponse<ShopOrderUpdateDto> serviceResponse = new ServiceResponse<ShopOrderUpdateDto>();
 
             try
             {
@@ -183,48 +182,46 @@ namespace Tips.Production.Api.Controllers
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid MaterialRequest object sent from client.");
+                    _logger.LogError("Invalid ShopOrder object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Update MaterialRequest object sent from client.";
+                    serviceResponse.Message = "Invalid Update ShopOrder object.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var getShopOrderById = await _shopOrderRepository.GetShopOrderById(id);
-                if (getShopOrderById is null)
+                var shopOrderDetailById = await _shopOrderRepository.GetShopOrderById(id);
+                if (shopOrderDetailById is null)
                 {
                     _logger.LogError($"ShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update ShopOrder with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Update ShopOrder with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                var updateShopOrder = _mapper.Map<ShopOrder>(getShopOrderById);
-
-                var shoporderItemDto = ShopOrderDtoUpdate.ShopOrderItems;
-
-                var shoporderItemList = new List<ShopOrderItem>();
-                for (int i = 0; i < shoporderItemDto.Count; i++)
+                var shopOrders = _mapper.Map<ShopOrder>(shopOrderDetailById);
+                var shopOrderItemDto = ShopOrderDtoUpdate.ShopOrderItems;
+                var shopOrderItemList = new List<ShopOrderItem>();
+                if(shopOrderItemDto != null)
+                for (int i = 0; i < shopOrderItemDto.Count; i++)
                 {
-                    ShopOrderItem shoporderItemDetail = _mapper.Map<ShopOrderItem>(shoporderItemDto[i]);
-                    shoporderItemList.Add(shoporderItemDetail);
+                    ShopOrderItem shoporderItemDetail = _mapper.Map<ShopOrderItem>(shopOrderItemDto[i]);
+                    shopOrderItemList.Add(shoporderItemDetail);
 
                 }
-
-                var updateShoporder = _mapper.Map(ShopOrderDtoUpdate, getShopOrderById);
-                updateShoporder.ShopOrderItems = shoporderItemList;
-                string result = await _shopOrderRepository.UpdateShopOrder(updateShoporder);
+                shopOrders.ShopOrderItems = shopOrderItemList;
+                var updateShopOrder = _mapper.Map(ShopOrderDtoUpdate, shopOrderDetailById);
+                string result = await _shopOrderRepository.UpdateShopOrder(updateShopOrder);
                 _shopOrderRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Shoporder Updated Successfully";
+                serviceResponse.Message = "ShopOrder Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateMaterialRequest action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside UpdateShopOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -240,22 +237,22 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getShopOrderById = await _shopOrderRepository.GetShopOrderById(id);
-                if (getShopOrderById == null)
+                var shopOrderDetailById = await _shopOrderRepository.GetShopOrderById(id);
+                if (shopOrderDetailById == null)
                 {
                     _logger.LogError($"ShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrder with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrder with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
-                getShopOrderById.IsDeleted = true;
-                string result = await _shopOrderRepository.UpdateShopOrder(getShopOrderById);
+                shopOrderDetailById.IsDeleted = true;
+                string result = await _shopOrderRepository.UpdateShopOrder(shopOrderDetailById);
                 _shopOrderRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Delete Successfully";
+                serviceResponse.Message = "ShopOrder Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -283,35 +280,35 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getShopOrderBySalesOrderNo = await _shopOrderRepository.GetShopOrderBySalesOrderNo(salesOrderNo);
-                if (getShopOrderBySalesOrderNo == null)
+                var shopOrderBySalesOrderNo = await _shopOrderRepository.GetShopOrderBySalesOrderNo(salesOrderNo);
+                if (shopOrderBySalesOrderNo == null)
                 {
                     _logger.LogError($"ShopOrder with id: {salesOrderNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrder with id: {salesOrderNo}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrder with salesOrderNo hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned ShopOrder with id: {salesOrderNo}");
-                    var result = _mapper.Map<ShopOrderDto>(getShopOrderBySalesOrderNo);
+                    var result = _mapper.Map<ShopOrderDto>(shopOrderBySalesOrderNo);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "ShopOrderBySalesOrderNo Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetshopOrderById action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -322,35 +319,35 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var shopOrders = await _shopOrderRepository.GetShopOrderBySalesOrderNo(shopOrderNo);
-                if (shopOrders == null)
+                var shopOrderByShopOrderNo = await _shopOrderRepository.GetShopOrderBySalesOrderNo(shopOrderNo);
+                if (shopOrderByShopOrderNo == null)
                 {
                     _logger.LogError($"ShopOrder with id: {shopOrderNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrder with id: {shopOrderNo}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrder with shopOrderNo hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned ShopOrder with id: {shopOrderNo}");
-                    var result = _mapper.Map<ShopOrderDto>(shopOrders);
+                    var result = _mapper.Map<ShopOrderDto>(shopOrderByShopOrderNo);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "ShopOrderByShopOrderNo Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetshopOrderByShopOrderNo action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
         [HttpGet]
@@ -360,12 +357,12 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getShopOrderByItemType = await _shopOrderRepository.GetShopOrderByItemType(itemType);
-                if (getShopOrderByItemType == null)
+                var shopOrderByItemType = await _shopOrderRepository.GetShopOrderByItemType(itemType);
+                if (shopOrderByItemType == null)
                 {
                     _logger.LogError($"ShopOrder with id: {itemType}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrder with id: {itemType}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrder with itemType hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
@@ -373,9 +370,9 @@ namespace Tips.Production.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned ShopOrder with id: {itemType}");
-                    var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(getShopOrderByItemType);
+                    var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(shopOrderByItemType);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "ShopOrderByItemType Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -385,35 +382,35 @@ namespace Tips.Production.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside GetShopOrderByItemType action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetShopOrderByFgNo(string FgNumber)
+        public async Task<IActionResult> GetShopOrderByFGNo(string fGNumber)
         {
             ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
 
             try
             {
-                var getShopOrderByFgNo = await _shopOrderRepository.GetShopOrderByFgNo(FgNumber);
-                if (getShopOrderByFgNo == null)
+                var shopOrderByFGNo = await _shopOrderRepository.GetShopOrderByFGNo(fGNumber);
+                if (shopOrderByFGNo == null)
                 {
-                    _logger.LogError($"ShopOrder with id: {FgNumber}, hasn't been found in db.");
+                    _logger.LogError($"ShopOrder with id: {fGNumber}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrder with id: {FgNumber}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrder with fGNumber hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned ShopOrder with id: {FgNumber}");
-                    var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(getShopOrderByFgNo);
+                    _logger.LogInfo($"Returned ShopOrder with id: {fGNumber}");
+                    var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(shopOrderByFGNo);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "ShopOrderByFGNo Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -421,7 +418,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetShopOrderByFgNo action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetShopOrderByFGNo action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
@@ -431,28 +428,28 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetShopOrderByFgNoAndSaNo(string FgNumber, string SaNumber)
+        public async Task<IActionResult> GetShopOrderByFGNoAndSANo(string fGNumber, string sANumber)
         {
             ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
 
             try
             {
-                var getShopOrderByFgNoAndSaNo = await _shopOrderRepository.GetShopOrderByFgNoAndSaNo(FgNumber, SaNumber);
-                if (getShopOrderByFgNoAndSaNo == null)
+                var shopOrderByFGNoAndSANo = await _shopOrderRepository.GetShopOrderByFGNoAndSANo(fGNumber, sANumber);
+                if (shopOrderByFGNoAndSANo == null)
                 {
-                    _logger.LogError($"ShopOrder with id: {FgNumber}, hasn't been found in db.");
+                    _logger.LogError($"ShopOrder with id: {fGNumber}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrder with id: {FgNumber}, hasn't been found in db.";
+                    serviceResponse.Message = $"shopOrderByFGNoAndSANo hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned ShopOrder with id: {FgNumber}");
-                    var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(getShopOrderByFgNoAndSaNo);
+                    _logger.LogInfo($"Returned ShopOrder with id: {fGNumber}");
+                    var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(shopOrderByFGNoAndSANo);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "ShopOrderByFGNoAndSANo Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -460,7 +457,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetShopOrderByFgNoAndSaNo action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetShopOrderByFGNoAndSANo action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
@@ -477,11 +474,11 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var shopOrderList = await _shopOrderRepository.GetAllOpenShopOrders();
-                _logger.LogInfo("Returned all ShopOrders()s");
-                var result = _mapper.Map<IEnumerable<ShopOrderDto>>(shopOrderList);
+                var openShopOrderDetials = await _shopOrderRepository.GetAllOpenShopOrders();
+                _logger.LogInfo("Returned all ShopOrders");
+                var result = _mapper.Map<IEnumerable<ShopOrderDto>>(openShopOrderDetials);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all OpenShopOrderDetails Successfully ";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -490,10 +487,10 @@ namespace Tips.Production.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
 
         }
@@ -505,21 +502,21 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var shopOrderShortCloseById = await _shopOrderRepository.GetShopOrderById(id);
-                if (shopOrderShortCloseById == null)
+                var shortCloseShopOrderById = await _shopOrderRepository.GetShopOrderById(id);
+                if (shortCloseShopOrderById == null)
                 {
-                    _logger.LogError($"ShopOrder with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"ShortCloseShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrder with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"ShortCloseShopOrder with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
-                shopOrderShortCloseById.IsShortClosed = true;
-                shopOrderShortCloseById.ShortClosedBy = "Admin";
-                shopOrderShortCloseById.ShortClosedOn = DateTime.Now;
-                string result = await _shopOrderRepository.UpdateShopOrder(shopOrderShortCloseById);
+                shortCloseShopOrderById.IsShortClosed = true;
+                shortCloseShopOrderById.ShortClosedBy = "Admin";
+                shortCloseShopOrderById.ShortClosedOn = DateTime.Now;
+                string result = await _shopOrderRepository.UpdateShopOrder(shortCloseShopOrderById);
                 _shopOrderRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ShopOrder have been closed";
@@ -529,12 +526,12 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteShopOrder action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside ShortCloseShopOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
     }

@@ -31,15 +31,15 @@ namespace Tips.Production.Api.Controllers
         }
 
        [HttpGet]
-        public async Task<IActionResult> GetAllShopOrderConfirmation()
+        public async Task<IActionResult> GetAllShopOrderConfirmations()
         {
             ServiceResponse<IEnumerable<ShopOrderConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderConfirmationDto>>();
 
             try
             {
-                var getAllShopOrderConfirmations = await _shopOrderConfirmationRepository.GetAllShopOrderConfirmation();
+                var shopOrderConfirmationDetails = await _shopOrderConfirmationRepository.GetAllShopOrderConfirmations();
                 _logger.LogInfo("Returned all ShopOrderConfirmationdetails");
-                var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(getAllShopOrderConfirmations);
+                var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(shopOrderConfirmationDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "ShopOrderConfirmation Successfully Returned";
                 serviceResponse.Success = true;
@@ -50,10 +50,10 @@ namespace Tips.Production.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
 
         }
@@ -65,25 +65,25 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getShopOrderConfirmation = await _shopOrderConfirmationRepository.GetShopOrderConfirmationById(id);
-                if (getShopOrderConfirmation == null)
+                var shopOrderConfirmationDetailById = await _shopOrderConfirmationRepository.GetShopOrderConfirmationById(id);
+                if (shopOrderConfirmationDetailById == null)
                 {
                     _logger.LogError($"ShopOrderConfirmationdetails with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrderConfirmationdetails with id hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrderConfirmationdetails with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned ShopOrderConfirmationdetails with id: {id}");
-                    var result = _mapper.Map<ShopOrderConfirmationDto>(getShopOrderConfirmation);
+                    var result = _mapper.Map<ShopOrderConfirmationDto>(shopOrderConfirmationDetailById);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "ShopOrderConfirmationById Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
@@ -93,14 +93,14 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPost]
         public IActionResult CreateShopOrderConfirmation([FromBody] ShopOrderConfirmationPostDto shopOrderConfirmationPostDto)
         {
-            ServiceResponse<ShopOrderConfirmationDto> serviceResponse = new ServiceResponse<ShopOrderConfirmationDto>();
+            ServiceResponse<ShopOrderConfirmationPostDto> serviceResponse = new ServiceResponse<ShopOrderConfirmationPostDto>();
 
             try
             {
@@ -111,13 +111,13 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.Message = "ShopOrderConfirmationdetails object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest();
+                    return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
                     _logger.LogError("Invalid ShopOrderConfirmationdetails object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Message = "Invalid ShopOrderConfirmationdetail object";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -130,7 +130,7 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Message = "ShopOrderConfirmation Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetShopOrderById", serviceResponse);
+                return Created("GetShopOrderItemById", serviceResponse);
             }
             catch (Exception ex)
             {
@@ -139,14 +139,14 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateShopOrderConfirmation(int id, [FromBody] ShopOrderConfirmationDto shopOrderConfirmationUpdateDto)
+        public async Task<IActionResult> UpdateShopOrderConfirmation(int id, [FromBody] ShopOrderConfirmationUpdateDto shopOrderConfirmationUpdateDto)
         {
-            ServiceResponse<ShopOrderConfirmationDto> serviceResponse = new ServiceResponse<ShopOrderConfirmationDto>();
+            ServiceResponse<ShopOrderConfirmationUpdateDto> serviceResponse = new ServiceResponse<ShopOrderConfirmationUpdateDto>();
 
             try
             {
@@ -163,20 +163,20 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError("Invalid ShopOrderConfirmationdetails object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Message = "Invalid ShopOrderConfirmationdetail object";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
 
-                var updateShopOrderConfirmation = await _shopOrderConfirmationRepository.GetShopOrderConfirmationById(id);
-                if (updateShopOrderConfirmation is null)
+                var shopOrderConfirmationDetailById = await _shopOrderConfirmationRepository.GetShopOrderConfirmationById(id);
+                if (shopOrderConfirmationDetailById is null)
                 {
                     _logger.LogError($"ShopOrderConfirmationdetails with id: {id}, hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
 
-                var shopOrderConfirmation = _mapper.Map(shopOrderConfirmationUpdateDto, updateShopOrderConfirmation);
+                var shopOrderConfirmation = _mapper.Map(shopOrderConfirmationUpdateDto, shopOrderConfirmationDetailById);
 
                 string result = await _shopOrderConfirmationRepository.UpdateShopOrderConfirmation(shopOrderConfirmation);
                 _logger.LogInfo(result);
@@ -194,7 +194,7 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -206,19 +206,19 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var deleteShopOrderConfirmation = await _shopOrderConfirmationRepository.GetShopOrderConfirmationById(id);
-                if (deleteShopOrderConfirmation == null)
+                var shopOrderConfirmationDetailById = await _shopOrderConfirmationRepository.GetShopOrderConfirmationById(id);
+                if (shopOrderConfirmationDetailById == null)
                 {
                     _logger.LogError($"ShopOrderConfirmation with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrderConfirmation with id hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrderConfirmation with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
-                deleteShopOrderConfirmation.IsDeleted = true;
-                string result = await _shopOrderConfirmationRepository.UpdateShopOrderConfirmation(deleteShopOrderConfirmation);
+                shopOrderConfirmationDetailById.IsDeleted = true;
+                string result = await _shopOrderConfirmationRepository.UpdateShopOrderConfirmation(shopOrderConfirmationDetailById);
                 _shopOrderConfirmationRepository.SaveAsync();
                 serviceResponse.Message = "ShopOrderConfirmation Deleted Successfully";
                 serviceResponse.Success = true;
@@ -232,7 +232,7 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -243,35 +243,35 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getAllShopOrderConfirmationByShopOrderNo = await _shopOrderConfirmationRepository.GetAllShopOrderConfirmationByShopOrderNo(shopOrderNo);
-                if (getAllShopOrderConfirmationByShopOrderNo == null)
+                var shopOrderConfirmationByShopOrderNo = await _shopOrderConfirmationRepository.GetAllShopOrderConfirmationByShopOrderNo(shopOrderNo);
+                if (shopOrderConfirmationByShopOrderNo == null)
                 {
                     _logger.LogError($"ShopOrderConfirmationdetails with ShopOrderNo: {shopOrderNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShopOrderConfirmationdetails with ShopOrderNo hasn't been found in db.";
+                    serviceResponse.Message = $"ShopOrderConfirmationdetails with ShopOrderNo hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned ShopOrderConfirmationdetails with ShopOrderNo: {shopOrderNo}");
-                    var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(getAllShopOrderConfirmationByShopOrderNo);
+                    var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(shopOrderConfirmationByShopOrderNo);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "ShopOrderConfirmationByShopOrderNo Successfully Returned";
+                    serviceResponse.Message = "Returned all ShopOrderConfirmationByShopOrderNo Successfully ";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetAllShopOrderConfirmationByShopOrderNo action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -282,36 +282,36 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getOpenDataForOqcByShopOrderNo = await _shopOrderConfirmationRepository.GetOpenDataForOqcByShopOrderNo(shopOrderNo);
-                if (getOpenDataForOqcByShopOrderNo == null)
+                var openDataForOqcByShopOrderNo = await _shopOrderConfirmationRepository.GetOpenDataForOqcByShopOrderNo(shopOrderNo);
+                if (openDataForOqcByShopOrderNo == null)
                 {
                     _logger.LogError($"Oqc with shopOrderNo: {shopOrderNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Oqc with shopOrderNo hasn't been found in db.";
+                    serviceResponse.Message = $"Oqc with shopOrderNo hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                    // shopOrderConfirmationList.IsOQCDone = False;
                     _logger.LogInfo($"Returned Oqc with shopOrderNo: {shopOrderNo}");
-                    var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(getOpenDataForOqcByShopOrderNo);
+                    var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(openDataForOqcByShopOrderNo);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "OpenDataForOqcByShopOrderNo Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetOpenDataForOqcByShopOrderNo action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 

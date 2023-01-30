@@ -6,10 +6,10 @@ namespace Tips.Production.Api.Contracts
     {
         Task<IEnumerable<SAShopOrder>> GetAllSAShopOrders();
         Task<SAShopOrder> GetSAShopOrderById(int id);
-        Task<long> CreateSAShopOrder(SAShopOrder SAshopOrder);
-        Task<string> UpdateSAShopOrder(SAShopOrder SAshopOrder);
+        Task<long> CreateSAShopOrder(SAShopOrder sAShopOrder);
+        Task<string> UpdateSAShopOrder(SAShopOrder sAShopOrder);
         Task<SAShopOrder> GetSAShopOrderBySalesOrderNo(string salesOrderNo);
-        Task<SAShopOrder> GetSAShopOrderBySAShopOrderNo(string SAshopOrderNo);
+        Task<SAShopOrder> GetSAShopOrderBySAShopOrderNo(string sAShopOrderNo);
         Task<IEnumerable<SAShopOrder>> GetAllOpenSAShopOrders();
 
     }

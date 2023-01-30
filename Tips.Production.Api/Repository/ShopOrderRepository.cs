@@ -34,20 +34,20 @@ namespace Tips.Production.Api.Repository
 
         public async Task<PagedList<ShopOrder>> GetAllShopOrders(PagingParameter pagingParameter)
         {
-            var getAllShopOrders =  PagedList<ShopOrder>.ToPagedList(FindAll()
+            var shopOrderDetails =  PagedList<ShopOrder>.ToPagedList(FindAll()
             .Include(t => t.ShopOrderItems)
-            .OrderBy(on => on.Id),pagingParameter.PageNumber,pagingParameter.PageSize);
-            return getAllShopOrders;
+            .OrderByDescending(on => on.Id),pagingParameter.PageNumber,pagingParameter.PageSize);
+            return shopOrderDetails;
 
         }
 
         public async Task<ShopOrder> GetShopOrderById(int id)
         {
-            var shopOrderById = await _tipsProductionDbContext.ShopOrders
+            var shopOrderDetailById = await _tipsProductionDbContext.ShopOrders
                             .Where(x => x.Id == id)
                             .Include(y => y.ShopOrderItems)
                              .FirstOrDefaultAsync();
-            return shopOrderById;
+            return shopOrderDetailById;
         }
 
         public async Task<string> UpdateShopOrder(ShopOrder shopOrder)
@@ -55,31 +55,31 @@ namespace Tips.Production.Api.Repository
             shopOrder.LastModifiedBy = "Admin";
             shopOrder.LastModifiedOn = DateTime.Now;
             Update(shopOrder);
-            string result = $"LeadTime details of {shopOrder.Id} is updated successfully!";
+            string result = $"ShopOrder details of {shopOrder.Id} is updated successfully!";
             return result;
         }
 
         public async Task<ShopOrder> GetShopOrderBySalesOrderNo(string salesOrderNo)
         {
-            var getShopOrderBySalesOrderNo = await _tipsProductionDbContext.ShopOrders
+            var shopOrderBySalesOrderNo = await _tipsProductionDbContext.ShopOrders
                 .Include (x => x.ShopOrderItems)
                 .Where (z => z.SalesOrderNumber == salesOrderNo)
                              .FirstOrDefaultAsync();
-            return getShopOrderBySalesOrderNo;
+            return shopOrderBySalesOrderNo;
         }
 
-        public async Task<ShopOrder> GetShopOrderByShopOrderNo(string ShopOrderNo)
+        public async Task<ShopOrder> GetShopOrderByShopOrderNo(string shopOrderNo)
         {
-            var getShopOrderByShopOrderNo = await _tipsProductionDbContext.ShopOrders
+            var shopOrderByShopOrderNo = await _tipsProductionDbContext.ShopOrders
                             .Include(x => x.ShopOrderItems)
-                            .Where(x => x.ShopOrderNumber == ShopOrderNo)
+                            .Where(x => x.ShopOrderNumber == shopOrderNo)
                              .FirstOrDefaultAsync();
-            return getShopOrderByShopOrderNo;
+            return shopOrderByShopOrderNo;
         }
 
         public async Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByItemType(string itemType)
         {
-            IEnumerable<ListOfShopOrderDto> getShopOrderByItemType = await _tipsProductionDbContext.ShopOrders
+            IEnumerable<ListOfShopOrderDto> shopOrderByItemType = await _tipsProductionDbContext.ShopOrders
                            .Where(x => x.ItemType == itemType).Select(x => new ListOfShopOrderDto()
                            {
                                Id = x.Id,
@@ -87,35 +87,34 @@ namespace Tips.Production.Api.Repository
                            }).ToListAsync();
 
 
-            return getShopOrderByItemType;
+            return shopOrderByItemType;
 
         }
-        public async Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFgNo(string FgNumber)
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFGNo(string fGNumber)
         {
-            IEnumerable<ListOfShopOrderDto> getShopOrderByFgNo = await _tipsProductionDbContext.ShopOrders
-                           .Where(x => x.ItemNumber == FgNumber && x.ItemType == "Fg").Select(x => new ListOfShopOrderDto()
-                           {
-                               Id = x.Id,
-                               ShopOrderNumber = x.ShopOrderNumber,
-                               
-                           }).ToListAsync();
-
-
-            return getShopOrderByFgNo;
-
-        }
-
-        public async Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFgNoAndSaNo(string FgNumber, string SaNumber)
-        {
-            IEnumerable<ListOfShopOrderDto> getShopOrderByFgNoAndSaNo = await _tipsProductionDbContext.ShopOrders
-                           .Where(x => x.ItemNumber == FgNumber && x.SAItemNumber == SaNumber && x.ItemType == "Sa").Select(x => new ListOfShopOrderDto()
+            IEnumerable<ListOfShopOrderDto> shopOrderByFGNo = await _tipsProductionDbContext.ShopOrders
+                           .Where(x => x.ItemNumber == fGNumber && x.ItemType == "Fg").Select(x => new ListOfShopOrderDto()
                            {
                                Id = x.Id,
                                ShopOrderNumber = x.ShopOrderNumber,
                            }).ToListAsync();
 
 
-            return getShopOrderByFgNoAndSaNo;
+            return shopOrderByFGNo;
+
+        }
+
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFGNoAndSANo(string fGNumber, string sANumber)
+        {
+            IEnumerable<ListOfShopOrderDto> shopOrderByFGNoAndSANo = await _tipsProductionDbContext.ShopOrders
+                           .Where(x => x.ItemNumber == fGNumber && x.SAItemNumber == sANumber && x.ItemType == "Sa").Select(x => new ListOfShopOrderDto()
+                           {
+                               Id = x.Id,
+                               ShopOrderNumber = x.ShopOrderNumber,
+                           }).ToListAsync();
+
+
+            return shopOrderByFGNoAndSANo;
 
         }
 

@@ -9,7 +9,7 @@ namespace Tips.Purchase.Api.Entities
         public int Id { get; set; }
         public DateTime PODeliveryDate { get; set; }
 
-        [Precision(13, 2)]
+        [Precision(13, 3)]
         public decimal PODeliveryQty { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
