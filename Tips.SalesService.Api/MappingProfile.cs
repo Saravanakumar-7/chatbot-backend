@@ -37,11 +37,13 @@ namespace Tips.SalesService.Api
             CreateMap<Rfq, RfqNumberListDto>().ReverseMap();
 
 
+
             CreateMap<RfqCustomGroup, RfqCustomGroupDto>().ReverseMap();
             CreateMap<RfqCustomGroup, RfqCustomGroupPostDto>().ReverseMap();
             CreateMap<RfqCustomGroup, RfqCustomGroupUpdateDto>().ReverseMap();
+            CreateMap<RfqCustomGroup, ListOfCustomGroupDto>().ReverseMap();
 
-             
+
             CreateMap<SourcingVendor, SourcingVendorDto>().ReverseMap();
             CreateMap<SourcingVendor, SourcingVendorPostDto>().ReverseMap();
             CreateMap<SourcingVendor, SourcingVendorUpdateDto>().ReverseMap();
@@ -62,10 +64,14 @@ namespace Tips.SalesService.Api
             CreateMap<RfqEngg, RfqEnggDto>().ReverseMap();
             CreateMap<RfqEngg, RfqEnggDtoPost>().ReverseMap();
             CreateMap<RfqEngg, RfqEnggDtoUpdate>().ReverseMap();
+            CreateMap<RfqEngg, RfqCustomerSupportPostDto>().ReverseMap();
+
 
             CreateMap<RfqEnggItem, RfqEnggItemDto>().ReverseMap();
             CreateMap<RfqEnggItem, RfqEnggItemDtoPost>().ReverseMap();
             CreateMap<RfqEnggItem, RfqEnggItemDtoUpdate>().ReverseMap();
+            CreateMap<RfqEnggItem, RfqCustomerSupportItemPostDto>().ReverseMap();
+
 
             CreateMap<RfqEnggRiskIdentification, RfqEnggRiskIdentificationDto>().ReverseMap();
             CreateMap<RfqEnggRiskIdentification, RfqEnggRiskIdentificationDtoPost>().ReverseMap();
@@ -258,6 +264,8 @@ namespace Tips.SalesService.Api
             CreateMap<ItemPriceList, ItemPriceListDto>().ReverseMap();
             CreateMap<ItemPriceList, ItemPriceListPostDto>().ReverseMap();
             CreateMap<ItemPriceList, ItemPriceListUpdateDto>().ReverseMap();
+            CreateMap<ItemPriceList, ReleaseLpDtoPost>().ReverseMap();
+
 
 
         }

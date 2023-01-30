@@ -8,6 +8,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerId { get; set; }
+        public string? generalDiscountType { get; set; }
         public string? QuoteRef { get; set; }
 
         [Precision(18, 3)]
@@ -52,6 +53,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? TotalAmount { get; set; }
+        public string? generalDiscountType { get; set; }
         public bool? IsTheseRequiredToBePrintedInQuote { get; set; }
 
         [Precision(18, 3)]
@@ -83,6 +85,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? TotalAmount { get; set; }
+        public string? generalDiscountType { get; set; }
         public bool? IsTheseRequiredToBePrintedInQuote { get; set; }
 
         [Precision(18, 3)]
@@ -105,5 +108,42 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public List<QuoteRFQNotesUpdateDto>? QuoteRFQNotesUpdateDtos { get; set; }
         public List<QuoteOtherTermsUpdateDto>? QuoteOtherTermsUpdateDtos { get; set; }
         public List<QuoteSpecialTermsUpdateDto>? QuoteSpecialTermsUpdateDtos { get; set; }
+    }
+    public class CsItemDetailsForQuoteDto
+    {
+        public string? RFQNumber { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerId { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
+        public string? PriceListName { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? Qty { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? UnitPrice { get; set; } 
+        public decimal? LeastCostPlus { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? LeastCostminus { get; set; }
+
+
+        [Precision(18, 3)]
+        public decimal? DiscountPlus { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? DiscountMinus { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Markup { get; set; }
+
+        public string? CustomFields { get; set; }
+
+        public DateTime? ValidThrough { get; set; }
+        public bool? IsDiscountApplicable { get; set; }
+        public DateTime? CreatedOn { get; set; }
+
+
     }
 }

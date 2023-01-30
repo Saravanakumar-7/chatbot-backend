@@ -206,9 +206,9 @@ namespace Tips.Master.Api.Controllers
 
         // PUT api/<CustomerInfoController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateLead(int id, [FromBody] LeadDto leadUpdateDto)
+        public async Task<IActionResult> UpdateLead(int id, [FromBody] LeadDtoUpdate leadUpdateDto)
         {
-            ServiceResponse<LeadDto> serviceResponse = new ServiceResponse<LeadDto>();
+            ServiceResponse<LeadDtoUpdate> serviceResponse = new ServiceResponse<LeadDtoUpdate>();
 
             try
             {

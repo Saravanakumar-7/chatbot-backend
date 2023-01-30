@@ -20,7 +20,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string RfqNumber { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public string? CustomerId { get; set; }
-
+        public bool? isSourcingAvailable { get; set; }  
         public bool? IsSourcing { get; set; }
         public bool? IsLpCosting { get; set; }
 

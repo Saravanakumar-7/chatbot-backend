@@ -16,6 +16,7 @@ namespace Tips.SalesService.Api.Contracts
     {
         Task<PagedList<RfqCustomerSupport>> GetAllRfqCustomerSupport(PagingParameter pagingParameter);
         Task<RfqCustomerSupport> GetRfqCustomerSupportById(int id);
+        Task<RfqCustomerSupport> GetRfqCustomerSupportDetailsById(int id);        
         Task<int?> CreateRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport);
         Task<string> UpdateRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport);
         Task<string> DeleteRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport);

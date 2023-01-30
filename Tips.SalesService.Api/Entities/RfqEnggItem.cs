@@ -15,7 +15,7 @@ namespace Tips.SalesService.Api.Entities
         public string? CustomerItemNumber { get; set; }
         public string Description { get; set; }
         public bool ReleaseStatus { get; set; } = false;
-        public int? Quantity { get;set;}
+        public int? Qty { get;set;}
         public string? CostingBomVersionNo { get;}
         public string? ItemNumber { get; set; }       
         public int RfqEnggId { get; set; }

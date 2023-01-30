@@ -64,8 +64,15 @@ namespace Tips.SalesService.Api.Repository
                            .FirstOrDefaultAsync();
 
             return getRfqCSById; 
-        }          
+        }
 
+        public async Task<RfqCustomerSupport> GetRfqCustomerSupportDetailsById(int id)
+        {
+            var getRfqCSById = await _tipsSalesServiceDbContext.RfqCustomerSupports.Where(x => x.Id == id) 
+                           .FirstOrDefaultAsync();
+
+            return getRfqCSById;
+        }
 
         public async Task<RfqCustomerSupport> GetRfqCustomerSupportByRfqNumber(string RfqNumber)
         {
@@ -148,6 +155,12 @@ namespace Tips.SalesService.Api.Repository
             var getRfqCSItemId = await _tipsSalesServiceDbContext.RfqCustomerSupportItems.Where(x => x.Id == id).FirstOrDefaultAsync();
             return getRfqCSItemId;
         }
+        //new
+        public async Task<IEnumerable<RfqCustomerSupportItems>> GetRfqCustomerSupportItemByRfqNumber(string rfqNumber)
+        {
+            var getRfqCSItemRfqnumber = await _tipsSalesServiceDbContext.RfqCustomerSupportItems.Where(x => x.RfqNumber == rfqNumber).ToListAsync();
+            return getRfqCSItemRfqnumber;
+        }
 
         public Task<string> UpdateRfqCustomerSupportItem(RfqCustomerSupportItems rfqCustomerSupportItems)
         {
@@ -171,6 +184,8 @@ namespace Tips.SalesService.Api.Repository
                         .FirstOrDefaultAsync();
             return SourcingByRfqNumber;
         }
+         
+
         public async Task<Rfq> RfqDetailsByRfqNumbers(string rfqNumber)
         {
             var rfqDetailsByRfqNumber = await _tipsSalesServiceDbContext.Rfqs
@@ -194,8 +209,9 @@ namespace Tips.SalesService.Api.Repository
         }
         public async Task<int?> CreateRfq(Rfq rfq)
         {
+            var date = DateTime.Now;
             rfq.CreatedBy = "Admin";
-            rfq.CreatedOn = DateTime.Now;
+            rfq.CreatedOn = date.Date;
             var version = 1.0;
             rfq.RevisionNumber = Convert.ToDecimal(version);
             //Guid rfqNumber = Guid.NewGuid();
@@ -510,8 +526,20 @@ namespace Tips.SalesService.Api.Repository
                 var result = await Create(rfqCustomGroup);
                 return result.Id;
             }
+        public async Task<IEnumerable<ListOfCustomGroupDto>> GetAllCustomGroupList()
+        {
+            IEnumerable<ListOfCustomGroupDto> getAllCustomGroupList = await _tipsSalesServiceDbContext.RfqCustomGroups
+                                .Select(c => new ListOfCustomGroupDto()
+                                {
+                                    Id = c.Id,
+                                    CustomGroupName = c.CustomGroupName,
 
-            public async Task<string> DeleteRfqCustomGroup(RfqCustomGroup rfqCustomGroup)
+                                })
+                              .ToListAsync();
+
+            return getAllCustomGroupList;
+        }
+        public async Task<string> DeleteRfqCustomGroup(RfqCustomGroup rfqCustomGroup)
             {
                 Delete(rfqCustomGroup);
                 string result = $"RfqCustomGroup details of {rfqCustomGroup.Id} is deleted successfully!";
@@ -567,8 +595,14 @@ namespace Tips.SalesService.Api.Repository
                 string result = $"RfqCustomField details of {rfqCustomField.Id} is deleted successfully!";
                 return result;
             }
+        public async Task<IEnumerable<RfqCustomField>> GetRfqCustomFieldByCustomGroup(string CustomGroup)
+        {
+            var getRfqCustomFieldByCustomGroupp = await FindByCondition(x => x.CustomGroupName == CustomGroup).ToListAsync();
 
-            public async Task<PagedList<RfqCustomField>> GetAllRfqCustomField(PagingParameter pagingParameter)
+            return getRfqCustomFieldByCustomGroupp;
+        }
+
+        public async Task<PagedList<RfqCustomField>> GetAllRfqCustomField(PagingParameter pagingParameter)
             {
                 var getAllRfqCustomField = PagedList<RfqCustomField>.ToPagedList(FindAll()
                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);

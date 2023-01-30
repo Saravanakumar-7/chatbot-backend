@@ -752,7 +752,7 @@ namespace Tips.SalesService.Api.Controllers
 
         }
 
-
+        //aravind
         //release active API
         [HttpPut]
         public async Task<IActionResult> UpdateRfqCustomerSupportRelease([FromBody] List<int> itemIds)
@@ -771,6 +771,31 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
+
+                //if (getIsSourcingAvailable.isSourcingAvailable == false)
+                //{
+
+                //    var rfqEnggDetail = _mapper.Map<RfqEngg>(rfqCustomerSupportDto);
+
+                //    var rfqDetails = rfqCustomerSupportDto.RfqCustomerSupportItems;
+
+
+                //    var rfqEnggItemList = new List<RfqEnggItem>();
+                //    for (int i = 0; i < rfqDetails.Count; i++)
+                //    {
+                //        RfqEnggItem rfqenggItemDto = _mapper.Map<RfqEnggItem>(rfqDetails[i]);
+                //        rfqenggItemDto.CustomerItemNumber = rfqCustomerSupportDto.CustomerRfqNumber;
+                //        rfqenggItemDto.ReleaseStatus = true;
+                //        rfqEnggItemList.Add(rfqenggItemDto);
+                //    }
+                //    rfqEnggDetail.RfqEnggItems = rfqEnggItemList;
+
+
+                //    _rfqenggRepository.CreateRfqEngg(rfqEnggDetail);
+                //    _rfqenggRepository.SaveAsync();
+                //    //test
+                //} 
+
                 foreach (var id in itemIds)
                 {
                     if (id == null)
@@ -788,6 +813,7 @@ namespace Tips.SalesService.Api.Controllers
                     string result = await _itemRepository.ActivateRfqCustomerSupportItemById(getRfqCSItemById);
                     _logger.LogInfo(result);
                     _repository.SaveAsync();
+                     
                 }
 
                 serviceResponse.Data = null;
@@ -862,7 +888,7 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-
+        //aravind
         [HttpPost]
         public async Task<IActionResult> CreateRfqCustomerSupport([FromBody] RfqCustomerSupportPostDto rfqCustomerSupportDto)
         {
@@ -907,6 +933,33 @@ namespace Tips.SalesService.Api.Controllers
                 _repository.CreateRfqCustomerSupport(createRfqCS);
 
                 _repository.SaveAsync();
+                var rfqNumber = createRfqCS.RfqNumber;
+                var getIsSourcingAvailable = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
+
+                //if (getIsSourcingAvailable.isSourcingAvailable == false)
+                //{
+
+                //    var rfqEnggDetail = _mapper.Map<RfqEngg>(rfqCustomerSupportDto);
+
+                //    var rfqDetails = rfqCustomerSupportDto.RfqCustomerSupportItems;
+
+
+                //    var rfqEnggItemList = new List<RfqEnggItem>();
+                //    for (int i = 0; i < rfqDetails.Count; i++)
+                //    {
+                //        RfqEnggItem rfqenggItemDto = _mapper.Map<RfqEnggItem>(rfqDetails[i]);
+                //        rfqenggItemDto.CustomerItemNumber = rfqCustomerSupportDto.CustomerRfqNumber;
+                //        rfqenggItemDto.ReleaseStatus = true;
+                //        rfqEnggItemList.Add(rfqenggItemDto);
+                //    }
+                //    rfqEnggDetail.RfqEnggItems = rfqEnggItemList;
+
+
+                //    _rfqenggRepository.CreateRfqEngg(rfqEnggDetail);
+                //    _rfqenggRepository.SaveAsync();
+                //    //test
+                //}
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
@@ -977,8 +1030,10 @@ namespace Tips.SalesService.Api.Controllers
                     createRfq.RfqNumber = days + months + years + "R" + (e);
                 }
                 await _rfqRepository.CreateRfq(createRfq);
+                var rfqDetails = _mapper.Map<RfqDto>(createRfq);
+
                 _rfqRepository.SaveAsync();
-                serviceResponse.Data = null;
+                serviceResponse.Data = rfqDetails;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -1567,6 +1622,9 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+
+
+
         [HttpPost]
         public async Task<IActionResult> BulkRelease([FromBody] List<ReleaseLpDtoPost> releaseLpDtoPosts)
         {
@@ -1806,10 +1864,34 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllCustomGroupList()
+        {
+            ServiceResponse<IEnumerable<ListOfCustomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfCustomGroupDto>>();
+            try
+            {
+                var getAllCustomGroupList = await _rfqCustomGroupRepository.GetAllCustomGroupList();
+                var result = _mapper.Map<IEnumerable<ListOfCustomGroupDto>>(getAllCustomGroupList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all CustomGroupList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
 
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllCustomGroupList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         // POST: api/<RfqCustomGroupController>
         [HttpPost]
-        public IActionResult CreateRfqCustomGroup([FromBody] RfqCustomGroupPostDto rfqCustomGroupPostDto)
+        public IActionResult CreateRfqCustomGroup([FromBody] List<RfqCustomGroupPostDto> rfqCustomGroupPostDto)
         {
             ServiceResponse<RfqCustomGroupPostDto> serviceResponse = new ServiceResponse<RfqCustomGroupPostDto>();
 
@@ -1833,8 +1915,15 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogError("Invalid RfqCustomGroup object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var cteateRfqCustomGroup = _mapper.Map<RfqCustomGroup>(rfqCustomGroupPostDto);
-                _rfqCustomGroupRepository.CreateRfqCustomGroup(cteateRfqCustomGroup);
+                var cteateRfqCustomGroup = _mapper.Map<List<RfqCustomGroup>>(rfqCustomGroupPostDto);
+
+                foreach (var customGroupdetails in cteateRfqCustomGroup)
+                {
+
+                    _rfqCustomGroupRepository.CreateRfqCustomGroup(customGroupdetails);
+
+                }
+
                 _rfqCustomGroupRepository.SaveAsync();
                 serviceResponse.Message = "RfqCustomGroup Successfully Created";
                 serviceResponse.Success = true;
@@ -1851,6 +1940,7 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
 
         // PUT: api/<RfqCustomGroupController>
         [HttpPut("{id}")]
@@ -2025,10 +2115,49 @@ namespace Tips.SalesService.Api.Controllers
                         return StatusCode(500, serviceResponse);
                     }
                 }
+        [HttpGet("{CustomGroup}")]
+        public async Task<IActionResult> GetRfqCustomFieldByCustomGroup(string CustomGroup)
+        {
+            ServiceResponse<IEnumerable<RfqCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqCustomFieldDto>>();
 
-                // POST: api/<RfqCustomFieldController>
+            try
+            {
+                var getCustomFieldList = await _rfqCustomFieldRepository.GetRfqCustomFieldByCustomGroup(CustomGroup);
+                if (getCustomFieldList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CustomFieldList with id: {CustomGroup}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"CustomFieldList with id: {CustomGroup}, hasn't been found.");
+                    return BadRequest(serviceResponse);
+                }
+                else
+                {
+
+                    _logger.LogInfo($"Returned CustomFieldList with id: {CustomGroup}");
+                    var result = _mapper.Map<IEnumerable<RfqCustomFieldDto>>(getCustomFieldList);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned CustomFieldList with id successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetRfqCustomFieldByCustomGroup action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // POST: api/<RfqCustomFieldController>
         [HttpPost]
-        public IActionResult CreateRfqCustomField([FromBody] RfqCustomFieldDtoPost rfqCustomFieldDtoPost)
+        public IActionResult CreateRfqCustomField([FromBody] List<RfqCustomFieldDtoPost> rfqCustomFieldDtoPost)
                 {
                     ServiceResponse<RfqCustomFieldDtoPost> serviceResponse = new ServiceResponse<RfqCustomFieldDtoPost>();
 
@@ -2052,8 +2181,16 @@ namespace Tips.SalesService.Api.Controllers
                             _logger.LogError("Invalid RfqCustomField object sent from client.");
                             return BadRequest(serviceResponse);
                         }
-                        var createRfqCustomField = _mapper.Map<RfqCustomField>(rfqCustomFieldDtoPost);
-                        _rfqCustomFieldRepository.CreateRfqCustomField(createRfqCustomField);
+                        var createRfqCustomField = _mapper.Map<List<RfqCustomField>>(rfqCustomFieldDtoPost);
+
+
+                foreach (var customFielddetails in createRfqCustomField)
+                {
+
+                    _rfqCustomFieldRepository.CreateRfqCustomField(customFielddetails);
+
+                }
+               // _rfqCustomFieldRepository.CreateRfqCustomField(createRfqCustomField);
                         _rfqCustomFieldRepository.SaveAsync();
                         serviceResponse.Message = "RfqCustomField Successfully Created";
                         serviceResponse.Success = true;

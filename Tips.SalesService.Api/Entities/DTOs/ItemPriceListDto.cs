@@ -11,7 +11,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
         public string? UOC { get; set; }
-        public string? LeastCost { get; set; }
+        public decimal? LeastCost { get; set; }
 
         [Precision(18, 3)]
         public decimal? LeastCostPlus { get; set; }
@@ -49,7 +49,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
         public string? UOC { get; set; }
-        public string? LeastCost { get; set; }
+        public decimal? LeastCost { get; set; }
 
         [Precision(18, 3)]
         public decimal? LeastCostPlus { get; set; }
@@ -79,7 +79,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
         public string? UOC { get; set; }
-        public string? LeastCost { get; set; }
+        public decimal? LeastCost { get; set; }
 
         [Precision(18, 3)]
         public decimal? LeastCostPlus { get; set; }
@@ -95,11 +95,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? DiscountMinus { get; set; }
 
         [Precision(18, 3)]
-        public decimal? Markup { get; set; }
-        public string Unit { get; set; }
+        public decimal? Markup { get; set; }      
 
         public string? PriceListName { get; set; }
         public DateTime? ValidThrough { get; set; }
         public bool? IsDiscountApplicable { get; set; }
+
+
     }
 }

@@ -16,6 +16,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string RFQNumber { get; set; }
         public string? CustomerRfqNumber { get; set; }
 
+
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
         public DateTime? RequestReceiveDate { get; set; }
@@ -35,10 +36,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class RfqCustomerSupportPostDto
     { 
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
-        public string? CustomerName { get; set; }
+        public string? CustomerName { get; set; }        
 
         [Required]
-        public string RFQNumber { get; set; }
+        public string RFQNumber { get; set; }     
+
 
         [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
         public string? CustomerRfqNumber { get; set; }
@@ -58,6 +60,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
         public string? CustomerName { get; set; }
+
 
         [Required]
         public string RFQNumber { get; set; }

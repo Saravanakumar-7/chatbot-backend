@@ -42,7 +42,7 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<IEnumerable<BTODeliveryOrder>> GetAllActiveBTODeliveryOrders()
         {
-            var getAllActiveBTODetails = await FindAll().ToListAsync();
+            var getAllActiveBTODetails = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
             return getAllActiveBTODetails;
         }
 
@@ -51,7 +51,7 @@ namespace Tips.Warehouse.Api.Repository
             var getAllBTODetails = PagedList<BTODeliveryOrder>.ToPagedList(FindAll()
                                  .Include(t => t.BTODeliveryOrderItems)
                                  .ThenInclude(s => s.BTOSerialNumbers)
-                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+                .OrderByDescending(x=>x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return getAllBTODetails;
         }
@@ -96,5 +96,24 @@ namespace Tips.Warehouse.Api.Repository
 
        
     }
+    public class BTODeliveryOrderItemRepository : RepositoryBase<BTODeliveryOrderItems>, IBTODeliveryOrderItemsRepository
+    {
+        private TipsWarehouseDbContext _tipsWarehouseDbContexts;
+        public BTODeliveryOrderItemRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        {
+            _tipsWarehouseDbContexts = repositoryContext;
         }
+        public async Task<BTODeliveryOrderItems> UpdateBtoDelieveryOrderBalanceQty(string itemNumber, string BtoDeliveryNumber, string Qty)
+        {
+            var getSalesOrderDetailsBySOandItemNo = await _tipsWarehouseDbContexts.bTODeliveryOrderItems
+                    .Where(x => x.FGItemNumber == itemNumber && x.BTONumber == BtoDeliveryNumber)
+                          .FirstOrDefaultAsync();
+            decimal Quantity = Convert.ToDecimal(Qty);
+            getSalesOrderDetailsBySOandItemNo.BalanceDoQty = getSalesOrderDetailsBySOandItemNo.DispatchQty - Quantity;
+            getSalesOrderDetailsBySOandItemNo.InvoicedQty = Quantity;
+            Update(getSalesOrderDetailsBySOandItemNo);
+            return getSalesOrderDetailsBySOandItemNo;
+        } 
+    }
+ }
  

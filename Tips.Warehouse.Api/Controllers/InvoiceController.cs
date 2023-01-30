@@ -18,15 +18,17 @@ namespace Tips.Warehouse.Api.Controllers
     public class InvoiceController : ControllerBase
     {
         private IInvoiceRepository _invoiceRepository;
+        private IBTODeliveryOrderItemsRepository _bTODeliveryOrderItemsRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
 
 
-        public InvoiceController(IInvoiceRepository invoiceRepository, ILoggerManager logger, IMapper mapper)
+        public InvoiceController(IInvoiceRepository invoiceRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _invoiceRepository = invoiceRepository;
             _logger = logger;
             _mapper = mapper;
+            _bTODeliveryOrderItemsRepository = bTODeliveryOrderItemsRepository;
         }
 
         [HttpGet]
@@ -145,6 +147,9 @@ namespace Tips.Warehouse.Api.Controllers
                     {
                         InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
                         invoiceChildItemsDtoList.Add(invoiceChildItem);
+                        string qty = Convert.ToString(invoiceChildItem.Qty);
+                        var getAllInvoicesList = await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderBalanceQty(invoiceChildItem.FGItemNumber, invoiceChildItem.DONumber, qty);
+                        _bTODeliveryOrderItemsRepository.SaveAsync();
                     }
                 }
 

@@ -84,8 +84,7 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<MaterialTransactionNoteItem> MaterialTransactionNoteItems { get; set; }
         public DbSet<LocationTransfer> locationTransfers { get; set; }
         public DbSet<ReleaseLp> ReleaseLps { get; set; }
-
-        public DbSet<ItemPriceList> ItemPriceLists { get; set; }
+ 
 
         public DbSet<ForeCastReleaseLp> ForeCastReleaseLps { get; set; }
          
