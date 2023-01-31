@@ -266,6 +266,9 @@ namespace Tips.SalesService.Api
             CreateMap<ItemPriceList, ItemPriceListUpdateDto>().ReverseMap();
             CreateMap<ItemPriceList, ReleaseLpDtoPost>().ReverseMap();
 
+            CreateMap<SalesOrderItems, SalesOrderDispatchQtyDto>().ReverseMap();
+
+
 
 
         }

@@ -107,4 +107,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SalesOrderNumber { get; set; }        
 
     }
-}
+
+   
+    }

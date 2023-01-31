@@ -141,4 +141,11 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal? UTGST { get; set; }
         public decimal? IGST { get; set; }
     }
+    public class SalesOrderDispatchQtyDto
+    {
+        public string FGItemNumber { get; set; }
+        public int SalesOrderId { get; set; }
+        public decimal DispatchQty { get; set; }
+
+    }
 }
