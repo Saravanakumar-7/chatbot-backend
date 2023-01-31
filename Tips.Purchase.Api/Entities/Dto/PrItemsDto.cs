@@ -10,63 +10,43 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? MftrItemNumber { get; set; }
         public string? Description { get; set; }
         public string? UOM { get; set; }
+
+        [Precision(13, 3)]
         public decimal? Qty { get; set; }
         public string? SpecialInstruction { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
- 
-        public List<PrAddProjectDto> PrAddprojectsDtoList { get; set; }
-        public List<PrAddDeliveryScheduleDto> PrAddDeliverySchedulesDtoList { get; set; }
+
+        public List<PrAddProjectDto>? PrAddprojectsDtoList { get; set; }
+        public List<PrAddDeliveryScheduleDto>? PrAddDeliverySchedulesDtoList { get; set; }
     }
 
-    public class PrItemsDtoPost
+    public class PrItemsPostDto
     {
         public string? ItemNumber { get; set; }
-
         public string? MftrItemNumber { get; set; }
-
         public string? Description { get; set; }
-
         public string? UOM { get; set; }
-        public decimal? Qty { get; set; }
 
+        [Precision(13, 3)]
+        public decimal? Qty { get; set; }
         public string? SpecialInstruction { get; set; }
 
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-
-        public List<PrAddProjectDtoPost> PrAddprojectsDtoPostList { get; set; }
-        public List<PrAddDeliveryScheduleDtoPost> PrAddDeliverySchedulesDtoPostList { get; set; }
+        public List<PrAddProjectPostDto>? PrAddprojectsDtoPostList { get; set; }
+        public List<PrAddDeliverySchedulePostDto>? PrAddDeliverySchedulesDtoPostList { get; set; }
     }
 
-    public class PrItemsDtoUpdate
+    public class PrItemsUpdateDto
     {
-
         public string? ItemNumber { get; set; }
-
         public string? MftrItemNumber { get; set; }
-
         public string? Description { get; set; }
-
         public string? UOM { get; set; }
-      
-        public decimal? Qty { get; set; }
 
+        [Precision(13, 3)]
+        public decimal? Qty { get; set; }
         public string? SpecialInstruction { get; set; }
 
-        public string Unit { get; set; }
-
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-
-        public List<PrAddProjectDtoUpdate> PrAddprojectsDtoUpdateList { get; set; }
-        public List<PrAddDeliveryScheduleDtoUpdate> PrAddDeliverySchedulesDtoUpdateList { get; set; }
+        public List<PrAddProjectDtoUpdate>? PrAddprojectsDtoUpdateList { get; set; }
+        public List<PrAddDeliveryScheduleUpdateDto>? PrAddDeliverySchedulesDtoUpdateList { get; set; }
     }
 
 }

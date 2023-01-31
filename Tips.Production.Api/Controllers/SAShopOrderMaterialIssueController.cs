@@ -28,25 +28,25 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllSAShopOrderMaterialIssue([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllSAShopOrderMaterialIssues([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<SAShopOrderMaterialIssueDto>> serviceResponse = new ServiceResponse<IEnumerable<SAShopOrderMaterialIssueDto>>();
             try
             {
-                var getAllSAShopOrderMaterialIssues = await _sAShopOrderMaterialIssueRepository.GetAllSAShopOrderMaterialIssue(pagingParameter);
+                var sAShopOrderMaterialIssueDetails = await _sAShopOrderMaterialIssueRepository.GetAllSAShopOrderMaterialIssues(pagingParameter);
                 var metadata = new
                 {
-                    getAllSAShopOrderMaterialIssues.TotalCount,
-                    getAllSAShopOrderMaterialIssues.PageSize,
-                    getAllSAShopOrderMaterialIssues.CurrentPage,
-                    getAllSAShopOrderMaterialIssues.HasNext,
-                    getAllSAShopOrderMaterialIssues.HasPreviuos
+                    sAShopOrderMaterialIssueDetails.TotalCount,
+                    sAShopOrderMaterialIssueDetails.PageSize,
+                    sAShopOrderMaterialIssueDetails.CurrentPage,
+                    sAShopOrderMaterialIssueDetails.HasNext,
+                    sAShopOrderMaterialIssueDetails.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all SAShopOrderMaterialIssues");
-                var result = _mapper.Map<IEnumerable<SAShopOrderMaterialIssueDto>>(getAllSAShopOrderMaterialIssues);
+                var result = _mapper.Map<IEnumerable<SAShopOrderMaterialIssueDto>>(sAShopOrderMaterialIssueDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all SAShopOrderMaterialIssues";
                 serviceResponse.Success = true;
@@ -72,25 +72,25 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getSAShopOrderMaterialIssue = await _sAShopOrderMaterialIssueRepository.GetSAShopOrderMaterialIssueById(id);
+                var sAShopOrderMaterialIssueDetailById = await _sAShopOrderMaterialIssueRepository.GetSAShopOrderMaterialIssueById(id);
 
-                if (getSAShopOrderMaterialIssue == null)
+                if (sAShopOrderMaterialIssueDetailById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"SAShopOrderMaterialIssue with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"SAShopOrderMaterialIssue with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"SAShopOrderMaterialIssue with id hasn't been found.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned SAShopOrderMaterialIssue with id: {id}");
-                    SAShopOrderMaterialIssueDto sAShopOrderMaterialIssueDtos = _mapper.Map<SAShopOrderMaterialIssueDto>(getSAShopOrderMaterialIssue);
+                    SAShopOrderMaterialIssueDto sAShopOrderMaterialIssueDtos = _mapper.Map<SAShopOrderMaterialIssueDto>(sAShopOrderMaterialIssueDetailById);
                     List<SAShopOrderMaterialIssueGeneralDto> sAShopOrderMaterialIssueGeneralDtoList = new List<SAShopOrderMaterialIssueGeneralDto>();
-                    if (getSAShopOrderMaterialIssue.SAShopOrderMaterialIssueGeneralList != null)
+                    if (sAShopOrderMaterialIssueDetailById.SAShopOrderMaterialIssueGeneralList != null)
                     {
-                        foreach (var itemDetails in getSAShopOrderMaterialIssue.SAShopOrderMaterialIssueGeneralList)
+                        foreach (var itemDetails in sAShopOrderMaterialIssueDetailById.SAShopOrderMaterialIssueGeneralList)
                         {
                             SAShopOrderMaterialIssueGeneralDto sAShopOrderMaterialIssueGeneralDtos = _mapper.Map<SAShopOrderMaterialIssueGeneralDto>(itemDetails);
                             sAShopOrderMaterialIssueGeneralDtoList.Add(sAShopOrderMaterialIssueGeneralDtos);
@@ -119,7 +119,7 @@ namespace Tips.Production.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateSAShopOrderMaterialIssue([FromBody] SAShopOrderMaterialIssuePostDto sAShopOrderMaterialIssuePostDto)
         {
-            ServiceResponse<SAShopOrderMaterialIssueDto> serviceResponse = new ServiceResponse<SAShopOrderMaterialIssueDto>();
+            ServiceResponse<SAShopOrderMaterialIssuePostDto> serviceResponse = new ServiceResponse<SAShopOrderMaterialIssuePostDto>();
 
             try
             {
@@ -127,7 +127,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError("SAShopOrderMaterialIssueDetails object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "SAShopOrderMaterialIssueDetails object sent from client is null.";
+                    serviceResponse.Message = "SAShopOrderMaterialIssueDetails object is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -136,7 +136,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError("Invalid SAShopOrderMaterialIssueDetails object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid SAShopOrderMaterialIssueDetails object sent from client.";
+                    serviceResponse.Message = "Invalid SAShopOrderMaterialIssueDetails object.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -187,24 +187,24 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError("Invalid Update SAShopOrderMaterialIssue object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Update SAShopOrderMaterialIssue object sent from client.";
+                    serviceResponse.Message = "Invalid Update SAShopOrderMaterialIssue object.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var updateSAShopOrderMaterialIssue = await _sAShopOrderMaterialIssueRepository.GetSAShopOrderMaterialIssueById(id);
-                if (updateSAShopOrderMaterialIssue is null)
+                var sAShopOrderMaterialIssueDetailById = await _sAShopOrderMaterialIssueRepository.GetSAShopOrderMaterialIssueById(id);
+                if (sAShopOrderMaterialIssueDetailById is null)
                 {
                     _logger.LogError($"Update SAShopOrderMaterialIssue with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update SAShopOrderMaterialIssue with id hasn't been found in db.";
+                    serviceResponse.Message = $"Update SAShopOrderMaterialIssue with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
                 var sAShopOrderMaterialIssueGeneral = _mapper.Map<IEnumerable<SAShopOrderMaterialIssueGeneral>>(sAShopOrderMaterialIssueUpdateDto.SAShopOrderMaterialIssueGeneralUpdateDtos);
-                var sAShopOrderMaterialIssue = _mapper.Map(sAShopOrderMaterialIssueUpdateDto, updateSAShopOrderMaterialIssue);
+                var sAShopOrderMaterialIssue = _mapper.Map(sAShopOrderMaterialIssueUpdateDto, sAShopOrderMaterialIssueDetailById);
                 sAShopOrderMaterialIssue.SAShopOrderMaterialIssueGeneralList = sAShopOrderMaterialIssueGeneral.ToList();
                 string result = await _sAShopOrderMaterialIssueRepository.UpdateSAShopOrderMaterialIssue(sAShopOrderMaterialIssue);
                 _logger.LogInfo(result);
@@ -233,17 +233,17 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var deleteSAShopOrderMaterialIssue = await _sAShopOrderMaterialIssueRepository.GetSAShopOrderMaterialIssueById(id);
-                if (deleteSAShopOrderMaterialIssue == null)
+                var sAShopOrderMaterialIssueDetailById = await _sAShopOrderMaterialIssueRepository.GetSAShopOrderMaterialIssueById(id);
+                if (sAShopOrderMaterialIssueDetailById == null)
                 {
                     _logger.LogError($"Delete SAShopOrderMaterialIssue with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Delete SAShopOrderMaterialIssue with id hasn't been found in db.";
+                    serviceResponse.Message = $"Delete SAShopOrderMaterialIssue with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _sAShopOrderMaterialIssueRepository.DeleteSAShopOrderMaterialIssue(deleteSAShopOrderMaterialIssue);
+                string result = await _sAShopOrderMaterialIssueRepository.DeleteSAShopOrderMaterialIssue(sAShopOrderMaterialIssueDetailById);
                 _logger.LogInfo(result);
                 _sAShopOrderMaterialIssueRepository.SaveAsync();
                 serviceResponse.Data = null;

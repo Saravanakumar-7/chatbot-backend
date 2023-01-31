@@ -13,17 +13,15 @@ namespace Tips.Production.Api.Entities
         }
 
         public DbSet<ShopOrder> ShopOrders { get; set; }
-
         public DbSet<ShopOrderItem> ShopOrderItems { get; set; }
-
-        public DbSet<ShopOrderConfirmation> shopOrderConfirmations { get; set; }
-
-        public DbSet<SAShopOrder> SAshopOrders { get; set; }
-
+        public DbSet<ShopOrderConfirmation> ShopOrderConfirmations { get; set; }
+        public DbSet<SAShopOrder> SAShopOrders { get; set; }
         public DbSet<SAShopOrderMaterialIssue> SAShopOrderMaterialIssues { get; set; }
-
+        public DbSet<SAShopOrderMaterialIssueGeneral> SAShopOrderMaterialIssueGenerals { get; set; }
         public DbSet<FGShopOrderMaterialIssue> FGShopOrderMaterialIssues { get; set; }
+        public DbSet<FGShopOrderMaterialIssueGeneral> FGShopOrderMaterialIssueGenerals { get; set; }
         public DbSet<MaterialReturnNote> MaterialReturnNotes { get; set; }
+        public DbSet<MaterialReturnNoteItem> MaterialReturnNoteItems { get; set; }
         public DbSet<MaterialIssue> MaterialIssue { get; set; }
 
     }

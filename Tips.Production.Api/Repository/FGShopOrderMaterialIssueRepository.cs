@@ -33,22 +33,22 @@ namespace Tips.Production.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<FGShopOrderMaterialIssue>> GetAllFGShopOrderMaterialIssue(PagingParameter pagingParameter)
+        public async Task<PagedList<FGShopOrderMaterialIssue>> GetAllFGShopOrderMaterialIssues(PagingParameter pagingParameter)
         {
-            var getAllFGShopOrderMaterialIssueDetails = PagedList<FGShopOrderMaterialIssue>.ToPagedList(FindAll()
+            var fGShopOrderMaterialIssueDetails = PagedList<FGShopOrderMaterialIssue>.ToPagedList(FindAll()
                                .Include(t => t.FGShopOrderMaterialIssueGeneralList)
-              .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+              .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return getAllFGShopOrderMaterialIssueDetails;
+            return fGShopOrderMaterialIssueDetails;
         }
 
         public async Task<FGShopOrderMaterialIssue> GetFGShopOrderMaterialIssueById(int id)
         {
-            var getFGShopOrderMaterialIssue = await _tipsProductionDbContext.FGShopOrderMaterialIssues.Where(x => x.Id == id)
+            var fGShopOrderMaterialIssueDetailById = await _tipsProductionDbContext.FGShopOrderMaterialIssues.Where(x => x.Id == id)
                                 .Include(t => t.FGShopOrderMaterialIssueGeneralList)
                                 .FirstOrDefaultAsync();
 
-            return getFGShopOrderMaterialIssue;
+            return fGShopOrderMaterialIssueDetailById;
         }
 
         public async Task<string> UpdateFGShopOrderMaterialIssue(FGShopOrderMaterialIssue fGShopOrderMaterialIssue)

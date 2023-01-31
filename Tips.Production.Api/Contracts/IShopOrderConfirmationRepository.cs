@@ -3,7 +3,7 @@ namespace Tips.Production.Api.Contracts
 {
     public interface IShopOrderConfirmationRepository : IRepositoryBase<ShopOrderConfirmation>
     {
-        Task<IEnumerable<ShopOrderConfirmation>> GetAllShopOrderConfirmation();
+        Task<IEnumerable<ShopOrderConfirmation>> GetAllShopOrderConfirmations();
         Task<ShopOrderConfirmation> GetShopOrderConfirmationById(int id);
         Task<long> CreateShopOrderConfirmation(ShopOrderConfirmation shopOrderConfirmation);
         Task<string> UpdateShopOrderConfirmation(ShopOrderConfirmation shopOrderConfirmation);

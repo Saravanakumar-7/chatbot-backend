@@ -8,92 +8,70 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         [Required]
         public int Id { get; set; }
-
         [Required]
         [MaxLength(100)]
         public string? ShopOrderNumber { get; set; }
-
         [Required]
-        public string Itemtype { get; set; }
-
+        public string? ItemType { get; set; }
         [Required]
-        [Precision(13, 2)]
-        public string? ShopOrderReleaseQty { get; set; }
-
+        [Precision(13, 3)]
+        public decimal? ShopOrderReleaseQty { get; set; }
         [Required]
-        [Precision(13, 2)]
-        public string? WipConfirmedQty { get; set; }
-
+        [Precision(13, 3)]
+        public decimal? WipConfirmedQty { get; set; }
+        [DefaultValue(false)]
+        public bool IsOQCDone { get; set; }
+        [DefaultValue(false)]
+        public bool IsDeleted { get; set; }
+        public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public string? Unit { get; set; }
-
-        [DefaultValue(false)]
-        public bool IsOQCDone { get; set; }
-
-
-        [DefaultValue(false)]
-        public bool IsDeleted { get; set; }
 
     }
 
     public class ShopOrderConfirmationPostDto
     {
-
         [Required]
         [MaxLength(100)]
         public string? ShopOrderNumber { get; set; }
-
         [Required]
-        public string Itemtype { get; set; }
-
+        public string? ItemType { get; set; }
         [Required]
-        [Precision(13, 2)]
-        public string? ShopOrderReleaseQty { get; set; }
-
+        [Precision(13, 3)]
+        public decimal? ShopOrderReleaseQty { get; set; }
         [Required]
-        [Precision(13, 2)]
-        public string? WipConfirmedQty { get; set; }
-
+        [Precision(13, 3)]
+        public decimal? WipConfirmedQty { get; set; }
         [DefaultValue(false)]
         public bool IsOQCDone { get; set; }
-
-
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
-
     }
 
     public class ShopOrderConfirmationUpdateDto
     {
         [Required]
         public int Id { get; set; }
-
         [Required]
         [MaxLength(100)]
         public string? ShopOrderNumber { get; set; }
-
         [Required]
-        public string Itemtype { get; set; }
-
+        public string? ItemType { get; set; }
         [Required]
-        [Precision(13, 2)]
-        public string? ShopOrderReleaseQty { get; set; }
-
+        [Precision(13, 3)]
+        public decimal? ShopOrderReleaseQty { get; set; }
         [Required]
-        [Precision(13, 2)]
-        public string? WipConfirmedQty { get; set; }
-
-        public string? Unit { get; set; }
-
+        [Precision(13, 3)]
+        public decimal? WipConfirmedQty { get; set; }
         [DefaultValue(false)]
         public bool IsOQCDone { get; set; }
-
-
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
+        public string? Unit { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
 
     }
 }

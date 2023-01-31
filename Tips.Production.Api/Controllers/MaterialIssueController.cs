@@ -31,27 +31,27 @@ namespace Tips.Production.Api.Controllers
 
         // GET: api/<MaterialIssueController>
         [HttpGet]
-        public async Task<IActionResult> GetAllMaterialIssue([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllMaterialIssues([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<MaterialIssueDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueDto>>();
             try
             {
-                var getAllMaterialIssue = await _materialIssueRepository.GetAllMaterialIssue(pagingParameter);
+                var materialIssueDetails = await _materialIssueRepository.GetAllMaterialIssues(pagingParameter);
                 var metadata = new
                 {
-                    getAllMaterialIssue.TotalCount,
-                    getAllMaterialIssue.PageSize,
-                    getAllMaterialIssue.CurrentPage,
-                    getAllMaterialIssue.HasNext,
-                    getAllMaterialIssue.HasPreviuos
+                    materialIssueDetails.TotalCount,
+                    materialIssueDetails.PageSize,
+                    materialIssueDetails.CurrentPage,
+                    materialIssueDetails.HasNext,
+                    materialIssueDetails.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all MaterialIssues");
-                var result = _mapper.Map<IEnumerable<MaterialIssueDto>>(getAllMaterialIssue);
+                var result = _mapper.Map<IEnumerable<MaterialIssueDto>>(materialIssueDetails);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all SAShopOrderMaterialIssues";
+                serviceResponse.Message = "Returned all MaterialIssue";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -76,11 +76,11 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getMaterialIssueById = await _materialIssueRepository.GetMaterialIssueById(id);
-                if (getMaterialIssueById == null)
+                var materialIssueDetailById = await _materialIssueRepository.GetMaterialIssueById(id);
+                if (materialIssueDetailById == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"MaterialIssue with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"MaterialIssue with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"MaterialIssue with id: {id}, hasn't been found in db.");
@@ -89,7 +89,7 @@ namespace Tips.Production.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    var result = _mapper.Map<MaterialIssueDto>(getMaterialIssueById);
+                    var result = _mapper.Map<MaterialIssueDto>(materialIssueDetailById);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned MaterialIssue with id Successfully";
                     serviceResponse.Success = true;
@@ -110,13 +110,13 @@ namespace Tips.Production.Api.Controllers
 
         // POST api/<MaterialIssueController>
         [HttpPost]
-        public IActionResult CreateMaterialIssue([FromBody] MaterialIssueDtoPost materialIssueDtoPost)
+        public IActionResult CreateMaterialIssue([FromBody] MaterialIssuePostDto materialIssuePostDto)
         {
             ServiceResponse<MaterialIssueDto> serviceResponse = new ServiceResponse<MaterialIssueDto>();
 
             try
             {
-                if (materialIssueDtoPost is null)
+                if (materialIssuePostDto is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "MaterialIssue object sent from client is null";
@@ -134,16 +134,16 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogError("Invalid MaterialIssue object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var  createMaterialIssue = _mapper.Map<MaterialIssue>(materialIssueDtoPost);
+                var  materialIssue = _mapper.Map<MaterialIssue>(materialIssuePostDto);
 
-                _materialIssueRepository.CreateMaterialIssue(createMaterialIssue);
+                _materialIssueRepository.CreateMaterialIssue(materialIssue);
                 _materialIssueRepository.SaveAsync(); 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "MaterialIssue Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
 
-                return Created("GetCommodityById", serviceResponse);
+                return Created("GetMaterialIssueById", serviceResponse);
             }
             catch (Exception ex)
             {
@@ -151,20 +151,20 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateMaterialIssue action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
         // PUT api/<MaterialIssueController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMaterialIssue(int id, [FromBody] MaterialIssueDtoUpdate materialIssueDtoUpdate)
+        public async Task<IActionResult> UpdateMaterialIssue(int id, [FromBody] MaterialIssueUpdateDto materialIssueUpdateDto)
         {
-            ServiceResponse<MaterialIssueDto> serviceResponse = new ServiceResponse<MaterialIssueDto>();
+            ServiceResponse<MaterialIssueUpdateDto> serviceResponse = new ServiceResponse<MaterialIssueUpdateDto>();
 
             try
             {
-                if (materialIssueDtoUpdate is null)
+                if (materialIssueUpdateDto is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "MaterialIssue object sent from client is null";
@@ -182,23 +182,23 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogError("Invalid MaterialIssue object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var getMaterialIssueById = await _materialIssueRepository.GetMaterialIssueById(id);
-                if (getMaterialIssueById is null)
+                var materialIssueDetailsById = await _materialIssueRepository.GetMaterialIssueById(id);
+                if (materialIssueDetailsById is null)
                 {
                     _logger.LogError($"MaterialIssue with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = " Update MterialIssue with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = " Update MaterialIssue with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                var updateMaterialIssue = _mapper.Map(materialIssueDtoUpdate, getMaterialIssueById);
-                _mapper.Map(materialIssueDtoUpdate, getMaterialIssueById);
+                var updateMaterialIssue = _mapper.Map(materialIssueUpdateDto, materialIssueDetailsById);
+                _mapper.Map(materialIssueUpdateDto, materialIssueDetailsById);
                 string result = await _materialIssueRepository.UpdateMaterialIssue(updateMaterialIssue);
                 _logger.LogInfo(result);
                 _materialIssueRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Message = "MaterialIssue Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -209,7 +209,7 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside UpdateCommodity action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside UpdateMaterialIssue action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -222,28 +222,28 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getMaterialIssueById = await _materialIssueRepository.GetMaterialIssueById(id);
-                if (getMaterialIssueById == null)
+                var materialIssueDetailById = await _materialIssueRepository.GetMaterialIssueById(id);
+                if (materialIssueDetailById == null)
                 {
                     _logger.LogError($"Delete MaterialIssue with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Delete MaterialIssue with id hasn't been found in db.";
+                    serviceResponse.Message = $"Delete MaterialIssue with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _materialIssueRepository.DeleteMaterialIssue(getMaterialIssueById);
+                string result = await _materialIssueRepository.DeleteMaterialIssue(materialIssueDetailById);
                 _logger.LogInfo(result);
                 _materialIssueRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Invoice Deleted Successfully";
+                serviceResponse.Message = "MaterialIssue Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteInvoice action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeleteMaterialIssue action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;

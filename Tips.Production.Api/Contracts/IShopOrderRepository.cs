@@ -16,9 +16,8 @@ namespace Tips.Production.Api.Contracts
         Task<ShopOrder> GetShopOrderBySalesOrderNo(string salesOrderNo);
         Task<ShopOrder> GetShopOrderByShopOrderNo(string shopOrderNo);
         Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByItemType(string itemType);
-        Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFgNo(string FgNumber);
-
-        Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFgNoAndSaNo(string FgNumber, string SaNumber);
+        Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFGNo(string fGNumber);
+        Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFGNoAndSANo(string fGNumber, string sANumber);
         Task<IEnumerable<ShopOrder>> GetAllOpenShopOrders();
         public void SaveAsync();
     }

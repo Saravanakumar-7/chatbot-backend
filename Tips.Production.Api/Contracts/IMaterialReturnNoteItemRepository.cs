@@ -7,7 +7,7 @@ namespace Tips.Production.Api.Contracts
     public interface IMaterialReturnNoteItemRepository : IRepositoryBase<MaterialReturnNoteItem>
     {
 
-        Task<PagedList<MaterialReturnNoteItem>> GetAllMaterialReturnNoteItem(PagingParameter pagingParameter);
+        Task<PagedList<MaterialReturnNoteItem>> GetAllMaterialReturnNoteItems(PagingParameter pagingParameter);
         Task<MaterialReturnNoteItem> GetMaterialReturnNoteItemById(int id);
 
         Task<int?> CreateMaterialReturnNoteItem(MaterialReturnNoteItem materialReturnNoteItem);

@@ -6,7 +6,7 @@ namespace Tips.Production.Api.Contracts
 {
     public interface IMaterialIssueRepository : IRepositoryBase<MaterialIssue>
     {
-        Task<PagedList<MaterialIssue>> GetAllMaterialIssue(PagingParameter pagingParameter);
+        Task<PagedList<MaterialIssue>> GetAllMaterialIssues(PagingParameter pagingParameter);
         Task<MaterialIssue> GetMaterialIssueById(int id);
         Task<int> CreateMaterialIssue(MaterialIssue materialIssue);
         Task<string> UpdateMaterialIssue(MaterialIssue materialIssue);

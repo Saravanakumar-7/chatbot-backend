@@ -8,16 +8,16 @@ namespace Tips.Purchase.Api.Contracts
 {
     public interface IPurchaseRequisitionRepository : IRepositoryBase<PurchaseRequisition>
     {
-        Task<PagedList<PurchaseRequisition>> GetAllPurchaseRequisition(PagingParameter pagingParameter);
+        Task<PagedList<PurchaseRequisition>> GetAllPurchaseRequisitions(PagingParameter pagingParameter);
         Task<PurchaseRequisition> GetPurchaseRequisitionById(int id);
-        Task<PurchaseRequisition> GetPurchaseRequisitionByPRNumber(string PRNumber);
-        Task<IEnumerable<PurchaseRequisition>> GetAllActivePurchaseRequisition();
+        Task<PurchaseRequisition> GetPurchaseRequisitionByPRNumber(string prNumber);
+        Task<IEnumerable<PurchaseRequisition>> GetAllActivePurchaseRequisitions();
         Task<long> CreatePurchaseRequisition(PurchaseRequisition purchaseRequisition);
         Task<string> UpdatePurchaseRequisition(PurchaseRequisition purchaseRequisition);
         Task<string> DeletePurchaseRequisition(PurchaseRequisition purchaseRequisition);
         Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllActivePurchaseRequisitionNameList();
-        Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPurchaseRequisitionApprovalINameList();
-        Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPurchaseRequisitionApprovalIINameList();
+        Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalINameList();
+        Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIINameList();
 
     }
 }

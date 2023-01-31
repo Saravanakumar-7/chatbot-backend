@@ -13,10 +13,10 @@ namespace Tips.Purchase.Api.Entities
     {
         [Key]
         public int Id { get; set; }
-        public DateTime PrDeliveryDate { get; set; }
+        public DateTime PRDeliveryDate { get; set; }
 
-        [Precision(13, 2)]
-        public decimal PrDeliveryQty { get; set; }
+        [Precision(13, 3)]
+        public decimal PRDeliveryQty { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

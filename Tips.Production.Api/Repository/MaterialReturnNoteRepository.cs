@@ -22,33 +22,32 @@ namespace Tips.Production.Api.Repository
             materialReturnNote.CreatedOn = DateTime.Now;
             materialReturnNote.Unit = "Bangalore";
             var result = await Create(materialReturnNote);
-
             return result.Id;
         }
 
         public async Task<string> DeleteMaterialReturnNote(MaterialReturnNote materialReturnNote)
         {
             Delete(materialReturnNote);
-            string result = $"materialReturnNote details of {materialReturnNote.Id} is deleted successfully!";
+            string result = $"MaterialReturnNote details of {materialReturnNote.Id} is deleted successfully!";
             return result;
         }
 
-        public async Task<PagedList<MaterialReturnNote>> GetAllMaterialReturnNote(PagingParameter pagingParameter)
+        public async Task<PagedList<MaterialReturnNote>> GetAllMaterialReturnNotes(PagingParameter pagingParameter)
         {
-            var getAllMaterialReturnNoteDetails = PagedList<MaterialReturnNote>.ToPagedList(FindAll()
+            var materialReturnNoteDetails = PagedList<MaterialReturnNote>.ToPagedList(FindAll()
                                .Include(x => x.MaterialReturnNoteItems)
-              .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return getAllMaterialReturnNoteDetails;
+              .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            return materialReturnNoteDetails;
         }
 
         public async Task<MaterialReturnNote> GetMaterialReturnNoteById(int id)
         {
-            var getMaterialReturnNoteDetailById = await _tipsProductionDbContext.MaterialReturnNotes.Where(x => x.Id == id)
+            var materialReturnNoteDetailById = await _tipsProductionDbContext.MaterialReturnNotes.Where(x => x.Id == id)
                               .Include(x => x.MaterialReturnNoteItems)
 
                               .FirstOrDefaultAsync();
 
-            return getMaterialReturnNoteDetailById;
+            return materialReturnNoteDetailById;
         }
 
         public async Task<string> UpdateMaterialReturnNote(MaterialReturnNote materialReturnNote)
@@ -56,8 +55,8 @@ namespace Tips.Production.Api.Repository
             materialReturnNote.LastModifiedBy = "Admin";
             materialReturnNote.LastModifiedOn = DateTime.Now;
             Update(materialReturnNote);
-            string result = $"materialReturnNote of Detail {materialReturnNote.Id} is updated successfully!";
+            string result = $"MaterialReturnNote of Detail {materialReturnNote.Id} is updated successfully!";
             return result;
         }
     }
-    }
+}

@@ -39,20 +39,20 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getAllMaterialReturnNote = await _materialReturnNoteRepository.GetAllMaterialReturnNote(pagingParameter);
+                var materialReturnNoteDetails = await _materialReturnNoteRepository.GetAllMaterialReturnNotes(pagingParameter);
                 var metadata = new
                 {
-                    getAllMaterialReturnNote.TotalCount,
-                    getAllMaterialReturnNote.PageSize,
-                    getAllMaterialReturnNote.CurrentPage,
-                    getAllMaterialReturnNote.HasNext,
-                    getAllMaterialReturnNote.HasPreviuos
+                    materialReturnNoteDetails.TotalCount,
+                    materialReturnNoteDetails.PageSize,
+                    materialReturnNoteDetails.CurrentPage,
+                    materialReturnNoteDetails.HasNext,
+                    materialReturnNoteDetails.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogError("Returned all getAllMaterialReturnNote");
-                var result = _mapper.Map<IEnumerable<MaterialReturnNoteDto>>(getAllMaterialReturnNote);
+                var result = _mapper.Map<IEnumerable<MaterialReturnNoteDto>>(materialReturnNoteDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all MaterialReturnNote Successfully";
                 serviceResponse.Success = true;
@@ -82,10 +82,10 @@ namespace Tips.Production.Api.Controllers
                 if (materialReturnNoteDetailbyId == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"materialReturnNoteDetail with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"MaterialReturnNoteDetail with id hasn't been found";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"materialReturnNoteDetail with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"MaterialReturnNoteDetail with id hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
@@ -93,7 +93,6 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogError($"Returned materialReturnNoteDetail with id: {id}");
 
                     MaterialReturnNoteDto materialReturnNoteDto = _mapper.Map<MaterialReturnNoteDto>(materialReturnNoteDetailbyId);
-
 
                     List<MaterialReturnNoteItemDto> materialReturnNoteItemDtos = new List<MaterialReturnNoteItemDto>();
 
@@ -109,7 +108,7 @@ namespace Tips.Production.Api.Controllers
 
                     materialReturnNoteDto.MaterialReturnNoteItems = materialReturnNoteItemDtos;
                     serviceResponse.Data = materialReturnNoteDto;
-                    serviceResponse.Message = $"Returned materialReturnNote with id: {id}";
+                    serviceResponse.Message = $"Returned materialReturnNote with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -117,7 +116,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside materialReturnNoteDetailbyId action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside MaterialReturnNoteById action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
@@ -128,33 +127,33 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateMaterialReturnNote([FromBody] MaterialReturnNoteDtoPost materialReturnNoteDtoPost)
+        public async Task<IActionResult> CreateMaterialReturnNote([FromBody] MaterialReturnNotePostDto materialReturnNotePostDto)
         {
-            ServiceResponse<MaterialReturnNoteDto> serviceResponse = new ServiceResponse<MaterialReturnNoteDto>();
+            ServiceResponse<MaterialReturnNotePostDto> serviceResponse = new ServiceResponse<MaterialReturnNotePostDto>();
 
             try
             {
-                if (materialReturnNoteDtoPost is null)
+                if (materialReturnNotePostDto is null)
                 {
-                    _logger.LogError("materialReturnNote object sent from client is null.");
+                    _logger.LogError("MaterialReturnNote object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "materialReturnNote object sent from client is null.";
+                    serviceResponse.Message = "MaterialReturnNote object sent from client is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid materialReturnNote object sent from client.");
+                    _logger.LogError("Invalid MaterialReturnNote object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid materialReturnNote object sent from client.";
+                    serviceResponse.Message = "Invalid MaterialReturnNote object sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
 
-                var createMaterialReturnNote = _mapper.Map<MaterialReturnNote>(materialReturnNoteDtoPost);
-                var materialReturnNoteItemDto = materialReturnNoteDtoPost.MaterialReturnNoteItems;
+                var materialReturnNote = _mapper.Map<MaterialReturnNote>(materialReturnNotePostDto);
+                var materialReturnNoteItemDto = materialReturnNotePostDto.MaterialReturnNoteItems;
 
                 var materialReturnNoteItemList = new List<MaterialReturnNoteItem>();
 
@@ -169,9 +168,9 @@ namespace Tips.Production.Api.Controllers
                     }
                 }
 
-                createMaterialReturnNote.MaterialReturnNoteItems = materialReturnNoteItemList;
+                materialReturnNote.MaterialReturnNoteItems = materialReturnNoteItemList;
 
-                await _materialReturnNoteRepository.CreateMaterialReturnNote(createMaterialReturnNote);
+                await _materialReturnNoteRepository.CreateMaterialReturnNote(materialReturnNote);
 
                 _materialReturnNoteRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -195,15 +194,15 @@ namespace Tips.Production.Api.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMaterialReturnNote(int id, [FromBody] MaterialReturnNoteDtoUpdate materialReturnNoteDtoUpdate)
+        public async Task<IActionResult> UpdateMaterialReturnNote(int id, [FromBody] MaterialReturnNoteUpdateDto materialReturnNoteUpdateDto)
         {
-            ServiceResponse<MaterialReturnNoteDto> serviceResponse = new ServiceResponse<MaterialReturnNoteDto>();
+            ServiceResponse<MaterialReturnNoteUpdateDto> serviceResponse = new ServiceResponse<MaterialReturnNoteUpdateDto>();
 
             try
             {
-                if (materialReturnNoteDtoUpdate is null)
+                if (materialReturnNoteUpdateDto is null)
                 {
-                    _logger.LogError("MaterialReturnNote object sent from client is null.");
+                    _logger.LogError("Update MaterialReturnNote object sent from client is null.");
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Update MaterialReturnNote object is null";
                     serviceResponse.Success = false;
@@ -212,53 +211,50 @@ namespace Tips.Production.Api.Controllers
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid MaterialReturnNote object sent from client.");
+                    _logger.LogError("Invalid Update MaterialReturnNote object sent from client.");
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Invalid Update MaterialReturnNote object sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var getMaterialReturnNoteById = await _materialReturnNoteRepository.GetMaterialReturnNoteById(id);
+                var materialReturnNoteDetailById = await _materialReturnNoteRepository.GetMaterialReturnNoteById(id);
 
-                if (getMaterialReturnNoteById is null)
+                if (materialReturnNoteDetailById is null)
                 {
                     _logger.LogError($"GetMaterialReturnNote with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update GetMaterialReturnNote with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Update GetMaterialReturnNote with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
-                var updateMaterialReturnNote = _mapper.Map<MaterialReturnNote>(getMaterialReturnNoteById);
-
-                var materialReturnNotesItemDto = materialReturnNoteDtoUpdate.MaterialReturnNoteItems;
-
+                var materialReturnNoteDetail = _mapper.Map<MaterialReturnNote>(materialReturnNoteDetailById);
+                var materialReturnNotesItemDto = materialReturnNoteUpdateDto.MaterialReturnNoteItems;
                 var materialReturnNoteItemList = new List<MaterialReturnNoteItem>();
-
-                for (int i = 0; i < materialReturnNotesItemDto.Count; i++)
+                if (materialReturnNotesItemDto != null)
                 {
-                    MaterialReturnNoteItem materialReturnNoteItem = _mapper.Map<MaterialReturnNoteItem>(materialReturnNotesItemDto[i]);
-                    materialReturnNoteItemList.Add(materialReturnNoteItem);
+                    for (int i = 0; i < materialReturnNotesItemDto.Count; i++)
+                    {
+                        MaterialReturnNoteItem materialReturnNoteItem = _mapper.Map<MaterialReturnNoteItem>(materialReturnNotesItemDto[i]);
+                        materialReturnNoteItemList.Add(materialReturnNoteItem);
 
+                    }
                 }
-
-                var updateMaterialReturnNoteItem = _mapper.Map(materialReturnNoteDtoUpdate, getMaterialReturnNoteById);
-
-                updateMaterialReturnNoteItem.MaterialReturnNoteItems = materialReturnNoteItemList;
+                materialReturnNoteDetail.MaterialReturnNoteItems = materialReturnNoteItemList;
+                var updateMaterialReturnNoteItem = _mapper.Map(materialReturnNoteUpdateDto, materialReturnNoteDetailById);
                 string result = await _materialReturnNoteRepository.UpdateMaterialReturnNote(updateMaterialReturnNoteItem);
-
                 _materialReturnNoteRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Message = "MaterialReturnNote Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateMaterialRequest action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside UpdateMaterialReturnNote action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -274,21 +270,21 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getMaterialReturnNoteById = await _materialReturnNoteRepository.GetMaterialReturnNoteById(id);
-                if (getMaterialReturnNoteById == null)
+                var materialReturnNoteDtailsById = await _materialReturnNoteRepository.GetMaterialReturnNoteById(id);
+                if (materialReturnNoteDtailsById == null)
                 {
                     _logger.LogError($"DeleteMaterialReturnNote with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"DeleteMaterialReturnNote with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"DeleteMaterialReturnNote with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _materialReturnNoteRepository.DeleteMaterialReturnNote(getMaterialReturnNoteById);
+                string result = await _materialReturnNoteRepository.DeleteMaterialReturnNote(materialReturnNoteDtailsById);
                 _logger.LogError(result);
                 _materialReturnNoteRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Delete Successfully";
+                serviceResponse.Message = "MaterialReturnNote Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

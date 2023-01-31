@@ -4,9 +4,9 @@ namespace Tips.Production.Api.Contracts
 {
     public interface IShopOrderItemRepository
     {
-        Task<IEnumerable<ShopOrder>> GetAllShopOrders();
-        Task<ShopOrder> GetShopOrderById(int id);
-        Task<long> CreateShopOrder(ShopOrder shopOrder);
-        Task<string> UpdateShopOrder(ShopOrder shopOrder);
+        Task<IEnumerable<ShopOrder>> GetAllShopOrderItems();
+        Task<ShopOrder> GetShopOrderItemById(int id);
+        Task<long> CreateShopOrderItem(ShopOrder shopOrderItem);
+        Task<string> UpdateShopOrderItem(ShopOrder shopOrderItem);
     }
 }
