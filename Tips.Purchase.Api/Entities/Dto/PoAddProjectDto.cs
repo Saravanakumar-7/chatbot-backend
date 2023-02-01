@@ -1,30 +1,30 @@
-﻿namespace Tips.Purchase.Api.Entities.DTOs
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Tips.Purchase.Api.Entities.DTOs
 {
     public class PoAddProjectDto
     {
         public int Id { get; set; }
-        public string POProjectNumber { get; set; }
+        public string? POProjectNumber { get; set; }
+
+        [Precision(13, 3)]
         public decimal POProjectQty { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+ 
     }
-    public class PoAddProjectDtoPost
-    {
-        
-        public string POProjectNumber { get; set; }
+    public class PoAddProjectPostDto
+    { 
+        public string? POProjectNumber { get; set; }
+
+        [Precision(13, 3)]
         public decimal POProjectQty { get; set; }
 
     }
-    public class PoAddProjectDtoUpdate
+    public class PoAddProjectUpdateDto
     {
-       
-        public string POProjectNumber { get; set; }
+        public string? POProjectNumber { get; set; }
+
+        [Precision(13, 3)]
         public decimal POProjectQty { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+   
     }
 }

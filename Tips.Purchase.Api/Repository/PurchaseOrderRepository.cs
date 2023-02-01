@@ -37,15 +37,15 @@ namespace Tips.Purchase.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<PurchaseOrder>> GetAllActivePurchaseOrder()
+        public async Task<IEnumerable<PurchaseOrder>> GetAllActivePurchaseOrders()
         {
-            var AllActivepurchaseOrder = await FindAll().ToListAsync();
-            return AllActivepurchaseOrder;
+            var activePurchaseOrderDetails = await FindAll().ToListAsync();
+            return activePurchaseOrderDetails;
         }
 
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllActivePurchaseOrderNameList()
         {
-            IEnumerable<PurchaseOrderIdNameListDto> AllActivePurchaseOrderName = await _tipsPurchaseDbContext.PurchaseOrders
+            IEnumerable<PurchaseOrderIdNameListDto> activePurchaseOrderNameList = await _tipsPurchaseDbContext.PurchaseOrders
                                 .Select(x => new PurchaseOrderIdNameListDto()
                                 {
                                     Id = x.Id,
@@ -53,11 +53,11 @@ namespace Tips.Purchase.Api.Repository
                                 })
                               .ToListAsync();
 
-            return AllActivePurchaseOrderName;
+            return activePurchaseOrderNameList;
         }
-        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPurchaseOrderApprovalINameList()
+        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalINameList()
         {
-            IEnumerable<PurchaseOrderIdNameListDto> AllPendingPOApprovalIName = await _tipsPurchaseDbContext.PurchaseOrders
+            IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders
                             .Where(x => x.POApprovalI == false).Select(x => new PurchaseOrderIdNameListDto()
                             {
                                 Id = x.Id,
@@ -65,12 +65,12 @@ namespace Tips.Purchase.Api.Repository
                             }).ToListAsync();
 
 
-            return AllPendingPOApprovalIName;
+            return pendingPOApprovalINameList;
         }
 
-        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPurchaseOrderApprovalIINameList()
+        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIINameList()
         {
-            IEnumerable<PurchaseOrderIdNameListDto> AllPendingPOApprovalIIName = await _tipsPurchaseDbContext.PurchaseOrders
+            IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalIINameList = await _tipsPurchaseDbContext.PurchaseOrders
                             .Where(x => x.POApprovalII == false).Select(x => new PurchaseOrderIdNameListDto()
                             {
                                 Id = x.Id,
@@ -78,26 +78,26 @@ namespace Tips.Purchase.Api.Repository
                             }).ToListAsync();
 
 
-            return AllPendingPOApprovalIIName;
+            return pendingPOApprovalIINameList;
         }
 
-        public async Task<PagedList<PurchaseOrder>> GetAllPurchaseOrder(PagingParameter pagingParameter)
+        public async Task<PagedList<PurchaseOrder>> GetAllPurchaseOrders(PagingParameter pagingParameter)
         {
 
-            var GetallpurchaseOrderDetails = PagedList<PurchaseOrder>.ToPagedList(FindAll()
+            var purchaseOrderDetails = PagedList<PurchaseOrder>.ToPagedList(FindAll()
                                 .Include(t => t.POItemList)
                                 .ThenInclude(x => x.POAddprojects)
                                 .Include(m => m.POItemList)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
 
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+               .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return GetallpurchaseOrderDetails;
+            return purchaseOrderDetails;
         }
 
         public async Task<PurchaseOrder> GetPurchaseOrderById(int id)
         {
-            var purchaseOrderbyId = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.Id == id)
+            var purchaseOrderDetailById = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.Id == id)
                                 .Include(t => t.POItemList)
                                 .ThenInclude(x => x.POAddprojects)
                                 .Include(m => m.POItemList)
@@ -106,12 +106,12 @@ namespace Tips.Purchase.Api.Repository
                                 .FirstOrDefaultAsync();
 
 
-            return purchaseOrderbyId;
+            return purchaseOrderDetailById;
         }
 
-        public async Task<PurchaseOrder> GetPurchaseOrderByPONumber(string PONumber)
+        public async Task<PurchaseOrder> GetPurchaseOrderByPONumber(string poNumber)
         {
-            var purchaseOrderbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.PONumber == PONumber)
+            var purchaseOrderDetailbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.PONumber == poNumber)
                                 .Include(t => t.POItemList)
                                 .ThenInclude(x => x.POAddprojects)
                                 .Include(m => m.POItemList)
@@ -120,7 +120,7 @@ namespace Tips.Purchase.Api.Repository
                                 .FirstOrDefaultAsync();
 
 
-            return purchaseOrderbyPONumber;
+            return purchaseOrderDetailbyPONumber;
         }
 
         public async Task<string> UpdatePurchaseOrder(PurchaseOrder purchaseOrder)
@@ -132,9 +132,9 @@ namespace Tips.Purchase.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPoNumberListByVendorName(string vendorName)
+        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPONumberListByVendorName(string vendorName)
         {
-            IEnumerable<PurchaseOrderIdNameListDto> AllPObyVendorName = await _tipsPurchaseDbContext.PurchaseOrders
+            IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorName = await _tipsPurchaseDbContext.PurchaseOrders
                            .Where(x => x.VendorName == vendorName).Select(x => new PurchaseOrderIdNameListDto()
                            {
                                Id = x.Id,
@@ -142,23 +142,23 @@ namespace Tips.Purchase.Api.Repository
                            }).ToListAsync();
 
 
-            return AllPObyVendorName;
+            return pONameListbyVendorName;
         }
 
-        public async Task<IEnumerable<PurchaseOrderItemNoListDto>> GetAllPoItemNumberListByPoNumber(string poNumber)
+        public async Task<IEnumerable<PurchaseOrderItemNoListDto>> GetAllPOItemNumberListByPoNumber(string poNumber)
         {
-            int AllPOItemNobyPONumber = await _tipsPurchaseDbContext.PurchaseOrders
+            int pOItemNoListbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders
                 .Where(s => s.PONumber == poNumber).Select(x => x.Id).FirstOrDefaultAsync();
 
-            IEnumerable<PurchaseOrderItemNoListDto> itemDetails = await _tipsPurchaseDbContext.PoItems
-                          .Where(x => x.PurchaseOrderId == AllPOItemNobyPONumber)
+            IEnumerable<PurchaseOrderItemNoListDto> pOItemNumberDetails = await _tipsPurchaseDbContext.PoItems
+                          .Where(x => x.PurchaseOrderId == pOItemNoListbyPONumber)
                           .Select(r => new PurchaseOrderItemNoListDto()
                           {
                               Id = r.Id,
                               ItemNumber = r.ItemNumber
                           }).ToListAsync();
 
-            return itemDetails;
+            return pOItemNumberDetails;
         }
 
     }

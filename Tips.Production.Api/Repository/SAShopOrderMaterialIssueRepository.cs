@@ -33,22 +33,22 @@ namespace Tips.Production.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<SAShopOrderMaterialIssue>> GetAllSAShopOrderMaterialIssue(PagingParameter pagingParameter)
+        public async Task<PagedList<SAShopOrderMaterialIssue>> GetAllSAShopOrderMaterialIssues(PagingParameter pagingParameter)
         {
-            var getAllSAShopOrderMaterialIssueDetails = PagedList<SAShopOrderMaterialIssue>.ToPagedList(FindAll()
+            var sAShopOrderMaterialIssueDetails = PagedList<SAShopOrderMaterialIssue>.ToPagedList(FindAll()
                               .Include(t => t.SAShopOrderMaterialIssueGeneralList)
-             .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+             .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return getAllSAShopOrderMaterialIssueDetails;
+            return sAShopOrderMaterialIssueDetails;
         }
 
         public async Task<SAShopOrderMaterialIssue> GetSAShopOrderMaterialIssueById(int id)
         {
-            var getSAShopOrderMaterialIssue = await _tipsProductionDbContext.SAShopOrderMaterialIssues.Where(x => x.Id == id)
+            var sAShopOrderMaterialIssueDetailById = await _tipsProductionDbContext.SAShopOrderMaterialIssues.Where(x => x.Id == id)
                                 .Include(t => t.SAShopOrderMaterialIssueGeneralList)
                                 .FirstOrDefaultAsync();
 
-            return getSAShopOrderMaterialIssue;
+            return sAShopOrderMaterialIssueDetailById;
         }
 
         public async Task<string> UpdateSAShopOrderMaterialIssue(SAShopOrderMaterialIssue sAShopOrderMaterialIssue)

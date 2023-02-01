@@ -9,27 +9,23 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ShopOrderNumber { get; set; }
         public DateTime ShopOrderDate { get; set; }
         public string? ProjectNumber { get; set; }
-
-        public string ItemType { get; set; }
-
-        [Precision(13, 2)]
+        public string? ItemType { get; set; }
+        [Precision(13, 3)]
         public decimal ShopOrderQty { get; set; }
         public string? ShopOrderType { get; set; }
-
-        public string PartNumber { get; set; }
+        public string? PartNumber { get; set; }
         [MinLength(500)]
-        public string Description { get; set; }
-        public string PartType { get; set; }
-        public string UOM { get; set; }
-        [Precision(13, 2)]
+        public string? Description { get; set; }
+        public string? UOM { get; set; }
+        [Precision(13, 3)]
         public decimal Qty { get; set; }
-        [Precision(13, 2)]
+        [Precision(13, 3)]
         public decimal RequiredQty { get; set; }
-        [Precision(13, 2)]
+        [Precision(13, 3)]
         public decimal AvailableQty { get; set; }
-        [Precision(13, 2)]
+        [Precision(13, 3)]
         public decimal AlreadyIssuedQty { get; set; }
-        [Precision(13, 2)]
+        [Precision(13, 3)]
         public decimal IssueQty { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
@@ -38,72 +34,59 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
     }
 
-    public class MaterialIssueDtoPost
+    public class MaterialIssuePostDto
     {
         public string? ShopOrderNumber { get; set; }
         public DateTime ShopOrderDate { get; set; }
-
-        [Required]
         public string? ProjectNumber { get; set; }
-
-        [Required]
-        public string ItemType { get; set; }
-
-        [Precision(13, 2)]
+        public string? ItemType { get; set; }
+        [Precision(13, 3)]
         public decimal ShopOrderQty { get; set; }
         public string? ShopOrderType { get; set; }
-
-        [Required]
-        public string PartNumber { get; set; }
+        public string? PartNumber { get; set; }
         [MinLength(500)]
-        public string Description { get; set; }
-        public string UOM { get; set; }
-
-        [Precision(13, 2)]
+        public string? Description { get; set; }
+        public string? UOM { get; set; }
+        [Precision(13, 3)]
         public decimal Qty { get; set; }
-        [Precision(13, 2)]
+        [Precision(13, 3)]
         public decimal RequiredQty { get; set; }
-        [Precision(13, 2)]
+        [Precision(13, 3)]
         public decimal AvailableQty { get; set; }
-        [Precision(13, 2)]
+        [Precision(13, 3)]
         public decimal AlreadyIssuedQty { get; set; }
-        [Precision(13, 2)]
-        public decimal IssueQty { get; set; }       
-
+        [Precision(13, 3)]
+        public decimal IssueQty { get; set; }
+      
     }
 
-    public class MaterialIssueDtoUpdate
+    public class MaterialIssueUpdateDto
     {
         public int Id { get; set; }
         public string? ShopOrderNumber { get; set; }
         public DateTime ShopOrderDate { get; set; }
-
-        [Required]
         public string? ProjectNumber { get; set; }
-
-        [Required]
-        public string ItemType { get; set; }
-
-        [Precision(13, 2)]
+        public string? ItemType { get; set; }
+        [Precision(13, 3)]
         public decimal ShopOrderQty { get; set; }
         public string? ShopOrderType { get; set; }
-
-        [Required]
-        public string PartNumber { get; set; }
+        public string? PartNumber { get; set; }
         [MinLength(500)]
-        public string Description { get; set; }
-        public string UOM { get; set; }
-
-        [Precision(13, 2)]
+        public string? Description { get; set; }
+        public string? UOM { get; set; }
+        [Precision(13, 3)]
         public decimal Qty { get; set; }
-        [Precision(13, 2)]
+        [Precision(13, 3)]
         public decimal RequiredQty { get; set; }
-        [Precision(13, 2)]
+        [Precision(13, 3)]
         public decimal AvailableQty { get; set; }
-        [Precision(13, 2)]
+        [Precision(13, 3)]
         public decimal AlreadyIssuedQty { get; set; }
-        [Precision(13, 2)]
+        [Precision(13, 3)]
         public decimal IssueQty { get; set; }
+        public string? Unit { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
 
     }
 }

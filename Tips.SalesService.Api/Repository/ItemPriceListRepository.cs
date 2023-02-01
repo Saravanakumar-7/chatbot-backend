@@ -50,6 +50,32 @@ namespace Tips.SalesService.Api.Repository
 
             return getAllItemPriceList;
         }
+         
+        public async Task<IEnumerable<ItemPriceListNameDto>> GetAllItemPriceNameList()
+        {
+            IEnumerable<ItemPriceListNameDto> getAllItemPriceListName = await _tipsSalesServiceDbContext.ItemPriceLists
+                                .Select(c => new ItemPriceListNameDto()
+                                {
+                                    PriceListName = c.PriceListName,
+
+                                }).Distinct()
+                              .ToListAsync();
+
+            return getAllItemPriceListName;
+        }
+
+        public async Task<IEnumerable<ItemNumberListDto>> GetAllItemNumberList()
+        {
+            IEnumerable<ItemNumberListDto> getAllItemNumberList = await _tipsSalesServiceDbContext.ItemPriceLists
+                                .Select(c => new ItemNumberListDto()
+                                {
+                                    ItemNumber = c.ItemNumber,
+
+                                }).Distinct()
+                              .ToListAsync();
+
+            return getAllItemNumberList;
+        }
 
         public async Task<ItemPriceList> GetItemPriceListById(int id)
         {
@@ -79,6 +105,6 @@ namespace Tips.SalesService.Api.Repository
             Update(itemPriceList);
             string result = $"ItemPriceList details of {itemPriceList.Id} is updated successfully!";
             return result;
-        }
+        } 
     }
 }

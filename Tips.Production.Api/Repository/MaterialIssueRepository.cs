@@ -20,32 +20,31 @@ namespace Tips.Production.Api.Repository
             materialIssue.CreatedOn = DateTime.Now;
             materialIssue.Unit = "Bangalore";
             var result = await Create(materialIssue);
-
             return result.Id;
         }
 
         public async Task<string> DeleteMaterialIssue(MaterialIssue materialIssue)
         {
             Delete(materialIssue);
-            string result = $"NaterialIssue details of {materialIssue.Id} is deleted successfully!";
+            string result = $"MaterialIssue details of {materialIssue.Id} is deleted successfully!";
             return result;
         }
 
-        public async Task<PagedList<MaterialIssue>> GetAllMaterialIssue(PagingParameter pagingParameter)
+        public async Task<PagedList<MaterialIssue>> GetAllMaterialIssues(PagingParameter pagingParameter)
         {
-            var getAllMaterialIssue = PagedList<MaterialIssue>.ToPagedList(FindAll()                              
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var materialIssueDetails = PagedList<MaterialIssue>.ToPagedList(FindAll()                              
+               .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return getAllMaterialIssue;
+            return materialIssueDetails;
         }
 
         public async Task<MaterialIssue> GetMaterialIssueById(int id)
         {
-            var getMaterialIssueById = await _tipsProductionDbContext.MaterialIssue.Where(x => x.Id == id)                           
+            var materialIssueDetailById = await _tipsProductionDbContext.MaterialIssue.Where(x => x.Id == id)                           
 
                               .FirstOrDefaultAsync();
 
-            return getMaterialIssueById;
+            return materialIssueDetailById;
         }
 
         public  async Task<string> UpdateMaterialIssue(MaterialIssue materialIssue)
@@ -53,7 +52,7 @@ namespace Tips.Production.Api.Repository
             materialIssue.LastModifiedBy = "Admin";
             materialIssue.LastModifiedOn = DateTime.Now;
             Update(materialIssue);
-            string result = $"materialIssue of Detail {materialIssue.Id} is updated successfully!";
+            string result = $"MaterialIssue of Detail {materialIssue.Id} is updated successfully!";
             return result;
         }
        

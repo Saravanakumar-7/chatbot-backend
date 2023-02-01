@@ -6,7 +6,7 @@ namespace Tips.Production.Api.Contracts
 {
     public interface IFGShopOrderMaterialIssueRepository : IRepositoryBase<FGShopOrderMaterialIssue>
     {
-        Task<PagedList<FGShopOrderMaterialIssue>> GetAllFGShopOrderMaterialIssue(PagingParameter pagingParameter);
+        Task<PagedList<FGShopOrderMaterialIssue>> GetAllFGShopOrderMaterialIssues(PagingParameter pagingParameter);
         Task<FGShopOrderMaterialIssue> GetFGShopOrderMaterialIssueById(int id);
         Task<long> CreateFGShopOrderMaterialIssue(FGShopOrderMaterialIssue fGShopOrderMaterialIssue);
         Task<string> UpdateFGShopOrderMaterialIssue(FGShopOrderMaterialIssue fGShopOrderMaterialIssue);

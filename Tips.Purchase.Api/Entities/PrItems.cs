@@ -12,7 +12,7 @@ namespace Tips.Purchase.Api.Entities
         public string? Description { get; set; }
         public string? UOM { get; set; }
 
-        [Precision(13, 2)]
+        [Precision(13, 3)]
         public decimal? Qty { get; set; }
         public string? SpecialInstruction { get; set; }
         public string? CreatedBy { get; set; }

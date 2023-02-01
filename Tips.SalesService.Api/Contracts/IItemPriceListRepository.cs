@@ -8,6 +8,10 @@ namespace Tips.SalesService.Api.Contracts
     public interface IItemPriceListRepository : IRepositoryBase<ItemPriceList>
     {
         Task<PagedList<ItemPriceList>> GetAllItemPriceList(PagingParameter pagingParameter);
+         Task<IEnumerable<ItemPriceListNameDto>> GetAllItemPriceNameList();
+
+        Task<IEnumerable<ItemNumberListDto>> GetAllItemNumberList();
+
         Task<ItemPriceList> GetItemPriceListById(int id);
         Task<IEnumerable<ItemPriceList>> GetItemPriceListByItemNo(string itemNo);
         Task<IEnumerable<ItemPriceList>> GetItemPriceListByItemNoAndPriceListName(string itemNo,string priceListName);

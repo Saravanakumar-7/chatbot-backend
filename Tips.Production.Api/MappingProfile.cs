@@ -11,14 +11,14 @@ namespace Tips.Production.Api
         public MappingProfile()
         {
             CreateMap<ShopOrder, ShopOrderDto>().ReverseMap();
-            CreateMap<ShopOrder, ShopOrderDtoPost>().ReverseMap();
-            CreateMap<ShopOrder, ShopOrderDtoUpdate>().ReverseMap();
+            CreateMap<ShopOrder, ShopOrderPostDto>().ReverseMap();
+            CreateMap<ShopOrder, ShopOrderUpdateDto>().ReverseMap();
             CreateMap<ShopOrder, ListOfShopOrderDto>().ReverseMap();
 
 
             CreateMap<ShopOrderItem, ShopOrderItemDto>().ReverseMap();
-            CreateMap<ShopOrderItem, ShopOrderItemDtoPost>().ReverseMap();
-            CreateMap<ShopOrderItem, ShopOrderItemDtoUpdate>().ReverseMap();
+            CreateMap<ShopOrderItem, ShopOrderItemPostDto>().ReverseMap();
+            CreateMap<ShopOrderItem, ShopOrderItemUpdateDto>().ReverseMap();
 
             CreateMap<ShopOrderConfirmation, ShopOrderConfirmationDto>().ReverseMap();
             CreateMap<ShopOrderConfirmation, ShopOrderConfirmationPostDto>().ReverseMap();
@@ -46,8 +46,16 @@ namespace Tips.Production.Api
 
 
             CreateMap<MaterialIssue, MaterialIssueDto>().ReverseMap();
-            CreateMap<MaterialIssue, MaterialIssueDtoPost>().ReverseMap();
-            CreateMap<MaterialIssue, MaterialIssueDtoUpdate>().ReverseMap();
+            CreateMap<MaterialIssue, MaterialIssuePostDto>().ReverseMap();
+            CreateMap<MaterialIssue, MaterialIssueUpdateDto>().ReverseMap();
+
+            CreateMap<MaterialReturnNote, MaterialReturnNoteDto>().ReverseMap();
+            CreateMap<MaterialReturnNote, MaterialReturnNotePostDto>().ReverseMap();
+            CreateMap<MaterialReturnNote, MaterialReturnNoteUpdateDto>().ReverseMap();
+
+            CreateMap<MaterialReturnNoteItem, MaterialReturnNoteItemDto>().ReverseMap();
+            CreateMap<MaterialReturnNoteItem, MaterialReturnNoteItemPostDto>().ReverseMap();
+            CreateMap<MaterialReturnNoteItem, MaterialReturnNoteItemUpdateDto>().ReverseMap();
 
         }
     }

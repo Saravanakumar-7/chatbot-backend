@@ -7,9 +7,9 @@ namespace Tips.Purchase.Api.Entities
     {
         [Key]
         public int Id { get; set; }
-        public string POProjectNumber { get; set; }
+        public string? POProjectNumber { get; set; }
 
-        [Precision(13, 2)]
+        [Precision(13, 3)]
         public decimal POProjectQty { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

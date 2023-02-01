@@ -26,25 +26,25 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllFGShopOrderMaterialIssue([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllFGShopOrderMaterialIssues([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<FGShopOrderMaterialIssueDto>> serviceResponse = new ServiceResponse<IEnumerable<FGShopOrderMaterialIssueDto>>();
             try
             {
-                var getAllFGShopOrderMaterialIssues = await _fGShopOrderMaterialIssueRepository.GetAllFGShopOrderMaterialIssue(pagingParameter);
+                var fGShopOrderMaterialIssueDetails = await _fGShopOrderMaterialIssueRepository.GetAllFGShopOrderMaterialIssues(pagingParameter);
                 var metadata = new
                 {
-                    getAllFGShopOrderMaterialIssues.TotalCount,
-                    getAllFGShopOrderMaterialIssues.PageSize,
-                    getAllFGShopOrderMaterialIssues.CurrentPage,
-                    getAllFGShopOrderMaterialIssues.HasNext,
-                    getAllFGShopOrderMaterialIssues.HasPreviuos
+                    fGShopOrderMaterialIssueDetails.TotalCount,
+                    fGShopOrderMaterialIssueDetails.PageSize,
+                    fGShopOrderMaterialIssueDetails.CurrentPage,
+                    fGShopOrderMaterialIssueDetails.HasNext,
+                    fGShopOrderMaterialIssueDetails.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all FGShopOrderMaterialIssues");
-                var result = _mapper.Map<IEnumerable<FGShopOrderMaterialIssueDto>>(getAllFGShopOrderMaterialIssues);
+                var result = _mapper.Map<IEnumerable<FGShopOrderMaterialIssueDto>>(fGShopOrderMaterialIssueDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all FGShopOrderMaterialIssues";
                 serviceResponse.Success = true;
@@ -70,12 +70,12 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getFGShopOrderMaterialIssue = await _fGShopOrderMaterialIssueRepository.GetFGShopOrderMaterialIssueById(id);
+                var fGShopOrderMaterialIssueDetailById = await _fGShopOrderMaterialIssueRepository.GetFGShopOrderMaterialIssueById(id);
 
-                if (getFGShopOrderMaterialIssue == null)
+                if (fGShopOrderMaterialIssueDetailById == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"FGShopOrderMaterialIssue with id hasn't been found in db.";
+                    serviceResponse.Message = $"FGShopOrderMaterialIssue with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"FGShopOrderMaterialIssue with id: {id}, hasn't been found in db.");
@@ -85,11 +85,11 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogInfo($"Returned FGShopOrderMaterialIssue with id: {id}");
 
-                    FGShopOrderMaterialIssueDto fGShopOrderMaterialIssueDtos = _mapper.Map<FGShopOrderMaterialIssueDto>(getFGShopOrderMaterialIssue);
+                    FGShopOrderMaterialIssueDto fGShopOrderMaterialIssueDtos = _mapper.Map<FGShopOrderMaterialIssueDto>(fGShopOrderMaterialIssueDetailById);
                     List<FGShopOrderMaterialIssueGeneralDto> fGShopOrderMaterialIssueGeneralDtoList = new List<FGShopOrderMaterialIssueGeneralDto>();
-                    if (getFGShopOrderMaterialIssue.FGShopOrderMaterialIssueGeneralList != null)
+                    if (fGShopOrderMaterialIssueDetailById.FGShopOrderMaterialIssueGeneralList != null)
                     {
-                        foreach (var itemDetails in getFGShopOrderMaterialIssue.FGShopOrderMaterialIssueGeneralList)
+                        foreach (var itemDetails in fGShopOrderMaterialIssueDetailById.FGShopOrderMaterialIssueGeneralList)
                         {
                             FGShopOrderMaterialIssueGeneralDto fGShopOrderMaterialIssueGeneralDtos = _mapper.Map<FGShopOrderMaterialIssueGeneralDto>(itemDetails);
                             fGShopOrderMaterialIssueGeneralDtoList.Add(fGShopOrderMaterialIssueGeneralDtos);
@@ -126,7 +126,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError("FGShopOrderMaterialIssueDetails object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "FGShopOrderMaterialIssueDetails object sent from client is null.";
+                    serviceResponse.Message = "FGShopOrderMaterialIssueDetails object is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -135,7 +135,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError("Invalid FGShopOrderMaterialIssueDetails object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid FGShopOrderMaterialIssueDetails object sent from client.";
+                    serviceResponse.Message = "Invalid FGShopOrderMaterialIssueDetails object.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -186,24 +186,24 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError("Invalid Update FGShopOrderMaterialIssue object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Update FGShopOrderMaterialIssue object sent from client.";
+                    serviceResponse.Message = "Invalid Update FGShopOrderMaterialIssue object.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var updateFGShopOrderMaterialIssue = await _fGShopOrderMaterialIssueRepository.GetFGShopOrderMaterialIssueById(id);
-                if (updateFGShopOrderMaterialIssue is null)
+                var fGShopOrderMaterialIssueDetailById = await _fGShopOrderMaterialIssueRepository.GetFGShopOrderMaterialIssueById(id);
+                if (fGShopOrderMaterialIssueDetailById is null)
                 {
                     _logger.LogError($"Update FGShopOrderMaterialIssue with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update FGShopOrderMaterialIssue with id hasn't been found in db.";
+                    serviceResponse.Message = $"Update FGShopOrderMaterialIssue with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
                 var fGShopOrderMaterialIssueGeneral = _mapper.Map<IEnumerable<FGShopOrderMaterialIssueGeneral>>(fGShopOrderMaterialIssueUpdateDto.FGShopOrderMaterialIssueGeneralUpdateDtos);
-                var fGShopOrderMaterialIssue = _mapper.Map(fGShopOrderMaterialIssueUpdateDto, updateFGShopOrderMaterialIssue);
+                var fGShopOrderMaterialIssue = _mapper.Map(fGShopOrderMaterialIssueUpdateDto, fGShopOrderMaterialIssueDetailById);
                 fGShopOrderMaterialIssue.FGShopOrderMaterialIssueGeneralList = fGShopOrderMaterialIssueGeneral.ToList();
                 string result = await _fGShopOrderMaterialIssueRepository.UpdateFGShopOrderMaterialIssue(fGShopOrderMaterialIssue);
                 _logger.LogInfo(result);
@@ -232,17 +232,17 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var deleteFGShopOrderMaterialIssue = await _fGShopOrderMaterialIssueRepository.GetFGShopOrderMaterialIssueById(id);
-                if (deleteFGShopOrderMaterialIssue == null)
+                var fGShopOrderMaterialIssueDetailsById = await _fGShopOrderMaterialIssueRepository.GetFGShopOrderMaterialIssueById(id);
+                if (fGShopOrderMaterialIssueDetailsById == null)
                 {
                     _logger.LogError($"Delete FGShopOrderMaterialIssue with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Delete FGShopOrderMaterialIssue with id hasn't been found in db.";
+                    serviceResponse.Message = $"Delete FGShopOrderMaterialIssue with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _fGShopOrderMaterialIssueRepository.DeleteFGShopOrderMaterialIssue(deleteFGShopOrderMaterialIssue);
+                string result = await _fGShopOrderMaterialIssueRepository.DeleteFGShopOrderMaterialIssue(fGShopOrderMaterialIssueDetailsById);
                 _logger.LogInfo(result);
                 _fGShopOrderMaterialIssueRepository.SaveAsync();
                 serviceResponse.Data = null;

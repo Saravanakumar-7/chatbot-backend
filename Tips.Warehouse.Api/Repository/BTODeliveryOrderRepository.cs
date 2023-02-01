@@ -72,6 +72,22 @@ namespace Tips.Warehouse.Api.Repository
             return getBtoDeliveryOrderList;
         }
 
+        public async Task<IEnumerable<ListOfBtoNumberDetails>> GetBtoNumberListByCustomerId(string customerLeadId)
+        {
+
+            IEnumerable<ListOfBtoNumberDetails> getBtoNumberList = await _tipsWarehouseDbContext.bTODeliveryOrder
+                                .Select(x => new ListOfBtoNumberDetails()
+                                {
+                                    CustomerLeadID = x.CustomerLeadId,
+                                    BTONumber = x.BTONumber,
+
+                                })
+                                .Where(x=>x.CustomerLeadID == customerLeadId)
+                              .ToListAsync();
+
+            return getBtoNumberList;
+        }
+
         public async Task<BTODeliveryOrder> GetBTODeliveryOrderById(int id)
         {
             var getBTODeliveryOrderDetailsbyId = await _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.Id == id)
@@ -110,7 +126,7 @@ namespace Tips.Warehouse.Api.Repository
                           .FirstOrDefaultAsync();
             decimal Quantity = Convert.ToDecimal(Qty);
             getSalesOrderDetailsBySOandItemNo.BalanceDoQty = getSalesOrderDetailsBySOandItemNo.DispatchQty - Quantity;
-            getSalesOrderDetailsBySOandItemNo.InvoicedQty = Quantity;
+            getSalesOrderDetailsBySOandItemNo.InvoicedQty += Quantity;
             Update(getSalesOrderDetailsBySOandItemNo);
             return getSalesOrderDetailsBySOandItemNo;
         } 

@@ -108,7 +108,7 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        [HttpGet("{itemNo}")]
+        [HttpGet]
         public async Task<IActionResult> GetItemPriceListByItemNo(string itemNo)
         {
             ServiceResponse<IEnumerable<ItemPriceListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemPriceListDto>>();
@@ -217,10 +217,10 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogInfo($"Returned ItemPriceListdetail with id: {ItemNo}");
                     var result = _mapper.Map<IEnumerable<ItemPriceListDto>>(getItemPriceList);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Rryurned ItemPriceList Successfully";
+                    serviceResponse.Message = "Returned ItemPriceList Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
@@ -327,5 +327,65 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //getallpricelist from itemmasterpricelist model
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllItemPriceNameList()
+        {
+            ServiceResponse<IEnumerable<ItemPriceListNameDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemPriceListNameDto>>();
+            try
+            {
+                var GetAllItemPriceList = await _repository.GetAllItemPriceNameList();                
+
+                _logger.LogInfo("Returned all ItemPriceListName");
+                var result = _mapper.Map<IEnumerable<ItemPriceListNameDto>>(GetAllItemPriceList);
+
+                 serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ItemPriceListName";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        //get all pricelist item number list
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllItemNumberList()
+        {
+            ServiceResponse<IEnumerable<ItemNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemNumberListDto>>();
+            try
+            {
+                var GetAllItemNumber= await _repository.GetAllItemNumberList();
+
+                _logger.LogInfo("Returned all GetAllItemNumber");
+                var result = _mapper.Map<IEnumerable<ItemNumberListDto>>(GetAllItemNumber);
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ItemNumber";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
     }
 }

@@ -12,9 +12,9 @@ namespace Contracts
     public interface IItemMasterRepository
     {
         Task<PagedList<ItemMaster>> GetAllItemMasters(PagingParameter pagingParameter);
-        Task<PagedList<ItemMaster>> GetAllFGItems(PagingParameter pagingParameter);
-        Task<PagedList<ItemMaster>> GetAllSAItems(PagingParameter pagingParameter);
-        Task<PagedList<ItemMaster>> GetAllFgSaItems(PagingParameter pagingParameter);
+        Task<IEnumerable<ItemMaster>> GetAllFGItems();
+        Task<IEnumerable<ItemMaster>> GetAllSAItems();
+        Task<IEnumerable<ItemMaster>> GetAllFgSaItems();
         Task<ItemMaster> GetItemMasterById(int id);
         Task<IEnumerable<ItemMaster>> GetAllActiveItemMasters();
         Task<long> CreateItemMaster(ItemMaster itemMaster);

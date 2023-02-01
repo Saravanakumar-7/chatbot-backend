@@ -67,25 +67,15 @@ namespace Tips.Master.Api.Controllers
         }
         //GET All FG items
         [HttpGet]
-        public async Task<IActionResult> GetAllFGItems([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllFGItems()
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var getAllFGItemsList = await _repository.ItemMasterRepository.GetAllFGItems(pagingParameter);
+                var getAllFGItemsList = await _repository.ItemMasterRepository.GetAllFGItems();
                 _logger.LogInfo("Returned all FGItemMasters");
-                var metadata = new
-                {
-                    getAllFGItemsList.TotalCount,
-                    getAllFGItemsList.PageSize,
-                    getAllFGItemsList.CurrentPage,
-                    getAllFGItemsList.HasNext,
-                    getAllFGItemsList.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-
+               
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGItemsList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all FGItemMasters Successfully";
@@ -110,25 +100,15 @@ namespace Tips.Master.Api.Controllers
 
         //GET All Sa items
         [HttpGet]
-        public async Task<IActionResult> GetAllSAItems([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllSAItems()
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var getAllSAItemsList = await _repository.ItemMasterRepository.GetAllSAItems(pagingParameter);
+                var getAllSAItemsList = await _repository.ItemMasterRepository.GetAllSAItems();
                 _logger.LogInfo("Returned all SAItemMasters");
-                var metadata = new
-                {
-                    getAllSAItemsList.TotalCount,
-                    getAllSAItemsList.PageSize,
-                    getAllSAItemsList.CurrentPage,
-                    getAllSAItemsList.HasNext,
-                    getAllSAItemsList.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-
+               
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllSAItemsList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all SAItemMasters Successfully";
@@ -148,25 +128,15 @@ namespace Tips.Master.Api.Controllers
         }
         //GET All FG&SAItems
         [HttpGet]
-        public async Task<IActionResult> GetAllFGSAItems([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllFGSAItems()
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaItems(pagingParameter);
+                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaItems();
                 _logger.LogInfo("Returned all FGSAItemMasters");
-                var metadata = new
-                {
-                    getAllFGSAItemsList.TotalCount,
-                    getAllFGSAItemsList.PageSize,
-                    getAllFGSAItemsList.CurrentPage,
-                    getAllFGSAItemsList.HasNext,
-                    getAllFGSAItemsList.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-
+               
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGSAItemsList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all FGSAItemMasters Successfully";

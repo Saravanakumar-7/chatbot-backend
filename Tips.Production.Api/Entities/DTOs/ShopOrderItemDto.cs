@@ -6,7 +6,7 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         public int Id { get; set; }
 
-        public string? ItemNumber { get; set; }
+        public string? FGItemNumber { get; set; }
 
         public string? Description { get; set; }
 
@@ -20,10 +20,9 @@ namespace Tips.Production.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? ReleaseQty { get; set; }
     }
-    public class ShopOrderItemDtoPost
+    public class ShopOrderItemPostDto
     {       
-
-        public string? ItemNumber { get; set; }
+        public string? FGItemNumber { get; set; }
 
         public string? Description { get; set; }
 
@@ -37,10 +36,9 @@ namespace Tips.Production.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? ReleaseQty { get; set; }
     }
-    public class ShopOrderItemDtoUpdate    {
-        
-
-        public string? ItemNumber { get; set; }
+    public class ShopOrderItemUpdateDto   
+    {
+        public string? FGItemNumber { get; set; }
 
         public string? Description { get; set; }
 

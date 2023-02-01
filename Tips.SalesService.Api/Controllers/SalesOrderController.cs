@@ -5,6 +5,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
 using Tips.SalesService.Api.Contracts;
@@ -146,15 +147,15 @@ namespace Tips.SalesService.Api.Controllers
                 var salesOrderItemsDto = salesOrderDtoPost.SalesOrderItemsPostDtos;
                 var salesOrderItemsList = new List<SalesOrderItems>();
 
-                if (salesOrderItemsDto != null)
-                {
-                    for (int i = 0; i < salesOrderItemsDto.Count; i++)
-                    {
-                        SalesOrderItems salesOrderItems = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
-                        salesOrderItemsList.Add(salesOrderItems);
-                    }
-                }
-                createSalesOrder.SalesOrdersItems = salesOrderItemsList;
+                //if (salesOrderItemsDto != null)
+                //{
+                //    for (int i = 0; i < salesOrderItemsDto.Count; i++)
+                //    {
+                //        SalesOrderItems salesOrderItems = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
+                //        salesOrderItemsList.Add(salesOrderItems);
+                //    }
+                //}
+                //createSalesOrder.SalesOrdersItems = salesOrderItemsList;
 
 
                 var date = DateTime.Now;
@@ -185,8 +186,7 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         SalesOrderItems salesOrderItems = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
                         salesOrderItems.SalesOrderNumber = createSalesOrder.SalesOrderNumber;
-                        //salesOrderItemsDto[i].sa = createSalesOrder.SalesOrderNumber;
-                        salesOrderItemsList.Add(salesOrderItems);
+                         salesOrderItemsList.Add(salesOrderItems);
                     }
                 }
 
@@ -486,88 +486,30 @@ namespace Tips.SalesService.Api.Controllers
 
 
 
-        //[HttpPost]
-        //public async Task<IActionResult> UpdateDispatchDetails([FromBody] dynamic dispatchDetials)
-        //{
-        //    ServiceResponse<SalesOrderItemsDto> serviceResponse = new ServiceResponse<SalesOrderItemsDto>();
+        [HttpPost]
+        public async Task<IActionResult> UpdateDispatchDetails([FromBody] List<SalesOrderDispatchQtyDto> salesOrderDispatchQtyDto)
+        {
+            //dynamic dispatchDetials
+            //we have to write code for same itemnumber in multiple rows
+            // Deserialise and store it in dynamic varibale
+            //lopp thori=ug the dynamic variable an pass hte item number and so id to salesorderitemdetials, get 
+            //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
+            foreach (var item in salesOrderDispatchQtyDto)
+            {
+                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
+                var orderItem = salesOrderItems.FirstOrDefault();
+                orderItem.BalanceQty = orderItem.BalanceQty - item.DispatchQty;
+                orderItem.DispatchQty += item.DispatchQty;
+                _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+            }
 
-        //    //we have to write code for same itemnumber in multiple rows
-        //      // Deserialise and store it in dynamic varibale
-        //    //lopp thori=ug the dynamic variable an pass hte item number and so id to salesorderitemdetials, get 
-        //    //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
-        //    foreach (dynamic item in dispatchDetials)
-        //    {
-        //        List<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
-        //        var orderItem = salesOrderItems.FirstOrDefault();
-        //        orderItem.BalanceQty = orderItem.BalanceQty - item.DispatchQty;
-        //        orderItem.DispatchQty += item.DispatchQty;
-        //        _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
-        //    }
+          
 
-        //    _salesOrderItemsRepository.SaveAsync();
-
-        //    serviceResponse.Data = null;
-        //    serviceResponse.Message = "Success";
-        //    serviceResponse.Success = true;
-        //    serviceResponse.StatusCode = HttpStatusCode.OK;
-        //    return Ok();
-        //}
+            _salesOrderItemsRepository.SaveAsync();
+            return Ok();
+        }
 
         //getsalesorderdetailbyitemnoandsalesorderId
-
-
-        //[HttpGet]
-        //public async Task<IActionResult> getSalesOrderDetailBySalesOrderIdNoandItemNo(string ItemNo, string SalesOrderId)
-        //{
-        //    ServiceResponse<GetSalesOrderGSTListDto> serviceResponse = new ServiceResponse<GetSalesOrderGSTListDto>();
-
-        //    try
-        //    {
-        //        var getSalesDetail = await _salesOrderItemsRepository.getSOBySalesOrderIdNoandItemNo(ItemNo, SalesOrderId);
-        //        if (getSalesDetail == null)
-        //        {
-        //            _logger.LogError($"SalesOrderDetail with id: {ItemNo}, hasn't been found in db.");
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = $"SalesOrderDetail with id: {ItemNo}, hasn't been found in db.";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            _logger.LogInfo($"Returned SalesOrderDetail with id: {ItemNo}");
-        //            var result = _mapper.Map<GetSalesOrderDetailsDto>(getSalesDetail);
-        //            serviceResponse.Data = result;
-        //            serviceResponse.Message = "Success";
-        //            serviceResponse.Success = true;
-        //            serviceResponse.StatusCode = HttpStatusCode.OK;
-        //            return Ok(result);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = "Inter server error";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, "Internal server error");
-        //    }
-        //}
-
-
-        //public Task<IActionResult> UpdateSOBasedOnCreatingDO()
-        //{
-        //    return null;
-        //}
-
-        //public Task<IActionResult> UpdateSOBasedOnCreatingShopOrder()
-        //{
-        //    return null;
-
-        //}
-
-
 
 
     }

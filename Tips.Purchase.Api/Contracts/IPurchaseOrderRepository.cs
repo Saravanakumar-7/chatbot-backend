@@ -10,18 +10,18 @@ namespace Tips.Purchase.Api.Contracts
 {
     public interface IPurchaseOrderRepository : IRepositoryBase<PurchaseOrder>
     {
-        Task<PagedList<PurchaseOrder>> GetAllPurchaseOrder(PagingParameter pagingParameter);
+        Task<PagedList<PurchaseOrder>> GetAllPurchaseOrders(PagingParameter pagingParameter);
         Task<PurchaseOrder> GetPurchaseOrderById(int id);
-        Task<PurchaseOrder> GetPurchaseOrderByPONumber(string PONumber);
-        Task<IEnumerable<PurchaseOrder>> GetAllActivePurchaseOrder();
+        Task<PurchaseOrder> GetPurchaseOrderByPONumber(string poNumber);
+        Task<IEnumerable<PurchaseOrder>> GetAllActivePurchaseOrders();
         Task<long> CreatePurchaseOrder(PurchaseOrder purchaseOrder);
         Task<string> UpdatePurchaseOrder(PurchaseOrder purchaseOrder);
         Task<string> DeletePurchaseOrder(PurchaseOrder purchaseOrder);
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllActivePurchaseOrderNameList();
-        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPurchaseOrderApprovalINameList();
-        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPurchaseOrderApprovalIINameList();
-        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPoNumberListByVendorName(string vendorName);
-        Task<IEnumerable<PurchaseOrderItemNoListDto>> GetAllPoItemNumberListByPoNumber(string poNumber);
-        //Task<IEnumerable<PoItemListDto>> GetAllPoListByPoNumberAndItemNumber(string poNumber,string itemNumber);
+        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalINameList();
+        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIINameList();
+        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPONumberListByVendorName(string vendorName);
+        Task<IEnumerable<PurchaseOrderItemNoListDto>> GetAllPOItemNumberListByPoNumber(string poNumber);
+      
     }
 }
