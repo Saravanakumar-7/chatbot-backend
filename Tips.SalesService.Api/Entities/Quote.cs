@@ -10,6 +10,10 @@ namespace Tips.SalesService.Api.Entities
         public int Id { get; set; }
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
+        public string? CustomerId { get; set; }
+        public string? RoomName { get; set; }
+
         public string? QuoteRef { get; set; }
         public string? generalDiscountType { get; set; }        
 

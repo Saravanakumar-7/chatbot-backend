@@ -17,7 +17,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13,3)]
         public decimal Qty { get; set; }
-        public string? Description { get; set; } 
+        public string? Description { get; set; }
+        public string? RoomName { get; set; }
         public bool ReleaseStatus { get; set; }       
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
@@ -35,7 +36,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal Qty { get; set; }
 
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
-        public string? Description { get; set; }            
+        public string? Description { get; set; }
+        public string? RoomName { get; set; }
         public List<RfqCSDeliverySchedulePostDto>? RfqCSDeliverySchedule { get; set; }
 
     }
@@ -51,7 +53,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
-       
+        public string? RoomName { get; set; }
+
         public List<RfqCSDeliveryScheduleUpdateDto>? RfqCSDeliverySchedule { get; set; }
 
     }

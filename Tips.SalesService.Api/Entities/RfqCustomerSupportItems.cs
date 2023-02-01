@@ -20,6 +20,7 @@ namespace Tips.SalesService.Api.Entities
         [Precision(13,3)]
         public decimal Qty { get; set; }
         public string? Description { get; set; }
+        public string? RoomName { get; set; }
         public bool ReleaseStatus { get; set; } = false;      
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }

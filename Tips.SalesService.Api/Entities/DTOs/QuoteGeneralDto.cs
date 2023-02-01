@@ -49,6 +49,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? Total { get; set; }
+        public string? RoomName { get; set; }
 
     }
     public class QuoteGeneralPostDto
@@ -98,6 +99,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? Total { get; set; }
+        public string? RoomName { get; set; }
     }
     public class QuoteGeneralUpdateDto
     {
@@ -145,6 +147,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? Total { get; set; }
-        
+        public string? RoomName { get; set; }
+
     }
 }

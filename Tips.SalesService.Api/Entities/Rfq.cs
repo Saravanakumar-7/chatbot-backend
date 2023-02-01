@@ -15,6 +15,7 @@ namespace Tips.SalesService.Api.Entities
         [Key]
         public int Id { get; set; }
         public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
 
         [Precision(13,1)]
         public decimal? RevisionNumber { get; set; }
@@ -23,6 +24,8 @@ namespace Tips.SalesService.Api.Entities
         public string? CustomerId { get; set; }
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
         public bool? IsSourcing { get; set; } = false;
         public bool? IsLpCosting { get; set; } = false;
         public bool? IsLpCostingRelease { get; set; } = false;
