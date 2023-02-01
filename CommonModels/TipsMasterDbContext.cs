@@ -111,8 +111,9 @@ namespace Entities
 
         public DbSet<EnggBomGroup> BomGroups { get; set; }
         public DbSet<EnggCustomField> CustomFields { get; set; }
-         
-       
+        public DbSet<ProductType>? ProductTypes { get; set; }
+        public DbSet<RoomNames>? RoomNames { get; set; }
+        public DbSet<TypeSolution> TypeSolutions { get; set; }
 
     }
 }

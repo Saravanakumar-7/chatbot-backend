@@ -17,6 +17,10 @@ namespace Repository
         private IProcurementTypeRepository _procurementTypeRepo;
         private IItemMasterRepository _itemMasterRepo;
         private IEnggBomRepository? _enggBomRepository;
+        private ITypeSolutionRepository _typeSolutionRepository;
+        private IProductTypeRepository? _productTypeRepository;
+ 
+        private IRoomNameRepository? _roomNameRepository;
         private IEnggBomNREConsumableRepository? _enggBomNREConsumableRepository;
          
 
@@ -126,8 +130,41 @@ namespace Repository
                 return _itemmasterRoutingRepository;
             }
         }
+        public IRoomNameRepository RoomNameRepository
+        {
+            get
+            {
+                if (_roomNameRepository == null)
+                {
+                    _roomNameRepository = new RoomNameRepository(_tipsMasterDbContext);
+                }
+                return _roomNameRepository;
+            }
+        }
+        public ITypeSolutionRepository TypeSolutionRepository
+        {
+            get
+            {
+                if (_typeSolutionRepository == null)
+                {
+                    _typeSolutionRepository = new TypeSolutionRepository(_tipsMasterDbContext);
+                }
+                return _typeSolutionRepository;
+            }
+        }
 
- 
+        public IProductTypeRepository ProductTypeRepository
+        {
+            get
+            {
+                if (_productTypeRepository == null)
+                {
+                    _productTypeRepository = new ProductTypeRepository(_tipsMasterDbContext);
+                }
+                return _productTypeRepository;
+            }
+        }
+
         public ISourceRepository sourceRepository
         {
             get
@@ -845,6 +882,7 @@ namespace Repository
 
         public IEnggBomChildItemRepository EnggBomChildItemRepository => throw new NotImplementedException();
 
+ 
         //public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
 
         //add new

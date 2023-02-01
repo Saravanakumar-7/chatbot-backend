@@ -3,11 +3,10 @@
     public class ReturnDeliveryOrder
     {
         public int Id { get; set; }
-        public string? ReturnDeliveryOrderNumber { get; set; }
-        public DateTime? ReturnDeliveryOrderDate { get; set; }
+        public string? ReturnDONumber { get; set; }
+        public DateTime? ReturnDODate { get; set; }
         public string? CustomerName { get; set; }
-        public string? CustomerAliasName { get; set; }
-        public string? CustomerId { get; set; }
+         public string? CustomerId { get; set; }
         public string? PONumber { get; set; }
         public string? IssuedTo { get; set; }
 

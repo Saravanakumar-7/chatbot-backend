@@ -36,7 +36,6 @@ namespace Tips.Master.Api
             CreateMap<Warehouse, WarehouseDtoPost>().ReverseMap();
             CreateMap<Warehouse, WarehouseDtoUpdate>().ReverseMap();
 
-
             CreateMap<UOM, UOMDto>().ReverseMap();
             CreateMap<UOM, UOMDtoPost>().ReverseMap();
             CreateMap<UOM, UOMDtoUpdate>().ReverseMap();
@@ -339,7 +338,20 @@ namespace Tips.Master.Api
 
             CreateMap<EnggCustomField, EnggCustomFieldDto>().ReverseMap();
             CreateMap<EnggCustomField, EnggCustomFieldDtoPost>().ReverseMap();
-            CreateMap<EnggCustomField, EnggCustomFieldDtoUpdate>().ReverseMap(); 
+            CreateMap<EnggCustomField, EnggCustomFieldDtoUpdate>().ReverseMap();
+
+            CreateMap<TypeSolution, TypeSolutionDto>().ReverseMap();
+            CreateMap<TypeSolution, TypeSolutionPostDto>().ReverseMap();
+            CreateMap<TypeSolution, TypeSolutionUpdateDto>().ReverseMap();
+
+            CreateMap<ProductType, ProductTypeDto>().ReverseMap();
+            CreateMap<ProductType, ProductTypePostDto>().ReverseMap();
+            CreateMap<ProductType, ProductTypeUpdateDto>().ReverseMap();
+
+
+            CreateMap<RoomNames, RoomNamesDto>().ReverseMap();
+            CreateMap<RoomNames, RoomNamePostDto>().ReverseMap();
+            CreateMap<RoomNames, RoomNameUpdateDto>().ReverseMap();
 
         }
     }

@@ -25,6 +25,9 @@ namespace Tips.SalesService.Api.Entities
         public string? Currency { get; set; }
 
         [Precision(18, 3)]
+        public decimal? TotalAmount { get; set; }
+
+        [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
 
         [Precision(13, 3)]

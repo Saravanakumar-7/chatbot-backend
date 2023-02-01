@@ -39,6 +39,10 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal? UTGST { get; set; }
         [Precision(13, 3)]
         public decimal? IGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAmount { get; set; }        
+
         public DateTime RequestedDate { get; set; }
         public string? Remarks { get; set; }
 
@@ -77,6 +81,9 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal? UTGST { get; set; }
         [Precision(13, 3)]
         public decimal? IGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAmount { get; set; }
         public DateTime RequestedDate { get; set; }
         public string? Remarks { get; set; }
     }
@@ -114,6 +121,9 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal? UTGST { get; set; }
         [Precision(13, 3)]
         public decimal? IGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAmount { get; set; }
         public DateTime RequestedDate { get; set; }
         public string? Remarks { get; set; }
 

@@ -87,11 +87,11 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var bom = await _repository.EnggBomRepository.GetEnggBomById(id);
+                var bomDetail = await _repository.EnggBomRepository.GetEnggBomById(id);
 
 
 
-                if (bom == null)
+                if (bomDetail == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"Engineering Bom with id: {id}, hasn't been found in db.";
@@ -103,13 +103,18 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Engineering Bom with id: {id}");
-                    EnggBomDto enggBomDto = _mapper.Map<EnggBomDto>(bom);
+                    EnggBomDto enggBomDto = _mapper.Map<EnggBomDto>(bomDetail);
                     List<EnggChildItemDto> childItemsDtos = new List<EnggChildItemDto>();
-                    foreach (var itemDetails in bom.EnggChildItems)
+                    enggBomDto.BomNREConsumableDto = _mapper.Map<List<BomNREConsumableDto>>(bomDetail.NREConsumable);
+
+                    if (bomDetail.EnggChildItems != null)
                     {
-                        EnggChildItemDto enggChildItemDto = _mapper.Map<EnggChildItemDto>(itemDetails);
-                        enggChildItemDto.EnggAlternatesDtos = _mapper.Map<List<EnggAlternatesDto>>(itemDetails.EnggAlternates);                       
-                        childItemsDtos.Add(enggChildItemDto);
+                        foreach (var itemDetails in bomDetail.EnggChildItems)
+                        {
+                            EnggChildItemDto enggChildItemDto = _mapper.Map<EnggChildItemDto>(itemDetails);
+                            enggChildItemDto.EnggAlternatesDtos = _mapper.Map<List<EnggAlternatesDto>>(itemDetails.EnggAlternates);
+                            childItemsDtos.Add(enggChildItemDto);
+                        }
                     }
                     enggBomDto.EnggChildItemDtos = childItemsDtos;
                     serviceResponse.Data = enggBomDto;

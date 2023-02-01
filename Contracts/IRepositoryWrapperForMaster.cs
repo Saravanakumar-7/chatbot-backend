@@ -104,7 +104,12 @@ namespace Contracts
 
         IEnggBomGroupRepository EnggBomGroupRepository { get; }
         IEnggCustomFieldRepository EnggCustomFieldRepository { get; }
-         
+
+         IProductTypeRepository ProductTypeRepository { get; }
+        ITypeSolutionRepository TypeSolutionRepository { get; }
+
+        IRoomNameRepository RoomNameRepository { get; }
+
         void SaveAsync();
     }
 }

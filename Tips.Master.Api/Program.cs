@@ -27,7 +27,9 @@ builder.Services.AddScoped<IEnggBomGroupRepository, EnggBomGroupRepository>();
 builder.Services.AddScoped<IReleaseEnggBomRepository, ReleaseEnggBomRepository>();
 builder.Services.AddScoped<ILeadRepository, LeadRepository>();
 
-
+builder.Services.AddScoped<IRoomNameRepository, RoomNameRepository>();
+builder.Services.AddScoped<IProductTypeRepository, ProductTypeRepository>();
+builder.Services.AddScoped<ITypeSolutionRepository, TypeSolutionRepository>();
 
 
 var app = builder.Build();
