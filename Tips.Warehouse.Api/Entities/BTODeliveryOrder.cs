@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Warehouse.Api.Entities
@@ -9,6 +10,10 @@ namespace Tips.Warehouse.Api.Entities
         public int Id { get; set; }
         public string CustomerName { get; set; }
         public string CustomerAliasName { get; set; }
+
+        [Precision(13,3)]
+        public decimal? ReturnQty { get; set; }
+
         public string CustomerLeadId { get; set; }
         public string BTONumber { get; set; }        
         public int SalesOrderId { get; set; }

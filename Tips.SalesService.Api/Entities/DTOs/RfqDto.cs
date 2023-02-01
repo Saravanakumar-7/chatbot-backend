@@ -14,6 +14,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
@@ -29,6 +30,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -38,24 +41,30 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class RfqPostDto
     {
         public string? CustomerName { get; set; }
-        //[Required]
-        //public string RfqNumber { get; set; }
-        public string? CustomerId { get; set; }
-        public string? CustomerRfqNumber { get; set; }
-        public DateTime? RequestReceivedate { get; set; }
-        public DateTime? QuoteExpectdate { get; set; }       
-        
-    }
-    public class RfqUpdateDto
-    {
-        public int Id { get; set; }
-        public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
         //[Required]
         //public string RfqNumber { get; set; }
         public string? CustomerId { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+
+    }
+    public class RfqUpdateDto
+    {
+        public int Id { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
+        //[Required]
+        //public string RfqNumber { get; set; }
+        public string? CustomerId { get; set; }
+        public string? CustomerRfqNumber { get; set; }
+        public DateTime? RequestReceivedate { get; set; }
+        public DateTime? QuoteExpectdate { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
         public string Unit { get; set; }
        
     }
