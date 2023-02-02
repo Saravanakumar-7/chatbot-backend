@@ -184,7 +184,21 @@ namespace Tips.SalesService.Api.Repository
                         .FirstOrDefaultAsync();
             return SourcingByRfqNumber;
         }
-         
+        public async Task<Rfq> RfqCsByRfqNumbers(string RfqNumber)
+        {
+            var rfqCsByRfqNumber = await _tipsSalesServiceDbContext.Rfqs
+              .Where(x => x.RfqNumber == RfqNumber)
+                        .FirstOrDefaultAsync();
+            return rfqCsByRfqNumber;
+        }
+        public async Task<Rfq> RfqEnggByRfqNumbers(string RfqNumber)
+        {
+            var rfqEnggByRfqNumber = await _tipsSalesServiceDbContext.Rfqs
+              .Where(x => x.RfqNumber == RfqNumber)
+                        .FirstOrDefaultAsync();
+            return rfqEnggByRfqNumber;
+        }
+
 
         public async Task<Rfq> RfqDetailsByRfqNumbers(string rfqNumber)
         {

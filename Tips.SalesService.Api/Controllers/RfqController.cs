@@ -917,6 +917,11 @@ namespace Tips.SalesService.Api.Controllers
 
                 var createRfqCS = _mapper.Map<RfqCustomerSupport>(rfqCustomerSupportDto);
 
+                var rfqCsData = createRfqCS.RfqNumber;
+
+                var rfqIsCsCompleteUpdate = await _rfqRepository.RfqCsByRfqNumbers(rfqCsData);
+
+                rfqIsCsCompleteUpdate.IsCsComplete = true;
 
                 var rfqCSItemDto = rfqCustomerSupportDto.RfqCustomerSupportItems;
 
@@ -931,7 +936,7 @@ namespace Tips.SalesService.Api.Controllers
                 createRfqCS.RfqCustomerSupportItems = rfqCustomerSupportLists;
 
                 _repository.CreateRfqCustomerSupport(createRfqCS);
-
+                _rfqRepository.Update(rfqIsCsCompleteUpdate);
                 _repository.SaveAsync();
                 var rfqNumber = createRfqCS.RfqNumber;
                 var getIsSourcingAvailable = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
@@ -1145,7 +1150,15 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var createRfqEngg =  _mapper.Map<RfqEngg>(rfqEnggDtoPost);
+
+                var rfqEnggData = createRfqEngg.RFQNumber;
+
+                var rfqIsEnggCompleteUpdate = await _rfqRepository.RfqEnggByRfqNumbers(rfqEnggData);
+
+                rfqIsEnggCompleteUpdate.IsEnggComplete = true;
+
                 _rfqenggRepository.CreateRfqEngg(createRfqEngg);
+                _rfqRepository.Update(rfqIsEnggCompleteUpdate);
                 _rfqenggRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";

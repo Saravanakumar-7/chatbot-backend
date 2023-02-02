@@ -13,9 +13,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {   
         public int Id { get; set; }    
         public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
+        public string? CustomerId { get; set; }
         public string RFQNumber { get; set; }
         public string? CustomerRfqNumber { get; set; }
-
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
