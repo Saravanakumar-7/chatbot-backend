@@ -78,7 +78,7 @@ namespace Tips.Warehouse.Api.Repository
             IEnumerable<ListOfBtoNumberDetails> getBtoNumberList = await _tipsWarehouseDbContext.bTODeliveryOrder
                                 .Select(x => new ListOfBtoNumberDetails()
                                 {
-                                    CustomerLeadID = x.CustomerLeadId,
+                                    CustomerLeadID = x.CustomerId,
                                     BTONumber = x.BTONumber,
 
                                 })

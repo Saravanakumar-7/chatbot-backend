@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
+using Tips.Warehouse.Api.Repository;
 
 namespace Tips.Warehouse.Api.Controllers
 {
@@ -19,6 +20,7 @@ namespace Tips.Warehouse.Api.Controllers
     public class ReturnDeliveryOrderController : ControllerBase
     {
         private IReturnDeliveryOrderRepository _repository;
+        private IInventoryRepository _inventoryRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
 
@@ -162,7 +164,34 @@ namespace Tips.Warehouse.Api.Controllers
                         ReturnDeliveryOrderItems returnDeliveryOrderItems = _mapper.Map<ReturnDeliveryOrderItems>(returnDeliveryOrderitemsDto[i]);
                         returnDeliveryOrderItems.ReturnQty = returnDeliveryOrderItems.AlreadyReturnQty + returnDeliveryOrderItems.ReturnQty;
                         returnDeliveryOrderItems.AlreadyReturnQty = returnDeliveryOrderItems.AlreadyReturnQty + returnDeliveryOrderItems.ReturnQty;
+                        returnDeliveryOrderItems.DispatchQty = returnDeliveryOrderItems.DispatchQty - returnDeliveryOrderItems.ReturnQty;
                         returnDeliveryOrderItemsDtoList.Add(returnDeliveryOrderItems);
+
+                        //Update Inventory balanced Quantity 
+                        var PartNumber = returnDeliveryOrderitemsDto[i].FGPartNumber;
+                        var getInventoryDetails = await _inventoryRepository.UpdateInventoryBalanceQtys(PartNumber);
+                        decimal ReturnQty = Convert.ToDecimal(returnDeliveryOrderitemsDto[i].ReturnQty);
+                        if (getInventoryDetails != null)
+                        {
+                            if (ReturnQty != 0 && getInventoryDetails.Balance_Quantity >= ReturnQty)
+                            {
+                                getInventoryDetails.Balance_Quantity = getInventoryDetails.Balance_Quantity + ReturnQty;
+                                ReturnQty = 0;
+                                if (getInventoryDetails.Balance_Quantity == 0)
+                                {
+                                    getInventoryDetails.IsStockAvailable = false;
+                                }
+                            }
+                            if (ReturnQty != 0 && getInventoryDetails.Balance_Quantity < ReturnQty)
+                            {
+                                ReturnQty = ReturnQty - getInventoryDetails.Balance_Quantity;
+                                getInventoryDetails.Balance_Quantity = 0;
+                                getInventoryDetails.IsStockAvailable = false;
+                            }
+
+                        }
+                        _inventoryRepository.Update(getInventoryDetails);
+                        _inventoryRepository.SaveAsync();
                     }
                 }
 
