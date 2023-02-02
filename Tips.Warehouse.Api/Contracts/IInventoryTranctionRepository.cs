@@ -2,6 +2,7 @@
 using Entities;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Repository;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Contracts
 {

@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
+using Tips.Warehouse.Api.Repository;
 
 namespace Tips.Warehouse.Api.Controllers
 {
@@ -19,6 +20,8 @@ namespace Tips.Warehouse.Api.Controllers
     public class BTODeliveryOrderController : ControllerBase
     {
         private IBTODeliveryOrderRepository _repository;
+        private IInventoryTranctionRepository _inventoryTranctionRepository;
+
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IInventoryRepository _inventoryRepository;
@@ -252,6 +255,32 @@ namespace Tips.Warehouse.Api.Controllers
                         bTODeliveryOrderItemsDetails.BalanceDoQty = bTODeliveryOrderItemsDetails.DispatchQty;
                         bTODeliveryOrderItemsDetails.BTONumber = bTODeliveryOrder.BTONumber;
                         bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDetails);
+
+                        //Update Inventory balanced Quantity 
+                        var PartNumber = bTODeliveryOrderItemsDtoList[i].FGItemNumber;
+                        var getInventoryDetails = await _inventoryRepository.UpdateInventoryBalanceQtys(PartNumber);
+                        decimal Quantity = Convert.ToDecimal(bTODeliveryOrderitemsList[i].DispatchQty);
+                        if (getInventoryDetails != null)
+                        {
+                            if (Quantity != 0 && getInventoryDetails.Balance_Quantity >= Quantity)
+                            {
+                                getInventoryDetails.Balance_Quantity = getInventoryDetails.Balance_Quantity - Quantity;
+                                Quantity = 0;
+                                if (getInventoryDetails.Balance_Quantity == 0)
+                                {
+                                    getInventoryDetails.IsStockAvailable = false;
+                                }
+                            }
+                            if (Quantity != 0 && getInventoryDetails.Balance_Quantity < Quantity)
+                            {
+                                Quantity = Quantity - getInventoryDetails.Balance_Quantity;
+                                getInventoryDetails.Balance_Quantity = 0;
+                                getInventoryDetails.IsStockAvailable = false;
+                            }
+                
+                        } 
+                        _inventoryRepository.Update(getInventoryDetails);
+                        _inventoryRepository.SaveAsync();
                     }
                 }
 
@@ -259,29 +288,15 @@ namespace Tips.Warehouse.Api.Controllers
 
                 await _repository.CreateBTODeliveryOrder(bTODeliveryOrder);
                 _repository.SaveAsync();
-
+ 
                 //update balance qty and dispatch qty in salesorder table
                 var btoDeliveryDispatchDetails = _mapper.Map<List<BtoDeliveryOrderDispatchQtyDetailsDto>>(bTODeliveryOrderitemsList);
-                                
-                    //if (btoDeliveryDispatchDetails != null)
-                    //{
-                    //for (int i = 0; i < btoDeliveryDispatchDetails.Count; i++)
-                    //{
-                    //    dynamic inventoryObject = new ExpandoObject();
-                    //    inventoryObject.FGItemNumber = btoDeliveryDispatchDetails[i].FGItemNumber;
-                    //    inventoryObject.SalesOrderId = btoDeliveryDispatchDetails[i].SalesOrderId;
-                    //    inventoryObject.DispatchQty = btoDeliveryDispatchDetails[i].DispatchQty;
+                         
+                var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchDetails"), data);
+                 
 
-                        var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
-                        var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchDetails"), data);
-
-
-                        //var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
-                        //var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        //var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchDetails"), data);
-                //    }
-                //}
                 serviceResponse.Data = null;
                 serviceResponse.Message = " BTODeliveryOrder Successfully Created";
                 serviceResponse.Success = true;

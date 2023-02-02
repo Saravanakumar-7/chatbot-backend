@@ -25,6 +25,8 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<ReturnDeliveryOrderItems> ReturnDeliveryOrderItems { get; set; }
         public DbSet<ReturnInvoice> ReturnInvoices { get; set; }
         public DbSet<ReturnInvoiceItem> ReturnInvoiceItems { get; set; }
+        public DbSet<DeliveryOrderTransaction> DeliveryOrderTransactions { get; set; }
+       
 
     }
 }

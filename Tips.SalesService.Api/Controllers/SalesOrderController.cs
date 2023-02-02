@@ -501,9 +501,7 @@ namespace Tips.SalesService.Api.Controllers
                 orderItem.BalanceQty = orderItem.BalanceQty - item.DispatchQty;
                 orderItem.DispatchQty += item.DispatchQty;
                 _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
-            }
-
-          
+            }          
 
             _salesOrderItemsRepository.SaveAsync();
             return Ok();

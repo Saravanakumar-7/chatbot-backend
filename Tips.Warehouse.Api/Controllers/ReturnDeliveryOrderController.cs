@@ -160,6 +160,8 @@ namespace Tips.Warehouse.Api.Controllers
                     for (int i = 0; i < returnDeliveryOrderitemsDto.Count; i++)
                     {
                         ReturnDeliveryOrderItems returnDeliveryOrderItems = _mapper.Map<ReturnDeliveryOrderItems>(returnDeliveryOrderitemsDto[i]);
+                        returnDeliveryOrderItems.ReturnQty = returnDeliveryOrderItems.AlreadyReturnQty + returnDeliveryOrderItems.ReturnQty;
+                        returnDeliveryOrderItems.AlreadyReturnQty = returnDeliveryOrderItems.AlreadyReturnQty + returnDeliveryOrderItems.ReturnQty;
                         returnDeliveryOrderItemsDtoList.Add(returnDeliveryOrderItems);
                     }
                 }
