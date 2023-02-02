@@ -88,5 +88,43 @@ namespace Tips.Warehouse.Api.Repository
             string result = $"materialIssue of Detail {inventory.Id} is updated successfully!";
             return result;
         }
+
+        public async Task<Inventory> UpdateInventoryBalanceQtys(string ItemNumber)
+        {
+            var getSalesOrderDetailsBySOandItemNo = await _tipsWarehouseDbContext.Inventory
+                 .Where(x => x.PartNumber == ItemNumber)
+                          .FirstOrDefaultAsync();
+
+            return getSalesOrderDetailsBySOandItemNo;
+        }
+
+        //public async Task<Inventory> UpdateInventoryBalanceQty(string partNumber, string Qty)
+        //{
+        //    var getInventoryDetails = await _tipsWarehouseDbContext.Inventory
+        //            .Where(x => x.PartNumber == partNumber)
+        //                  .FirstOrDefaultAsync();
+        //    decimal Quantity = Convert.ToDecimal(Qty);
+        //    if (getInventoryDetails != null)
+        //    {
+        //        if (Quantity != 0 && getInventoryDetails.Balance_Quantity >= Quantity)
+        //        {
+        //            getInventoryDetails.Balance_Quantity = getInventoryDetails.Balance_Quantity - Quantity;
+        //            Quantity = 0;
+        //            if (getInventoryDetails.Balance_Quantity == 0)
+        //            {
+        //                getInventoryDetails.IsStockAvailable = false;
+        //            }
+        //        }
+        //        if (Quantity != 0 && getInventoryDetails.Balance_Quantity < Quantity)
+        //        {
+        //            Quantity = Quantity - getInventoryDetails.Balance_Quantity;
+        //            getInventoryDetails.Balance_Quantity = 0;
+        //            getInventoryDetails.IsStockAvailable = false;
+        //        }
+        //        Update(getInventoryDetails);
+        //    }
+        //    return getInventoryDetails;
+        //}
+
     }
 }
