@@ -126,6 +126,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
+        public string? RoomName { get; set; }
         public string? CustomerId { get; set; }
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }

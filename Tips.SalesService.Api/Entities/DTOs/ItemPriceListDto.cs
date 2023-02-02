@@ -105,11 +105,15 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class ItemPriceListNameDto
     { 
-        public string? PriceListName { get; set; } 
+        public string? PriceListName { get; set; }
+        
+
     }
 
     public class ItemNumberListDto
     {
         public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
+
     }
 }
