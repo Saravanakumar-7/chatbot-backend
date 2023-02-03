@@ -139,13 +139,14 @@ namespace Entities.DTOs
     }
     public class CustomerMasterDtoPost
     {
-        [Required(ErrorMessage = "CompanyId is required")]
+        [Required(ErrorMessage = "CustomerId is required")]
         public string? CustomerId { get; set; }
 
-        [Required(ErrorMessage = "CompanyId is required")]
+        [Required(ErrorMessage = "CustomerName is required")]
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
-        [Required(ErrorMessage = "CompanyId is required")]
+
+        [Required(ErrorMessage = "CustomerType is required")]
         public string? CustomerType { get; set; }
         public string? Address { get; set; }
         public string? City { get; set; }

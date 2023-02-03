@@ -52,6 +52,7 @@ namespace Tips.SalesService.Api.Entities
         [Precision(18, 3)]
         public decimal? Total { get; set; }
         public string? RoomName { get; set; }
+        public string? CustomFields { get; set; }
 
         public int QuoteId { get; set; }
         public Quote? Quote { get; set; }
