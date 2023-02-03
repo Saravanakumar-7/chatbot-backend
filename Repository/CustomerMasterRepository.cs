@@ -42,7 +42,9 @@ namespace Repository
                                 {
                                     Id = x.Id,
                                     CustomerAliasName = x.CustomerAliasName,
-                                    CustomerName = x.CustomerName 
+                                    CustomerName = x.CustomerName,
+                                    CustomerId = x.CustomerId
+
                                 })
                                 .OrderByDescending(x => x.Id)
                               .ToListAsync();   

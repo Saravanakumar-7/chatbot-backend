@@ -34,6 +34,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? BalanceQty { get; set; }
 
         public string? Remarks { get; set; }
+        public string? SerialNo { get; set; }
 
         public DateTime? CreatedOn { get; set; }
 
@@ -75,6 +76,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? BalanceQty { get; set; }
 
         public string? Remarks { get; set; }
+        public string? SerialNo { get; set; }
+
 
     }
 
@@ -109,6 +112,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? BalanceQty { get; set; }
 
         public string? Remarks { get; set; }
+        public string? SerialNo { get; set; }
+
 
         public DateTime? CreatedOn { get; set; }
 

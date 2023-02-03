@@ -31,7 +31,7 @@ namespace Tips.Warehouse.Api.Entities
 
         [Precision(13, 2)]
         public decimal? BalanceQty { get; set; }
-
+        public string? SerialNo { get; set; }
         public string? Remarks { get; set; }
 
         public DateTime? CreatedOn { get; set; }
