@@ -287,7 +287,10 @@ namespace Tips.Warehouse.Api.Controllers
                 bTODeliveryOrder.BTODeliveryOrderItems = bTODeliveryOrderItemsDtoList;
 
                 await _repository.CreateBTODeliveryOrder(bTODeliveryOrder);
-                _repository.SaveAsync();
+                _repository.SaveAsync(); 
+
+
+                
  
                 //update balance qty and dispatch qty in salesorder table
                 var btoDeliveryDispatchDetails = _mapper.Map<List<BtoDeliveryOrderDispatchQtyDetailsDto>>(bTODeliveryOrderitemsList);
@@ -295,7 +298,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchDetails"), data);
-                 
+                  
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = " BTODeliveryOrder Successfully Created";

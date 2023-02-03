@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+﻿using System.Dynamic;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
@@ -23,12 +23,18 @@ namespace Tips.Warehouse.Api.Controllers
         private IInventoryRepository _inventoryRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
 
-        public ReturnDeliveryOrderController(IReturnDeliveryOrderRepository repository, ILoggerManager logger, IMapper mapper)
+        public ReturnDeliveryOrderController(IReturnDeliveryOrderRepository repository,IInventoryRepository inventoryRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _httpClient = httpClient;
+            _config = config;
+            _inventoryRepository = inventoryRepository;
+
         }
 
 
@@ -172,23 +178,9 @@ namespace Tips.Warehouse.Api.Controllers
                         var getInventoryDetails = await _inventoryRepository.UpdateInventoryBalanceQtys(PartNumber);
                         decimal ReturnQty = Convert.ToDecimal(returnDeliveryOrderitemsDto[i].ReturnQty);
                         if (getInventoryDetails != null)
-                        {
-                            if (ReturnQty != 0 && getInventoryDetails.Balance_Quantity >= ReturnQty)
-                            {
-                                getInventoryDetails.Balance_Quantity = getInventoryDetails.Balance_Quantity + ReturnQty;
-                                ReturnQty = 0;
-                                if (getInventoryDetails.Balance_Quantity == 0)
-                                {
-                                    getInventoryDetails.IsStockAvailable = false;
-                                }
-                            }
-                            if (ReturnQty != 0 && getInventoryDetails.Balance_Quantity < ReturnQty)
-                            {
-                                ReturnQty = ReturnQty - getInventoryDetails.Balance_Quantity;
-                                getInventoryDetails.Balance_Quantity = 0;
-                                getInventoryDetails.IsStockAvailable = false;
-                            }
-
+                        { 
+                            getInventoryDetails.Balance_Quantity = getInventoryDetails.Balance_Quantity + ReturnQty;
+                            getInventoryDetails.IsStockAvailable = true;
                         }
                         _inventoryRepository.Update(getInventoryDetails);
                         _inventoryRepository.SaveAsync();
@@ -199,6 +191,17 @@ namespace Tips.Warehouse.Api.Controllers
 
                 await _repository.CreateReturnDeliveryOrder(returnDeliveryOrder);
                 _repository.SaveAsync();
+
+                //update balance qty and dispatch qty in sales order table for return bto concept
+
+                var btoDeliveryDispatchDetails = _mapper.Map<ReturnBtoDODispatchQtyDetailsDto>(returnDeliveryOrderitemsDto);
+
+                var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnDOUpdateDispatchDetails"), data);
+
+
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = " BTODeliveryOrder Successfully Created";
                 serviceResponse.Success = true;
