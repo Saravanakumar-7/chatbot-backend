@@ -194,16 +194,14 @@ namespace Tips.Warehouse.Api.Controllers
 
                 //update balance qty and dispatch qty in sales order table for return bto concept
 
-                var btoDeliveryDispatchDetails = _mapper.Map<ReturnBtoDODispatchQtyDetailsDto>(returnDeliveryOrderitemsDto);
+                var btoDeliveryReturnDetails = _mapper.Map<List<BtoDOReturnQtyDetailsDto>>(returnDeliveryOrderitemsDto);
 
-                var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
+                var json = JsonConvert.SerializeObject(btoDeliveryReturnDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnDOUpdateDispatchDetails"), data);
 
-
-
                 serviceResponse.Data = null;
-                serviceResponse.Message = " BTODeliveryOrder Successfully Created";
+                serviceResponse.Message = " BTODeliveryOrder Quantity Return Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
