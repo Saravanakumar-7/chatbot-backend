@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {
@@ -52,6 +53,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? UnitPrice { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
+        public int SalesOrderId { get; set; }
 
         [Precision(13, 2)]
         public decimal? FGOrderQty { get; set; }
@@ -113,6 +115,17 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? CreatedBy { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+
+    }
+
+    public class ReturnBtoDODispatchQtyDetailsDto
+    {
+
+        public string FGPartNumber { get; set; }
+        public int SalesOrderId { get; set; }
+        public decimal ReturnQty { get; set; }
+
+
 
     }
 
