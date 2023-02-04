@@ -37,6 +37,9 @@ builder.Services.AddScoped<IInventoryTranctionRepository, InventoryTranctionRepo
 builder.Services.AddScoped<IReturnInvoiceRepository, ReturnInvoiceRepository>();
 builder.Services.AddScoped<IBTODeliveryOrderItemsRepository, BTODeliveryOrderItemRepository>();
 
+builder.Services.AddScoped<IBTODeliveryOrderHistoryRepository, BTODeliveryOrderHistoryRepository>();
+
+
 
 
 builder.Services.AddControllers();

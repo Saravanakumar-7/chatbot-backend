@@ -507,6 +507,53 @@ namespace Tips.SalesService.Api.Controllers
             return Ok();
         }
 
+        //below method old dispatch qty greater then new dispatch qty in bto edit part
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateDispatchQtyGreaterThenNewDispatchQty([FromBody] List<SalesOrderDispatchQtyDto> salesOrderDispatchQtyDto)
+        {
+            //dynamic dispatchDetials
+            //we have to write code for same itemnumber in multiple rows
+            // Deserialise and store it in dynamic varibale
+            //lopp thori=ug the dynamic variable an pass hte item number and so id to salesorderitemdetials, get 
+            //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
+            foreach (var item in salesOrderDispatchQtyDto)
+            {
+                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
+                var orderItem = salesOrderItems.FirstOrDefault();
+                orderItem.BalanceQty = orderItem.BalanceQty + item.DispatchQty;
+                orderItem.DispatchQty -= item.DispatchQty;
+                _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+            }
+
+            _salesOrderItemsRepository.SaveAsync();
+            return Ok();
+        }
+
+        //below method old dispatch qty Smaller then new dispatch qty in bto edit part
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateDispatchQtySmallerThenNewDispatchQty([FromBody] List<SalesOrderDispatchQtyDto> salesOrderDispatchQtyDto)
+        {
+            //dynamic dispatchDetials
+            //we have to write code for same itemnumber in multiple rows
+            // Deserialise and store it in dynamic varibale
+            //lopp thori=ug the dynamic variable an pass hte item number and so id to salesorderitemdetials, get 
+            //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
+            foreach (var item in salesOrderDispatchQtyDto)
+            {
+                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
+                var orderItem = salesOrderItems.FirstOrDefault();
+                orderItem.BalanceQty = orderItem.BalanceQty - item.DispatchQty;
+                orderItem.DispatchQty += item.DispatchQty;
+                _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+            }
+
+            _salesOrderItemsRepository.SaveAsync();
+            return Ok();
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> ReturnDOUpdateDispatchDetails([FromBody] List<ReturnDOSalesOrderDispatchQtyDto> salesOrderDispatchQtyDto)
         {
@@ -517,7 +564,7 @@ namespace Tips.SalesService.Api.Controllers
             //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
             foreach (var item in salesOrderDispatchQtyDto)
             {
-                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
+                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
                 var orderItem = salesOrderItems.FirstOrDefault();
                 orderItem.BalanceQty = orderItem.BalanceQty + item.ReturnQty;
                 orderItem.DispatchQty -= item.ReturnQty;

@@ -49,6 +49,7 @@
         
         public string FGItemNumber { get; set; }
         public string Description { get; set; }
+        public int SalesOrderId { get; set; }
         public decimal UnitPrice { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
@@ -73,6 +74,16 @@
         public string FGItemNumber { get; set; }
         public int SalesOrderId { get; set; }
         public decimal DispatchQty { get; set; } 
+
+
+
+    }
+    public class BtoDeliveryOrderReturnQtyDetailsDto
+    {
+
+        public string FGItemNumber { get; set; }
+        public int SalesOrderId { get; set; }
+        public decimal DispatchQty { get; set; }
 
 
 

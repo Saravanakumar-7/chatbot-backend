@@ -51,7 +51,7 @@ namespace Tips.Warehouse.Api.Repository
             var getAllBTODetails = PagedList<BTODeliveryOrder>.ToPagedList(FindAll()
                                  .Include(t => t.BTODeliveryOrderItems)
                                  .ThenInclude(s => s.BTOSerialNumbers)
-                .OrderByDescending(x=>x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return getAllBTODetails;
         }
@@ -59,15 +59,15 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<IEnumerable<ListofBtoDeliveryOrderDetails>> GetBtoDeliveryOrderNumberList()
         {
 
-            IEnumerable<ListofBtoDeliveryOrderDetails> getBtoDeliveryOrderList = await _tipsWarehouseDbContext.bTODeliveryOrder                                
+            IEnumerable<ListofBtoDeliveryOrderDetails> getBtoDeliveryOrderList = await _tipsWarehouseDbContext.bTODeliveryOrder
                                 .Select(x => new ListofBtoDeliveryOrderDetails()
                                 {
                                     BtoDeliveryOrderId = x.Id,
-                                    BTONumber = x.BTONumber,                                 
+                                    BTONumber = x.BTONumber,
 
                                 })
                                 .OrderBy(on => on.BtoDeliveryOrderId)
-                              .ToListAsync();             
+                              .ToListAsync();
 
             return getBtoDeliveryOrderList;
         }
@@ -82,7 +82,7 @@ namespace Tips.Warehouse.Api.Repository
                                     BTONumber = x.BTONumber,
 
                                 })
-                                .Where(x=>x.CustomerLeadID == customerLeadId)
+                                .Where(x => x.CustomerLeadID == customerLeadId)
                               .ToListAsync();
 
             return getBtoNumberList;
@@ -99,7 +99,7 @@ namespace Tips.Warehouse.Api.Repository
             return getBTODeliveryOrderDetailsbyId;
         }
 
-    
+
 
         public async Task<string> UpdateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder)
         {
@@ -110,7 +110,7 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
-       
+
     }
     public class BTODeliveryOrderItemRepository : RepositoryBase<BTODeliveryOrderItems>, IBTODeliveryOrderItemsRepository
     {
@@ -129,7 +129,37 @@ namespace Tips.Warehouse.Api.Repository
             getSalesOrderDetailsBySOandItemNo.InvoicedQty += Quantity;
             Update(getSalesOrderDetailsBySOandItemNo);
             return getSalesOrderDetailsBySOandItemNo;
-        } 
+        }
+        public async Task<BTODeliveryOrderItems> GetBtoDelieveryOrderItemDetails(string itemNumber, string BTONumber)
+        {
+            var getBTODeliveryOrderItemDetails = await _tipsWarehouseDbContexts.bTODeliveryOrderItems
+                    .Where(x => x.FGItemNumber == itemNumber && x.BTONumber == BTONumber)
+                          .FirstOrDefaultAsync(); 
+            return getBTODeliveryOrderItemDetails;
+        }
+        
+
     }
- }
- 
+
+    public class BTODeliveryOrderHistoryRepository : RepositoryBase<BTODeliveryOrderHistory>, IBTODeliveryOrderHistoryRepository
+    {
+        private TipsWarehouseDbContext _tipsWarehouseDbContext;
+        public BTODeliveryOrderHistoryRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        {
+            _tipsWarehouseDbContext = repositoryContext;
+        }
+         
+
+        public async Task<long> CreateBTODeliveryOrderHistory(BTODeliveryOrderHistory bTODeliveryOrderHistory)
+        {
+            var date = DateTime.Now;
+            bTODeliveryOrderHistory.CreatedBy = "Admin";
+            bTODeliveryOrderHistory.CreatedOn = date.Date; 
+            var result = await Create(bTODeliveryOrderHistory);
+            return result.Id;
+        }
+
+    }
+}
+
+

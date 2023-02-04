@@ -89,7 +89,7 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
-        public async Task<Inventory> UpdateInventoryBalanceQtys(string ItemNumber)
+        public async Task<Inventory> GetInventoryDetails(string ItemNumber)
         {
             var getSalesOrderDetailsBySOandItemNo = await _tipsWarehouseDbContext.Inventory
                  .Where(x => x.PartNumber == ItemNumber)

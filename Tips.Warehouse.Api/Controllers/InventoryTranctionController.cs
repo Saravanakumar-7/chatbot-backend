@@ -134,7 +134,7 @@ namespace Tips.Warehouse.Api.Controllers
                     }
                     var createInventoryTranction = _mapper.Map<InventoryTranction>(inventoryTranctionDtoPost);
 
-                    _inventoryTranctionRepository.CreateInventoryTranction(createInventoryTranction);
+                    _inventoryTranctionRepository.CreateInventoryTransaction(createInventoryTranction);
                     _inventoryTranctionRepository.SaveAsync();
                     serviceResponse.Data = null;
                     serviceResponse.Message = "MaterialIssue Successfully Created";
