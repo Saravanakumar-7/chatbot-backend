@@ -159,10 +159,17 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal DispatchQty { get; set; }
 
     }
+    public class SalesOrderUpdateDispatchQtyDto
+    {
+        public string FGItemNumber { get; set; }
+        public int SalesOrderId { get; set; }
+        public decimal DispatchQty { get; set; }
+
+    }
 
     public class ReturnDOSalesOrderDispatchQtyDto
     {
-        public string FGItemNumber { get; set; }
+        public string FGPartNumber { get; set; }
         public int SalesOrderId { get; set; }
         public decimal ReturnQty { get; set; }
 

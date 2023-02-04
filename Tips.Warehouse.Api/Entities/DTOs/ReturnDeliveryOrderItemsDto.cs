@@ -7,6 +7,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? FGPartNumber { get; set; }
+        public string? BTONumber { get; set; }
+
         public string? Description { get; set; }
 
         [Precision(13, 2)]
@@ -49,6 +51,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public string? FGPartNumber { get; set; }
         public string? Description { get; set; }
+        public string? BTONumber { get; set; }
 
         [Precision(13, 2)]
         public decimal? UnitPrice { get; set; }

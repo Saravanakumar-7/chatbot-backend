@@ -12,14 +12,14 @@ namespace Tips.Warehouse.Api.Repository
         {
         }
 
-        public async Task<int?> CreateInventoryTranction(InventoryTranction inventoryTranction)
+        public async Task<InventoryTranction> CreateInventoryTransaction(InventoryTranction inventoryTranction)
         {
-            inventoryTranction.CreatedBy = "Admin";
-            inventoryTranction.CreatedOn = DateTime.Now;
-            inventoryTranction.Unit = "Bangalore";
+            //inventoryTranction.CreatedBy = "Admin";
+            //inventoryTranction.CreatedOn = DateTime.Now;
+            //inventoryTranction.Unit = "Bangalore";
             var result = await Create(inventoryTranction);
 
-            return result.Id;
+            return result;
         }
 
         public async Task<string> DeleteInventoryTranction(InventoryTranction inventoryTranction)

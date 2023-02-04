@@ -15,8 +15,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<string> DeleteInventory(Inventory inventory);
 
         Task<Inventory> GetInventoryById(int id);
-
-        Task<Inventory> UpdateInventoryBalanceQtys(string ItemNumber);
+        
+        Task<Inventory> GetInventoryDetails(string ItemNumber);
 
         //Task<Inventory> UpdateInventoryBalanceQty(string partNumber, string Qty);
  
