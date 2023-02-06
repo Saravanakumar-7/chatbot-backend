@@ -87,6 +87,13 @@ namespace Tips.Warehouse.Api.Repository
 
             return getBtoNumberList;
         }
+        public async Task<BTODeliveryOrder> GetBtoDetailsByBtoNo(string BTONumber)
+        {
+            var getBtoDetailsByBtoNo = await _tipsWarehouseDbContext.bTODeliveryOrder
+                    .Where(x => x.BTONumber == BTONumber)
+                          .FirstOrDefaultAsync();
+            return getBtoDetailsByBtoNo;
+        }
 
         public async Task<BTODeliveryOrder> GetBTODeliveryOrderById(int id)
         {
