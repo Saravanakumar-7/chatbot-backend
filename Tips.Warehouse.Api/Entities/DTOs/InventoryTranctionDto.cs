@@ -177,4 +177,5 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
       
     }
+     
 }

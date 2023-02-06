@@ -56,7 +56,7 @@ namespace Tips.SalesService.Api.Repository
             IEnumerable<ItemPriceListNameDto> getAllItemPriceListName = await _tipsSalesServiceDbContext.ItemPriceLists
                                 .Select(c => new ItemPriceListNameDto()
                                 {
-                                    PriceListName = c.PriceListName,
+                                    PriceListName = c.PriceListName,                                    
 
                                 }).Distinct()
                               .ToListAsync();
@@ -70,6 +70,7 @@ namespace Tips.SalesService.Api.Repository
                                 .Select(c => new ItemNumberListDto()
                                 {
                                     ItemNumber = c.ItemNumber,
+                                    Description = c.Description
 
                                 }).Distinct()
                               .ToListAsync();

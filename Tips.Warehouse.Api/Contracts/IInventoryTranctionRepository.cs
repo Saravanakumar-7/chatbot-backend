@@ -2,6 +2,7 @@
 using Entities;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Repository;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Contracts
 {
@@ -9,7 +10,7 @@ namespace Tips.Warehouse.Api.Contracts
     {
         Task<PagedList<InventoryTranction>> GetAllInventoryTranction(PagingParameter pagingParameter);
 
-        Task<int?> CreateInventoryTranction(InventoryTranction inventoryTranction);
+        Task<InventoryTranction> CreateInventoryTransaction(InventoryTranction inventoryTranction);
         Task<string> UpdateInventoryTraction(InventoryTranction inventoryTranction);
         Task<string> DeleteInventoryTranction(InventoryTranction inventoryTranction);
 

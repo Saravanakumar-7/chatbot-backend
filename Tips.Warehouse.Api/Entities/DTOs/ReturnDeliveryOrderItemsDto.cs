@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {
@@ -6,6 +7,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? FGPartNumber { get; set; }
+        public string? BTONumber { get; set; }
+
         public string? Description { get; set; }
 
         [Precision(13, 2)]
@@ -33,6 +36,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? BalanceQty { get; set; }
 
         public string? Remarks { get; set; }
+        public string? SerialNo { get; set; }
 
         public DateTime? CreatedOn { get; set; }
 
@@ -47,11 +51,13 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public string? FGPartNumber { get; set; }
         public string? Description { get; set; }
+        public string? BTONumber { get; set; }
 
         [Precision(13, 2)]
         public decimal? UnitPrice { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
+        public int SalesOrderId { get; set; }
 
         [Precision(13, 2)]
         public decimal? FGOrderQty { get; set; }
@@ -73,6 +79,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? BalanceQty { get; set; }
 
         public string? Remarks { get; set; }
+        public string? SerialNo { get; set; }
+
 
     }
 
@@ -107,12 +115,23 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? BalanceQty { get; set; }
 
         public string? Remarks { get; set; }
+        public string? SerialNo { get; set; }
+
 
         public DateTime? CreatedOn { get; set; }
 
         public string? CreatedBy { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+
+    }
+
+    public class BtoDOReturnQtyDetailsDto
+    {
+
+        public string FGPartNumber { get; set; }
+        public int SalesOrderId { get; set; }
+        public decimal ReturnQty { get; set; }
 
     }
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tips.SalesService.Api.Entities.Dto;
 
 namespace Tips.SalesService.Api.Entities.Dto
@@ -56,8 +57,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? ProjectNumber { get; set; }
         public OrderStatus StatusEnum { get; set; }
 
-        [Precision(13, 3)]
-        public decimal? BalanceQty { get; set; }
+ 
 
         [Precision(13, 3)]
         public decimal? DispatchQty { get; set; }
@@ -156,6 +156,21 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string FGItemNumber { get; set; }
         public int SalesOrderId { get; set; }
         public decimal DispatchQty { get; set; }
+
+    }
+    public class SalesOrderUpdateDispatchQtyDto
+    {
+        public string FGItemNumber { get; set; }
+        public int SalesOrderId { get; set; }
+        public decimal DispatchQty { get; set; }
+
+    }
+
+    public class ReturnDOSalesOrderDispatchQtyDto
+    {
+        public string FGPartNumber { get; set; }
+        public int SalesOrderId { get; set; }
+        public decimal ReturnQty { get; set; }
 
     }
 }

@@ -99,6 +99,8 @@ namespace Tips.SalesService.Api.Repository
                                 {
                                     RFQNumber = e.RfqNumber,
                                     CustomerName = rfqDetail.CustomerName,
+                                    CustomerAliasName = rfqDetail.CustomerAliasName,
+                                    RoomName=e.RoomName,
                                     CustomerId = rfqDetail.CustomerId,
                                     ItemNumber = e.ItemNumber,
                                     Description = e.Description,

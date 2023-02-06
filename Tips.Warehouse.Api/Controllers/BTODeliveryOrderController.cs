@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
+using Tips.Warehouse.Api.Repository;
 
 namespace Tips.Warehouse.Api.Controllers
 {
@@ -19,6 +20,8 @@ namespace Tips.Warehouse.Api.Controllers
     public class BTODeliveryOrderController : ControllerBase
     {
         private IBTODeliveryOrderRepository _repository;
+        private IInventoryTranctionRepository _inventoryTranctionRepository;
+        private IBTODeliveryOrderHistoryRepository _bTODeliveryOrderHistoryRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IInventoryRepository _inventoryRepository;
@@ -27,7 +30,7 @@ namespace Tips.Warehouse.Api.Controllers
 
 
 
-        public BTODeliveryOrderController(IBTODeliveryOrderRepository repository, HttpClient httpClient, IConfiguration config, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
+        public BTODeliveryOrderController(IBTODeliveryOrderRepository repository, IInventoryTranctionRepository inventoryTranctionRepository , IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, HttpClient httpClient, IConfiguration config, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
@@ -35,6 +38,8 @@ namespace Tips.Warehouse.Api.Controllers
             _httpClient = httpClient;
             _inventoryRepository = inventoryRepository;
             _config = config;
+            _inventoryTranctionRepository = inventoryTranctionRepository;
+            _bTODeliveryOrderHistoryRepository = bTODeliveryOrderHistoryRepository;
 
         }
 
@@ -213,8 +218,6 @@ namespace Tips.Warehouse.Api.Controllers
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
 
-
-
                 var newcount = await _repository.GetBTONumberAutoIncrementCount(date);
 
                 if (newcount > 0)
@@ -247,41 +250,125 @@ namespace Tips.Warehouse.Api.Controllers
                             cps = cps.TrimEnd(',');
                             bTODeliveryOrderitemsList[i].SerialNo = cps;
                         }
-                         BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsList[i]);
+                        
+                        BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsList[i]);
                         bTODeliveryOrderItemsDetails.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsList[i].BTOSerialNumberDtoPost);
                         bTODeliveryOrderItemsDetails.BalanceDoQty = bTODeliveryOrderItemsDetails.DispatchQty;
                         bTODeliveryOrderItemsDetails.BTONumber = bTODeliveryOrder.BTONumber;
                         bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDetails);
+
+                        //Update Inventory balanced Quantity 
+
+                        var PartNumber = bTODeliveryOrderItemsDtoList[i].FGItemNumber;
+                        var getInventoryDetails = await _inventoryRepository.GetInventoryDetails(PartNumber);
+                        decimal Quantity = Convert.ToDecimal(bTODeliveryOrderitemsList[i].DispatchQty);
+                        if (getInventoryDetails != null)
+                        {
+                            if (Quantity != 0 && getInventoryDetails.Balance_Quantity >= Quantity)
+                            {
+                                getInventoryDetails.Balance_Quantity = getInventoryDetails.Balance_Quantity - Quantity;
+                                Quantity = 0;
+                                if (getInventoryDetails.Balance_Quantity == 0)
+                                {
+                                    getInventoryDetails.IsStockAvailable = false;
+                                }
+                            }
+                            if (Quantity != 0 && getInventoryDetails.Balance_Quantity < Quantity)
+                            {
+                                Quantity = Quantity - getInventoryDetails.Balance_Quantity;
+                                getInventoryDetails.Balance_Quantity = 0;
+                                getInventoryDetails.IsStockAvailable = false;
+                            }
+                
+                        } 
+                        
+
+                        //Add BTO Detail Into Inventory transaction Table
+
+                        InventoryTranction inventoryTranction = new InventoryTranction();
+                        inventoryTranction.PartNumber = bTODeliveryOrderItemsDtoList[i].FGItemNumber;
+                        inventoryTranction.MftrPartNumber = bTODeliveryOrderItemsDtoList[i].FGItemNumber;
+                        inventoryTranction.Description = bTODeliveryOrderItemsDtoList[i].Description;
+                        inventoryTranction.Issued_Quantity = Convert.ToDecimal(bTODeliveryOrderItemsDtoList[i].DispatchQty);
+                        inventoryTranction.UOM = bTODeliveryOrderItemsDtoList[i].UOM;
+                        inventoryTranction.Issued_DateTime = DateTime.Now;
+                        inventoryTranction.ReferenceID = bTODeliveryOrder.BTONumber;
+                        inventoryTranction.ReferenceIDFrom = "BTO Delivery Order";
+                        inventoryTranction.Issued_By = "Admin";
+                        inventoryTranction.CreatedOn = DateTime.Now;
+                        inventoryTranction.Unit = "Bangalore"; 
+                        inventoryTranction.CreatedBy = "Admin";
+                        inventoryTranction.LastModifiedBy = "Admin";
+                        inventoryTranction.LastModifiedOn = DateTime.Now; 
+                        inventoryTranction.ModifiedStatus = false;
+                        inventoryTranction.From_Location = "FG";
+                        inventoryTranction.TO_Location = "BTO";
+                        inventoryTranction.Remarks = "Customer,BTO";
+
+                        var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+
+
+                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                        _inventoryTranctionRepository.SaveAsync();
+
+                        _inventoryRepository.Update(getInventoryDetails);
+                        _inventoryRepository.SaveAsync();
+
+                        // Add Bto detail in to btodeliveryorderhistory table
+
+                        BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
+                        bTODeliveryOrderHistory.BTONumber = bTODeliveryOrder.BTONumber;
+                        bTODeliveryOrderHistory.CustomerName = bTODeliveryOrder.CustomerName;
+                        bTODeliveryOrderHistory.CustomerAliasName = bTODeliveryOrder.CustomerAliasName;
+                        bTODeliveryOrderHistory.CustomerId = bTODeliveryOrder.CustomerId;
+                        bTODeliveryOrderHistory.PONumber = bTODeliveryOrder.PONumber;
+                        bTODeliveryOrderHistory.IssuedTo = bTODeliveryOrder.IssuedTo;
+                        bTODeliveryOrderHistory.DODate = bTODeliveryOrder.DODate;
+                        bTODeliveryOrderHistory.FGItemNumber = bTODeliveryOrderItemsDtoList[i].FGItemNumber;
+                        bTODeliveryOrderHistory.SalesOrderId = bTODeliveryOrderItemsDtoList[i].SalesOrderId;
+                        bTODeliveryOrderHistory.Description = bTODeliveryOrderItemsDtoList[i].Description;
+                        bTODeliveryOrderHistory.BalanceDoQty = bTODeliveryOrderItemsDtoList[i].BalanceDoQty;
+                        bTODeliveryOrderHistory.UnitPrice = bTODeliveryOrderItemsDtoList[i].UnitPrice;
+                        bTODeliveryOrderHistory.UOC = bTODeliveryOrderItemsDtoList[i].UOC;
+                        bTODeliveryOrderHistory.UOM = bTODeliveryOrderItemsDtoList[i].UOM;
+                        bTODeliveryOrderHistory.FGOrderQty = bTODeliveryOrderItemsDtoList[i].FGOrderQty;
+                        bTODeliveryOrderHistory.OrderBalanceQty = bTODeliveryOrderItemsDtoList[i].OrderBalanceQty;
+                        bTODeliveryOrderHistory.FGStock = bTODeliveryOrderItemsDtoList[i].FGStock;
+                        bTODeliveryOrderHistory.Discount = bTODeliveryOrderItemsDtoList[i].Discount;
+                        bTODeliveryOrderHistory.NetValue = bTODeliveryOrderItemsDtoList[i].NetValue;
+                        bTODeliveryOrderHistory.DispatchQty = bTODeliveryOrderItemsDtoList[i].DispatchQty;
+                        bTODeliveryOrderHistory.InvoicedQty = bTODeliveryOrderItemsDtoList[i].InvoicedQty;
+                        bTODeliveryOrderHistory.SerialNo = bTODeliveryOrderItemsDtoList[i].SerialNo;
+                        bTODeliveryOrderHistory.CreatedBy = bTODeliveryOrderItemsDtoList[i].CreatedBy;
+                        bTODeliveryOrderHistory.LastModifiedOn = bTODeliveryOrderItemsDtoList[i].LastModifiedOn;
+                        bTODeliveryOrderHistory.Remark = "From Create BTO";
+
+
+                        var bTODeliveryOrderHistoryDetails = _mapper.Map<BTODeliveryOrderHistory>(bTODeliveryOrderHistory);
+                         
+
+                        await _bTODeliveryOrderHistoryRepository.CreateBTODeliveryOrderHistory(bTODeliveryOrderHistoryDetails);
+                        _bTODeliveryOrderHistoryRepository.SaveAsync();
+
                     }
                 }
 
                 bTODeliveryOrder.BTODeliveryOrderItems = bTODeliveryOrderItemsDtoList;
 
                 await _repository.CreateBTODeliveryOrder(bTODeliveryOrder);
-                _repository.SaveAsync();
+                _repository.SaveAsync(); 
+
+  
+
 
                 //update balance qty and dispatch qty in salesorder table
                 var btoDeliveryDispatchDetails = _mapper.Map<List<BtoDeliveryOrderDispatchQtyDetailsDto>>(bTODeliveryOrderitemsList);
-                                
-                    //if (btoDeliveryDispatchDetails != null)
-                    //{
-                    //for (int i = 0; i < btoDeliveryDispatchDetails.Count; i++)
-                    //{
-                    //    dynamic inventoryObject = new ExpandoObject();
-                    //    inventoryObject.FGItemNumber = btoDeliveryDispatchDetails[i].FGItemNumber;
-                    //    inventoryObject.SalesOrderId = btoDeliveryDispatchDetails[i].SalesOrderId;
-                    //    inventoryObject.DispatchQty = btoDeliveryDispatchDetails[i].DispatchQty;
+                         
+                var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchDetails"), data);
+                  
 
-                        var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
-                        var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchDetails"), data);
-
-
-                        //var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
-                        //var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        //var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchDetails"), data);
-                //    }
-                //}
                 serviceResponse.Data = null;
                 serviceResponse.Message = " BTODeliveryOrder Successfully Created";
                 serviceResponse.Success = true;
@@ -335,19 +422,180 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-
+                 
 
                 var bTODeliveryOrder = _mapper.Map<BTODeliveryOrder>(bTODeliveryOrderbyId);
+
+                var getOldbtoDeliveryOrderItemsDetails = bTODeliveryOrder.BTODeliveryOrderItems;
+
                 var bTODeliveryOrderitemsDto = bTODeliveryOrderDtoUpdate.BTODeliveryOrderItemsDtoUpdate;
                 var bTODeliveryOrderitemsList = new List<BTODeliveryOrderItems>();
 
                 if (bTODeliveryOrderitemsDto != null)
                 {
-                    for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
-                    {
-                        BTODeliveryOrderItems bTODeliveryOrderItems = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);
-                        bTODeliveryOrderItems.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDtoUpdate);
-                        bTODeliveryOrderitemsList.Add(bTODeliveryOrderItems);
+                    for (int j = 0; j < getOldbtoDeliveryOrderItemsDetails.Count; j++)
+                    { 
+                        for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
+                        {
+                            BTODeliveryOrderItems bTODeliveryOrderItems = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);
+                            bTODeliveryOrderItems.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDtoUpdate);
+                            bTODeliveryOrderitemsList.Add(bTODeliveryOrderItems);
+
+                            //Update Inventory balanced Quantity 
+
+                            //var PartNumber = bTODeliveryOrderitemsDto[i].FGItemNumber;
+                            //var getInventoryDetails = await _inventoryRepository.GetInventoryDetails(PartNumber);
+                            //decimal Quantity = Convert.ToDecimal(bTODeliveryOrderitemsDto[i].DispatchQty);
+                            //if (getInventoryDetails != null)
+                            //{
+                            //    if (getOldbtoDeliveryOrderItemsDetails[j].DispatchQty > Quantity && Quantity !=0)
+                            //    {
+                            //        var diff = getOldbtoDeliveryOrderItemsDetails[j].DispatchQty - Quantity;
+                                   
+                            //            getInventoryDetails.Balance_Quantity = getInventoryDetails.Balance_Quantity + diff;
+                                        
+                            //            if (getInventoryDetails.Balance_Quantity != 0)
+                            //            {
+                            //                getInventoryDetails.IsStockAvailable = true;
+                            //            }
+
+                            //        //Add BTO Detail Into Inventory transaction Table
+
+                            //        InventoryTranction inventoryTranction = new InventoryTranction();
+                            //        inventoryTranction.PartNumber = bTODeliveryOrderitemsDto[i].FGItemNumber;
+                            //        inventoryTranction.MftrPartNumber = bTODeliveryOrderitemsDto[i].FGItemNumber;
+                            //        inventoryTranction.Description = bTODeliveryOrderitemsDto[i].Description;
+                            //        inventoryTranction.Issued_Quantity = diff;
+                            //        inventoryTranction.UOM = bTODeliveryOrderitemsDto[i].UOM;
+                            //        inventoryTranction.Issued_DateTime = DateTime.Now;
+                            //        inventoryTranction.ReferenceID = bTODeliveryOrder.BTONumber;
+                            //        inventoryTranction.ReferenceIDFrom = "Update BTO Delivery Order";
+                            //        inventoryTranction.Issued_By = "Admin";
+                            //        inventoryTranction.CreatedOn = DateTime.Now;
+                            //        inventoryTranction.Unit = "Bangalore";
+                            //        inventoryTranction.CreatedBy = "Admin";
+                            //        inventoryTranction.LastModifiedBy = "Admin";
+                            //        inventoryTranction.LastModifiedOn = DateTime.Now;
+                            //        inventoryTranction.ModifiedStatus = false;
+                            //        inventoryTranction.From_Location = "FG";
+                            //        inventoryTranction.TO_Location = "BTO";
+                            //        inventoryTranction.Remarks = "Update,BTO";
+
+                            //        var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+
+
+                            //        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                            //        _inventoryTranctionRepository.SaveAsync();
+                            //    }
+                            //    if (getOldbtoDeliveryOrderItemsDetails[j].DispatchQty < Quantity && Quantity != 0)
+                            //    {
+                            //        var diff = Quantity - getOldbtoDeliveryOrderItemsDetails[j].DispatchQty;
+                            //        if (getInventoryDetails.Balance_Quantity >= diff)
+                            //        {
+                            //            getInventoryDetails.Balance_Quantity = getInventoryDetails.Balance_Quantity - diff;
+                                        
+                            //            if (getInventoryDetails.Balance_Quantity == 0)
+                            //            {
+                            //                getInventoryDetails.IsStockAvailable = false;
+                            //            }
+                            //        }
+
+                            //        //Add BTO Detail Into Inventory transaction Table
+
+                            //        InventoryTranction inventoryTranction = new InventoryTranction();
+                            //        inventoryTranction.PartNumber = bTODeliveryOrderitemsList[i].FGItemNumber;
+                            //        inventoryTranction.MftrPartNumber = bTODeliveryOrderitemsList[i].FGItemNumber;
+                            //        inventoryTranction.Description = bTODeliveryOrderitemsList[i].Description;
+                            //        inventoryTranction.Issued_Quantity = diff;
+                            //        inventoryTranction.UOM = bTODeliveryOrderitemsList[i].UOM;
+                            //        inventoryTranction.Issued_DateTime = DateTime.Now;
+                            //        inventoryTranction.ReferenceID = bTODeliveryOrder.BTONumber;
+                            //        inventoryTranction.ReferenceIDFrom = "Update BTO Delivery Order";
+                            //        inventoryTranction.Issued_By = "Admin";
+                            //        inventoryTranction.CreatedOn = DateTime.Now;
+                            //        inventoryTranction.Unit = "Bangalore";
+                            //        inventoryTranction.CreatedBy = "Admin";
+                            //        inventoryTranction.LastModifiedBy = "Admin";
+                            //        inventoryTranction.LastModifiedOn = DateTime.Now;
+                            //        inventoryTranction.ModifiedStatus = false;
+                            //        inventoryTranction.From_Location = "FG";
+                            //        inventoryTranction.TO_Location = "BTO";
+                            //        inventoryTranction.Remarks = "Update,BTO";
+
+                            //        var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+
+
+                            //        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                            //        _inventoryTranctionRepository.SaveAsync();
+                            //    }                                 
+
+                            //}
+                            //_inventoryRepository.Update(getInventoryDetails);
+                            //_inventoryRepository.SaveAsync();
+
+                            ////update dispatch qty and balance qty in sales order 
+
+                            //if (getOldbtoDeliveryOrderItemsDetails[j].DispatchQty > Quantity && Quantity != 0)
+                            //{
+                            //    var diff = getOldbtoDeliveryOrderItemsDetails[j].DispatchQty - Quantity;
+                            //    Quantity = 0;
+                            //    bTODeliveryOrderitemsDto[i].DispatchQty = diff;
+                            //    var btoDeliveryDispatchDetails = _mapper.Map<List<BtoDeliveryOrderDispatchQtyDetailsDto>>(bTODeliveryOrderitemsDto);
+                                
+                            //    var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
+                            //    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                            //    var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchQtyGreaterThenNewDispatchQty"), data);
+                            //}
+                             
+
+                            //if (getOldbtoDeliveryOrderItemsDetails[j].DispatchQty < Quantity && Quantity != 0)
+                            //{
+                            //    var diff = Quantity - getOldbtoDeliveryOrderItemsDetails[j].DispatchQty;
+                            //    Quantity = 0;
+                            //    bTODeliveryOrderitemsDto[i].DispatchQty = diff;
+                            //    var btoDeliveryDispatchDetails = _mapper.Map<List<BtoDeliveryOrderDispatchQtyDetailsDto>>(bTODeliveryOrderitemsDto);
+                                
+                            //    var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
+                            //    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                            //    var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchQtySmallerThenNewDispatchQty"), data);
+                            //}
+
+                            //// Add Bto detail in to btodeliveryorderhistory table
+
+                            //BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
+                            //bTODeliveryOrderHistory.BTONumber = bTODeliveryOrder.BTONumber;
+                            //bTODeliveryOrderHistory.CustomerName = bTODeliveryOrder.CustomerName;
+                            //bTODeliveryOrderHistory.CustomerAliasName = bTODeliveryOrder.CustomerAliasName;
+                            //bTODeliveryOrderHistory.CustomerId = bTODeliveryOrder.CustomerId;
+                            //bTODeliveryOrderHistory.PONumber = bTODeliveryOrder.PONumber;
+                            //bTODeliveryOrderHistory.IssuedTo = bTODeliveryOrder.IssuedTo;
+                            //bTODeliveryOrderHistory.DODate = bTODeliveryOrder.DODate;
+                            //bTODeliveryOrderHistory.FGItemNumber = bTODeliveryOrderitemsList[i].FGItemNumber;
+                            //bTODeliveryOrderHistory.SalesOrderId = bTODeliveryOrderitemsList[i].SalesOrderId;
+                            //bTODeliveryOrderHistory.Description = bTODeliveryOrderitemsList[i].Description;
+                            //bTODeliveryOrderHistory.BalanceDoQty = bTODeliveryOrderitemsList[i].BalanceDoQty;
+                            //bTODeliveryOrderHistory.UnitPrice = bTODeliveryOrderitemsList[i].UnitPrice;
+                            //bTODeliveryOrderHistory.UOC = bTODeliveryOrderitemsList[i].UOC;
+                            //bTODeliveryOrderHistory.UOM = bTODeliveryOrderitemsList[i].UOM;
+                            //bTODeliveryOrderHistory.FGOrderQty = bTODeliveryOrderitemsList[i].FGOrderQty;
+                            //bTODeliveryOrderHistory.OrderBalanceQty = bTODeliveryOrderitemsList[i].OrderBalanceQty;
+                            //bTODeliveryOrderHistory.FGStock = bTODeliveryOrderitemsList[i].FGStock;
+                            //bTODeliveryOrderHistory.Discount = bTODeliveryOrderitemsList[i].Discount;
+                            //bTODeliveryOrderHistory.NetValue = bTODeliveryOrderitemsList[i].NetValue;
+                            //bTODeliveryOrderHistory.DispatchQty = bTODeliveryOrderitemsList[i].DispatchQty;
+                            //bTODeliveryOrderHistory.InvoicedQty = bTODeliveryOrderitemsList[i].InvoicedQty;
+                            //bTODeliveryOrderHistory.SerialNo = bTODeliveryOrderitemsList[i].SerialNo;
+                            //bTODeliveryOrderHistory.CreatedBy = bTODeliveryOrderitemsList[i].CreatedBy;
+                            //bTODeliveryOrderHistory.LastModifiedOn = bTODeliveryOrderitemsList[i].LastModifiedOn;
+                            //bTODeliveryOrderHistory.Remark = "From Update BTO";
+
+
+                            //var bTODeliveryOrderHistoryDetails = _mapper.Map<BTODeliveryOrderHistory>(bTODeliveryOrderHistory);
+
+
+                            //await _bTODeliveryOrderHistoryRepository.CreateBTODeliveryOrderHistory(bTODeliveryOrderHistoryDetails);
+                            //_bTODeliveryOrderHistoryRepository.SaveAsync();
+                        }
                     }
                 }
 

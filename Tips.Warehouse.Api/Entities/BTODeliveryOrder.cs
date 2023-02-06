@@ -9,12 +9,9 @@ namespace Tips.Warehouse.Api.Entities
         [Key]
         public int Id { get; set; }
         public string CustomerName { get; set; }
-        public string CustomerAliasName { get; set; }
+        public string CustomerAliasName { get; set; }              
 
-        [Precision(13,3)]
-        public decimal? ReturnQty { get; set; }
-
-        public string CustomerLeadId { get; set; }
+        public string CustomerId { get; set; }
         public string BTONumber { get; set; }        
         public int SalesOrderId { get; set; }
         public string PONumber { get; set; }

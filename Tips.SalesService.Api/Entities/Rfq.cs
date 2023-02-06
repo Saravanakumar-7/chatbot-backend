@@ -27,6 +27,8 @@ namespace Tips.SalesService.Api.Entities
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
         public bool? IsSourcing { get; set; } = false;
+        public bool? IsCsComplete { get; set; } = false;
+        public bool? IsEnggComplete { get; set; } = false;
         public bool? IsLpCosting { get; set; } = false;
         public bool? IsLpCostingRelease { get; set; } = false;
         public bool? isSourcingAvailable { get; set; } = false;       

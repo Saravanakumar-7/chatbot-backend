@@ -95,4 +95,16 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ItemNumber { get; set; }
         public decimal Balance_Quantity { get; set; }
     }
+
+    public class ListOfLocationTransferDto
+    {
+        public string PartNumber { get; set; }
+        public string Description { get; set; }
+        public string? UOM { get; set; }
+        public string Warehouse { get; set; }
+        public string? Location { get; set; }
+        public string? PartType { get; set; }
+
+
+    }
 }

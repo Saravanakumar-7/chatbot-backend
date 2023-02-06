@@ -10,7 +10,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrders(PagingParameter pagingParameter);
         Task<BTODeliveryOrder> GetBTODeliveryOrderById(int id);
 
-        Task<IEnumerable<ListOfBtoNumberDetails>> GetBtoNumberListByCustomerId(string customerLeadId);        
+        Task<IEnumerable<ListOfBtoNumberDetails>> GetBtoNumberListByCustomerId(string customerLeadId);
+        Task<BTODeliveryOrder> GetBtoDetailsByBtoNo(string BTONumber);
 
         Task<IEnumerable<BTODeliveryOrder>> GetAllActiveBTODeliveryOrders();
         Task<long> CreateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder);
