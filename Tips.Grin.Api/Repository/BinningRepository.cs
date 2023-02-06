@@ -3,6 +3,7 @@ using Entities;
 using Microsoft.EntityFrameworkCore;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Grin.Api.Repository
 {
@@ -18,17 +19,23 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<Binning> CreateBinning(Binning binning)
         {
-           
+
             binning.CreatedBy = "Admin";
             binning.CreatedOn = DateTime.Now;
             binning.Unit = "Bangalore";
             var result = await Create(binning);
             return result;
         }
-        public async Task<IEnumerable<Binning>> GetAllBinningDetails()
+        public async Task<PagedList<Binning>> GetAllBinningDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var getAllBinnings = await FindAll().OrderByDescending(x=>x.Id).ToListAsync();
-            return getAllBinnings;
+
+            var getAllBinningDetails = FindAll()
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue) ||
+                   inv.InvoiceNumber.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))))
+                 .Include(t => t.BinningItems)
+                 .ThenInclude(t => t.BinningLocations);
+                return PagedList<Binning>.ToPagedList(getAllBinningDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+
 
         }
         public async Task<IEnumerable<Binning>> GetBinningDetailsByGrinNo(string grinNo)
@@ -43,7 +50,7 @@ namespace Tips.Grin.Api.Repository
             binning.LastModifiedOn = DateTime.Now;
             Update(binning);
             string result = $"binning details of {binning.Id} is updated successfully!";
-             return result;
+            return result;
         }
 
 
@@ -63,6 +70,31 @@ namespace Tips.Grin.Api.Repository
             string result = $"binning details of {binning.Id} is deleted successfully!";
             return result;
 
+        }
+    }
+
+
+
+    public class BinningItemsRepository : RepositoryBase<BinningItems>, IBinningItemsRepository
+    {
+        private TipsGrinDbContext _tipsGrinDbContext;
+
+        public BinningItemsRepository(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
+        {
+            _tipsGrinDbContext = tipsGrinDbContext;
+
+        }
+
+        public async Task<PagedList<BinningItems>> GetAllBinningItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        {
+            var getAllBinningItems = FindAll()
+               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
+               inv.Description.Contains(searchParams.SearchValue) || inv.MftrItemNumber.Contains(searchParams.SearchValue)
+               || inv.ProjectNumber.Contains(searchParams.SearchValue) || inv.ManufactureBatchNumber.Contains(searchParams.SearchValue))))
+              .Include(t => t.BinningLocations);
+
+
+            return PagedList<BinningItems>.ToPagedList(getAllBinningItems, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
     }
 }

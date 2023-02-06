@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Text;
 using System.Dynamic;
 using System.IO;
+using Tips.Grin.Api.Repository;
 
 namespace Tips.Grin.Api.Controllers
 {
@@ -20,33 +21,45 @@ namespace Tips.Grin.Api.Controllers
     public class BinningController : ControllerBase
     {
         private IBinningRepository _binningRepository;
+        private IBinningItemsRepository _binningItemsRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public BinningController(IBinningRepository binningRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        public BinningController(IBinningRepository binningRepository, IBinningItemsRepository binningItemsRepository,ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _logger = logger;
             _binningRepository = binningRepository;
+            _binningItemsRepository = binningItemsRepository;
             _mapper = mapper;
             _httpClient = httpClient;
             _config = config;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllBinningDetails()
+        public async Task<IActionResult> GetAllBinningDetails([FromQuery] PagingParameter pagingParameter ,[FromQuery] SearchParams searchParams)
         {
             ServiceResponse<IEnumerable<BinningDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningDto>>();
 
             try
             {
-                var getAllBinnings = await _binningRepository.GetAllBinningDetails();
+                var getAllBinnings = await _binningRepository.GetAllBinningDetails(pagingParameter, searchParams);
+                var metadata = new
+                {
+                    getAllBinnings.TotalCount,
+                    getAllBinnings.PageSize,
+                    getAllBinnings.CurrentPage,
+                    getAllBinnings.HasNext,
+                    getAllBinnings.HasPreviuos
+                };
 
-                _logger.LogInfo("Returned all Binning details");
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all Binnings");
                 var result = _mapper.Map<IEnumerable<BinningDto>>(getAllBinnings);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all Binnings";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -55,10 +68,10 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Something went wrong,try again";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -397,5 +410,43 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllBinningItems([FromQuery] PagingParameter pagingParameter,[FromQuery] SearchParams searchParams)
+        {
+            ServiceResponse<IEnumerable<BinningItemsDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningItemsDto>>();
+
+            try
+            {
+                var getAllBinningItems = await _binningItemsRepository.GetAllBinningItems(pagingParameter,searchParams);
+
+                var metadata = new
+                {
+                    getAllBinningItems.TotalCount,
+                    getAllBinningItems.PageSize,
+                    getAllBinningItems.CurrentPage,
+                    getAllBinningItems.HasNext,
+                    getAllBinningItems.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all BinningItems details");
+                var result = _mapper.Map<IEnumerable<BinningItemsDto>>(getAllBinningItems);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }

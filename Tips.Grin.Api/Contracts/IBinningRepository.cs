@@ -1,11 +1,13 @@
 ﻿using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Tips.Grin.Api.Entities;
 
 namespace Tips.Grin.Api.Contracts
 {
     public interface IBinningRepository : IRepositoryBase<Binning>
     {
-        Task<IEnumerable<Binning>> GetAllBinningDetails();
+        Task<PagedList<Binning>> GetAllBinningDetails(PagingParameter pagingParameter, SearchParams searchParams);
         Task<IEnumerable<Binning>> GetBinningDetailsByGrinNo(string grinNo);
         Task<string> UpdateBinning(Binning binning);
         Task<Binning> GetBinningDetailsbyId(int id);

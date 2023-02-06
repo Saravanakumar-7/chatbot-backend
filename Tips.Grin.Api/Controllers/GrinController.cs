@@ -33,6 +33,7 @@ namespace Tips.Grin.Api.Controllers
     public class GrinController : ControllerBase
     {
         private IGrinRepository _repository;
+        private IGrinPartsRepository _grinPartsRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IDocumentUploadRepository _documentUploadRepository;
@@ -40,10 +41,11 @@ namespace Tips.Grin.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public GrinController(IGrinRepository repository, IDocumentUploadRepository documentUploadRepository,
+        public GrinController(IGrinRepository repository, IDocumentUploadRepository documentUploadRepository, IGrinPartsRepository grinPartsRepository,
             IWebHostEnvironment webHostEnvironment, ILoggerManager logger, IMapper mapper, HttpClient httpClient,IConfiguration config)
         {
             _repository = repository;
+            _grinPartsRepository = grinPartsRepository;
             _logger = logger;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
@@ -54,14 +56,14 @@ namespace Tips.Grin.Api.Controllers
         // GET: api/<GrinController>
         [HttpGet]
 
-        public async Task<IActionResult> GetAllGrin([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllGrin([FromQuery] PagingParameter pagingParameter,[FromQuery] SearchParams searchParams)
 
         {
             ServiceResponse<IEnumerable<GrinDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinDto>>();
 
             try
             {
-                var GetallGrins = await _repository.GetAllGrin(pagingParameter);
+                var GetallGrins = await _repository.GetAllGrin(pagingParameter,searchParams);
 
                 var metadata = new
                 {
@@ -177,6 +179,26 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 var grins = _mapper.Map<Grins>(grinPostDto);
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
+
+                var newcount = await _repository.GetGrinNumberAutoIncrementCount(date);
+
+                if (newcount > 0)
+                {
+                    var number = newcount + 1;
+                    string e = String.Format("{0:D4}", number);
+                    grins.GrinNumber = days + months + years + "G" + (e);
+                }
+                else
+                {
+                    var count = 1;
+                    var e = count.ToString("D4");
+                    grins.GrinNumber = days + months + years + "G" + (e);
+                }
+
                 var grinPartsDto = grinPostDto.GrinParts;
 
                 var grinPartsList = new List<GrinParts>();
@@ -326,7 +348,7 @@ namespace Tips.Grin.Api.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateGrin(int id, [FromBody] GrinDto grinDto)
+        public async Task<IActionResult> UpdateGrin(int id, [FromBody] GrinUpdateDto grinDto)
         {
             ServiceResponse<GrinDto> serviceResponse = new ServiceResponse<GrinDto>();
 
@@ -468,5 +490,48 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+
+        public async Task<IActionResult> GetAllGrinParts([FromQuery] PagingParameter pagingParameter,[FromQuery] SearchParams searchParams)
+
+        {
+            ServiceResponse<IEnumerable<GrinPartsDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinPartsDto>>();
+
+            try
+            {
+                var GetallGrinsParts = await _grinPartsRepository.GetAllGrinParts(pagingParameter,searchParams);
+
+                var metadata = new
+                {
+                    GetallGrinsParts.TotalCount,
+                    GetallGrinsParts.PageSize,
+                    GetallGrinsParts.CurrentPage,
+                    GetallGrinsParts.HasNext,
+                    GetallGrinsParts.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
+                _logger.LogInfo("Returned all GrinsParts");
+                var result = _mapper.Map<IEnumerable<GrinPartsDto>>(GetallGrinsParts);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all GrinsParts Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 }

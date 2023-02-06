@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Grin.Api.Repository
 {
@@ -31,17 +32,28 @@ namespace Tips.Grin.Api.Repository
             var result = await Create(iQCConfirmation);
             return result.Id;
         }
-         
 
-        public async Task<IEnumerable<IQCConfirmation>> GetAllIqcDetails()
+
+        public async Task<PagedList<IQCConfirmation>> GetAllIqcDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var getallIQCList = await FindAll().ToListAsync();
-            return (getallIQCList);
+            var getallIQCList = FindAll()
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || (inv.GrinNumber != null && inv.GrinNumber.Contains(searchParams.SearchValue)) ||
+                (!string.IsNullOrEmpty(inv.VendorName) && inv.VendorName.Contains(searchParams.SearchValue)) || (inv.Id != null && inv.Id.ToString().Contains(searchParams.SearchValue))
+                 || (inv.InvoiceNumber != null && inv.InvoiceNumber.Contains(searchParams.SearchValue)))))
+                 .Include(t => t.IQCConfirmationItems);
+
+            return PagedList<IQCConfirmation>.ToPagedList(getallIQCList, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
         public async Task<IEnumerable<IQCConfirmation>> GetIqcDetailsbyGrinNo(string grinNumber)
-    {
-            var iQCDetail = await FindByCondition(x => x.GrinNumber == grinNumber).ToListAsync();
+        {
+            //var iQCDetail = await FindByCondition(x => x.GrinNumber == grinNumber).ToListAsync();
+            //return iQCDetail;
+
+            var iQCDetail = await _tipsGrinDbContext.IQCConfirmations
+               .Include(t => t.IQCConfirmationItems)
+             .Where(x => x.GrinNumber == grinNumber)
+                       .ToListAsync();
             return iQCDetail;
         }
 
@@ -57,13 +69,34 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<IQCConfirmation> GetIqcDetailsbyId(int id)
         {
-            var iQCDetailById = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-
-            return iQCDetailById;
+            var iQCDetailsbyId = await _tipsGrinDbContext.IQCConfirmations.Where(x => x.Id == id)
+                                .Include(v => v.IQCConfirmationItems)
+                                .FirstOrDefaultAsync();
+            return iQCDetailsbyId;
         }
- 
+
     }
 
+    public class IQCConfirmationItemsRepository : RepositoryBase<IQCConfirmationItems>, IIQCConfirmationItemsRepository
+    {
+        private TipsGrinDbContext _tipsGrinDbContext;
+
+        public IQCConfirmationItemsRepository(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
+        {
+            _tipsGrinDbContext = tipsGrinDbContext;
+
+        }
+
+        public async Task<PagedList<IQCConfirmationItems>> GetAllIQCConfirmationItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        {
+            var getAllIqcItems = FindAll()
+             .Where(iqc => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || iqc.ItemNumber.Contains(searchParams.SearchValue) ||
+             iqc.Description.Contains(searchParams.SearchValue) || iqc.MftrItemNumber.Contains(searchParams.SearchValue) || iqc.ManufactureBatchNumber.Contains(searchParams.SearchValue)
+             )));
+
+            return PagedList<IQCConfirmationItems>.ToPagedList(getAllIqcItems, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+    }
 }
 
 

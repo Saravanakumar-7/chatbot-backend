@@ -60,7 +60,6 @@ namespace Tips.Grin.Api.Entities.DTOs
     }
     public class GrinPostDto
     {
-        public string? GrinNumber { get; set; }
 
 
         //[Required(ErrorMessage = "PONumber is required")]
@@ -110,7 +109,6 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class GrinUpdateDto
     {
         public int Id { get; set; }
-        public string? GrinNumber { get; set; }
 
         //[Required(ErrorMessage = "PONumber is required")]
         //public string PONumber { get; set; }
