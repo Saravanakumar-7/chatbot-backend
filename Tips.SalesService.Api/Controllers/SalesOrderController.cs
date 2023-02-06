@@ -186,7 +186,8 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         SalesOrderItems salesOrderItems = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
                         salesOrderItems.SalesOrderNumber = createSalesOrder.SalesOrderNumber;
-                         salesOrderItemsList.Add(salesOrderItems);
+                        salesOrderItems.BalanceQty = salesOrderItemsDto[i].OrderQty;
+                        salesOrderItemsList.Add(salesOrderItems);
                     }
                 }
 

@@ -286,11 +286,11 @@ namespace Tips.Warehouse.Api.Controllers
                         //Add BTO Detail Into Inventory transaction Table
 
                         InventoryTranction inventoryTranction = new InventoryTranction();
-                        inventoryTranction.PartNumber = getInventoryDetails.PartNumber;
-                        inventoryTranction.MftrPartNumber = getInventoryDetails.PartNumber;
-                        inventoryTranction.Description = getInventoryDetails.Description;
-                        inventoryTranction.Issued_Quantity = Quantity;
-                        inventoryTranction.UOM = getInventoryDetails.UOM;
+                        inventoryTranction.PartNumber = bTODeliveryOrderItemsDtoList[i].FGItemNumber;
+                        inventoryTranction.MftrPartNumber = bTODeliveryOrderItemsDtoList[i].FGItemNumber;
+                        inventoryTranction.Description = bTODeliveryOrderItemsDtoList[i].Description;
+                        inventoryTranction.Issued_Quantity = Convert.ToDecimal(bTODeliveryOrderItemsDtoList[i].DispatchQty);
+                        inventoryTranction.UOM = bTODeliveryOrderItemsDtoList[i].UOM;
                         inventoryTranction.Issued_DateTime = DateTime.Now;
                         inventoryTranction.ReferenceID = bTODeliveryOrder.BTONumber;
                         inventoryTranction.ReferenceIDFrom = "BTO Delivery Order";

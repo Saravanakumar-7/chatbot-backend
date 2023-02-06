@@ -57,8 +57,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? ProjectNumber { get; set; }
         public OrderStatus StatusEnum { get; set; }
 
-        [Precision(13, 3)]
-        public decimal? BalanceQty { get; set; }
+ 
 
         [Precision(13, 3)]
         public decimal? DispatchQty { get; set; }
