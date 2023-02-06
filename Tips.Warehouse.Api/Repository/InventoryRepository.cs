@@ -97,6 +97,25 @@ namespace Tips.Warehouse.Api.Repository
 
             return getSalesOrderDetailsBySOandItemNo;
         }
+        public async Task<IEnumerable<ListOfLocationTransferDto>> GetInventoryDetailsForLocationTransfer(string ItemNumber)
+        {
+
+            IEnumerable<ListOfLocationTransferDto> getBtoNumberList = await _tipsWarehouseDbContext.Inventory
+                                .Select(x => new ListOfLocationTransferDto()
+                                {
+                                    PartNumber = x.PartNumber,
+                                    Description = x.Description,
+                                    UOM = x.UOM,
+                                    Warehouse = x.Warehouse,
+                                    Location = x.Location,
+                                    PartType = x.PartType
+
+                                })
+                                .Where(x => x.PartNumber == ItemNumber)
+                              .ToListAsync();
+
+            return getBtoNumberList;
+        }
 
         //public async Task<Inventory> UpdateInventoryBalanceQty(string partNumber, string Qty)
         //{
