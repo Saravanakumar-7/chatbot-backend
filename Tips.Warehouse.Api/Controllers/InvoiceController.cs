@@ -1,14 +1,17 @@
-﻿using AutoMapper;
+﻿using System.Dynamic;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using AutoMapper;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
+using Newtonsoft.Json;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
 using Tips.Warehouse.Api.Repository;
-using Newtonsoft.Json;
 
 
 namespace Tips.Warehouse.Api.Controllers
@@ -21,13 +24,17 @@ namespace Tips.Warehouse.Api.Controllers
         private IBTODeliveryOrderItemsRepository _bTODeliveryOrderItemsRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
 
 
-        public InvoiceController(IInvoiceRepository invoiceRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, ILoggerManager logger, IMapper mapper)
+        public InvoiceController(IInvoiceRepository invoiceRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _invoiceRepository = invoiceRepository;
             _logger = logger;
             _mapper = mapper;
+            _httpClient = httpClient;
+            _config = config;
             _bTODeliveryOrderItemsRepository = bTODeliveryOrderItemsRepository;
         }
 
@@ -148,7 +155,8 @@ namespace Tips.Warehouse.Api.Controllers
                         InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
                         invoiceChildItemsDtoList.Add(invoiceChildItem);
                         string qty = Convert.ToString(invoiceChildItem.Qty);
-                        var getAllInvoicesList = await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderBalanceQty(invoiceChildItem.FGItemNumber, invoiceChildItem.DONumber, qty);
+                        var doNumber = invoiceitemsDto[i].DONumber;
+                        var getAllInvoicesList = await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderBalanceQty(invoiceChildItem.FGItemNumber, doNumber, qty);
                         _bTODeliveryOrderItemsRepository.SaveAsync();
                     }
                 }
@@ -178,6 +186,15 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 await _invoiceRepository.CreateInvoice(invoice);
                 _invoiceRepository.SaveAsync();
+
+                //update balance qty and dispatch qty in salesorder table
+                var btoDeliveryDispatchDetails = _mapper.Map<List<InvoiceDeliveryDetailsDto>>(invoiceitemsDto);
+
+                var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "InvoiceUpdateDispatchDetails"), data);
+
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Invoice Successfully Created";
                 serviceResponse.Success = true;

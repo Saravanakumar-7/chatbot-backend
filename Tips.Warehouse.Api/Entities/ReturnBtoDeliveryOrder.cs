@@ -1,6 +1,6 @@
 ﻿namespace Tips.Warehouse.Api.Entities
 {
-    public class ReturnDeliveryOrder
+    public class ReturnBtoDeliveryOrder
     {
         public int Id { get; set; }
         public string? ReturnDONumber { get; set; }
@@ -19,6 +19,6 @@
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<ReturnDeliveryOrderItems>? ReturnDeliveryOrderItems { get; set; }
+        public List<ReturnBtoDeliveryOrderItems>? ReturnBtoDeliveryOrderItems { get; set; }
     }
 }

@@ -61,18 +61,19 @@ namespace Tips.Warehouse.Api
             CreateMap<BTODeliveryOrder, ListofBtoDeliveryOrderDetails>().ReverseMap();
             CreateMap<Inventory, GetInventoryListByItemNo>().ReverseMap();
 
-            CreateMap<ReturnDeliveryOrder, ReturnDeliveryOrderDto>().ReverseMap();
-            CreateMap<ReturnDeliveryOrder, ReturnDeliveryOrderDtoPost>().ReverseMap();
-            CreateMap<ReturnDeliveryOrder, ReturnDeliveryOrderDtoUpdate>().ReverseMap();
+            CreateMap<ReturnBtoDeliveryOrder, ReturnBtoDeliveryOrderDto>().ReverseMap();
+            CreateMap<ReturnBtoDeliveryOrder, ReturnBtoDeliveryOrderPostDto>().ReverseMap();
+            CreateMap<ReturnBtoDeliveryOrder, ReturnBtoDeliveryOrderUpdateDto>().ReverseMap();
 
-            CreateMap<ReturnDeliveryOrderItems, ReturnDeliveryOrderItemsDto>().ReverseMap();
-            CreateMap<ReturnDeliveryOrderItems, ReturnDeliveryOrderItemsDtoPost>().ReverseMap();
-            CreateMap<ReturnDeliveryOrderItems, ReturnDeliveryOrderItemsDtoUpdate>().ReverseMap();
+            CreateMap<ReturnBtoDeliveryOrderItems, ReturnBtoDeliveryOrderItemsDto>().ReverseMap();
+            CreateMap<ReturnBtoDeliveryOrderItems, ReturnBtoDeliveryOrderItemsPostDto>().ReverseMap();
+            CreateMap<ReturnBtoDeliveryOrderItems, ReturnBtoDeliveryOrderItemsUpdateDto>().ReverseMap();
 
             CreateMap<BTODeliveryOrderItemsDtoPost, BtoDeliveryOrderDispatchQtyDetailsDto>().ReverseMap();
 
-            CreateMap<ReturnDeliveryOrderItemsDtoPost, BtoDOReturnQtyDetailsDto>().ReverseMap();
- 
+            CreateMap<ReturnBtoDeliveryOrderItemsPostDto, BtoDOReturnQtyDetailsDto>().ReverseMap();
+
+            CreateMap<InvoiceChildItem, BtoDeliveryOrderDispatchQtyDetailsDto>().ReverseMap();
 
             //CreateMap<BTODeliveryOrderItems, inven>().ReverseMap();
         }

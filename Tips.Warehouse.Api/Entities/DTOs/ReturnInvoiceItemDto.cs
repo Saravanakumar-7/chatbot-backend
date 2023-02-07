@@ -123,9 +123,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class BtoInvoiceReturnQtyDetailsDto
     {
 
-        public string FGPartNumber { get; set; }
-        public int SalesOrderId { get; set; }
-        public decimal ReturnQty { get; set; }
+        public string? FGPartNumber { get; set; }
+        public int? SalesOrderId { get; set; }
+        public decimal? ReturnQty { get; set; }
 
     }
 

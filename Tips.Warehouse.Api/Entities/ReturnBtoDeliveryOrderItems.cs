@@ -2,7 +2,7 @@
 
 namespace Tips.Warehouse.Api.Entities
 {
-    public class ReturnDeliveryOrderItems
+    public class ReturnBtoDeliveryOrderItems
     {
         public int Id { get; set; }
         public string? FGPartNumber { get; set; }
@@ -39,7 +39,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public int ReturnDeliveryOrderId { get; set; }
-        public ReturnDeliveryOrder? ReturnDeliveryOrder { get; set; }
+        public ReturnBtoDeliveryOrder? ReturnDeliveryOrder { get; set; }
 
     }
 }
