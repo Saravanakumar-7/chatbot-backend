@@ -22,7 +22,7 @@
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<BTOSerialNumberDto> BTOSerialNumberDto { get; set; }
+       // public List<BTOSerialNumberDto> BTOSerialNumberDto { get; set; }
 
     }
     public class BTODeliveryOrderItemsDtoPost
@@ -39,9 +39,9 @@
         public decimal Discount { get; set; }
         public decimal NetValue { get; set; }
         public decimal DispatchQty { get; set; }
-                public string SerialNo { get; set; }
+        public string SerialNo { get; set; }
         
-        public List<BTOSerialNumberDtoPost> BTOSerialNumberDtoPost { get; set; }
+       // public List<BTOSerialNumberDtoPost> BTOSerialNumberDtoPost { get; set; }
 
     }
     public class BTODeliveryOrderItemsDtoUpdate
@@ -64,7 +64,7 @@
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<BTOSerialNumberDtoUpdate> BTOSerialNumberDtoUpdate { get; set; }
+      //  public List<BTOSerialNumberDtoUpdate> BTOSerialNumberDtoUpdate { get; set; }
 
     }
 

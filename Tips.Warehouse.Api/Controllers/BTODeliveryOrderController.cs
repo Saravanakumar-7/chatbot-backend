@@ -113,7 +113,7 @@ namespace Tips.Warehouse.Api.Controllers
                         foreach (var deliveryOrderitemDetails in getBTODeliveryOrderDetailById.BTODeliveryOrderItems)
                         {
                             BTODeliveryOrderItemsDto bTODeliveryOrderItemsDtos = _mapper.Map<BTODeliveryOrderItemsDto>(deliveryOrderitemDetails);
-                            bTODeliveryOrderItemsDtos.BTOSerialNumberDto = _mapper.Map<List<BTOSerialNumberDto>>(deliveryOrderitemDetails.BTOSerialNumbers);
+                            //bTODeliveryOrderItemsDtos.BTOSerialNumberDto = _mapper.Map<List<BTOSerialNumberDto>>(deliveryOrderitemDetails.BTOSerialNumbers);
                             bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDtos);
                         }
                     }
@@ -239,20 +239,20 @@ namespace Tips.Warehouse.Api.Controllers
                    
                     for (int i = 0; i < bTODeliveryOrderitemsList.Count; i++)
                     {
-                        string cps = "";
-                        var btoSerialNumberList = bTODeliveryOrderitemsList[i].BTOSerialNumberDtoPost.ToList();
-                        if (btoSerialNumberList.Count() != 0)
-                        { 
-                            for (int j = 0; j < btoSerialNumberList.Count(); j++)
-                            {
-                                cps += btoSerialNumberList[j].SerialNumber.Trim() + ",";
-                            }
-                            cps = cps.TrimEnd(',');
-                            bTODeliveryOrderitemsList[i].SerialNo = cps;
-                        }
+                        //string cps = "";
+                        //var btoSerialNumberList = bTODeliveryOrderitemsList[i].BTOSerialNumberDtoPost.ToList();
+                        //if (btoSerialNumberList.Count() != 0)
+                        //{ 
+                        //    for (int j = 0; j < btoSerialNumberList.Count(); j++)
+                        //    {
+                        //        cps += btoSerialNumberList[j].SerialNumber.Trim() + ",";
+                        //    }
+                        //    cps = cps.TrimEnd(',');
+                        //    bTODeliveryOrderitemsList[i].SerialNo = cps;
+                        //}
                         
                         BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsList[i]);
-                        bTODeliveryOrderItemsDetails.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsList[i].BTOSerialNumberDtoPost);
+                       // bTODeliveryOrderItemsDetails.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsList[i].BTOSerialNumberDtoPost);
                         bTODeliveryOrderItemsDetails.BalanceDoQty = bTODeliveryOrderItemsDetails.DispatchQty;
                         bTODeliveryOrderItemsDetails.BTONumber = bTODeliveryOrder.BTONumber;
                         bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDetails);
@@ -438,7 +438,7 @@ namespace Tips.Warehouse.Api.Controllers
                         for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
                         {
                             BTODeliveryOrderItems bTODeliveryOrderItems = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);
-                            bTODeliveryOrderItems.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDtoUpdate);
+                           // bTODeliveryOrderItems.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDtoUpdate);
                             bTODeliveryOrderitemsList.Add(bTODeliveryOrderItems);
 
                             //Update Inventory balanced Quantity 

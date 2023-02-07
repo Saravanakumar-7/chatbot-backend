@@ -32,6 +32,6 @@ namespace Tips.Warehouse.Api.Entities
         public DateTime? LastModifiedOn { get; set; }
         public int BTODeliveryOrderId { get; set; }
         public BTODeliveryOrder? BTODeliveryOrder { get; set; }
-        public List<BTOSerialNumber> BTOSerialNumbers { get; set; }   
+       // public List<BTOSerialNumber> BTOSerialNumbers { get; set; }   
     }
 }

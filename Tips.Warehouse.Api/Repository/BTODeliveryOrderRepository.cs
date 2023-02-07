@@ -50,7 +50,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var getAllBTODetails = PagedList<BTODeliveryOrder>.ToPagedList(FindAll()
                                  .Include(t => t.BTODeliveryOrderItems)
-                                 .ThenInclude(s => s.BTOSerialNumbers)
+                                 //.ThenInclude(s => s.BTOSerialNumbers)
                 .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return getAllBTODetails;
@@ -99,7 +99,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var getBTODeliveryOrderDetailsbyId = await _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.Id == id)
                                 .Include(t => t.BTODeliveryOrderItems)
-                                .ThenInclude(s => s.BTOSerialNumbers)
+                                //.ThenInclude(s => s.BTOSerialNumbers)
                                 .FirstOrDefaultAsync();
 
 
