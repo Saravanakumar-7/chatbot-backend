@@ -126,6 +126,9 @@ namespace Tips.Grin.Api.Controllers
                         ReturnGrinParts returnGrinParts = _mapper.Map<ReturnGrinParts>(returnGrinDto[i]);
                         returnGrinPartsList.Add(returnGrinParts);
 
+                        //add return grin details to  inventory table
+
+                        //add return grin details to  inventory table 
 
                     }
                 }
