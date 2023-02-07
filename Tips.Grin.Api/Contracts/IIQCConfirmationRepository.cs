@@ -8,12 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Tips.Grin.Api.Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Grin.Api.Contracts
 {
     public interface IIQCConfirmationRepository : IRepositoryBase<IQCConfirmation>
     {
-        Task<IEnumerable<IQCConfirmation>> GetAllIqcDetails();
+        Task<PagedList<IQCConfirmation>> GetAllIqcDetails( PagingParameter pagingParameter, SearchParams searchParams);
         Task<IEnumerable<IQCConfirmation>> GetIqcDetailsbyGrinNo(string grinNumber);
         Task<string> UpdateIqc(IQCConfirmation iQCConfirmation);
         

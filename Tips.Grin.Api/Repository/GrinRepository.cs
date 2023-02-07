@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Grin.Api.Repository
 {
@@ -23,18 +24,25 @@ namespace Tips.Grin.Api.Repository
         } 
         public async Task<int?> CreateGrin(Grins grins)
         {
+            var date = DateTime.Now;
             grins.CreatedBy = "Admin";
-            grins.CreatedOn = DateTime.Now;
-            Guid grinId = Guid.NewGuid();
-            grins.GrinNumber = "GR-" + grinId.ToString();
+            grins.CreatedOn = date.Date;
+            //Guid grinId = Guid.NewGuid();
+            //grins.GrinNumber = "GR-" + grinId.ToString();
             grins.Unit = "Bangalore";       
 
             var result = await Create(grins);
             return result.Id;
-        }        
+        }
 
-       
-         
+        public async Task<int?> GetGrinNumberAutoIncrementCount(DateTime date)
+        {
+            var getGrinNumberAutoIncrementCount = _tipsGrinDbContext.Grins.Where(x => x.CreatedOn == date.Date).Count();
+
+            return getGrinNumberAutoIncrementCount;
+        }
+
+
         public async Task<string> DeleteGrin(Grins grins)
         {
             Delete(grins);
@@ -42,10 +50,13 @@ namespace Tips.Grin.Api.Repository
             return result;
         } 
 
-        public async Task<IEnumerable<Grins>> GetAllActiveGrin()
+        public async Task<PagedList<Grins>> GetAllActiveGrin([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var allActiveGrinDetails = await FindAll().ToListAsync();
-            return allActiveGrinDetails;
+            var allActiveGrinDetails = FindAll()
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue) ||
+                   inv.VendorId.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))))
+                 .Include(t => t.GrinParts);
+            return PagedList<Grins>.ToPagedList(allActiveGrinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<IEnumerable<GrinNumberListDto>> GetAllActiveGrinNoList()
@@ -62,14 +73,20 @@ namespace Tips.Grin.Api.Repository
             return allActiveGrinNoList;
         }
 
-        public async Task<PagedList<Grins>> GetAllGrin(PagingParameter pagingParameter)
+        public async Task<PagedList<Grins>> GetAllGrin([FromQuery] PagingParameter pagingParameter,[FromQuery] SearchParams searchParams)
         {
-            var getAllGrinDetails= PagedList<Grins>.ToPagedList (FindAll()
-                                .Include(t => t.GrinParts)
-                                .ThenInclude(t => t.ProjectNumbers) 
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var getAllGrinDetails = FindAll()
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue) ||
+                 inv.VendorId.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))))
+               .Include(t => t.GrinParts)
+               .ThenInclude(d => d.ProjectNumbers);
 
-            return getAllGrinDetails;
+            return PagedList<Grins>.ToPagedList(getAllGrinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        private void ThenInclude(Func<object, ProjectNumbers> value)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<Grins> GetGrinById(int id)
@@ -129,7 +146,19 @@ namespace Tips.Grin.Api.Repository
         {
             _tipsGrinDbContexts = tipsGrinDbContext;
         }
-         
+
+        public async Task<PagedList<GrinParts>> GetAllGrinParts([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        {
+            var getAllGrinParts = FindAll()
+                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
+                 inv.ItemDescription.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue)
+                 || inv.MftrItemNumber.Contains(searchParams.SearchValue) || inv.ManufactureBatchNumber.Contains(searchParams.SearchValue)
+                 )))
+                .Include(t => t.ProjectNumbers);
+
+            return PagedList<GrinParts>.ToPagedList(getAllGrinParts, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
         public async Task<GrinParts> UpdateGrinPartsQty(int GrinPartId, string AcceptedQty, string RejectedQty)
         {
             var data = await _tipsGrinDbContexts.GrinParts.Where(x => x.Id == GrinPartId).FirstOrDefaultAsync();

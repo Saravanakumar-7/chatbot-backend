@@ -40,9 +40,12 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public string Unit { get; set; }
 
-        
+        public List<IQCConfirmationItemsDto>? IQCConfirmationItems { get; set; }
+    
 
-    }
+
+
+}
     public class IQCConfirmationPostDto
     {
         public string? GrinNumber { get; set; }
@@ -64,6 +67,9 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public bool IsDeleted { get; set; } = false;
 
+        public List<IQCConfirmationItemsPostDto>? IQCConfirmationItemsPostDtos { get; set; }
+
+
 
 
     }
@@ -71,8 +77,8 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class IQCConfirmationUpdateDto
     {
 
-    
-    public string? GrinNumber { get; set; }
+        public int Id { get; set; }
+        public string? GrinNumber { get; set; }
 
     public string? ItemNumber { get; set; }
 
@@ -92,6 +98,9 @@ namespace Tips.Grin.Api.Entities.DTOs
     public bool IsDeleted { get; set; } = false;
 
     public string Unit { get; set; }
+
+    public List<IQCConfirmationItemsUpdateDto>? IQCConfirmationItemsUpdateDtos { get; set; }
+
 
 
     }

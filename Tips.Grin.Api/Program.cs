@@ -29,6 +29,9 @@ builder.Services.AddScoped<IGrinRepository, GrinRepository>();
 builder.Services.AddScoped<IIQCConfirmationRepository, IQCConfirmationRepository>();
 builder.Services.AddScoped<IBinningRepository, BinningRepository>();
 builder.Services.AddScoped<IReturnGrinRepository, ReturnGrinRepository>();
+builder.Services.AddScoped<IBinningItemsRepository, BinningItemsRepository>();
+builder.Services.AddScoped<IGrinPartsRepository, GrinPartsRepository>();
+builder.Services.AddScoped<IIQCConfirmationItemsRepository, IQCConfirmationItemsRepository>();
 //builder.Services.AddScoped<IReturnGrinDocumentUploadRepository, ReturnGrinDocumentUpload>();
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
