@@ -113,4 +113,12 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
 
     }
+    public class InvoiceDeliveryDetailsDto
+    {
+
+        public string? FGItemNumber { get; set; }
+        public int? SalesOrderId { get; set; }
+        public decimal? Qty { get; set; }
+
+    }
 }

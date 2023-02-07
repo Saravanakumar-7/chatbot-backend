@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {
-    public class ReturnDeliveryOrderItemsDto
+    public class ReturnBtoDeliveryOrderItemsDto
     {
         public int Id { get; set; }
         public string? FGPartNumber { get; set; }
@@ -47,7 +47,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
     }
 
-    public class ReturnDeliveryOrderItemsDtoPost
+    public class ReturnBtoDeliveryOrderItemsPostDto
     {
         public string? FGPartNumber { get; set; }
         public string? Description { get; set; }
@@ -84,7 +84,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
     }
 
-    public class ReturnDeliveryOrderItemsDtoUpdate
+    public class ReturnBtoDeliveryOrderItemsUpdateDto
     {
         public int? Id { get; set; }
         public string? FGPartNumber { get; set; }

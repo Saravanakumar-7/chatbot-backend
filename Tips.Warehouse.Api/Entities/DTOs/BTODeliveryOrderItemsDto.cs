@@ -77,16 +77,6 @@
 
 
 
-    }
-    public class BtoDeliveryOrderReturnQtyDetailsDto
-    {
-
-        public string FGItemNumber { get; set; }
-        public int SalesOrderId { get; set; }
-        public decimal DispatchQty { get; set; }
-
-
-
-    }
+    }  
 
 }

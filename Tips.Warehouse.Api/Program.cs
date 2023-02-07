@@ -31,7 +31,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();  
 builder.Services.AddScoped<IBTODeliveryOrderRepository, BTODeliveryOrderRepository>();
 builder.Services.AddScoped<IDeliveryOrderRepository, DeliveryOrderRepository>();
-builder.Services.AddScoped<IReturnDeliveryOrderRepository, ReturnDeliveryOrderRepository>();
+builder.Services.AddScoped<IReturnBtoDeliveryOrderRepository, ReturnBtoDeliveryOrderRepository>();
 builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 builder.Services.AddScoped<IInventoryTranctionRepository, InventoryTranctionRepository>();
 builder.Services.AddScoped<IReturnInvoiceRepository, ReturnInvoiceRepository>();

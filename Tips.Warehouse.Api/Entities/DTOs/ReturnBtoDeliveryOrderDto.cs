@@ -1,6 +1,6 @@
 ﻿namespace Tips.Warehouse.Api.Entities.DTOs
 {
-    public class ReturnDeliveryOrderDto
+    public class ReturnBtoDeliveryOrderDto
     {
 
         public int Id { get; set; }
@@ -21,10 +21,10 @@
         public DateTime? LastModifiedOn { get; set; }
 
 
-        public List<ReturnDeliveryOrderItemsDto>? ReturnDeliveryOrderItems { get; set; }
+        public List<ReturnBtoDeliveryOrderItemsDto>? ReturnBtoDeliveryOrderItemsDtos { get; set; }
     }
 
-    public class ReturnDeliveryOrderDtoPost
+    public class ReturnBtoDeliveryOrderPostDto
     {
         public string? ReturnDeliveryOrderNumber { get; set; }
         public DateTime? ReturnDeliveryOrderDate { get; set; }
@@ -34,11 +34,11 @@
         public string? PONumber { get; set; }
         public string? IssuedTo { get; set; }
 
-        public List<ReturnDeliveryOrderItemsDtoPost>? ReturnDeliveryOrderItems { get; set; }
+        public List<ReturnBtoDeliveryOrderItemsPostDto>? ReturnBtoDeliveryOrderItemsPostDtos { get; set; }
 
     }
 
-    public class ReturnDeliveryOrderDtoUpdate
+    public class ReturnBtoDeliveryOrderUpdateDto
     {
         public int Id { get; set; }
         public string? ReturnDeliveryOrderNumber { get; set; }
@@ -56,6 +56,6 @@
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<ReturnDeliveryOrderItemsDtoUpdate>? ReturnDeliveryOrderItems { get; set; }
+        public List<ReturnBtoDeliveryOrderItemsUpdateDto>? ReturnBtoDeliveryOrderItemsUpdateDtos { get; set; }
     }
 }

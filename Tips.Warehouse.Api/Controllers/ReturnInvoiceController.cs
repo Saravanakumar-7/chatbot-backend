@@ -263,7 +263,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                //update balance qty and dispatch qty in sales order table for return Invoice concept
 
-                var btoDeliveryReturnDetails = _mapper.Map<List<BtoDOReturnQtyDetailsDto>>(returnInvoiceItemDto);
+                var btoDeliveryReturnDetails = _mapper.Map<List<BtoInvoiceReturnQtyDetailsDto>>(returnInvoiceItemDto);
 
                 var json = JsonConvert.SerializeObject(btoDeliveryReturnDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
