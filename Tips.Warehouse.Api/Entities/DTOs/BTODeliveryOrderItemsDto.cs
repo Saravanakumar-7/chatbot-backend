@@ -76,7 +76,14 @@
         public decimal DispatchQty { get; set; } 
 
 
+    }
+    public class BtoDeliveryOrderInvoiceQtyDetailsDto
+    {
 
-    }  
+        public string FGItemNumber { get; set; }
+        public int SalesOrderId { get; set; }
+        public decimal Qty { get; set; }
+
+    }
 
 }

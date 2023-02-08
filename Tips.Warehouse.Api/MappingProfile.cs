@@ -73,7 +73,19 @@ namespace Tips.Warehouse.Api
 
             CreateMap<ReturnBtoDeliveryOrderItemsPostDto, BtoDOReturnQtyDetailsDto>().ReverseMap();
 
-            CreateMap<InvoiceChildItem, BtoDeliveryOrderDispatchQtyDetailsDto>().ReverseMap();
+            CreateMap<InvoiceChildItemPostDto, BtoDeliveryOrderInvoiceQtyDetailsDto>().ReverseMap();
+
+
+            CreateMap<ReturnInvoice, ReturnInvoiceDto>().ReverseMap();
+            CreateMap<ReturnInvoice, ReturnInvoiceDtoPost>().ReverseMap();
+            CreateMap<ReturnInvoice, ReturnInvoiceDtoUpdate>().ReverseMap();
+
+            CreateMap<ReturnInvoiceItem, ReturnInvoiceItemDto>().ReverseMap();
+            CreateMap<ReturnInvoiceItem, ReturnInvoiceItemDtoPost>().ReverseMap();
+            CreateMap<ReturnInvoiceItem, ReturnInvoiceItemDtoUpdate>().ReverseMap();
+
+            CreateMap<ReturnInvoiceItemDtoPost, BtoInvoiceReturnQtyDetailsDto>().ReverseMap();
+
 
             //CreateMap<BTODeliveryOrderItems, inven>().ReverseMap();
         }

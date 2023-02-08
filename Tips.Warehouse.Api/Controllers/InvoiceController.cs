@@ -188,7 +188,7 @@ namespace Tips.Warehouse.Api.Controllers
                 _invoiceRepository.SaveAsync();
 
                 //update balance qty and dispatch qty in salesorder table
-                var btoDeliveryDispatchDetails = _mapper.Map<List<InvoiceDeliveryDetailsDto>>(invoiceitemsDto);
+                var btoDeliveryDispatchDetails = _mapper.Map<List<BtoDeliveryOrderInvoiceQtyDetailsDto>>(invoiceitemsDto);
 
                 var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
