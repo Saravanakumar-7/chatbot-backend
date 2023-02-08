@@ -164,9 +164,26 @@ namespace Tips.Warehouse.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
+                
+
                 var returnBtoDeliveryOrder = _mapper.Map<ReturnBtoDeliveryOrder>(returnBtoDeliveryOrderPostDto);
 
                 var returnBtoDeliveryOrderitemsDto = returnBtoDeliveryOrderPostDto.ReturnBtoDeliveryOrderItemsPostDtos;
+                var getBtoNumber = returnBtoDeliveryOrderPostDto.BTONumber;
+                var returnBtoNumberCount = await _repository.GetReturnBtoDeliveryOrderByBtoNo(getBtoNumber);
+                //var getReturnBtoNumber = _mapper.Map<ReturnBtoDeliveryOrder>(getReturnBtoNumberDetails);
+
+
+                if (returnBtoNumberCount != 0)
+                {
+                    int returnBtocount = Convert.ToInt16(returnBtoNumberCount + 1);
+                    returnBtoDeliveryOrder.ReturnDONumber = getBtoNumber + "-" + "R" + "-" + returnBtocount;
+                }
+                else
+                {
+                    int returnBtocount = 1;
+                    returnBtoDeliveryOrder.ReturnDONumber = getBtoNumber + "-" + "R" + "-" + returnBtocount;
+                }
 
                 var returnBtoDeliveryOrderItemsDtoList = new List<ReturnBtoDeliveryOrderItems>();
 

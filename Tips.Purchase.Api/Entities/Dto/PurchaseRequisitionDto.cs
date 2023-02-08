@@ -50,11 +50,11 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
     public class PurchaseRequisitionPostDto
     {
-        public string? PRNumber { get; set; }
+        //public string? PRNumber { get; set; }
 
         public DateTime? PRDate { get; set; }
 
-        public int? RevisionNumber { get; set; }
+        //public int? RevisionNumber { get; set; }
 
         public string? ProcurementType { get; set; }
 
@@ -82,7 +82,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
     public class PurchaseRequisitionUpdateDto
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
 
         public string? PRNumber { get; set; }
 

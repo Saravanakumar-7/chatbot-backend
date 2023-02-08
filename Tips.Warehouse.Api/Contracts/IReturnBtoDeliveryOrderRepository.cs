@@ -13,6 +13,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<int?> CreateReturnBtoDeliveryOrder(ReturnBtoDeliveryOrder returnBtoDeliveryOrder);
         Task<string> UpdateReturnBtoDeliveryOrder(ReturnBtoDeliveryOrder returnBtoDeliveryOrder);
         Task<string> DeleteReturnBtoDeliveryOrder(ReturnBtoDeliveryOrder returnBtoDeliveryOrder);
+        Task<int?> GetReturnBtoDeliveryOrderByBtoNo(string BTONumber);
+
 
     }
 }

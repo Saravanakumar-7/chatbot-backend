@@ -13,11 +13,14 @@ namespace Tips.Purchase.Api.Contracts
         Task<PurchaseRequisition> GetPurchaseRequisitionByPRNumber(string prNumber);
         Task<IEnumerable<PurchaseRequisition>> GetAllActivePurchaseRequisitions();
         Task<long> CreatePurchaseRequisition(PurchaseRequisition purchaseRequisition);
+        Task<PurchaseRequisition> ChangePurchaseRequisitionVersion(PurchaseRequisition purchaseRequisition);
         Task<string> UpdatePurchaseRequisition(PurchaseRequisition purchaseRequisition);
         Task<string> DeletePurchaseRequisition(PurchaseRequisition purchaseRequisition);
         Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllActivePurchaseRequisitionNameList();
         Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalINameList();
         Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIINameList();
+        Task<int?> GetPRNumberAutoIncrementCount(DateTime date);
+
 
     }
 }

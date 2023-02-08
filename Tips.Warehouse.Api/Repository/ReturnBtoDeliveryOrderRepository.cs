@@ -48,6 +48,12 @@ namespace Tips.Warehouse.Api.Repository
 
             return getReturnBtoDeliveryOrderById;
         }
+        public async Task<int?> GetReturnBtoDeliveryOrderByBtoNo(string BTONumber)
+        {
+            var getReturnBtoDeliveryOrderByBtoNo =  _tipsWarehouseDbContext.ReturnBtoDeliveryOrders
+                    .Where(x => x.BTONumber == BTONumber).Count();
+            return getReturnBtoDeliveryOrderByBtoNo;
+        }
 
         public async Task<string> UpdateReturnBtoDeliveryOrder(ReturnBtoDeliveryOrder returnBtoDeliveryOrder)
         {

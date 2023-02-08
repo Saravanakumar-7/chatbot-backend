@@ -19,13 +19,43 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<long> CreatePurchaseRequisition(PurchaseRequisition purchaseRequisitions)
         {
+            var date = DateTime.Now;
             purchaseRequisitions.CreatedBy = "Admin";
-            purchaseRequisitions.CreatedOn = DateTime.Now;
-            Guid purchaseRequisitionsNumber = Guid.NewGuid();
-            purchaseRequisitions.PRNumber = "PR-" + purchaseRequisitionsNumber.ToString();
+            purchaseRequisitions.CreatedOn = date.Date;
+           // Guid purchaseRequisitionsNumber = Guid.NewGuid();
+           // purchaseRequisitions.PRNumber = "PR-" + purchaseRequisitionsNumber.ToString();
             purchaseRequisitions.Unit = "Bangalore";
+            purchaseRequisitions.RevisionNumber = 1;
             var result = await Create(purchaseRequisitions);
             return result.Id;
+        }
+        public async Task<int?> GetPRNumberAutoIncrementCount(DateTime date)
+        {
+            var getPRNumberAutoIncrementCount = _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.CreatedOn == date.Date).Count();
+
+            return getPRNumberAutoIncrementCount;
+        }
+
+        public async Task<PurchaseRequisition> ChangePurchaseRequisitionVersion(PurchaseRequisition purchaseRequisition)
+        {
+            purchaseRequisition.CreatedBy = "Admin";
+            purchaseRequisition.CreatedOn = DateTime.Now;
+            purchaseRequisition.Unit = "Bangalore";
+            var getIdByPRNumber = _tipsPurchaseDbContext.PurchaseRequisitions
+                .Where(x => x.PRNumber == purchaseRequisition.PRNumber)
+                .OrderByDescending(x => x.Id)
+                .Select(x => x.Id)
+                .FirstOrDefault();
+            var getOldRevisionNumber = _tipsPurchaseDbContext.PurchaseRequisitions
+                .Where(x => x.Id == getIdByPRNumber)
+                .Select(x => x.RevisionNumber)
+                .FirstOrDefault();
+            var increaseVersionNumber = 1;
+            var convertversionnumber = /*Convert.ToDecimal*/(increaseVersionNumber);
+            var version = getOldRevisionNumber + convertversionnumber;
+            purchaseRequisition.RevisionNumber = /*Convert.ToDecimal*/(version);
+            var result = await Create(purchaseRequisition);
+            return result;
         }
 
         public  async Task<string> DeletePurchaseRequisition(PurchaseRequisition purchaseRequisitions)

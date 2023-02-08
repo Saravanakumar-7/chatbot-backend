@@ -150,6 +150,27 @@ namespace Tips.Purchase.Api.Controllers
                 var prItemDto = purchaseRequistionPostDto.PrItemsDtoPostList;
                 var prItemDtoList = new List<PrItem>();
 
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
+
+                var newcount = await _repository.GetPRNumberAutoIncrementCount(date);
+
+                if (newcount > 0)
+                {
+                    var number = newcount + 1;
+                    string e = String.Format("{0:D4}", number);
+                    purchaseRequisitionDetails.PRNumber = days + months + years + "PR" + (e);
+                }
+                else
+                {
+                    var count = 1;
+                    var e = count.ToString("D4");
+                    purchaseRequisitionDetails.PRNumber = days + months + years + "PR" + (e);
+                }
+
+
                 if (prItemDto != null)
                 {
                     for (int i = 0; i < prItemDto.Count; i++)
@@ -180,6 +201,71 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //Test
+
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePurchaseRequisitionRevision([FromBody] PurchaseRequisitionUpdateDto purchaseRequistionPostDto)
+        {
+            ServiceResponse<PurchaseRequisitionPostDto> serviceResponse = new ServiceResponse<PurchaseRequisitionPostDto>();
+            try
+            {
+                if (purchaseRequistionPostDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "PurchaseRequisition object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("PurchaseRequisition object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseRequisition object.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseRequisition object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+
+                var purchaseRequisitionDetails = _mapper.Map<PurchaseRequisition>(purchaseRequistionPostDto);
+                var prItemDto = purchaseRequistionPostDto.PrItemsDtoUpdateList;
+                var prItemDtoList = new List<PrItem>();                 
+
+                if (prItemDto != null)
+                {
+                    for (int i = 0; i < prItemDto.Count; i++)
+                    {
+                        PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
+                        prItemDetails.PrAddprojects = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoUpdateList);
+                        prItemDetails.PrAddDeliverySchedules = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoUpdateList);
+                        prItemDtoList.Add(prItemDetails);
+                    }
+                }
+                purchaseRequisitionDetails.PrItemList = prItemDtoList;
+                await _repository.ChangePurchaseRequisitionVersion(purchaseRequisitionDetails);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = " PurchaseRequisition Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreatePurchaseRequisition action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        //test
 
 
         [HttpPut("{id}")]
