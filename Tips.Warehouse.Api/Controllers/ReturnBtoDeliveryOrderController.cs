@@ -279,7 +279,7 @@ namespace Tips.Warehouse.Api.Controllers
                         bTODeliveryOrderHistory.NetValue = getBtoDeliveryOrderDetails.NetValue;
                         bTODeliveryOrderHistory.DispatchQty = ReturnQty;
                         bTODeliveryOrderHistory.InvoicedQty = getBtoDeliveryOrderDetails.InvoicedQty;
-                        bTODeliveryOrderHistory.SerialNo = returnBtoDeliveryOrderItemsDtoList[i].SerialNo; 
+                        bTODeliveryOrderHistory.SerialNo = resultd; 
                         bTODeliveryOrderHistory.Remark = "From Return BTO";
 
                         var bTODeliveryOrderHistoryDetails = _mapper.Map<BTODeliveryOrderHistory>(bTODeliveryOrderHistory);
