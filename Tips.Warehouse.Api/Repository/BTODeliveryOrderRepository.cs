@@ -137,10 +137,10 @@ namespace Tips.Warehouse.Api.Repository
             Update(getSalesOrderDetailsBySOandItemNo);
             return getSalesOrderDetailsBySOandItemNo;
         }
-        public async Task<BTODeliveryOrderItems> GetBtoDelieveryOrderItemDetails(string itemNumber, string BTONumber)
+        public async Task<BTODeliveryOrderItems> GetBtoDelieveryOrderItemDetails(int btoDeliveryOrderPartsId)
         {
             var getBTODeliveryOrderItemDetails = await _tipsWarehouseDbContexts.bTODeliveryOrderItems
-                    .Where(x => x.FGItemNumber == itemNumber && x.BTONumber == BTONumber)
+                    .Where(x => x.Id == btoDeliveryOrderPartsId)
                           .FirstOrDefaultAsync(); 
             return getBTODeliveryOrderItemDetails;
         }
@@ -159,9 +159,8 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<long> CreateBTODeliveryOrderHistory(BTODeliveryOrderHistory bTODeliveryOrderHistory)
         {
-            var date = DateTime.Now;
-            bTODeliveryOrderHistory.CreatedBy = "Admin";
-            bTODeliveryOrderHistory.CreatedOn = date.Date; 
+             bTODeliveryOrderHistory.CreatedBy = "Admin";
+            bTODeliveryOrderHistory.CreatedOn = DateTime.Now; 
             var result = await Create(bTODeliveryOrderHistory);
             return result.Id;
         }

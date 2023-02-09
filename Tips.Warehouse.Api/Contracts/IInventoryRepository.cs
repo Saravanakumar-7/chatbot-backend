@@ -18,6 +18,8 @@ namespace Tips.Warehouse.Api.Contracts
         
         Task<Inventory> GetInventoryDetails(string ItemNumber);
 
+        Task<Inventory> GetInventoryFGDetailsByItemNumber(string ItemNumber);        
+
         //Task<Inventory> UpdateInventoryBalanceQty(string partNumber, string Qty);
 
         Task<IEnumerable<ListOfLocationTransferDto>> GetInventoryDetailsForLocationTransfer(string ItemNumber);

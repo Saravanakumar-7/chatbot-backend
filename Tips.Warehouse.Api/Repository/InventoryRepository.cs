@@ -97,6 +97,19 @@ namespace Tips.Warehouse.Api.Repository
 
             return getSalesOrderDetailsBySOandItemNo;
         }
+
+        //get inventory details from fg partnumber
+
+        public async Task<Inventory> GetInventoryFGDetailsByItemNumber(string ItemNumber)
+        {
+            var getSalesOrderDetailsBy = await _tipsWarehouseDbContext.Inventory
+                 .Where(x => x.PartNumber == ItemNumber && x.PartType == "FG" && x.IsStockAvailable == true)
+                          .FirstOrDefaultAsync();
+
+            return getSalesOrderDetailsBy;
+        }
+         
+
         public async Task<IEnumerable<ListOfLocationTransferDto>> GetInventoryDetailsForLocationTransfer(string ItemNumber)
         {
 

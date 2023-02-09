@@ -58,6 +58,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? UOC { get; set; }
         public string? UOM { get; set; }
         public int SalesOrderId { get; set; }
+        public int BtoDeliveryOrderPartsId { get; set; }
 
         [Precision(13, 2)]
         public decimal? FGOrderQty { get; set; }

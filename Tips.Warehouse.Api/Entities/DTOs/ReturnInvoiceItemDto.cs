@@ -48,8 +48,12 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? FGPartNumber { get; set; }
         public string? Description { get; set; }
 
+        public int BtoDeliveryOrderPartsId { get; set; }
+
         [Precision(13, 3)]
         public decimal? ActualQty { get; set; }
+
+        public string? SerialNumber { get; set; }
 
         [Precision(13, 3)]
         public decimal? Qty { get; set; }

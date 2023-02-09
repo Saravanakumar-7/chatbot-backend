@@ -28,7 +28,7 @@
     {
         //public string? ReturnDeliveryOrderNumber { get; set; }
         public DateTime? ReturnDeliveryOrderDate { get; set; }
-        public string? CustomerName { get; set; }
+        public string? CustomerName { get; set; }       
 
         public string? BTONumber { get; set; }
         public string? CustomerAliasName { get; set; }

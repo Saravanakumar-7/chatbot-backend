@@ -190,7 +190,7 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderItemsList.Add(salesOrderItems);
                     }
                 }
-
+                createSalesOrder.SalesOrdersItems = salesOrderItemsList;
                 createSalesOrder.SalesOrdersItems = salesOrderItemsList;
 
 

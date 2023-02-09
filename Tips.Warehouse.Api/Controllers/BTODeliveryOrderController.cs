@@ -238,49 +238,61 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                    
                     for (int i = 0; i < bTODeliveryOrderitemsList.Count; i++)
-                    {
-                        //string cps = "";
-                        //var btoSerialNumberList = bTODeliveryOrderitemsList[i].BTOSerialNumberDtoPost.ToList();
-                        //if (btoSerialNumberList.Count() != 0)
-                        //{ 
-                        //    for (int j = 0; j < btoSerialNumberList.Count(); j++)
-                        //    {
-                        //        cps += btoSerialNumberList[j].SerialNumber.Trim() + ",";
-                        //    }
-                        //    cps = cps.TrimEnd(',');
-                        //    bTODeliveryOrderitemsList[i].SerialNo = cps;
-                        //}
-                        
+                    { 
                         BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsList[i]);
-                       // bTODeliveryOrderItemsDetails.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsList[i].BTOSerialNumberDtoPost);
-                        bTODeliveryOrderItemsDetails.BalanceDoQty = bTODeliveryOrderItemsDetails.DispatchQty;
+                         bTODeliveryOrderItemsDetails.BalanceDoQty = bTODeliveryOrderItemsDetails.DispatchQty;
                         bTODeliveryOrderItemsDetails.BTONumber = bTODeliveryOrder.BTONumber;
                         bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDetails);
 
                         //Update Inventory balanced Quantity 
 
                         var PartNumber = bTODeliveryOrderItemsDtoList[i].FGItemNumber;
-                        var getInventoryDetails = await _inventoryRepository.GetInventoryDetails(PartNumber);
+                        var getInventoryFGDetailsByItemnumber = await _inventoryRepository.GetInventoryFGDetailsByItemNumber(PartNumber);
                         decimal Quantity = Convert.ToDecimal(bTODeliveryOrderitemsList[i].DispatchQty);
-                        if (getInventoryDetails != null)
+                        if (getInventoryFGDetailsByItemnumber != null)
                         {
-                            if (Quantity != 0 && getInventoryDetails.Balance_Quantity >= Quantity)
+                            if (Quantity != 0 && getInventoryFGDetailsByItemnumber.Balance_Quantity >= Quantity)
                             {
-                                getInventoryDetails.Balance_Quantity = getInventoryDetails.Balance_Quantity - Quantity;
+                                getInventoryFGDetailsByItemnumber.Balance_Quantity = getInventoryFGDetailsByItemnumber.Balance_Quantity - Quantity;
                                 Quantity = 0;
-                                if (getInventoryDetails.Balance_Quantity == 0)
+                                if (getInventoryFGDetailsByItemnumber.Balance_Quantity == 0)
                                 {
-                                    getInventoryDetails.IsStockAvailable = false;
+                                    getInventoryFGDetailsByItemnumber.IsStockAvailable = false;
                                 }
                             }
-                            if (Quantity != 0 && getInventoryDetails.Balance_Quantity < Quantity)
+                            if (Quantity != 0 && getInventoryFGDetailsByItemnumber.Balance_Quantity < Quantity)
                             {
-                                Quantity = Quantity - getInventoryDetails.Balance_Quantity;
-                                getInventoryDetails.Balance_Quantity = 0;
-                                getInventoryDetails.IsStockAvailable = false;
+                                Quantity = Quantity - getInventoryFGDetailsByItemnumber.Balance_Quantity;
+                                getInventoryFGDetailsByItemnumber.Balance_Quantity = 0;
+                                getInventoryFGDetailsByItemnumber.IsStockAvailable = false;
                             }
-                
-                        } 
+
+                            _inventoryRepository.Update(getInventoryFGDetailsByItemnumber);
+                            _inventoryRepository.SaveAsync();
+                        }
+                        else
+                        {
+                            Inventory inventory = new Inventory();
+                            inventory.PartNumber = bTODeliveryOrderItemsDtoList[i].FGItemNumber;
+                            inventory.MftrPartNumber = bTODeliveryOrderItemsDtoList[i].FGItemNumber;
+                            inventory.Description = bTODeliveryOrderItemsDtoList[i].Description;
+                            inventory.ProjectNumber = "";
+                            inventory.Balance_Quantity = bTODeliveryOrderitemsList[i].DispatchQty;
+                            inventory.UOM = bTODeliveryOrderItemsDtoList[i].UOM;
+                            inventory.IsStockAvailable = true;
+                            inventory.Warehouse = "FG";
+                            inventory.Location = "FG";
+                            inventory.GrinNo = bTODeliveryOrder.BTONumber;
+                            inventory.GrinPartId = 0;
+                            inventory.PartType = "";
+                            inventory.GrinMaterialType = "";
+                            inventory.ReferenceID = bTODeliveryOrder.BTONumber;
+                            inventory.ReferenceIDFrom = "Create BTO Delivery Order";
+                            inventory.shopOrderNo = "";
+
+                            await _inventoryRepository.CreateInventory(inventory);
+                            _inventoryRepository.SaveAsync();
+                        }
                         
 
                         //Add BTO Detail Into Inventory transaction Table
@@ -303,7 +315,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTranction.ModifiedStatus = false;
                         inventoryTranction.From_Location = "FG";
                         inventoryTranction.TO_Location = "BTO";
-                        inventoryTranction.Remarks = "Customer,BTO";
+                        inventoryTranction.Remarks = "Create BTO";
 
                         var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
@@ -311,8 +323,6 @@ namespace Tips.Warehouse.Api.Controllers
                         await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
                         _inventoryTranctionRepository.SaveAsync();
 
-                        _inventoryRepository.Update(getInventoryDetails);
-                        _inventoryRepository.SaveAsync();
 
                         // Add Bto detail in to btodeliveryorderhistory table
 

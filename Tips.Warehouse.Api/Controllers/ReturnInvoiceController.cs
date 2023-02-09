@@ -207,12 +207,19 @@ namespace Tips.Warehouse.Api.Controllers
                         _inventoryRepository.Update(getInventoryDetails);
                         _inventoryRepository.SaveAsync();
 
-                      //update balance Qty and Dispatch Qty in Bto Delivery Order Table
+                        //update balance Qty and Dispatch Qty in Bto Delivery Order Table
+                        int getBtoPartsId = returnInvoiceItemDto[i].BtoDeliveryOrderPartsId;
 
-                        var getBtoDeliveryOrderDetails = await _bTODeliveryOrderItemsRepository.GetBtoDelieveryOrderItemDetails(PartNumber, DONumber);
+                        var getBtoDeliveryOrderDetails = await _bTODeliveryOrderItemsRepository.GetBtoDelieveryOrderItemDetails(getBtoPartsId);
                         decimal BtoReturnQty = Convert.ToDecimal(returnInvoiceItemsDtoList[i].ReturnQty);
                         getBtoDeliveryOrderDetails.BalanceDoQty = getBtoDeliveryOrderDetails.BalanceDoQty + BtoReturnQty;
                         getBtoDeliveryOrderDetails.DispatchQty -= BtoReturnQty;
+
+                       var getSerialNoFromBto = getBtoDeliveryOrderDetails.SerialNo.Split(",");
+                        var getSerialNoFronInvoiceReturn = returnInvoiceItemDto[i].SerialNumber.Split(",");
+                        var res = getSerialNoFromBto.Except(getSerialNoFronInvoiceReturn).Union(getSerialNoFronInvoiceReturn.Except(getSerialNoFromBto));
+                        String SerialNumber = String.Join(",", res);
+                        getBtoDeliveryOrderDetails.SerialNo = SerialNumber;
                         //passing BtoNumber GetBtoDetails
                         var getBtoDeliveryorderByBtoNo = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(DONumber);
 

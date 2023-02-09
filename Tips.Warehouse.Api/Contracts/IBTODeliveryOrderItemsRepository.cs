@@ -10,7 +10,7 @@ namespace Tips.Warehouse.Api.Contracts
         //Task<BTODeliveryOrderItems> GetBTODeliveryOrderItemById(int id);
         Task<BTODeliveryOrderItems> UpdateBtoDelieveryOrderBalanceQty(string itemNumber, string BtoDeliveryNumber, string Qty);
 
-        Task<BTODeliveryOrderItems> GetBtoDelieveryOrderItemDetails(string itemNumber, string BTONumber);
+        Task<BTODeliveryOrderItems> GetBtoDelieveryOrderItemDetails(int btoDeliveryOrderPartsId);
 
 
         //Task<IEnumerable<BTODeliveryOrderItems>> GetAllActiveBTODeliveryOrderItems();
