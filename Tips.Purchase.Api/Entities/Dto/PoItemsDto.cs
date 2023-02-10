@@ -24,11 +24,14 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal IGST { get; set; }
         [Precision(13, 3)]
         public decimal UTGST { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? SubTotal { get; set; }
         [Precision(13, 3)]
         public decimal Total { get; set; }
    
-        public List<PoAddProjectDto>? POAddprojectsDtoList { get; set; }
-        public List<PoAddDeliveryScheduleDto>? POAddDeliverySchedulesDtoList { get; set; }
+        public List<PoAddProjectDto>? POAddprojects { get; set; }
+        public List<PoAddDeliveryScheduleDto>? POAddDeliverySchedules { get; set; }
 
     }
 
@@ -53,10 +56,12 @@ namespace Tips.Purchase.Api.Entities.Dto
         [Precision(13, 3)]
         public decimal UTGST { get; set; }
         [Precision(13, 3)]
+        public decimal? SubTotal { get; set; }
+        [Precision(13, 3)]
         public decimal Total { get; set; }
 
-        public List<PoAddProjectPostDto>? POAddprojectsDtoPostList { get; set; }
-        public List<PoAddDeliverySchedulePostDto>? POAddDeliverySchedulesDtoPostList { get; set; }
+        public List<PoAddProjectPostDto>? POAddprojects { get; set; }
+        public List<PoAddDeliverySchedulePostDto>? POAddDeliverySchedules { get; set; }
 
     }
 
@@ -81,10 +86,12 @@ namespace Tips.Purchase.Api.Entities.Dto
         [Precision(13, 3)]
         public decimal UTGST { get; set; }
         [Precision(13, 3)]
+        public decimal? SubTotal { get; set; }
+        [Precision(13, 3)]
         public decimal Total { get; set; }
 
-        public List<PoAddProjectUpdateDto>? POAddprojectsDtoUpdateList { get; set; }
-        public List<PoAddDeliveryScheduleUpdateDto>? POAddDeliverySchedulesDtoUpdateList { get; set; }
+        public List<PoAddProjectUpdateDto>? POAddprojects { get; set; }
+        public List<PoAddDeliveryScheduleUpdateDto>? POAddDeliverySchedules { get; set; }
 
     }
     public class PurchaseOrderItemNoListDto
@@ -113,6 +120,8 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal IGST { get; set; }
         [Precision(13, 3)]
         public decimal UTGST { get; set; }
+        [Precision(13, 3)]
+        public decimal? SubTotal { get; set; }
         [Precision(13, 3)]
         public decimal Total { get; set; }
     }

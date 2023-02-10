@@ -2,6 +2,8 @@
 using Entities.Helper;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Microsoft.Identity.Client;
+using System.Linq;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
@@ -160,9 +162,21 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<long> CreateBTODeliveryOrderHistory(BTODeliveryOrderHistory bTODeliveryOrderHistory)
         {
              bTODeliveryOrderHistory.CreatedBy = "Admin";
-            bTODeliveryOrderHistory.CreatedOn = DateTime.Now; 
+            bTODeliveryOrderHistory.CreatedOn = DateTime.Now;
+            bTODeliveryOrderHistory.Unit = "Banglore";
             var result = await Create(bTODeliveryOrderHistory);
             return result.Id;
+        }
+        public async Task<PagedList<BTODeliveryOrderHistory>> GetAllBtoHistoryDetails(PagingParameter pagingParameter)
+        {
+            var bto = await _tipsWarehouseDbContext.ReturnBtoDeliveryOrders
+              .FirstOrDefaultAsync();          
+
+            var getAllBTODetails = PagedList<BTODeliveryOrderHistory>.ToPagedList(FindAll()
+                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+
+
+            return getAllBTODetails;
         }
 
     }

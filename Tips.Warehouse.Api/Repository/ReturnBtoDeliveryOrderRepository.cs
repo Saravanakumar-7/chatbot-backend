@@ -1,8 +1,10 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -22,22 +24,20 @@ namespace Tips.Warehouse.Api.Repository
             var result = await Create(returnBtoDeliveryOrder);
             return result.Id;
         }
+        //public async Task<PagedList<BTODeliveryOrderHistory>> GetAllBtoHistoryDetails(PagingParameter pagingParameter)
+        //{
+        //    var getAllBTODetails = PagedList<BTODeliveryOrderHistory>.ToPagedList(FindAll()                              
+        //         .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+
+        //    return getAllBTODetails;
+        //}       
 
         public async Task<string> DeleteReturnBtoDeliveryOrder(ReturnBtoDeliveryOrder returnBtoDeliveryOrder)
         {
             Delete(returnBtoDeliveryOrder);
             string result = $"DeleteReturnBtoDeliveryOrder details of {returnBtoDeliveryOrder.Id} is deleted successfully!";
             return result;
-        }
-
-        public async Task<PagedList<ReturnBtoDeliveryOrder>> GetAllReturnBtoDeliveryOrders(PagingParameter pagingParameter)
-        {
-            var getAllReturnBtoDeliveryOrders = PagedList<ReturnBtoDeliveryOrder>.ToPagedList(FindAll()
-                                .Include(t => t.ReturnBtoDeliveryOrderItems)
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-
-            return getAllReturnBtoDeliveryOrders;
-        }
+        }       
 
         public async Task<ReturnBtoDeliveryOrder> GetReturnBtoDeliveryOrderById(int id)
         {

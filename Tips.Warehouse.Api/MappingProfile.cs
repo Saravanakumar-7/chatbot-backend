@@ -1,4 +1,6 @@
 using AutoMapper;
+using System;
+using System.Net;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
 
@@ -65,6 +67,7 @@ namespace Tips.Warehouse.Api
             CreateMap<ReturnBtoDeliveryOrder, ReturnBtoDeliveryOrderPostDto>().ReverseMap();
             CreateMap<ReturnBtoDeliveryOrder, ReturnBtoDeliveryOrderUpdateDto>().ReverseMap();
 
+
             CreateMap<ReturnBtoDeliveryOrderItems, ReturnBtoDeliveryOrderItemsDto>().ReverseMap();
             CreateMap<ReturnBtoDeliveryOrderItems, ReturnBtoDeliveryOrderItemsPostDto>().ReverseMap();
             CreateMap<ReturnBtoDeliveryOrderItems, ReturnBtoDeliveryOrderItemsUpdateDto>().ReverseMap();
@@ -85,6 +88,14 @@ namespace Tips.Warehouse.Api
             CreateMap<ReturnInvoiceItem, ReturnInvoiceItemDtoUpdate>().ReverseMap();
 
             CreateMap<ReturnInvoiceItemDtoPost, BtoInvoiceReturnQtyDetailsDto>().ReverseMap();
+
+            CreateMap<BTODeliveryOrderHistory, ReturnBtoDeliveryOrderDto>().ReverseMap();
+
+           
+        
+
+
+
 
 
             //CreateMap<BTODeliveryOrderItems, inven>().ReverseMap();

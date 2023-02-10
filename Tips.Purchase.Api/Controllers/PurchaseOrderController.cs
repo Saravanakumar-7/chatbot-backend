@@ -93,13 +93,13 @@ namespace Tips.Purchase.Api.Controllers
                         foreach (var poItemDetails in purchaseOrderDetailbyId.POItemList)
                         {
                             PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
-                            poItemDtos.POAddprojectsDtoList = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
-                            poItemDtos.POAddDeliverySchedulesDtoList = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
+                            poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
+                            poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
                             poItemDtoList.Add(poItemDtos);
                         }
                     }
 
-                    purchaseOrderDto.POItemsDtoList = poItemDtoList;     
+                    purchaseOrderDto.POItems = poItemDtoList;     
                     serviceResponse.Data = purchaseOrderDto;
                     serviceResponse.Message = "Returned PurchaseOrderById Successfully";
                     serviceResponse.Success = true;
@@ -145,7 +145,7 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
                 var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderPostDto);
-                var poItemDto = purchaseOrderPostDto.POItemsDtoPostList;
+                var poItemDto = purchaseOrderPostDto.POItems;
                 var poItemDtoList = new List<PoItem>();
 
                 if (poItemDto != null)
@@ -153,8 +153,8 @@ namespace Tips.Purchase.Api.Controllers
                     for (int i = 0; i < poItemDto.Count; i++)
                     {
                         PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
-                        poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojectsDtoPostList);
-                        poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedulesDtoPostList);
+                        poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                        poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
 
                         poItemDtoList.Add(poItemDetails);
                     }
@@ -219,7 +219,7 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
                 var purchaseOrderDetails= _mapper.Map<PurchaseOrder>(purchaseOrderDetailbyId);
-                var poItemDto = purchaseOrderUpdateDto.POItemsDtoUpdateList;
+                var poItemDto = purchaseOrderUpdateDto.POItems;
                 var poItemList = new List<PoItem>();
 
                 if (poItemDto != null)
@@ -227,8 +227,8 @@ namespace Tips.Purchase.Api.Controllers
                     for (int i = 0; i < poItemDto.Count; i++)
                     {
                         PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
-                        poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojectsDtoUpdateList);
-                        poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedulesDtoUpdateList);
+                        poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                        poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
                         poItemList.Add(poItemDetails);
                     }
                 }

@@ -65,6 +65,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public string? CustomerLeadID { get; set; }
         public string? BTONumber { get; set; }
+
+        public string? BtoDeliveryOrderId { get ; set; }    
     }
 
 }

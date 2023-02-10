@@ -5,6 +5,7 @@ using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
+using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -51,20 +52,20 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<IEnumerable<ReturnBtoDeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ReturnBtoDeliveryOrderDto>>();
             try
             {
-                var getAllReturnBtoDeliveryOrdersDetails = await _repository.GetAllReturnBtoDeliveryOrders(pagingParameter);
+                var btoHistoryDetails = await _bTODeliveryOrderHistoryRepository.GetAllBtoHistoryDetails(pagingParameter);
                 var metadata = new
                 {
-                    getAllReturnBtoDeliveryOrdersDetails.TotalCount,
-                    getAllReturnBtoDeliveryOrdersDetails.PageSize,
-                    getAllReturnBtoDeliveryOrdersDetails.CurrentPage,
-                    getAllReturnBtoDeliveryOrdersDetails.HasNext,
-                    getAllReturnBtoDeliveryOrdersDetails.HasPreviuos
+                    btoHistoryDetails.TotalCount,
+                    btoHistoryDetails.PageSize,
+                    btoHistoryDetails.CurrentPage,
+                    btoHistoryDetails.HasNext,
+                    btoHistoryDetails.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all ReturnBTODeliveryOrders");
-                var result = _mapper.Map<IEnumerable<ReturnBtoDeliveryOrderDto>>(getAllReturnBtoDeliveryOrdersDetails);
+                var result = _mapper.Map<IEnumerable<ReturnBtoDeliveryOrderDto>>(btoHistoryDetails);                
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ReturnBTODeliveryOrders";
                 serviceResponse.Success = true;

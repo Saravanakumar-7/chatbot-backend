@@ -28,6 +28,9 @@ namespace Tips.Purchase.Api.Entities
         public decimal UTGST { get; set; }
         [Precision(13, 3)]
         public decimal Total { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? SubTotal { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
