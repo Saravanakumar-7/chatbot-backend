@@ -24,13 +24,16 @@ namespace Tips.Warehouse.Api.Repository
             var result = await Create(returnBtoDeliveryOrder);
             return result.Id;
         }
-        //public async Task<PagedList<BTODeliveryOrderHistory>> GetAllBtoHistoryDetails(PagingParameter pagingParameter)
-        //{
-        //    var getAllBTODetails = PagedList<BTODeliveryOrderHistory>.ToPagedList(FindAll()                              
-        //         .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+      
 
-        //    return getAllBTODetails;
-        //}       
+        public async Task<PagedList<ReturnBtoDeliveryOrder>> GetAllReturnBtoDeliveryOrderDetails(PagingParameter pagingParameter)
+        {
+            var getAllBTODetails = PagedList<ReturnBtoDeliveryOrder>.ToPagedList(FindAll()
+                                 .Include(t => t.ReturnBtoDeliveryOrderItems)               
+                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+
+            return getAllBTODetails;
+        }
 
         public async Task<string> DeleteReturnBtoDeliveryOrder(ReturnBtoDeliveryOrder returnBtoDeliveryOrder)
         {
