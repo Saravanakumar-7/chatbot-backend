@@ -22,18 +22,20 @@ namespace Tips.Warehouse.Api.Controllers
     {
         private IInvoiceRepository _invoiceRepository;
         private IBTODeliveryOrderItemsRepository _bTODeliveryOrderItemsRepository;
+        private IInventoryTranctionRepository _inventoryTranctionRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
 
-        public InvoiceController(IInvoiceRepository invoiceRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, ILoggerManager logger, IMapper mapper)
+        public InvoiceController(IInvoiceRepository invoiceRepository, IInventoryTranctionRepository inventoryTranctionRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _invoiceRepository = invoiceRepository;
             _logger = logger;
             _mapper = mapper;
             _httpClient = httpClient;
+            _inventoryTranctionRepository = inventoryTranctionRepository;
             _config = config;
             _bTODeliveryOrderItemsRepository = bTODeliveryOrderItemsRepository;
         }
@@ -148,20 +150,6 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var invoiceChildItemsDtoList = new List<InvoiceChildItem>();
 
-                if (invoiceitemsDto != null)
-                {
-                    for (int i = 0; i < invoiceitemsDto.Count; i++)
-                    {
-                        InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
-                        invoiceChildItemsDtoList.Add(invoiceChildItem);
-                        string qty = Convert.ToString(invoiceChildItem.Qty);
-                        var doNumber = invoiceitemsDto[i].DONumber;
-                        var getAllInvoicesList = await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderBalanceQty(invoiceChildItem.FGItemNumber, doNumber, qty);
-                        _bTODeliveryOrderItemsRepository.SaveAsync();
-                    }
-                }
-
-                invoice.InvoiceChildItems = invoiceChildItemsDtoList;
 
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
@@ -184,6 +172,46 @@ namespace Tips.Warehouse.Api.Controllers
                     var e = count.ToString("D4");
                     invoice.InvoiceNumber = days + months + years + "IN" + (e);
                 }
+
+                if (invoiceitemsDto != null)
+                {
+                    for (int i = 0; i < invoiceitemsDto.Count; i++)
+                    {
+                        InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
+                        invoiceChildItemsDtoList.Add(invoiceChildItem);
+                        string qty = Convert.ToString(invoiceChildItem.Qty);
+                        var doNumber = invoiceitemsDto[i].DONumber;
+                        var getAllInvoicesList = await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderBalanceQty(invoiceChildItem.FGItemNumber, doNumber, qty);
+                        _bTODeliveryOrderItemsRepository.SaveAsync();
+
+                        //Add inventory Transaction Table
+
+                        InventoryTranction inventoryTranction = new InventoryTranction();
+                        inventoryTranction.PartNumber = invoiceChildItemsDtoList[i].FGItemNumber;
+                        inventoryTranction.MftrPartNumber = invoiceChildItemsDtoList[i].FGItemNumber;
+                        inventoryTranction.Description = "";
+                        inventoryTranction.Issued_Quantity = invoiceChildItem.Qty;
+                        inventoryTranction.UOM = invoiceChildItemsDtoList[i].UOM;
+                        inventoryTranction.Issued_DateTime = DateTime.Now;
+                        inventoryTranction.ReferenceID = invoice.InvoiceNumber;
+                        inventoryTranction.ReferenceIDFrom = "Invoice Delivery Order";
+                        inventoryTranction.Issued_By = "Admin";
+                        inventoryTranction.CreatedOn = DateTime.Now; 
+                        inventoryTranction.From_Location = "BTO";
+                        inventoryTranction.TO_Location = "Invoice";
+                        inventoryTranction.Remarks = "Create - Invoice";
+
+                        var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+
+
+                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                        _inventoryTranctionRepository.SaveAsync();
+
+                    }
+                }
+
+                invoice.InvoiceChildItems = invoiceChildItemsDtoList;
+
                 await _invoiceRepository.CreateInvoice(invoice);
                 _invoiceRepository.SaveAsync();
 
