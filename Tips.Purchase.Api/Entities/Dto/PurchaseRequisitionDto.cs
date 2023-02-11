@@ -88,7 +88,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public DateTime? PRDate { get; set; }
 
-        public int? RevisionNumber { get; set; }
+        //public int? RevisionNumber { get; set; }
 
         public string? ProcurementType { get; set; }
 

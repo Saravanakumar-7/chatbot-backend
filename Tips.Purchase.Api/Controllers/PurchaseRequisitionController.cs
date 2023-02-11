@@ -205,8 +205,8 @@ namespace Tips.Purchase.Api.Controllers
         //Test
 
 
-        [HttpPost]
-        public async Task<IActionResult> ChangePurchaseRequisitionRevision([FromBody] PurchaseRequisitionUpdateDto purchaseRequistionPostDto)
+        [HttpPut]
+        public async Task<IActionResult> UpdatePurchaseRequisition([FromBody] PurchaseRequisitionUpdateDto purchaseRequistionPostDto)
         {
             ServiceResponse<PurchaseRequisitionPostDto> serviceResponse = new ServiceResponse<PurchaseRequisitionPostDto>();
             try
@@ -248,86 +248,11 @@ namespace Tips.Purchase.Api.Controllers
                 await _repository.ChangePurchaseRequisitionVersion(purchaseRequisitionDetails);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = " PurchaseRequisition Successfully Created";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Something went wrong inside CreatePurchaseRequisition action: {ex.Message}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
-
-        //test
-
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePurchaseRequisition(int id, [FromBody] PurchaseRequisitionUpdateDto purchaseRequisitionUpdateDto)
-        {
-            ServiceResponse<PurchaseRequisitionUpdateDto> serviceResponse = new ServiceResponse<PurchaseRequisitionUpdateDto>();
-            try
-            {
-                if (purchaseRequisitionUpdateDto is null)
-                {
-                    _logger.LogError("Update PurchaseRequisition object sent from client is null.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Update PurchaseRequisition object is null.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(serviceResponse);
-                }
-                if (!ModelState.IsValid)
-                {
-                    _logger.LogError("Invalid Update PurchaseRequisition object sent from client.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Update PurchaseRequisition object.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(serviceResponse);
-                }
-                var purchaseRequistionDetailById = await _repository.GetPurchaseRequisitionById(id);
-                if (purchaseRequistionDetailById is null)
-                {
-                    _logger.LogError($"Update PurchaseRequisition with id: {id}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update PurchaseRequisition hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
-                }
-
-                var purchaseRequisitionDetails = _mapper.Map<PurchaseRequisition>(purchaseRequistionDetailById);
-                var prItemDto = purchaseRequisitionUpdateDto.PrItemsDtoUpdateList;
-                var prItemList = new List<PrItem>();
-
-                if (prItemDto != null)
-                {
-                    for (int i = 0; i < prItemDto.Count; i++)
-                    {
-                        PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
-                        prItemDetails.PrAddprojects = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoUpdateList);
-                        prItemDetails.PrAddDeliverySchedules = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoUpdateList);
-                        prItemList.Add(prItemDetails);
-                    }
-                }
-
-                purchaseRequisitionDetails.PrItemList = prItemList;
-                var updatePurchaseRequisition = _mapper.Map(purchaseRequisitionUpdateDto, purchaseRequisitionDetails);
-                string result = await _repository.UpdatePurchaseRequisition(updatePurchaseRequisition);
-                _logger.LogInfo(result);
-                _repository.SaveAsync();
-                serviceResponse.Data = null;
                 serviceResponse.Message = " PurchaseRequisition Successfully Updated";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
+
             }
             catch (Exception ex)
             {
@@ -339,6 +264,81 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //test
+
+
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> UpdatePurchaseRequisition(int id, [FromBody] PurchaseRequisitionUpdateDto purchaseRequisitionUpdateDto)
+        //{
+        //    ServiceResponse<PurchaseRequisitionUpdateDto> serviceResponse = new ServiceResponse<PurchaseRequisitionUpdateDto>();
+        //    try
+        //    {
+        //        if (purchaseRequisitionUpdateDto is null)
+        //        {
+        //            _logger.LogError("Update PurchaseRequisition object sent from client is null.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Update PurchaseRequisition object is null.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _logger.LogError("Invalid Update PurchaseRequisition object sent from client.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid Update PurchaseRequisition object.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        var purchaseRequistionDetailById = await _repository.GetPurchaseRequisitionById(id);
+        //        if (purchaseRequistionDetailById is null)
+        //        {
+        //            _logger.LogError($"Update PurchaseRequisition with id: {id}, hasn't been found in db.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"Update PurchaseRequisition hasn't been found.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            return NotFound(serviceResponse);
+        //        }
+
+        //        var purchaseRequisitionDetails = _mapper.Map<PurchaseRequisition>(purchaseRequistionDetailById);
+        //        var prItemDto = purchaseRequisitionUpdateDto.PrItemsDtoUpdateList;
+        //        var prItemList = new List<PrItem>();
+
+        //        if (prItemDto != null)
+        //        {
+        //            for (int i = 0; i < prItemDto.Count; i++)
+        //            {
+        //                PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
+        //                prItemDetails.PrAddprojects = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoUpdateList);
+        //                prItemDetails.PrAddDeliverySchedules = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoUpdateList);
+        //                prItemList.Add(prItemDetails);
+        //            }
+        //        }
+
+        //        purchaseRequisitionDetails.PrItemList = prItemList;
+        //        var updatePurchaseRequisition = _mapper.Map(purchaseRequisitionUpdateDto, purchaseRequisitionDetails);
+        //        string result = await _repository.UpdatePurchaseRequisition(updatePurchaseRequisition);
+        //        _logger.LogInfo(result);
+        //        _repository.SaveAsync();
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = " PurchaseRequisition Successfully Updated";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside UpdatePurchaseRequisition action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong ,try again";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePurchaseRequisition(int id)
