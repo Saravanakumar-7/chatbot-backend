@@ -47,7 +47,7 @@ namespace Tips.Warehouse.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllReturnBtoDeliveryOrders([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllBtoHistoryDetails([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<ReturnBtoDeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ReturnBtoDeliveryOrderDto>>();
             try
@@ -64,8 +64,45 @@ namespace Tips.Warehouse.Api.Controllers
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                _logger.LogInfo("Returned all ReturnBTODeliveryOrders");
+                _logger.LogInfo("Returned all BTODeliveryOrderHistories");
                 var result = _mapper.Map<IEnumerable<ReturnBtoDeliveryOrderDto>>(btoHistoryDetails);                
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all BTODeliveryOrderHistories";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllReturnBtoDetails([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<ReturnBtoDeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ReturnBtoDeliveryOrderDto>>();
+            try
+            {
+                var returnBtoDetails = await _repository.GetAllReturnBtoDeliveryOrderDetails(pagingParameter);
+                var metadata = new
+                {
+                    returnBtoDetails.TotalCount,
+                    returnBtoDetails.PageSize,
+                    returnBtoDetails.CurrentPage,
+                    returnBtoDetails.HasNext,
+                    returnBtoDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all ReturnBTODeliveryOrders");
+                var result = _mapper.Map<IEnumerable<ReturnBtoDeliveryOrderDto>>(returnBtoDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ReturnBTODeliveryOrders";
                 serviceResponse.Success = true;

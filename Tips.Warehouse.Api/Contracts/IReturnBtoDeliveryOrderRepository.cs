@@ -7,7 +7,7 @@ namespace Tips.Warehouse.Api.Contracts
 {
     public interface IReturnBtoDeliveryOrderRepository : IRepositoryBase<ReturnBtoDeliveryOrder>
     {
-        //Task<PagedList<BTODeliveryOrderHistory>> GetAllBtoHistoryDetails(PagingParameter pagingParameter);
+        Task<PagedList<ReturnBtoDeliveryOrder>> GetAllReturnBtoDeliveryOrderDetails(PagingParameter pagingParameter);
         Task<ReturnBtoDeliveryOrder> GetReturnBtoDeliveryOrderById(int id);
         Task<int?> CreateReturnBtoDeliveryOrder(ReturnBtoDeliveryOrder returnBtoDeliveryOrder);
         Task<string> UpdateReturnBtoDeliveryOrder(ReturnBtoDeliveryOrder returnBtoDeliveryOrder);
