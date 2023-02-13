@@ -48,8 +48,8 @@ namespace Tips.Warehouse.Api.Repository
 
          }
 
-        
 
+        
 
         public async Task<Invoice> GetInvoiceById(int id)
         {
@@ -77,4 +77,21 @@ namespace Tips.Warehouse.Api.Repository
         }
 
     }
-}
+
+    public class InvoiceChildRepository : RepositoryBase<InvoiceChildItem>, IInvoiceChildRepository
+    {
+        private TipsWarehouseDbContext _tipsWarehouseDbContexts;
+
+        public InvoiceChildRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        {
+            _tipsWarehouseDbContext = repositoryContext;
+        }
+        public async Task<InvoiceChildItem> GetInvoiceChildItemDetails(int invoiceChildId)
+        {
+            var getInvoiceChildItemDetails = await _tipsWarehouseDbContexts.invoiceChildItems
+                    .Where(x => x.Id == invoiceChildId)
+                          .FirstOrDefaultAsync();
+            return getInvoiceChildItemDetails;
+        }
+    }
+    }

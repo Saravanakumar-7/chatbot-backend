@@ -41,8 +41,8 @@
     public class ReturnBtoDeliveryOrderUpdateDto
     {
         public int Id { get; set; }
-        public string? ReturnDeliveryOrderNumber { get; set; }
-        public DateTime? ReturnDeliveryOrderDate { get; set; }
+        public string? ReturnBTONumber { get; set; }
+        public DateTime? ReturnBTODate { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerId { get; set; }

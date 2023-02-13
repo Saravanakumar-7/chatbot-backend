@@ -578,24 +578,24 @@ namespace Tips.SalesService.Api.Controllers
         //Update Balancre Qty and DispatchQty Using ReturnInvoice 
         [HttpPost]
         public async Task<IActionResult> ReturnInvoiceUpdateDispatchDetails([FromBody] List<ReturnDOSalesOrderDispatchQtyDto> salesOrderDispatchQtyDto)
-        {
-            //dynamic dispatchDetials
-            //we have to write code for same itemnumber in multiple rows
-            // Deserialise and store it in dynamic varibale
-            //lopp thori=ug the dynamic variable an pass hte item number and so id to salesorderitemdetials, get 
-            //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
+        { 
             foreach (var item in salesOrderDispatchQtyDto)
             {
                 IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
                 var orderItem = salesOrderItems.FirstOrDefault();
-                orderItem.BalanceQty = orderItem.BalanceQty + item.ReturnQty;
+                orderItem.BalanceQty += item.ReturnQty;
                 orderItem.DispatchQty -= item.ReturnQty;
+                if(orderItem.BalanceQty == orderItem.OrderQty)
+                {
+                    orderItem.StatusEnum = OrderStatus.Open;
+                }
                 _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
             }
 
             _salesOrderItemsRepository.SaveAsync();
             return Ok();
         }
+
         //Update Balancre Qty and DispatchQty Using Invoice 
         [HttpPost]
         public async Task<IActionResult> InvoiceUpdateDispatchDetails([FromBody] List<InvoiceSalesOrderUpdateDispatchQtyDto> salesOrderDispatchQtyDto)

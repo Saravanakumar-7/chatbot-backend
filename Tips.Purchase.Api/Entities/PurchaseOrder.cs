@@ -18,7 +18,7 @@ namespace Tips.Purchase.Api.Entities
         public string? VendorName { get; set; }
         public string? VendorId { get; set; }
         public string? QuotationReferenceNumber { get; set; }
-        public DateTime QuotationDated { get; set; }
+        public DateTime QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
 
         //Billing&ShippingDetails
@@ -31,15 +31,20 @@ namespace Tips.Purchase.Api.Entities
         //Terms
         public string? RetentionPeriod { get; set; }
         public string? SpecialTermsAndConditions { get; set; }
-        
+
+        public decimal TotalAmount { get; set; }
+
         public bool POApprovalI { get; set; } = false;
         public string? POApprovedIBy { get; set; }
         public DateTime POApprovedIDate { get; set; }
         public bool POApprovalII { get; set; }=false;
         public string? POApprovedIIBy { get; set; }
         public DateTime POApprovedIIDate { get; set; }
-        public bool IsDeleted { get; set; } = false; 
-        
+        public bool IsDeleted { get; set; } = false;
+
+        [DefaultValue(0)]
+        public Status Status { get; set; }
+
         [DefaultValue(false)]
         public bool IsShortClosed { get; set; }
         public string? ShortClosedBy { get; set; }

@@ -42,7 +42,7 @@ namespace Tips.Purchase.Api.Repository
             purchaseRequisition.CreatedOn = DateTime.Now;
             purchaseRequisition.Unit = "Bangalore";
             var getOldRevisionNumber = _tipsPurchaseDbContext.PurchaseRequisitions
-                .Where(x => x.PRNumber == purchaseRequisition.PRNumber)
+                .Where(x => x.PrNumber == purchaseRequisition.PrNumber)
                 .OrderByDescending(x => x.Id)
                 .Select(x => x.RevisionNumber)
                 .FirstOrDefault();
@@ -74,7 +74,7 @@ namespace Tips.Purchase.Api.Repository
                                 .Select(x => new PurchaseRequisitionIdNameListDto()
                                 {
                                     Id = x.Id,
-                                    PRNumber = x.PRNumber,
+                                    PrNumber = x.PrNumber,
                                 })
                               .ToListAsync();
 
@@ -84,10 +84,10 @@ namespace Tips.Purchase.Api.Repository
         public async Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalINameList()
         {
             IEnumerable<PurchaseRequisitionIdNameListDto> pendingPRApprovalINameList = await _tipsPurchaseDbContext.PurchaseRequisitions
-                            .Where(x => x.PRApprovalI == false).Select(x => new PurchaseRequisitionIdNameListDto()
+                            .Where(x => x.PrApprovalI == false).Select(x => new PurchaseRequisitionIdNameListDto()
                             {
                                 Id = x.Id,
-                                PRNumber = x.PRNumber,
+                                PrNumber = x.PrNumber,
                             }).ToListAsync();
 
 
@@ -97,10 +97,10 @@ namespace Tips.Purchase.Api.Repository
         public async Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIINameList()
         {
             IEnumerable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIINameList = await _tipsPurchaseDbContext.PurchaseRequisitions
-                            .Where(x => x.PRApprovalII == false).Select(x => new PurchaseRequisitionIdNameListDto()
+                            .Where(x => x.PrApprovalII == false).Select(x => new PurchaseRequisitionIdNameListDto()
                             {
                                 Id = x.Id,
-                                PRNumber = x.PRNumber,
+                                PrNumber = x.PrNumber,
                             }).ToListAsync();
 
 
@@ -134,7 +134,7 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<PurchaseRequisition> GetPurchaseRequisitionByPRNumber(string prNumber)
         {
-            var purchaseRequistionByPRNumber = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PRNumber == prNumber)
+            var purchaseRequistionByPRNumber = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PrNumber == prNumber)
                                  .Include(t => t.PrItemList)
                                  .ThenInclude(x => x.PrAddprojects)
                                 .Include(m => m.PrItemList)

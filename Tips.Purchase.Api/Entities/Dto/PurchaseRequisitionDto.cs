@@ -12,9 +12,9 @@ namespace Tips.Purchase.Api.Entities.DTOs
     {
         public int Id { get; set; }
 
-        public string? PRNumber { get; set; }
+        public string? PrNumber { get; set; }
 
-        public DateTime? PRDate { get; set; }
+        public DateTime? PrDate { get; set; }
 
         public int? RevisionNumber { get; set; }
 
@@ -22,7 +22,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public string? Purpose { get; set; }
 
-        public string? PRFiles { get; set; }
+        public string? PrFiles { get; set; }
 
         public string? DeliveryTerms { get; set; }
 
@@ -52,7 +52,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
     {
         //public string? PRNumber { get; set; }
 
-        public DateTime? PRDate { get; set; }
+        public DateTime? PrDate { get; set; }
 
         //public int? RevisionNumber { get; set; }
 
@@ -60,7 +60,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public string? Purpose { get; set; }
 
-        public string? PRFiles { get; set; }
+        public string? PrFiles { get; set; }
 
         public string? DeliveryTerms { get; set; }
 
@@ -84,9 +84,9 @@ namespace Tips.Purchase.Api.Entities.DTOs
     {
         //public int Id { get; set; }
 
-        public string? PRNumber { get; set; }
+        public string? PrNumber { get; set; }
 
-        public DateTime? PRDate { get; set; }
+        public DateTime? PrDate { get; set; }
 
         //public int? RevisionNumber { get; set; }
 
@@ -94,7 +94,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public string? Purpose { get; set; }
 
-        public string? PRFiles { get; set; }
+        public string? PrFiles { get; set; }
 
         public string? DeliveryTerms { get; set; }
 
@@ -122,7 +122,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
     public class PurchaseRequisitionIdNameListDto
     {
         public int Id { get; set; }
-        public string? PRNumber { get; set; }
+        public string? PrNumber { get; set; }
     }
 
 }

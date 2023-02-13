@@ -16,6 +16,7 @@ namespace Tips.Purchase.Api.Entities
         public decimal UnitPrice { get; set; }
         [Precision(13,3)]
         public decimal Qty { get; set; }
+        public string? PartType { get; set; }   
         public string? SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
         [Precision(13, 3)]
@@ -26,11 +27,13 @@ namespace Tips.Purchase.Api.Entities
         public decimal IGST { get; set; }
         [Precision(13, 3)]
         public decimal UTGST { get; set; }
-        [Precision(13, 3)]
-        public decimal Total { get; set; }
+
 
         [Precision(13, 3)]
         public decimal? SubTotal { get; set; }
+
+        [Precision(13, 3)]
+        public decimal TotalWithTax { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

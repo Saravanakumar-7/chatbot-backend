@@ -27,20 +27,22 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private IInventoryRepository _inventoryRepository;
+        private IInvoiceChildRepository _invoiceChildRepository;    
         private IInventoryTranctionRepository _inventoryTranctionRepository;
         private IBTODeliveryOrderItemsRepository _bTODeliveryOrderItemsRepository;
         private IBTODeliveryOrderHistoryRepository _bTODeliveryOrderHistoryRepository;
         private IBTODeliveryOrderRepository _bTODeliveryOrderRepository;
 
 
-        public ReturnInvoiceController(IReturnInvoiceRepository returnInvoiceRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryTranctionRepository inventoryTranctionRepository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
+        public ReturnInvoiceController(IReturnInvoiceRepository returnInvoiceRepositor,IInvoiceChildRepository invoiceChildRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryTranctionRepository inventoryTranctionRepository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
         {
-            _returnInvoiceRepository = returnInvoiceRepository;
+            _returnInvoiceRepository = returnInvoiceRepositor;
             _logger = logger;
             _mapper = mapper;
             _httpClient = httpClient;
             _config = config;
             _inventoryRepository = inventoryRepository;
+            _invoiceChildRepository = invoiceChildRepository;
             _inventoryTranctionRepository = inventoryTranctionRepository;
             _bTODeliveryOrderItemsRepository = bTODeliveryOrderItemsRepository;
             _bTODeliveryOrderHistoryRepository = bTODeliveryOrderHistoryRepository;
@@ -154,103 +156,130 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var returnInvoiceItem = _mapper.Map<IEnumerable<ReturnInvoiceItem>>(ReturnInvoiceDtoPost.ReturnInvoiceItems);
+                
                 var returnInvoiceDetails = _mapper.Map<ReturnInvoice>(ReturnInvoiceDtoPost);
-                // invoiceEntity.ReturnInvoiceItems = returnInvoiceItem.ToList();
                 var returnInvoiceItemDto = ReturnInvoiceDtoPost.ReturnInvoiceItems;
-                var returnInvoiceItemsDtoList = new List<ReturnInvoiceItem>();
-                if (returnInvoiceItem != null)
+                var returnInvoiceItemsList = new List<ReturnInvoiceItem>();
+
+                var invoiceNumber = returnInvoiceDetails.InvoiceNumber;
+                var returnInvoiceNumberCount = await _returnInvoiceRepository.GetReturnInvoiceByInvoiceNo(invoiceNumber);
+
+                if (returnInvoiceNumberCount != 0)
+                {
+                    int returnInvoicecount = Convert.ToInt16(returnInvoiceNumberCount + 1);
+                    returnInvoiceDetails.InvoiceNumber = invoiceNumber + "-" + "R" + "-" + returnInvoicecount;
+                }
+                else
+                {
+                    int returnInvoicecount = 1;
+                    returnInvoiceDetails.InvoiceNumber = invoiceNumber + "-" + "R" + "-" + returnInvoicecount;
+                }
+
+
+                if (returnInvoiceItemDto != null)
                 {
                     for (int i = 0; i < returnInvoiceItemDto.Count; i++)
                     {
                         ReturnInvoiceItem returnInvoiceItems = _mapper.Map<ReturnInvoiceItem>(returnInvoiceItemDto[i]);
-                        returnInvoiceItemsDtoList.Add(returnInvoiceItems);
+                        returnInvoiceItemsList.Add(returnInvoiceItems);
 
                         //Update Inventory balanced Quantity 
+
                         var PartNumber = returnInvoiceItemDto[i].FGPartNumber;
                         var DONumber = returnInvoiceItemDto[i].DONumber;
-                        var getInventoryDetails = await _inventoryRepository.GetInventoryDetails(PartNumber);
-                        decimal ReturnQty = Convert.ToDecimal(returnInvoiceItemDto[i].ReturnQty);
-                        if (getInventoryDetails != null)
+                        var inventoryFGDetails = await _inventoryRepository.GetInventoryFGDetailsByItemNumber(PartNumber);
+                        decimal ReturnQty = returnInvoiceItemDto[i].ReturnQty;
+
+                        if (inventoryFGDetails != null)
                         {
-                            getInventoryDetails.Balance_Quantity = getInventoryDetails.Balance_Quantity + ReturnQty;
-                            getInventoryDetails.IsStockAvailable = true;
+                            inventoryFGDetails.Balance_Quantity = inventoryFGDetails.Balance_Quantity + ReturnQty;
+
+                            _inventoryRepository.Update(inventoryFGDetails);
+                            _inventoryRepository.SaveAsync();
                         }
+                        else
+                        {
+                            Inventory inventory = new Inventory();
+                            inventory.PartNumber = returnInvoiceItemsList[i].FGPartNumber;
+                            inventory.MftrPartNumber = returnInvoiceItemsList[i].FGPartNumber;
+                            inventory.Description = returnInvoiceItemsList[i].Description;
+                            inventory.ProjectNumber = "";
+                            inventory.Balance_Quantity = ReturnQty;
+                            inventory.UOM = returnInvoiceItemsList[i].UOM;
+                            inventory.IsStockAvailable = true;
+                            inventory.Warehouse = "FG";
+                            inventory.Location = "FG";
+                            inventory.GrinNo = "";
+                            inventory.GrinPartId = 0;
+                            inventory.PartType = returnInvoiceItemsList[i].PartType;
+                            inventory.GrinMaterialType = "";
+                            inventory.ReferenceID = returnInvoiceDetails.InvoiceNumber; // return invoice number
+                            inventory.ReferenceIDFrom = "Return Invoice";
+                            inventory.shopOrderNo = "";
+
+                            await _inventoryRepository.CreateInventory(inventory);
+                            _inventoryRepository.SaveAsync();
+                        }
+                         
                         //add return details in to inventory table
 
                         InventoryTranction inventoryTranction = new InventoryTranction();
-                        inventoryTranction.PartNumber = returnInvoiceItemsDtoList[i].FGPartNumber;
-                        inventoryTranction.MftrPartNumber = returnInvoiceItemsDtoList[i].FGPartNumber;
-                        inventoryTranction.Description = returnInvoiceItemsDtoList[i].Description;
-                        inventoryTranction.Issued_Quantity = Convert.ToDecimal(returnInvoiceItemsDtoList[i].ReturnQty);
-                        inventoryTranction.UOM = returnInvoiceItemsDtoList[i].UOM;
+                        inventoryTranction.PartNumber = returnInvoiceItemsList[i].FGPartNumber;
+                        inventoryTranction.MftrPartNumber = returnInvoiceItemsList[i].FGPartNumber;
+                        inventoryTranction.Description = returnInvoiceItemsList[i].Description;
+                        inventoryTranction.Issued_Quantity = ReturnQty;
+                        inventoryTranction.UOM = returnInvoiceItemsList[i].UOM;
                         inventoryTranction.Issued_DateTime = DateTime.Now;
-                        inventoryTranction.ReferenceID = returnInvoiceItemsDtoList[i].DONumber;
-                        inventoryTranction.ReferenceIDFrom = "Return Invoice Delivery Order";
-                        inventoryTranction.Issued_By = "Admin";
-                        inventoryTranction.CreatedOn = DateTime.Now;
-                        inventoryTranction.Unit = "Bangalore";
-                        inventoryTranction.CreatedBy = "Admin";
-                        inventoryTranction.LastModifiedBy = "Admin";
-                        inventoryTranction.LastModifiedOn = DateTime.Now;
-                        inventoryTranction.ModifiedStatus = false;
-                        inventoryTranction.From_Location = "FG";
-                        inventoryTranction.TO_Location = "Invoice";
-                        inventoryTranction.Remarks = "Return,Invoice";
+                        inventoryTranction.ReferenceID = returnInvoiceDetails.InvoiceNumber;
+                        inventoryTranction.ReferenceIDFrom = "Return Invoice";
+                        inventoryTranction.From_Location = "Invoice";
+                        inventoryTranction.TO_Location = "FG";
+                        inventoryTranction.Remarks = returnInvoiceItemsList[i].Remarks;
 
-                        var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
-
-
-                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
                         _inventoryTranctionRepository.SaveAsync();
+                         
 
-                        _inventoryRepository.Update(getInventoryDetails);
-                        _inventoryRepository.SaveAsync();
+                        //update Dispatch Qty in Bto Delivery Order Table
+                        int getBtoDeliveryOrderPartsId = returnInvoiceItemDto[i].BtoDeliveryOrderPartsId;
 
-                        //update balance Qty and Dispatch Qty in Bto Delivery Order Table
-                        int getBtoPartsId = returnInvoiceItemDto[i].BtoDeliveryOrderPartsId;
+                        var btoDeliveryOrderItemDetails = await _bTODeliveryOrderItemsRepository.GetBtoDelieveryOrderItemDetails(getBtoDeliveryOrderPartsId);
+                        btoDeliveryOrderItemDetails.BalanceDoQty -= ReturnQty;
+                        btoDeliveryOrderItemDetails.DispatchQty -= ReturnQty;
+                        btoDeliveryOrderItemDetails.InvoicedQty -= ReturnQty;
 
-                        var getBtoDeliveryOrderDetails = await _bTODeliveryOrderItemsRepository.GetBtoDelieveryOrderItemDetails(getBtoPartsId);
-                        decimal BtoReturnQty = Convert.ToDecimal(returnInvoiceItemsDtoList[i].ReturnQty);
-                        getBtoDeliveryOrderDetails.BalanceDoQty = getBtoDeliveryOrderDetails.BalanceDoQty + BtoReturnQty;
-                        getBtoDeliveryOrderDetails.DispatchQty -= BtoReturnQty;
 
-                       var getSerialNoFromBto = getBtoDeliveryOrderDetails.SerialNo.Split(",");
-                        var getSerialNoFronInvoiceReturn = returnInvoiceItemDto[i].SerialNumber.Split(",");
-                        var res = getSerialNoFromBto.Except(getSerialNoFronInvoiceReturn).Union(getSerialNoFronInvoiceReturn.Except(getSerialNoFromBto));
-                        String SerialNumber = String.Join(",", res);
-                        getBtoDeliveryOrderDetails.SerialNo = SerialNumber;
                         //passing BtoNumber GetBtoDetails
-                        var getBtoDeliveryorderByBtoNo = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(DONumber);
+                        var btoDeliveryorderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(DONumber);
 
                         // Add return details in to btodeliveryorderhistory table
 
                         BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
-                        bTODeliveryOrderHistory.BTONumber = returnInvoiceItemsDtoList[i].DONumber;
+                        bTODeliveryOrderHistory.BTONumber = returnInvoiceItemsList[i].DONumber;
                         bTODeliveryOrderHistory.CustomerName = returnInvoiceDetails.CustomerName;
                         bTODeliveryOrderHistory.CustomerAliasName = returnInvoiceDetails.CustomerAliasName;
-                        bTODeliveryOrderHistory.CustomerId = getBtoDeliveryorderByBtoNo.CustomerId;
-                        bTODeliveryOrderHistory.PONumber = getBtoDeliveryorderByBtoNo.PONumber;
-                        bTODeliveryOrderHistory.IssuedTo = getBtoDeliveryorderByBtoNo.IssuedTo;
+                        bTODeliveryOrderHistory.CustomerId = btoDeliveryorderDetails.CustomerId;
+                        bTODeliveryOrderHistory.PONumber = btoDeliveryorderDetails.PONumber;
+                        bTODeliveryOrderHistory.IssuedTo = btoDeliveryorderDetails.IssuedTo;
                         bTODeliveryOrderHistory.DODate = Convert.ToDateTime(returnInvoiceDetails.CreatedOn);
-                        bTODeliveryOrderHistory.FGItemNumber = returnInvoiceItemsDtoList[i].FGPartNumber;
-                        bTODeliveryOrderHistory.SalesOrderId = getBtoDeliveryOrderDetails.SalesOrderId;
-                        bTODeliveryOrderHistory.Description = returnInvoiceItemsDtoList[i].Description;
-                        bTODeliveryOrderHistory.BalanceDoQty = Convert.ToDecimal(getBtoDeliveryOrderDetails.BalanceDoQty);
-                        bTODeliveryOrderHistory.UnitPrice = Convert.ToDecimal(returnInvoiceItemsDtoList[i].UnitPrice);
-                        bTODeliveryOrderHistory.UOC = getBtoDeliveryOrderDetails.UOC;
-                        bTODeliveryOrderHistory.UOM = returnInvoiceItemsDtoList[i].UOM;
-                        bTODeliveryOrderHistory.FGOrderQty = Convert.ToDecimal(getBtoDeliveryOrderDetails.FGOrderQty);
-                        bTODeliveryOrderHistory.OrderBalanceQty = Convert.ToDecimal(getBtoDeliveryOrderDetails.OrderBalanceQty);
-                        bTODeliveryOrderHistory.FGStock = Convert.ToDecimal(getBtoDeliveryOrderDetails.FGStock);
-                        bTODeliveryOrderHistory.Discount = getBtoDeliveryOrderDetails.Discount;
-                        bTODeliveryOrderHistory.NetValue = getBtoDeliveryOrderDetails.NetValue;
-                        bTODeliveryOrderHistory.DispatchQty = Convert.ToDecimal(getBtoDeliveryOrderDetails.DispatchQty);
-                        bTODeliveryOrderHistory.InvoicedQty = getBtoDeliveryOrderDetails.InvoicedQty;
-                        bTODeliveryOrderHistory.SerialNo = getBtoDeliveryOrderDetails.SerialNo;
+                        bTODeliveryOrderHistory.FGItemNumber = returnInvoiceItemsList[i].FGPartNumber;
+                        bTODeliveryOrderHistory.SalesOrderId = btoDeliveryOrderItemDetails.SalesOrderId;
+                        bTODeliveryOrderHistory.Description = returnInvoiceItemsList[i].Description;
+                        bTODeliveryOrderHistory.BalanceDoQty = Convert.ToDecimal(btoDeliveryOrderItemDetails.BalanceDoQty);
+                        bTODeliveryOrderHistory.UnitPrice = Convert.ToDecimal(returnInvoiceItemsList[i].UnitPrice);
+                        bTODeliveryOrderHistory.UOC = btoDeliveryOrderItemDetails.UOC;
+                        bTODeliveryOrderHistory.UOM = returnInvoiceItemsList[i].UOM;
+                        bTODeliveryOrderHistory.FGOrderQty = Convert.ToDecimal(btoDeliveryOrderItemDetails.FGOrderQty);
+                        bTODeliveryOrderHistory.OrderBalanceQty = Convert.ToDecimal(btoDeliveryOrderItemDetails.OrderBalanceQty);
+                        bTODeliveryOrderHistory.FGStock = Convert.ToDecimal(btoDeliveryOrderItemDetails.FGStock);
+                        bTODeliveryOrderHistory.Discount = btoDeliveryOrderItemDetails.Discount;
+                        bTODeliveryOrderHistory.NetValue = btoDeliveryOrderItemDetails.NetValue;
+                        bTODeliveryOrderHistory.DispatchQty = ReturnQty;
+                        bTODeliveryOrderHistory.InvoicedQty = btoDeliveryOrderItemDetails.InvoicedQty;
+                        bTODeliveryOrderHistory.SerialNo = btoDeliveryOrderItemDetails.SerialNo;
                         bTODeliveryOrderHistory.CreatedBy = returnInvoiceDetails.CreatedBy;
                         bTODeliveryOrderHistory.LastModifiedOn = returnInvoiceDetails.LastModifiedOn;
-                        bTODeliveryOrderHistory.Remark = "From Return Invoice";
+                        bTODeliveryOrderHistory.Remark = "Return Invoice";
 
                         var bTODeliveryOrderHistoryDetails = _mapper.Map<BTODeliveryOrderHistory>(bTODeliveryOrderHistory);
 
@@ -258,21 +287,21 @@ namespace Tips.Warehouse.Api.Controllers
                         _bTODeliveryOrderHistoryRepository.SaveAsync();
 
 
-                        _bTODeliveryOrderItemsRepository.Update(getBtoDeliveryOrderDetails);
+                        _bTODeliveryOrderItemsRepository.Update(btoDeliveryOrderItemDetails);
                         _bTODeliveryOrderItemsRepository.SaveAsync();
                     }
                 }
 
-                returnInvoiceDetails.ReturnInvoiceItems = returnInvoiceItemsDtoList;
+                returnInvoiceDetails.ReturnInvoiceItems = returnInvoiceItemsList;
 
                 await _returnInvoiceRepository.CreateReturnInvoice(returnInvoiceDetails);
                 _returnInvoiceRepository.SaveAsync();
 
                //update balance qty and dispatch qty in sales order table for return Invoice concept
 
-                var btoDeliveryReturnDetails = _mapper.Map<List<BtoInvoiceReturnQtyDetailsDto>>(returnInvoiceItemDto);
+                var invoiceReturnDetails = _mapper.Map<List<BtoInvoiceReturnQtyDetailsDto>>(returnInvoiceItemDto);
 
-                var json = JsonConvert.SerializeObject(btoDeliveryReturnDetails);
+                var json = JsonConvert.SerializeObject(invoiceReturnDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnInvoiceUpdateDispatchDetails"), data);
 

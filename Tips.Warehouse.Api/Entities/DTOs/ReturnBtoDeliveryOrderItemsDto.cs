@@ -12,9 +12,11 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? Description { get; set; }
 
         [Precision(13, 2)]
-        public decimal? UnitPrice { get; set; }
-        public string? UOC { get; set; }
+        public decimal UnitPrice { get; set; }
+        public string UOC { get; set; }
         public string? UOM { get; set; }
+        public string? PartType { get; set; }
+
 
         [Precision(13, 2)]
         public decimal? FGOrderQty { get; set; }
@@ -54,9 +56,11 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? BTONumber { get; set; }
 
         [Precision(13, 2)]
-        public decimal? UnitPrice { get; set; }
-        public string? UOC { get; set; }
+        public decimal UnitPrice { get; set; }
+        public string UOC { get; set; }
         public string? UOM { get; set; }
+        public string? PartType { get; set; }
+
         public int SalesOrderId { get; set; }
         public int BtoDeliveryOrderPartsId { get; set; }
 
@@ -92,9 +96,11 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? Description { get; set; }
 
         [Precision(13, 2)]
-        public decimal? UnitPrice { get; set; }
-        public string? UOC { get; set; }
+        public decimal UnitPrice { get; set; }
+        public string UOC { get; set; }
         public string? UOM { get; set; }
+        public string? PartType { get; set; }
+
 
         [Precision(13, 2)]
         public decimal? FGOrderQty { get; set; }

@@ -11,12 +11,7 @@ namespace Tips.Grin.Api.Entities
        
 
         [Precision(18, 3)]
-        public decimal? ProjectQty { get; set; }
-
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public decimal? ProjectQty { get; set; } 
 
         public int GrinPartsId { get; set; }
         public GrinParts? GrinParts { get; set; }

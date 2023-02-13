@@ -3,8 +3,8 @@
     public class ReturnBtoDeliveryOrder
     {
         public int Id { get; set; }
-        public string? ReturnDONumber { get; set; }
-        public DateTime? ReturnDODate { get; set; }
+        public string? ReturnBTONumber { get; set; }
+        public DateTime? ReturnBTODate { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? BTONumber { get; set; }

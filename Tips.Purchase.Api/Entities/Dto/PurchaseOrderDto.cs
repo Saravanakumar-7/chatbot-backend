@@ -17,7 +17,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? VendorName { get; set; }
         public string? VendorId { get; set; }
         public string? QuotationReferenceNumber { get; set; }
-        public DateTime QuotationDated { get; set; }
+        public DateTime QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
 
         //Billing&ShippingDetails
@@ -36,6 +36,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public bool IsShortClosed { get; set; }
         public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }
+        public decimal TotalAmount { get; set; }
+
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -72,7 +74,9 @@ namespace Tips.Purchase.Api.Entities.DTOs
         //Terms
         public string? RetentionPeriod { get; set; }
         public string? SpecialTermsAndConditions { get; set; }
-   
+        public decimal TotalAmount { get; set; }
+
+
         public List<PoItemsPostDto>? POItems { get; set; }
        
     }
@@ -103,6 +107,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         //Terms
         public string? RetentionPeriod { get; set; }
         public string? SpecialTermsAndConditions { get; set; }
+        public decimal TotalAmount { get; set; }
+
         public string? Unit { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }

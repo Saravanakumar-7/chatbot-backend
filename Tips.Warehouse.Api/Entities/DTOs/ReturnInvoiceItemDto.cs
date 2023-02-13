@@ -13,14 +13,19 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? ActualQty { get; set; }
 
         [Precision(13, 3)]
-        public decimal? Qty { get; set; }
+        public decimal InvoicedQty { get; set; }
         public string? UOM { get; set; }
 
+        public string? PartType { get; set; }
+
+        public int InvoicePartsId { get; set; }
+
+
         [Precision(13, 3)]
-        public decimal? UnitPrice { get; set; }
-        public string? UnitOfCurrency { get; set; }
-        public string? TotalValue { get; set; }
-        public string? SalesOrderId { get; set; }
+        public decimal UnitPrice { get; set; }
+        public string UOC { get; set; }
+        public decimal TotalValue { get; set; }
+        public int? SalesOrderId { get; set; }
         [Precision(13, 3)]
         public decimal SGST { get; set; }
 
@@ -37,7 +42,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal TotalValueWithTax { get; set; }
 
         [Precision(13, 3)]
-        public decimal? ReturnQty { get; set; }
+        public decimal ReturnQty { get; set; }
+        public string? SerialNumber { get; set; }
 
         public string? Remarks { get; set; }
     }
@@ -56,14 +62,18 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? SerialNumber { get; set; }
 
         [Precision(13, 3)]
-        public decimal? Qty { get; set; }
+        public decimal InvoicedQty { get; set; }
         public string? UOM { get; set; }
+        public string? PartType { get; set; }
+
+        public int InvoicePartsId { get; set; }
+
 
         [Precision(13, 3)]
-        public decimal? UnitPrice { get; set; }
-        public string? UnitOfCurrency { get; set; }
-        public string? TotalValue { get; set; }
-        public string? SalesOrderId { get; set; }
+        public decimal UnitPrice { get; set; }
+        public string  UOC { get; set; }
+        public decimal TotalValue { get; set; }
+        public int? SalesOrderId { get; set; }
         [Precision(13, 3)]
         public decimal SGST { get; set; }
 
@@ -80,7 +90,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal TotalValueWithTax { get; set; }
 
         [Precision(13, 3)]
-        public decimal? ReturnQty { get; set; }
+        public decimal ReturnQty { get; set; }
+         
 
         public string? Remarks { get; set; }
     }
@@ -90,20 +101,18 @@ namespace Tips.Warehouse.Api.Entities.DTOs
        // public int Id { get; set; }
         public string? DONumber { get; set; }
         public string? FGPartNumber { get; set; }
-        public string? Description { get; set; }
+        public string? Description { get; set; } 
+        public int InvoicePartsId { get; set; }
 
         [Precision(13, 3)]
-        public decimal? ActualQty { get; set; }
-
-        [Precision(13, 3)]
-        public decimal? Qty { get; set; }
+        public decimal InvoicedQty { get; set; }
         public string? UOM { get; set; }
 
         [Precision(13, 3)]
-        public decimal? UnitPrice { get; set; }
-        public string? UnitOfCurrency { get; set; }
-        public string? TotalValue { get; set; }
-        public string? SalesOrderId { get; set; }
+        public decimal UnitPrice { get; set; }
+        public string UOC { get; set; }
+        public decimal TotalValue { get; set; }
+        public int? SalesOrderId { get; set; }
         [Precision(13, 3)]
         public decimal SGST { get; set; }
 
@@ -120,7 +129,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal TotalValueWithTax { get; set; }
 
         [Precision(13, 3)]
-        public decimal? ReturnQty { get; set; }
+        public decimal ReturnQty { get; set; }
+
+        public string? SerialNumber { get; set; }
 
         public string? Remarks { get; set; }
     }
