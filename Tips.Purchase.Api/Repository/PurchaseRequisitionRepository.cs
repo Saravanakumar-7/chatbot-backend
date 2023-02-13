@@ -41,19 +41,16 @@ namespace Tips.Purchase.Api.Repository
             purchaseRequisition.CreatedBy = "Admin";
             purchaseRequisition.CreatedOn = DateTime.Now;
             purchaseRequisition.Unit = "Bangalore";
-            var getIdByPRNumber = _tipsPurchaseDbContext.PurchaseRequisitions
+            var getOldRevisionNumber = _tipsPurchaseDbContext.PurchaseRequisitions
                 .Where(x => x.PRNumber == purchaseRequisition.PRNumber)
                 .OrderByDescending(x => x.Id)
-                .Select(x => x.Id)
-                .FirstOrDefault();
-            var getOldRevisionNumber = _tipsPurchaseDbContext.PurchaseRequisitions
-                .Where(x => x.Id == getIdByPRNumber)
                 .Select(x => x.RevisionNumber)
                 .FirstOrDefault();
+          
             var increaseVersionNumber = 1;
-            var convertversionnumber = /*Convert.ToDecimal*/(increaseVersionNumber);
+            var convertversionnumber = (increaseVersionNumber);
             var version = getOldRevisionNumber + convertversionnumber;
-            purchaseRequisition.RevisionNumber = /*Convert.ToDecimal*/(version);
+            purchaseRequisition.RevisionNumber = (version);
             var result = await Create(purchaseRequisition);
             return result;
         }
