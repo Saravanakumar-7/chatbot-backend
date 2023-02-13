@@ -2,10 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tips.Purchase.Api.Entities;
 
 namespace Tips.Grin.Api.Entities
 {
@@ -57,12 +59,14 @@ namespace Tips.Grin.Api.Entities
         [Required]
         public string UOM { get; set; }
 
+        [DefaultValue(0)]
+        public GrinStatus Status { get; set; }
+
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
 
-        //public List<DocumentUpload> COCUpload { get; set; }
+        public bool IsCOCUploaded { get; set; } = false;
 
-        public string? COCUpload { get; set; }
 
         [Precision(13, 3)]
         public decimal? SGST { get; set; }

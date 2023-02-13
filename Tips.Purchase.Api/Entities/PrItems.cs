@@ -12,6 +12,8 @@ namespace Tips.Purchase.Api.Entities
         public string? Description { get; set; }
         public string? UOM { get; set; }
 
+        public string? PartType { get; set; }
+
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
         public string? SpecialInstruction { get; set; }

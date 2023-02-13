@@ -1,9 +1,12 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tips.Purchase.Api.Entities;
 
 namespace Tips.Grin.Api.Entities
 {
@@ -38,8 +41,11 @@ namespace Tips.Grin.Api.Entities
 
         public DateTime? BEDate { get; set; }
 
-        public int? TotalInvoice { get; set; }
-        //public List<DocumentUpload> GrinDocuments { get; set; }
+        [Precision(13,3)]
+        public decimal? TotalInvoiceValue { get; set; }
+
+        [DefaultValue(0)]
+        public Status Status { get; set; }
 
         public string? GrinDocuments { get; set; }
 

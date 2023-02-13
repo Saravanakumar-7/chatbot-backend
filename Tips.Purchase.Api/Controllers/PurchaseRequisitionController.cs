@@ -161,13 +161,13 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var number = newcount + 1;
                     string e = String.Format("{0:D4}", number);
-                    purchaseRequisitionDetails.PRNumber = days + months + years + "PR" + (e);
+                    purchaseRequisitionDetails.PrNumber = days + months + years + "PR" + (e);
                 }
                 else
                 {
                     var count = 1;
                     var e = count.ToString("D4");
-                    purchaseRequisitionDetails.PRNumber = days + months + years + "PR" + (e);
+                    purchaseRequisitionDetails.PrNumber = days + months + years + "PR" + (e);
                 }
 
 
@@ -468,9 +468,9 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError($"PurchaseRequisitionApprovalI with string: {PRNumber}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                purchaseRequisitionDetailByPRNumber.PRApprovalI = true;
-                purchaseRequisitionDetailByPRNumber.PRApprovedIBy = "Admin";
-                purchaseRequisitionDetailByPRNumber.PRApprovedIDate = DateTime.Now;
+                purchaseRequisitionDetailByPRNumber.PrApprovalI = true;
+                purchaseRequisitionDetailByPRNumber.PrApprovedIBy = "Admin";
+                purchaseRequisitionDetailByPRNumber.PrApprovedIDate = DateTime.Now;
                 string result = await _repository.UpdatePurchaseRequisition(purchaseRequisitionDetailByPRNumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
@@ -507,9 +507,9 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError($"PurchaseRequisitionApprovalII with string: {PRNumber}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                purchaseRequisitionDetailByPRNumber.PRApprovalII = true;
-                purchaseRequisitionDetailByPRNumber.PRApprovedIIBy = "Admin";
-                purchaseRequisitionDetailByPRNumber.PRApprovedIIDate = DateTime.Now;
+                purchaseRequisitionDetailByPRNumber.PrApprovalII = true;
+                purchaseRequisitionDetailByPRNumber.PrApprovedIIBy = "Admin";
+                purchaseRequisitionDetailByPRNumber.PrApprovedIIDate = DateTime.Now;
                 string result = await _repository.UpdatePurchaseRequisition(purchaseRequisitionDetailByPRNumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
