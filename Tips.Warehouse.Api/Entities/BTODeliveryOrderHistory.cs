@@ -31,7 +31,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? SerialNo { get; set; }
         public string? Unit { get; set; }
         public string? Remark { get; set; }
-
+        public string? UniqeId { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

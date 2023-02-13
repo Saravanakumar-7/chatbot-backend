@@ -158,6 +158,44 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        [HttpGet("{btoNumber}")]
+        public async Task<IActionResult> GetBtoHistoryDetailsByBtoNo(string btoNumber, string uniqueId)
+        {
+            ServiceResponse<IEnumerable<BTODeliveryOrderHistory>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderHistory>>();
+
+            try
+            {
+                var btoHistoryDetailByBtoNo = await _bTODeliveryOrderHistoryRepository.GetBtoHistoryDetailsByBtoNo(btoNumber, uniqueId);
+                if (btoHistoryDetailByBtoNo == null)
+                {
+                    _logger.LogError($"BtoHistoryDetail with id: {btoNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"BtoHistoryDetail with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned BtoHistoryDetail with id: {btoNumber}");
+                    var result = _mapper.Map<IEnumerable<BTODeliveryOrderHistory>>(btoHistoryDetailByBtoNo);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned BtoHistoryDetail Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetBtoHistoryDetailsById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
 
 
         [HttpGet("{id}")]
@@ -253,6 +291,8 @@ namespace Tips.Warehouse.Api.Controllers
 
                 if (returnBtoDeliveryOrderitemsDto != null)
                 {
+                    Guid guid = Guid.NewGuid();
+
                     for (int i = 0; i < returnBtoDeliveryOrderitemsDto.Count; i++)
                     {
 
@@ -358,6 +398,7 @@ namespace Tips.Warehouse.Api.Controllers
                         bTODeliveryOrderHistory.InvoicedQty = getBtoDeliveryOrderDetails.InvoicedQty;
                         bTODeliveryOrderHistory.SerialNo = resultd; 
                         bTODeliveryOrderHistory.Remark = "From Return BTO";
+                        bTODeliveryOrderHistory.UniqeId = guid.ToString();
 
                         var bTODeliveryOrderHistoryDetails = _mapper.Map<BTODeliveryOrderHistory>(bTODeliveryOrderHistory);
 
