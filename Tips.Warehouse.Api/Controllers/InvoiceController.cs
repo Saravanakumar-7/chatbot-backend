@@ -179,7 +179,7 @@ namespace Tips.Warehouse.Api.Controllers
                     {
                         InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
                         invoiceChildItemsDtoList.Add(invoiceChildItem);
-                        string qty = Convert.ToString(invoiceChildItem.Qty);
+                        string qty = Convert.ToString(invoiceChildItem.InvoicedQty);
                         var doNumber = invoiceitemsDto[i].DONumber;
                         var getAllInvoicesList = await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderBalanceQty(invoiceChildItem.FGItemNumber, doNumber, qty);
                         _bTODeliveryOrderItemsRepository.SaveAsync();
@@ -190,7 +190,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTranction.PartNumber = invoiceChildItemsDtoList[i].FGItemNumber;
                         inventoryTranction.MftrPartNumber = invoiceChildItemsDtoList[i].FGItemNumber;
                         inventoryTranction.Description = "";
-                        inventoryTranction.Issued_Quantity = invoiceChildItem.Qty;
+                        inventoryTranction.Issued_Quantity = invoiceChildItem.InvoicedQty;
                         inventoryTranction.UOM = invoiceChildItemsDtoList[i].UOM;
                         inventoryTranction.Issued_DateTime = DateTime.Now;
                         inventoryTranction.ReferenceID = invoice.InvoiceNumber;

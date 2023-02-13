@@ -123,7 +123,8 @@ namespace Tips.SalesService.Api.Repository
         public async Task<IEnumerable<SalesOrderItems>> GetSalesOrderDetailsByIdandItemNo(string ItemNumber, int SalesOrderId)
         {
             var getSalesOrderDetailsBySOandItemNo = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                 .Where(x => x.ItemNumber == ItemNumber && x.SalesOrderId == SalesOrderId)
+                 .Where(x => x.ItemNumber == ItemNumber && x.SalesOrderId == SalesOrderId &&
+                 x.StatusEnum == OrderStatus.PartiallyClosed)
                           .ToListAsync();
 
             return getSalesOrderDetailsBySOandItemNo;

@@ -31,7 +31,9 @@ namespace Tips.Purchase.Api.Entities
         //Terms
         public string? RetentionPeriod { get; set; }
         public string? SpecialTermsAndConditions { get; set; }
-        
+
+        public decimal TotalAmount { get; set; }
+
         public bool POApprovalI { get; set; } = false;
         public string? POApprovedIBy { get; set; }
         public DateTime POApprovedIDate { get; set; }

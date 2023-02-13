@@ -10,9 +10,10 @@ namespace Tips.Warehouse.Api.Entities
         public string? BTONumber { get; set; }
 
         [Precision(13, 2)]
-        public decimal? UnitPrice { get; set; }
-        public string? UOC { get; set; }
+        public decimal UnitPrice { get; set; }
+        public string UOC { get; set; }
         public string? UOM { get; set; }
+        public string? PartType { get; set; }
 
         [Precision(13, 2)]
         public decimal? FGOrderQty { get; set; }

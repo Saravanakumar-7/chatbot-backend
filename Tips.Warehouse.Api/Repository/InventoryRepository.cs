@@ -2,6 +2,7 @@
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
@@ -102,8 +103,10 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<Inventory> GetInventoryFGDetailsByItemNumber(string ItemNumber)
         {
+            var partTypes = new string[] { "FG", "TG","FRU" };
+          
             var getSalesOrderDetailsBy = await _tipsWarehouseDbContext.Inventory
-                 .Where(x => x.PartNumber == ItemNumber && x.PartType == "FG" && x.IsStockAvailable == true)
+                 .Where(x => x.PartNumber == ItemNumber && partTypes.Contains(x.PartType) && x.IsStockAvailable == true)
                           .FirstOrDefaultAsync();
 
             return getSalesOrderDetailsBy;

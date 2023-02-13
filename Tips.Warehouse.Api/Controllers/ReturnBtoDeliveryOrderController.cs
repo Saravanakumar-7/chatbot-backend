@@ -223,7 +223,7 @@ namespace Tips.Warehouse.Api.Controllers
                         returnBtoDeliveryOrderItems.DispatchQty = returnBtoDeliveryOrderItems.DispatchQty - returnBtoDeliveryOrderItems.ReturnQty;
                         returnBtoDeliveryOrderItemsDtoList.Add(returnBtoDeliveryOrderItems);
 
-                        //Update Inventory balanced Quantity 
+                        //Update Inventory balanced Quantity
 
                         var PartNumber = returnBtoDeliveryOrderitemsDto[i].FGPartNumber;
                         var BtoNumber = returnBtoDeliveryOrderitemsDto[i].BTONumber;

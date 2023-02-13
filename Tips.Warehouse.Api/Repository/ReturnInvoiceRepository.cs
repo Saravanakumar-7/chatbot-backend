@@ -38,6 +38,16 @@ namespace Tips.Warehouse.Api.Repository
             return (getAllReturnInvoiceList);
         }
 
+        public async Task<int?> GetReturnInvoiceByInvoiceNo(string InvoiceNumber)
+        {
+            var getReturnInvoiceDetails = _tipsWarehouseDbContext.ReturnInvoices
+                    .Where(x => x.InvoiceNumber == InvoiceNumber).Count();
+            return getReturnInvoiceDetails;
+        }
+
+        
+
+
         public async Task<ReturnInvoice> GetReturnInvoiceById(int id)
         {
             var getReturnInvoiceListById = await _tipsWarehouseDbContext.ReturnInvoices
