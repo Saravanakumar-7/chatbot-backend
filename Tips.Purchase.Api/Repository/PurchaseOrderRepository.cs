@@ -30,6 +30,12 @@ namespace Tips.Purchase.Api.Repository
             return result.Id;
         }
 
+        public async Task<int?> GetPONumberAutoIncrementCount(DateTime date)
+        {
+            var getPONumberAutoIncrementCount = _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.CreatedOn == date.Date).Count();
+
+            return getPONumberAutoIncrementCount;
+        }
         public async Task<string> DeletePurchaseOrder(PurchaseOrder purchaseOrder)
         {
             Delete(purchaseOrder);
