@@ -10,5 +10,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<long> CreateBTODeliveryOrderHistory(BTODeliveryOrderHistory bTODeliveryOrderHistory);
         Task<PagedList<BTODeliveryOrderHistory>> GetAllBtoHistoryDetails(PagingParameter pagingParameter);
 
+        Task<BTODeliveryOrderHistory> GetBtoHistoryDetailsById(int id);
+
+
     }
 }
