@@ -180,6 +180,13 @@ namespace Tips.Warehouse.Api.Repository
             return getAllBTODetails;
         }
 
+        public async Task<BTODeliveryOrderHistory> GetBtoHistoryDetailsById(int id)
+        {
+            var BtoHistoryDetails = await _tipsWarehouseDbContext.BTODeliveryOrderHistories.Where(x => x.Id == id)
+                                .FirstOrDefaultAsync();
+            return BtoHistoryDetails;
+        }
+
     }
 }
 

@@ -120,6 +120,45 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBtoHistoryDetailsById(int id)
+        {
+            ServiceResponse<BTODeliveryOrderHistory> serviceResponse = new ServiceResponse<BTODeliveryOrderHistory>();
+
+            try
+            {
+                var btoHistoryDetailById = await _bTODeliveryOrderHistoryRepository.GetBtoHistoryDetailsById(id);
+                if (btoHistoryDetailById == null)
+                {
+                    _logger.LogError($"BtoHistoryDetail with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"BtoHistoryDetail with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned BtoHistoryDetail with id: {id}");
+                    var result = _mapper.Map<BTODeliveryOrderHistory>(btoHistoryDetailById);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned BtoHistoryDetail Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetBtoHistoryDetailsById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetReturnBtoDeliveryOrderById(int id)
