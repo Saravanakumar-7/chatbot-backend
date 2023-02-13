@@ -12,6 +12,7 @@ namespace Tips.Warehouse.Api.Contracts
 
         Task<BTODeliveryOrderHistory> GetBtoHistoryDetailsById(int id);
 
+        Task<IEnumerable<BTODeliveryOrderHistory>> GetBtoHistoryDetailsByBtoNo(string btoNumber, string uniqueId);
 
     }
 }

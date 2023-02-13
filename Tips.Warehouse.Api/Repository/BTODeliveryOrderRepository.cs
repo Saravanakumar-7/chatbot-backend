@@ -186,6 +186,13 @@ namespace Tips.Warehouse.Api.Repository
                                 .FirstOrDefaultAsync();
             return BtoHistoryDetails;
         }
+        public async Task<IEnumerable<BTODeliveryOrderHistory>> GetBtoHistoryDetailsByBtoNo(string btoNumber, string uniqueId)
+        {
+            var BtoHistoryDetails = await _tipsWarehouseDbContext.BTODeliveryOrderHistories
+              .Where(x => x.BTONumber == btoNumber && x.UniqeId == uniqueId)                
+                        .ToListAsync();
+            return BtoHistoryDetails;
+        }
 
     }
 }
