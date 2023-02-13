@@ -19,6 +19,8 @@ namespace Tips.Warehouse.Api.Entities
         public string? UOM { get; set; }
         public string? PartType { get; set; }
         public string? SerialNumber { get; set; }
+        public int BtoDeliveryOrderPartsId { get; set; }
+
 
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
