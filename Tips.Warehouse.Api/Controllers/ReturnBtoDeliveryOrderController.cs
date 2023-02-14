@@ -49,7 +49,7 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllBtoHistoryDetails([FromQuery] PagingParameter pagingParameter)
         {
-            ServiceResponse<IEnumerable<ReturnBtoDeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ReturnBtoDeliveryOrderDto>>();
+            ServiceResponse<IEnumerable<BTODeliveryOrderHistory>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderHistory>>();
             try
             {
                 var btoHistoryDetails = await _bTODeliveryOrderHistoryRepository.GetAllBtoHistoryDetails(pagingParameter);
@@ -65,7 +65,7 @@ namespace Tips.Warehouse.Api.Controllers
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all BTODeliveryOrderHistories");
-                var result = _mapper.Map<IEnumerable<ReturnBtoDeliveryOrderDto>>(btoHistoryDetails);                
+                var result = _mapper.Map<IEnumerable<BTODeliveryOrderHistory>>(btoHistoryDetails);                
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all BTODeliveryOrderHistories";
                 serviceResponse.Success = true;

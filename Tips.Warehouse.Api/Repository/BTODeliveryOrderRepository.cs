@@ -7,6 +7,8 @@ using System.Linq;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
+using System;
+using System.Text.RegularExpressions;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -168,14 +170,18 @@ namespace Tips.Warehouse.Api.Repository
             var result = await Create(bTODeliveryOrderHistory);
             return result.Id;
         }
+
+
         public async Task<PagedList<BTODeliveryOrderHistory>> GetAllBtoHistoryDetails(PagingParameter pagingParameter)
         {
             var bto = await _tipsWarehouseDbContext.ReturnBtoDeliveryOrders
-              .FirstOrDefaultAsync();          
+              .FirstOrDefaultAsync();
 
             var getAllBTODetails = PagedList<BTODeliveryOrderHistory>.ToPagedList(FindAll()
-                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+                    .Where(x => x.UniqeId != null)
+                    .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
+          
 
             return getAllBTODetails;
         }
@@ -193,7 +199,6 @@ namespace Tips.Warehouse.Api.Repository
                         .ToListAsync();
             return BtoHistoryDetails;
         }
-
     }
 }
 
