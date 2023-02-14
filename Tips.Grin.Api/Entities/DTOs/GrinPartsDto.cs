@@ -134,9 +134,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
 
-        //public List<DocumentUploadPostDto> COCUpload { get; set; }
+        public List<DocumentUploadPostDto> COCUpload { get; set; }
 
-        public string? COCUpload { get; set; }
+        //public string? COCUpload { get; set; }
         public decimal? SGST { get; set; }
 
         public decimal? IGST { get; set; }

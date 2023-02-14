@@ -18,7 +18,9 @@ namespace Tips.Purchase.Api.Controllers
         private IPurchaseOrderRepository _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        
+        private IDocumentUploadRepository _documentUploadRepository;
+
+
         public PurchaseOrderController(IPurchaseOrderRepository repository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
@@ -147,7 +149,7 @@ namespace Tips.Purchase.Api.Controllers
                 var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderPostDto);
                 var poItemDto = purchaseOrderPostDto.POItems;
                 var poItemDtoList = new List<PoItem>();
-
+                
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
                 var months = Convert.ToString(date.Month.ToString("D2"));
@@ -166,6 +168,41 @@ namespace Tips.Purchase.Api.Controllers
                     var count = 1;
                     var e = count.ToString("D4");
                     purchaseOrderDetails.PONumber = days + months + years + "PO" + (e);
+                }
+
+                //// Po Upload
+
+                var poUploadDetails = purchaseOrderPostDto.POFiles;
+                foreach (var poUploadDetail in poUploadDetails)
+                {
+                    var fileContent = poUploadDetail.FileByte;
+                    var poNumber = purchaseOrderDetails.PONumber;
+                    string fileName = poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                    Guid guid = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", guid.ToString() + "_" + fileName);
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                        var uploadedFile = new DocumentUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            ParentId = poNumber,
+                            DocumentFrom = "PODocument",
+                        };
+
+                        _documentUploadRepository.CreateUploadDocumentPO(uploadedFile);
+                        _documentUploadRepository.SaveAsync();
+
+                    }
+
                 }
 
                 if (poItemDto != null)

@@ -55,7 +55,9 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? RevisionNumber { get; set; }
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
-        public string? POFiles { get; set; }
+        public List<DocumentUploadPostDto> POFiles { get; set; }
+
+        //public string? POFiles { get; set; }
 
         //VendorDetails
         public string? VendorName { get; set; }

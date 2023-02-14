@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Tips.Grin.Api.Entities.DTOs
+namespace Tips.Purchase.Api.Entities.DTOs
 {
     public class DocumentUploadDto
     {
@@ -28,7 +28,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public int Id { get; set; }
         public string FileName { get; set; }
         public string FileExtension { get; set; }
-         
+
         public byte[] FileByte { get; set; }
 
     }

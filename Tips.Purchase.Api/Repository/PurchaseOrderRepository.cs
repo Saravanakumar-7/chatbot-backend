@@ -168,4 +168,24 @@ namespace Tips.Purchase.Api.Repository
         }
 
     }
+
+    public class UploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository
+    {
+        private TipsPurchaseDbContext _tipsPurchaseDbContexts;
+        public UploadDocumentRepository(TipsPurchaseDbContext tipsPurchaseDbContext) : base(tipsPurchaseDbContext)
+        {
+            _tipsPurchaseDbContexts = tipsPurchaseDbContext;
+        }
+         
+        public async Task<int?> CreateUploadDocumentPO(DocumentUpload documentUpload)
+        {
+            documentUpload.CreatedBy = "Admin";
+            documentUpload.CreatedOn = DateTime.Now;
+            documentUpload.LastModifiedBy = "Admin";
+            documentUpload.LastModifiedOn = DateTime.Now;
+
+            var result = await Create(documentUpload);
+            return result.Id;
+        }
+    }
 }
