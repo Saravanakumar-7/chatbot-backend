@@ -43,6 +43,10 @@ namespace Tips.Purchase.Api
             CreateMap<PrAddDeliverySchedule, PrAddDeliverySchedulePostDto>().ReverseMap();
             CreateMap<PrAddDeliverySchedule, PrAddDeliveryScheduleUpdateDto>().ReverseMap();
 
+            CreateMap<DocumentUpload, DocumentUploadDto>().ReverseMap();
+            CreateMap<DocumentUpload, DocumentUploadPostDto>().ReverseMap();
+            CreateMap<DocumentUpload, DocumentUploadUpdateDto>().ReverseMap();
+
 
         }
     }

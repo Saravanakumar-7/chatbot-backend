@@ -10,8 +10,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime PODate { get; set; }
         public int? RevisionNumber { get; set; }
         public string? ProcurementType { get; set; }
-        public string? Currency { get; set; }
-        public string? POFiles { get; set; }
+        public string? Currency { get; set; } 
 
         //VendorDetails
         public string? VendorName { get; set; }
@@ -26,6 +25,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? ShippingMode { get; set; }
         public string? ShipTo { get; set; }
         public string? BillTo { get; set; }
+        public List<DocumentUploadPostDto>? POFiles { get; set; }
 
         //Terms
         public string? RetentionPeriod { get; set; }

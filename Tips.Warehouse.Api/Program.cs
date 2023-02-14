@@ -36,6 +36,7 @@ builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 builder.Services.AddScoped<IInventoryTranctionRepository, InventoryTranctionRepository>();
 builder.Services.AddScoped<IReturnInvoiceRepository, ReturnInvoiceRepository>();
 builder.Services.AddScoped<IBTODeliveryOrderItemsRepository, BTODeliveryOrderItemRepository>();
+builder.Services.AddScoped<IInvoiceChildRepository, InvoiceChildRepository>();
 
 builder.Services.AddScoped<IBTODeliveryOrderHistoryRepository, BTODeliveryOrderHistoryRepository>();
 

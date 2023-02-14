@@ -21,11 +21,12 @@ namespace Tips.Purchase.Api.Controllers
         private IDocumentUploadRepository _documentUploadRepository;
 
 
-        public PurchaseOrderController(IPurchaseOrderRepository repository, ILoggerManager logger, IMapper mapper)
+        public PurchaseOrderController(IPurchaseOrderRepository repository, IDocumentUploadRepository documentUploadRepository , ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _documentUploadRepository = documentUploadRepository;
         }
 
         [HttpGet]
@@ -47,6 +48,7 @@ namespace Tips.Purchase.Api.Controllers
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all PurchaseOrder");
+                 
                 var result = _mapper.Map<IEnumerable<PurchaseOrderDto>>(purchaseOrderDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PurchaseOrders";

@@ -365,6 +365,7 @@ namespace Tips.Warehouse.Api.Controllers
                         var getBtoDeliveryOrderDetails = await _bTODeliveryOrderItemsRepository.GetBtoDelieveryOrderItemDetails(getBtoPartsId);
                         getBtoDeliveryOrderDetails.BalanceDoQty -= ReturnQty;
                         getBtoDeliveryOrderDetails.DispatchQty -= ReturnQty;
+                        
 
                         String[] strs1 = getBtoDeliveryOrderDetails.SerialNo.Split(",");
                         String[] strs2 = returnBtoDeliveryOrderitemsDto[i].SerialNo.Split(",");
@@ -373,6 +374,8 @@ namespace Tips.Warehouse.Api.Controllers
                         getBtoDeliveryOrderDetails.SerialNo = resultd;
 
                         // Add return details in to btodeliveryorderhistory table
+
+                        var returnSerialNumber = returnBtoDeliveryOrderitemsDto[i].SerialNo;
 
                         BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
                         bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
@@ -396,8 +399,8 @@ namespace Tips.Warehouse.Api.Controllers
                         bTODeliveryOrderHistory.NetValue = getBtoDeliveryOrderDetails.NetValue;
                         bTODeliveryOrderHistory.DispatchQty = ReturnQty;
                         bTODeliveryOrderHistory.InvoicedQty = getBtoDeliveryOrderDetails.InvoicedQty;
-                        bTODeliveryOrderHistory.SerialNo = resultd; 
-                        bTODeliveryOrderHistory.Remark = "From Return BTO";
+                        bTODeliveryOrderHistory.SerialNo = returnSerialNumber; 
+                        bTODeliveryOrderHistory.Remark = returnBtoDeliveryOrderitemsDto[i].Remarks; 
                         bTODeliveryOrderHistory.UniqeId = guid.ToString();
 
                         var bTODeliveryOrderHistoryDetails = _mapper.Map<BTODeliveryOrderHistory>(bTODeliveryOrderHistory);
