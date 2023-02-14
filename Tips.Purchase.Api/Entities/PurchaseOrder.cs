@@ -9,7 +9,7 @@ namespace Tips.Purchase.Api.Entities
         public int Id { get; set; }
         public string? PONumber { get; set; }
         public DateTime PODate { get; set; }
-        public string? RevisionNumber { get; set; }
+        public int? RevisionNumber { get; set; }
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
         public string? POFiles { get; set; }

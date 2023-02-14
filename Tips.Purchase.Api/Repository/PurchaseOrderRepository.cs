@@ -21,13 +21,33 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<long> CreatePurchaseOrder(PurchaseOrder purchaseOrder)
         {
+            var date = DateTime.Now;
             purchaseOrder.CreatedBy = "Admin";
-            purchaseOrder.CreatedOn = DateTime.Now;
-            Guid purchaseOrderNumber = Guid.NewGuid();
-            purchaseOrder.PONumber = "PO-" + purchaseOrderNumber.ToString();
+            purchaseOrder.CreatedOn = date.Date;
+            //Guid purchaseOrderNumber = Guid.NewGuid();
+            //purchaseOrder.PONumber = "PO-" + purchaseOrderNumber.ToString();
             purchaseOrder.Unit = "Banglore";
+            purchaseOrder.RevisionNumber = 1;
             var result = await Create(purchaseOrder);
             return result.Id;
+        }
+        public async Task<PurchaseOrder> ChangePurchaseOrderVersion(PurchaseOrder purchaseOrder)
+        {
+            purchaseOrder.CreatedBy = "Admin";
+            purchaseOrder.CreatedOn = DateTime.Now;
+            purchaseOrder.Unit = "Bangalore";
+            var getOldRevisionNumber = _tipsPurchaseDbContext.PurchaseOrders
+                .Where(x => x.PONumber == purchaseOrder.PONumber)
+                .OrderByDescending(x => x.Id)
+                .Select(x => x.RevisionNumber)
+                .FirstOrDefault();
+
+            var increaseVersionNumber = 1;
+            var convertversionnumber = (increaseVersionNumber);
+            var version = getOldRevisionNumber + convertversionnumber;
+            purchaseOrder.RevisionNumber = (version);
+            var result = await Create(purchaseOrder);
+            return result;
         }
 
         public async Task<int?> GetPONumberAutoIncrementCount(DateTime date)

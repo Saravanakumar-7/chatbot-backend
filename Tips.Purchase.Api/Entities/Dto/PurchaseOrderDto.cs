@@ -8,7 +8,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public int Id { get; set; }
         public string? PONumber { get; set; }
         public DateTime PODate { get; set; }
-        public string? RevisionNumber { get; set; }
+        public int? RevisionNumber { get; set; }
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
         public string? POFiles { get; set; }
@@ -50,9 +50,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
     public class PurchaseOrderPostDto
     {
-        public string? PONumber { get; set; }
         public DateTime PODate { get; set; }
-        public string? RevisionNumber { get; set; }
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
         public string? POFiles { get; set; }
@@ -61,7 +59,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? VendorName { get; set; }
         public string? VendorId { get; set; }
         public string? QuotationReferenceNumber { get; set; }
-        public DateTime QuotationDated { get; set; }
+        public DateTime QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
 
         //Billing&ShippingDetails
@@ -82,10 +80,9 @@ namespace Tips.Purchase.Api.Entities.DTOs
     }
     public class PurchaseOrderUpdateDto
     {
-        public int Id { get; set; }
+        
         public string? PONumber { get; set; }
         public DateTime PODate { get; set; }
-        public string? RevisionNumber { get; set; }
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
         public string? POFiles { get; set; }
@@ -94,7 +91,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? VendorName { get; set; }
         public string? VendorId { get; set; }
         public string? QuotationReferenceNumber { get; set; }
-        public DateTime QuotationDated { get; set; }
+        public DateTime QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
 
         //Billing&ShippingDetails

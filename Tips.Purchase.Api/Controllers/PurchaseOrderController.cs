@@ -149,6 +149,7 @@ namespace Tips.Purchase.Api.Controllers
                 var poItemDtoList = new List<PoItem>();
 
                 var date = DateTime.Now;
+                purchaseOrderPostDto.QuotationDate = date;
                 var days = Convert.ToString(date.Day.ToString("D2"));
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
@@ -201,46 +202,34 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePurchaseOrder(int id, [FromBody] PurchaseOrderUpdateDto purchaseOrderUpdateDto)
+        [HttpPut]
+        public async Task<IActionResult> UpdatePurchaseOrder([FromBody] PurchaseOrderUpdateDto purchaseOrderPostDto)
         {
-            ServiceResponse<PurchaseOrderUpdateDto> serviceResponse = new ServiceResponse<PurchaseOrderUpdateDto>();
+            ServiceResponse<PurchaseOrderPostDto> serviceResponse = new ServiceResponse<PurchaseOrderPostDto>();
             try
             {
-                if (purchaseOrderUpdateDto is null)
+                if (purchaseOrderPostDto is null)
                 {
-                    _logger.LogError("Update PurchaseOrder object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Update PurchaseOrder object is null.";
+                    serviceResponse.Message = "PurchaseOrder object is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("PurchaseOrder object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid Update PurchaseOrder object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Update PurchaseOrder object.";
+                    serviceResponse.Message = "Invalid PurchaseOrder object.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseOrder object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var purchaseOrderDetailbyId = await _repository.GetPurchaseOrderById(id);
-                if (purchaseOrderDetailbyId is null)
-                {
-                    _logger.LogError($"Update PurchaseOrder with id: {id}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update PurchaseOrder hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
-                }
 
-                var purchaseOrderDetails= _mapper.Map<PurchaseOrder>(purchaseOrderDetailbyId);
-                var poItemDto = purchaseOrderUpdateDto.POItems;
-                var poItemList = new List<PoItem>();
+                var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderPostDto);
+                var poItemDto = purchaseOrderPostDto.POItems;
+                var poItemDtoList = new List<PoItem>();               
 
                 if (poItemDto != null)
                 {
@@ -249,24 +238,24 @@ namespace Tips.Purchase.Api.Controllers
                         PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
                         poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
-                        poItemList.Add(poItemDetails);
+
+                        poItemDtoList.Add(poItemDetails);
                     }
                 }
 
-                purchaseOrderDetails.POItemList = poItemList;
-                var updatePurchaseOrder = _mapper.Map(purchaseOrderUpdateDto, purchaseOrderDetails);
-                string result = await _repository.UpdatePurchaseOrder(updatePurchaseOrder);
-                _logger.LogInfo(result);
+                purchaseOrderDetails.POItemList = poItemDtoList;
+                await _repository.ChangePurchaseOrderVersion(purchaseOrderDetails);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = " PurchaseOrder Successfully Updated";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
+
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdatePurchaseOrder action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside UpdateurchaseOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong ,try again";
                 serviceResponse.Success = false;
@@ -274,6 +263,78 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> UpdatePurchaseOrder(int id, [FromBody] PurchaseOrderUpdateDto purchaseOrderUpdateDto)
+        //{
+        //    ServiceResponse<PurchaseOrderUpdateDto> serviceResponse = new ServiceResponse<PurchaseOrderUpdateDto>();
+        //    try
+        //    {
+        //        if (purchaseOrderUpdateDto is null)
+        //        {
+        //            _logger.LogError("Update PurchaseOrder object sent from client is null.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Update PurchaseOrder object is null.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _logger.LogError("Invalid Update PurchaseOrder object sent from client.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid Update PurchaseOrder object.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        var purchaseOrderDetailbyId = await _repository.GetPurchaseOrderById(id);
+        //        if (purchaseOrderDetailbyId is null)
+        //        {
+        //            _logger.LogError($"Update PurchaseOrder with id: {id}, hasn't been found in db.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"Update PurchaseOrder hasn't been found.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            return NotFound(serviceResponse);
+        //        }
+
+        //        var purchaseOrderDetails= _mapper.Map<PurchaseOrder>(purchaseOrderDetailbyId);
+        //        var poItemDto = purchaseOrderUpdateDto.POItems;
+        //        var poItemList = new List<PoItem>();
+
+        //        if (poItemDto != null)
+        //        {
+        //            for (int i = 0; i < poItemDto.Count; i++)
+        //            {
+        //                PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+        //                poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+        //                poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
+        //                poItemList.Add(poItemDetails);
+        //            }
+        //        }
+
+        //        purchaseOrderDetails.POItemList = poItemList;
+        //        var updatePurchaseOrder = _mapper.Map(purchaseOrderUpdateDto, purchaseOrderDetails);
+        //        string result = await _repository.UpdatePurchaseOrder(updatePurchaseOrder);
+        //        _logger.LogInfo(result);
+        //        _repository.SaveAsync();
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = " PurchaseOrder Successfully Updated";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside UpdatePurchaseOrder action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong ,try again";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePurchaseOrder(int id)
