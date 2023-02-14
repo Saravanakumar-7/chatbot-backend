@@ -44,7 +44,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal TotalValueWithTax { get; set; }
-        
+
+        public int BtoDeliveryOrderPartsId { get; set; }
+
 
         public int InvoiceId { get; set; }
     }
@@ -63,6 +65,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? Description { get; set; }
 
         public string? SerialNumber { get; set; }
+
+        public int BtoDeliveryOrderPartsId { get; set; }
 
 
         [Precision(13, 3)]
