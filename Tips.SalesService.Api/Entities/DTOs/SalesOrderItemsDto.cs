@@ -60,6 +60,7 @@ namespace Tips.SalesService.Api.Entities.Dto
  
 
         [Precision(13, 3)]
+        [DefaultValue(0)]
         public decimal? DispatchQty { get; set; }
 
         [Precision(13, 3)]
@@ -101,6 +102,10 @@ namespace Tips.SalesService.Api.Entities.Dto
 
         [Precision(13, 3)]
         public decimal? DispatchQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? BasicAmount { get; set; }
+        public string? Discount { get; set; }
 
         [Precision(13, 3)]
         public decimal? ShopOrderQty { get; set; }

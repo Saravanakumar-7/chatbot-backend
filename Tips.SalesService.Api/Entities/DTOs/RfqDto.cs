@@ -75,5 +75,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }       
         public string RfqNumber { get; set; }
         public string? CustomerName { get; set; }
+        public string? CustomerId { get; set; }
     }
 }

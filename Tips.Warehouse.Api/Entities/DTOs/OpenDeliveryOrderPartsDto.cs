@@ -28,6 +28,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal DispatchQty { get; set; }
         public string Remarks { get; set; }
+        public string? SerialNo { get; set; }
         public bool IsActive { get; set; } = true;
 
         public string? CreatedBy { get; set; }
@@ -72,6 +73,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Required(ErrorMessage = "Remarks is required")]
         public string Remarks { get; set; }
+        public string? SerialNo { get; set; }
+
         public bool IsActive { get; set; } = true;
 
         
@@ -114,6 +117,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal DispatchQty { get; set; }
 
         [Required(ErrorMessage = "Remarks is required")]
+        public string? SerialNo { get; set; }
         public string Remarks { get; set; }
         public bool IsActive { get; set; } = true;
         
