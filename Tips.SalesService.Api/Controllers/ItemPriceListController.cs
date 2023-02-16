@@ -4,6 +4,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Utilities;
 using System.Net;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
@@ -147,6 +148,65 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //test
+
+        [HttpPost]
+        public async Task<IActionResult> GetItemPriceListByListOfItemNoAndPriceListName(ItemNumberAndPriceNameListDto[][] itemNumberAndPriceNameListDtos)
+        {
+            ServiceResponse<IEnumerable<ItemPriceList>> serviceResponse = new ServiceResponse<IEnumerable<ItemPriceList>>();
+            try
+            {
+                var test = new List<ItemPriceList>();
+
+                foreach (var array in itemNumberAndPriceNameListDtos)
+                {
+                    foreach (var item in array)
+                    {
+                        var itemNumber = item.ItemNumber;
+                        var priceListName = item.PriceListName;
+                        var getItemPriceLists = await _repository.GetItemPriceListByListOfItemNoAndPriceListName(itemNumber, priceListName);
+                        ItemPriceList bTODeliveryOrderItemsDetails = _mapper.Map<ItemPriceList>(item);
+                        bTODeliveryOrderItemsDetails.Qty = getItemPriceLists.Qty;
+                        bTODeliveryOrderItemsDetails.Description = getItemPriceLists.Description;
+                        bTODeliveryOrderItemsDetails.UOC = getItemPriceLists.UOC;
+                        bTODeliveryOrderItemsDetails.LeastCost = getItemPriceLists.LeastCost;
+                        bTODeliveryOrderItemsDetails.Id = getItemPriceLists.Id;
+                        bTODeliveryOrderItemsDetails.LeastCostPlus = getItemPriceLists.LeastCostPlus;
+                        bTODeliveryOrderItemsDetails.LeastCostminus = getItemPriceLists.LeastCostminus;
+                        bTODeliveryOrderItemsDetails.DiscountMinus = getItemPriceLists.DiscountMinus;
+                        bTODeliveryOrderItemsDetails.DiscountPlus = getItemPriceLists.DiscountPlus;
+                        bTODeliveryOrderItemsDetails.Markup = getItemPriceLists.Markup;
+                        bTODeliveryOrderItemsDetails.PriceListName = getItemPriceLists.PriceListName;
+                        bTODeliveryOrderItemsDetails.ValidThrough = getItemPriceLists.ValidThrough;
+                        bTODeliveryOrderItemsDetails.IsDiscountApplicable = getItemPriceLists.IsDiscountApplicable;
+                        bTODeliveryOrderItemsDetails.Unit = getItemPriceLists.Unit;
+                        bTODeliveryOrderItemsDetails.CreatedOn = getItemPriceLists.CreatedOn;
+                        bTODeliveryOrderItemsDetails.CreatedBy = getItemPriceLists.CreatedBy;
+                        bTODeliveryOrderItemsDetails.LastModifiedBy = getItemPriceLists.LastModifiedBy;
+                        bTODeliveryOrderItemsDetails.LastModifiedOn = getItemPriceLists.LastModifiedOn;
+                        bTODeliveryOrderItemsDetails.ReleaseLpId = getItemPriceLists.ReleaseLpId;
+                        bTODeliveryOrderItemsDetails.ReleaseLp = getItemPriceLists.ReleaseLp;
+                        test.Add(bTODeliveryOrderItemsDetails);
+                    }
+                }
+                var result = _mapper.Map<IEnumerable<ItemPriceList>>(test);
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned ItemPriceList Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ItemPriceListdetail action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        } 
 
         // POST api/<ItemPriceListController>
         [HttpPost]

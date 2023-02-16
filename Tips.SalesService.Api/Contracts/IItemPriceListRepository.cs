@@ -14,6 +14,12 @@ namespace Tips.SalesService.Api.Contracts
 
         Task<ItemPriceList> GetItemPriceListById(int id);
         Task<IEnumerable<ItemPriceList>> GetItemPriceListByItemNo(string itemNo);
+
+        Task<ItemPriceList> GetItemPriceListByListOfItemNoAndPriceListName(string itemNo, string priceListName);
+
+
+        //Task<IEnumerable<ItemNumberAndPriceNameListDto>> GetItemPriceListByItemNoAndPriceListNames(string itemNo, string priceListName);
+        
         Task<IEnumerable<ItemPriceList>> GetItemPriceListByItemNoAndPriceListName(string itemNo,string priceListName);
 
         Task<ItemPriceList> CreateFromReleaseLp(ItemPriceList itemPriceList);

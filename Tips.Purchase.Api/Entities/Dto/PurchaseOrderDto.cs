@@ -25,7 +25,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? ShippingMode { get; set; }
         public string? ShipTo { get; set; }
         public string? BillTo { get; set; }
-        public List<DocumentUploadPostDto>? POFiles { get; set; }
+        //public List<DocumentUploadPostDto>? POFiles { get; set; }
+        public List<DocumentUploadDto>? POFiles { get; set; }
 
         //Terms
         public string? RetentionPeriod { get; set; }

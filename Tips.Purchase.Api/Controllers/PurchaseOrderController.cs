@@ -1,8 +1,13 @@
-﻿using System.Net;
+﻿using System.IO.Compression;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 using AutoMapper;
+using Azure;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Newtonsoft.Json;
 using Tips.Purchase.Api.Contracts;
 using Tips.Purchase.Api.Entities;
@@ -15,7 +20,7 @@ namespace Tips.Purchase.Api.Controllers
     [ApiController]
     public class PurchaseOrderController : ControllerBase
     {
-        private IPurchaseOrderRepository _repository;
+         private IPurchaseOrderRepository _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IDocumentUploadRepository _documentUploadRepository;
@@ -48,8 +53,10 @@ namespace Tips.Purchase.Api.Controllers
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all PurchaseOrder");
-                 
                 var result = _mapper.Map<IEnumerable<PurchaseOrderDto>>(purchaseOrderDetails);
+                
+                List<DocumentUploadDto> documentUploadDtos = new List<DocumentUploadDto>();
+                 
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PurchaseOrders";
                 serviceResponse.Success = true;
@@ -150,8 +157,11 @@ namespace Tips.Purchase.Api.Controllers
 
                 var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderPostDto);
                 var poItemDto = purchaseOrderPostDto.POItems;
+                var poFile = purchaseOrderPostDto.POFiles;
                 var poItemDtoList = new List<PoItem>();
-                
+                var poDocumentUploadDtoList = new List<DocumentUpload>();
+
+
                 var date = DateTime.Now;
                 purchaseOrderPostDto.QuotationDate = date;
                 var days = Convert.ToString(date.Day.ToString("D2"));
@@ -197,12 +207,18 @@ namespace Tips.Purchase.Api.Controllers
                             FileName = fileName,
                             FileExtension = FileExt,
                             FilePath = filePath,
-                            ParentId = poNumber,
+                            ParentNumber = poNumber,
                             DocumentFrom = "PODocument",
                         };
 
                         _documentUploadRepository.CreateUploadDocumentPO(uploadedFile);
                         _documentUploadRepository.SaveAsync();
+
+                        if (uploadedFile != null)
+                        { 
+                                DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
+                            poDocumentUploadDtoList.Add(poFileDetails);                         
+                        }
 
                     }
 
@@ -218,9 +234,10 @@ namespace Tips.Purchase.Api.Controllers
 
                         poItemDtoList.Add(poItemDetails);
                     }
-                }
+                } 
 
                 purchaseOrderDetails.POItemList= poItemDtoList;
+                purchaseOrderDetails.POFiles = poDocumentUploadDtoList;
                 await _repository.CreatePurchaseOrder(purchaseOrderDetails);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -240,6 +257,46 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //download file api
+
+        [HttpGet]
+        public async Task<ActionResult> DownloadFile(string Filename)
+        {
+            ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", Filename);
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out var ContentType))
+            {
+                ContentType = "application/octet-stream";
+            }
+            var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+        
+             return File(bytes, ContentType, Path.GetFileName(filePath));
+        }
+        [HttpGet("{filename}")]
+        public IActionResult DownloadFiles(string filename)
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", filename);
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                var downloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFiles/{filename}";
+
+                return Ok(new { FilePath = filePath, DownloadUrl = downloadUrl });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
 
         [HttpPut]
         public async Task<IActionResult> UpdatePurchaseOrder([FromBody] PurchaseOrderUpdateDto purchaseOrderPostDto)

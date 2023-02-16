@@ -14,8 +14,8 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal UnitPrice { get; set; }
         [Precision(13, 3)]
         public decimal Qty { get; set; }
+        public decimal BalanceQty { get; set; }
         public string? PartType { get; set; }
-
         public string? SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
         [Precision(13, 3)]

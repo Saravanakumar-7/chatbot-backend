@@ -98,7 +98,32 @@ namespace Tips.SalesService.Api.Repository
             return getItemPriceListByItemNoAndPriceListName;
         }
 
-        
+        public async Task<ItemPriceList> GetItemPriceListByListOfItemNoAndPriceListName(string itemNo, string priceListName)
+        {
+
+            var getItemPriceListByItemNoAndPriceListNames = await _tipsSalesServiceDbContext.ItemPriceLists
+                                .Where(b => b.ItemNumber == itemNo && b.PriceListName == priceListName)
+                               .FirstOrDefaultAsync();
+
+            return getItemPriceListByItemNoAndPriceListNames;
+        }
+         
+         
+        //public async Task<IEnumerable<ItemNumberAndPriceNameListDto>> GetItemPriceListByItemNoAndPriceListNames(string itemNo, string priceListName)
+        //{
+
+        //    IEnumerable<ItemNumberAndPriceNameListDto> getItemPriceListByItemNoAndPriceListName = await _tipsSalesServiceDbContext.ItemPriceLists
+        //                        .Where(b => b.ItemNumber == itemNo && b.PriceListName == priceListName)
+        //                        .Select(x => new ItemNumberAndPriceNameListDto()
+        //                        {
+        //                            ItemNumber = x.ItemNumber,
+        //                            PriceListName = x.PriceListName,
+        //                        })
+        //                      .ToListAsync();
+
+        //    return getItemPriceListByItemNoAndPriceListName;
+        //}
+
         public async Task<string> UpdateItemPriceList(ItemPriceList itemPriceList)
         {
             itemPriceList.LastModifiedBy = "Admin";

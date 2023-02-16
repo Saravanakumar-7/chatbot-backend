@@ -111,6 +111,7 @@ namespace Tips.Purchase.Api.Repository
         {
 
             var purchaseOrderDetails = PagedList<PurchaseOrder>.ToPagedList(FindAll()
+                                .Include(o=>o.POFiles)
                                 .Include(t => t.POItemList)
                                 .ThenInclude(x => x.POAddprojects)
                                 .Include(m => m.POItemList)

@@ -5,7 +5,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class ItemPriceListDto
     {
         public int? Id { get; set; }
-        public string? ItemNUmber { get; set; }
+        public string? ItemNumber { get; set; }
         public string? Description { get; set; }
 
         [Precision(13, 3)]
@@ -116,4 +116,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? Description { get; set; }
 
     }
+    public class ItemNumberAndPriceNameListDto
+    {
+        public string? ItemNumber { get; set; }
+        public string? PriceListName { get; set; }
+
+    }
+     
 }

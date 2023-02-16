@@ -12,7 +12,8 @@ namespace Tips.Purchase.Api.Entities
         public int? RevisionNumber { get; set; }
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
-        public string? POFiles { get; set; }
+
+
 
         //VendorDetails
         public string? VendorName { get; set; }
@@ -54,6 +55,8 @@ namespace Tips.Purchase.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+
+        public List<DocumentUpload>? POFiles { get; set; }
 
         public List<PoItem>? POItemList { get; set; }
 

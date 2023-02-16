@@ -21,11 +21,13 @@ namespace Tips.Purchase.Api.Entities
 
         public string DocumentFrom { get; set; }
 
-        public string ParentId { get; set; }
+        public string ParentNumber { get; set; }    
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+         
+        public PurchaseOrder? PurchaseOrder { get; set; } 
     }
 }
