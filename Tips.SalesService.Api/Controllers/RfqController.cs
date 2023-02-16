@@ -325,16 +325,16 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        [HttpGet("{CustomerName}")]
-        public async Task<IActionResult> GetAllActiveRfqNumberListByCustomerName(string CustomerName)
+        [HttpGet("{CustomerId}")]
+        public async Task<IActionResult> GetAllActiveRfqNumberListByCustomerId(string CustomerId)
         {
             ServiceResponse<IEnumerable<RfqNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqNumberListDto>>();
             try
             {
-                var getAllActiveRfqNumberListByCustomerName = await _rfqRepository.GetAllActiveRfqNumberListByCustomerName(CustomerName);
-                var result = _mapper.Map<IEnumerable<RfqNumberListDto>>(getAllActiveRfqNumberListByCustomerName);
+                var getAllActiveRfqNumberListByCustomerId = await _rfqRepository.GetAllActiveRfqNumberListByCustomerId(CustomerId);
+                var result = _mapper.Map<IEnumerable<RfqNumberListDto>>(getAllActiveRfqNumberListByCustomerId);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all ActiveRfqNumberListByCustomerName";
+                serviceResponse.Message = "Returned all ActiveRfqNumberListByCustomerId";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -343,7 +343,7 @@ namespace Tips.SalesService.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllActiveRfqNumberListByCustomerName action";
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveRfqNumberListByCustomerId action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

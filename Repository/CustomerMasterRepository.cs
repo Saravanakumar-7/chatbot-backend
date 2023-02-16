@@ -43,7 +43,7 @@ namespace Repository
                                     Id = x.Id,
                                     CustomerAliasName = x.CustomerAliasName,
                                     CustomerName = x.CustomerName,
-                                    CustomerId = x.CustomerId
+                                    CustomerNumber = x.CustomerNumber
 
                                 })
                                 .OrderByDescending(x => x.Id)

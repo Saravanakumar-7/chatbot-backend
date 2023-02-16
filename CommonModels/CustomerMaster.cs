@@ -12,8 +12,8 @@ namespace Entities
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "CustomerId is required")]
-        public string? CustomerId { get; set; }
+        [Required(ErrorMessage = "CustomerNumber is required")]
+        public string? CustomerNumber { get; set; }
         
         [Required(ErrorMessage = "CustomerName is required")]
         public string? CustomerName { get; set; }

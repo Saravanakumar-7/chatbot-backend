@@ -287,7 +287,7 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberListByCustomerName(string CustomerName)
+        public async Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberListByCustomerId(string CustomerId)
         {           
 
             IEnumerable<RfqNumberListDto> getAllActiveRfqNumberList = await _tipsSalesServiceDbContext.Rfqs
@@ -295,10 +295,11 @@ namespace Tips.SalesService.Api.Repository
                                 {
                                     Id = x.Id,
                                     RfqNumber = x.RfqNumber,
-                                    CustomerName = x.CustomerName                                  
+                                    CustomerName = x.CustomerName,
+                                    CustomerId = x.CustomerId
 
                                 })
-                               .Where(b => b.CustomerName == CustomerName)                                
+                               .Where(b => b.CustomerId == CustomerId)                                
                               .ToListAsync();
 
             return getAllActiveRfqNumberList;
