@@ -47,8 +47,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         [Precision(18, 3)]
         public decimal? BasicAmount { get; set; }
 
-        [Precision(18, 3)]
-        public decimal? Discount { get; set; }
+         public string? Discount { get; set; }
 
 
         public DateTime RequestedDate { get; set; }
@@ -94,8 +93,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         [Precision(18, 3)]
         public decimal? BasicAmount { get; set; }
 
-        [Precision(18, 3)]
-        public decimal? Discount { get; set; }
+         public string? Discount { get; set; }
         public DateTime RequestedDate { get; set; }
         public string? Remarks { get; set; }
     }
@@ -115,9 +113,8 @@ namespace Tips.SalesService.Api.Entities.Dto
 
         [Precision(18, 3)]
         public decimal? BasicAmount { get; set; }
-
-        [Precision(18, 3)]
-        public decimal? Discount { get; set; }
+         
+        public string? Discount { get; set; }
 
         [Precision(13, 3)]
         public decimal? ShopOrderQty { get; set; }
