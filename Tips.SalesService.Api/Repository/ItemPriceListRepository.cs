@@ -98,14 +98,14 @@ namespace Tips.SalesService.Api.Repository
             return getItemPriceListByItemNoAndPriceListName;
         }
 
-        public async Task<ItemPriceList> GetItemPriceListByListOfItemNoAndPriceListName(string itemNo, string priceListName)
+        public async Task<ItemPriceList> GetItemPricesByPassingListOfItemNoAndPriceListNames(string itemNo, string priceListName)
         {
 
-            var getItemPriceListByItemNoAndPriceListNames = await _tipsSalesServiceDbContext.ItemPriceLists
-                                .Where(b => b.ItemNumber == itemNo && b.PriceListName == priceListName)
+            var itemPriceListByItemNoAndPriceListNames = await _tipsSalesServiceDbContext.ItemPriceLists
+                                .Where(b => b.ItemNumber == itemNo || b.PriceListName == priceListName)
                                .FirstOrDefaultAsync();
 
-            return getItemPriceListByItemNoAndPriceListNames;
+            return itemPriceListByItemNoAndPriceListNames;
         }
          
          
