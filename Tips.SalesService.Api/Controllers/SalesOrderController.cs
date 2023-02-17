@@ -23,12 +23,14 @@ namespace Tips.SalesService.Api.Controllers
         private ISalesOrderItemsRepository _salesOrderItemsRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        public SalesOrderController(ISalesOrderRepository repository, ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
+        private ISalesOrderHistoryRepository _salesOrderHistory;
+        public SalesOrderController(ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _salesOrderItemsRepository = salesOrderItemsRepository;
+            _salesOrderHistory = salesOrderHistoryRepository;
         }
 
         // GET: api/<SalesOrderController>
@@ -117,6 +119,7 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+       
 
         // POST api/<PurchaseOrderController>
         [HttpPost]
@@ -195,7 +198,9 @@ namespace Tips.SalesService.Api.Controllers
 
 
                 await _repository.CreateSalesOrder(createSalesOrder);
-                _repository.SaveAsync();
+                _repository.SaveAsync();          
+
+
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = " SalesOrder Successfully Created";
@@ -251,7 +256,7 @@ namespace Tips.SalesService.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                var updateSalesOrders = _mapper.Map<SalesOrder>(salesOrderDtoUpdate);
+                var salesOrderDetails = _mapper.Map<SalesOrder>(salesOrderDtoUpdate);
                 var salesOrderItemsDto = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos;
                 var salesOrderItemsList = new List<SalesOrderItems>();
                 if (salesOrderItemsDto != null)
@@ -260,11 +265,68 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
                         salesOrderItemsList.Add(salesOrderItemsDetail);
+
+                        SalesOrderHistory salesOrderHistory = new SalesOrderHistory();
+                        salesOrderHistory.SalesOrderNumber = salesOrderDetails.SalesOrderNumber;
+                        salesOrderHistory.ProjectNumber = salesOrderDetails.ProjectNumber;
+                        salesOrderHistory.QuoteNumber = salesOrderDetails.QuoteNumber;
+                        salesOrderHistory.OrderDate = salesOrderDetails.OrderDate;
+                        salesOrderHistory.OrderType = salesOrderDetails.OrderType;
+                        salesOrderHistory.CustomerName = salesOrderDetails.CustomerName;
+                        salesOrderHistory.CustomerId = salesOrderDetails.CustomerId;
+                        salesOrderHistory.RevisionNumber = salesOrderDetails.RevisionNumber;
+                        salesOrderHistory.SOStatus = salesOrderDetails.SOStatus;
+                        salesOrderHistory.PONumber = salesOrderDetails.PONumber;
+                        salesOrderHistory.PODate = salesOrderDetails.PODate;
+                        salesOrderHistory.ReceivedDate = salesOrderDetails.ReceivedDate;
+                        salesOrderHistory.BillTo = salesOrderDetails.BillTo;
+                        salesOrderHistory.BillToId = salesOrderDetails.BillToId;
+                        salesOrderHistory.ShipTo = salesOrderDetails.ShipTo;
+                        salesOrderHistory.ShipToId = salesOrderDetails.ShipToId;
+                        salesOrderHistory.PaymentTerms = salesOrderDetails.PaymentTerms;
+                        salesOrderHistory.Total = salesOrderDetails.Total;
+                        salesOrderHistory.Unit = salesOrderHistory.Unit;
+                        salesOrderHistory.IsShortClosed = salesOrderDetails.IsShortClosed;
+                        salesOrderHistory.ShortClosedBy = salesOrderDetails.ShortClosedBy;
+                        salesOrderHistory.ShortClosedOn = salesOrderDetails.ShortClosedOn;
+                        salesOrderHistory.CreatedBy = salesOrderDetails.CreatedBy;
+                        salesOrderHistory.CreatedOn = salesOrderDetails.CreatedOn;
+                        salesOrderHistory.LastModifiedBy = salesOrderDetails.LastModifiedBy;
+                        salesOrderHistory.LastModifiedOn = salesOrderDetails.LastModifiedOn;
+                        salesOrderHistory.ItemNumber = salesOrderItemsDto[i].ItemNumber;
+                        salesOrderHistory.Description = salesOrderItemsDto[i].Description;
+                        salesOrderHistory.BalanceQty = salesOrderItemsDto[i].BalanceQty;
+                        salesOrderHistory.DispatchQty = salesOrderItemsDto[i].DispatchQty;
+                        salesOrderHistory.ShopOrderQty = salesOrderItemsDto[i].ShopOrderQty;
+                        salesOrderHistory.UOM = salesOrderItemsDto[i].UOM;
+                        salesOrderHistory.Currency = salesOrderItemsDto[i].Currency;
+                        salesOrderHistory.TotalAmount = salesOrderItemsDto[i].TotalAmount;
+                        salesOrderHistory.BasicAmount = salesOrderItemsDto[i].BasicAmount;
+                        salesOrderHistory.Discount = salesOrderItemsDto[i].Discount;
+                        salesOrderHistory.UnitPrice = salesOrderItemsDto[i].UnitPrice;
+                        salesOrderHistory.OrderQty = salesOrderItemsDto[i].OrderQty;
+                        salesOrderHistory.SGST = salesOrderItemsDto[i].SGST;
+                        salesOrderHistory.UTGST = salesOrderItemsDto[i].UTGST;
+                        salesOrderHistory.CGST = salesOrderItemsDto[i].CGST;
+                        salesOrderHistory.IGST = salesOrderItemsDto[i].IGST;
+                        salesOrderHistory.ReceivedDate = salesOrderItemsDto[i].RequestedDate;
+                        salesOrderHistory.Remarks = salesOrderItemsDto[i].Remarks;
+                       
+
+
+
+
+                        var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
+
+
+                        await _salesOrderHistory.CreateSalesOrderHistory(salesOrderHistories);
+                        _salesOrderHistory.SaveAsync();
                     }
                 }
 
                 var updateData = _mapper.Map(salesOrderDtoUpdate, getSalesOrderById);
                 updateData.SalesOrdersItems = salesOrderItemsList;
+
                 string result = await _repository.UpdateSalesOrder(updateData);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();

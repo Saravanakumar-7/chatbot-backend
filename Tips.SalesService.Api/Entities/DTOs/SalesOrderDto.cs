@@ -1,4 +1,5 @@
 ﻿using Microsoft.Build.Framework;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using Tips.SalesService.Api.Entities.Dto;
 
@@ -14,7 +15,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? OrderType { get; set; }
         public string? CustomerName { get; set; }
         public int CustomerId { get; set; }
-        public string? RevNo { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
 
         //PO Details
         public string? PONumber { get; set; }
@@ -55,8 +58,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? OrderDate { get; set; }
         public string? OrderType { get; set; }
         public string? CustomerName { get; set; }
-        public int CustomerId { get; set; }
-        public string? RevNo { get; set; }
+        public int CustomerId { get; set; }      
 
         //PO Details
         public string? PONumber { get; set; }
@@ -85,7 +87,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? OrderType { get; set; }
         public string? CustomerName { get; set; }
         public int CustomerId { get; set; }
-        public string? RevNo { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
 
         //PO Details
         public string? PONumber { get; set; }

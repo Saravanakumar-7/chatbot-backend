@@ -22,9 +22,12 @@ namespace Tips.SalesService.Api.Repository
             salesOrder.CreatedBy = "Admin";
             salesOrder.CreatedOn = date.Date;
             salesOrder.Unit = "Banglore";
+            var version = 1;
+            salesOrder.RevisionNumber = Convert.ToDecimal(version);
             var result = await Create(salesOrder);
             return result.Id;
         }
+      
         public async Task<int?> GetSONumberAutoIncrementCount(DateTime date)
         {
             var getSONumberAutoIncrementCount = _tipsSalesServiceDbContext.SalesOrders.Where(x => x.CreatedOn == date.Date).Count();
@@ -79,13 +82,23 @@ namespace Tips.SalesService.Api.Repository
                               .ToListAsync();
 
             return getSalesorderList;
-        } 
+        }
         public async Task<string> UpdateSalesOrder(SalesOrder salesOrder)
         {
             salesOrder.LastModifiedBy = "Admin";
             salesOrder.LastModifiedOn = DateTime.Now;
             Guid salesOrderNO = Guid.NewGuid();
             salesOrder.SalesOrderNumber = "SO-" + salesOrderNO.ToString();
+            var getOldRevisionNumber = _tipsSalesServiceDbContext.SalesOrders
+               .Where(x => x.SalesOrderNumber == salesOrder.SalesOrderNumber)
+               .OrderByDescending(x => x.Id)
+               .Select(x => x.RevisionNumber)
+               .FirstOrDefault();
+
+            var increaseVersionNumber = 1;
+            var convertversionnumber = (increaseVersionNumber);
+            var version = getOldRevisionNumber + convertversionnumber;
+            salesOrder.RevisionNumber = (version);
             Update(salesOrder);
             string result = $"SalesOrder of Detail {salesOrder.Id} is updated successfully!";
             return result;
@@ -120,6 +133,8 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
+
+
         public async Task<IEnumerable<SalesOrderItems>> GetSalesOrderDetailsByIdandItemNo(string ItemNumber, int SalesOrderId)
         {
             var getSalesOrderDetailsBySOandItemNo = await _tipsSalesServiceDbContexts.SalesOrdersItems
@@ -150,6 +165,23 @@ namespace Tips.SalesService.Api.Repository
         {
             Update(salesOrderItems);
             string result = $"SalesOrderItem of Detail {salesOrderItems.Id} is updated successfully!";
+            return result;
+        }
+    }
+
+
+    public class SalesOrderHistoryRepository : RepositoryBase<SalesOrderHistory>, ISalesOrderHistoryRepository
+    {
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContexts;
+        public SalesOrderHistoryRepository(TipsSalesServiceDbContext repositoryContext) : base(repositoryContext)
+        {
+            _tipsSalesServiceDbContexts = repositoryContext;
+        }
+
+        public async Task<SalesOrderHistory> CreateSalesOrderHistory(SalesOrderHistory salesOrderHistory)
+        {           
+            var result = await Create(salesOrderHistory);
+
             return result;
         }
     }
