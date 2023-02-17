@@ -215,4 +215,11 @@ namespace Tips.Grin.Api.Entities.DTOs
         
         public List<ProjectNumbersDtoUpdate>? ProjectNumbers { get; set; }
     }
+    //for this model code we are going to reduce balance qty in po while create grin parts
+    public class GrinUpdateQtyDetailsDto
+    {
+        public string? ItemNumber { get; set; }
+        public decimal Qty { get; set; }
+        public string? PONumber { get; set; }
+    }
 }

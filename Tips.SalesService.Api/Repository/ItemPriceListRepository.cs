@@ -101,27 +101,45 @@ namespace Tips.SalesService.Api.Repository
         public async Task<ItemPriceList> GetItemPriceListByListOfItemNoAndPriceListName(string itemNo, string priceListName)
         {
 
+
             var getItemPriceListByItemNoAndPriceListNames = await _tipsSalesServiceDbContext.ItemPriceLists
-                                .Where(b => b.ItemNumber == itemNo && b.PriceListName == priceListName)
+                                .Where(b => b.ItemNumber == itemNo || b.PriceListName == priceListName)
                                .FirstOrDefaultAsync();
 
             return getItemPriceListByItemNoAndPriceListNames;
         }
-         
-         
-        //public async Task<IEnumerable<ItemNumberAndPriceNameListDto>> GetItemPriceListByItemNoAndPriceListNames(string itemNo, string priceListName)
+
+        //public async Task<IEnumerable<ItemPriceListDto>> GetItemPriceListByListOfItemNoAndPriceListNames(string itemNo, string priceListName)
         //{
-
-        //    IEnumerable<ItemNumberAndPriceNameListDto> getItemPriceListByItemNoAndPriceListName = await _tipsSalesServiceDbContext.ItemPriceLists
-        //                        .Where(b => b.ItemNumber == itemNo && b.PriceListName == priceListName)
-        //                        .Select(x => new ItemNumberAndPriceNameListDto()
+        //    var leftOuterJoin = from c in _tipsSalesServiceDbContext.RfqCustomerSupportItems
+        //                         join d in _tipsSalesServiceDbContext.ItemPriceLists on c.ItemNumber equals d.ItemNumber into dept
+        //                        from ItemPriceList in dept.DefaultIfEmpty()
+        //                        select new ItemPriceListDto
         //                        {
-        //                            ItemNumber = x.ItemNumber,
-        //                            PriceListName = x.PriceListName,
-        //                        })
-        //                      .ToListAsync();
+        //                            Qty = ItemPriceList.Qty,
+        //                            Description = ItemPriceList.Description,
+        //                            UOC = ItemPriceList.UOC,
+        //                            LeastCost = ItemPriceList.LeastCost,
+        //                            Id = c.Id,
+        //                            LeastCostPlus = ItemPriceList.LeastCostPlus,
+        //                            LeastCostminus = ItemPriceList.LeastCostminus,
+        //                            DiscountMinus = ItemPriceList.DiscountMinus,
+        //                            DiscountPlus = ItemPriceList.DiscountPlus,
+        //                            Markup = ItemPriceList.Markup,
+        //                            PriceListName = ItemPriceList.PriceListName,
+        //                            ValidThrough = ItemPriceList.ValidThrough,
+        //                            IsDiscountApplicable = ItemPriceList.IsDiscountApplicable,
+        //                            Unit = ItemPriceList.Unit,
+        //                            CreatedOn = ItemPriceList.CreatedOn,
+        //                            CreatedBy = ItemPriceList.CreatedBy,
+        //                            LastModifiedBy = ItemPriceList.LastModifiedBy,
+        //                            LastModifiedOn = ItemPriceList.LastModifiedOn,
+        //                            ReleaseLpId = ItemPriceList.ReleaseLpId,
+        //                            ReleaseLp = ItemPriceList.ReleaseLp
+        //                        };
+        //    var postdata = leftOuterJoin.Where(x=>x.ItemNumber == itemNo || x.PriceListName == priceListName).ToList();
 
-        //    return getItemPriceListByItemNoAndPriceListName;
+        //    return postdata;
         //}
 
         public async Task<string> UpdateItemPriceList(ItemPriceList itemPriceList)

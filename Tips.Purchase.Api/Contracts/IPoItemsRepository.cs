@@ -1,15 +1,18 @@
-﻿using Entities;
+﻿
+using Entities.Helper;
+using Entities;
 using Tips.Purchase.Api.Entities;
+using Tips.Purchase.Api.Entities.Dto;
+using Tips.Purchase.Api.Entities.DTOs;
 
 namespace Tips.Purchase.Api.Contracts
 {
-    public interface IPoItemsRepository
+    public interface IPoItemsRepository : IRepositoryBase<PoItem>
     {
-        Task<IEnumerable<PoItem>> GetAllPoItems();
-        Task<PoItem> GetPoItemById(int id);
-        Task<IEnumerable<PoItem>> GetAllActivePoItems();
-        Task<int?> CreatePoItem(PoItem poItem);
-        Task<string> UpdatePoItem(PoItem poItem);
-        Task<string> DeletePoItem(PoItem poItem);
+        Task<IEnumerable<PoItem>> GetPODetailsByPONumberandItemNo(string PONumber, string ItemNumber);
+        Task<string> UpdatePOOrderItem(PoItem poItem);
+        Task<int?> GetPODetailsByPONumber(string PONumber);
+
+
     }
 }

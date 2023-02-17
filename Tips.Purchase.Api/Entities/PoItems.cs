@@ -16,9 +16,16 @@ namespace Tips.Purchase.Api.Entities
         public decimal UnitPrice { get; set; }
         [Precision(13,3)]
         public decimal Qty { get; set; }
+
+        public string? PONumber { get; set; }
+
+        public decimal BalanceQty { get; set; }
+
         public string? PartType { get; set; }   
         public string? SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
+        public bool PoPartsStatus { get; set; }
+
         [Precision(13, 3)]
         public decimal SGST { get; set; }
         [Precision(13, 3)]

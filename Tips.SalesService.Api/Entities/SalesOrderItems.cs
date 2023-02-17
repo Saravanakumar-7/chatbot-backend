@@ -28,6 +28,12 @@ namespace Tips.SalesService.Api.Entities
         public decimal? TotalAmount { get; set; }
 
         [Precision(18, 3)]
+        public decimal? BasicAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Discount { get; set; }
+
+        [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
 
         [Precision(13, 3)]
