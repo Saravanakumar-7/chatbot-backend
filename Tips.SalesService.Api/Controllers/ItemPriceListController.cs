@@ -151,41 +151,22 @@ namespace Tips.SalesService.Api.Controllers
         //test
 
         [HttpPost]
-        public async Task<IActionResult> GetItemPriceListByListOfItemNoAndPriceListName(List<ItemNumberAndPriceNameListDto> itemNumberAndPriceNameListDtos)
+        public async Task<IActionResult> GetItemPricesByPassingListOfItemNoAndPriceListNames(List<ItemNumberAndPriceNameListDto> itemNumberAndPriceNameListDtos)
         {
             ServiceResponse<IEnumerable<ItemPriceList>> serviceResponse = new ServiceResponse<IEnumerable<ItemPriceList>>();
             try
             {
-                var test = new List<ItemPriceList>();
-                 
+
+                var test = new List<ItemPriceList>();                
+                
                     foreach (var item in itemNumberAndPriceNameListDtos)
                     {
                         var itemNumber = item.ItemNumber;
                         var priceListName = item.PriceListName;
-                        var getItemPriceLists = await _repository.GetItemPriceListByListOfItemNoAndPriceListName(itemNumber, priceListName);
-                        //ItemPriceList bTODeliveryOrderItemsDetails = _mapper.Map<ItemPriceList>(item);
-                    //bTODeliveryOrderItemsDetails.Qty = getItemPriceLists.Qty;
-                    //bTODeliveryOrderItemsDetails.Description = getItemPriceLists.Description;
-                    //bTODeliveryOrderItemsDetails.UOC = getItemPriceLists.UOC;
-                    //bTODeliveryOrderItemsDetails.LeastCost = getItemPriceLists.LeastCost;
-                    //bTODeliveryOrderItemsDetails.Id = getItemPriceLists.Id;
-                    //bTODeliveryOrderItemsDetails.LeastCostPlus = getItemPriceLists.LeastCostPlus;
-                    //bTODeliveryOrderItemsDetails.LeastCostminus = getItemPriceLists.LeastCostminus;
-                    //bTODeliveryOrderItemsDetails.DiscountMinus = getItemPriceLists.DiscountMinus;
-                    //bTODeliveryOrderItemsDetails.DiscountPlus = getItemPriceLists.DiscountPlus;
-                    //bTODeliveryOrderItemsDetails.Markup = getItemPriceLists.Markup;
-                    //bTODeliveryOrderItemsDetails.PriceListName = getItemPriceLists.PriceListName;
-                    //bTODeliveryOrderItemsDetails.ValidThrough = getItemPriceLists.ValidThrough;
-                    //bTODeliveryOrderItemsDetails.IsDiscountApplicable = getItemPriceLists.IsDiscountApplicable;
-                    //bTODeliveryOrderItemsDetails.Unit = getItemPriceLists.Unit;
-                    //bTODeliveryOrderItemsDetails.CreatedOn = getItemPriceLists.CreatedOn;
-                    //bTODeliveryOrderItemsDetails.CreatedBy = getItemPriceLists.CreatedBy;
-                    //bTODeliveryOrderItemsDetails.LastModifiedBy = getItemPriceLists.LastModifiedBy;
-                    //bTODeliveryOrderItemsDetails.LastModifiedOn = getItemPriceLists.LastModifiedOn;
-                    //bTODeliveryOrderItemsDetails.ReleaseLpId = getItemPriceLists.ReleaseLpId;
-                    //bTODeliveryOrderItemsDetails.ReleaseLp = getItemPriceLists.ReleaseLp;
-                    test.Add(getItemPriceLists);
-                    } 
+                        var getItemPriceLists = await _repository.GetItemPricesByPassingListOfItemNoAndPriceListNames(itemNumber, priceListName);                       
+                        test.Add(getItemPriceLists);
+                    }
+                
                 var result = _mapper.Map<IEnumerable<ItemPriceList>>(test);
 
                 serviceResponse.Data = result;
