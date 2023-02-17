@@ -87,7 +87,9 @@ namespace Tips.SalesService.Api.Entities
  
 
         public DbSet<ForeCastReleaseLp> ForeCastReleaseLps { get; set; }
-         
+
+        public DbSet<SalesOrderHistory> salesOrderHistories { get; set; }
+
 
 
     }

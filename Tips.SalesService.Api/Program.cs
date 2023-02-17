@@ -61,6 +61,7 @@ builder.Services.AddScoped<IForeCastCustomGroupRepository, ForeCastCustomGroupRe
 builder.Services.AddScoped<IForeCastCustomFieldRepository, ForeCastCustomFieldRepository>();
 builder.Services.AddScoped<ISalesOrderItemsRepository, SalesOrderItemRepository>();
 builder.Services.AddScoped<IItemPriceListRepository, ItemPriceListRepository>();
+builder.Services.AddScoped<ISalesOrderHistoryRepository, SalesOrderHistoryRepository>();
 
 
 //builder.Services.AddScoped<IRfqCustomerSupportNotesRepository, RfqCustomerSupportNotes>();
