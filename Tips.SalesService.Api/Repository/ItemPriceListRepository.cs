@@ -98,43 +98,18 @@ namespace Tips.SalesService.Api.Repository
             return getItemPriceListByItemNoAndPriceListName;
         }
 
-        public async Task<ItemPriceList> GetItemPricesByPassingListOfItemNoAndPriceListNames(string itemNo, string priceListName)
+        public async Task<ItemPriceList> GetItemPricesByListOfItemNoAndPriceListNames(string itemNo, string priceListName)
         {
-            var query = _tipsSalesServiceDbContext.ItemPriceLists.Where(b => b.ItemNumber == itemNo);
+            var itemPriceListDetails = _tipsSalesServiceDbContext.ItemPriceLists.Where(b => b.ItemNumber == itemNo);
             if (!string.IsNullOrEmpty(priceListName))
             {
-                query = query.Where(b => b.PriceListName == priceListName);
+                itemPriceListDetails = itemPriceListDetails.Where(b => b.PriceListName == priceListName);
             }
-            var itemPriceListByItemNoAndPriceListNames = await query.FirstOrDefaultAsync();
+            var itemPriceList = await itemPriceListDetails.FirstOrDefaultAsync();
 
-            return itemPriceListByItemNoAndPriceListNames;
+            return itemPriceList;
         }
-
-        //public async Task<ItemPriceList> GetItemPricesByPassingListOfItemNoAndPriceListNames(string itemNo, string priceListName)
-        //{
-
-        //    var itemPriceListByItemNoAndPriceListNames = await _tipsSalesServiceDbContext.ItemPriceLists
-        //                        .Where(b => b.ItemNumber == itemNo || b.PriceListName == priceListName)
-        //                       .FirstOrDefaultAsync();
-
-        //    return itemPriceListByItemNoAndPriceListNames;
-        //}
          
-         
-        //public async Task<IEnumerable<ItemNumberAndPriceNameListDto>> GetItemPriceListByItemNoAndPriceListNames(string itemNo, string priceListName)
-        //{
-
-        //    IEnumerable<ItemNumberAndPriceNameListDto> getItemPriceListByItemNoAndPriceListName = await _tipsSalesServiceDbContext.ItemPriceLists
-        //                        .Where(b => b.ItemNumber == itemNo && b.PriceListName == priceListName)
-        //                        .Select(x => new ItemNumberAndPriceNameListDto()
-        //                        {
-        //                            ItemNumber = x.ItemNumber,
-        //                            PriceListName = x.PriceListName,
-        //                        })
-        //                      .ToListAsync();
-
-        //    return getItemPriceListByItemNoAndPriceListName;
-        //}
 
         public async Task<string> UpdateItemPriceList(ItemPriceList itemPriceList)
         {

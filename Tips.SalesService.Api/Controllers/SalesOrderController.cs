@@ -499,7 +499,7 @@ namespace Tips.SalesService.Api.Controllers
             {
                 IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
                 var orderItem = salesOrderItems.FirstOrDefault();
-                orderItem.BalanceQty = orderItem.BalanceQty - item.DispatchQty;
+                orderItem.BalanceQty -= item.DispatchQty;
                 orderItem.DispatchQty += item.DispatchQty;
                 _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
             }          
