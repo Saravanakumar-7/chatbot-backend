@@ -36,6 +36,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ShortClosedBy { get; set; }
 
         public DateTime? ShortClosedOn { get; set; }
+
+        public decimal? Total { get; set; }
+
+        
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -65,7 +69,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ShipTo { get; set; }
         public int? ShipToId { get; set; }
         public string? PaymentTerms { get; set; }
-        public string? Remarks { get; set; }      
+        public string? Remarks { get; set; }
+        public decimal? Total { get; set; }
+
 
         public List<SalesOrderItemsPostDto>? SalesOrderItemsPostDtos { get; set; }
     }
@@ -93,6 +99,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int? ShipToId { get; set; }
         public string? PaymentTerms { get; set; }
         public string? Remarks { get; set; }
+        public decimal? Total { get; set; }
+
 
         [Required]
         public string Unit { get; set; }

@@ -117,37 +117,7 @@ namespace Tips.SalesService.Api.Repository
                                     IsDiscountApplicable = ItemPriceList.IsDiscountApplicable
                                 };
 
-            var postdata = leftOuterJoin.ToList();
-
-
-            //var customersAndOrders = _tipsSalesServiceDbContext.RfqCustomerSupportItems
-            //         .Where(c => c.RfqNumber == rfqNumber && c.ReleaseStatus == true)
-            //         .Join(_tipsSalesServiceDbContext.ItemPriceLists,                     
-            //         c => c.ItemNumber,
-            //         o => o.ItemNumber,
-            //         (c, o) => new { RfqCustomerSupportItems = c, ItemPriceLists = o })
-            //         .Select(co => new CsItemDetailsForQuoteDto
-            //         {
-
-            //             RFQNumber = co.RfqCustomerSupportItems.RfqNumber,
-            //             CustomerName = rfqDetail.CustomerName,
-            //             CustomerId = rfqDetail.CustomerId,
-            //             ItemNumber = co.RfqCustomerSupportItems.ItemNumber,                         
-            //             Description = co.RfqCustomerSupportItems.Description,
-            //             CustomFields = co.RfqCustomerSupportItems.CustomFields,
-            //             PriceListName = co.ItemPriceLists.PriceListName,
-            //             Qty = co.RfqCustomerSupportItems.Qty,
-            //             UnitPrice = co.ItemPriceLists.LeastCost,
-            //             LeastCostPlus = co.ItemPriceLists.LeastCostPlus,
-            //             LeastCostminus = co.ItemPriceLists.LeastCostminus,
-            //             DiscountMinus = co.ItemPriceLists.DiscountMinus,
-            //             DiscountPlus = co.ItemPriceLists.DiscountPlus,
-            //             Markup = co.ItemPriceLists.Markup,
-            //             CreatedOn = co.ItemPriceLists.CreatedOn,
-            //             IsDiscountApplicable = co.ItemPriceLists.IsDiscountApplicable
-            //         }).ToList();
-
-            //return customersAndOrders;
+            var postdata = leftOuterJoin.ToList(); 
 
             return postdata;
         }

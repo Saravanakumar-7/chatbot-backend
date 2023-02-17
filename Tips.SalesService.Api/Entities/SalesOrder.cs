@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Tips.SalesService.Api.Entities
@@ -30,6 +31,10 @@ namespace Tips.SalesService.Api.Entities
         public string? ShipTo { get; set; }
         public int? ShipToId { get; set; }
         public string? PaymentTerms { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Total { get; set; }
+
         public string? Remarks { get; set; }
         public string Unit { get; set; }      
 

@@ -209,4 +209,39 @@ namespace Tips.Purchase.Api.Repository
             return result.Id;
         }
     }
+
+    public class PurchaseOrderItemRepository : RepositoryBase<PoItem>, IPoItemsRepository
+    {
+        private TipsPurchaseDbContext _tipsPurchaseDbContexts;
+        public PurchaseOrderItemRepository(TipsPurchaseDbContext repositoryContext) : base(repositoryContext)
+        {
+            _tipsPurchaseDbContexts = repositoryContext;
+        }
+
+        public async Task<IEnumerable<PoItem>> GetPODetailsByPONumberandItemNo(string ItemNumber, string PONumber)
+        {
+            var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContexts.PoItems
+                 .Where(x => x.ItemNumber == ItemNumber && x.PONumber == PONumber && x.PoPartsStatus != true)
+                          .ToListAsync();
+
+            return getPODetailsByPONOandItemNo;
+        }
+
+        //get count po item for particular po number
+
+        public async Task<int?> GetPODetailsByPONumber(string PONumber)
+        {
+            var getPODetailsByPONO = _tipsPurchaseDbContexts.PoItems.Where(x => x.PONumber == PONumber).Count();
+
+            return getPODetailsByPONO;
+        }
+
+
+        public async Task<string> UpdatePOOrderItem(PoItem poItem)
+        {
+            Update(poItem);
+            string result = $"POOrderItem of Detail {poItem.Id} is updated successfully!";
+            return result;
+        } 
+    }
 }

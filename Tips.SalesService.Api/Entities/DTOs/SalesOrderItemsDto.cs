@@ -42,7 +42,14 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal? IGST { get; set; }
 
         [Precision(18, 3)]
-        public decimal? TotalAmount { get; set; }        
+        public decimal? TotalAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? BasicAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Discount { get; set; }
+
 
         public DateTime RequestedDate { get; set; }
         public string? Remarks { get; set; }
@@ -55,9 +62,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? Description { get; set; }
         //public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
-        public OrderStatus StatusEnum { get; set; }
-
- 
+  
 
         [Precision(13, 3)]
         [DefaultValue(0)]
@@ -85,6 +90,12 @@ namespace Tips.SalesService.Api.Entities.Dto
 
         [Precision(18, 3)]
         public decimal? TotalAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? BasicAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Discount { get; set; }
         public DateTime RequestedDate { get; set; }
         public string? Remarks { get; set; }
     }
@@ -95,17 +106,18 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? Description { get; set; }
       //  public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
-        public OrderStatus StatusEnum { get; set; }
-
+ 
         [Precision(13, 3)]
         public decimal? BalanceQty { get; set; }
 
         [Precision(13, 3)]
         public decimal? DispatchQty { get; set; }
 
-        [Precision(13, 3)]
+        [Precision(18, 3)]
         public decimal? BasicAmount { get; set; }
-        public string? Discount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? Discount { get; set; }
 
         [Precision(13, 3)]
         public decimal? ShopOrderQty { get; set; }

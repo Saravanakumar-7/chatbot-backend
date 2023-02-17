@@ -76,7 +76,7 @@
         public decimal DispatchQty { get; set; } 
 
 
-    }
+    } 
     public class BtoDeliveryOrderInvoiceQtyDetailsDto
     {
 

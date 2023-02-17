@@ -21,14 +21,16 @@ namespace Tips.Purchase.Api.Controllers
     public class PurchaseOrderController : ControllerBase
     {
          private IPurchaseOrderRepository _repository;
+        private IPoItemsRepository _poItemsRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IDocumentUploadRepository _documentUploadRepository;
 
 
-        public PurchaseOrderController(IPurchaseOrderRepository repository, IDocumentUploadRepository documentUploadRepository , ILoggerManager logger, IMapper mapper)
+        public PurchaseOrderController(IPurchaseOrderRepository repository, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository , ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
+            _poItemsRepository = poItemsRepository;
             _logger = logger;
             _mapper = mapper;
             _documentUploadRepository = documentUploadRepository;
@@ -229,6 +231,9 @@ namespace Tips.Purchase.Api.Controllers
                     for (int i = 0; i < poItemDto.Count; i++)
                     {
                         PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+                        poItemDetails.BalanceQty = poItemDto[i].Qty;
+                        poItemDetails.PoPartsStatus = false;
+                        poItemDetails.PONumber = purchaseOrderDetails.PONumber;
                         poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
 
@@ -275,6 +280,8 @@ namespace Tips.Purchase.Api.Controllers
         
              return File(bytes, ContentType, Path.GetFileName(filePath));
         }
+
+
         [HttpGet("{filename}")]
         public IActionResult DownloadFiles(string filename)
         {
@@ -287,7 +294,7 @@ namespace Tips.Purchase.Api.Controllers
 
             try
             {
-                var downloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFiles/{filename}";
+                var downloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={filename}";
 
                 return Ok(new { FilePath = filePath, DownloadUrl = downloadUrl });
             }
@@ -360,6 +367,42 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        //pass data from grin using _httpclient service to purchase
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateBalanceQtyDetails([FromBody] List<PurchaseOrderUpdateQtyDetailsDto> purchaseOrderUpdateQtyDetails)
+        { 
+            foreach (var item in purchaseOrderUpdateQtyDetails)
+            {
+                IEnumerable<PoItem> poItems = await _poItemsRepository.GetPODetailsByPONumberandItemNo(item.ItemNumber, item.PONumber);
+                var PoorderItem = poItems.FirstOrDefault();
+                if(PoorderItem.BalanceQty >= item.Qty)
+                {
+                    if(PoorderItem.BalanceQty == item.Qty)
+                    {
+                        PoorderItem.PoPartsStatus = true;
+                    }
+                    PoorderItem.BalanceQty -= item.Qty;
+                    item.Qty = 0;
+                    break;
+                }
+                else
+                {
+                    item.Qty -= PoorderItem.BalanceQty;
+                    PoorderItem.BalanceQty = 0;
+                }
+                if (item.Qty <= 0)
+                {
+                    break;
+                }                
+                _poItemsRepository.UpdatePOOrderItem(PoorderItem);
+            }
+            //
+
+
+            _poItemsRepository.SaveAsync();
+            return Ok();
+        }
         //[HttpPut("{id}")]
         //public async Task<IActionResult> UpdatePurchaseOrder(int id, [FromBody] PurchaseOrderUpdateDto purchaseOrderUpdateDto)
         //{

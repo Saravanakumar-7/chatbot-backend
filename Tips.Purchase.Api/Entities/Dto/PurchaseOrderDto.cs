@@ -122,4 +122,6 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? PONumber { get; set; }
     }
 
+   
+
 }

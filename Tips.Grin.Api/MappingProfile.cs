@@ -58,6 +58,7 @@ namespace Tips.Grin.Api
             CreateMap<ReturnGrinDocumentUpload, ReturnGrinDocumentUploadDto>().ReverseMap();
             CreateMap<ReturnGrinDocumentUpload, ReturnGrinDocumentUploadDtoPost>().ReverseMap();
 
+            CreateMap<GrinPartsPostDto, GrinUpdateQtyDetailsDto>().ReverseMap();
 
 
 
