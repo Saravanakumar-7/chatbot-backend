@@ -100,13 +100,25 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<ItemPriceList> GetItemPricesByPassingListOfItemNoAndPriceListNames(string itemNo, string priceListName)
         {
-
-            var itemPriceListByItemNoAndPriceListNames = await _tipsSalesServiceDbContext.ItemPriceLists
-                                .Where(b => b.ItemNumber == itemNo || b.PriceListName == priceListName)
-                               .FirstOrDefaultAsync();
+            var query = _tipsSalesServiceDbContext.ItemPriceLists.Where(b => b.ItemNumber == itemNo);
+            if (!string.IsNullOrEmpty(priceListName))
+            {
+                query = query.Where(b => b.PriceListName == priceListName);
+            }
+            var itemPriceListByItemNoAndPriceListNames = await query.FirstOrDefaultAsync();
 
             return itemPriceListByItemNoAndPriceListNames;
         }
+
+        //public async Task<ItemPriceList> GetItemPricesByPassingListOfItemNoAndPriceListNames(string itemNo, string priceListName)
+        //{
+
+        //    var itemPriceListByItemNoAndPriceListNames = await _tipsSalesServiceDbContext.ItemPriceLists
+        //                        .Where(b => b.ItemNumber == itemNo || b.PriceListName == priceListName)
+        //                       .FirstOrDefaultAsync();
+
+        //    return itemPriceListByItemNoAndPriceListNames;
+        //}
          
          
         //public async Task<IEnumerable<ItemNumberAndPriceNameListDto>> GetItemPriceListByItemNoAndPriceListNames(string itemNo, string priceListName)
