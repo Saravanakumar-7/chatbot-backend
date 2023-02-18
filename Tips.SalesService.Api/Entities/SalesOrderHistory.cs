@@ -68,7 +68,7 @@ namespace Tips.SalesService.Api.Entities
         public decimal? BasicAmount { get; set; }
 
         [Precision(18, 3)]
-        public decimal? Discount { get; set; }
+        public string? Discount { get; set; }
 
         [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
@@ -84,6 +84,8 @@ namespace Tips.SalesService.Api.Entities
         public decimal? UTGST { get; set; }
         [Precision(13, 3)]
         public decimal? IGST { get; set; }
+         
+
         public DateTime RequestedDate { get; set; }
         public string? Remarks { get; set; }
         public string? CreatedBy { get; set; }

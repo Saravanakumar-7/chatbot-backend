@@ -86,10 +86,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? OrderDate { get; set; }
         public string? OrderType { get; set; }
         public string? CustomerName { get; set; }
-        public int CustomerId { get; set; }
-
-        [Precision(13, 1)]
-        public decimal? RevisionNumber { get; set; }
+        public int CustomerId { get; set; } 
 
         //PO Details
         public string? PONumber { get; set; }

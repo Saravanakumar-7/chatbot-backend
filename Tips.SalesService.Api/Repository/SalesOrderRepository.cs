@@ -23,7 +23,7 @@ namespace Tips.SalesService.Api.Repository
             salesOrder.CreatedOn = date.Date;
             salesOrder.Unit = "Banglore";
             var version = 1;
-            salesOrder.RevisionNumber = Convert.ToDecimal(version);
+            salesOrder.RevisionNumber = (version);
             var result = await Create(salesOrder);
             return result.Id;
         }
@@ -86,18 +86,15 @@ namespace Tips.SalesService.Api.Repository
         public async Task<string> UpdateSalesOrder(SalesOrder salesOrder)
         {
             salesOrder.LastModifiedBy = "Admin";
-            salesOrder.LastModifiedOn = DateTime.Now;
-            Guid salesOrderNO = Guid.NewGuid();
-            salesOrder.SalesOrderNumber = "SO-" + salesOrderNO.ToString();
-            var getOldRevisionNumber = _tipsSalesServiceDbContext.SalesOrders
+            salesOrder.LastModifiedOn = DateTime.Now; 
+            var oldRevisionNumber = _tipsSalesServiceDbContext.SalesOrders
                .Where(x => x.SalesOrderNumber == salesOrder.SalesOrderNumber)
                .OrderByDescending(x => x.Id)
                .Select(x => x.RevisionNumber)
                .FirstOrDefault();
 
-            var increaseVersionNumber = 1;
-            var convertversionnumber = (increaseVersionNumber);
-            var version = getOldRevisionNumber + convertversionnumber;
+            var increaseVersionNumber = 1; 
+            var version = oldRevisionNumber + increaseVersionNumber;
             salesOrder.RevisionNumber = (version);
             Update(salesOrder);
             string result = $"SalesOrder of Detail {salesOrder.Id} is updated successfully!";
@@ -181,9 +178,9 @@ namespace Tips.SalesService.Api.Repository
         }
 
         public async Task<SalesOrderHistory> CreateSalesOrderHistory(SalesOrderHistory salesOrderHistory)
-        {           
+        {
+            salesOrderHistory.Unit = "Banglore";
             var result = await Create(salesOrderHistory);
-
             return result;
         }
     }

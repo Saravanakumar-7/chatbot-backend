@@ -156,6 +156,24 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<ItemPriceList>> serviceResponse = new ServiceResponse<IEnumerable<ItemPriceList>>();
             try
             {
+                if (itemNumberAndPriceNameListDtos is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ItemPriceList sent from client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("ItemPriceList sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid ItemPriceList.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid ItemPriceList.");
+                    return BadRequest(serviceResponse);
+                }
 
                 var itemPriceLists = new List<ItemPriceList>();                
                 
