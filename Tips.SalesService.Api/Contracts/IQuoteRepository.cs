@@ -14,7 +14,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<CsItemDetailsForQuoteDto>> GetCsItemDetailsForQuote(string rfqNumber);
 
 
-        
+        Task<int?> GetQuoteNumberAutoIncrementCount(DateTime date);
 
         Task<IEnumerable<Quote>> GetAllActiveQuote();
         Task<long> CreateQuote(Quote quote);       

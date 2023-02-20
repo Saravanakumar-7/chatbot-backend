@@ -5,6 +5,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class QuoteDto
     {
         public int Id { get; set; }
+        public string? QuoteNumber { get; set; }
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }

@@ -20,13 +20,21 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<long> CreateQuote(Quote quote)
         {
+            var date = DateTime.Now;
             quote.CreatedBy = "Admin";
-            quote.CreatedOn = DateTime.Now;
+            quote.CreatedOn = date.Date;
             quote.Unit = "Bangalore";
             var version = 1;
             quote.RevisionNumber = Convert.ToDecimal(version);
             var result = await Create(quote);
             return result.Id;
+        }
+
+        public async Task<int?> GetQuoteNumberAutoIncrementCount(DateTime date)
+        {
+            var getQuoteNumberAutoIncrementCount = _tipsSalesServiceDbContext.Quotes.Where(x => x.CreatedOn == date.Date).Count();
+
+            return getQuoteNumberAutoIncrementCount;
         }
 
         public async Task<Quote> ChangeQuoteVersion(Quote quote)
