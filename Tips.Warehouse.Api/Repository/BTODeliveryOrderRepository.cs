@@ -52,7 +52,7 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrders(PagingParameter pagingParameter)
         {
-            var getAllBTODetails = PagedList<BTODeliveryOrder>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
+            var getAllBTODetails = PagedList<BTODeliveryOrder>.ToPagedList(FindAll()
                                  .Include(t => t.BTODeliveryOrderItems)
                                  //.ThenInclude(s => s.BTOSerialNumbers)
                 .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
@@ -178,7 +178,7 @@ namespace Tips.Warehouse.Api.Repository
             var bto = await _tipsWarehouseDbContext.ReturnBtoDeliveryOrders
               .FirstOrDefaultAsync();
 
-            var getAllBTODetails = PagedList<BTODeliveryOrderHistory>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
+            var getAllBTODetails = PagedList<BTODeliveryOrderHistory>.ToPagedList(FindAll()
                     .Where(x => x.UniqeId != null)
                     .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 

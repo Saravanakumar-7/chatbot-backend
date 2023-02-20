@@ -31,8 +31,8 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<PagedList<InventoryTranction>> GetAllInventoryTranction(PagingParameter pagingParameter)
         {
-            var getAllInventoryTranction = PagedList<InventoryTranction>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
-            .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var getAllInventoryTranction = PagedList<InventoryTranction>.ToPagedList(FindAll()
+            .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return getAllInventoryTranction;
         }

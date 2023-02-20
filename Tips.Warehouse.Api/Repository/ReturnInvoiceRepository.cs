@@ -31,9 +31,9 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<PagedList<ReturnInvoice>> GetAllReturnInvoice(PagingParameter pagingParameter)
         {
-            var getAllReturnInvoiceList = PagedList<ReturnInvoice>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
+            var getAllReturnInvoiceList = PagedList<ReturnInvoice>.ToPagedList(FindAll()
                .Include(k => k.ReturnInvoiceItems)
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+               .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return (getAllReturnInvoiceList);
         }

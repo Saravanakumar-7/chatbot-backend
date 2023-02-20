@@ -46,10 +46,10 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<PagedList<DeliveryOrder>> GetAllDeliveryOrders(PagingParameter pagingParameter)
         {
-            var allDeliveryOrderDetails = PagedList<DeliveryOrder>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
+            var allDeliveryOrderDetails = PagedList<DeliveryOrder>.ToPagedList(FindAll()
                                 .Include(t => t.DeliveryOrderItems)
                                 .ThenInclude(y => y.DoSerialNumbers)
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+              .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return allDeliveryOrderDetails;
         }

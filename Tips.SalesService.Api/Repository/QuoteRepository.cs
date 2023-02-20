@@ -141,7 +141,7 @@ namespace Tips.SalesService.Api.Repository
                                .Include(i => i.QuoteRFQNotes)
                                .Include(i => i.QuoteSpecialTerms)
 
-              .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+              .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return quoteDetails;
         }
