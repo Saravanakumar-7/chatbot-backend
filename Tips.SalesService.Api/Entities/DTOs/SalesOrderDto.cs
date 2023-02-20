@@ -30,7 +30,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ShipTo { get; set; }
         public int ShipToId { get; set; }
         public string? PaymentTerms { get; set; }
-       
+        public string? Remarks { get; set; }
         public string Unit { get; set; }
 
         [DefaultValue(false)]

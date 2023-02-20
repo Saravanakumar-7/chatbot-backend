@@ -37,7 +37,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? GeneralDiscount { get; set; }
-
+        public string? Remarks { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -86,7 +86,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class QuoteUpdateDto
     {
-        public int Id { get; set; }
+        public string? QuoteNumber { get; set; }
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
