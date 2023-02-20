@@ -137,8 +137,9 @@ namespace Tips.Warehouse.Api.Repository
                     .Where(x => x.FGItemNumber == itemNumber && x.BTONumber == BtoDeliveryNumber)
                           .FirstOrDefaultAsync();
             decimal Quantity = Convert.ToDecimal(Qty);
-            getSalesOrderDetailsBySOandItemNo.BalanceDoQty -= getSalesOrderDetailsBySOandItemNo.DispatchQty;
             getSalesOrderDetailsBySOandItemNo.InvoicedQty += Quantity;
+            getSalesOrderDetailsBySOandItemNo.BalanceDoQty = getSalesOrderDetailsBySOandItemNo.DispatchQty - getSalesOrderDetailsBySOandItemNo.InvoicedQty;
+            
             Update(getSalesOrderDetailsBySOandItemNo);
             return getSalesOrderDetailsBySOandItemNo;
         }
