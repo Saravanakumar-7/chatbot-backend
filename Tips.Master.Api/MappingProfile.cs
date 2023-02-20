@@ -335,6 +335,7 @@ namespace Tips.Master.Api
             CreateMap<EnggBomGroup, EnggBomGroupDto>().ReverseMap();
             CreateMap<EnggBomGroup, EnggBomGroupDtoPost>().ReverseMap();
             CreateMap<EnggBomGroup, EnggBomGroupDtoUpdate>().ReverseMap();
+            CreateMap<EnggBomGroup, ListOfBomGroupDto>().ReverseMap();
 
             CreateMap<EnggCustomField, EnggCustomFieldDto>().ReverseMap();
             CreateMap<EnggCustomField, EnggCustomFieldDtoPost>().ReverseMap();
@@ -352,6 +353,9 @@ namespace Tips.Master.Api
             CreateMap<RoomNames, RoomNamesDto>().ReverseMap();
             CreateMap<RoomNames, RoomNamePostDto>().ReverseMap();
             CreateMap<RoomNames, RoomNameUpdateDto>().ReverseMap();
+
+            
+
 
         }
     }

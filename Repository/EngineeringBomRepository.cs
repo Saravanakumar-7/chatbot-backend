@@ -215,6 +215,21 @@ namespace Repository
             return AllActiveEnggbomGroupDetails;
         }
 
+        public async  Task<IEnumerable<ListOfBomGroupDto>> GetAllBomGroupList()
+        {
+            IEnumerable<ListOfBomGroupDto> getAllBomGroupList = await _tipsMasterDbContext.BomGroups
+                               .Select(c => new ListOfBomGroupDto()
+                               {
+                                   Id = c.Id,
+                                   BomGroupName = c.BomGroupName,
+
+                               })
+                               .OrderByDescending(c => c.Id)
+                             .ToListAsync();
+
+            return getAllBomGroupList;
+        }
+
         public async Task<PagedList<EnggBomGroup>> GetAllEnggBomGroup(PagingParameter pagingParameter)
         {
             var GetallEnggbomGroupDetails = PagedList<EnggBomGroup>.ToPagedList(FindAll()
@@ -275,6 +290,13 @@ namespace Repository
             var GetallEnggcustomFieldsDetails = PagedList<EnggCustomField>.ToPagedList(FindAll()
             .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
             return GetallEnggcustomFieldsDetails;
+        }
+
+        public async Task<IEnumerable<EnggCustomField>> GetEnggCustomFieldByBomGroup(string BomgroupName)
+        {
+            var getEnggCustomFieldByBomGroup = await FindByCondition(x => x.BOMGroupName == BomgroupName).ToListAsync();
+
+            return getEnggCustomFieldByBomGroup;
         }
 
         public async Task<EnggCustomField> GetEnggCustomFieldById(int id)

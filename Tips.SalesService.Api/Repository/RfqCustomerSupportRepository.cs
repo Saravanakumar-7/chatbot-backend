@@ -550,6 +550,7 @@ namespace Tips.SalesService.Api.Repository
                                     CustomGroupName = c.CustomGroupName,
 
                                 })
+                                .OrderByDescending(c => c.Id)
                               .ToListAsync();
 
             return getAllCustomGroupList;

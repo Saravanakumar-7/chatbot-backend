@@ -40,13 +40,13 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<IEnumerable<DeliveryOrder>> GetAllActiveDeliveryOrders()
         {
-            var allActiveDeliveryOrderDetails = await FindAll().ToListAsync();
+            var allActiveDeliveryOrderDetails = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
             return allActiveDeliveryOrderDetails;
         }
 
         public async Task<PagedList<DeliveryOrder>> GetAllDeliveryOrders(PagingParameter pagingParameter)
         {
-            var allDeliveryOrderDetails = PagedList<DeliveryOrder>.ToPagedList(FindAll()
+            var allDeliveryOrderDetails = PagedList<DeliveryOrder>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
                                 .Include(t => t.DeliveryOrderItems)
                                 .ThenInclude(y => y.DoSerialNumbers)
                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);

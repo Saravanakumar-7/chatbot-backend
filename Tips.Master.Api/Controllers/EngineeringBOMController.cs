@@ -701,6 +701,33 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        // Get ListOf BomGroup Names
+        [HttpGet]
+        public async Task<IActionResult> GetAllBomGroupList()
+        {
+            ServiceResponse<IEnumerable<ListOfBomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfBomGroupDto>>();
+            try
+            {
+                var bomGroupList = await _repository.EnggBomGroupRepository.GetAllBomGroupList();
+                var result = _mapper.Map<IEnumerable<ListOfBomGroupDto>>(bomGroupList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all bomGroupList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllbomGroupList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         // GET: api/<EnggBomGroupController>
         [HttpGet]
@@ -1014,6 +1041,47 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
 
+            }
+        }
+        //get: EnggCustomFiedDetails by BomgeoupName
+
+        [HttpGet("{BomgroupName}")]
+        public async Task<IActionResult> GetEnggCustomFieldByBomGroup(string BomgroupName)
+        {
+            ServiceResponse<IEnumerable<EnggCustomField>> serviceResponse = new ServiceResponse<IEnumerable<EnggCustomField>>();
+
+            try
+            {
+                var enggCustomFieldDetails = await _repository.EnggCustomFieldRepository.GetEnggCustomFieldByBomGroup(BomgroupName);
+                if (enggCustomFieldDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CustomFieldList with id: {BomgroupName}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"CustomFieldList with id: {BomgroupName}, hasn't been found.");
+                    return BadRequest(serviceResponse);
+                }
+                else
+                {
+
+                    _logger.LogInfo($"Returned EnggCustomFieldDetails with id: {BomgroupName}");
+                    var result = _mapper.Map<IEnumerable<EnggCustomField>>(enggCustomFieldDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned EnggCustomFieldDetails with id successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetEnggCustomFieldDetails action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 

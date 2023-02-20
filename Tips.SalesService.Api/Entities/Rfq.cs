@@ -35,6 +35,7 @@ namespace Tips.SalesService.Api.Entities
 
         [DefaultValue(0)]
         public CsRelease ReleaseStatus { get; set; }
+        public string? Remarks { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

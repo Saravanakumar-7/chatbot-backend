@@ -23,7 +23,7 @@ namespace Tips.SalesService.Api.Repository
             quote.CreatedBy = "Admin";
             quote.CreatedOn = DateTime.Now;
             quote.Unit = "Bangalore";
-            var version = 1.0;
+            var version = 1;
             quote.RevisionNumber = Convert.ToDecimal(version);
             var result = await Create(quote);
             return result.Id;
@@ -43,7 +43,7 @@ namespace Tips.SalesService.Api.Repository
                 .Where(x => x.Id == getIdByRfqNumber)
                 .Select(x => x.RevisionNumber)
                 .FirstOrDefault();
-            var increaseVersionNumber = 0.1;
+            var increaseVersionNumber = 1;
             var convertversionnumber = Convert.ToDecimal(increaseVersionNumber);
             var version = getOldRevisionNumber + convertversionnumber;
             quote.RevisionNumber = Convert.ToDecimal(version);
