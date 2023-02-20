@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
+using Entities.DTOs;
 using Entities.Helper;
 
 namespace Contracts
@@ -16,5 +17,6 @@ namespace Contracts
         Task<int?> CreateEnggBomGroup(EnggBomGroup enggbomGroup);
         Task<string> UpdateEnggBomGroup(EnggBomGroup enggbomGroup);
         Task<string> DeleteEnggBomGroup(EnggBomGroup enggbomGroup);
+        Task<IEnumerable<ListOfBomGroupDto>> GetAllBomGroupList();
     }
 }

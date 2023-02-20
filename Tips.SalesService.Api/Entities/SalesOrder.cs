@@ -28,6 +28,7 @@ namespace Tips.SalesService.Api.Entities
         public DateTime? ReceivedDate { get; set; }
 
         //Billing&Shipping
+
         public string? BillTo { get; set; }
         public int? BillToId { get; set; }
         public string? ShipTo { get; set; }

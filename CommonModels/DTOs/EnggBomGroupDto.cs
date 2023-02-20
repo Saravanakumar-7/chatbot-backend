@@ -32,4 +32,11 @@ namespace Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
+
+    public class ListOfBomGroupDto
+    {
+        public int Id { get; set; }
+        public string? BomGroupName { get; set; }
+
+    }
 }

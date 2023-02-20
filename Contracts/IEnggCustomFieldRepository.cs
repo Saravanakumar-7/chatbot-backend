@@ -16,5 +16,6 @@ namespace Contracts
         Task<int?> CreateEnggCustomField(EnggCustomField enggcustomFields);
         Task<string> UpdateEnggCustomField(EnggCustomField enggcustomFields);
         Task<string> DeleteEnggCustomField(EnggCustomField enggcustomFields);
+        Task<IEnumerable<EnggCustomField>> GetEnggCustomFieldByBomGroup(string BomgroupName);
     }
 }

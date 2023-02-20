@@ -68,7 +68,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
         public string Unit { get; set; }
-       
+        public string? Remarks { get; set; }
+
     }
     public class RfqNumberListDto
     {

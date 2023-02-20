@@ -47,7 +47,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<PagedList<OpenDeliveryOrder>> GetAllOpenDeliveryOrders(PagingParameter pagingParameter)
         {
 
-            var getAllOpenDeliveryOrderDetails = PagedList<OpenDeliveryOrder>.ToPagedList(FindAll()
+            var getAllOpenDeliveryOrderDetails = PagedList<OpenDeliveryOrder>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
                                 .Include(x => x.OpenDeliveryOrderParts)
                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
             return getAllOpenDeliveryOrderDetails;
