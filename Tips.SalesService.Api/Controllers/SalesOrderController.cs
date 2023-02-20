@@ -267,53 +267,50 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderItemsList.Add(salesOrderItemsDetail);
 
                         SalesOrderHistory salesOrderHistory = new SalesOrderHistory();
-                        salesOrderHistory.SalesOrderNumber = salesOrderDetails.SalesOrderNumber;
-                        salesOrderHistory.ProjectNumber = salesOrderDetails.ProjectNumber;
-                        salesOrderHistory.QuoteNumber = salesOrderDetails.QuoteNumber;
-                        salesOrderHistory.OrderDate = salesOrderDetails.OrderDate;
-                        salesOrderHistory.OrderType = salesOrderDetails.OrderType;
-                        salesOrderHistory.CustomerName = salesOrderDetails.CustomerName;
-                        salesOrderHistory.CustomerId = salesOrderDetails.CustomerId;
-                        salesOrderHistory.RevisionNumber = salesOrderDetails.RevisionNumber;
-                        salesOrderHistory.SOStatus = salesOrderDetails.SOStatus;
-                        salesOrderHistory.PONumber = salesOrderDetails.PONumber;
-                        salesOrderHistory.PODate = salesOrderDetails.PODate;
-                        salesOrderHistory.ReceivedDate = salesOrderDetails.ReceivedDate;
-                        salesOrderHistory.BillTo = salesOrderDetails.BillTo;
-                        salesOrderHistory.BillToId = salesOrderDetails.BillToId;
-                        salesOrderHistory.ShipTo = salesOrderDetails.ShipTo;
-                        salesOrderHistory.ShipToId = salesOrderDetails.ShipToId;
-                        salesOrderHistory.PaymentTerms = salesOrderDetails.PaymentTerms;
-                        salesOrderHistory.Total = salesOrderDetails.Total;
-                        salesOrderHistory.Unit = salesOrderHistory.Unit;
-                        salesOrderHistory.IsShortClosed = salesOrderDetails.IsShortClosed;
-                        salesOrderHistory.ShortClosedBy = salesOrderDetails.ShortClosedBy;
-                        salesOrderHistory.ShortClosedOn = salesOrderDetails.ShortClosedOn;
-                        salesOrderHistory.CreatedBy = salesOrderDetails.CreatedBy;
-                        salesOrderHistory.CreatedOn = salesOrderDetails.CreatedOn;
-                        salesOrderHistory.LastModifiedBy = salesOrderDetails.LastModifiedBy;
-                        salesOrderHistory.LastModifiedOn = salesOrderDetails.LastModifiedOn;
-                        salesOrderHistory.ItemNumber = salesOrderItemsDto[i].ItemNumber;
-                        salesOrderHistory.Description = salesOrderItemsDto[i].Description;
-                        salesOrderHistory.BalanceQty = salesOrderItemsDto[i].BalanceQty;
-                        salesOrderHistory.DispatchQty = salesOrderItemsDto[i].DispatchQty;
-                        salesOrderHistory.ShopOrderQty = salesOrderItemsDto[i].ShopOrderQty;
-                        salesOrderHistory.UOM = salesOrderItemsDto[i].UOM;
-                        salesOrderHistory.Currency = salesOrderItemsDto[i].Currency;
-                        salesOrderHistory.TotalAmount = salesOrderItemsDto[i].TotalAmount;
-                        salesOrderHistory.BasicAmount = salesOrderItemsDto[i].BasicAmount;
-                        salesOrderHistory.Discount = salesOrderItemsDto[i].Discount;
-                        salesOrderHistory.UnitPrice = salesOrderItemsDto[i].UnitPrice;
-                        salesOrderHistory.OrderQty = salesOrderItemsDto[i].OrderQty;
-                        salesOrderHistory.SGST = salesOrderItemsDto[i].SGST;
-                        salesOrderHistory.UTGST = salesOrderItemsDto[i].UTGST;
-                        salesOrderHistory.CGST = salesOrderItemsDto[i].CGST;
-                        salesOrderHistory.IGST = salesOrderItemsDto[i].IGST;
-                        salesOrderHistory.ReceivedDate = salesOrderItemsDto[i].RequestedDate;
-                        salesOrderHistory.Remarks = salesOrderItemsDto[i].Remarks;
-                       
-
-
+                        salesOrderHistory.SalesOrderNumber = getSalesOrderById.SalesOrderNumber;
+                        salesOrderHistory.ProjectNumber = getSalesOrderById.ProjectNumber;
+                        salesOrderHistory.QuoteNumber = getSalesOrderById.QuoteNumber;
+                        salesOrderHistory.OrderDate = getSalesOrderById.OrderDate;
+                        salesOrderHistory.OrderType = getSalesOrderById.OrderType;
+                        salesOrderHistory.CustomerName = getSalesOrderById.CustomerName;
+                        salesOrderHistory.CustomerId = getSalesOrderById.CustomerId;
+                        salesOrderHistory.RevisionNumber = getSalesOrderById.RevisionNumber;
+                        salesOrderHistory.SOStatus = getSalesOrderById.SOStatus;
+                        salesOrderHistory.PONumber = getSalesOrderById.PONumber;
+                        salesOrderHistory.PODate = getSalesOrderById.PODate;
+                        salesOrderHistory.ReceivedDate = getSalesOrderById.ReceivedDate;
+                        salesOrderHistory.BillTo = getSalesOrderById.BillTo;
+                        salesOrderHistory.BillToId = getSalesOrderById.BillToId;
+                        salesOrderHistory.ShipTo = getSalesOrderById.ShipTo;
+                        salesOrderHistory.ShipToId = getSalesOrderById.ShipToId;
+                        salesOrderHistory.PaymentTerms = getSalesOrderById.PaymentTerms;
+                        salesOrderHistory.Total = getSalesOrderById.Total;
+                        salesOrderHistory.Unit = getSalesOrderById.Unit;
+                        salesOrderHistory.IsShortClosed = getSalesOrderById.IsShortClosed;
+                        salesOrderHistory.ShortClosedBy = getSalesOrderById.ShortClosedBy;
+                        salesOrderHistory.ShortClosedOn = getSalesOrderById.ShortClosedOn;
+                        salesOrderHistory.CreatedBy = getSalesOrderById.CreatedBy;
+                        salesOrderHistory.CreatedOn = getSalesOrderById.CreatedOn;
+                        salesOrderHistory.LastModifiedBy = getSalesOrderById.LastModifiedBy;
+                        salesOrderHistory.LastModifiedOn = getSalesOrderById.LastModifiedOn;
+                        salesOrderHistory.ItemNumber = getSalesOrderById.SalesOrdersItems[i].ItemNumber;
+                        salesOrderHistory.Description = getSalesOrderById.SalesOrdersItems[i].Description;
+                        salesOrderHistory.BalanceQty = getSalesOrderById.SalesOrdersItems[i].BalanceQty;
+                        salesOrderHistory.DispatchQty = getSalesOrderById.SalesOrdersItems[i].DispatchQty;
+                        salesOrderHistory.ShopOrderQty = getSalesOrderById.SalesOrdersItems[i].ShopOrderQty;
+                        salesOrderHistory.UOM = getSalesOrderById.SalesOrdersItems[i].UOM;
+                        salesOrderHistory.Currency = getSalesOrderById.SalesOrdersItems[i].Currency;
+                        salesOrderHistory.TotalAmount = getSalesOrderById.SalesOrdersItems[i].TotalAmount;
+                        salesOrderHistory.BasicAmount = getSalesOrderById.SalesOrdersItems[i].BasicAmount;
+                        salesOrderHistory.Discount = getSalesOrderById.SalesOrdersItems[i].Discount;
+                        salesOrderHistory.UnitPrice = getSalesOrderById.SalesOrdersItems[i].UnitPrice;
+                        salesOrderHistory.OrderQty = getSalesOrderById.SalesOrdersItems[i].OrderQty;
+                        salesOrderHistory.SGST = getSalesOrderById.SalesOrdersItems[i].SGST;
+                        salesOrderHistory.UTGST = getSalesOrderById.SalesOrdersItems[i].UTGST;
+                        salesOrderHistory.CGST = getSalesOrderById.SalesOrdersItems[i].CGST;
+                        salesOrderHistory.IGST = getSalesOrderById.SalesOrdersItems[i].IGST;
+                        salesOrderHistory.ReceivedDate = getSalesOrderById.SalesOrdersItems[i].RequestedDate;
+                        salesOrderHistory.Remarks = getSalesOrderById.SalesOrdersItems[i].Remarks;
 
 
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
@@ -561,7 +558,7 @@ namespace Tips.SalesService.Api.Controllers
             {
                 IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
                 var orderItem = salesOrderItems.FirstOrDefault();
-                orderItem.BalanceQty = orderItem.BalanceQty - item.DispatchQty;
+                orderItem.BalanceQty -= item.DispatchQty;
                 orderItem.DispatchQty += item.DispatchQty;
                 _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
             }          

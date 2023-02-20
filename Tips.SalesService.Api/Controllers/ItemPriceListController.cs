@@ -151,25 +151,42 @@ namespace Tips.SalesService.Api.Controllers
         //test
 
         [HttpPost]
-        public async Task<IActionResult> GetItemPricesByPassingListOfItemNoAndPriceListNames(List<ItemNumberAndPriceNameListDto> itemNumberAndPriceNameListDtos)
+        public async Task<IActionResult> GetItemPricesByListOfItemNoAndPriceListNames(List<ItemNumberAndPriceNameListDto> itemNumberAndPriceNameListDtos)
         {
             ServiceResponse<IEnumerable<ItemPriceList>> serviceResponse = new ServiceResponse<IEnumerable<ItemPriceList>>();
             try
             {
+                if (itemNumberAndPriceNameListDtos is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ItemPriceList sent from client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("ItemPriceList sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid ItemPriceList.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid ItemPriceList.");
+                    return BadRequest(serviceResponse);
+                }
 
-                var test = new List<ItemPriceList>();                
+                var itemPriceLists = new List<ItemPriceList>();                
                 
                     foreach (var item in itemNumberAndPriceNameListDtos)
+                    { 
+                        var itemPriceList = await _repository.GetItemPricesByListOfItemNoAndPriceListNames(item.ItemNumber, item.PriceListName);
+                    if(itemPriceList != null)
                     {
-                        var itemNumber = item.ItemNumber;
-                        var priceListName = item.PriceListName;
-                        var getItemPriceLists = await _repository.GetItemPricesByPassingListOfItemNoAndPriceListNames(itemNumber, priceListName);                       
-                        test.Add(getItemPriceLists);
+                        itemPriceLists.Add(itemPriceList);
                     }
+                }
                 
-                var result = _mapper.Map<IEnumerable<ItemPriceList>>(test);
-
-                serviceResponse.Data = result;
+                serviceResponse.Data = itemPriceLists;
                 serviceResponse.Message = "Returned ItemPriceList Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;

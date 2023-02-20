@@ -63,9 +63,9 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? ProjectNumber { get; set; }
   
 
-        [Precision(13, 3)]
-        [DefaultValue(0)]
-        public decimal? DispatchQty { get; set; }
+        //[Precision(13, 3)]
+        //[DefaultValue(0)]
+        //public decimal? DispatchQty { get; set; }
 
         [Precision(13, 3)]
         public decimal? ShopOrderQty { get; set; }
