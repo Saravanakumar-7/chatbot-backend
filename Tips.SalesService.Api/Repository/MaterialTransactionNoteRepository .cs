@@ -38,9 +38,9 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<MaterialTransactionNote>> GetAllMaterialTransactionNote(PagingParameter pagingParameter)
         {
-            var AllMtn = PagedList<MaterialTransactionNote>.ToPagedList(FindAll().OrderByDescending(c => c.Id)
+            var AllMtn = PagedList<MaterialTransactionNote>.ToPagedList(FindAll()
            .Include(t => t.MaterialTransactionNoteItems)
-           .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+           .OrderByDescending(c => c.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
             return AllMtn;
         }
 

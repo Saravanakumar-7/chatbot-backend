@@ -45,8 +45,8 @@ namespace Tips.SalesService.Api.Repository
         public async Task<PagedList<ItemPriceList>> GetAllItemPriceList(PagingParameter pagingParameter)
         {
 
-            var getAllItemPriceList = PagedList<ItemPriceList>.ToPagedList(FindAll().OrderByDescending(x => x.Id)                                
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var getAllItemPriceList = PagedList<ItemPriceList>.ToPagedList(FindAll()
+                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return getAllItemPriceList;
         }
@@ -72,7 +72,7 @@ namespace Tips.SalesService.Api.Repository
                                     ItemNumber = c.ItemNumber,
                                     Description = c.Description
 
-                                }).Distinct()
+                                }).Distinct()                                
                               .ToListAsync();
 
             return getAllItemNumberList;

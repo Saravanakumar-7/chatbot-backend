@@ -33,8 +33,8 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<LocationTransfer>> GetAllLocationTransfer(PagingParameter pagingParameter)
         {
-            var getAllLocationTransfers = PagedList<LocationTransfer>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
-                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var getAllLocationTransfers = PagedList<LocationTransfer>.ToPagedList(FindAll()
+                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return getAllLocationTransfers;
         }

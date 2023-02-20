@@ -1127,7 +1127,7 @@ namespace Tips.Master.Api.Controllers
 
         // POST: api/<EnggCustomFieldController>
         [HttpPost]
-        public IActionResult CreateEnggCustomField([FromBody] EnggCustomFieldDtoPost enggcustomFieldDtoPost)
+        public IActionResult CreateEnggCustomField([FromBody] List<EnggCustomFieldDtoPost> enggcustomFieldDtoPost)
         {
             ServiceResponse<EnggCustomFieldDtoPost> serviceResponse = new ServiceResponse<EnggCustomFieldDtoPost>();
 
@@ -1151,8 +1151,14 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid EnggcustomField object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var enggcustomFieldEntity = _mapper.Map<EnggCustomField>(enggcustomFieldDtoPost);
-                _repository.EnggCustomFieldRepository.CreateEnggCustomField(enggcustomFieldEntity);
+                var enggcustomFieldEntity = _mapper.Map<List<EnggCustomField>>(enggcustomFieldDtoPost);
+
+                foreach( var enggCustomFielddetails in enggcustomFieldEntity)
+                {
+                    _repository.EnggCustomFieldRepository.CreateEnggCustomField(enggCustomFielddetails);
+
+
+                }
                 _repository.SaveAsync();
                 serviceResponse.Message = "EnggCustomField Successfully Created";
                 serviceResponse.Success = true;

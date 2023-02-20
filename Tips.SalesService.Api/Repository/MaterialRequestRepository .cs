@@ -41,8 +41,8 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<MaterialRequest>> GetAllMaterialRequest(PagingParameter pagingParameter)
         {
-            var getAllMR = PagedList<MaterialRequest>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
-            .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var getAllMR = PagedList<MaterialRequest>.ToPagedList(FindAll()
+                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
             return getAllMR;
         }
 

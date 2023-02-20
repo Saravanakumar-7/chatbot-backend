@@ -44,7 +44,7 @@ namespace Tips.SalesService.Api.Repository
 
 
         {
-            var getAllRfqSourcing =PagedList<RfqSourcing>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
+            var getAllRfqSourcing =PagedList<RfqSourcing>.ToPagedList(FindAll()
            .Include(t => t.RfqSourcingItems)
            .ThenInclude(x => x.RfqSourcingVendors)
            .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);

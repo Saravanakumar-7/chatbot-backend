@@ -52,7 +52,7 @@ namespace Repository
 
 
             var GetallEnggbomDetails = PagedList<EnggBom>.ToPagedList(FindAll()
-               .OrderBy(on => on.BOMId), pagingParameter.PageNumber, pagingParameter.PageSize);
+               .OrderByDescending(x => x.BOMId), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
             return GetallEnggbomDetails;
@@ -233,7 +233,7 @@ namespace Repository
         public async Task<PagedList<EnggBomGroup>> GetAllEnggBomGroup(PagingParameter pagingParameter)
         {
             var GetallEnggbomGroupDetails = PagedList<EnggBomGroup>.ToPagedList(FindAll()
-             .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+             .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
             return GetallEnggbomGroupDetails;
@@ -288,7 +288,7 @@ namespace Repository
         public async Task<PagedList<EnggCustomField>> GetAllEnggCustomFields(PagingParameter pagingParameter)
         {
             var GetallEnggcustomFieldsDetails = PagedList<EnggCustomField>.ToPagedList(FindAll()
-            .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
             return GetallEnggcustomFieldsDetails;
         }
 

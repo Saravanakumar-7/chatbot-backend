@@ -36,8 +36,8 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<FgOqc>> GetAllFgOqcs(PagingParameter pagingParameter)
         {
-            var getAllFgOqcs = PagedList<FgOqc>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
-           .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var getAllFgOqcs = PagedList<FgOqc>.ToPagedList(FindAll()
+           .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
             return getAllFgOqcs;
 
         }
