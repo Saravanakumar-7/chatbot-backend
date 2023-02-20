@@ -92,7 +92,22 @@ namespace Repository
 
             return getAllFGSAItems;
         }
-     
+
+        //sa,fg, and fru
+
+        public async Task<IEnumerable<ItemMaster>> GetAllFgSaFruItems()
+        {
+            var getAllFGSAItems = await FindAll().Where(a => a.ItemType == "SA" || a.ItemType == "FG" || a.ItemType == "FRU")
+                                .Include(t => t.ItemmasterAlternate)
+                                .Include(x => x.ItemMasterApprovedVendor)
+                                .Include(m => m.ItemMasterFileUpload)
+                                .Include(s => s.ItemMasterRouting)
+                                .Include(f => f.ItemMasterWarehouse)
+                                .ToListAsync();
+
+            return getAllFGSAItems;
+        }
+
         public async Task<ItemMaster> GetItemMasterById(int id)
         {
             var getItemMasterById = await TipsMasterDbContext.ItemMasters
