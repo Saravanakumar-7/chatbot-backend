@@ -84,9 +84,6 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class GrinPartsPostDto
     {
         
-
-        [Required(ErrorMessage = "ItemDescription is required")]
-        [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
         public string ItemDescription { get; set; }
         public string? PONumber { get; set; }
 
@@ -95,11 +92,11 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? Qty { get; set; }
 
-        [Precision(13, 3)]
-        public decimal AcceptedQty { get; set; }
+        //[Precision(13, 3)]
+        //public decimal AcceptedQty { get; set; }
 
-        [Precision(13, 3)]
-        public decimal RejectedQty { get; set; }
+        //[Precision(13, 3)]
+        //public decimal RejectedQty { get; set; }
 
         [Required(ErrorMessage = "MftrItemNumber is required")]
         public string MftrItemNumber { get; set; }

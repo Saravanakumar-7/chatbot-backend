@@ -1,4 +1,7 @@
-﻿using System.IO.Compression;
+﻿using System;
+using System.Buffers.Text;
+using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
@@ -8,7 +11,9 @@ using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Tips.Purchase.Api.Contracts;
 using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.Dto;
@@ -25,15 +30,17 @@ namespace Tips.Purchase.Api.Controllers
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IDocumentUploadRepository _documentUploadRepository;
+        public static IWebHostEnvironment _webHostEnvironment { get; set; }  
 
 
-        public PurchaseOrderController(IPurchaseOrderRepository repository, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository , ILoggerManager logger, IMapper mapper)
+        public PurchaseOrderController(IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository , ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _poItemsRepository = poItemsRepository;
             _logger = logger;
             _mapper = mapper;
             _documentUploadRepository = documentUploadRepository;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
@@ -76,7 +83,76 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-  
+        //get details by ponumber
+        [HttpGet]
+        public async Task<IActionResult> GetPurchaseOrderByPoNumber(string PONumber)
+        {
+            ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
+            try
+            {
+                var purchaseOrderDetailbyPONumber = await _repository.GetPurchaseOrderByPONumber(PONumber);
+
+                if (purchaseOrderDetailbyPONumber == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder  hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder with id: {PONumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {PONumber}");
+
+                    PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetailbyPONumber);
+                    List<PoItemsDto> poItemDtoList = new List<PoItemsDto>();
+
+                    List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
+
+                    if (purchaseOrderDto.POFiles.Count() != 0)
+                    {
+                        foreach (var documentUploadDetails in purchaseOrderDto.POFiles)
+                        {
+                            DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
+                            documentUplaodDtoList.Add(poItemDtos);
+                        }
+                    }
+                    purchaseOrderDto.POFiles = documentUplaodDtoList;
+                    if (purchaseOrderDetailbyPONumber.POItemList != null)
+                    {
+                        foreach (var poItemDetails in purchaseOrderDetailbyPONumber.POItemList)
+                        {
+                            PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
+                            poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
+                            poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
+                            poItemDtoList.Add(poItemDtos);
+                        }
+                    }
+
+                    purchaseOrderDto.POItems = poItemDtoList;
+                    serviceResponse.Data = purchaseOrderDto;
+                    serviceResponse.Message = "Returned PurchaseOrderByPONumber Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside PurchaseOrderByPONumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+
+        }
+ 
+
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPurchaseOrderById(int id)
         {
@@ -101,6 +177,17 @@ namespace Tips.Purchase.Api.Controllers
                     PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetailbyId);
                     List<PoItemsDto> poItemDtoList = new List<PoItemsDto>();
 
+                    List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
+
+                    if (purchaseOrderDto.POFiles.Count() != 0)
+                    {
+                        foreach (var documentUploadDetails in purchaseOrderDto.POFiles)
+                        {
+                            DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
+                            documentUplaodDtoList.Add(poItemDtos);
+                        }
+                    }
+                    purchaseOrderDto.POFiles = documentUplaodDtoList;
                     if (purchaseOrderDetailbyId.POItemList != null)
                     {
                         foreach (var poItemDetails in purchaseOrderDetailbyId.POItemList)
@@ -130,7 +217,20 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //image get api
+        [HttpPost]
 
+        public async Task<IActionResult> getUploadedFile([FromBody] string fileName)
+        {
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", fileName);
+            string FileExt = Path.GetExtension(fileName).ToUpper();
+            if (System.IO.File.Exists(filePath))
+            {
+                byte[] a = System.IO.File.ReadAllBytes(filePath);
+                 return File(a,"image/"+ FileExt);
+            }
+            return null;
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreatePurchaseOrder([FromBody] PurchaseOrderPostDto purchaseOrderPostDto)
@@ -188,41 +288,41 @@ namespace Tips.Purchase.Api.Controllers
                 //// Po Upload
 
                 var poUploadDetails = purchaseOrderPostDto.POFiles;
-                foreach (var poUploadDetail in poUploadDetails)
-                {
-                    var fileContent = poUploadDetail.FileByte;
-                    var poNumber = purchaseOrderDetails.PONumber;
-                    string fileName = poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
-                    string FileExt = Path.GetExtension(fileName).ToUpper();
+                 foreach (var poUploadDetail in poUploadDetails)
+                {                       
+                        var fileContent = poUploadDetail.FileByte;
+                        var poNumber = purchaseOrderDetails.PONumber;
+                        string fileName = poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
+                        string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                    Guid guid = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", guid.ToString() + "_" + fileName);
-                    using (MemoryStream ms = new MemoryStream(fileContent))
-                    {
-                        ms.Position = 0;
-                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        Guid guid = Guid.NewGuid();
+                        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", /*guid.ToString() + "_" */ fileName);
+                        using (MemoryStream ms = new MemoryStream(fileContent))
                         {
-                            ms.WriteTo(fileStream);
-                        }
-                        var uploadedFile = new DocumentUpload
-                        {
-                            FileName = fileName,
-                            FileExtension = FileExt,
-                            FilePath = filePath,
-                            ParentNumber = poNumber,
-                            DocumentFrom = "PODocument",
-                        };
+                            ms.Position = 0;
+                            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                            {
+                                ms.WriteTo(fileStream);
+                            }
+                            var uploadedFile = new DocumentUpload
+                            {
+                                FileName = fileName,
+                                FileExtension = FileExt,
+                                FilePath = filePath,
+                                ParentNumber = poNumber,
+                                DocumentFrom = "PODocument",
+                            };
 
-                        _documentUploadRepository.CreateUploadDocumentPO(uploadedFile);
-                        _documentUploadRepository.SaveAsync();
+                            _documentUploadRepository.CreateUploadDocumentPO(uploadedFile);
+                            _documentUploadRepository.SaveAsync();
 
-                        if (uploadedFile != null)
-                        { 
+                            if (uploadedFile != null)
+                            {
                                 DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
-                            poDocumentUploadDtoList.Add(poFileDetails);                         
-                        }
+                                poDocumentUploadDtoList.Add(poFileDetails);
+                            }
 
-                    }
+                        }                  
 
                 }
 

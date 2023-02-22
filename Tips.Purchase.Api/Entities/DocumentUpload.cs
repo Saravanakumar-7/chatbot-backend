@@ -28,6 +28,8 @@ namespace Tips.Purchase.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
          
-        public PurchaseOrder? PurchaseOrder { get; set; } 
+        public PurchaseOrder? PurchaseOrder { get; set; }
+        public PurchaseRequisition? PurchaseRequisition { get; set; }
+
     }
 }

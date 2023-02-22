@@ -111,6 +111,7 @@ namespace Tips.Purchase.Api.Repository
         {
   
             var purchaseRequistionDetails = PagedList<PurchaseRequisition>.ToPagedList(FindAll()
+                                .Include(f=>f.PrFiles)
                                 .Include(t => t.PrItemList)
                                 .ThenInclude(x => x.PrAddprojects)
                                 .Include(m => m.PrItemList)
@@ -123,8 +124,9 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PurchaseRequisition> GetPurchaseRequisitionById(int id)
         {
             var purchaseRequistionDetailById = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.Id == id)
-                                 .Include(t => t.PrItemList)
-                                 .ThenInclude(x => x.PrAddprojects)
+                                .Include(o => o.PrFiles)
+                                .Include(t => t.PrItemList)
+                                .ThenInclude(x => x.PrAddprojects)
                                 .Include(m => m.PrItemList)
                                 .ThenInclude(i => i.PrAddDeliverySchedules)
                                 .FirstOrDefaultAsync();
@@ -135,8 +137,9 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PurchaseRequisition> GetPurchaseRequisitionByPRNumber(string prNumber)
         {
             var purchaseRequistionByPRNumber = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PrNumber == prNumber)
-                                 .Include(t => t.PrItemList)
-                                 .ThenInclude(x => x.PrAddprojects)
+                                  .Include(o => o.PrFiles)
+                                  .Include(t => t.PrItemList)
+                                .ThenInclude(x => x.PrAddprojects)
                                 .Include(m => m.PrItemList)
                                 .ThenInclude(i => i.PrAddDeliverySchedules)
                                 .FirstOrDefaultAsync();
@@ -154,4 +157,25 @@ namespace Tips.Purchase.Api.Repository
         }
         
     }
+
+    public class PRUploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository
+    {
+        private TipsPurchaseDbContext _tipsPurchaseDbContext;
+        public PRUploadDocumentRepository(TipsPurchaseDbContext tipsPurchaseDbContext) : base(tipsPurchaseDbContext)
+        {
+            _tipsPurchaseDbContext = tipsPurchaseDbContext;
+        }
+
+        public async Task<int?> CreateUploadDocumentPO(DocumentUpload documentUpload)
+        {
+            documentUpload.CreatedBy = "Admin";
+            documentUpload.CreatedOn = DateTime.Now;
+            documentUpload.LastModifiedBy = "Admin";
+            documentUpload.LastModifiedOn = DateTime.Now;
+
+            var result = await Create(documentUpload);
+            return result.Id;
+        }
+    }
+
 }

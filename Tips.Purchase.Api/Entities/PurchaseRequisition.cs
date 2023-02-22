@@ -25,7 +25,7 @@ namespace Tips.Purchase.Api.Entities
 
         public string? Purpose { get; set; }
 
-        public string? PrFiles { get; set; }
+        public List<DocumentUpload>? PrFiles { get; set; }
 
         public string? DeliveryTerms { get; set; }
 

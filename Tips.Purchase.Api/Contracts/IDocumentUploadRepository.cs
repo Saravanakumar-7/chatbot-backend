@@ -6,5 +6,7 @@ namespace Tips.Purchase.Api.Contracts
     public interface IDocumentUploadRepository : IRepositoryBase<DocumentUpload>
     {
         Task<int?> CreateUploadDocumentPO(DocumentUpload documentUpload);
+
+         
     }
 }

@@ -20,12 +20,16 @@ namespace Tips.Purchase.Api.Controllers
         private IPurchaseRequisitionRepository _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        
-        public PurchaseRequisitionController(IPurchaseRequisitionRepository repository, ILoggerManager logger, IMapper mapper)
+        private IDocumentUploadRepository _prdocumentUploadRepository;
+
+
+        public PurchaseRequisitionController(IPurchaseRequisitionRepository repository, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _prdocumentUploadRepository = prdocumentUploadRepository;
+
         }
 
         [HttpGet]
@@ -149,6 +153,7 @@ namespace Tips.Purchase.Api.Controllers
                 var purchaseRequisitionDetails = _mapper.Map<PurchaseRequisition>(purchaseRequistionPostDto);
                 var prItemDto = purchaseRequistionPostDto.PrItemsDtoPostList;
                 var prItemDtoList = new List<PrItem>();
+                var poDocumentUploadDtoList = new List<DocumentUpload>();
 
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
@@ -171,6 +176,48 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
 
+                //// Pr Upload
+
+                var prUploadDetails = purchaseRequistionPostDto.PrFiles;
+                foreach (var prUploadDetail in prUploadDetails)
+                {
+                    var fileContent = prUploadDetail.FileByte;
+                    var prNumber = purchaseRequisitionDetails.PrNumber;
+                    string fileName = prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                    Guid guid = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", guid.ToString() + "_" + fileName);
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                        var uploadedFile = new DocumentUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            ParentNumber = prNumber,
+                            DocumentFrom = "PRDocument",
+                        };
+
+                        _prdocumentUploadRepository.CreateUploadDocumentPO(uploadedFile);
+                        _prdocumentUploadRepository.SaveAsync();
+
+                        if (uploadedFile != null)
+                        {
+                            DocumentUpload prFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
+                            poDocumentUploadDtoList.Add(prFileDetails);
+                        }
+
+                    }
+
+                }
+
+
                 if (prItemDto != null)
                 {
                     for (int i = 0; i < prItemDto.Count; i++)
@@ -182,6 +229,8 @@ namespace Tips.Purchase.Api.Controllers
                     }
                 }
                 purchaseRequisitionDetails.PrItemList = prItemDtoList;
+
+                purchaseRequisitionDetails.PrFiles = poDocumentUploadDtoList;
                 await _repository.CreatePurchaseRequisition(purchaseRequisitionDetails);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;

@@ -19,8 +19,9 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PrAddProject> PrAddProjects { get; set; }
         public DbSet<PrAddDeliverySchedule> PrAddDeliverySchedules { get; set; }
 
-        public DbSet<DocumentUpload> DocumentUploads { get; set; }  
+        public DbSet<DocumentUpload> DocumentUploads { get; set; }
 
+ 
 
     }
 }

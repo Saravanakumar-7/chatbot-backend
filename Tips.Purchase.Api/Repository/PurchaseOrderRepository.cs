@@ -125,7 +125,9 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PurchaseOrder> GetPurchaseOrderById(int id)
         {
             var purchaseOrderDetailById = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.Id == id)
-                                .Include(t => t.POItemList)
+                                                .Include(o=>o.POFiles)
+                
+                .Include(t => t.POItemList)
                                 .ThenInclude(x => x.POAddprojects)
                                 .Include(m => m.POItemList)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
@@ -139,7 +141,8 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PurchaseOrder> GetPurchaseOrderByPONumber(string poNumber)
         {
             var purchaseOrderDetailbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.PONumber == poNumber)
-                                .Include(t => t.POItemList)
+                .Include(o => o.POFiles)
+                .Include(t => t.POItemList)
                                 .ThenInclude(x => x.POAddprojects)
                                 .Include(m => m.POItemList)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
