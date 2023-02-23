@@ -5,7 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
+using Entities.DTOs;
 using Microsoft.EntityFrameworkCore;
+using Entities.Helper;
+using System.Collections.Immutable;
 
 namespace Repository
 {
@@ -20,7 +23,9 @@ namespace Repository
         {
             locations.CreatedBy = "Admin";
             locations.CreatedOn = DateTime.Now;
+            locations.Unit = "Bangalore";
             var result = await Create(locations);
+
             return result.Id;
         }
 
@@ -33,21 +38,21 @@ namespace Repository
 
         public async Task<IEnumerable<Locations>> GetAllActiveLocations()
         {
-            var locationsList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return locationsList;
+            var AllActivelocations = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            return AllActivelocations;
         }
 
         public async Task<IEnumerable<Locations>> GetAllLocations()
         {
 
-            var locationsList = await FindAll().ToListAsync();
-            return locationsList;
+            var GetallLocations = await FindAll().ToListAsync();
+            return GetallLocations;
         }
 
         public async Task<Locations> GetLocationsById(int id)
         {
-            var locationsList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-            return locationsList;
+            var LocationsbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return LocationsbyId;
         }
 
         public async Task<string> UpdateLocations(Locations locations)
@@ -58,5 +63,31 @@ namespace Repository
             string result = $"Locations details of {locations.Id} is updated successfully!";
             return result;
         }
+        //public async Task<Locations> GetListofLocationsByWarehouse(string Warehouse)
+        //{
+        //    var locationsbyWh = await TipsMasterDbContext.Locations
+
+        //        .Where(x => x.Warehouse == Warehouse).FirstOrDefaultAsync();
+
+        //    return locationsbyWh;
+        //}
+
+        //public async Task<Locations> GetListofLocationsByWarehouse(string Warehouse)
+        //{
+        //    var locationsBywh = await FindByCondition(x => x.Warehouse == Warehouse)
+        //        .ToList();
+
+        //    return locationsBywh;
+        //}
+        public async Task<IEnumerable<Locations>> GetListofLocationsByWarehouse(string Warehouse)
+        {
+            IEnumerable<Locations> locationbyWh = await TipsMasterDbContext.Locations
+             .Where(x => x.Warehouse == Warehouse ).ToListAsync();
+
+            return locationbyWh;
+
+            
+        }
     }
+    
 }

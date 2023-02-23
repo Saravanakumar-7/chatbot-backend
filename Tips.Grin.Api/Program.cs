@@ -1,6 +1,12 @@
+using Contracts;
+using LoggerService;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
+using System.Text.Json.Serialization;
+using Tips.Grin.Api.Contracts;
+using Tips.Grin.Api.Entities;
 using Tips.Grin.Api.Extensions;
+using Tips.Grin.Api.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,14 +25,29 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<IGrinRepository, GrinRepository>();
+builder.Services.AddScoped<IIQCConfirmationRepository, IQCConfirmationRepository>();
+builder.Services.AddScoped<IBinningRepository, BinningRepository>();
+builder.Services.AddScoped<IReturnGrinRepository, ReturnGrinRepository>();
+builder.Services.AddScoped<IBinningItemsRepository, BinningItemsRepository>();
+builder.Services.AddScoped<IGrinPartsRepository, GrinPartsRepository>();
+builder.Services.AddScoped<IIQCConfirmationItemsRepository, IQCConfirmationItemsRepository>();
+//builder.Services.AddScoped<IReturnGrinDocumentUploadRepository, ReturnGrinDocumentUpload>();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
+
+builder.Services.AddScoped<IDocumentUploadRepository, UploadDocumentRepository>();
+builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseHttpsRedirection();
 

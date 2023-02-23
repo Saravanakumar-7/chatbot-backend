@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class PurchaseRequistion
     {
+        [Key]
         public int Id { get; set; }
 
         public string? PRNumber { get; set; }

@@ -19,54 +19,19 @@ namespace Repository
 
         }
 
-        //public async Task<string> ActivateCustomerType(int id)
-        //{
-
-        //    var customerType = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();  
-        //    if (customerType != null)
-        //    {
-        //        Update(customerType);
-        //        customerType.IsActive = true;
-        //        TipsMasterDbContext.Add(customerType);
-        //        await TipsMasterDbContext.SaveChangesAsync();
-                
-        //        return  "Data Succufully Activated!";
-                
-        //    }
-        //    else
-        //    {
-        //        return  "Customer Type with the given id not found";
-                
-        //    }
-            
-        //}
+    
 
         public async Task<int?> CreateCustomerType(CustomerType customerType)
         {
             customerType.CreatedBy = "Admin";
             customerType.CreatedOn = DateTime.Now;
+            customerType.Unit = "Bangalore";
             var result= await Create(customerType);
+           
             return result.Id;
         }
 
-        //public async Task<string> DeactivateCustomerType(int id)
-        //{
-            
-        //    var customerType = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-        //    if (customerType != null)
-        //    {
-        //        customerType.IsActive = false;
-        //        TipsMasterDbContext.Add(customerType);
-        //        await TipsMasterDbContext.SaveChangesAsync();
-
-        //        return "Data Succufully DeActivated!";
-        //    }
-        //    else
-        //    {
-        //        return "Customer Type with the given id not found";
-        //    }
-            
-        //}
+       
 
         public async Task<string> DeleteCustomerType(CustomerType customerType)
         {
@@ -77,23 +42,23 @@ namespace Repository
 
         public async Task<IEnumerable<CustomerType>> GetAllActiveCustomerTypes()
         {
-            var customerTypeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return customerTypeList;
+            var AllActiveCustomerTypes = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveCustomerTypes;
         }
 
         public async Task<IEnumerable<CustomerType>> GetAllCustomerTypes()
         {
 
-            var customerTypeList = await FindAll().ToListAsync();
+            var GetallCustomerTypes = await FindAll().ToListAsync();
 
-            return customerTypeList;
+            return GetallCustomerTypes;
         }
 
         public async Task<CustomerType> GetCustomerTypeById(int id)
         {
-            var customerType = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var CustomerTypebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return customerType;
+            return CustomerTypebyId;
         }
 
         public async Task<string> UpdateCustomerType(CustomerType customerType)

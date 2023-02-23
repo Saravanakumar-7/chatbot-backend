@@ -35,7 +35,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var currencies = await _repository.CurrencyRepository.GetAllActiveCurrency();
+                var currencies = await _repository.CurrencyRepository.GetAllCurrency();
                 _logger.LogInfo("Returned all Currencies");
                 var result = _mapper.Map<IEnumerable<CurrencyDto>>(currencies);
                 serviceResponse.Data = result;
@@ -48,20 +48,20 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false; 
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllActivecurrencies()
+        public async Task<IActionResult> GetAllActiveCurrency()
         {
             ServiceResponse<IEnumerable<CurrencyDto>> serviceResponse = new ServiceResponse<IEnumerable<CurrencyDto>>();
 
             try
             {
-                var currencies = await _repository.CostingMethodRepository.GetAllActiveCostingMethods();
+                var currencies = await _repository.CurrencyRepository.GetAllActiveCurrency();
                 _logger.LogInfo("Returned all Currency");
                 var result = _mapper.Map<IEnumerable<CurrencyDto>>(currencies);
                 serviceResponse.Data = result;
@@ -75,7 +75,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -154,8 +154,8 @@ namespace Tips.Master.Api.Controllers
                 _repository.CurrencyRepository.CreateCurrency(currency);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfylly Created";
-                serviceResponse.Success = false;
+                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetCurrencyById", serviceResponse);
             }
@@ -201,7 +201,7 @@ namespace Tips.Master.Api.Controllers
                 {
                     _logger.LogError($"Currency with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = " Update BasicOfApproval with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = " Update Currency with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);

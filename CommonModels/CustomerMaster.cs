@@ -9,14 +9,17 @@ namespace Entities
 {
     public class CustomerMaster
     {
-
+        [Key]
         public int Id { get; set; }
-        [Required]
-        public string? CustomerId { get; set; }//api//api1
-        [Required]
-        public string? CustomerName { get; set; }//api
-        public string? CustomerAliasName { get; set; }//api1
-        [Required]
+
+        [Required(ErrorMessage = "CustomerNumber is required")]
+        public string? CustomerNumber { get; set; }
+        
+        [Required(ErrorMessage = "CustomerName is required")]
+        public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
+        
+        [Required(ErrorMessage = "CustomerType is required")]
         public string? CustomerType { get; set; }
         public string? Address { get; set; }
         public string? City { get; set; }
@@ -33,7 +36,9 @@ namespace Entities
         public string? ExportUnitType { get; set; }
         public bool GeneralMSME { get; set; } = true;
         public string? SalesManager { get; set; }
+        public string? SalesManagerCode { get; set; }
         public string? Region { get; set; }
+       
 
         //RelatedLink
 
@@ -62,6 +67,7 @@ namespace Entities
         public string? LDApplicableValue { get; set; }
         public bool SourceInspection { get; set; }=true;
         public string? SourceInspectionValue { get; set; }
+        public string? Others { get; set; }
 
         //Statutory
 
@@ -82,8 +88,8 @@ namespace Entities
         public string? Capacity { get; set; }
         public string? FloorSpace { get; set; }
         public string? Machine { get; set; }
-        public string? Tools { get; set; }
-        public string? Equip { get; set; }
+        public string? ToolsAndEquip { get; set; }
+      
         public bool ERP { get; set; }
         public string? ERPValue { get; set; }
         public string?ESDSetup { get; set; }
@@ -91,8 +97,8 @@ namespace Entities
         public string? UOM { get; set; }
         public string? Sqft { get; set; }
         public string? MachineDetails { get; set; }
-        public string? ToolsDetials { get; set; }
-        public string? EquipDetials { get; set; }
+        public string? ToolsAndEquipDetails { get; set; }
+     
         public bool ERPDetails { get; set; }
         public string? ESDSetupDetails { get; set; }
         public string? HazmatSetupDetails { get; set; }
@@ -114,7 +120,9 @@ namespace Entities
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-        public bool IsActive { get; set; } = true;
+        public string? CustomerApprove { get; set; }
+   
+        public string? Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -125,5 +133,7 @@ namespace Entities
         public List<CustomerShippingAddresses>? CustomerShippingAddresses { get; set; }
         public List<CustomerContacts>? CustomerContacts { get; set; }
         public List<CustomerBanking>? CustomerBanking { get; set; }
+
+        public List<CustomerMasterHeadCounting>? CustomerMasterHeadCountings { get; set; }
     }
 }

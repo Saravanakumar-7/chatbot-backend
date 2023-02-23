@@ -1,0 +1,31 @@
+﻿using Entities; 
+using Tips.Grin.Api.Entities.DTOs;
+using Entities.Helper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Tips.Grin.Api.Entities;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Tips.Grin.Api.Contracts
+{
+    public interface IGrinRepository : IRepositoryBase<Grins>
+    {
+        Task<PagedList<Grins>> GetAllGrin(PagingParameter pagingParameter,SearchParams searchParams);
+        Task<Grins> GetGrinById(int id);
+        Task<PagedList<Grins>> GetAllActiveGrin( PagingParameter pagingParameter, SearchParams searchParams);
+        Task<int?> CreateGrin(Grins grins);
+        Task<int?> GetGrinNumberAutoIncrementCount(DateTime date);
+
+        Task<string> UpdateGrin(Grins grins);
+        Task<string> DeleteGrin(Grins grins);
+
+
+
+
+
+        Task<IEnumerable<GrinNumberListDto>> GetAllActiveGrinNoList();
+    }
+}

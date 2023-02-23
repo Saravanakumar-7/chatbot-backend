@@ -145,7 +145,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "Invalid typeOfCompany object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid Bank object sent from client.");
+                    _logger.LogError("Invalid typeOfCompany object sent from client.");
                     return BadRequest(serviceResponse);
                 }
 
@@ -153,8 +153,8 @@ namespace Tips.Master.Api.Controllers
                 _repository.TypeOfCompanyRepository.CreateTypeOfCompany(TypeofCompany);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfylly Created";
-                serviceResponse.Success = false;
+                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetTypeOfCompanyById", serviceResponse);
 

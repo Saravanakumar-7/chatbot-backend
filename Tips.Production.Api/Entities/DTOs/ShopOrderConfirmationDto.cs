@@ -1,0 +1,77 @@
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
+
+namespace Tips.Production.Api.Entities.DTOs
+{
+    public class ShopOrderConfirmationDto
+    {
+        [Required]
+        public int Id { get; set; }
+        [Required]
+        [MaxLength(100)]
+        public string? ShopOrderNumber { get; set; }
+        [Required]
+        public string? ItemType { get; set; }
+        [Required]
+        [Precision(13, 3)]
+        public decimal? ShopOrderReleaseQty { get; set; }
+        [Required]
+        [Precision(13, 3)]
+        public decimal? WipConfirmedQty { get; set; }
+        [DefaultValue(false)]
+        public bool IsOQCDone { get; set; }
+        [DefaultValue(false)]
+        public bool IsDeleted { get; set; }
+        public string? Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+
+    }
+
+    public class ShopOrderConfirmationPostDto
+    {
+        [Required]
+        [MaxLength(100)]
+        public string? ShopOrderNumber { get; set; }
+        [Required]
+        public string? ItemType { get; set; }
+        [Required]
+        [Precision(13, 3)]
+        public decimal? ShopOrderReleaseQty { get; set; }
+        [Required]
+        [Precision(13, 3)]
+        public decimal? WipConfirmedQty { get; set; }
+        [DefaultValue(false)]
+        public bool IsOQCDone { get; set; }
+        [DefaultValue(false)]
+        public bool IsDeleted { get; set; }
+    }
+
+    public class ShopOrderConfirmationUpdateDto
+    {
+        [Required]
+        public int Id { get; set; }
+        [Required]
+        [MaxLength(100)]
+        public string? ShopOrderNumber { get; set; }
+        [Required]
+        public string? ItemType { get; set; }
+        [Required]
+        [Precision(13, 3)]
+        public decimal? ShopOrderReleaseQty { get; set; }
+        [Required]
+        [Precision(13, 3)]
+        public decimal? WipConfirmedQty { get; set; }
+        [DefaultValue(false)]
+        public bool IsOQCDone { get; set; }
+        [DefaultValue(false)]
+        public bool IsDeleted { get; set; }
+        public string? Unit { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+
+    }
+}

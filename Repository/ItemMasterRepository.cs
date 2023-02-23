@@ -5,42 +5,45 @@ using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
+using Entities.DTOs;
 using Entities.Helper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
-    public class ItemMasterRepository:RepositoryBase<ItemMaster>,IItemMasterRepository
+    public class ItemMasterRepository : RepositoryBase<ItemMaster>, IItemMasterRepository
     {
         public ItemMasterRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
         {
 
         }
 
-        public async Task<long> CreateItem(ItemMaster itemMaster)
+        public async Task<long> CreateItemMaster(ItemMaster itemMaster)
         {
             itemMaster.CreatedBy = "Admin";
             itemMaster.CreatedOn = DateTime.Now;
+            itemMaster.Unit = "Bangalore";
             var result = await Create(itemMaster);
+
             return result.Id;
         }
 
-        public async Task<string> DeleteItem(ItemMaster itemMaster)
+        public async Task<string> DeleteItemMaster(ItemMaster itemMaster)
         {
             Delete(itemMaster);
-            string result = $"LeadTime details of {itemMaster.Id} is deleted successfully!";
+            string result = $"ItemMaster details of {itemMaster.Id} is deleted successfully!";
             return result;
         }
 
-        public async Task<List<ItemMaster>> GetAllActiveItems()
+        public async Task<IEnumerable<ItemMaster>> GetAllActiveItemMasters()
         {
-            var LeadTimeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return LeadTimeList;
+            var getAllActiveItemMasters = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return getAllActiveItemMasters;
         }
 
-        public async Task<PagedList<ItemMaster>> GetAllItems(PagingParameter pagingParameter)
+        public async Task<PagedList<ItemMaster>> GetAllItemMasters(PagingParameter pagingParameter)
         {
-            var itemmasterList = PagedList<ItemMaster>.ToPagedList(FindAll()
+            var getAllItemMasters = PagedList<ItemMaster>.ToPagedList(FindAll()
                                 .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(m => m.ItemMasterFileUpload)
@@ -48,13 +51,66 @@ namespace Repository
                                 .Include(f => f.ItemMasterWarehouse)
                                 .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return itemmasterList;
+            return getAllItemMasters;
         }
-         
 
-        public async Task<ItemMaster> GetItemById(int id)
+
+
+        public async Task<IEnumerable<ItemMaster>> GetAllFGItems()
         {
-            var ItemMasterList = await TipsMasterDbContext.ItemMasters
+            var getAllFGItems = await FindAll().Where(a => a.ItemType == "Fg")
+                                .Include(t => t.ItemmasterAlternate)
+                                .Include(x => x.ItemMasterApprovedVendor)
+                                .Include(m => m.ItemMasterFileUpload)
+                                .Include(s => s.ItemMasterRouting)
+                                .Include(f => f.ItemMasterWarehouse)
+                                .ToListAsync();
+
+            return getAllFGItems;
+        }
+        public async Task<IEnumerable<ItemMaster>> GetAllSAItems()
+        {
+            var getAllSAItems = await FindAll().Where(a => a.ItemType == "Sa")
+                                .Include(t => t.ItemmasterAlternate)
+                                .Include(x => x.ItemMasterApprovedVendor)
+                                .Include(m => m.ItemMasterFileUpload)
+                                .Include(s => s.ItemMasterRouting)
+                                .Include(f => f.ItemMasterWarehouse)
+                                .ToListAsync();
+
+            return getAllSAItems;
+        }
+        public async Task<IEnumerable<ItemMaster>> GetAllFgSaItems()
+        {
+            var getAllFGSAItems = await FindAll().Where(a => a.ItemType == "Sa" || a.ItemType == "Fg")
+                                .Include(t => t.ItemmasterAlternate)
+                                .Include(x => x.ItemMasterApprovedVendor)
+                                .Include(m => m.ItemMasterFileUpload)
+                                .Include(s => s.ItemMasterRouting)
+                                .Include(f => f.ItemMasterWarehouse)
+                                .ToListAsync();
+
+            return getAllFGSAItems;
+        }
+
+        //sa,fg, and fru
+
+        public async Task<IEnumerable<ItemMaster>> GetAllFgSaFruItems()
+        {
+            var getAllFGSAItems = await FindAll().Where(a => a.ItemType == "SA" || a.ItemType == "FG" || a.ItemType == "FRU")
+                                .Include(t => t.ItemmasterAlternate)
+                                .Include(x => x.ItemMasterApprovedVendor)
+                                .Include(m => m.ItemMasterFileUpload)
+                                .Include(s => s.ItemMasterRouting)
+                                .Include(f => f.ItemMasterWarehouse)
+                                .ToListAsync();
+
+            return getAllFGSAItems;
+        }
+
+        public async Task<ItemMaster> GetItemMasterById(int id)
+        {
+            var getItemMasterById = await TipsMasterDbContext.ItemMasters
                             .Where(x => x.Id == id)
                              .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
@@ -62,23 +118,46 @@ namespace Repository
                                 .Include(s => s.ItemMasterRouting)
                                 .Include(p => p.ItemMasterWarehouse)
                              .FirstOrDefaultAsync();
-            //var ItemMasterList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return ItemMasterList;
+
+            return getItemMasterById;
         }
 
-        public async Task<string> UpdateItem(ItemMaster itemMaster)
-     {
+        public async Task<string> UpdateItemMaster(ItemMaster itemMaster)
+        {
             itemMaster.LastModifiedBy = "Admin";
             itemMaster.LastModifiedOn = DateTime.Now;
             Update(itemMaster);
-            string result = $"LeadTime details of {itemMaster.Id} is updated successfully!";
+            string result = $"ItemMaster details of {itemMaster.Id} is updated successfully!";
             return result;
         }
-
-        Task<IEnumerable<ItemMaster>> IItemMasterRepository.GetAllActiveItems()
+        public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllActiveItemMasterIdNoList()
         {
-            throw new NotImplementedException();
+            IEnumerable<ItemMasterIdNoListDto> getAllActiveItemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters
+                                .Select(c => new ItemMasterIdNoListDto()
+                                {
+                                    id = c.Id,
+                                    ItemNumber = c.ItemNumber,
+                                    Description = c.Description,
+
+                                })
+                              .ToListAsync();
+
+            return getAllActiveItemMasterIdNoListDto;
         }
+        public async Task<ItemMaster> GetItemMasterByItemNumber(string ItemNumber)
+        {
+            var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == ItemNumber)
+                 .Include(t => t.ItemmasterAlternate)
+                                .Include(x => x.ItemMasterApprovedVendor)
+                                .Include(m => m.ItemMasterFileUpload)
+                                .Include(s => s.ItemMasterRouting)
+                                .Include(p => p.ItemMasterWarehouse)
+
+                             .FirstOrDefaultAsync();
+            return getItemMasterByItemNo;
+        }
+
+    } 
+
     }
-}

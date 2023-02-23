@@ -9,11 +9,14 @@ namespace Entities
 {
     public class WeightUom
     {
+        [Key]
         public int Id { get; set; }
         public string? WeightUomName { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool IsActive { get; set; } = true;
+        public string Unit { get; set; }
+
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

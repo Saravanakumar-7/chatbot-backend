@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace Entities
 {
     public class CustomerAddresses
     {
+        [Key]
         public int Id { get; set; }
 
         public string? InvoiceAddress { get; set; }
@@ -15,7 +17,7 @@ namespace Entities
         public string? GSTNNumber { get; set; }
 
         public string? PANNumber { get; set; }
-
+        public bool SameAsAddress { get; set; } = false;
         public bool IsActive { get; set; } = true;
 
         public string? CreatedBy { get; set; }
@@ -23,7 +25,7 @@ namespace Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public int CustomerId { get; set; }
+        public int CustomerMasterId { get; set; }
 
         public CustomerMaster? CustomerMaster { get; set; }
     }

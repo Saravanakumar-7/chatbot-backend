@@ -20,7 +20,9 @@ namespace Repository
         {
             commodity.CreatedBy = "Admin";
             commodity.CreatedOn = DateTime.Now;
+            commodity.Unit = "Bangalore";
             var result = await Create(commodity);
+            
             return result.Id;
         }
 
@@ -33,20 +35,20 @@ namespace Repository
 
         public async Task<IEnumerable<Commodity>> GetAllActiveCommodity()
         {
-            var commodityList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return commodityList;
+            var AllActiveCommodities = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveCommodities;
         }
 
         public async Task<IEnumerable<Commodity>> GetAllCommodity()
         {
-            var commodityList = await FindAll().ToListAsync();
-            return commodityList;
+            var Getallcommodities = await FindAll().ToListAsync();
+            return Getallcommodities;
         }
 
         public async Task<Commodity> GetCommodityById(int id)
         {
-            var commodityList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-            return commodityList;
+            var CommoditybyId= await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return CommoditybyId;
         }
 
         public async Task<string> UpdateCommodity(Commodity commodity)

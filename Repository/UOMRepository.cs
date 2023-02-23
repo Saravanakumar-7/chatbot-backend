@@ -20,7 +20,9 @@ namespace Repository
         {
             uom.CreatedBy = "Admin";
             uom.CreatedOn = DateTime.Now;
+            uom.Unit = "Bangalore";
             var result = await Create(uom);
+
             return result.Id;
         }
 
@@ -33,19 +35,19 @@ namespace Repository
 
         public async Task<IEnumerable<UOM>> GetAllActiveUOM()
         {
-            var uomList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return uomList;
+            var AllActiveUom = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            return AllActiveUom;
         }
         public async Task<IEnumerable<UOM>> GetAllUOM()
         {
-            var uomList = await FindAll().ToListAsync();
-            return uomList;
+            var GetallUom = await FindAll().ToListAsync();
+            return GetallUom;
         }
 
         public async Task<UOM> GetUOMById(int id)
         {
-            var uomList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-            return uomList;
+            var UombyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return UombyId;
         }
 
         public async Task<string> UpdateUOM(UOM uom)

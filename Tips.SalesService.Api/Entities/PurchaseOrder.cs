@@ -1,7 +1,10 @@
-﻿namespace Tips.SalesService.Api.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Tips.SalesService.Api.Entities
 {
     public class PurchaseOrder
     {
+        [Key]
         public int Id { get; set; }
         public string PONumber { get; set; }
         public string PODate { get; set; }

@@ -1,0 +1,13 @@
+﻿using Entities.Helper;
+using Entities;
+using Microsoft.AspNetCore.Mvc;
+using Tips.Grin.Api.Entities;
+
+namespace Tips.Grin.Api.Contracts
+{
+    public interface IIQCConfirmationItemsRepository : IRepositoryBase<IQCConfirmationItems>
+    {
+        Task<PagedList<IQCConfirmationItems>> GetAllIQCConfirmationItems( PagingParameter pagingParameter,  SearchParams searchParams);
+
+    }
+}

@@ -44,7 +44,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -52,7 +52,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveDepartments()
+        public async Task<IActionResult> GetAllActiveLocations()
         {
             ServiceResponse<IEnumerable<LocationsDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationsDto>>();
 
@@ -72,11 +72,50 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");
 
+            }
+        }
+        [HttpGet("{Warehouse}")]
+        public async Task<IActionResult> GetListofLocationsByWarehouse(string Warehouse)
+        {
+            ServiceResponse<IEnumerable<GetListofLocationsByWarehouseDto>> serviceResponse = new ServiceResponse<IEnumerable<GetListofLocationsByWarehouseDto>>();
+
+            try
+            {
+                var locationbywh = await _repository.LocationsRepository.GetListofLocationsByWarehouse(Warehouse);
+                if (locationbywh == null)
+                {
+                    _logger.LogError($"ListOfLocations with id: {Warehouse}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ListOfLocations with id: {Warehouse}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned ListOfLocations with id: {Warehouse}");
+                    var result = _mapper.Map<IEnumerable<GetListofLocationsByWarehouseDto>>(locationbywh);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside ListOfLocations action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -153,8 +192,8 @@ namespace Tips.Master.Api.Controllers
                 _repository.LocationsRepository.CreateLocations(LocationsEntity);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfylly Created";
-                serviceResponse.Success = false;
+                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetLocationsById", serviceResponse);
             }

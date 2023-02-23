@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class Grin
     {
+        [Key]
         public int Id { get; set; }
 
         public string? VendorName { get; set; }

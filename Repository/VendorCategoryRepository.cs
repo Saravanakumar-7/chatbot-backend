@@ -21,7 +21,9 @@ namespace Repository
         {
             vendorCategory.CreatedBy = "Admin";
             vendorCategory.CreatedOn = DateTime.Now;
+            vendorCategory.Unit = "Bangalore";
             var result = await Create(vendorCategory);
+            
             return result.Id;
         }
 
@@ -34,22 +36,22 @@ namespace Repository
 
         public async Task<IEnumerable<VendorCategory>> GetAllActiveVendorCategory()
         {
-            var vendorCategories = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return vendorCategories;
+            var AllActiveVendorCategories = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveVendorCategories;
         }
 
         public async Task<IEnumerable<VendorCategory>> GetAllVendorCategory()
         {
-            var vendorCategories = await FindAll().ToListAsync();
+            var GetallVendorCategories = await FindAll().ToListAsync();
 
-            return vendorCategories;
+            return GetallVendorCategories;
         }
 
         public async Task<VendorCategory> GetVendorCategoryById(int id)
         {
-            var vendorCategory = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var vendorCategorybyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return vendorCategory;
+            return vendorCategorybyId;
         }
 
         public async Task<string> UpdateVendorCategory(VendorCategory vendorCategory)

@@ -20,7 +20,9 @@ namespace Repository
         {
             ProcurementType.CreatedBy = "Admin";
             ProcurementType.CreatedOn = DateTime.Now;
+            ProcurementType.Unit = "Bangalore";
             var result = await Create(ProcurementType);
+            
             return result.Id;
         }
 
@@ -33,20 +35,20 @@ namespace Repository
 
         public async Task<IEnumerable<ProcurementType>> GetAllActiveProcurementType()
         {
-            var ProcurementTypeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return ProcurementTypeList;
+            var AllActiveProcurementTypes = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveProcurementTypes;
         }
 
         public async Task<IEnumerable<ProcurementType>> GetAllProcurementType()
         {
-            var ProcurementTypeList = await FindAll().ToListAsync();
-            return ProcurementTypeList;
+            var GetallProcurementTypes = await FindAll().ToListAsync();
+            return GetallProcurementTypes;
         }
 
         public async Task<ProcurementType> GetProcurementTypeById(int id)
         {
-            var ProcurementTypeList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-            return ProcurementTypeList;
+            var ProcurementTypebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return ProcurementTypebyId;
         }
 
         public async Task<string> UpdateProcurementType(ProcurementType ProcurementType)

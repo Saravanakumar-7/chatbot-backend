@@ -20,8 +20,11 @@ namespace Repository
         {
             auditFrequency.CreatedBy = "Admin";
             auditFrequency.CreatedOn = DateTime.Now;
+            auditFrequency.Unit = "Bangalore";
             var result = await Create(auditFrequency);
+            
             return result.Id;
+            
         }
 
         public async Task<string> DeleteAuditFrequency(AuditFrequency auditFrequency)
@@ -34,23 +37,23 @@ namespace Repository
         public async Task<IEnumerable<AuditFrequency>> GetAllActiveAuditFrequencies()
         {
 
-            var auditFrequencyList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return auditFrequencyList;
+            var AllActiveAuditFrequencies = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveAuditFrequencies;
         }
 
         public async Task<IEnumerable<AuditFrequency>> GetAllAuditFrequencies()
         {
 
-            var auditFrequencyList = await FindAll().ToListAsync();
+            var GetallAuditFrequencies = await FindAll().ToListAsync();
 
-            return auditFrequencyList;
+            return GetallAuditFrequencies;
         }
 
         public async Task<AuditFrequency> GetAuditFrequenyById(int id)
         {
-            var auditFrequency = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var AuditFrequencyyid = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return auditFrequency;
+            return AuditFrequencyyid;
         }       
         public async Task<string> UpdateAuditFrequency(AuditFrequency auditFrequency)
         {

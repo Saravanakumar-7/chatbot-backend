@@ -15,10 +15,6 @@ namespace Entities.DTOs
         public string? VendorCode { get; set; }
         public string? VendorName { get; set; }
         public string? ShareOfBusiness { get; set; }
-
-        //[ForeignKey(nameof(ItemMaster))]
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -30,10 +26,7 @@ namespace Entities.DTOs
         public string? VendorCode { get; set; }
         public string? VendorName { get; set; }
         public string? ShareOfBusiness { get; set; }
-
-        //[ForeignKey(nameof(ItemMaster))]
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
+      
     }
 
     public class ItemMasterApprovedVendorDtoUpdate
@@ -43,10 +36,7 @@ namespace Entities.DTOs
         public string? VendorCode { get; set; }
         public string? VendorName { get; set; }
         public string? ShareOfBusiness { get; set; }
-
-        //[ForeignKey(nameof(ItemMaster))]
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
+            
     }
 
 }

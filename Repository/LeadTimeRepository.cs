@@ -20,7 +20,9 @@ namespace Repository
         {
             leadTime.CreatedBy = "Admin";
             leadTime.CreatedOn = DateTime.Now;
+            leadTime.Unit = "Bangalore";
             var result = await Create(leadTime);
+           
             return result.Id;
         }
 
@@ -33,22 +35,22 @@ namespace Repository
 
         public async Task<IEnumerable<LeadTime>> GetAllActiveLeadTime()
         {
-            var LeadTimeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return LeadTimeList;
+            var AllActiveLeadTime = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveLeadTime;
         }
 
         public async Task<IEnumerable<LeadTime>> GetAllLeadTime()
         {
-            var LeadTimeList = await FindAll().ToListAsync();
+            var GetallLeadTime = await FindAll().ToListAsync();
 
-            return LeadTimeList;
+            return GetallLeadTime;
         }
 
         public async Task<LeadTime> GetLeadTimeById(int id)
         {
-            var LeadTimeList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var LeadTimebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return LeadTimeList;
+            return LeadTimebyId;
         }
 
         public async Task<string> UpdateLeadTime(LeadTime leadTime)

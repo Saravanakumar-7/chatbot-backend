@@ -20,6 +20,7 @@ namespace Repository
         {
             bank.CreatedBy = "Admin";
             bank.CreatedOn = DateTime.Now;
+            bank.Unit = "Bangalore";
             var result = await Create(bank);
             return result.Id;
         }
@@ -33,22 +34,22 @@ namespace Repository
 
         public async Task<IEnumerable<Bank>> GetAllActiveBank()
         {
-            var banks = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return banks;
+            var AllActiveBanks = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveBanks;
         }
 
         public async Task<IEnumerable<Bank>> GetAllBank()
         {
-            var banks = await FindAll().ToListAsync();
+            var Getallbanks = await FindAll().ToListAsync();
 
-            return banks;
+            return Getallbanks;
         }
 
         public async Task<Bank> GetBankById(int id)
         {
-            var bankById = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var BankById = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return bankById;
+            return BankById;
         }
 
         public async Task<string> UpdateBank(Bank bank)

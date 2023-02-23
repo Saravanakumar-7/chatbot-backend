@@ -38,6 +38,7 @@ namespace Entities.DTOs
         public string? IBANCode { get; set; }
         public bool Primary { get; set; } = true;
         public bool IsActive { get; set; } = true;
+       
 
     }
 

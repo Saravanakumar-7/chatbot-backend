@@ -21,7 +21,9 @@ namespace Repository
         {
             scopeOfSupply.CreatedBy = "Admin";
             scopeOfSupply.CreatedOn = DateTime.Now;
+            scopeOfSupply.Unit = "Bangalore";
             var result = await Create(scopeOfSupply);
+            
             return result.Id;
         }
 
@@ -34,22 +36,22 @@ namespace Repository
 
         public async Task<IEnumerable<ScopeOfSupply>> GetAllActiveScopeOfSupply()
         {
-            var scopeOfSupplies = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return scopeOfSupplies;
+            var AllActiveScopeOfSupplies = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveScopeOfSupplies;
         }
 
         public async Task<IEnumerable<ScopeOfSupply>> GetAllScopeOfSupply()
         {
-            var scopeOfSupplies = await FindAll().ToListAsync();
+            var GetallScopeOfSupplies = await FindAll().ToListAsync();
 
-            return scopeOfSupplies;
+            return GetallScopeOfSupplies;
         }
 
         public async Task<ScopeOfSupply> GetScopeOfSupplyById(int id)
         {
-            var scopeOfSupply = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var ScopeOfSupplybyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return scopeOfSupply;
+            return ScopeOfSupplybyId;
         }
 
         public async Task<string> UpdateScopeOfSupply(ScopeOfSupply scopeOfSupply)

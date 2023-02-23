@@ -20,7 +20,9 @@ namespace Repository
         {
             language.CreatedBy = "Admin";
             language.CreatedOn = DateTime.Now;
+            language.Unit = "Bangalore";
             var result = await Create(language);
+           
             return result.Id;
         }
 
@@ -33,24 +35,24 @@ namespace Repository
 
         public async Task<IEnumerable<Language>> GetAllActiveLanguages()
         {
-            var languageList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return languageList;
+            var AllActivelanguages = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActivelanguages;
         }
     
 
         public async Task<IEnumerable<Language>> GetAllLanguages()
         {
 
-        var languageList = await FindAll().ToListAsync();
+        var GetallLanguage = await FindAll().ToListAsync();
 
-        return languageList;
+        return GetallLanguage;
         }
 
         public async Task<Language> GetLanguageById(int id)
         {
-            var language = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var LanguagebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return language;
+            return LanguagebyId;
         }
 
         public async Task<string> UpdateLanguage(Language language)

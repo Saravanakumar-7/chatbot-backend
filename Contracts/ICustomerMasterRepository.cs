@@ -11,12 +11,12 @@ namespace Contracts
 {
     public interface ICustomerMasterRepository:IRepositoryBase<CustomerMaster>
     {
-        Task<PagedList<CustomerMaster>> GetAllCustomerMaster(PagingParameter pagingParameter);
+        Task<PagedList<CustomerMaster>> GetAllCustomerMasters(PagingParameter pagingParameter);
         Task<CustomerMaster> GetCustomerMasterById(int id);
-        Task<IEnumerable<CustomerMaster>> GetAllActiveCustomerMaster();
-        Task<int?> CreateCustomerMaster(CustomerMaster customerMaster);
+        Task<IEnumerable<CustomerMaster>> GetAllActiveCustomerMasters();
+        Task<CustomerMaster> CreateCustomerMaster(CustomerMaster customerMaster);
         Task<string> UpdateCustomerMaster(CustomerMaster customerMaster);
         Task<string> DeleteCustomerMaster(CustomerMaster customerMaster);
-        Task<IEnumerable<CustomerIdNameListDto>> GetAllActiveCustomerIdNameList();
+        Task<IEnumerable<CustomerIdNameListDto>> GetAllActiveCustomerMasterIdNameList();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,8 +38,8 @@ namespace Entities.DTOs
         public string? IBANCode { get; set; }
         public bool Primary { get; set; } = true;
         public bool IsActive { get; set; } = true;
-
         
+
     }
     public class CompanyBankingDtoUpdate
     {
@@ -53,6 +54,5 @@ namespace Entities.DTOs
         public bool Primary { get; set; } = true;
         public bool IsActive { get; set; } = true;
 
-       
     }
 }

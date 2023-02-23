@@ -1,10 +1,12 @@
-﻿using System.Net;
+﻿using Entities.DTOs;
+using Entities;
+using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol.Core.Types;
 using AutoMapper;
 using Contracts;
-using Entities;
-using Entities.DTOs;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Entities.Migrations;
+using System.Net;
 using Newtonsoft.Json;
 
 namespace Tips.Master.Api.Controllers
@@ -31,22 +33,22 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<IEnumerable<CompanyMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<CompanyMasterDto>>();
             try
             {
-                var listOfCompanyMaster = await _repository.CompanyMasterRepository.GetAllCompanyMaster(pagingParameter);
+                var getallCompanyMasters = await _repository.CompanyMasterRepository.GetAllCompanyMasters(pagingParameter);
                 var metadata = new
                 {
-                    listOfCompanyMaster.TotalCount,
-                    listOfCompanyMaster.PageSize,
-                    listOfCompanyMaster.CurrentPage,
-                    listOfCompanyMaster.HasNext,
-                    listOfCompanyMaster.HasPreviuos
+                    getallCompanyMasters.TotalCount,
+                    getallCompanyMasters.PageSize,
+                    getallCompanyMasters.CurrentPage,
+                    getallCompanyMasters.HasNext,
+                    getallCompanyMasters.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                _logger.LogInfo("Returned all CompanyMaster");
-                var result = _mapper.Map<IEnumerable<CompanyMasterDto>>(listOfCompanyMaster);
+                _logger.LogInfo("Returned all CompanyMasters");
+                var result = _mapper.Map<IEnumerable<CompanyMasterDto>>(getallCompanyMasters);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned all CompanyMasters Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -55,10 +57,10 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllCompanyMaster action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -69,12 +71,12 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<CompanyMasterDto> serviceResponse = new ServiceResponse<CompanyMasterDto>();
             try
             {
-                var CompanyMasterDetails = await _repository.CompanyMasterRepository.GetCompanyMasterById(id);
+                var getCompanyMasterbyId = await _repository.CompanyMasterRepository.GetCompanyMasterById(id);
 
-                if (CompanyMasterDetails == null)
+                if (getCompanyMasterbyId == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"CompanyMaster with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"CompanyMaster with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"CompanyMaster with id: {id}, hasn't been found in db.");
@@ -82,10 +84,10 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned owner with id: {id}");
-                    var result = _mapper.Map<CompanyMasterDto>(CompanyMasterDetails);
+                    _logger.LogInfo($"Returned CompanyMaster with id: {id}");
+                    var result = _mapper.Map<CompanyMasterDto>(getCompanyMasterbyId);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Returned CompanyMasterById Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -95,10 +97,10 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside GetCompanyMasterById action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetCompanyMasterById action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -132,7 +134,9 @@ namespace Tips.Master.Api.Controllers
                 var Contacts = _mapper.Map<IEnumerable<CompanyContacts>>(companyMasterDtoPost.CompanyContacts);
                 var Bankings = _mapper.Map<IEnumerable<CompanyBanking>>(companyMasterDtoPost.CompanyBankings);
                 var Addresses = _mapper.Map<IEnumerable<CompanyAddresses>>(companyMasterDtoPost.CompanyAddresses);
-                
+                var CompanymasterHeadCount = _mapper.Map<IEnumerable<CompanyMasterHeadCounting>>(companyMasterDtoPost.CompanyMasterHeadCountings);
+
+              
 
                 await _repository.CompanyMasterRepository.CreateCompanyMaster(CompanyMaster);
                 _repository.SaveAsync();
@@ -140,17 +144,17 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = " CompanyMaster Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.Created;
-                return Created("GetCompanyMasterById", "Successfully Created");
+                return Created("GetCompanyMasterById", serviceResponse);
 
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateCompanyMaster action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -184,39 +188,43 @@ namespace Tips.Master.Api.Controllers
                 {
                     _logger.LogError($"Update CompanyMaster with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update CompanyMaster with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Update CompanyMaster with id hasn't been found in db.";
                     serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound; 
                     return NotFound(serviceResponse);
                 }
 
 
                 var Addresses = _mapper.Map<IEnumerable<CompanyAddresses>>(companyMasterDtoUpdate.CompanyAddresses);
                 var Contacts = _mapper.Map<IEnumerable<CompanyContacts>>(companyMasterDtoUpdate.CompanyContacts);
-                var Banking = _mapper.Map<IEnumerable<CompanyBanking>>(companyMasterDtoUpdate.CompanyBankings);
-                var data = _mapper.Map(companyMasterDtoUpdate, updateCompanyMaster);
+                var Bankings = _mapper.Map<IEnumerable<CompanyBanking>>(companyMasterDtoUpdate.CompanyBankings);
+                var CompanymasterHeadCounting = _mapper.Map<IEnumerable<CompanyMasterHeadCounting>>(companyMasterDtoUpdate.CompanyMasterHeadCountings);
 
-                data.CompanyAddresses = Addresses.ToList();
-                data.CompanyContacts = Contacts.ToList();
-                data.CompanyBankings = Banking.ToList();
+                var companyMaster = _mapper.Map(companyMasterDtoUpdate, updateCompanyMaster);
 
-                string result = await _repository.CompanyMasterRepository.UpdateCompanyMaster(data);
+
+                companyMaster.CompanyAddresses = Addresses.ToList();
+                companyMaster.CompanyContacts = Contacts.ToList();
+                companyMaster.CompanyBankings = Bankings.ToList();
+                companyMaster.CompanyMasterHeadCountings = CompanymasterHeadCounting.ToList();
+
+                string result = await _repository.CompanyMasterRepository.UpdateCompanyMaster(companyMaster);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = " CompanyMaster Successfully Updated";
                 serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.NoContent;
-                return NoContent();
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside UpdateCompanyMaster action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside UpdateCompanyMaster action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -227,17 +235,17 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<CompanyMasterDto> serviceResponse = new ServiceResponse<CompanyMasterDto>();
             try
             {
-                var deleteCompany = await _repository.CompanyMasterRepository.GetCompanyMasterById(id);
-                if (deleteCompany == null)
+                var deleteCompanyMaster = await _repository.CompanyMasterRepository.GetCompanyMasterById(id);
+                if (deleteCompanyMaster == null)
                 {
                     _logger.LogError($"Delete Company with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Delete Company with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Delete Company with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.CompanyMasterRepository.DeleteCompanyMaster(deleteCompany);
+                string result = await _repository.CompanyMasterRepository.DeleteCompanyMaster(deleteCompanyMaster);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
 
@@ -249,12 +257,12 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeleteCompanyMaster action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside DeleteOwner action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -264,11 +272,10 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<IEnumerable<CompanyIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<CompanyIdNameListDto>>();
             try
             {
-                var listOfCompanyMaster = await _repository.CompanyMasterRepository.GetAllActiveCompanyIdNameList();
-                //_logger.LogInfo("Returned all CustomerMaster");
-                var result = _mapper.Map<IEnumerable<CompanyIdNameListDto>>(listOfCompanyMaster);
+                var getAllActiveCompanymasterIdNameList = await _repository.CompanyMasterRepository.GetAllActiveCompanyMasterIdNameList();
+                var result = _mapper.Map<IEnumerable<CompanyIdNameListDto>>(getAllActiveCompanymasterIdNameList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Success";
+                serviceResponse.Message = "Returned All ActiveCompanyIdNameList Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -277,10 +284,10 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllActiveCompanyIdNameList action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 

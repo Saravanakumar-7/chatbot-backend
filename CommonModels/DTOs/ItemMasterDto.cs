@@ -14,14 +14,17 @@ namespace Entities.DTOs
         [Key]
         [Column("ItemMasterId")]
         public long Id { get; set; }
+        [Required(ErrorMessage = "ItemNumber is required")]
         [MaxLength(100)]
         public string? ItemNumber { get; set; }
+        [Required(ErrorMessage = "Description is required")]
         [MaxLength(500)]
         public string? Description { get; set; }
         [DefaultValue(true)]
         public bool IsActive { get; set; }
         [DefaultValue(false)]
         public bool IsObsolete { get; set; }
+        [Required(ErrorMessage = "ItemType is required")]
         [MaxLength(50)]
         public string? ItemType { get; set; }
         [MaxLength(20)]
@@ -33,9 +36,9 @@ namespace Entities.DTOs
         [MaxLength(100)]
         public string? MaterialGroup { get; set; }
         [DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
-        public DateTime ValidFrom { get; set; }
+        public DateTime? ValidFrom { get; set; }
         [DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
-        public DateTime ValidTo { get; set; }
+        public DateTime? ValidTo { get; set; }
         [MaxLength(50)]
         public string? PurchaseGroup { get; set; }
         [MaxLength(50)]
@@ -70,10 +73,10 @@ namespace Entities.DTOs
         public string? FootPrint { get; set; }
         public decimal Min { get; set; }
         public decimal Max { get; set; }
-        public string? Leadtime { get; set; }
+        public string? LeadTime { get; set; }
         public string? Reorder { get; set; }
         public string? TwoBin { get; set; }
-        public string? Kanban { get; set; }
+        public bool Kanban { get; set; }
         [DefaultValue(false)]
         public bool IsEsd { get; set; }
         [DefaultValue(false)]
@@ -98,6 +101,7 @@ namespace Entities.DTOs
         public bool Valuation { get; set; }
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         [DisplayFormat(DataFormatString = "{dd-MM-yyyy HH:mm:ss}")]
         public DateTime CreatedOn { get; set; }
@@ -113,14 +117,17 @@ namespace Entities.DTOs
 
     public class ItemMasterDtoPost
     {
+        [Required(ErrorMessage = "ItemNumber is required")]
         [MaxLength(100)]
         public string? ItemNumber { get; set; }
+        [Required(ErrorMessage = "Description is required")]
         [MaxLength(500)]
         public string? Description { get; set; }
         [DefaultValue(true)]
         public bool IsActive { get; set; }
         [DefaultValue(false)]
         public bool IsObsolete { get; set; }
+        [Required(ErrorMessage = "ItemType is required")]
         [MaxLength(50)]
         public string? ItemType { get; set; }
         [MaxLength(20)]
@@ -131,10 +138,10 @@ namespace Entities.DTOs
         public string? Hsn { get; set; }
         [MaxLength(100)]
         public string? MaterialGroup { get; set; }
-        //[DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
-        public DateTime ValidFrom { get; set; }
-        //[DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
-        public DateTime ValidTo { get; set; }
+        
+        public DateTime? ValidFrom { get; set; }
+        
+        public DateTime? ValidTo { get; set; }
         [MaxLength(50)]
         public string? PurchaseGroup { get; set; }
         [MaxLength(50)]
@@ -169,10 +176,10 @@ namespace Entities.DTOs
         public string? FootPrint { get; set; }
         public decimal Min { get; set; }
         public decimal Max { get; set; }
-        public string? Leadtime { get; set; }
+        public string? LeadTime { get; set; }
         public string? Reorder { get; set; }
         public string? TwoBin { get; set; }
-        public string? Kanban { get; set; }
+        public bool Kanban { get; set; }
         [DefaultValue(false)]
         public bool IsEsd { get; set; }
         [DefaultValue(false)]
@@ -197,6 +204,7 @@ namespace Entities.DTOs
         public bool Valuation { get; set; }
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
+     
         public List<ItemmasterAlternateDtoPost>? ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouseDtoPost>? ItemMasterWarehouse { get; set; }
         public List<ItemMasterApprovedVendorDtoPost>? ItemMasterApprovedVendor { get; set; }
@@ -209,14 +217,17 @@ namespace Entities.DTOs
         [Key]
         [Column("ItemMasterId")]
         public long Id { get; set; }
+        [Required(ErrorMessage = "ItemNumber is required")]
         [MaxLength(100)]
         public string? ItemNumber { get; set; }
+        [Required(ErrorMessage = "Description is required")]
         [MaxLength(500)]
         public string? Description { get; set; }
         [DefaultValue(true)]
         public bool IsActive { get; set; }
         [DefaultValue(false)]
         public bool IsObsolete { get; set; }
+        [Required(ErrorMessage = "ItemType is required")]
         [MaxLength(50)]
         public string? ItemType { get; set; }
         [MaxLength(20)]
@@ -228,9 +239,9 @@ namespace Entities.DTOs
         [MaxLength(100)]
         public string? MaterialGroup { get; set; }
         [DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
-        public DateTime ValidFrom { get; set; }
+        public DateTime? ValidFrom { get; set; }
         [DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
-        public DateTime ValidTo { get; set; }
+        public DateTime? ValidTo { get; set; }
         [MaxLength(50)]
         public string? PurchaseGroup { get; set; }
         [MaxLength(50)]
@@ -265,10 +276,10 @@ namespace Entities.DTOs
         public string? FootPrint { get; set; }
         public decimal Min { get; set; }
         public decimal Max { get; set; }
-        public string? Leadtime { get; set; }
+        public string? LeadTime { get; set; }
         public string? Reorder { get; set; }
         public string? TwoBin { get; set; }
-        public string? Kanban { get; set; }
+        public bool Kanban { get; set; }
         [DefaultValue(false)]
         public bool IsEsd { get; set; }
         [DefaultValue(false)]
@@ -293,6 +304,9 @@ namespace Entities.DTOs
         public bool Valuation { get; set; }
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
+        [Required(ErrorMessage = "Unit is required")]
+        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
+        public string Unit { get; set; }
         public List<ItemmasterAlternateDtoUpdate>? ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouseDtoUpdate>? ItemMasterWarehouse { get; set; }
         public List<ItemMasterApprovedVendorDtoUpdate>? ItemMasterApprovedVendor { get; set; }
@@ -300,5 +314,12 @@ namespace Entities.DTOs
         public List<ItemMasterRoutingDtoUpdate>? ItemMasterRouting { get; set; }
 
     }
+
+    public class ItemMasterIdNoListDto
+    {
+        public long id { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
+    } 
 
 }

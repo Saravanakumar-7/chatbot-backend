@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface IItemMasterFileUpload
     {
-        Task<IEnumerable<ItemMasterFileUpload>> GetAllItemMasterFileUpload();
+        Task<IEnumerable<ItemMasterFileUpload>> GetAllItemMasterFileUploads();
         Task<ItemMasterFileUpload> GetItemMasterFileUploadById(int id);
-        Task<IEnumerable<ItemMasterFileUpload>> GetAllActiveItemMasterFileUpload();
+        Task<IEnumerable<ItemMasterFileUpload>> GetAllActiveItemMasterFileUploads();
         Task<int?> CreateItemMasterFileUpload(ItemMasterFileUpload itemMasterFileUpload);
         Task<string> UpdateItemMasterFileUpload(ItemMasterFileUpload itemMasterFileUpload);
         Task<string> DeleteItemMasterFileUpload(ItemMasterFileUpload itemMasterFileUpload);

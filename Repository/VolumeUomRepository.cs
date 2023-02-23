@@ -20,10 +20,12 @@ namespace Repository
         {
             volumeUom.CreatedBy = "Admin";
             volumeUom.CreatedOn = DateTime.Now;
+            volumeUom.Unit = "Bangalore";
             var result = await Create(volumeUom);
+
             return result.Id;
 
-            //throw new NotImplementedException();
+            
         }
 
         public async Task<string> DeleteVolumeUom(VolumeUom volumeUom)
@@ -35,22 +37,22 @@ namespace Repository
 
         public async Task<IEnumerable<VolumeUom>> GetAllActiveVolumeUom()
         {
-            var VolumeUomList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return VolumeUomList;
+            var AllActiveVolumeUomList = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveVolumeUomList;
         }
 
         public async Task<IEnumerable<VolumeUom>> GetAllVolumeUom()
         {
-            var volumeUoms = await FindAll().ToListAsync();
+            var GetallVolumeUom = await FindAll().ToListAsync();
 
-            return volumeUoms;
+            return GetallVolumeUom;
         }
 
         public async Task<VolumeUom> GetVolumeUomById(int id)
         {
-            var volumeUom = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var VolumeUombyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return volumeUom;
+            return VolumeUombyId;
         }
 
         public async Task<string> UpdateVolumeUom(VolumeUom volumeUom)

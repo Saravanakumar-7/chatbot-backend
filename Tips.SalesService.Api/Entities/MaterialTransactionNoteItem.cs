@@ -1,0 +1,31 @@
+﻿using Entities.DTOs;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+
+namespace Tips.SalesService.Api.Entities
+{
+    public class MaterialTransactionNoteItem
+    {
+        [Key]
+        public int? Id { get; set; }
+        public string? FromPartNumber { get; set; }
+        public string? FromLocation { get; set; }
+        public int? Stock { get; set; }
+        public string? ToProject { get; set; }
+        public string? ToPartNumber { get; set; }
+
+        [Precision(13,3)]
+        public decimal? TransferQty { get; set; }
+        public bool IsApproved { get; set; }
+        public bool IsClosed { get; set; }        
+        public int MaterialTransactionNoteId { get; set; }
+
+        public MaterialTransactionNote? MaterialTransactionNote { get; set; }
+    }
+}

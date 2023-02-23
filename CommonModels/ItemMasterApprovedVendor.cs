@@ -11,7 +11,6 @@ namespace Entities
         public string? VendorName { get; set; }
         public string? ShareOfBusiness { get; set; }
 
-       
         public long ItemMasterId { get; set; }
         public ItemMaster? ItemMaster { get; set; }
     }

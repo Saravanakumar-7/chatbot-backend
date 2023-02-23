@@ -20,7 +20,9 @@ namespace Repository
         {
             packingInstruction.CreatedBy = "Admin";
             packingInstruction.CreatedOn = DateTime.Now;
+            packingInstruction.Unit = "Bangalore";
             var result = await Create(packingInstruction);
+            
             return result.Id;
         }
 
@@ -34,23 +36,23 @@ namespace Repository
         public async Task<IEnumerable<PackingInstruction>> GetAllActivePackingInstruction()
         {
 
-            var PackingInstructionList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return PackingInstructionList;
+            var AllActivePackingInstructions = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActivePackingInstructions;
         }
 
         public async Task<IEnumerable<PackingInstruction>> GetAllPackingInstruction()
         {
 
-            var PackingInstructionList = await FindAll().ToListAsync();
+            var GetallPackingInstructions= await FindAll().ToListAsync();
 
-            return PackingInstructionList;
+            return GetallPackingInstructions;
         }
 
         public async Task<PackingInstruction> GetPackingInstructionById(int id)
         {
-            var auditFrequency = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var PackingInstructionbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return auditFrequency;
+            return PackingInstructionbyId;
         }
 
         public async Task<string> UpdatePackingInstruction(PackingInstruction packingInstruction)
@@ -58,7 +60,7 @@ namespace Repository
             packingInstruction.LastModifiedBy = "Admin";
             packingInstruction.LastModifiedOn = DateTime.Now;
             Update(packingInstruction);
-            string result = $"AuditFrequency details of {packingInstruction.Id} is updated successfully!";
+            string result = $"UpdatePackingInstruction details of {packingInstruction.Id} is updated successfully!";
             return result;
         }
     }

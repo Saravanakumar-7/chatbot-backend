@@ -32,9 +32,9 @@ namespace Tips.Master.Api.Controllers
             try
             {
 
-                var AuditFrequenciesList = await _repository.AuditFrequencyRepository.GetAllAuditFrequencies();
+                var GetallAuditFrequencies = await _repository.AuditFrequencyRepository.GetAllAuditFrequencies();
                 _logger.LogInfo("Returned all AuditFrequencies");
-                var result = _mapper.Map<IEnumerable<AuditFrequencyDto>>(AuditFrequenciesList);
+                var result = _mapper.Map<IEnumerable<AuditFrequencyDto>>(GetallAuditFrequencies);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all AuditFrequencies Successfully";
                 serviceResponse.Success = true;
@@ -45,7 +45,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -59,11 +59,11 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var AuditFrequencies = await _repository.AuditFrequencyRepository.GetAllActiveAuditFrequencies();
+                var AllActiveAuditFrequencies = await _repository.AuditFrequencyRepository.GetAllActiveAuditFrequencies();
                 _logger.LogInfo("Returned all AuditFrequencies");
-                var result = _mapper.Map<IEnumerable<AuditFrequencyDto>>(AuditFrequencies);
+                var result = _mapper.Map<IEnumerable<AuditFrequencyDto>>(AllActiveAuditFrequencies);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all AuditFrequencies Successfully";
+                serviceResponse.Message = "Returned all Active AuditFrequencies Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode= HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -73,7 +73,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -82,14 +82,14 @@ namespace Tips.Master.Api.Controllers
         }
         // GET api/<AuditFrequencyController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAuditFrequenyById(int id)
+        public async Task<IActionResult> GetAuditFrequencyById(int id)
         {
             ServiceResponse<AuditFrequencyDto> serviceResponse = new ServiceResponse<AuditFrequencyDto>();
 
             try
             {
-                var AuditFrequeny = await _repository.AuditFrequencyRepository.GetAuditFrequenyById(id);
-                if (AuditFrequeny == null)
+                var AuditFrequenybyId = await _repository.AuditFrequencyRepository.GetAuditFrequenyById(id);
+                if (AuditFrequenybyId == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"AuditFrequencies with id: {id}, hasn't been found in db.";
@@ -102,7 +102,7 @@ namespace Tips.Master.Api.Controllers
                 {
 
                     _logger.LogInfo($"Returned AuditFrequency with id: {id}");
-                    var result = _mapper.Map<AuditFrequencyDto>(AuditFrequeny);
+                    var result = _mapper.Map<AuditFrequencyDto>(AuditFrequenybyId);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned AuditFrequency with id successfully";
                     serviceResponse.Success = true;
@@ -120,10 +120,10 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpPost]
+        
         // POST api/<AuditFrequencyController>
         [HttpPost]
-        public IActionResult CreateAuditFrequeny([FromBody] AuditFrequencyDtoPost auditFrequencyDtoPost)
+        public IActionResult CreateAuditFrequency([FromBody] AuditFrequencyDtoPost auditFrequencyDtoPost)
         {
             ServiceResponse<AuditFrequencyDto> serviceResponse = new ServiceResponse<AuditFrequencyDto>();
 
@@ -136,7 +136,6 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("AuditFrequeny object sent from client is null.");
-                    //return BadRequest("PurchaseGroup object is null");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
@@ -146,17 +145,17 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid AuditFrequeny object sent from client.");
-                    //return BadRequest("Invalid model object");
+                    
                     return BadRequest(serviceResponse);
                 }
-                var AuditFrequeny = _mapper.Map<AuditFrequency>(auditFrequencyDtoPost);
-                _repository.AuditFrequencyRepository.CreateAuditFrequency(AuditFrequeny);
+                var AuditFrequenyCreate = _mapper.Map<AuditFrequency>(auditFrequencyDtoPost);
+                _repository.AuditFrequencyRepository.CreateAuditFrequency(AuditFrequenyCreate);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfylly Created";
-                serviceResponse.Success = false;
+                serviceResponse.Message = "AuditFrequency Created Successfully";
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetAuditFrequenyById", serviceResponse);
+                return Created("GetAuditFrequencyById", serviceResponse);
             }
             catch (Exception ex)
             {
@@ -164,14 +163,14 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateAuditFrequency action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
         // PUT api/<AuditFrequencyController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAuditFrequeny(int id, [FromBody] AuditFrequencyDtoUpdate auditFrequencyDtoUpdate)
+        public async Task<IActionResult> UpdateAuditFrequency(int id, [FromBody] AuditFrequencyDtoUpdate auditFrequencyDtoUpdate)
         {
             ServiceResponse<AuditFrequencyDto> serviceResponse = new ServiceResponse<AuditFrequencyDto>();
 
@@ -180,10 +179,10 @@ namespace Tips.Master.Api.Controllers
                 if (auditFrequencyDtoUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "update AuditFrequeny object sent from client is null";
+                    serviceResponse.Message = "update AuditFrequency object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("updare AuditFrequeny object sent from client is null.");
+                    _logger.LogError("update AuditFrequency object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
@@ -196,8 +195,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid Update auditFrequency object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var auditFrequency = await _repository.AuditFrequencyRepository.GetAuditFrequenyById(id);
-                if (auditFrequency is null)
+                var auditFrequencyUpdate = await _repository.AuditFrequencyRepository.GetAuditFrequenyById(id);
+                if (auditFrequencyUpdate is null)
                 {
                     _logger.LogError($"Update auditFrequency with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -206,8 +205,8 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode= HttpStatusCode.NotFound;  
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(auditFrequencyDtoUpdate, auditFrequency);
-                string result = await _repository.AuditFrequencyRepository.UpdateAuditFrequency(auditFrequency);
+                _mapper.Map(auditFrequencyDtoUpdate, auditFrequencyUpdate);
+                string result = await _repository.AuditFrequencyRepository.UpdateAuditFrequency(auditFrequencyUpdate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -235,8 +234,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var auditFrequency = await _repository.AuditFrequencyRepository.GetAuditFrequenyById(id);
-                if (auditFrequency == null)
+                var DeleteAuditfrequency = await _repository.AuditFrequencyRepository.GetAuditFrequenyById(id);
+                if (DeleteAuditfrequency == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Delete auditFrequency object sent from client is null";
@@ -245,7 +244,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"Delete auditFrequency with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                string result = await _repository.AuditFrequencyRepository.DeleteAuditFrequency(auditFrequency);
+                string result = await _repository.AuditFrequencyRepository.DeleteAuditFrequency(DeleteAuditfrequency);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deleted Successfully";
@@ -259,7 +258,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside AuditFrequency action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeleteAuditFrequency action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -270,8 +269,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var auditFrequency = await _repository.AuditFrequencyRepository.GetAuditFrequenyById(id);
-                if (auditFrequency is null)
+                var AuditFrequencyActivate = await _repository.AuditFrequencyRepository.GetAuditFrequenyById(id);
+                if (AuditFrequencyActivate is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "auditFrequency object sent from client is null";
@@ -280,8 +279,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"auditFrequency with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                auditFrequency.IsActive = true;
-                string result = await _repository.AuditFrequencyRepository.UpdateAuditFrequency(auditFrequency);
+                AuditFrequencyActivate.IsActive = true;
+                string result = await _repository.AuditFrequencyRepository.UpdateAuditFrequency(AuditFrequencyActivate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -306,8 +305,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var auditFrequency = await _repository.AuditFrequencyRepository.GetAuditFrequenyById(id);
-                if (auditFrequency is null)
+                var AuditFrequencyDeactivate = await _repository.AuditFrequencyRepository.GetAuditFrequenyById(id);
+                if (AuditFrequencyDeactivate is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "auditFrequency object sent from client is null";
@@ -316,8 +315,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"auditFrequency with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                auditFrequency.IsActive = false;
-                string result = await _repository.AuditFrequencyRepository.UpdateAuditFrequency(auditFrequency);
+                AuditFrequencyDeactivate.IsActive = false;
+                string result = await _repository.AuditFrequencyRepository.UpdateAuditFrequency(AuditFrequencyDeactivate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deactivated Successfully";

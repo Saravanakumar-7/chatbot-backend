@@ -31,9 +31,9 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var CommodityList = await _repository.CommodityRepository.GetAllCommodity();
+                var GetallCommodity = await _repository.CommodityRepository.GetAllCommodity();
                 _logger.LogInfo("Returned all Commodity");
-                var result = _mapper.Map<IEnumerable<CommodityDto>>(CommodityList);
+                var result = _mapper.Map<IEnumerable<CommodityDto>>(GetallCommodity);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Commodity Successfully";
                 serviceResponse.Success = true;
@@ -44,10 +44,10 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -58,9 +58,9 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var Commodity = await _repository.CommodityRepository.GetAllActiveCommodity();
+                var AllActiveCommodity = await _repository.CommodityRepository.GetAllActiveCommodity();
                 _logger.LogInfo("Returned all Commodity");
-                var result = _mapper.Map<IEnumerable<CommodityDto>>(Commodity);
+                var result = _mapper.Map<IEnumerable<CommodityDto>>(AllActiveCommodity);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Active Commodity successfully";
                 serviceResponse.Success = true;
@@ -72,7 +72,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -88,11 +88,11 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var Commodity = await _repository.CommodityRepository.GetCommodityById(id);
-                if (Commodity == null)
+                var CommoditybyId = await _repository.CommodityRepository.GetCommodityById(id);
+                if (CommoditybyId == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"PurchaseGroup with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Commodity with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"Commodity with id: {id}, hasn't been found in db.");
@@ -101,9 +101,9 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    var result = _mapper.Map<CommodityDto>(Commodity);
+                    var result = _mapper.Map<CommodityDto>(CommoditybyId);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned owner with id Successfully";
+                    serviceResponse.Message = "Returned Commodity with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -146,11 +146,11 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid Commodity object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var CommodityEntity = _mapper.Map<Commodity>(commodityDtoPost);
-                _repository.CommodityRepository.CreateCommodity(CommodityEntity);
+                var CommodityCreate = _mapper.Map<Commodity>(commodityDtoPost);
+                _repository.CommodityRepository.CreateCommodity(CommodityCreate);
                 _repository.SaveAsync(); serviceResponse.Data = null;
-                serviceResponse.Message = "Successfylly Created";
-                serviceResponse.Success = false;
+                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
 
                 return Created("GetCommodityById",serviceResponse);
@@ -192,18 +192,18 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid Commodity object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var CommodityEntity = await _repository.CommodityRepository.GetCommodityById(id);
-                if (CommodityEntity is null)
+                var CommodityUpdate = await _repository.CommodityRepository.GetCommodityById(id);
+                if (CommodityUpdate is null)
                 {
                     _logger.LogError($"Commodity with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = " Update BasicOfApproval with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = " Update Commodity with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(commodityDtoUpdate, CommodityEntity);
-                string result = await _repository.CommodityRepository.UpdateCommodity(CommodityEntity);
+                _mapper.Map(commodityDtoUpdate, CommodityUpdate);
+                string result = await _repository.CommodityRepository.UpdateCommodity(CommodityUpdate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -231,17 +231,17 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var Commodity = await _repository.CommodityRepository.GetCommodityById(id);
-                if (Commodity == null)
+                var CommodityDelete = await _repository.CommodityRepository.GetCommodityById(id);
+                if (CommodityDelete == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Purchasegroup object sent from client is null";
+                    serviceResponse.Message = "Commodity object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"Commodity with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                string result = await _repository.CommodityRepository.DeleteCommodity(Commodity);
+                string result = await _repository.CommodityRepository.DeleteCommodity(CommodityDelete);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deleted Successfully";
@@ -267,8 +267,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var Commodity = await _repository.CommodityRepository.GetCommodityById(id);
-                if (Commodity is null)
+                var CommodityActivate = await _repository.CommodityRepository.GetCommodityById(id);
+                if (CommodityActivate is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "purchasegroup object sent from client is null";
@@ -277,8 +277,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"Commodity with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                Commodity.ActiveStatus = true;
-                string result = await _repository.CommodityRepository.UpdateCommodity(Commodity);
+                CommodityActivate.IsActive = true;
+                string result = await _repository.CommodityRepository.UpdateCommodity(CommodityActivate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -305,8 +305,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var Commodity = await _repository.CommodityRepository.GetCommodityById(id);
-                if (Commodity is null)
+                var CommodityDeactivate = await _repository.CommodityRepository.GetCommodityById(id);
+                if (CommodityDeactivate is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "purchasegroup object sent from client is null";
@@ -315,8 +315,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"Commodity with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                Commodity.ActiveStatus = false;
-                string result = await _repository.CommodityRepository.UpdateCommodity(Commodity);
+                CommodityDeactivate.IsActive = false;
+                string result = await _repository.CommodityRepository.UpdateCommodity(CommodityDeactivate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deactivated Successfully";

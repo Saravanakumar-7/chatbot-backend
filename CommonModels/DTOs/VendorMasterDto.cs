@@ -11,14 +11,14 @@ namespace Entities.DTOs
     public class VendorMasterDto
     {
         public int Id { get; set; }
-
-        public string VendorId { get; set; }
-
-        public string VendorName { get; set; }
+        [Required(ErrorMessage = "VendorId is required")]
+        public string? VendorId { get; set; }
+        [Required(ErrorMessage = "VendorName is required")]
+        public string? VendorName { get; set; }
 
         public string? VendorAliasName { get; set; }
-
-        public string VendorType { get; set; }
+        [Required(ErrorMessage = "VendorType is required")]
+        public string? VendorType { get; set; }
 
         public string? Address { get; set; }
 
@@ -29,6 +29,7 @@ namespace Entities.DTOs
         public string? Country { get; set; }
 
         public string? PinZipCode { get; set; }
+        public string? ShippingMode { get; set; }
 
         public string? PurchaseGroup { get; set; }
         public string? BoardNumber { get; set; }
@@ -62,6 +63,8 @@ namespace Entities.DTOs
 
         public string? PreferredFreightForwader { get; set; }
 
+        public string? Others { get; set; }
+
         //saturation
 
         public bool InCoporation { get; set; } = true;
@@ -92,7 +95,7 @@ namespace Entities.DTOs
         public string? Capacity { get; set; }
         public string? UOM { get; set; }
         public string? FloorSpace { get; set; }
-        public string? sqft { get; set; }
+        public string? Sqft { get; set; }
 
         public string? Machine { get; set; }
         public string? ToolsandEquip { get; set; }
@@ -111,8 +114,8 @@ namespace Entities.DTOs
 
         public string? VendorCategory { get; set; }
 
-        public string? BankOfApproval { get; set; }
-
+        public string? BasisOfApproval { get; set; }
+        public string? CustomerApprove { get; set; }
         public bool InventoryItem { get; set; } = true;
 
         public string? ApprovalStatus { get; set; }
@@ -125,7 +128,7 @@ namespace Entities.DTOs
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-
+        public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -133,7 +136,7 @@ namespace Entities.DTOs
         public List<VendorAddressDto>? Addresses { get; set; }
         public List<VendorContactsDto>? Contacts { get; set; }
         public List<VendorBankingDto>? VendorBankings { get; set; }
-        public List<HeadCountingDto>? HeadCountings { get; set; }
+        public List<VendorHeadCountingDto>? HeadCountings { get; set; }
     }
 
 
@@ -142,17 +145,17 @@ namespace Entities.DTOs
  
         [Required(ErrorMessage = "VendorId is required")]
         [StringLength(100, ErrorMessage = "VendorId can't be longer than 100 characters")]
-        public string VendorId { get; set; }
+        public string? VendorId { get; set; }
 
         [Required(ErrorMessage = "VendorName is required")]
         [StringLength(100, ErrorMessage = "VendorName can't be longer than 100 characters")]
-        public string VendorName { get; set; }
+        public string? VendorName { get; set; }
 
         public string? VendorAliasName { get; set; }
         
         [Required(ErrorMessage = "VendorType is required")]
         [StringLength(500, ErrorMessage = "VendorType can't be longer than 500 characters")]
-        public string VendorType { get; set; }
+        public string? VendorType { get; set; }
 
         public string? Address { get; set; }
 
@@ -163,6 +166,7 @@ namespace Entities.DTOs
         public string? Country { get; set; }
 
         public string? PinZipCode { get; set; }
+        public string? ShippingMode { get; set; }
 
         public string? PurchaseGroup { get; set; }
         public string? BoardNumber { get; set; }
@@ -196,6 +200,7 @@ namespace Entities.DTOs
         public string? SpecialTerms { get; set; }
 
         public string? PreferredFreightForwader { get; set; }
+        public string? Others { get; set; }
 
         //saturation
 
@@ -227,7 +232,7 @@ namespace Entities.DTOs
         public string? Capacity { get; set; }
         public string? UOM { get; set; }
         public string? FloorSpace { get; set; }
-        public string? sqft { get; set; }
+        public string? Sqft { get; set; }
 
         public string? Machine { get; set; }
         public string? ToolsandEquip { get; set; }
@@ -246,8 +251,8 @@ namespace Entities.DTOs
 
         public string? VendorCategory { get; set; }
 
-        public string? BankOfApproval { get; set; }
-
+        public string? BasisOfApproval { get; set; }
+        public string? CustomerApprove { get; set; }
         public bool InventoryItem { get; set; } = true;
 
         public string? ApprovalStatus { get; set; }
@@ -260,11 +265,7 @@ namespace Entities.DTOs
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        
 
         public List<VendorAddressPostDto>? Addresses { get; set; }
         public List<VendorContactsPostDto>? Contacts { get; set; }
@@ -279,18 +280,18 @@ namespace Entities.DTOs
         [Required(ErrorMessage = "VendorId is required")]
         [StringLength(100, ErrorMessage = "VendorId can't be longer than 100 characters")]
 
-        public string VendorId { get; set; }
+        public string? VendorId { get; set; }
 
         [Required(ErrorMessage = "VendorName is required")]
         [StringLength(100, ErrorMessage = "VendorName can't be longer than 100 characters")]
 
-        public string VendorName { get; set; }
+        public string? VendorName { get; set; }
 
         public string? VendorAliasName { get; set; }
         [Required(ErrorMessage = "VendorType is required")]
         [StringLength(500, ErrorMessage = "VendorType can't be longer than 500 characters")]
 
-        public string VendorType { get; set; }
+        public string? VendorType { get; set; }
 
         public string? Address { get; set; }
 
@@ -301,6 +302,7 @@ namespace Entities.DTOs
         public string? Country { get; set; }
 
         public string? PinZipCode { get; set; }
+        public string? ShippingMode { get; set; }
 
         public string? PurchaseGroup { get; set; }
         public string? BoardNumber { get; set; }
@@ -333,6 +335,7 @@ namespace Entities.DTOs
         public string? SpecialTerms { get; set; }
 
         public string? PreferredFreightForwader { get; set; }
+        public string? Others { get; set; }
 
         //saturation
 
@@ -364,7 +367,7 @@ namespace Entities.DTOs
         public string? Capacity { get; set; }
         public string? UOM { get; set; }
         public string? FloorSpace { get; set; }
-        public string? sqft { get; set; }
+        public string? Sqft { get; set; }
 
         public string? Machine { get; set; }
         public string? ToolsandEquip { get; set; }
@@ -383,8 +386,8 @@ namespace Entities.DTOs
 
         public string? VendorCategory { get; set; }
 
-        public string? BankOfApproval { get; set; }
-
+        public string? BasisOfApproval { get; set; }
+        public string? CustomerApprove { get; set; }
         public bool InventoryItem { get; set; } = true;
 
         public string? ApprovalStatus { get; set; }
@@ -394,6 +397,9 @@ namespace Entities.DTOs
         public string? Upload { get; set; }
         public bool ReAudit { get; set; } = true;
         public string? AuditFrequency { get; set; }
+        [Required(ErrorMessage = "Unit is required")]
+        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
+        public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

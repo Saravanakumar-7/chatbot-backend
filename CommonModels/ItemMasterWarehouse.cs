@@ -12,7 +12,6 @@ namespace Entities
         [DefaultValue(true)]
         public bool IsActive { get; set; }
 
-        
         public long ItemMasterId { get; set; }
         public ItemMaster? ItemMaster { get; set; }
     }

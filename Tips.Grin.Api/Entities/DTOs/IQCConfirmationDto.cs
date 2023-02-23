@@ -1,0 +1,111 @@
+﻿using Entities.DTOs;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using Microsoft.EntityFrameworkCore;
+
+namespace Tips.Grin.Api.Entities.DTOs
+{
+    public class IQCConfirmationDto
+    {
+        public int Id { get; set; }
+
+        public string? GrinNumber { get; set; }
+
+        public string? ItemNumber { get; set; }
+
+        public int ItemId { get; set; }
+
+        public int GrinPartId { get; set; }
+
+        public string? ProjectNumber { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? AcceptedQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? RejectedQty { get; set; }
+
+        public bool IsBinningDone { get; set; } = false;
+
+        public bool IsDeleted { get; set; } = false;
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+
+        public string Unit { get; set; }
+
+        public List<IQCConfirmationItemsDto>? IQCConfirmationItems { get; set; }
+    
+
+
+
+}
+    public class IQCConfirmationPostDto
+    {
+        public string? GrinNumber { get; set; }
+
+        public string? ItemNumber { get; set; }
+
+        public int ItemId { get; set; }
+        public int GrinPartId { get; set; }
+
+        public string? ProjectNumber { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? AcceptedQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? RejectedQty { get; set; }
+
+        public bool IsBinningDone { get; set; } = false;
+
+        public bool IsDeleted { get; set; } = false;
+
+        public List<IQCConfirmationItemsPostDto>? IQCConfirmationItemsPostDtos { get; set; }
+
+
+
+
+    }
+
+    public class IQCConfirmationUpdateDto
+    {
+
+        public int Id { get; set; }
+        public string? GrinNumber { get; set; }
+
+    public string? ItemNumber { get; set; }
+
+    public int ItemId { get; set; }
+    public int GrinPartId { get; set; }
+
+    public string? ProjectNumber { get; set; }
+
+    [Precision(13, 3)]
+    public decimal? AcceptedQty { get; set; }
+
+    [Precision(13, 3)]
+    public decimal? RejectedQty { get; set; }
+
+    public bool IsBinningDone { get; set; } = false;
+
+    public bool IsDeleted { get; set; } = false;
+
+    public string Unit { get; set; }
+
+    public List<IQCConfirmationItemsUpdateDto>? IQCConfirmationItemsUpdateDtos { get; set; }
+
+
+
+    }
+
+
+
+
+}

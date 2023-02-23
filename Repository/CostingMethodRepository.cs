@@ -20,7 +20,9 @@ namespace Repository
         {
             costingMethod.CreatedBy = "Admin";
             costingMethod.CreatedOn = DateTime.Now;
+            costingMethod.Unit = "Bangalore";
             var result = await Create(costingMethod);
+            
             return result.Id;
         }
 
@@ -33,23 +35,23 @@ namespace Repository
 
         public async Task<IEnumerable<CostingMethod>> GetAllActiveCostingMethods()
         {
-            var costingMethodList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return costingMethodList;
+            var AllActiveCostingmethods = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveCostingmethods;
         }
 
         public async Task<IEnumerable<CostingMethod>> GetAllCostingMethods()
         {
-            var costingMethodList = await FindAll().ToListAsync();
+            var GetallCostingMethods = await FindAll().ToListAsync();
 
-            return costingMethodList;
+            return GetallCostingMethods;
         }
 
         public async Task<CostingMethod> GetCostingMethodById(int id)
         {
 
-            var costingMethod = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var CostingMethodbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return costingMethod;
+            return CostingMethodbyId;
         }
 
         public async Task<string> UpdateCostingMethod(CostingMethod costingMethod)

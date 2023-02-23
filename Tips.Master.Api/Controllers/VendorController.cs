@@ -30,30 +30,30 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<VendorController>
         [HttpGet]
-        public async Task<IActionResult> GetAllVendors([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllVendorMasters([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<VendorMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<VendorMasterDto>>();
 
             try
             {
-                var listOfVendors = await _repository.VendorRepository.GetAllVendors(pagingParameter);
+                var getAllVendorMastersList = await _repository.VendorRepository.GetAllVendorMasters(pagingParameter);
 
                 var metadata = new
                 {
-                    listOfVendors.TotalCount,
-                    listOfVendors.PageSize,
-                    listOfVendors.CurrentPage,
-                    listOfVendors.HasNext,
-                    listOfVendors.HasPreviuos
+                    getAllVendorMastersList.TotalCount,
+                    getAllVendorMastersList.PageSize,
+                    getAllVendorMastersList.CurrentPage,
+                    getAllVendorMastersList.HasNext,
+                    getAllVendorMastersList.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
 
-                _logger.LogInfo("Returned all Vendors");
-                var result = _mapper.Map<IEnumerable<VendorMasterDto>>(listOfVendors);
+                _logger.LogInfo("Returned all VendorMasters");
+                var result = _mapper.Map<IEnumerable<VendorMasterDto>>(getAllVendorMastersList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all Vendors Successfully";
+                serviceResponse.Message = "Returned all VendorMasters Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -71,18 +71,18 @@ namespace Tips.Master.Api.Controllers
 
         // GET api/<VendorController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetVendorById(int id)
+        public async Task<IActionResult> GetVendorMasterById(int id)
         {
             ServiceResponse<VendorMasterDto> serviceResponse = new ServiceResponse<VendorMasterDto>();
 
             try
             {
-                var vendorDetails = await _repository.VendorRepository.GetVendorById(id);
+                var getvendorMasterById = await _repository.VendorRepository.GetVendorMasterById(id);
 
-                if (vendorDetails == null)
+                if (getvendorMasterById == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Vendor with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"VendorMaster with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"Vendor with id: {id}, hasn't been found in db.");
@@ -90,10 +90,10 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned Vendor with id: {id}");
-                    var result = _mapper.Map<VendorMasterDto>(vendorDetails);
+                    _logger.LogInfo($"Returned VendorMaster with id: {id}");
+                    var result = _mapper.Map<VendorMasterDto>(getvendorMasterById);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = $"Returned Vendor with id: {id}";
+                    serviceResponse.Message = $"Returned VendorMasterById Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse); 
@@ -101,7 +101,7 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetVendorDepartmentById action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetVendorMasterById action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
@@ -112,7 +112,7 @@ namespace Tips.Master.Api.Controllers
 
         // POST api/<VendorController>
         [HttpPost]
-        public async Task<IActionResult> CreateVendor([FromBody] VendorMasterPostDto vendorMasterPost)
+        public async Task<IActionResult> CreateVendorMaster([FromBody] VendorMasterPostDto vendorMasterPost)
         {
             ServiceResponse<VendorMasterDto> serviceResponse = new ServiceResponse<VendorMasterDto>();
 
@@ -120,18 +120,18 @@ namespace Tips.Master.Api.Controllers
             {
                 if (vendorMasterPost is null)
                 {
-                    _logger.LogError("VendorDetails object sent from client is null.");
+                    _logger.LogError("VendorMasters object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "VendorDetails object sent from client is null.";
+                    serviceResponse.Message = "VendorMasters object sent from client is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
                if (!ModelState.IsValid)
                {
-                    _logger.LogError("Invalid VendorDetails object sent from client.");
+                    _logger.LogError("Invalid VendorMasters object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid VendorDetails object sent from client.";
+                    serviceResponse.Message = "Invalid VendorMasters object sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -140,19 +140,19 @@ namespace Tips.Master.Api.Controllers
                 var address = _mapper.Map<IEnumerable<VendorAddress>>(vendorMasterPost.Addresses);
                 var contact = _mapper.Map<IEnumerable<VendorContacts>>(vendorMasterPost.Contacts);
                 var banking = _mapper.Map<IEnumerable<VendorBanking>>(vendorMasterPost.VendorBankings);
-                var headcount = _mapper.Map<IEnumerable<HeadCounting>>(vendorMasterPost.HeadCountings);
-                var vendor = _mapper.Map<VendorMaster>(vendorMasterPost);
+                var headcount = _mapper.Map<IEnumerable<VendorHeadCounting>>(vendorMasterPost.HeadCountings);
+                var vendorMaster = _mapper.Map<VendorMaster>(vendorMasterPost);
 
-                vendor.Addresses = address.ToList();
-                vendor.Contacts = contact.ToList();
-                vendor.VendorBankings = banking.ToList();
-                vendor.HeadCountings = headcount.ToList();
+                vendorMaster.Addresses = address.ToList();
+                vendorMaster.Contacts = contact.ToList();
+                vendorMaster.VendorBankings = banking.ToList();
+                vendorMaster.HeadCountings = headcount.ToList();
 
-                _repository.VendorRepository.CreateVendor(vendor); 
+                await _repository.VendorRepository.CreateVendorMaster(vendorMaster); 
 
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "VendorMaster Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetVendorById",serviceResponse);
@@ -160,7 +160,7 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateVendor action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateVendorMaster action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -171,7 +171,7 @@ namespace Tips.Master.Api.Controllers
 
         // PUT api/<VendorController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateVendor(int id, [FromBody] VendorMasterDto vendorMasterUpdateDto)
+        public async Task<IActionResult> UpdateVendorMaster(int id, [FromBody] VendorMasterDto vendorMasterUpdateDto)
         {
             ServiceResponse<VendorMasterDto> serviceResponse = new ServiceResponse<VendorMasterDto>();
 
@@ -179,28 +179,28 @@ namespace Tips.Master.Api.Controllers
             {
                 if (vendorMasterUpdateDto is null)
                 {
-                    _logger.LogError("Update Vendor object sent from client is null.");
+                    _logger.LogError("Update VendorMasters object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Update Vendor object is null";
+                    serviceResponse.Message = "Update VendorMasters object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid Update Vendor object sent from client.");
+                    _logger.LogError("Invalid Update VendorMasters object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Update Vendor object sent from client.";
+                    serviceResponse.Message = "Invalid Update VendorMasters object sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var updatevendor = await _repository.VendorRepository.GetVendorById(id);
-                if (updatevendor is null)
+                var updateVendorMaster = await _repository.VendorRepository.GetVendorMasterById(id);
+                if (updateVendorMaster is null)
                 {
-                    _logger.LogError($"Update Vendor with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Update VendorMasters with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update Vendor with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Update VendorMasters with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
@@ -214,28 +214,28 @@ namespace Tips.Master.Api.Controllers
 
                 var banking = _mapper.Map<IEnumerable<VendorBanking>>(vendorMasterUpdateDto.VendorBankings);
 
-                var Headcount = _mapper.Map<IEnumerable<HeadCounting>>(vendorMasterUpdateDto.HeadCountings);
+                var headcount = _mapper.Map<IEnumerable<VendorHeadCounting>>(vendorMasterUpdateDto.HeadCountings);
 
-                var data = _mapper.Map(vendorMasterUpdateDto, updatevendor);
+                var vendorMaster = _mapper.Map(vendorMasterUpdateDto, updateVendorMaster);
 
 
-                data.Addresses = address.ToList();
-                data.Contacts = contact.ToList();
-                data.VendorBankings = banking.ToList();
-                data.HeadCountings = Headcount.ToList();
+                vendorMaster.Addresses = address.ToList();
+                vendorMaster.Contacts = contact.ToList();
+                vendorMaster.VendorBankings = banking.ToList();
+                vendorMaster.HeadCountings = headcount.ToList();
 
-                string result = await _repository.VendorRepository.UpdateVendor(data);
+                string result = await _repository.VendorRepository.UpdateVendorMaster(vendorMaster);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = "VendorMaster Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateVolumeUom action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside UpdateVendorMaster action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -246,34 +246,34 @@ namespace Tips.Master.Api.Controllers
 
         // DELETE api/<VendorController>/5
         [HttpDelete("{id}")]
-     public async Task<IActionResult> DeleteVendor(int id)
+     public async Task<IActionResult> DeleteVendorMaster(int id)
         {
             ServiceResponse<VendorMasterDto> serviceResponse = new ServiceResponse<VendorMasterDto>();
 
             try
             {
-                var deleteVendor = await _repository.VendorRepository.GetVendorById(id);
-                if (deleteVendor == null)
+                var deleteVendorMaster = await _repository.VendorRepository.GetVendorMasterById(id);
+                if (deleteVendorMaster == null)
                 {
-                    _logger.LogError($"Delete vendor with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Delete VendorMaster with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Delete vendor with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Delete VendorMaster with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.VendorRepository.DeleteVendor(deleteVendor);
+                string result = await _repository.VendorRepository.DeleteVendorMaster(deleteVendorMaster);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Delete Successfully";
+                serviceResponse.Message = "VendorMaster Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeleteVendorMaster action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -288,11 +288,10 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<IEnumerable<VendorIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<VendorIdNameListDto>>();
             try
             {
-                var listOfVendors = await _repository.VendorRepository.GetAllActiveVendorNameList();
-                //_logger.LogInfo("Returned all CustomerMaster");
-                var result = _mapper.Map<IEnumerable<VendorIdNameListDto>>(listOfVendors);
+                var getAllActiveVendorNameList = await _repository.VendorRepository.GetAllActiveVendorMasterNameList();
+                var result = _mapper.Map<IEnumerable<VendorIdNameListDto>>(getAllActiveVendorNameList);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all VendorName";
+                serviceResponse.Message = "Returned All ActiveVendorNameList";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

@@ -16,10 +16,6 @@ namespace Entities.DTOs
         public string? WareHouse { get; set; }
         [DefaultValue(true)]
         public bool IsActive { get; set; }
-
-        //[ForeignKey(nameof(ItemMaster))]
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -30,10 +26,7 @@ namespace Entities.DTOs
         public string? WareHouse { get; set; }
         [DefaultValue(true)]
         public bool IsActive { get; set; }
-
-        //[ForeignKey(nameof(ItemMaster))]
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
+     
     }
     public class ItemMasterWarehouseDtoUpdate
     {
@@ -43,8 +36,5 @@ namespace Entities.DTOs
         [DefaultValue(true)]
         public bool IsActive { get; set; }
 
-        //[ForeignKey(nameof(ItemMaster))]
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
     }
 }

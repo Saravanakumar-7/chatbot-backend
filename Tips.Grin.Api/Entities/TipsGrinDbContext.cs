@@ -9,5 +9,22 @@ namespace Tips.Grin.Api.Entities
         {
 
         }
+        public DbSet<Grins> Grins { get; set; }
+
+        public DbSet<GrinParts> GrinParts { get; set; }
+
+        public DbSet<IQCConfirmation> IQCConfirmations { get; set; }
+        public DbSet<IQCConfirmationItems> IQCConfirmationItems { get; set; }
+        public DbSet<Binning> Binnings { get; set; }
+        public DbSet<BinningItems> BinningItem { get; set; }
+
+        public DbSet<BinningLocation> BinningLocations { get; set; }
+
+        public DbSet<DocumentUpload> DocumentUploads { get; set; }
+        public DbSet<ReturnGrin> ReturnGrins { get; set; }
+        public DbSet<ReturnGrinParts> ReturnGrinParts { get; set; }
+        public DbSet<ReturnGrinDocumentUpload> ReturnGrinDocumentUploads { get; set; }
+
+
     }
 }

@@ -1,0 +1,99 @@
+﻿using static Tips.Production.Api.Entities.ShopOrder;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
+using Microsoft.EntityFrameworkCore;
+
+namespace Tips.Production.Api.Entities.DTOs
+{
+    public class ShopOrderDto
+    {
+        public int Id { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        [Required]
+        public string? ProjectType { get; set; }
+        [Required]
+        public string? ItemType { get; set; }
+        public string? ItemNumber { get; set; }
+        [Precision(13, 3)]
+        public decimal? TotalSOReleaseQty { get; set; }
+        [Required]
+        public DateTime SOClosedDate { get; set; }
+        public string? SAItemNumber { get; set; }
+        [Precision(13, 3)]
+        public decimal? CanCreateQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? WipQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? OqcQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? ScrapQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? SOReleaseQty { get; set; }
+        [DefaultValue(0)]
+        public OrderStatus FGDoneStatus { get; set; }
+        public bool IsDeleted { get; set; } = false;
+        [DefaultValue(0)]
+        public OrderStatus Status { get; set; }
+        [DefaultValue(false)]
+        public bool IsShortClosed { get; set; }
+        public string? ShortClosedBy { get; set; }
+        public DateTime? ShortClosedOn { get; set; }
+        public string? Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public List<ShopOrderItemDto>? ShopOrderItems { get; set; }
+
+    }
+
+    public class ShopOrderPostDto
+    {
+        public string? ShopOrderNumber { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        [Required]
+        public string? ProjectType { get; set; }
+        [Required]
+        public string? ItemType { get; set; }
+        public string? ItemNumber { get; set; }
+        [Precision(13, 3)]
+        public decimal? TotalSOReleaseQty { get; set; }
+        [Required]
+        public DateTime SOClosedDate { get; set; }
+        public string? SAItemNumber { get; set; }
+        [Precision(13, 3)]
+        public decimal? CanCreateQty { get; set; }
+
+        public List<ShopOrderItemPostDto>? ShopOrderItems { get; set; }
+    }
+
+    public class ShopOrderUpdateDto
+    {
+        public int Id { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        [Required]
+        public string? ProjectType { get; set; }
+        [Required]
+        public string? ItemType { get; set; }
+        public string? ItemNumber { get; set; }
+        [Precision(13, 3)]
+        public decimal? TotalSOReleaseQty { get; set; }
+        [Required]
+        public DateTime SOClosedDate { get; set; }
+        public string? SAItemNumber { get; set; }
+        [Precision(13, 3)]
+        public decimal? CanCreateQty { get; set; }
+        public string? Unit { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public List<ShopOrderItemUpdateDto>? ShopOrderItems { get; set; }
+    }
+    public class ListOfShopOrderDto
+    {
+       public int Id { get; set; }
+       public string? ShopOrderNumber { get; set; }
+    }
+
+}

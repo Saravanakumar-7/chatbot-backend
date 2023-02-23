@@ -20,7 +20,9 @@ namespace Repository
         {
             uoc.CreatedBy = "Admin";
             uoc.CreatedOn = DateTime.Now;
+            uoc.Unit = "Bangalore";
             var result = await Create(uoc);
+            
             return result.Id;
         }
 
@@ -33,20 +35,20 @@ namespace Repository
 
         public async Task<IEnumerable<UOC>> GetAllActiveUOC()
         {
-            var uocList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return uocList;
+            var AllActiveUoc = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            return AllActiveUoc;
         }
 
         public async Task<IEnumerable<UOC>> GetAllUOC()
         {
-            var uocList = await FindAll().ToListAsync();
-            return uocList;
+            var GetallUoc = await FindAll().ToListAsync();
+            return GetallUoc;
         }
 
         public async Task<UOC> GetUOCById(int id)
         {
-            var uocList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-            return uocList;
+            var UocbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return UocbyId;
         }
 
         public async Task<string> UpdateUOC(UOC uoc)

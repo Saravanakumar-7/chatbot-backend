@@ -4,9 +4,11 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Repository;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -15,7 +17,7 @@ namespace Tips.Master.Api.Controllers
     public class ItemMasterController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
-        private ILoggerManager _logger;
+          private ILoggerManager _logger;
         private IMapper _mapper;
 
         public ItemMasterController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
@@ -27,26 +29,26 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<ItemMasterController>
         [HttpGet]
-        public async Task<IActionResult> GetAllItems([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllItemMasters([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var ItemMasterList = await _repository.ItemMasterRepository.GetAllItems(pagingParameter);
+                var getAllItemMastersList = await _repository.ItemMasterRepository.GetAllItemMasters(pagingParameter);
                 _logger.LogInfo("Returned all ItemMasters");
                 var metadata = new
                 {
-                    ItemMasterList.TotalCount,
-                    ItemMasterList.PageSize,
-                    ItemMasterList.CurrentPage,
-                    ItemMasterList.HasNext,
-                    ItemMasterList.HasPreviuos
+                    getAllItemMastersList.TotalCount,
+                    getAllItemMastersList.PageSize,
+                    getAllItemMastersList.CurrentPage,
+                    getAllItemMastersList.HasNext,
+                    getAllItemMastersList.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(ItemMasterList);
+                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllItemMastersList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ItemMasters Successfully";
                 serviceResponse.Success = true;
@@ -57,7 +59,126 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        //GET All FG items
+        [HttpGet]
+        public async Task<IActionResult> GetAllFGItems()
+        {
+            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+
+            try
+            {
+                var getAllFGItemsList = await _repository.ItemMasterRepository.GetAllFGItems();
+                _logger.LogInfo("Returned all FGItemMasters");
+               
+                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGItemsList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all FGItemMasters Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        //passing items number and get process records
+
+      
+
+
+        //GET All Sa items
+        [HttpGet]
+        public async Task<IActionResult> GetAllSAItems()
+        {
+            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+
+            try
+            {
+                var getAllSAItemsList = await _repository.ItemMasterRepository.GetAllSAItems();
+                _logger.LogInfo("Returned all SAItemMasters");
+               
+                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllSAItemsList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SAItemMasters Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        //GET All FG&SAItems
+        [HttpGet]
+        public async Task<IActionResult> GetAllFGSAItems()
+        {
+            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+
+            try
+            {
+                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaItems();
+                _logger.LogInfo("Returned all FGSAItemMasters");
+               
+                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGSAItemsList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all FGSAItemMasters Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // get all fg,sa,fru item list
+
+        [HttpGet]
+        public async Task<IActionResult> getAllBomItems()
+        {
+            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+
+            try
+            {
+                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaFruItems();
+                _logger.LogInfo("Returned all FGSAFRUItemMasters");
+
+                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGSAItemsList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all FG,SA,FRU ItemMasters Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -66,38 +187,38 @@ namespace Tips.Master.Api.Controllers
 
         // GET api/<ItemMasterController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetItemById(int id)
+        public async Task<IActionResult> GetItemMasterById(int id)
         {
             ServiceResponse<ItemMasterDto> serviceResponse = new ServiceResponse<ItemMasterDto>();
 
             try
             {
-                var itemMaster = await _repository.ItemMasterRepository.GetItemById(id);
-                if (itemMaster == null)
+                var getItemMaster = await _repository.ItemMasterRepository.GetItemMasterById(id);
+                if (getItemMaster == null)
                 {
                     _logger.LogError($"ItemMaster with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ItemMaster with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"ItemMaster with id hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
+                    return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogInfo($"Returned ItemMaster with id: {id}");
-                    var result = _mapper.Map<ItemMasterDto>(itemMaster);
+                    var result = _mapper.Map<ItemMasterDto>(getItemMaster);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned ItemMaster with id Successfully";
+                    serviceResponse.Message = "Returned ItemMasterById Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetItemById action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetItemMasterById action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -136,17 +257,17 @@ namespace Tips.Master.Api.Controllers
                 var itemMasterFileUpload = _mapper.Map<IEnumerable<ItemMasterFileUpload>>(itemMasterDtoPost.ItemMasterFileUpload);
                 var itemMasterRouting=_mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoPost.ItemMasterRouting);
                 var itemMasterWarehouse = _mapper.Map<IEnumerable<ItemMasterWarehouse>>(itemMasterDtoPost.ItemMasterWarehouse);
-                _repository.ItemMasterRepository.CreateItem(itemMasterEntity);
+                _repository.ItemMasterRepository.CreateItemMaster(itemMasterEntity);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "ItemMaster Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetItemById", serviceResponse);
+                return Created("GetItemMasterById", serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateItemMaster action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -167,7 +288,7 @@ namespace Tips.Master.Api.Controllers
                 {
                     _logger.LogError("ItemMaster object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Update Vendor object is null";
+                    serviceResponse.Message = "Update ItemMaster object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -181,8 +302,8 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var itemMasterEntity = await _repository.ItemMasterRepository.GetItemById(id);
-                if (itemMasterEntity is null)
+                var updateItemMasterEntity = await _repository.ItemMasterRepository.GetItemMasterById(id);
+                if (updateItemMasterEntity is null)
                 {
                     _logger.LogError($"ItemMaster with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -196,7 +317,7 @@ namespace Tips.Master.Api.Controllers
                 var itemMasterFileUpload = _mapper.Map<IEnumerable<ItemMasterFileUpload>>(itemMasterDtoUpdate.ItemMasterFileUpload);
                 var itemMasterRouting = _mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoUpdate.ItemMasterRouting);
                 var itemMasterWarehouse = _mapper.Map<IEnumerable<ItemMasterWarehouse>>(itemMasterDtoUpdate.ItemMasterWarehouse);
-                var itemMaster = _mapper.Map(itemMasterDtoUpdate, itemMasterEntity);
+                var itemMaster = _mapper.Map(itemMasterDtoUpdate, updateItemMasterEntity);
 
                 itemMaster.ItemmasterAlternate = itemMasterAlternate.ToList();
                 itemMaster.ItemMasterApprovedVendor = itemMasterApprovedVendor.ToList();
@@ -204,11 +325,11 @@ namespace Tips.Master.Api.Controllers
                 itemMaster.ItemMasterRouting = itemMasterRouting.ToList();
                 itemMaster.ItemMasterWarehouse = itemMasterWarehouse.ToList();
 
-                string result = await _repository.ItemMasterRepository.UpdateItem(itemMaster);
+                string result = await _repository.ItemMasterRepository.UpdateItemMaster(itemMaster);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = "ItemMaster Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -232,28 +353,28 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var itemMaster = await _repository.ItemMasterRepository.GetItemById(id);
-                if (itemMaster == null)
+                var deleteItemMaster = await _repository.ItemMasterRepository.GetItemMasterById(id);
+                if (deleteItemMaster == null)
                 {
                     _logger.LogError($"ItemMaster with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Delete vendor hasn't been found in db";
+                    serviceResponse.Message = "Delete ItemMaster hasn't been found in db";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.ItemMasterRepository.DeleteItem(itemMaster);
+                string result = await _repository.ItemMasterRepository.DeleteItemMaster(deleteItemMaster);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Delete Successfully";
+                serviceResponse.Message = "ItemMaster Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeleteItemMaster action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -269,8 +390,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var itemMaster = await _repository.ItemMasterRepository.GetItemById(id);
-                if (itemMaster is null)
+                var activateItemMaster = await _repository.ItemMasterRepository.GetItemMasterById(id);
+                if (activateItemMaster is null)
                 {
                     _logger.LogError($"ItemMaster with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -279,12 +400,12 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                itemMaster.IsActive = true;
-                string result = await _repository.ItemMasterRepository.UpdateItem(itemMaster);
+                activateItemMaster.IsActive = true;
+                string result = await _repository.ItemMasterRepository.UpdateItemMaster(activateItemMaster);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Activate Successfully";
+                serviceResponse.Message = "ItemMaster Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -307,8 +428,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var itemMaster = await _repository.ItemMasterRepository.GetItemById(id);
-                if (itemMaster is null)
+                var deactivateItemMaster = await _repository.ItemMasterRepository.GetItemMasterById(id);
+                if (deactivateItemMaster is null)
                 {
                     _logger.LogError($"ItemMaster with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -317,12 +438,12 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                  }
-                itemMaster.IsActive = false;
-                string result = await _repository.ItemMasterRepository.UpdateItem(itemMaster);
+                deactivateItemMaster.IsActive = false;
+                string result = await _repository.ItemMasterRepository.UpdateItemMaster(deactivateItemMaster);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "DeActivate Successfully";
+                serviceResponse.Message = "ItemMaster Deactivated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -337,6 +458,69 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveItemMasterIdNoList()
+        {
+            ServiceResponse<IEnumerable<ItemMasterIdNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterIdNoListDto>>();
+            try
+            {
+                var getAllActiveItemMasters = await _repository.ItemMasterRepository.GetAllActiveItemMasterIdNoList();
+                //_logger.LogInfo("Returned all CustomerMaster");
+                var result = _mapper.Map<IEnumerable<ItemMasterIdNoListDto>>(getAllActiveItemMasters);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active ItemMasterIdNoList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
 
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveItemMasterIdNoList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("ItemNumber")]
+        public async Task<IActionResult> GetItemMasterByItemNumber(string ItemNumber)
+        {
+            ServiceResponse<ItemMasterDto> serviceResponse = new ServiceResponse<ItemMasterDto>();
+
+            try
+            {
+                var getItemMasterByItemNumber = await _repository.ItemMasterRepository.GetItemMasterByItemNumber(ItemNumber);
+                if (getItemMasterByItemNumber == null)
+                {
+                    _logger.LogError($"Itemmasters with id: {ItemNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Itemmasters with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Itemmasters with id: {ItemNumber}");
+                    var result = _mapper.Map<ItemMasterDto>(getItemMasterByItemNumber);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned All ItemMasterByItemNumber";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetItemMasterByItemNumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

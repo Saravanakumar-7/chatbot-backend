@@ -19,7 +19,9 @@ namespace Repository
         {
             salutations.CreatedBy = "Admin";
             salutations.CreatedOn = DateTime.Now;
+            salutations.Unit = "Bangalore";
             var result = await Create(salutations);
+            
             return result.Id;
         }
 
@@ -27,29 +29,29 @@ namespace Repository
         {
 
             Delete(salutations);
-            string result = $"salutations details of {salutations.Id} is deleted successfully!";
+            string result = $"Salutations details of {salutations.Id} is deleted successfully!";
             return result;
         }
 
         public async Task<IEnumerable<Salutations>> GetAllActiveSalutations()
         {
-            var salutationsList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return salutationsList;
+            var AllActivesalutations= await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActivesalutations;
         }
 
         public async Task<IEnumerable<Salutations>> GetAllSalutations()
         {
 
-            var salutationsList = await FindAll().ToListAsync();
+            var GetallSalutations= await FindAll().ToListAsync();
 
-            return salutationsList;
+            return GetallSalutations;
         }
 
         public async Task<Salutations> GetSalutationsById(int id)
         {
-            var salutations = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var SalutationsbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return salutations;
+            return SalutationsbyId;
         }
 
         public async Task<string> UpdateSalutations(Salutations salutations)
@@ -57,7 +59,7 @@ namespace Repository
             salutations.LastModifiedBy = "Admin";
             salutations.LastModifiedOn = DateTime.Now;
             Update(salutations);
-            string result = $"salutations details of {salutations.Id} is updated successfully!";
+            string result = $"Salutations details of {salutations.Id} is updated successfully!";
             return result;
         }
     }

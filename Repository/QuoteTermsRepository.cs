@@ -20,7 +20,9 @@ namespace Repository
         {
             quoteTerms.CreatedBy = "Admin";
             quoteTerms.CreatedOn = DateTime.Now;
+            quoteTerms.Unit = "Bangalore";
             var result = await Create(quoteTerms);
+
             return result.Id;
         }
 
@@ -33,20 +35,20 @@ namespace Repository
 
         public async Task<IEnumerable<QuoteTerms>> GetAllActiveQuoteTerms()
         {
-            var quoteTermsList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return quoteTermsList;
+            var AllActiveQuoteTerms = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            return AllActiveQuoteTerms;
         }
 
         public async Task<IEnumerable<QuoteTerms>> GetAllQuoteTerms()
         {
-            var quoteTermsList = await FindAll().ToListAsync();
-            return quoteTermsList;
+            var GetallQuoteTerms= await FindAll().ToListAsync();
+            return GetallQuoteTerms;
         }
 
         public async Task<QuoteTerms> GetQuoteTermsById(int id)
         {
-            var quoteTermsList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-            return quoteTermsList;
+            var QuoteTermsbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return QuoteTermsbyId;
         }
 
         public async Task<string> UpdateQuoteTerms(QuoteTerms quoteTerms)

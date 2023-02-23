@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,13 +11,13 @@ namespace Entities.DTOs
     {
         public int Id { get; set; }
 
-        public string? PoAddress { get; set; }
+        public string? POAddress { get; set; }
 
         public string? GSTNNumber { get; set; }
 
         public string? PANNumber { get; set; }
 
-        public bool SameasAddress { get; set; } = false;
+        public bool SameAsAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
 
@@ -29,32 +30,31 @@ namespace Entities.DTOs
     public class CompanyAddressesDtoPost
     {
     
-        public string? PoAddress { get; set; }
+        public string? POAddress { get; set; }
 
         public string? GSTNNumber { get; set; }
 
         public string? PANNumber { get; set; }
 
-        public bool SameasAddress { get; set; } = false;
+        public bool SameAsAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
 
-       
+
     }
     public class CompanyAddressesDtoUpdate
     {
         public int Id { get; set; }
 
-        public string? PoAddress { get; set; }
+        public string? POAddress { get; set; }
 
         public string? GSTNNumber { get; set; }
 
         public string? PANNumber { get; set; }
 
-        public bool SameasAddress { get; set; } = false;
+        public bool SameAsAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
 
-       
     }
 }

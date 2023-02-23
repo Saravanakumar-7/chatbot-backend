@@ -20,7 +20,9 @@ namespace Repository
         {
             materialType.CreatedBy = "Admin";
             materialType.CreatedOn = DateTime.Now;
+            materialType.Unit = "Bangalore";
             var result = await Create(materialType);
+            
             return result.Id;
         }
 
@@ -33,20 +35,20 @@ namespace Repository
 
         public async Task<IEnumerable<MaterialType>> GetAllActiveMaterialType()
         {
-            var materialTypeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return materialTypeList;
+            var AllActiveMaterialTypes = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveMaterialTypes;
         }
 
         public async Task<IEnumerable<MaterialType>> GetAllMaterialType()
         {
-            var materialTypeList = await FindAll().ToListAsync();
-            return materialTypeList;
+            var GetallmaterialTypes = await FindAll().ToListAsync();
+            return GetallmaterialTypes;
         }
 
         public async Task<MaterialType> GetMaterialTypeById(int id)
         {
-            var materialTypeList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-            return materialTypeList;
+            var MaterialTypebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return MaterialTypebyId;
         }
 
         public async Task<string> UpdateMaterialType(MaterialType materialType)

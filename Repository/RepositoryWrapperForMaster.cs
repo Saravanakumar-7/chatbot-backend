@@ -16,6 +16,15 @@ namespace Repository
         private IMaterialTypeRepository _materialTypeRepo;
         private IProcurementTypeRepository _procurementTypeRepo;
         private IItemMasterRepository _itemMasterRepo;
+        private IEnggBomRepository? _enggBomRepository;
+        private ITypeSolutionRepository _typeSolutionRepository;
+        private IProductTypeRepository? _productTypeRepository;
+ 
+        private IRoomNameRepository? _roomNameRepository;
+        private IEnggBomNREConsumableRepository? _enggBomNREConsumableRepository;
+         
+
+        private IItemMasterRoutingRepository? _itemmasterRoutingRepository;
 
         private IDeliveryTermRepository? _deliveryTermRepo;
         private IVolumeUomRepository? _volumeUomRepo;
@@ -26,7 +35,7 @@ namespace Repository
         private IBankRepository? _bankRepo;
         private ICurrencyRepository? _currency;
 
-        private IBasicOfApprovalRepository? _basicOfApproval;
+        private IBasisOfApprovalRepository? _basisOfApproval;
         private IScopeOfSupplyRepository? _scopeOfSupply;
         private IVendorCategoryRepository? _vendorCategory;
         private IVendorDepartmentRepository? _vendorDepartment;
@@ -44,7 +53,11 @@ namespace Repository
         private IExportUnitTypeRepository? _exportUnitTypeRepo; 
         private ITypeOfCompanyRepository? _typeOfCompanyRepo;   
         private IPaymentTermRepository? _paymentTermRepo;   
-        private IPackingInstructionRepository? _packingInstructionRepo; 
+        private IPackingInstructionRepository? _packingInstructionRepo;
+        private IPreferredFreightForwarderRepository? _preferredFreightForwarderRepo;
+        private IGST_PercentageRepository? _gstpercentageRepo;
+        private IPriceListRepository? _pricelistRepo;
+        private IShipmentModeRepository? _shipmentmodeRepo;
 
         private IShipmentInstructionsRepository? _shipmentInstructionsRepo;
         private ICategoryRepository? _categoryRepo;
@@ -57,17 +70,237 @@ namespace Repository
          
 
         private ICompanyMasterRepository? _companyMasterRepo;
-         
+
+        private ILeadRepository? _leadRepo;
 
         private IUOCRepository? _uOCRepo;
         private IUOMRepository? _uOMRepo;
         private ICommodityRepository? _commodityRepo;
         private ILocationsRepository? _locationsRepo;
-
+        private IProcessRepository? _processRepo;
+        private IPartTypesRepository? _parttypesRepo;
+        private IDemoStatusRepository? _demoStatusRepo;
+        private ILeadStatusRepository? _leadStatusRepo;
+        private ILeadTypeRepository? _leadTypeRepo;
+        private ISecondarySourceRepository? _secondarySourceRepo;
+        private ISourceRepository? _sourceRepo;
+        private IReleaseEnggBomRepository? _releaseEnggBomRepo;
+        private IReleaseCostBomRepository? _releaseCostBomRepo;
+        private IReleaseProductBomRepository? _releaseProductBomRepo;
+        private IEnggBomGroupRepository? _enggbomGroupRepo;
+        private IEnggCustomFieldRepository? _enggcustomFieldRepo;
+         
 
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
+        }
+        public IEnggBomRepository EnggBomRepository
+        {
+            get
+            {
+                if (_enggBomRepository == null)
+                {
+                    _enggBomRepository = new EngineeringBomRepository(_tipsMasterDbContext);
+                }
+                return _enggBomRepository;
+            }
+        }
+
+        public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository
+        {
+            get
+            {
+                if (_enggBomNREConsumableRepository == null)
+                {
+                    _enggBomNREConsumableRepository = new EngineeringNREConsumableRepository(_tipsMasterDbContext);
+                }
+                return _enggBomNREConsumableRepository;
+            }
+        }
+
+        public IItemMasterRoutingRepository ItemMasterRoutingRepository
+        {
+            get
+            {
+                if (_itemmasterRoutingRepository == null)
+                {
+                    _itemmasterRoutingRepository = new ItemMasterRoutingRepository(_tipsMasterDbContext);
+                }
+                return _itemmasterRoutingRepository;
+            }
+        }
+        public IRoomNameRepository RoomNameRepository
+        {
+            get
+            {
+                if (_roomNameRepository == null)
+                {
+                    _roomNameRepository = new RoomNameRepository(_tipsMasterDbContext);
+                }
+                return _roomNameRepository;
+            }
+        }
+        public ITypeSolutionRepository TypeSolutionRepository
+        {
+            get
+            {
+                if (_typeSolutionRepository == null)
+                {
+                    _typeSolutionRepository = new TypeSolutionRepository(_tipsMasterDbContext);
+                }
+                return _typeSolutionRepository;
+            }
+        }
+
+        public IProductTypeRepository ProductTypeRepository
+        {
+            get
+            {
+                if (_productTypeRepository == null)
+                {
+                    _productTypeRepository = new ProductTypeRepository(_tipsMasterDbContext);
+                }
+                return _productTypeRepository;
+            }
+        }
+
+        public ISourceRepository sourceRepository
+        {
+            get
+            {
+                if (_sourceRepo == null)
+                {
+                    _sourceRepo = new SourceRepository(_tipsMasterDbContext);
+                }
+                return _sourceRepo;
+            }
+        }
+        public ISecondarySourceRepository secondarySourceRepository
+        {
+            get
+            {
+                if (_secondarySourceRepo == null)
+                {
+                    _secondarySourceRepo = new SecondarySourceRepository(_tipsMasterDbContext);
+                }
+                return _secondarySourceRepo;
+            }
+        }
+        public ILeadStatusRepository LeadStatusRepository
+        {
+            get
+            {
+                if (_leadStatusRepo == null)
+                {
+                    _leadStatusRepo = new LeadStatusRepository(_tipsMasterDbContext);
+                }
+                return _leadStatusRepo;
+            }
+        }
+        public ILeadTypeRepository LeadTypeRepository
+        {
+            get
+            {
+                if (_leadTypeRepo == null)
+                {
+                    _leadTypeRepo = new LeadTypeRepository(_tipsMasterDbContext);
+                }
+                return _leadTypeRepo;
+            }
+        }
+
+        public IDemoStatusRepository DemoStatusRepository
+        {
+            get
+            {
+                if (_demoStatusRepo == null)
+                {
+                    _demoStatusRepo = new DemoStatusRepository(_tipsMasterDbContext);
+                }
+                return _demoStatusRepo;
+            }
+        }
+
+        public ILeadRepository LeadRepository
+        {
+            get
+            {
+                if (_leadRepo == null)
+                {
+                    _leadRepo = new LeadRepository(_tipsMasterDbContext);
+                }
+                return _leadRepo;
+            }
+        }
+        public IPartTypesRepository partTypesRepository
+        {
+            get
+            {
+                if (_parttypesRepo == null)
+                {
+                    _parttypesRepo = new PartTypesRepository(_tipsMasterDbContext);
+                }
+                return _parttypesRepo;
+            }
+        }
+        public IProcessRepository ProcessRepository
+        {
+            get
+            {
+                if (_processRepo == null)
+                {
+                    _processRepo = new ProcessRepository(_tipsMasterDbContext);
+                }
+                return _processRepo;
+            }
+        }
+        public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository
+        {
+            get
+            {
+                if (_preferredFreightForwarderRepo == null)
+                {
+                    _preferredFreightForwarderRepo = new PreferredFreightForwarderRepository(_tipsMasterDbContext);
+                }
+                return _preferredFreightForwarderRepo;
+            }
+        }
+
+        public IPreferredFreightForwarderRepository preferredFreightForwarderRepository => throw new NotImplementedException();
+
+        public IPriceListRepository PriceListRepository
+        {
+            get
+            {
+                if (_pricelistRepo == null)
+                {
+                    _pricelistRepo = new PriceListRepository(_tipsMasterDbContext);
+                }
+                return _pricelistRepo;
+            }
+        }
+        public IShipmentModeRepository ShipmentModeRepository
+        {
+            get
+            {
+                if (_shipmentmodeRepo == null)
+                {
+                    _shipmentmodeRepo = new ShipmentModeRepository(_tipsMasterDbContext);
+                }
+                return _shipmentmodeRepo;
+            }
+        }
+        public IGST_PercentageRepository GST_PercentageRepository
+        {
+            get
+            {
+                if (_gstpercentageRepo == null)
+                {
+                    _gstpercentageRepo = new GST_PercentageRepository(_tipsMasterDbContext);
+                }
+                return _gstpercentageRepo;
+            }
         }
         public ILocationsRepository LocationsRepository
         {
@@ -113,7 +346,7 @@ namespace Repository
                 return _uOMRepo;
             }
         }
-        public IPaymentTermRepository paymentTermRepository
+        public IPaymentTermRepository PaymentTermRepository
         {
             get
             {
@@ -124,6 +357,8 @@ namespace Repository
                 return _paymentTermRepo;
             }
         }
+
+        //public IPaymentTermRepository PaymentTermRepository => throw new NotImplementedException();
 
         public ISegmentRepository SegmentRepository
         {
@@ -244,7 +479,7 @@ namespace Repository
                 return _customerTypeRepo;
             }
         }
-        public IPackingInstructionRepository packingInstructionRepository
+        public IPackingInstructionRepository PackingInstructionRepository
         {
             get
             {
@@ -375,15 +610,15 @@ namespace Repository
                 return _currency;
             }
         }
-        public IBasicOfApprovalRepository BasicOfApprovalRepository
+        public IBasisOfApprovalRepository BasisOfApprovalRepository
         {
             get
             {
-                if (_basicOfApproval == null)
+                if (_basisOfApproval == null)
                 {
-                    _basicOfApproval = new BasicOfApprovalRepository(_tipsMasterDbContext);
+                    _basisOfApproval = new BasisOfApprovalRepository(_tipsMasterDbContext);
                 }
-                return _basicOfApproval;
+                return _basisOfApproval;
             }
         }
 
@@ -456,7 +691,7 @@ namespace Repository
                 return _costCenterRepo;
             }
         }
-        public ICostingMethodRepository costingMethodRepository
+        public ICostingMethodRepository CostingMethodRepository
         {
             get
             {
@@ -468,9 +703,9 @@ namespace Repository
             }
         }
 
-        public ICostingMethodRepository CostingMethodRepository => throw new NotImplementedException();
+      //  public ICostingMethodRepository CostingMethodRepository => throw new NotImplementedException();
 
-        public IExportUnitTypeRepository exportUnitTypeRepository
+        public IExportUnitTypeRepository ExportUnitTypeRepository
         {
             get
             {
@@ -482,9 +717,9 @@ namespace Repository
             }
         }
 
-        public IExportUnitTypeRepository ExportUnitTypeRepository => throw new NotImplementedException();
+        //public IExportUnitTypeRepository ExportUnitTypeRepository => throw new NotImplementedException();
 
-        public ISalutationsRepository salutationsRepository
+        public ISalutationsRepository SalutationsRepository
         {
             get
             {
@@ -496,7 +731,7 @@ namespace Repository
             }
         }
 
-        public ISalutationsRepository SalutationsRepository => throw new NotImplementedException();
+        //public ISalutationsRepository SalutationsRepository => throw new NotImplementedException();
 
         public ILanguageRepository LanguageRepository
         {
@@ -520,7 +755,7 @@ namespace Repository
                 return _typeOfCompanyRepo;
             }
         }
-        public INatureOfRelationshipRepository natureOfRelationshipRepository
+        public INatureOfRelationshipRepository NatureOfRelationshipRepository
         {
             get
             {
@@ -532,7 +767,7 @@ namespace Repository
             }
         }
 
-        public INatureOfRelationshipRepository NatureOfRelationshipRepository => throw new NotImplementedException();
+        // INatureOfRelationshipRepository NatureOfRelationshipRepository => throw new NotImplementedException();
 
         public IAuditFrequencyRepository AuditFrequencyRepository
         {
@@ -546,6 +781,67 @@ namespace Repository
             }
         }
 
+        public IReleaseEnggBomRepository ReleaseEnggBomRepository
+        {
+            get
+            {
+                if (_releaseEnggBomRepo == null)
+                {
+                    _releaseEnggBomRepo = new ReleaseEnggBomRepository(_tipsMasterDbContext);
+                }
+                return _releaseEnggBomRepo;
+            }
+        }
+
+
+        public IReleaseCostBomRepository ReleaseCostBomRepository
+        {
+            get
+            {
+                if (_releaseCostBomRepo == null)
+                {
+                    _releaseCostBomRepo = new ReleaseCostBomRepository(_tipsMasterDbContext);
+                }
+                return _releaseCostBomRepo;
+            }
+        }
+
+
+        public IReleaseProductBomRepository ReleaseProductBomRepository
+        {
+            get
+            {
+                if (_releaseProductBomRepo == null)
+                {
+                    _releaseProductBomRepo = new ReleaseProductBomRepository(_tipsMasterDbContext);
+                }
+                return _releaseProductBomRepo;
+            }
+        }
+
+        public IEnggBomGroupRepository EnggBomGroupRepository
+        {
+            get
+            {
+                if (_enggbomGroupRepo == null)
+                {
+                    _enggbomGroupRepo = new EnggBomGroupRepository(_tipsMasterDbContext);
+                }
+                return _enggbomGroupRepo;
+            }
+        }
+
+        public IEnggCustomFieldRepository EnggCustomFieldRepository
+        {
+            get
+            {
+                if (_enggcustomFieldRepo == null)
+                {
+                    _enggcustomFieldRepo = new EnggCustomFieldRepository(_tipsMasterDbContext);
+                }
+                return _enggcustomFieldRepo;
+            }
+        }
 
         public IVendorContactRepository VendorContactRepository => throw new NotImplementedException();
 
@@ -553,11 +849,11 @@ namespace Repository
 
         public IVendorBankingRepository VendorBankingRepository => throw new NotImplementedException();
         
-        public ITypeOfCompanyRepository typeOfCompanyRepository=> throw new NotImplementedException();
+        //public ITypeOfCompanyRepository TypeOfCompanyRepository => throw new NotImplementedException();
 
-        public IPaymentTermRepository PaymentTermRepository => throw new NotImplementedException();
+        //public IPaymentTermRepository PaymentTermRepository => throw new NotImplementedException();
 
-        public IPackingInstructionRepository PackingInstructionRepository => throw new NotImplementedException();
+        //public IPackingInstructionRepository PackingInstructionRepository => throw new NotImplementedException();
 
         public ICompanyAddressesRepository CompanyAddressesRepository => throw new NotImplementedException();
 
@@ -579,9 +875,30 @@ namespace Repository
 
         public IItemMasterFileUpload ItemMasterFileUploadRepository => throw new NotImplementedException();
 
-        public IItemMasterRouting ItemMasterRoutingRepository => throw new NotImplementedException();
-
+ 
         public IItemMasterWarehouse ItemMasterWarehouseRepository => throw new NotImplementedException();
+
+        public IEnggBomAlternatesRepository EnggBomAlternatesRepository => throw new NotImplementedException();
+
+        public IEnggBomChildItemRepository EnggBomChildItemRepository => throw new NotImplementedException();
+
+ 
+        //public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
+
+        //add new
+        //public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
+
+
+        //public IItemMasterRoutingRepository ItemMasterRoutingRepository => throw new NotImplementedException();
+
+
+
+
+        //public ICustomerInfoRepository CustomerInfoRepository => throw new NotImplementedException();
+
+        //public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository => throw new NotImplementedException();
+
+
 
         public void SaveAsync()
         {

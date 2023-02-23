@@ -21,7 +21,9 @@ namespace Repository
         {
             typeOfCompany.CreatedBy = "Admin";
             typeOfCompany.CreatedOn = DateTime.Now;
+            typeOfCompany.Unit = "Bangalore";
             var result = await Create(typeOfCompany);
+            
             return result.Id;
         }
 
@@ -34,24 +36,24 @@ namespace Repository
 
         public async Task<IEnumerable<TypeOfCompany>> GetAllActiveTypeofCompanies()
         {
-            var typeOfCompanyList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return typeOfCompanyList;
+            var AllActiveTypeOfCompanyList = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveTypeOfCompanyList;
         }
 
         public async Task<IEnumerable<TypeOfCompany>> GetAllTypeOfCompanies()
         {
 
-            var typeOfCompanyList = await FindAll().ToListAsync();
+            var GetallTypeOfCompany = await FindAll().ToListAsync();
 
-            return typeOfCompanyList;
+            return GetallTypeOfCompany;
         }
 
         public async Task<TypeOfCompany> GetTypeOfCompanyById(int id)
         {
 
-            var typeOfCompany = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var TypeOfCompanybyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return typeOfCompany;
+            return TypeOfCompanybyId;
         }
 
         public async Task<string> UpdateTypeOfCompany(TypeOfCompany typeOfCompany)
@@ -60,7 +62,7 @@ namespace Repository
             typeOfCompany.LastModifiedBy = "Admin";
             typeOfCompany.LastModifiedOn = DateTime.Now;
             Update(typeOfCompany);
-            string result = $"AuditFrequency details of {typeOfCompany.Id} is updated successfully!";
+            string result = $"TypeOfCompany details of {typeOfCompany.Id} is updated successfully!";
             return result;
         }
     }
