@@ -78,7 +78,10 @@ namespace Tips.Grin.Api.Repository
             var getAllGrinDetails = FindAll()
               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue) ||
                  inv.VendorId.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))))
-               .Include(t => t.GrinParts)
+              .Include(t => t.GrinDocuments)
+              .Include(t => t.GrinParts)
+              .ThenInclude(c=>c.CoCUpload)
+              .Include(t => t.GrinParts)
                .ThenInclude(d => d.ProjectNumbers);
 
             return PagedList<Grins>.ToPagedList(getAllGrinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
@@ -92,11 +95,11 @@ namespace Tips.Grin.Api.Repository
         public async Task<Grins> GetGrinById(int id)
         {
             var grinDetailsbyId = await _tipsGrinDbContext.Grins.Where(x => x.Id == id)
-                                //.Include(c=>c.GrinDocuments)
-                                //.Include(m => m.GrinParts)
-                                //.ThenInclude(n=>n.cocUpload)
-                               .Include(x => x.GrinParts) 
-                               .ThenInclude(t => t.ProjectNumbers)
+                                    .Include(t => t.GrinDocuments)
+              .Include(t => t.GrinParts)
+              .ThenInclude(c => c.CoCUpload)
+              .Include(t => t.GrinParts)
+               .ThenInclude(d => d.ProjectNumbers)
                                .FirstOrDefaultAsync();
 
             return grinDetailsbyId;

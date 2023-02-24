@@ -191,6 +191,19 @@ namespace Tips.Purchase.Api.Repository
             return pOItemNumberDetails;
         }
 
+        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPONumberListByVendorId(string vendorId)
+        {
+            IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
+                           .Where(x => x.VendorId == vendorId).Select(x => new PurchaseOrderIdNameListDto()
+                           {
+                               Id = x.Id,
+                               PONumber = x.PONumber
+                           }).ToListAsync();
+
+
+            return pONameListbyVendorId;
+        }
+
     }
 
     public class UploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository

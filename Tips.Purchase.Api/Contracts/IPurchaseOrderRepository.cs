@@ -15,6 +15,9 @@ namespace Tips.Purchase.Api.Contracts
         Task<PurchaseOrder> GetPurchaseOrderByPONumber(string poNumber);
         Task<IEnumerable<PurchaseOrder>> GetAllActivePurchaseOrders();
         Task<long> CreatePurchaseOrder(PurchaseOrder purchaseOrder);
+
+        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPONumberListByVendorId(string vendorId);
+
         Task<string> UpdatePurchaseOrder(PurchaseOrder purchaseOrder);
         Task<string> DeletePurchaseOrder(PurchaseOrder purchaseOrder);
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllActivePurchaseOrderNameList();

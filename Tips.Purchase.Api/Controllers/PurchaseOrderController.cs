@@ -318,7 +318,35 @@ namespace Tips.Purchase.Api.Controllers
             return null;
         }
 
-        [HttpPost]
+        //getponumber by vendorid
+
+        [HttpGet("{vendorId}")]
+        public async Task<IActionResult> GetAllPoNumberListByVendorId(string vendorId)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pONumberDetailsbyVendorId = await _repository.GetAllPONumberListByVendorId(vendorId);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PONumberListId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllPONumberListByVendorId action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+    }
+
+    [HttpPost]
         public async Task<IActionResult> CreatePurchaseOrder([FromBody] PurchaseOrderPostDto purchaseOrderPostDto)
         {
             ServiceResponse<PurchaseOrderPostDto> serviceResponse = new ServiceResponse<PurchaseOrderPostDto>();
