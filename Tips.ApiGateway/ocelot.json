@@ -1,0 +1,165 @@
+{
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:7163"
+  },
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/tips/Bank/GetAllBankDetails",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Bank/GetAllBankDetails",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Bank/GetAllActiveBankDetails",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Bank/GetAllActiveBankDetails",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Bank/GetBankById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Bank/GetBankById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Bank/CreateBank",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/Bank/CreateBank",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Bank/UpdateBank/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Bank/UpdateBank/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Bank/DeleteBank/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/Bank/DeleteBank/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Bank/ActivateBank/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Bank/ActivateBank/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Bank/DeactivateBank/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Bank/DeactivateBank/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    // Sales Service API Routes
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/GetAllRfqs",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Rfq/GetAllRfqs",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/GetRfqById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Rfq/GetRfqById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/CreateRfq",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/Rfq/CreateRfq",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/UpdateRfq/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Rfq/UpdateRfq/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/DeleteRfq/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/Rfq/DeleteRfq/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    }
+  ]
+}
