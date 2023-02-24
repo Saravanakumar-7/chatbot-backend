@@ -19,6 +19,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IPurchaseRequisitionRepository, PurchaseRequisitionRepository>();
 builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
 builder.Services.AddScoped<IDocumentUploadRepository, UploadDocumentRepository>();
+builder.Services.AddScoped<IDocumentUploadRepository, PRUploadDocumentRepository>();
 builder.Services.AddScoped<IPoItemsRepository, PurchaseOrderItemRepository>();
 
 

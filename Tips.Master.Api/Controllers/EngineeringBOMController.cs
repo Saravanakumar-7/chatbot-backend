@@ -236,7 +236,7 @@ namespace Tips.Master.Api.Controllers
                 {
                     _logger.LogError("Engineering Bom object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Engineering Bom object sent from client is null.";
+                    serviceResponse.Message = "Engineering Bom object is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -245,18 +245,21 @@ namespace Tips.Master.Api.Controllers
                 {
                     _logger.LogError("Invalid Engineering Bom object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Engineering Bom object sent from client.";
+                    serviceResponse.Message = "Invalid Engineering Bom object.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
 
                 var enggBomList = _mapper.Map<EnggBom>(enggBomPostDto);
-                var enggnre = enggBomPostDto.BomNREConsumablePostDto;
+
+                enggBomList.RevisionNumber = 1;
+
+                var enggNre = enggBomPostDto.BomNREConsumablePostDto;
                 var nreList = new List<NREConsumable>();
-                for (int i = 0; i < enggnre.Count; i++)
+                for (int i = 0; i < enggNre.Count; i++)
                 {
-                    NREConsumable enggChildItemDetails = _mapper.Map<NREConsumable>(enggnre[i]);
+                    NREConsumable enggChildItemDetails = _mapper.Map<NREConsumable>(enggNre[i]);
                     nreList.Add(enggChildItemDetails);
 
                 }
@@ -265,23 +268,34 @@ namespace Tips.Master.Api.Controllers
                 var enggChildItemDto = enggBomPostDto.EnggChildItemPosts;
 
                 var enggChildItemList = new List<EnggChildItem>();
-                for (int i = 0; i < enggChildItemDto.Count; i++)
+                if (enggChildItemDto != null)
                 {
-                    EnggChildItem enggChildItemDetail = _mapper.Map<EnggChildItem>(enggChildItemDto[i]);
-                    enggChildItemDetail.EnggAlternates = _mapper.Map<List<EnggAlternates>>(enggChildItemDto[i].EnggAlternatesPostDtos);
-                    enggChildItemList.Add(enggChildItemDetail);
-
+                    for (int i = 0; i < enggChildItemDto.Count; i++)
+                    {
+                        EnggChildItem enggChildItemDetail = _mapper.Map<EnggChildItem>(enggChildItemDto[i]);
+                        enggChildItemDetail.EnggAlternates = _mapper.Map<List<EnggAlternates>>(enggChildItemDto[i].EnggAlternatesPostDtos);
+                        enggChildItemList.Add(enggChildItemDetail);
+                    }
+                }
+                else
+                {
+                    _logger.LogError("Engineering Bom Item object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Engineering Bom Items Object is Empty.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
                 }
                 enggBomList.EnggChildItems = enggChildItemList;
 
-                _repository.EnggBomRepository.CreateEnggBom(enggBomList);
+                await _repository.EnggBomRepository.CreateEnggBom(enggBomList);
 
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetEnggBomById", serviceResponse);
+                return Ok(serviceResponse);
 
             }
             catch (Exception ex)
@@ -301,7 +315,7 @@ namespace Tips.Master.Api.Controllers
 
         // PUT api/<EngineeringBOMController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEnggBom(int id, [FromBody] EnggBomUpdateDto enggBomDto)
+        public async Task<IActionResult> UpdateEnggBom(int id, [FromBody] EnggBomUpdateDto enggBomDto, [FromQuery] RevisionType revisionType)
         {
             ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
 
@@ -338,6 +352,17 @@ namespace Tips.Master.Api.Controllers
 
 
                 var enggBomList = _mapper.Map<EnggBom>(updateEnggBom);
+
+                if (revisionType == 0)
+                {
+                    enggBomList.RevisionNumber =enggBomList.RevisionNumber + Convert.ToDecimal(0.1);
+                }
+                else
+                {
+                    var revRound = Math.Round(enggBomList.RevisionNumber);
+                    enggBomList.RevisionNumber = revRound + Convert.ToDecimal(1.0);
+                }
+
 
                 var enggChildItemDto = enggBomDto.EnggChildItemUpdates;
 

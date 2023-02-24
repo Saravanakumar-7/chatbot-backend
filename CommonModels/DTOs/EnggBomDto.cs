@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -18,7 +19,8 @@ namespace Entities.DTOs
 
         public string? ItemType { get; set; }
 
-        public string? RevisionNumber { get; set; }
+        [Precision(5,2)]
+        public decimal? RevisionNumber { get; set; }
 
         [DefaultValue(true)]
         public bool IsActive { get; set; }
@@ -44,8 +46,7 @@ namespace Entities.DTOs
         public string? ItemDescription { get; set; }
 
         public string? ItemType { get; set; }
-
-        public string? RevisionNumber { get; set; }
+         
         
         [DefaultValue(true)]
         public bool IsActive { get; set; }
@@ -70,8 +71,7 @@ namespace Entities.DTOs
         public string? ItemDescription { get; set; }
 
         public string? ItemType { get; set; }
-
-        public string? RevisionNumber { get; set; }
+         
 
         [DefaultValue(true)]
         public bool IsActive { get; set; }
@@ -91,11 +91,14 @@ namespace Entities.DTOs
     }
     public class ItemMasterNREDetailsListDto
     {
-        public int id { get; set; }
+        public int BOMId { get; set; }
 
-        //public List<ItemMasterRouting>? itemMasterRoutings { get; set; }
-
+ 
     }
-
+    public enum RevisionType
+    {
+        minor,
+        major
+    }
 
 }

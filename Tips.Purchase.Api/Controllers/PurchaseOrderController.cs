@@ -217,6 +217,92 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //upload update document apoi
+
+
+        [HttpPost]
+        public async Task<IActionResult> UploadDocument([FromBody] List<UploadDocumentDto> uploadDocumentDto)
+        {
+            ServiceResponse<UploadDocumentDto> serviceResponse = new ServiceResponse<UploadDocumentDto>();
+            try
+            {
+                if (uploadDocumentDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "PurchaseOrder UploadDocument object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("PurchaseOrder UploadDocument sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseOrder UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseOrder UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+
+                //var uploadDocumentDetails = _mapper.Map<DocumentUpload>(uploadDocumentDto);
+                //var uploadDocumentDtoList = new List<UploadDocumentDto>();
+
+                foreach (var poUploadDetail in uploadDocumentDto)
+                {
+                    var fileContent = poUploadDetail.FileByte;
+                    var poNumber = poUploadDetail.ParentNumber;
+                    string fileName = poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                    Guid guid = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", /*guid.ToString() + "_" */ fileName);
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+
+                        var uploadedFile = new DocumentUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            ParentNumber = poNumber,
+                            DocumentFrom = "PODocument", 
+                            
+                           //PurchaseOrder = poUploadDetail.PurchaseOrder,
+
+                        };
+                        var poUploadDoc = _mapper.Map<DocumentUpload>(uploadedFile);
+                        
+                        await _documentUploadRepository.CreateUploadDocumentPO(poUploadDoc);
+                        _documentUploadRepository.SaveAsync();
+
+                    }
+                }
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = " UploadDocument Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UploadDocument action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         //image get api
         [HttpPost]
 
@@ -311,8 +397,7 @@ namespace Tips.Purchase.Api.Controllers
                                 FilePath = filePath,
                                 ParentNumber = poNumber,
                                 DocumentFrom = "PODocument",
-                            };
-
+                            }; 
                             _documentUploadRepository.CreateUploadDocumentPO(uploadedFile);
                             _documentUploadRepository.SaveAsync();
 

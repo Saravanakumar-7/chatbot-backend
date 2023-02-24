@@ -92,7 +92,10 @@ namespace Tips.Grin.Api.Repository
         public async Task<Grins> GetGrinById(int id)
         {
             var grinDetailsbyId = await _tipsGrinDbContext.Grins.Where(x => x.Id == id)
-                               .Include(x => x.GrinParts)
+                                //.Include(c=>c.GrinDocuments)
+                                //.Include(m => m.GrinParts)
+                                //.ThenInclude(n=>n.cocUpload)
+                               .Include(x => x.GrinParts) 
                                .ThenInclude(t => t.ProjectNumbers)
                                .FirstOrDefaultAsync();
 

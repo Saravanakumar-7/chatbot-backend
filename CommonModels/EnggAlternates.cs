@@ -17,6 +17,8 @@ namespace Entities
         public string ChildItemNumber { get; set; }
         public string ChildItemAlternateNumber { get; set; }
 
+        public string? CustomerName { get; set; }
+
         public string? UOM { get; set; }
 
         [Precision(13,3)]

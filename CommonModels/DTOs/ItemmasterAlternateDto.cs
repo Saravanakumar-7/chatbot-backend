@@ -15,6 +15,10 @@ namespace Entities.DTOs
         public int Id { get; set; }
         public string? ManufacturerPartNo { get; set; }
         public string? Manufacturer { get; set; }
+
+        [DefaultValue(false)]
+        public bool AlternateSource { get; set; }
+
         [DefaultValue(false)]
         public bool IsDefault { get; set; }
         public string? CreatedBy { get; set; }
@@ -27,6 +31,10 @@ namespace Entities.DTOs
 
     {
         public string? ManufacturerPartNo { get; set; }
+
+        [DefaultValue(false)]
+        public bool AlternateSource { get; set; }
+
         public string? Manufacturer { get; set; }
         [DefaultValue(false)]
         public bool IsDefault { get; set; }
@@ -38,6 +46,9 @@ namespace Entities.DTOs
         [Key]
         public int Id { get; set; }
         public string? ManufacturerPartNo { get; set; }
+
+        [DefaultValue(false)]
+        public bool AlternateSource { get; set; }
         public string? Manufacturer { get; set; }
         [DefaultValue(false)]
         public bool IsDefault { get; set; }

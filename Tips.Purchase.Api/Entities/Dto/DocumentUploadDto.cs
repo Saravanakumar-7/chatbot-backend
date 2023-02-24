@@ -32,4 +32,13 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public byte[] FileByte { get; set; }
 
     }
+
+    public class UploadDocumentDto
+    {
+        //public int PurchaseOrderId { get; set; }
+        public string ParentNumber { get; set; }
+        public string FileName { get; set; }
+        public string FileExtension { get; set; }
+        public byte[] FileByte { get; set; } 
+    }
 }

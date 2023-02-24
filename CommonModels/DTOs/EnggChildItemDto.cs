@@ -76,7 +76,7 @@ namespace Entities.DTOs
     }
     public class EnggChildItemUpdateDto
     {
-        public int Id { get; set; }
+         
 
         [Required(ErrorMessage = "ItemNumber is required")]
         public string ItemNumber { get; set; }

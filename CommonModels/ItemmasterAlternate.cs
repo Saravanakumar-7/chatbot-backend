@@ -14,7 +14,10 @@ namespace Entities
         [Key]
         public int Id { get; set; }
         public string? ManufacturerPartNo { get; set; }
-        public string? Manufacturer { get; set; }   
+        public string? Manufacturer { get; set; }
+
+        [DefaultValue(false)]
+        public bool AlternateSource { get; set; }
 
         [DefaultValue(false)]
         public bool IsDefault { get; set; }

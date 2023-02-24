@@ -41,9 +41,7 @@ namespace Entities.DTOs
    
 }
     public class BomNREConsumableUpdateDto
-    {
-        public int Id { get; set; }
-
+    { 
         public string? NREItemNumber { get; set; }
 
         [Precision(13, 3)]

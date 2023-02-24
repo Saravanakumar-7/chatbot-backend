@@ -23,13 +23,12 @@ namespace Repository
         }
 
         public async Task<int?> CreateEnggBom(EnggBom enggBom)
-        {
+        { 
             enggBom.CreatedBy = "Admin";
             enggBom.CreatedOn = DateTime.Now;
             enggBom.LastModifiedBy = "Admin";
             enggBom.LastModifiedOn = DateTime.Now;
-            enggBom.Unit = "Bangalore";
-
+            enggBom.Unit = "Bangalore"; 
             var result = await Create(enggBom);
             return result.BOMId;
         }
