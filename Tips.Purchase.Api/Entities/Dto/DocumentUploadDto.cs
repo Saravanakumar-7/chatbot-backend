@@ -33,12 +33,11 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
     }
 
-    public class UploadDocumentDto
+    public class GetDownloadUrlDto
     {
-        //public int PurchaseOrderId { get; set; }
-        public string ParentNumber { get; set; }
         public string FileName { get; set; }
         public string FileExtension { get; set; }
-        public byte[] FileByte { get; set; } 
+        public string FilePath { get; set; }
+        public string DownloadUrl { get; set; }
     }
 }

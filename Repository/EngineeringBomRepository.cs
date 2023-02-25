@@ -33,6 +33,23 @@ namespace Repository
             return result.BOMId;
         }
 
+        public async Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom)
+        {
+            enggBom.CreatedBy = "Admin";
+            enggBom.CreatedOn = DateTime.Now;
+            enggBom.Unit = "Bangalore";
+            var getOldRevisionNumber = _tipsMasterDbContext.EnggBoms
+                .Where(x => x.ItemNumber == enggBom.ItemNumber)
+                .OrderByDescending(x => x.BOMId)
+                .Select(x => x.RevisionNumber)
+                .FirstOrDefault();
+
+            enggBom.RevisionNumber = getOldRevisionNumber;
+            var result = await Create(enggBom);
+            return result;
+
+        }
+
         public async Task<string> DeleteEnggBom(EnggBom enggBom)
         {
             Delete(enggBom);

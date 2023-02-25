@@ -50,6 +50,21 @@ namespace Tips.Purchase.Api.Repository
             return result;
         }
 
+        public async Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string poNumber)
+        {
+
+            IEnumerable<GetDownloadUrlDto> getDownloadDetails = await _tipsPurchaseDbContext.DocumentUploads
+                                .Where(b => b.ParentNumber == poNumber)
+                                .Select(x => new GetDownloadUrlDto()
+                                {
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath
+                                })
+                              .ToListAsync();
+
+            return getDownloadDetails;
+        }
         public async Task<int?> GetPONumberAutoIncrementCount(DateTime date)
         {
             var getPONumberAutoIncrementCount = _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.CreatedOn == date.Date).Count();

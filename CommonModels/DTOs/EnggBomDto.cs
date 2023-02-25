@@ -61,8 +61,7 @@ namespace Entities.DTOs
 
     }
     public class EnggBomUpdateDto
-    {
-        public int BOMId { get; set; }
+    { 
 
         [Required(ErrorMessage = "ItemNumber is required")]
         public string ItemNumber { get; set; }
