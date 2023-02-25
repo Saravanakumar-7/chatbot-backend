@@ -57,8 +57,8 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
-         
-        public string? COCUpload { get; set; }
+
+        public List<DocumentUploadDto> COCUpload { get; set; }
 
 
         [Precision(13, 3)]

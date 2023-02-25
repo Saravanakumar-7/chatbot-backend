@@ -13,8 +13,14 @@ namespace Tips.Purchase.Api.Contracts
         Task<PagedList<PurchaseOrder>> GetAllPurchaseOrders(PagingParameter pagingParameter);
         Task<PurchaseOrder> GetPurchaseOrderById(int id);
         Task<PurchaseOrder> GetPurchaseOrderByPONumber(string poNumber);
+
+        Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string poNumber);
+
         Task<IEnumerable<PurchaseOrder>> GetAllActivePurchaseOrders();
         Task<long> CreatePurchaseOrder(PurchaseOrder purchaseOrder);
+
+        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPONumberListByVendorId(string vendorId);
+
         Task<string> UpdatePurchaseOrder(PurchaseOrder purchaseOrder);
         Task<string> DeletePurchaseOrder(PurchaseOrder purchaseOrder);
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllActivePurchaseOrderNameList();

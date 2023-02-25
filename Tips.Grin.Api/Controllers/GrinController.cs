@@ -203,23 +203,9 @@ namespace Tips.Grin.Api.Controllers
                 var grinPartsDto = grinPostDto.GrinParts;
 
                 var grinPartsList = new List<GrinParts>();
-                if (grinPartsDto != null)
-                {
-                    for (int i = 0; i < grinPartsDto.Count; i++)
-                    {
-                        GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
-                        grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
-                        grinPartsList.Add(grinParts);
+                var grinDocumentUploadDtoList = new List<DocumentUpload>();
+                var grinPartsDocumentUploadDtoList = new List<DocumentUpload>();
 
-         
-                    }
-                }
-
-              
-                
-                grins.GrinParts = grinPartsList;
-
-                await _repository.CreateGrin(grins);
 
                 //// grin upload
 
@@ -240,103 +226,176 @@ namespace Tips.Grin.Api.Controllers
                         {
                             ms.WriteTo(fileStream);
                         }
-                        var uploadedFile = new DocumentUpload
+                        var uploadedFiles = new DocumentUpload
                         {
                             FileName = fileName,
                             FileExtension = FileExt,
                             FilePath = filePath,
                             ParentId = grinNumber,
                             DocumentFrom = "GrinDocument",
+
                         };
 
-                        _documentUploadRepository.CreateUploadDocumentGrin(uploadedFile);
+                        DocumentUpload poFileDetailsd = _mapper.Map<DocumentUpload>(uploadedFiles);
+
+                        await _documentUploadRepository.CreateUploadDocumentGrin(poFileDetailsd);
                         _documentUploadRepository.SaveAsync();
 
-                    }
-
-                }
-                //parts coc upload
-
-                var grinPartsDetails = grinPostDto.GrinParts;
-                foreach (var grinCoCUpload in grinPartsDetails)
-                {
-
-                    var cocUploadDocs = grinCoCUpload.COCUpload;
-
-                    foreach (var cocUpload in cocUploadDocs)
-                    {
-                        var fileContent = cocUpload.FileByte;
-                        var grinNumber = grins.GrinNumber;
-                        string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
-                        string FileExt = Path.GetExtension(fileName).ToUpper();
-
-                        Guid guid = Guid.NewGuid();
-                        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload", guid.ToString() + "_" + fileName);
-                        using (MemoryStream ms = new MemoryStream(fileContent))
+                        if (uploadedFiles != null)
                         {
-                            ms.Position = 0;
-                            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                            {
-                                ms.WriteTo(fileStream);
-                            }
-                            var uploadedFile = new DocumentUpload
-                            {
-                                FileName = fileName,
-                                FileExtension = FileExt,
-                                FilePath = filePath,
-                                ParentId = grinNumber,
-                                DocumentFrom = "GrinCoCDocument",
-                            };
-
-                            _documentUploadRepository.CreateUploadDocumentGrin(uploadedFile);
-                            _documentUploadRepository.SaveAsync();
-
+                            DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFiles);
+                            grinDocumentUploadDtoList.Add(poFileDetails);
                         }
-
                     }
 
                 }
+
+                ////parts coc upload
+
+                //var grinPartsDetails = grinPostDto.GrinParts;
+                //foreach (var grinCoCUpload in grinPartsDetails)
+                //{
+
+                //    var cocUploadDocs = grinCoCUpload.COCUpload;
+
+                //    foreach (var cocUpload in cocUploadDocs)
+                //    {
+                //        var fileContent = cocUpload.FileByte;
+                //        var grinNumber = grins.GrinNumber;
+                //        string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
+                //        string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                //        Guid guid = Guid.NewGuid();
+                //        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload", guid.ToString() + "_" + fileName);
+                //        using (MemoryStream ms = new MemoryStream(fileContent))
+                //        {
+                //            ms.Position = 0;
+                //            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                //            {
+                //                ms.WriteTo(fileStream);
+                //            }
+                //            var uploadedFile = new DocumentUpload
+                //            {
+                //                FileName = fileName,
+                //                FileExtension = FileExt,
+                //                FilePath = filePath,
+                //                ParentId = grinNumber,
+                //                DocumentFrom = "GrinCoCDocument",
+                //            };
+
+                //            _documentUploadRepository.CreateUploadDocumentGrin(uploadedFile);
+                //            _documentUploadRepository.SaveAsync();
+
+                //            if (uploadedFile != null)
+                //            {
+                //                DocumentUpload poFileDetail = _mapper.Map<DocumentUpload>(uploadedFile);
+                //                grinPartsDocumentUploadDtoList.Add(poFileDetail);
+                //            }
+                //        }
+
+                //    }
+
+                //}
 
                 //end cocupload
 
-
-
-                _repository.SaveAsync();
-
-                foreach (var parts in grinPartsList)
+                if (grinPartsDto != null)
                 {
-                    foreach (var project in parts.ProjectNumbers)
+                    for (int i = 0; i < grinPartsDto.Count; i++)
                     {
-                        dynamic inventoryObject = new ExpandoObject();
-                        inventoryObject.PartNumber = parts.ItemNumber;
-                        inventoryObject.MftrPartNumber = parts.MftrItemNumber;
-                        inventoryObject.Description = parts.ItemDescription;
-                        inventoryObject.ProjectNumber = project.ProjectNumber;
-                        inventoryObject.Balance_Quantity = project.ProjectQty;
-                        inventoryObject.UOM = parts.UOM;
-                        inventoryObject.IsStockAvailable = true;
-                        inventoryObject.Warehouse = "GRIN";
-                        inventoryObject.Location = "GRIN";
-                        inventoryObject.GrinNo = parts.Grins.GrinNumber;
-                        inventoryObject.GrinPartId = parts.Id;
-                        inventoryObject.PartType = "PurchasePart";
-                        inventoryObject.ReferenceID = Convert.ToString(parts.Id);
-                        inventoryObject.ReferenceIDFrom = "GRIN";
+                        GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
+                        grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
 
-                        var json = JsonConvert.SerializeObject(inventoryObject);
-                        var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"] ,"CreateInventory"), data);
+                        var cocUploadDocs = grinPartsDto[i].COCUpload;
+
+                        foreach (var cocUpload in cocUploadDocs)
+                        {
+                            var fileContent = cocUpload.FileByte;
+                            var grinNumber = grins.GrinNumber;
+                            string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
+                            string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                            Guid guid = Guid.NewGuid();
+                            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload", guid.ToString() + "_" + fileName);
+                            using (MemoryStream ms = new MemoryStream(fileContent))
+                            {
+                                ms.Position = 0;
+                                using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                                {
+                                    ms.WriteTo(fileStream);
+                                }
+                                var uploadedFile = new DocumentUpload
+                                {
+                                    FileName = fileName,
+                                    FileExtension = FileExt,
+                                    FilePath = filePath,
+                                    ParentId = grinNumber,
+                                    DocumentFrom = "GrinCoCDocument",
+                                };
+
+                                _documentUploadRepository.CreateUploadDocumentGrin(uploadedFile);
+                                _documentUploadRepository.SaveAsync();
+
+                                if (uploadedFile != null)
+                                {
+                                    DocumentUpload poFileDetail = _mapper.Map<DocumentUpload>(uploadedFile);
+                                    grinPartsDocumentUploadDtoList.Add(poFileDetail);
+                                }
+                                grinParts.CoCUpload = grinPartsDocumentUploadDtoList;
+
+                            }
+
+                        }
+
+                        grinPartsList.Add(grinParts);
+
                     }
-                    
                 }
 
-                //update balance qty  in Purchase order table for grin concept
+                grins.GrinParts = grinPartsList;
+                 grins.GrinDocuments = grinDocumentUploadDtoList;
+                
+                await _repository.CreateGrin(grins);
+                _repository.SaveAsync();
+                
+                
 
-                var grinPartsDetail = _mapper.Map<List<GrinUpdateQtyDetailsDto>>(grinPartsDetails);
 
-                var jsons = JsonConvert.SerializeObject(grinPartsDetail);
-                var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                var responses = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdateBalanceQtyDetails"), datas);
+
+                //foreach (var parts in grinPartsList)
+                //{
+                //    foreach (var project in parts.ProjectNumbers)
+                //    {
+                //        dynamic inventoryObject = new ExpandoObject();
+                //        inventoryObject.PartNumber = parts.ItemNumber;
+                //        inventoryObject.MftrPartNumber = parts.MftrItemNumber;
+                //        inventoryObject.Description = parts.ItemDescription;
+                //        inventoryObject.ProjectNumber = project.ProjectNumber;
+                //        inventoryObject.Balance_Quantity = project.ProjectQty;
+                //        inventoryObject.UOM = parts.UOM;
+                //        inventoryObject.IsStockAvailable = true;
+                //        inventoryObject.Warehouse = "GRIN";
+                //        inventoryObject.Location = "GRIN";
+                //        inventoryObject.GrinNo = parts.Grins.GrinNumber;
+                //        inventoryObject.GrinPartId = parts.Id;
+                //        inventoryObject.PartType = "PurchasePart";
+                //        inventoryObject.ReferenceID = Convert.ToString(parts.Id);
+                //        inventoryObject.ReferenceIDFrom = "GRIN";
+
+                //        var json = JsonConvert.SerializeObject(inventoryObject);
+                //        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                //        var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"] ,"CreateInventory"), data);
+                //    }
+
+                //}
+
+                ////update balance qty  in Purchase order table for grin concept
+
+                //var grinPartsDetail = _mapper.Map<List<GrinUpdateQtyDetailsDto>>(grinPartsDetails);
+
+                //var jsons = JsonConvert.SerializeObject(grinPartsDetail);
+                //var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                //var responses = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdateBalanceQtyDetails"), datas);
 
 
                 serviceResponse.Data = null;
