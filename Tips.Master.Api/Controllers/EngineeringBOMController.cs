@@ -23,9 +23,9 @@ namespace Tips.Master.Api.Controllers
         private ILoggerManager _logger;
         private IReleaseProductBomRepository _releaseProductBomRepository;
         private IMapper _mapper;
-        private IReleaseCostBomRepository _releaseCostBomRepository; 
- 
-        public EngineeringBOMController(IRepositoryWrapperForMaster repository,IReleaseProductBomRepository releaseProductBomRepository, IReleaseCostBomRepository releaseCostBomRepository, IReleaseEnggBomRepository releaseEnggBomRepository, ILoggerManager logger, IMapper mapper)
+        private IReleaseCostBomRepository _releaseCostBomRepository;
+        private IEnggBomRepository _enggBomRepository;
+        public EngineeringBOMController(IEnggBomRepository enggBomRepository, IRepositoryWrapperForMaster repository,IReleaseProductBomRepository releaseProductBomRepository, IReleaseCostBomRepository releaseCostBomRepository, IReleaseEnggBomRepository releaseEnggBomRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
@@ -33,6 +33,7 @@ namespace Tips.Master.Api.Controllers
             _releaseCostBomRepository = releaseCostBomRepository;
              _releaseEnggBomRepository = releaseEnggBomRepository;
             _releaseProductBomRepository = releaseProductBomRepository;
+            _enggBomRepository = enggBomRepository;
         }
         // GET: api/<EngineeringBOMController>
         [HttpGet]
@@ -308,20 +309,104 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-         
+
+        //PUT api/<EngineeringBOMController>/5
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> UpdateEnggBom(int id, [FromBody] EnggBomUpdateDto enggBomDto, [FromQuery] RevisionType revisionType)
+        //{
+        //    ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
+
+        //    try
+        //    {
+        //        if (enggBomDto is null)
+        //        {
+        //            _logger.LogError("Update EngineeringBom object sent from client is null.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Update EngineeringBom object is null";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _logger.LogError("Invalid Update EngineeringBom object sent from client.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid Update EngineeringBom object sent from client.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        var updateEnggBom = await _repository.EnggBomRepository.GetEnggBomById(id);
+        //        if (updateEnggBom is null)
+        //        {
+        //            _logger.LogError($"Update EngineeringBom with id: {id}, hasn't been found in db.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"Update EngineeringBom with id: {id}, hasn't been found in db.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            return NotFound(serviceResponse);
+        //        }
+
+
+        //        var enggBomList = _mapper.Map<EnggBom>(updateEnggBom);
+
+        //        if (revisionType == 0)
+        //        {
+        //            enggBomList.RevisionNumber = enggBomList.RevisionNumber + Convert.ToDecimal(0.1);
+        //        }
+        //        else
+        //        {
+        //            var revRound = Math.Round(enggBomList.RevisionNumber);
+        //            enggBomList.RevisionNumber = revRound + Convert.ToDecimal(1.0);
+        //        }
+
+
+        //        var enggChildItemDto = enggBomDto.EnggChildItemUpdates;
+
+        //        var enggChildItemList = new List<EnggChildItem>();
+        //        for (int i = 0; i < enggChildItemDto.Count; i++)
+        //        {
+        //            EnggChildItem enggChildItemDetail = _mapper.Map<EnggChildItem>(enggChildItemDto[i]);
+        //            enggChildItemDetail.EnggAlternates = _mapper.Map<List<EnggAlternates>>(enggChildItemDto[i].EnggAlternatesUpdateDtos);
+        //            enggChildItemList.Add(enggChildItemDetail);
+
+        //        }
+        //        enggBomList.EnggChildItems = enggChildItemList;
+
+        //        var data = _mapper.Map(enggBomDto, enggBomList);
+
+        //        string result = await _repository.EnggBomRepository.UpdateEnggBom(data);
 
 
 
+        //        _logger.LogInfo(result);
+        //        _repository.SaveAsync();
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Update Successfully";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside UpdateEngineering Bom action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
 
         // PUT api/<EngineeringBOMController>/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEnggBom(int id, [FromBody] EnggBomUpdateDto enggBomDto, [FromQuery] RevisionType revisionType)
+        [HttpPut]
+        public async Task<IActionResult> UpdateEnggBomRevNumber([FromBody] EnggBomUpdateDto enggBomUpdateDto, [FromQuery] RevisionType revisionType)
         {
             ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
 
             try
             {
-                if (enggBomDto is null)
+                if (enggBomUpdateDto is null)
                 {
                     _logger.LogError("Update EngineeringBom object sent from client is null.");
                     serviceResponse.Data = null;
@@ -339,50 +424,34 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var updateEnggBom = await _repository.EnggBomRepository.GetEnggBomById(id);
-                if (updateEnggBom is null)
+            
+                var enggBomList = _mapper.Map<EnggBom>(enggBomUpdateDto);
+                var enggChildItemDto = enggBomUpdateDto.EnggChildItemUpdates;
+                var enggChildItemList = new List<EnggChildItem>();
+                if (enggChildItemDto != null)
                 {
-                    _logger.LogError($"Update EngineeringBom with id: {id}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update EngineeringBom with id: {id}, hasn't been found in db.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
+                    for (int i = 0; i < enggChildItemDto.Count; i++)
+                    {
+                        EnggChildItem enggChildItemDetail = _mapper.Map<EnggChildItem>(enggChildItemDto[i]);
+                        enggChildItemDetail.EnggAlternates = _mapper.Map<List<EnggAlternates>>(enggChildItemDto[i].EnggAlternatesUpdateDtos);
+                        enggChildItemList.Add(enggChildItemDetail);
+
+                    }
                 }
+                enggBomList.EnggChildItems = enggChildItemList;
 
-
-                var enggBomList = _mapper.Map<EnggBom>(updateEnggBom);
-
+                var data = _mapper.Map(enggBomUpdateDto, enggBomList);
+                await _repository.EnggBomRepository.UpdateEnggBomVersion(data);
                 if (revisionType == 0)
                 {
-                    enggBomList.RevisionNumber =enggBomList.RevisionNumber + Convert.ToDecimal(0.1);
+                    enggBomList.RevisionNumber = enggBomList.RevisionNumber + Convert.ToDecimal(0.1);
                 }
                 else
                 {
                     var revRound = Math.Round(enggBomList.RevisionNumber);
                     enggBomList.RevisionNumber = revRound + Convert.ToDecimal(1.0);
                 }
-
-
-                var enggChildItemDto = enggBomDto.EnggChildItemUpdates;
-
-                var enggChildItemList = new List<EnggChildItem>();
-                for (int i = 0; i < enggChildItemDto.Count; i++)
-                {
-                    EnggChildItem enggChildItemDetail = _mapper.Map<EnggChildItem>(enggChildItemDto[i]);
-                    enggChildItemDetail.EnggAlternates = _mapper.Map<List<EnggAlternates>>(enggChildItemDto[i].EnggAlternatesUpdateDtos);
-                    enggChildItemList.Add(enggChildItemDetail);
-
-                }
-                enggBomList.EnggChildItems = enggChildItemList;
-
-                var data = _mapper.Map(enggBomDto, enggBomList);
-
-                string result = await _repository.EnggBomRepository.UpdateEnggBom(data);
-
-
-                
-                _logger.LogInfo(result);
+                //_logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Update Successfully";
@@ -518,8 +587,10 @@ namespace Tips.Master.Api.Controllers
                 }
 
                 var release = _mapper.Map<ReleaseEnggBom>(releaseEnggBomDtoPost);
-                //_repository.releaseEnggBomRepository.CreateReleaseEnggBom(release);
-                _releaseEnggBomRepository.CreateReleaseEnggBom(release);
+                release.IsReleaseCompleted = true;
+                await _releaseEnggBomRepository.CreateReleaseEnggBom(release);
+                _repository.SaveAsync();
+                await _enggBomRepository.ReleasedEnggBomByItemAndRevisionNumber(releaseEnggBomDtoPost.ItemNumber, releaseEnggBomDtoPost.ReleaseVersion);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ReleaseEnggBom Successfully Created";
@@ -660,7 +731,10 @@ namespace Tips.Master.Api.Controllers
                 }
 
                 var release = _mapper.Map<ReleaseCostBom>(releaseCostBomDtoPost);
-                _releaseCostBomRepository.CreateReleaseCostBom(release);
+                release.IsReleaseCostCompleted = true;
+                await _releaseCostBomRepository.CreateReleaseCostBom(release);
+                _repository.SaveAsync();
+                await _releaseEnggBomRepository.ReleasedEnggBomByItemAndRevisionNumber(releaseCostBomDtoPost.ItemNumber, releaseCostBomDtoPost.ReleaseVersion);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ReleaseCostBom Successfully Created";
@@ -707,7 +781,12 @@ namespace Tips.Master.Api.Controllers
                 }
 
                 var release = _mapper.Map<ReleaseProductBom>(releaseProductBomDtoPost);
-                _releaseProductBomRepository.CreateReleaseProductBom(release);
+                release.IsReleaseProductCompleted= true;
+                await _releaseProductBomRepository.CreateReleaseProductBom(release);
+                _repository.SaveAsync();
+                await _releaseCostBomRepository.ReleasedCostBomByItemAndRevisionNumber(releaseProductBomDtoPost.ItemNumber, releaseProductBomDtoPost.ReleaseVersion);
+                _repository.SaveAsync();
+                await _releaseEnggBomRepository.ReleasedEnggProductionByItemAndRevisionNumber(releaseProductBomDtoPost.ItemNumber, releaseProductBomDtoPost.ReleaseVersion);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ReleaseProductBom Successfully Created";
@@ -1291,6 +1370,81 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside DeleteEnggBomGroup action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllEnggBomItemNumberVersionlist()
+        {
+            ServiceResponse<IEnumerable<GetAllEnggBomItemNumberList>> serviceResponse = new ServiceResponse<IEnumerable<GetAllEnggBomItemNumberList>>();
+            try
+            {
+                var enggBomDetails = await _enggBomRepository.GetAllEnggBomItemNumberVersionList();
+                var result = _mapper.Map<IEnumerable<GetAllEnggBomItemNumberList>>(enggBomDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all enggBomItemNumberVersionlist";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllEnggBomItemNumberVersionlist action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllReleaseCostBomItemNumberVersionList()
+        {
+            ServiceResponse<IEnumerable<GetAllReleaseCostBomItemNumberVersionList>> serviceResponse = new ServiceResponse<IEnumerable<GetAllReleaseCostBomItemNumberVersionList>>();
+            try
+            {
+                var releaseCostBomDetails = await _releaseCostBomRepository.GetAllReleaseCostBomItemNumberVersionList();
+                var result = _mapper.Map<IEnumerable<GetAllReleaseCostBomItemNumberVersionList>>(releaseCostBomDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all releaseCostBomItemNumberVersionlist";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllReleaseCostBomItemNumberVersionList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllReleaseProductBomItemNumberVersionList()
+        {
+            ServiceResponse<IEnumerable<GetAllReleaseProductBomItemNumberVersionList>> serviceResponse = new ServiceResponse<IEnumerable<GetAllReleaseProductBomItemNumberVersionList>>();
+            try
+            {
+                var releaseProductBomDetails = await _releaseProductBomRepository.GetAllReleaseProductBomItemNumberVersionList();
+                var result = _mapper.Map<IEnumerable<GetAllReleaseProductBomItemNumberVersionList>>(releaseProductBomDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all releaseProductBomItemNumberVersionlist";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllReleaseProductBomItemNumberVersionList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }

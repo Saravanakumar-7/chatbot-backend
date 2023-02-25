@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
 using Repository;
 using Tips.Master.Api.Extensions;
+using static Repository.ReleaseCostBomRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +25,7 @@ builder.Services.AddScoped<IReleaseProductBomRepository, ReleaseProductBomReposi
 builder.Services.AddScoped<IReleaseCostBomRepository, ReleaseCostBomRepository>();
 builder.Services.AddScoped<IReleaseEnggBomRepository, ReleaseEnggBomRepository>();
 builder.Services.AddScoped<IEnggBomGroupRepository, EnggBomGroupRepository>();
-builder.Services.AddScoped<IReleaseEnggBomRepository, ReleaseEnggBomRepository>();
+builder.Services.AddScoped<IEnggBomRepository, EngineeringBomRepository>();
 builder.Services.AddScoped<ILeadRepository, LeadRepository>();
 
 builder.Services.AddScoped<IRoomNameRepository, RoomNameRepository>();

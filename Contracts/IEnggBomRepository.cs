@@ -17,6 +17,9 @@ namespace Contracts
         Task<IEnumerable<EnggBom>> GetAllActiveEnggBom();
         Task<int?> CreateEnggBom(EnggBom enggBom);
         Task<string> UpdateEnggBom(EnggBom enggBom);
-        Task<string> DeleteEnggBom(EnggBom enggBom); 
+        Task<string> DeleteEnggBom(EnggBom enggBom);
+        Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom);
+        Task <IEnumerable<object>> GetAllEnggBomItemNumberVersionList();
+        Task<EnggBom> ReleasedEnggBomByItemAndRevisionNumber(string itemNumber,decimal revisionNumber);
     }
 }
