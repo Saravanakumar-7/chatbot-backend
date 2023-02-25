@@ -53,7 +53,7 @@ namespace Entities.DTOs
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
 
-        public string Unit { get; set; }
+        //public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

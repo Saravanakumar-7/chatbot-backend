@@ -75,7 +75,7 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<PagedList<Grins>> GetAllGrin([FromQuery] PagingParameter pagingParameter,[FromQuery] SearchParams searchParams)
         {
-            var getAllGrinDetails = FindAll()
+            var getAllGrinDetails = FindAll().OrderByDescending(x=>x.Id)
               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue) ||
                  inv.VendorId.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))))
               .Include(t => t.GrinDocuments)
