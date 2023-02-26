@@ -16,6 +16,8 @@ namespace Entities.DTOs
         public string ChildItemNumber { get; set; }
         public string ChildItemAlternateNumber { get; set; }
 
+        public string? CustomerName { get; set; }
+
         public string? UOM { get; set; }
 
         [Precision(13, 3)]
@@ -47,6 +49,7 @@ namespace Entities.DTOs
 
         [Required(ErrorMessage = "ChildItemAlternateNumber is required")]
         public string ChildItemAlternateNumber { get; set; }
+        public string? CustomerName { get; set; }
 
         public string? UOM { get; set; }
 
@@ -69,16 +72,16 @@ namespace Entities.DTOs
       
     }
     public class EnggAlternatesUpdateDto
-    {
-    public int Id { get; set; }
+    { 
 
     [Required(ErrorMessage = "ChildItemNumber is required")]
     public string ChildItemNumber { get; set; }
 
     [Required(ErrorMessage = "ChildItemAlternateNumber is required")]
     public string ChildItemAlternateNumber { get; set; }
+        public string? CustomerName { get; set; }
 
-    public string? UOM { get; set; }
+        public string? UOM { get; set; }
 
     [Required(ErrorMessage = "QuantityPer is required")]
     [Precision(13,3)]
@@ -95,8 +98,7 @@ namespace Entities.DTOs
     public string? ProbabilityOfUsage { get; set; }
 
     [DefaultValue(true)]
-    public bool IsActive { get; set; }
-    public string Unit { get; set; }
+    public bool IsActive { get; set; } 
     public string? CreatedBy { get; set; }
     public DateTime? CreatedOn { get; set; }
     public string? LastModifiedBy { get; set; }

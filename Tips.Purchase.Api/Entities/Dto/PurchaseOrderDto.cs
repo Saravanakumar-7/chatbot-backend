@@ -88,7 +88,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime PODate { get; set; }
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
-        public List<DocumentUploadUpdateDto> POFiles { get; set; }
+        //public List<DocumentUploadUpdateDto> POFiles { get; set; }
 
         //VendorDetails
         public string? VendorName { get; set; }

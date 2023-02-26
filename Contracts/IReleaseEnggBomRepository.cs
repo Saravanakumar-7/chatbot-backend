@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Entities.Helper;
 using Entities;
+using Entities.DTOs;
 
 namespace Contracts
 {
@@ -16,5 +17,7 @@ namespace Contracts
         Task<int?> CreateReleaseEnggBom(ReleaseEnggBom releaseEnggBom);
         Task<string> UpdateReleaseEnggBom(ReleaseEnggBom releaseEnggBom);
         Task<string> DeleteReleaseEnggBom(ReleaseEnggBom releaseEnggBom);
+        Task<ReleaseEnggBom> ReleasedEnggBomByItemAndRevisionNumber(string itemNumber, decimal revisionNumber);
+        Task<ReleaseEnggBom> ReleasedEnggProductionByItemAndRevisionNumber(string itemNumber, decimal revisionNumber);
     }
 }

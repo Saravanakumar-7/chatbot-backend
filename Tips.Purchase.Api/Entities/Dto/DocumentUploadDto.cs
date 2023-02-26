@@ -32,4 +32,12 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public byte[] FileByte { get; set; }
 
     }
+
+    public class GetDownloadUrlDto
+    {
+        public string FileName { get; set; }
+        public string FileExtension { get; set; }
+        public string FilePath { get; set; }
+        public string DownloadUrl { get; set; }
+    }
 }

@@ -21,7 +21,7 @@ namespace Tips.Purchase.Api.Entities
 
         public string DocumentFrom { get; set; }
 
-        public string ParentNumber { get; set; }    
+        public string ParentNumber { get; set; } 
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

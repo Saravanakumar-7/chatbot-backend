@@ -10,5 +10,7 @@ namespace Contracts
     public interface IReleaseProductBomRepository : IRepositoryBase<ReleaseProductBom>
     {
         Task<int?> CreateReleaseProductBom(ReleaseProductBom releaseProductBom);
+        Task<IEnumerable<object>> GetAllReleaseProductBomItemNumberVersionList();
+       
     }
 }
