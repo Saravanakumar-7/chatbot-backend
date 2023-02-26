@@ -3,6 +3,7 @@
     "BaseUrl": "https://localhost:7163"
   },
   "Routes": [
+    // Tips Master Service
     {
       "UpstreamPathTemplate": "/tips/Bank/GetAllBankDetails",
       "UpstreamHttpMethod": [ "Get" ],
@@ -102,9 +103,9 @@
 
     // Sales Service API Routes
     {
-      "UpstreamPathTemplate": "/tips/Rfq/GetAllRfqs",
+      "UpstreamPathTemplate": "/tips/Rfq/GetAllRfq",
       "UpstreamHttpMethod": [ "Get" ],
-      "DownstreamPathTemplate": "/api/Rfq/GetAllRfqs",
+      "DownstreamPathTemplate": "/api/Rfq/GetAllRfq",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {

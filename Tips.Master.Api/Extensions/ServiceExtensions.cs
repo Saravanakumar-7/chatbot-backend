@@ -42,22 +42,22 @@ namespace Tips.Master.Api.Extensions
 
         }
 
-        //public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
-        //{
-            
-        //    var connectionString = config["MySqlconnection:connectionString"];
-        //    services.AddDbContext<TipsMasterDbContext>(o => o.UseMySQL(connectionString));
-        //}
+        public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
+        {
 
-        //public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices
-        //{
-        //    public void ConfigureDesignTimeServices(IServiceCollection serviceCollection)
-        //    {
-        //        serviceCollection.AddEntityFrameworkMySQL();
-        //        new EntityFrameworkRelationalDesignServicesBuilder(serviceCollection)
-        //            .TryAddCoreServices();
-        //    }
-        //}
+            var connectionString = config["MySqlconnection:connectionString"];
+            services.AddDbContext<TipsMasterDbContext>(o => o.UseMySQL(connectionString));
+        }
+
+        public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices
+        {
+            public void ConfigureDesignTimeServices(IServiceCollection serviceCollection)
+            {
+                serviceCollection.AddEntityFrameworkMySQL();
+                new EntityFrameworkRelationalDesignServicesBuilder(serviceCollection)
+                    .TryAddCoreServices();
+            }
+        }
 
         public static void ConfigureRepositoryWrapper(this IServiceCollection services)
         {
