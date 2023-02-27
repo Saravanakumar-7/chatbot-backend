@@ -266,6 +266,22 @@ namespace Repository
 
             return releaseCostBom;
         }
+        public async Task<PagedList<CostingBom>> GetAllCostingBom(PagingParameter pagingParameter)
+        {
+            var costingBomDetails = PagedList<CostingBom>.ToPagedList(FindAll()
+             .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+
+
+            return costingBomDetails;
+        }
+        public async Task<CostingBom> GetCostingBomById(int id)
+        {
+            var costingBomDetailsbyId = await _tipsMasterDbContext.CostingBoms.Where(x => x.Id == id)
+                              .FirstOrDefaultAsync();
+
+            return costingBomDetailsbyId;
+
+        }
 
     }
 
@@ -308,7 +324,22 @@ namespace Repository
 
                 return releaseProductBomItemNumberList;
             }
-       
+        public async Task<PagedList<ProductionBom>> GetAllProductionBom(PagingParameter pagingParameter)
+        {
+            var productionBomDetails = PagedList<ProductionBom>.ToPagedList(FindAll()
+             .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+
+
+            return productionBomDetails;
+        }
+        public async Task<ProductionBom> GetProductionBomById(int id)
+        {
+            var productionBomDetailsbyId = await _tipsMasterDbContext.ProductionBoms.Where(x => x.Id == id)
+                                  .FirstOrDefaultAsync();
+
+            return productionBomDetailsbyId;
+        }
+
     }
 
         public class EnggBomGroupRepository : RepositoryBase<EnggBomGroup>, IEnggBomGroupRepository

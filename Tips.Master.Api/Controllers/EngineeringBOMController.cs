@@ -702,6 +702,92 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllCostingBOM([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<CostingBom>> serviceResponse = new ServiceResponse<IEnumerable<CostingBom>>();
+
+            try
+            {
+                var costingBomDetails = await _releaseCostBomRepository.GetAllCostingBom(pagingParameter);
+
+                var metadata = new
+                {
+                    costingBomDetails.TotalCount,
+                    costingBomDetails.PageSize,
+                    costingBomDetails.CurrentPage,
+                    costingBomDetails.HasNext,
+                    costingBomDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
+
+                _logger.LogInfo("Returned all Boms");
+                var costingBomList = _mapper.Map<IEnumerable<CostingBom>>(costingBomDetails);
+
+
+
+                serviceResponse.Data = costingBomList;
+                serviceResponse.Message = "Returned all CostingBoms Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCostingBomById(int id)
+        {
+            ServiceResponse<CostingBom> serviceResponse = new ServiceResponse<CostingBom>();
+
+            try
+            {
+                //var productionBomDetailsById = await _repository.releaseEnggBomRepository.GetReleaseEnggBomById(id);
+                var costingBomDetailsById = await _releaseCostBomRepository.GetCostingBomById(id);
+
+
+                if (costingBomDetailsById == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CostingBomDetails hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CostingBomDetails with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned CostingBomDetails with id: {id}");
+                    var result = _mapper.Map<CostingBom>(costingBomDetailsById);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = $"Returned CostingBomDetailsById Successfully.";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetCostingBomById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         // POST api/<ReleaseCostBomController>
         [HttpPost]
         public async Task<IActionResult> CreateReleaseCostBom([FromBody] CostingBomDtoPost releaseCostBomDtoPost)
@@ -752,6 +838,93 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllProductionBOM([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<ProductionBom>> serviceResponse = new ServiceResponse<IEnumerable<ProductionBom>>();
+
+            try
+            {
+                var productionBomDetails = await _releaseProductBomRepository.GetAllProductionBom(pagingParameter);
+
+                var metadata = new
+                {
+                    productionBomDetails.TotalCount,
+                    productionBomDetails.PageSize,
+                    productionBomDetails.CurrentPage,
+                    productionBomDetails.HasNext,
+                    productionBomDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
+
+                _logger.LogInfo("Returned all Boms");
+                var productionBomList = _mapper.Map<IEnumerable<ProductionBom>>(productionBomDetails);
+
+
+
+                serviceResponse.Data = productionBomList;
+                serviceResponse.Message = "Returned all ProductionBoms Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetProductionBomById(int id)
+        {
+            ServiceResponse<ProductionBom> serviceResponse = new ServiceResponse<ProductionBom>();
+
+            try
+            {
+                //var productionBomDetailsById = await _repository.releaseEnggBomRepository.GetReleaseEnggBomById(id);
+                var productionBomDetailsById = await _releaseProductBomRepository.GetProductionBomById(id);
+
+
+                if (productionBomDetailsById == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ProductionBomDetails hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ProductionBomDetails with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned ProductionBomDetails with id: {id}");
+                    var result = _mapper.Map<ProductionBom>(productionBomDetailsById);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = $"Returned ProductionBomDetailsById Successfully.";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetProductionBomById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         // POST api/<ReleaseProductBomController>
         [HttpPost]
         public async Task<IActionResult> CreateReleaseProductBom([FromBody] ReleaseProductBomDtoPost releaseProductBomDtoPost)

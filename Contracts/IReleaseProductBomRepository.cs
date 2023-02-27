@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
+using Entities.Helper;
 
 namespace Contracts
 {
     public interface IReleaseProductBomRepository : IRepositoryBase<ProductionBom>
     {
+        Task<PagedList<ProductionBom>> GetAllProductionBom(PagingParameter pagingParameter);
+        Task<ProductionBom> GetProductionBomById(int id);
         Task<int?> CreateReleaseProductBom(ProductionBom releaseProductBom);
         Task<IEnumerable<object>> GetAllReleaseProductBomItemNumberVersionList();
        
