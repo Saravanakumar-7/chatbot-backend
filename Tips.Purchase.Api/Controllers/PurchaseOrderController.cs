@@ -506,7 +506,8 @@ namespace Tips.Purchase.Api.Controllers
 
             try
             {
-                var downloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={filename}";
+                var downloadUrl = $"{Request.Scheme}://{Request.Host}/TipsPurchasePublish/api/PurchaseOrder/DownloadFile?Filename={filename}";
+                //var downloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={filename}";
 
                 return Ok(new { FilePath = filePath, DownloadUrl = downloadUrl });
             }
@@ -529,8 +530,9 @@ namespace Tips.Purchase.Api.Controllers
 
                 foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
                 {
-                    getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
-                    
+                    //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+                    getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/TipsPurchasePublish/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+
                 }
                 if (getDownloadDetailByPoNumber == null)
                 {

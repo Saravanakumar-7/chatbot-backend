@@ -398,9 +398,8 @@ namespace Tips.Master.Api.Controllers
         //    }
         //}
 
-        // PUT api/<EngineeringBOMController>/5
         [HttpPut]
-        public async Task<IActionResult> UpdateEnggBomRevNumber([FromBody] EnggBomUpdateDto enggBomUpdateDto, [FromQuery] RevisionType revisionType)
+        public async Task<IActionResult> UpdateEnggBom([FromBody] EnggBomUpdateDto enggBomUpdateDto, [FromQuery] RevisionType revisionType)
         {
             ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
 
@@ -408,18 +407,18 @@ namespace Tips.Master.Api.Controllers
             {
                 if (enggBomUpdateDto is null)
                 {
-                    _logger.LogError("Update EngineeringBom object sent from client is null.");
+                    _logger.LogError("EngineeringBom object sent from client is null for update.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Update EngineeringBom object is null";
+                    serviceResponse.Message = "EngineeringBom object is null for update";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid Update EngineeringBom object sent from client.");
+                    _logger.LogError("Invalid EngineeringBom object sent from client for update.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Update EngineeringBom object sent from client.";
+                    serviceResponse.Message = "Invalid EngineeringBom object sent from client for update.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -586,7 +585,7 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var release = _mapper.Map<ReleaseEnggBom>(releaseEnggBomDtoPost);
+                var release = _mapper.Map<EngineeringBom>(releaseEnggBomDtoPost);
                 release.IsReleaseCompleted = true;
                 await _releaseEnggBomRepository.CreateReleaseEnggBom(release);
                 _repository.SaveAsync();
@@ -705,9 +704,9 @@ namespace Tips.Master.Api.Controllers
 
         // POST api/<ReleaseCostBomController>
         [HttpPost]
-        public async Task<IActionResult> CreateReleaseCostBom([FromBody] ReleaseCostBomDtoPost releaseCostBomDtoPost)
+        public async Task<IActionResult> CreateReleaseCostBom([FromBody] CostingBomDtoPost releaseCostBomDtoPost)
         {
-            ServiceResponse<ReleaseCostBomDtoPost> serviceResponse = new ServiceResponse<ReleaseCostBomDtoPost>();
+            ServiceResponse<CostingBomDtoPost> serviceResponse = new ServiceResponse<CostingBomDtoPost>();
 
             try
             {
@@ -730,7 +729,7 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var release = _mapper.Map<ReleaseCostBom>(releaseCostBomDtoPost);
+                var release = _mapper.Map<CostingBom>(releaseCostBomDtoPost);
                 release.IsReleaseCostCompleted = true;
                 await _releaseCostBomRepository.CreateReleaseCostBom(release);
                 _repository.SaveAsync();
@@ -780,7 +779,7 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var release = _mapper.Map<ReleaseProductBom>(releaseProductBomDtoPost);
+                var release = _mapper.Map<ProductionBom>(releaseProductBomDtoPost);
                 release.IsReleaseProductCompleted= true;
                 await _releaseProductBomRepository.CreateReleaseProductBom(release);
                 _repository.SaveAsync();
@@ -1377,11 +1376,11 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllEnggBomItemNumberVersionlist()
         {
-            ServiceResponse<IEnumerable<GetAllEnggBomItemNumberList>> serviceResponse = new ServiceResponse<IEnumerable<GetAllEnggBomItemNumberList>>();
+            ServiceResponse<IEnumerable<EnggBomItemRevisionList>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomItemRevisionList>>();
             try
             {
                 var enggBomDetails = await _enggBomRepository.GetAllEnggBomItemNumberVersionList();
-                var result = _mapper.Map<IEnumerable<GetAllEnggBomItemNumberList>>(enggBomDetails);
+                var result = _mapper.Map<IEnumerable<EnggBomItemRevisionList>>(enggBomDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all enggBomItemNumberVersionlist";
                 serviceResponse.Success = true;
@@ -1402,11 +1401,11 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllReleaseCostBomItemNumberVersionList()
         {
-            ServiceResponse<IEnumerable<GetAllReleaseCostBomItemNumberVersionList>> serviceResponse = new ServiceResponse<IEnumerable<GetAllReleaseCostBomItemNumberVersionList>>();
+            ServiceResponse<IEnumerable<CostingBomItemRevisionList>> serviceResponse = new ServiceResponse<IEnumerable<CostingBomItemRevisionList>>();
             try
             {
                 var releaseCostBomDetails = await _releaseCostBomRepository.GetAllReleaseCostBomItemNumberVersionList();
-                var result = _mapper.Map<IEnumerable<GetAllReleaseCostBomItemNumberVersionList>>(releaseCostBomDetails);
+                var result = _mapper.Map<IEnumerable<CostingBomItemRevisionList>>(releaseCostBomDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all releaseCostBomItemNumberVersionlist";
                 serviceResponse.Success = true;
@@ -1417,7 +1416,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllReleaseCostBomItemNumberVersionList action";
+                serviceResponse.Message = $"Something went wrong inside CostingBomItemRevisionList action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

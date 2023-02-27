@@ -9,15 +9,15 @@ using Entities.DTOs;
 
 namespace Contracts
 {
-    public interface IReleaseEnggBomRepository : IRepositoryBase<ReleaseEnggBom>
+    public interface IReleaseEnggBomRepository : IRepositoryBase<EngineeringBom>
     {
-        Task<PagedList<ReleaseEnggBom>> GetAllReleaseEnggBom(PagingParameter pagingParameter);
-        Task<ReleaseEnggBom> GetReleaseEnggBomById(int id);
-        Task<IEnumerable<ReleaseEnggBom>> GetAllActiveReleaseEnggBom();
-        Task<int?> CreateReleaseEnggBom(ReleaseEnggBom releaseEnggBom);
-        Task<string> UpdateReleaseEnggBom(ReleaseEnggBom releaseEnggBom);
-        Task<string> DeleteReleaseEnggBom(ReleaseEnggBom releaseEnggBom);
-        Task<ReleaseEnggBom> ReleasedEnggBomByItemAndRevisionNumber(string itemNumber, decimal revisionNumber);
-        Task<ReleaseEnggBom> ReleasedEnggProductionByItemAndRevisionNumber(string itemNumber, decimal revisionNumber);
+        Task<PagedList<EngineeringBom>> GetAllReleaseEnggBom(PagingParameter pagingParameter);
+        Task<EngineeringBom> GetReleaseEnggBomById(int id);
+        Task<IEnumerable<EngineeringBom>> GetAllActiveReleaseEnggBom();
+        Task<int?> CreateReleaseEnggBom(EngineeringBom releaseEnggBom);
+        Task<string> UpdateReleaseEnggBom(EngineeringBom releaseEnggBom);
+        Task<string> DeleteReleaseEnggBom(EngineeringBom releaseEnggBom);
+        Task<EngineeringBom> ReleasedEnggBomByItemAndRevisionNumber(string itemNumber, decimal revisionNumber);
+        Task<EngineeringBom> ReleasedEnggProductionByItemAndRevisionNumber(string itemNumber, decimal revisionNumber);
     }
 }

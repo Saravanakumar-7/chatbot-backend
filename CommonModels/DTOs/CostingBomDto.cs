@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Entities.DTOs
 {
-    public class ReleaseCostBomDtoPost
+    public class CostingBomDtoPost
     {
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
@@ -15,7 +15,7 @@ namespace Entities.DTOs
         public string ReleaseNote { get; set; }
 
     }
-    public class GetAllReleaseCostBomItemNumberVersionList
+    public class CostingBomItemRevisionList
     {
         public string ItemNumber { set; get; }
         public decimal[] ReleaseVersion { get; set; }

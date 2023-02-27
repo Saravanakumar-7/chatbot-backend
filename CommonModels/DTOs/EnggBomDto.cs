@@ -100,4 +100,11 @@ namespace Entities.DTOs
         major
     }
 
+    
+ public class EnggBomItemRevisionList
+    {
+        public string ItemNumber { set; get; }
+        public decimal[] RevisionNumber { get; set; }
+
+    }
 }
