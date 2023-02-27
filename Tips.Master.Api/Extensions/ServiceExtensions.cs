@@ -3,6 +3,7 @@ using Entities;
 using LoggerService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using MySql.EntityFrameworkCore.Extensions;
 //using MySql.EntityFrameworkCore.Extensions;
 using Repository;
 

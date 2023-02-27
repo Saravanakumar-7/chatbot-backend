@@ -2,6 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Contracts;
 using Tips.SalesService.Api.Entities;
+using Entities;
+using Microsoft.EntityFrameworkCore.Design;
+using MySql.EntityFrameworkCore.Extensions;
 
 namespace Tips.SalesService.Api.Extensions
 {
@@ -36,6 +39,23 @@ namespace Tips.SalesService.Api.Extensions
         {
             var connectionString = config["MSSqlconnection:connectionString"];
             services.AddDbContext<TipsSalesServiceDbContext>(o => o.UseSqlServer(connectionString));
+        }
+
+        public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
+        {
+
+            var connectionString = config["MySqlconnection:connectionString"];
+            services.AddDbContext<TipsSalesServiceDbContext>(o => o.UseMySQL(connectionString));
+        }
+
+        public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices
+        {
+            public void ConfigureDesignTimeServices(IServiceCollection serviceCollection)
+            {
+                serviceCollection.AddEntityFrameworkMySQL();
+                new EntityFrameworkRelationalDesignServicesBuilder(serviceCollection)
+                    .TryAddCoreServices();
+            }
         }
 
         //public static void ConfigureRepositoryWrapper(this IServiceCollection services)
