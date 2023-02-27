@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Entities
 {
-    public class ReleaseProductBom
+    public class ProductionBom
     {
         [Key]
         public int Id { get; set; }

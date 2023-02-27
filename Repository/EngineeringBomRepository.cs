@@ -50,23 +50,7 @@ namespace Repository
             var result = await Create(enggBom);
             return result.BOMId;
         }
-
-        public async Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom)
-        {
-            enggBom.CreatedBy = "Admin";
-            enggBom.CreatedOn = DateTime.Now;
-            enggBom.Unit = "Bangalore";
-            var getOldRevisionNumber = _tipsMasterDbContext.EnggBoms
-                .Where(x => x.ItemNumber == enggBom.ItemNumber)
-                .OrderByDescending(x => x.BOMId)
-                .Select(x => x.RevisionNumber)
-                .FirstOrDefault();
-
-            enggBom.RevisionNumber = getOldRevisionNumber;
-            var result = await Create(enggBom);
-            return result;
-
-        }
+         
 
         public async Task<string> DeleteEnggBom(EnggBom enggBom)
         {
@@ -136,7 +120,7 @@ namespace Repository
             .ToList();
 
             var enggBomItemNumberList = enggBomDetails
-           .Select(bom => new GetAllEnggBomItemNumberList
+           .Select(bom => new EnggBomItemRevisionList
             {
                 ItemNumber = bom.ItemNumber,
                 RevisionNumber = bom.RevisionNumbers
@@ -157,7 +141,7 @@ namespace Repository
         }
     }
 
-    public class ReleaseEnggBomRepository : RepositoryBase<ReleaseEnggBom>, IReleaseEnggBomRepository
+    public class ReleaseEnggBomRepository : RepositoryBase<EngineeringBom>, IReleaseEnggBomRepository
     {
         private TipsMasterDbContext _tipsMasterDbContext;
         public ReleaseEnggBomRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
@@ -165,7 +149,7 @@ namespace Repository
             _tipsMasterDbContext = repositoryContext;
         }
 
-        public async Task<int?> CreateReleaseEnggBom(ReleaseEnggBom releaseEnggBom)
+        public async Task<int?> CreateReleaseEnggBom(EngineeringBom releaseEnggBom)
         {
             releaseEnggBom.CreatedBy = "Admin";
             releaseEnggBom.CreatedOn = DateTime.Now;
@@ -175,35 +159,35 @@ namespace Repository
             return result.Id;
         }
 
-        public async Task<string> DeleteReleaseEnggBom(ReleaseEnggBom releaseEnggBom)
+        public async Task<string> DeleteReleaseEnggBom(EngineeringBom releaseEnggBom)
         {
             Delete(releaseEnggBom);
             string result = $"ReleaseEnggBom details of {releaseEnggBom.Id} is deleted successfully!";
             return result;
         }
 
-        public async Task<IEnumerable<ReleaseEnggBom>> GetAllActiveReleaseEnggBom()
+        public async Task<IEnumerable<EngineeringBom>> GetAllActiveReleaseEnggBom()
         {
             var AllActiveReleaseEnggBomDetails = await FindAll().ToListAsync();
             return AllActiveReleaseEnggBomDetails;
         }
 
-        public async Task<PagedList<ReleaseEnggBom>> GetAllReleaseEnggBom(PagingParameter pagingParameter)
+        public async Task<PagedList<EngineeringBom>> GetAllReleaseEnggBom(PagingParameter pagingParameter)
         {
-            var GetallReleaseEnggBomDetails = PagedList<ReleaseEnggBom>.ToPagedList(FindAll()
+            var GetallReleaseEnggBomDetails = PagedList<EngineeringBom>.ToPagedList(FindAll()
               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
             return GetallReleaseEnggBomDetails;
         }
 
-        public async Task<ReleaseEnggBom> GetReleaseEnggBomById(int id)
+        public async Task<EngineeringBom> GetReleaseEnggBomById(int id)
         {
-            var ReleaseEnggBomDetailsbyId = await _tipsMasterDbContext.ReleaseEnggBoms.Where(x => x.Id == id).FirstOrDefaultAsync();
+            var ReleaseEnggBomDetailsbyId = await _tipsMasterDbContext.EngineeringBoms.Where(x => x.Id == id).FirstOrDefaultAsync();
             return ReleaseEnggBomDetailsbyId;
         }
 
-        public async Task<string> UpdateReleaseEnggBom(ReleaseEnggBom releaseEnggBom)
+        public async Task<string> UpdateReleaseEnggBom(EngineeringBom releaseEnggBom)
         {
             releaseEnggBom.LastModifiedBy = "Admin";
             releaseEnggBom.LastModifiedOn = DateTime.Now;
@@ -211,9 +195,9 @@ namespace Repository
             string result = $"ReleaseEnggBom Detail {releaseEnggBom.Id} is updated successfully!";
             return result;
         }
-        public async Task<ReleaseEnggBom> ReleasedEnggBomByItemAndRevisionNumber(string itemNumber, decimal revisionNumber)
+        public async Task<EngineeringBom> ReleasedEnggBomByItemAndRevisionNumber(string itemNumber, decimal revisionNumber)
         {
-            var releaseEnggBom = await _tipsMasterDbContext.ReleaseEnggBoms
+            var releaseEnggBom = await _tipsMasterDbContext.EngineeringBoms
             .Where(x => x.ItemNumber == itemNumber && x.ReleaseVersion == revisionNumber)
             .FirstOrDefaultAsync();
 
@@ -221,9 +205,9 @@ namespace Repository
 
             return releaseEnggBom;
         }
-        public async Task<ReleaseEnggBom> ReleasedEnggProductionByItemAndRevisionNumber(string itemNumber, decimal revisionNumber)
+        public async Task<EngineeringBom> ReleasedEnggProductionByItemAndRevisionNumber(string itemNumber, decimal revisionNumber)
         {
-            var releaseProductBom = await _tipsMasterDbContext.ReleaseEnggBoms
+            var releaseProductBom = await _tipsMasterDbContext.EngineeringBoms
             .Where(x => x.ItemNumber == itemNumber && x.ReleaseVersion == revisionNumber)
             .FirstOrDefaultAsync();
 
@@ -233,7 +217,7 @@ namespace Repository
         }
     }
 
-    public class ReleaseCostBomRepository : RepositoryBase<ReleaseCostBom>, IReleaseCostBomRepository
+    public class ReleaseCostBomRepository : RepositoryBase<CostingBom>, IReleaseCostBomRepository
     {
         private TipsMasterDbContext _tipsMasterDbContext;
         public ReleaseCostBomRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
@@ -241,7 +225,7 @@ namespace Repository
             _tipsMasterDbContext = repositoryContext;
         }
 
-        public async Task<int?> CreateReleaseCostBom(ReleaseCostBom releaseCostBom)
+        public async Task<int?> CreateReleaseCostBom(CostingBom releaseCostBom)
         {
             releaseCostBom.CreatedBy = "Admin";
             releaseCostBom.CreatedOn = DateTime.Now;
@@ -253,7 +237,7 @@ namespace Repository
 
         public async Task<IEnumerable<object>> GetAllReleaseCostBomItemNumberVersionList()
         {
-            var releaseCostBomDetails = _tipsMasterDbContext.ReleaseEnggBoms
+            var releaseCostBomDetails = _tipsMasterDbContext.EngineeringBoms
             .Where(x => x.IsReleaseCostCompleted == true)
             .GroupBy(bom => bom.ItemNumber)
             .Select(group => new
@@ -264,7 +248,7 @@ namespace Repository
             .ToList();
 
             var releaseCostBomItemNumberList = releaseCostBomDetails
-           .Select(bom => new GetAllReleaseCostBomItemNumberVersionList
+           .Select(bom => new CostingBomItemRevisionList
            {
                ItemNumber = bom.ItemNumber,
                ReleaseVersion = bom.RevisionNumbers
@@ -272,9 +256,9 @@ namespace Repository
 
             return releaseCostBomItemNumberList;
         }
-        public async Task<ReleaseCostBom> ReleasedCostBomByItemAndRevisionNumber(string itemNumber, decimal revisionNumber)
+        public async Task<CostingBom> ReleasedCostBomByItemAndRevisionNumber(string itemNumber, decimal revisionNumber)
         {
-            var releaseCostBom = await _tipsMasterDbContext.ReleaseCostBoms
+            var releaseCostBom = await _tipsMasterDbContext.CostingBoms
             .Where(x => x.ItemNumber == itemNumber && x.ReleaseVersion == revisionNumber)
             .FirstOrDefaultAsync();
 
@@ -285,7 +269,7 @@ namespace Repository
 
     }
 
-        public class ReleaseProductBomRepository : RepositoryBase<ReleaseProductBom>, IReleaseProductBomRepository
+        public class ReleaseProductBomRepository : RepositoryBase<ProductionBom>, IReleaseProductBomRepository
         {
             private TipsMasterDbContext _tipsMasterDbContext;
             public ReleaseProductBomRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
@@ -293,7 +277,7 @@ namespace Repository
                 _tipsMasterDbContext = repositoryContext;
             }
 
-            public async Task<int?> CreateReleaseProductBom(ReleaseProductBom releaseProductBom)
+            public async Task<int?> CreateReleaseProductBom(ProductionBom releaseProductBom)
             {
                 releaseProductBom.CreatedBy = "Admin";
                 releaseProductBom.CreatedOn = DateTime.Now;
@@ -305,7 +289,7 @@ namespace Repository
 
             public async Task<IEnumerable<object>> GetAllReleaseProductBomItemNumberVersionList()
             {
-                var releaseProductBomDetails = _tipsMasterDbContext.ReleaseCostBoms
+                var releaseProductBomDetails = _tipsMasterDbContext.CostingBoms
                 .Where(x => x.IsReleaseProductCompleted == true)
                 .GroupBy(bom => bom.ItemNumber)
                 .Select(group => new

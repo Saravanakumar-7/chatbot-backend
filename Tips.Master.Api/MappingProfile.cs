@@ -324,13 +324,13 @@ namespace Tips.Master.Api
 
             CreateMap<Inventory_Transaction, Inventory_TransactionDto>().ReverseMap();
 
-            CreateMap<ReleaseEnggBom, ReleaseEnggBomDto>().ReverseMap();
-            CreateMap<ReleaseEnggBom, ReleaseEnggBomDtoPost>().ReverseMap();
-            CreateMap<ReleaseEnggBom, ReleaseEnggBomDtoUpdate>().ReverseMap();
+            CreateMap<EngineeringBom, ReleaseEnggBomDto>().ReverseMap();
+            CreateMap<EngineeringBom, ReleaseEnggBomDtoPost>().ReverseMap();
+            CreateMap<EngineeringBom, ReleaseEnggBomDtoUpdate>().ReverseMap();
 
-            CreateMap<ReleaseCostBom, ReleaseCostBomDtoPost>().ReverseMap();
+            CreateMap<CostingBom, CostingBomDtoPost>().ReverseMap();
 
-            CreateMap<ReleaseProductBom, ReleaseProductBomDtoPost>().ReverseMap();
+            CreateMap<ProductionBom, ReleaseProductBomDtoPost>().ReverseMap();
 
             CreateMap<EnggBomGroup, EnggBomGroupDto>().ReverseMap();
             CreateMap<EnggBomGroup, EnggBomGroupDtoPost>().ReverseMap();

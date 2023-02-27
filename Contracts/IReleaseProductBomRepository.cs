@@ -7,9 +7,9 @@ using Entities;
 
 namespace Contracts
 {
-    public interface IReleaseProductBomRepository : IRepositoryBase<ReleaseProductBom>
+    public interface IReleaseProductBomRepository : IRepositoryBase<ProductionBom>
     {
-        Task<int?> CreateReleaseProductBom(ReleaseProductBom releaseProductBom);
+        Task<int?> CreateReleaseProductBom(ProductionBom releaseProductBom);
         Task<IEnumerable<object>> GetAllReleaseProductBomItemNumberVersionList();
        
     }

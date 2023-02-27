@@ -105,9 +105,9 @@ namespace Entities
         public DbSet<SecondarySource> SecondarySources { get; set; }
         public DbSet<Source> Sources { get; set; }
 
-        public DbSet<ReleaseEnggBom> ReleaseEnggBoms { get; set; }
-        public DbSet<ReleaseCostBom> ReleaseCostBoms { get; set; }
-        public DbSet<ReleaseProductBom> ReleaseProductBoms { get; set; }
+        public DbSet<EngineeringBom> EngineeringBoms { get; set; }
+        public DbSet<CostingBom> CostingBoms { get; set; }
+        public DbSet<ProductionBom> ProductionBoms { get; set; }
 
         public DbSet<EnggBomGroup> BomGroups { get; set; }
         public DbSet<EnggCustomField> CustomFields { get; set; }

@@ -8,10 +8,10 @@ using Entities.DTOs;
 
 namespace Contracts
 {
-    public interface IReleaseCostBomRepository : IRepositoryBase<ReleaseCostBom>
+    public interface IReleaseCostBomRepository : IRepositoryBase<CostingBom>
     {
-        Task<int?> CreateReleaseCostBom(ReleaseCostBom releaseCostBom);
+        Task<int?> CreateReleaseCostBom(CostingBom releaseCostBom);
         Task<IEnumerable<object>> GetAllReleaseCostBomItemNumberVersionList();
-        Task<ReleaseCostBom> ReleasedCostBomByItemAndRevisionNumber(string itemNumber, decimal revisionNumber);
+        Task<CostingBom> ReleasedCostBomByItemAndRevisionNumber(string itemNumber, decimal revisionNumber);
     }
 }
