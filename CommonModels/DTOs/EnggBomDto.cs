@@ -107,4 +107,9 @@ namespace Entities.DTOs
         public decimal[] RevisionNumber { get; set; }
 
     }
+    public class EnggBomRevisionNumberList
+    {
+        public decimal[] RevisionNumber { get; set; }
+
+    }
 }
