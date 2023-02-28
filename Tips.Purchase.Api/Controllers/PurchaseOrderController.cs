@@ -408,8 +408,8 @@ namespace Tips.Purchase.Api.Controllers
                     string fileName = poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                    Guid guid = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", guid.ToString() + "_" ,fileName);
+                    //Guid guid = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument",/* guid.ToString() + "_" ,*/fileName);
                     using (MemoryStream ms = new MemoryStream(fileContent))
                     {
                         ms.Position = 0;
@@ -542,10 +542,23 @@ namespace Tips.Purchase.Api.Controllers
 
                 foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
                 {
+
+
+                    //string path = "~/Upload/PODocument/" + getDownloadUrlByFilename.FileName;
+
+
+                    //if (System.IO.File.Exists(path))
+                    //{
+                    //    getDownloadUrlByFilename.DownloadUrl = Url.Action("StageDocumentDownloadFile", "StageDocumentUpload", new { id = uploadedFile.Id }, protocol: HttpContext.Request.Scheme);
+
+                    //}
+                    //getDownloadUrlByFilename.DownloadUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}";
+
+                    //Uri resourceFullPath = new Uri(baseUri, VirtualPathUtility.ToAbsolute(resourceRelative));
                     //getDownloadUrlByFilename.DownloadUrl = Url.Action(new { id = uploadedFile.Id }, protocol: HttpContext.Request.Scheme);
 
-                    //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
-                    getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/TipsPurchasePublish/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+                    getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+                    //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/TipsPurchasePublish/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
 
                 }
                 if (getDownloadDetailByPoNumber == null)
