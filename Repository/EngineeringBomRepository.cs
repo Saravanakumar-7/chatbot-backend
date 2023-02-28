@@ -139,6 +139,38 @@ namespace Repository
 
             return releaseEnggBom;
         }
+
+        public async Task<IEnumerable<object>> GetAllEnggBomVersionListByItemNumber(string itemNumber)
+        {
+            var enggBomDetails = _tipsMasterDbContext.EnggBoms
+           .Where(x => x.ItemNumber==itemNumber)
+           .GroupBy(bom => bom.ItemNumber)
+           .Select(group => new
+           {
+               ItemNumber = group.Key,
+               RevisionNumbers = group.Select(bom => bom.RevisionNumber).ToArray()
+           })
+           .ToList();
+
+            var enggBomItemNumberList = enggBomDetails
+           .Select(bom => new EnggBomRevisionNumberList
+           {
+               RevisionNumber = bom.RevisionNumbers
+           }).ToList();
+
+            return enggBomItemNumberList;
+        }
+
+        public async Task<EnggBom> GetEnggBomByItemNumber(string itemNumber)
+        {
+            var EnggBomDetailsbyItemNumber = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == itemNumber)
+                               .Include(m => m.NREConsumable)
+                               .Include(t => t.EnggChildItems)
+                               .ThenInclude(x => x.EnggAlternates)
+                             .FirstOrDefaultAsync();
+
+            return EnggBomDetailsbyItemNumber;
+        }
     }
 
     public class ReleaseEnggBomRepository : RepositoryBase<EngineeringBom>, IReleaseEnggBomRepository
@@ -283,6 +315,26 @@ namespace Repository
 
         }
 
+        public async Task<IEnumerable<object>> GetAllCostingBomVersionListByItemNumber(string itemNumber)
+        {
+            var costingBomDetails = _tipsMasterDbContext.EngineeringBoms
+             .Where(x => x.ItemNumber == itemNumber)
+             .GroupBy(bom => bom.ItemNumber)
+             .Select(group => new
+             {
+                 ItemNumber = group.Key,
+                 RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
+             })
+             .ToList();
+
+            var costingBomVersionList = costingBomDetails
+           .Select(bom => new CostingBomRevisionNumberList
+           {
+               ReleaseVersion = bom.RevisionNumbers
+           }).ToList();
+
+            return costingBomVersionList;
+        }
     }
 
         public class ReleaseProductBomRepository : RepositoryBase<ProductionBom>, IReleaseProductBomRepository
@@ -340,6 +392,26 @@ namespace Repository
             return productionBomDetailsbyId;
         }
 
+        public async Task<IEnumerable<object>> GetAllProductionBomVersionListByItemNumber(string itemNumber)
+        {
+            var productionBomDetails = _tipsMasterDbContext.CostingBoms
+               .Where(x => x.ItemNumber == itemNumber)
+                .GroupBy(bom => bom.ItemNumber)
+                .Select(group => new
+                {
+                    ItemNumber = group.Key,
+                    RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
+                })
+                .ToList();
+
+            var productionBomVersionList = productionBomDetails
+           .Select(bom => new ProductionBomRevisionNumberList
+           {
+               ReleaseVersion = bom.RevisionNumbers
+           }).ToList();
+
+            return productionBomVersionList;
+        }
     }
 
         public class EnggBomGroupRepository : RepositoryBase<EnggBomGroup>, IEnggBomGroupRepository

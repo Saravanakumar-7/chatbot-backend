@@ -137,7 +137,59 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet("{itemNumber}")]
+        public async Task<IActionResult> GetEnggBomByItemNumber(string itemNumber)
+        {
+            ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
 
+            try
+            {
+                var enggBomDetailByItemNumber = await _repository.EnggBomRepository.GetEnggBomByItemNumber(itemNumber);
+
+                if (enggBomDetailByItemNumber == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Engineering Bom with id hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Engineering Bom with id: {itemNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Engineering Bom with id: {itemNumber}");
+                    EnggBomDto enggBomDto = _mapper.Map<EnggBomDto>(enggBomDetailByItemNumber);
+                    List<EnggChildItemDto> childItemsDtos = new List<EnggChildItemDto>();
+                    enggBomDto.BomNREConsumableDto = _mapper.Map<List<BomNREConsumableDto>>(enggBomDetailByItemNumber.NREConsumable);
+
+                    if (enggBomDetailByItemNumber.EnggChildItems != null)
+                    {
+                        foreach (var itemDetails in enggBomDetailByItemNumber.EnggChildItems)
+                        {
+                            EnggChildItemDto enggChildItemDto = _mapper.Map<EnggChildItemDto>(itemDetails);
+                            enggChildItemDto.EnggAlternatesDtos = _mapper.Map<List<EnggAlternatesDto>>(itemDetails.EnggAlternates);
+                            childItemsDtos.Add(enggChildItemDto);
+                        }
+                    }
+                    enggBomDto.EnggChildItemDtos = childItemsDtos;
+                    serviceResponse.Data = enggBomDto;
+                    serviceResponse.Message = $"Returned EngineeringBomByItemNumber Successfully ";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetEnggBomByItemNumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet("{fgPartNumber}")]
         public async Task<IActionResult> GetEnggBomByFgPartNumber(string fgPartNumber)
@@ -1632,5 +1684,81 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet("{itemNumber}")]
+        public async Task<IActionResult> GetAllEnggBomRevisionNumberList(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<EnggBomRevisionNumberList>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomRevisionNumberList>>();
+            try
+            {
+                var costingBomVersionDetails = await _enggBomRepository.GetAllEnggBomVersionListByItemNumber(itemNumber);
+                var result = _mapper.Map<IEnumerable<EnggBomRevisionNumberList>>(costingBomVersionDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all EnggBomRevisionNumbers";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllEnggBomRevisionNumberList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet("{itemNumber}")]
+        public async Task<IActionResult> GetAllCostingBomRevisionNumberList(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<CostingBomRevisionNumberList>> serviceResponse = new ServiceResponse<IEnumerable<CostingBomRevisionNumberList>>();
+            try
+            {
+                var costingBomVersionDetails = await _releaseCostBomRepository.GetAllCostingBomVersionListByItemNumber(itemNumber);
+                var result = _mapper.Map<IEnumerable<CostingBomRevisionNumberList>>(costingBomVersionDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all CostingBomRevisionNumbers";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllCostingBomRevisionNumberList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet("{itemNumber}")]
+        public async Task<IActionResult> GetAllProductionBomRevisionNumberList(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<ProductionBomRevisionNumberList>> serviceResponse = new ServiceResponse<IEnumerable<ProductionBomRevisionNumberList>>();
+            try
+            {
+                var productionBomVersionDetails = await _releaseProductBomRepository.GetAllProductionBomVersionListByItemNumber(itemNumber);
+                var result = _mapper.Map<IEnumerable<ProductionBomRevisionNumberList>>(productionBomVersionDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ProductionBomRevisionNumbers";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllProductionBomRevisionNumberList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 }

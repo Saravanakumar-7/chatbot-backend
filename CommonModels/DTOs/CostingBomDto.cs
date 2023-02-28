@@ -21,4 +21,9 @@ namespace Entities.DTOs
         public decimal[] ReleaseVersion { get; set; }
 
     }
+    public class CostingBomRevisionNumberList
+    {
+        public decimal[] ReleaseVersion { get; set; }
+
+    }
 }
