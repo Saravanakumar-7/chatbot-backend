@@ -238,7 +238,7 @@ namespace Repository
         public async Task<IEnumerable<object>> GetAllReleaseCostBomItemNumberVersionList()
         {
             var releaseCostBomDetails = _tipsMasterDbContext.EngineeringBoms
-            .Where(x => x.IsReleaseCostCompleted == true)
+            .Where(x => x.IsReleaseCompleted == true && x.IsReleaseCostCompleted == false)
             .GroupBy(bom => bom.ItemNumber)
             .Select(group => new
             {
@@ -306,7 +306,7 @@ namespace Repository
             public async Task<IEnumerable<object>> GetAllReleaseProductBomItemNumberVersionList()
             {
                 var releaseProductBomDetails = _tipsMasterDbContext.CostingBoms
-                .Where(x => x.IsReleaseProductCompleted == true)
+                .Where(x => x.IsReleaseCostCompleted == true && x.IsReleaseProductCompleted == false)
                 .GroupBy(bom => bom.ItemNumber)
                 .Select(group => new
                 {
