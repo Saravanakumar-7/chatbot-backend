@@ -34,22 +34,31 @@ namespace Tips.Grin.Api.Repository
         }
 
 
+        //public async Task<PagedList<IQCConfirmation>> GetAllIqcDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        //{
+        //    var getallIQCList = FindAll()
+        //        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || (inv.GrinNumber != null && inv.GrinNumber.Contains(searchParams.SearchValue)) ||
+        //        (!string.IsNullOrEmpty(inv.VendorName) && inv.VendorName.Contains(searchParams.SearchValue)) || (inv.Id != null && inv.Id.ToString().Contains(searchParams.SearchValue))
+        //         || (inv.InvoiceNumber != null && inv.InvoiceNumber.Contains(searchParams.SearchValue)))))
+        //         .Include(t => t.IQCConfirmationItems);
+
+        //    return PagedList<IQCConfirmation>.ToPagedList(getallIQCList, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+        //}
+
         public async Task<PagedList<IQCConfirmation>> GetAllIqcDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             var getallIQCList = FindAll()
                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || (inv.GrinNumber != null && inv.GrinNumber.Contains(searchParams.SearchValue)) ||
-                (!string.IsNullOrEmpty(inv.VendorName) && inv.VendorName.Contains(searchParams.SearchValue)) || (inv.Id != null && inv.Id.ToString().Contains(searchParams.SearchValue))
-                 || (inv.InvoiceNumber != null && inv.InvoiceNumber.Contains(searchParams.SearchValue)))))
+                   (inv.Id != null && inv.Id.ToString().Contains(searchParams.SearchValue))
+                )))
                  .Include(t => t.IQCConfirmationItems);
 
             return PagedList<IQCConfirmation>.ToPagedList(getallIQCList, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
         public async Task<IEnumerable<IQCConfirmation>> GetIqcDetailsbyGrinNo(string grinNumber)
-        {
-            //var iQCDetail = await FindByCondition(x => x.GrinNumber == grinNumber).ToListAsync();
-            //return iQCDetail;
-
+        { 
             var iQCDetail = await _tipsGrinDbContext.IQCConfirmations
                .Include(t => t.IQCConfirmationItems)
              .Where(x => x.GrinNumber == grinNumber)
@@ -87,12 +96,20 @@ namespace Tips.Grin.Api.Repository
 
         }
 
+        //public async Task<PagedList<IQCConfirmationItems>> GetAllIQCConfirmationItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        //{
+        //    var getAllIqcItems = FindAll()
+        //     .Where(iqc => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || iqc.ItemNumber.Contains(searchParams.SearchValue) ||
+        //     iqc.Description.Contains(searchParams.SearchValue) || iqc.MftrItemNumber.Contains(searchParams.SearchValue) || iqc.ManufactureBatchNumber.Contains(searchParams.SearchValue)
+        //     )));
+
+        //    return PagedList<IQCConfirmationItems>.ToPagedList(getAllIqcItems, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
+
         public async Task<PagedList<IQCConfirmationItems>> GetAllIQCConfirmationItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             var getAllIqcItems = FindAll()
-             .Where(iqc => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || iqc.ItemNumber.Contains(searchParams.SearchValue) ||
-             iqc.Description.Contains(searchParams.SearchValue) || iqc.MftrItemNumber.Contains(searchParams.SearchValue) || iqc.ManufactureBatchNumber.Contains(searchParams.SearchValue)
-             )));
+             .Where(iqc => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || iqc.ItemNumber.Contains(searchParams.SearchValue))));
 
             return PagedList<IQCConfirmationItems>.ToPagedList(getAllIqcItems, pagingParameter.PageNumber, pagingParameter.PageSize);
         }

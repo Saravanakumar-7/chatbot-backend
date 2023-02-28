@@ -41,7 +41,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public DateTime? BEDate { get; set; }
 
-        public int? TotalInvoice { get; set; }
+        public decimal? TotalInvoiceValue { get; set; }
 
         public List<DocumentUploadDto> GrinDocuments { get; set; }
 
@@ -95,7 +95,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public DateTime? BEDate { get; set; }
 
-        public int? TotalInvoice { get; set; }
+        public decimal? TotalInvoiceValue { get; set; }
 
         public List<DocumentUploadPostDto> GrinDocuments { get; set; }
 
@@ -139,7 +139,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public DateTime? BEDate { get; set; }
 
-        public int? TotalInvoice { get; set; }
+        public decimal? TotalInvoiceValue { get; set; }
         public List<DocumentUploadUpdateDto> GrinDocuments { get; set; }
 
         //public string? GrinDocuments { get; set; }

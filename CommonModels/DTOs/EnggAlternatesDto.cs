@@ -25,7 +25,7 @@ namespace Entities.DTOs
 
         public string? Description { get; set; }
 
-        public string? Remark { get; set; }
+        public string? Remarks { get; set; }
 
         public string? Version { get; set; }
 
@@ -99,10 +99,10 @@ namespace Entities.DTOs
 
     [DefaultValue(true)]
     public bool IsActive { get; set; } 
-    public string? CreatedBy { get; set; }
-    public DateTime? CreatedOn { get; set; }
-    public string? LastModifiedBy { get; set; }
-    public DateTime? LastModifiedOn { get; set; }
+    //public string? CreatedBy { get; set; }
+    //public DateTime? CreatedOn { get; set; }
+    //public string? LastModifiedBy { get; set; }
+    //public DateTime? LastModifiedOn { get; set; }
 }
 
 }

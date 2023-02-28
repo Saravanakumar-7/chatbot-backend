@@ -425,6 +425,18 @@ namespace Tips.Master.Api.Controllers
                 }
             
                 var enggBomList = _mapper.Map<EnggBom>(enggBomUpdateDto);
+
+                var enggNre = enggBomUpdateDto.BomNREConsumableUpdateDto;
+                var nreList = new List<NREConsumable>();
+                for (int i = 0; i < enggNre.Count; i++)
+                {
+                    NREConsumable enggChildItemDetails = _mapper.Map<NREConsumable>(enggNre[i]);
+                    nreList.Add(enggChildItemDetails);
+
+                }
+                enggBomList.NREConsumable = nreList;
+
+
                 var enggChildItemDto = enggBomUpdateDto.EnggChildItemUpdates;
                 var enggChildItemList = new List<EnggChildItem>();
                 if (enggChildItemDto != null)

@@ -239,28 +239,28 @@ namespace Tips.Grin.Api.Controllers
                 _iQCConfirmationRepository.SaveAsync();
 
                 // Inventory Update Code
-                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByGrinNo?", "GrinNo=", iQCCreate.GrinNumber, "&ItemNumber=", iQCCreate.ItemNumber, "&ProjectNumber=", iQCCreate.ProjectNumber));
-                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                dynamic inventoryObject = inventoryObjectData.data;
-                inventoryObject.Balance_Quantity = iQCCreate.AcceptedQty;
-                inventoryObject.Warehouse = "IQC";
-                inventoryObject.Location = "IQC";
-                inventoryObject.ReferenceIDFrom = "GRIN";
+                //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByGrinNo?", "GrinNo=", iQCCreate.GrinNumber, "&ItemNumber=", iQCCreate.ItemNumber, "&ProjectNumber=", iQCCreate.ProjectNumber));
+                //var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                //dynamic inventoryObject = inventoryObjectData.data;
+                //inventoryObject.Balance_Quantity = iQCCreate.AcceptedQty;
+                //inventoryObject.Warehouse = "IQC";
+                //inventoryObject.Location = "IQC";
+                //inventoryObject.ReferenceIDFrom = "GRIN";
 
-                var json = JsonConvert.SerializeObject(inventoryObject);
-                var data = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"], "UpdateInventory/", inventoryObject.id), data);
+                //var json = JsonConvert.SerializeObject(inventoryObject);
+                //var data = new StringContent(json, Encoding.UTF8, "application/json");
+                //var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"], "UpdateInventory/", inventoryObject.id), data);
 
                 //update accepted qty and rejected qty in grin model 
 
-                var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iQCCreate.GrinPartId, iQCCreate.AcceptedQty.ToString(), iQCCreate.RejectedQty.ToString());
+                //var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iQCCreate.GrinPartId, iQCCreate.AcceptedQty.ToString(), iQCCreate.RejectedQty.ToString());
 
-                var iQCCreates = _mapper.Map<GrinParts>(updatedGrinPartsQty);
+                //var iQCCreates = _mapper.Map<GrinParts>(updatedGrinPartsQty);
 
-                string result = await _grinPartsRepository.UpdateGrinQty(iQCCreates);
+                //string result = await _grinPartsRepository.UpdateGrinQty(iQCCreates);
 
-                _grinPartsRepository.SaveAsync();
+                //_grinPartsRepository.SaveAsync();
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "IQCConfirmation Successfully Created";
@@ -281,75 +281,76 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+        //check and enble the below code
 
 
-        [HttpPost]
-        public async Task<IActionResult> SaveMultipleIqc([FromBody] List<IQCConfirmationPostDto> iQCConfirmationPostDtos)
-        {
-            ServiceResponse<IQCConfirmationPostDto> serviceResponse = new ServiceResponse<IQCConfirmationPostDto>();
+        //[HttpPost]
+        //public async Task<IActionResult> SaveMultipleIqc([FromBody] List<IQCConfirmationPostDto> iQCConfirmationPostDtos)
+        //{
+        //    ServiceResponse<IQCConfirmationPostDto> serviceResponse = new ServiceResponse<IQCConfirmationPostDto>();
 
-            try
-            {
-                if (iQCConfirmationPostDtos == null)
-                {
-                    _logger.LogError("IQCConfirmation details object sent from client is null.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "IQCConfirmation details object is null";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest();
-                }
-                if (!ModelState.IsValid)
-                {
-                    _logger.LogError("Invalid IQCConfirmation details object sent from client.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid model object";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(serviceResponse);
-                }
+        //    try
+        //    {
+        //        if (iQCConfirmationPostDtos == null)
+        //        {
+        //            _logger.LogError("IQCConfirmation details object sent from client is null.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "IQCConfirmation details object is null";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest();
+        //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _logger.LogError("Invalid IQCConfirmation details object sent from client.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid model object";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
 
-                var iQCConfirmationList = _mapper.Map<List<IQCConfirmation>>(iQCConfirmationPostDtos);
-                bool isAnyRecordCreated = false;
-                foreach (var iQCDetails in iQCConfirmationList)
-                {
-                    if (iQCDetails.AcceptedQty > 0 || iQCDetails.RejectedQty > 0)
-                    {
-                        await _iQCConfirmationRepository.Create(iQCDetails);
-                        isAnyRecordCreated = true;
-                    }
-                }
-                if (isAnyRecordCreated)
-                {
-                    _iQCConfirmationRepository.SaveAsync();
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Successfully Created";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Created("IQCConfirmationById", serviceResponse);
-                }
-                else
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Nothing to save,Because accepted or rejected quantity is not greater than 0 in any rows !";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Created("IQCConfirmationById", serviceResponse);
-                }
+        //        var iQCConfirmationList = _mapper.Map<List<IQCConfirmation>>(iQCConfirmationPostDtos);
+        //        bool isAnyRecordCreated = false;
+        //        foreach (var iQCDetails in iQCConfirmationList)
+        //        {
+        //            if (iQCDetails.AcceptedQty > 0 || iQCDetails.RejectedQty > 0)
+        //            {
+        //                await _iQCConfirmationRepository.Create(iQCDetails);
+        //                isAnyRecordCreated = true;
+        //            }
+        //        }
+        //        if (isAnyRecordCreated)
+        //        {
+        //            _iQCConfirmationRepository.SaveAsync();
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Successfully Created";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Created("IQCConfirmationById", serviceResponse);
+        //        }
+        //        else
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Nothing to save,Because accepted or rejected quantity is not greater than 0 in any rows !";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Created("IQCConfirmationById", serviceResponse);
+        //        }
 
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Something went wrong inside Create IQCConfirmation action: {ex.Message}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside Create IQCConfirmation action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, "Internal server error");
 
 
-            }
-        }
+        //    }
+        //}
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetIqcDetailsbyId(int id)
@@ -422,7 +423,7 @@ namespace Tips.Grin.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                iQCDetailById.IsDeleted = true;
+                //iQCDetailById.IsDeleted = true;
                 string result = await _iQCConfirmationRepository.UpdateIqc(iQCDetailById);
                 serviceResponse.Message = "IQCConfirmation Deleted Successfully";
                 serviceResponse.Success = true;
