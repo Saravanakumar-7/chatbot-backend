@@ -16,60 +16,49 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public string? GrinNumber { get; set; }
 
-        public string? ItemNumber { get; set; }
+        public string? VendorName { get; set; }
 
-        public int ItemId { get; set; }
+        public int? VendorId { get; set; }
 
-        public int GrinPartId { get; set; }
-
-        public string? ProjectNumber { get; set; }
+        public DateTime? InvoiceDate { get; set; }
 
         [Precision(13, 3)]
-        public decimal? AcceptedQty { get; set; }
+        public decimal? InvoiceValue { get; set; }
 
-        [Precision(13, 3)]
-        public decimal? RejectedQty { get; set; }
+        public string? InvoiceNumber { get; set; }         
 
-        public bool IsBinningDone { get; set; } = false;
+        public string? AWBNumber1 { get; set; }
+        public string? AWBNumber2 { get; set; }
+        public string? BENumber { get; set; }
+        public int? TotalInvoice { get; set; }
+        public string? GrinDocuments { get; set; }
+        public DateTime? AWBDate1 { get; set; }
+        public DateTime? AWBDate2 { get; set; }
 
+        public DateTime? BEDate { get; set; }
+         
+
+        public string Unit { get; set; }
         public bool IsDeleted { get; set; } = false;
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public string Unit { get; set; }
-
         public List<IQCConfirmationItemsDto>? IQCConfirmationItems { get; set; }
-    
-
-
 
 }
     public class IQCConfirmationPostDto
     {
-        public string? GrinNumber { get; set; }
-
-        public string? ItemNumber { get; set; }
-
-        public int ItemId { get; set; }
-        public int GrinPartId { get; set; }
-
-        public string? ProjectNumber { get; set; }
-
-        [Precision(13, 3)]
-        public decimal? AcceptedQty { get; set; }
-
-        [Precision(13, 3)]
-        public decimal? RejectedQty { get; set; }
-
-        public bool IsBinningDone { get; set; } = false;
-
-        public bool IsDeleted { get; set; } = false;
+        public string GrinNumber { get; set; }
+        public int GrinId { get; set; }
+        public string Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
 
         public List<IQCConfirmationItemsPostDto>? IQCConfirmationItemsPostDtos { get; set; }
-
-
 
 
     }
@@ -78,30 +67,14 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
 
         public int Id { get; set; }
-        public string? GrinNumber { get; set; }
-
-    public string? ItemNumber { get; set; }
-
-    public int ItemId { get; set; }
-    public int GrinPartId { get; set; }
-
-    public string? ProjectNumber { get; set; }
-
-    [Precision(13, 3)]
-    public decimal? AcceptedQty { get; set; }
-
-    [Precision(13, 3)]
-    public decimal? RejectedQty { get; set; }
-
-    public bool IsBinningDone { get; set; } = false;
-
-    public bool IsDeleted { get; set; } = false;
-
-    public string Unit { get; set; }
-
-    public List<IQCConfirmationItemsUpdateDto>? IQCConfirmationItemsUpdateDtos { get; set; }
-
-
+        public string GrinNumber { get; set; }
+        public int GrinId { get; set; }
+        public string Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public List<IQCConfirmationItemsUpdateDto>? IQCConfirmationItemsUpdateDtos { get; set; }
 
     }
 

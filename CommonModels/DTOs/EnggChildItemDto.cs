@@ -60,7 +60,7 @@ namespace Entities.DTOs
         public string? Description { get; set; }
 
         [StringLength(500, ErrorMessage = "Remark can't be longer than 500 characters")]
-        public string? Remark { get; set; }
+        public string? Remarks { get; set; }
 
         public string? Version { get; set; }
 
@@ -104,10 +104,10 @@ namespace Entities.DTOs
         public bool IsActive { get; set; }
         //public string Unit { get; set; }
 
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        //public string? CreatedBy { get; set; }
+        //public DateTime? CreatedOn { get; set; }
+        //public string? LastModifiedBy { get; set; }
+        //public DateTime? LastModifiedOn { get; set; }
 
         public List<EnggAlternatesUpdateDto>? EnggAlternatesUpdateDtos { get; set; }
 

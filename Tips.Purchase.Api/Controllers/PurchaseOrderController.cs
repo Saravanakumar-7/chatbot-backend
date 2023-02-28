@@ -493,6 +493,18 @@ namespace Tips.Purchase.Api.Controllers
             return File(bytes, ContentType, Path.GetFileName(filePath));
         }
 
+        //public async Task<IActionResult> StageDocumentDownloadFile(int fileid)
+        //{
+        //    ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+        //    StageDocumentUpload DownloadFilesList = await _repository.StageDocumentUploadService.StageDownloadFiles(fileid);
+        //    if (DownloadFilesList == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var DownloadFilesdata = DownloadFilesList;
+        //    var stream = new FileStream(DownloadFilesdata.FilePath, FileMode.Open);
+        //    return File(stream, "application/octet-stream", DownloadFilesdata.FileName);
+        //}
 
         [HttpGet("{filename}")]
         public IActionResult DownloadFiles(string filename)
@@ -530,6 +542,8 @@ namespace Tips.Purchase.Api.Controllers
 
                 foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
                 {
+                    //getDownloadUrlByFilename.DownloadUrl = Url.Action(new { id = uploadedFile.Id }, protocol: HttpContext.Request.Scheme);
+
                     //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
                     getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/TipsPurchasePublish/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
 

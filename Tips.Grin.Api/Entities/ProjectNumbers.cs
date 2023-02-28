@@ -16,9 +16,5 @@ namespace Tips.Grin.Api.Entities
         public int GrinPartsId { get; set; }
         public GrinParts? GrinParts { get; set; }
 
-
-
-
-
     }
 }
