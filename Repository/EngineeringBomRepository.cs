@@ -140,30 +140,17 @@ namespace Repository
             return releaseEnggBom;
         }
 
-        public async Task<IEnumerable<object>> GetAllEnggBomVersionListByItemNumber(string itemNumber)
+        public async Task<IEnumerable<EngineeringBom>> GetAllEnggBomVersionListByItemNumber(string itemNumber)
         {
-            var enggBomDetails = _tipsMasterDbContext.EnggBoms
-           .Where(x => x.ItemNumber==itemNumber)
-           .GroupBy(bom => bom.ItemNumber)
-           .Select(group => new
-           {
-               ItemNumber = group.Key,
-               RevisionNumbers = group.Select(bom => bom.RevisionNumber).ToArray()
-           })
-           .ToList();
-
-            var enggBomItemNumberList = enggBomDetails
-           .Select(bom => new EnggBomRevisionNumberList
-           {
-               RevisionNumber = bom.RevisionNumbers
-           }).ToList();
-
-            return enggBomItemNumberList;
+            var enggBomDetails = await _tipsMasterDbContext.EngineeringBoms
+           .Where(x => x.ItemNumber==itemNumber).ToListAsync();
+           
+            return enggBomDetails;
         }
 
-        public async Task<EnggBom> GetEnggBomByItemNumber(string itemNumber)
+        public async Task<EnggBom> GetEnggBomByItemNoAndRevNo(string itemNumber,decimal revisionNumber)
         {
-            var EnggBomDetailsbyItemNumber = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == itemNumber)
+            var EnggBomDetailsbyItemNumber = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == itemNumber && x.RevisionNumber == revisionNumber)
                                .Include(m => m.NREConsumable)
                                .Include(t => t.EnggChildItems)
                                .ThenInclude(x => x.EnggAlternates)
@@ -315,25 +302,12 @@ namespace Repository
 
         }
 
-        public async Task<IEnumerable<object>> GetAllCostingBomVersionListByItemNumber(string itemNumber)
+        public async Task<IEnumerable<CostingBom>> GetAllCostingBomVersionListByItemNumber(string itemNumber)
         {
-            var costingBomDetails = _tipsMasterDbContext.EngineeringBoms
-             .Where(x => x.ItemNumber == itemNumber)
-             .GroupBy(bom => bom.ItemNumber)
-             .Select(group => new
-             {
-                 ItemNumber = group.Key,
-                 RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
-             })
-             .ToList();
+            var costingBomDetails = await _tipsMasterDbContext.CostingBoms
+             .Where(x => x.ItemNumber == itemNumber).ToListAsync();
 
-            var costingBomVersionList = costingBomDetails
-           .Select(bom => new CostingBomRevisionNumberList
-           {
-               ReleaseVersion = bom.RevisionNumbers
-           }).ToList();
-
-            return costingBomVersionList;
+            return costingBomDetails;
         }
     }
 
@@ -392,25 +366,13 @@ namespace Repository
             return productionBomDetailsbyId;
         }
 
-        public async Task<IEnumerable<object>> GetAllProductionBomVersionListByItemNumber(string itemNumber)
+        public async Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber)
         {
-            var productionBomDetails = _tipsMasterDbContext.CostingBoms
+            var productionBomDetails =await _tipsMasterDbContext.ProductionBoms
                .Where(x => x.ItemNumber == itemNumber)
-                .GroupBy(bom => bom.ItemNumber)
-                .Select(group => new
-                {
-                    ItemNumber = group.Key,
-                    RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
-                })
-                .ToList();
+             .ToListAsync();
 
-            var productionBomVersionList = productionBomDetails
-           .Select(bom => new ProductionBomRevisionNumberList
-           {
-               ReleaseVersion = bom.RevisionNumbers
-           }).ToList();
-
-            return productionBomVersionList;
+            return productionBomDetails;
         }
     }
 

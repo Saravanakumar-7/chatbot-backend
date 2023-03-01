@@ -372,22 +372,22 @@ namespace Tips.Grin.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned IQCConfirmation details with id: {id}");
-
-                    IQCConfirmationDto iQCConfirmationDtos = _mapper.Map<IQCConfirmationDto>(iQCDetailsbyId);
-
+                    var iQCConformationDetailsDtos = _mapper.Map<GrinDto>(iQCDetailsbyId);
+                    
                     List<IQCConfirmationItemsDto> iQCConfirmationItemsList = new List<IQCConfirmationItemsDto>();
-
+                    List<GrinPartsDto> grinPartDto = _mapper.Map<List<GrinPartsDto>>(iQCConfirmationItemsList);
                     if (iQCDetailsbyId.IQCConfirmationItems != null)
                     {
-
+                        
                         foreach (var iqc in iQCDetailsbyId.IQCConfirmationItems)
                         {
-                            IQCConfirmationItemsDto iQCConfirmationItemsDto = _mapper.Map<IQCConfirmationItemsDto>(iqc);
-                            iQCConfirmationItemsList.Add(iQCConfirmationItemsDto);
+                            GrinPartsDto iQCConfirmationItemsDto = _mapper.Map<GrinPartsDto>(iqc);
+                            grinPartDto.Add(iQCConfirmationItemsDto);
                         }
                     }
-                    iQCConfirmationDtos.IQCConfirmationItems = iQCConfirmationItemsList;
-                    serviceResponse.Data = iQCConfirmationDtos;
+
+                    iQCConformationDetailsDtos.GrinParts = grinPartDto;
+                    //serviceResponse.Data = iQCConformationDetailsDtos;
                     serviceResponse.Message = "Success";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

@@ -79,11 +79,10 @@ namespace Tips.Grin.Api.Repository
         public async Task<IQCConfirmation> GetIqcDetailsbyId(int id)
         {
             var iQCDetailsbyId = await _tipsGrinDbContext.IQCConfirmations.Where(x => x.Id == id)
-                                .Include(v => v.IQCConfirmationItems)
                                 .FirstOrDefaultAsync();
             return iQCDetailsbyId;
         }
-
+  
     }
 
     public class IQCConfirmationItemsRepository : RepositoryBase<IQCConfirmationItems>, IIQCConfirmationItemsRepository

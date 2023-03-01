@@ -25,7 +25,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? InvoiceValue { get; set; }
 
-        public string? InvoiceNumber { get; set; }         
+        public string? InvoiceNumber { get; set; }
 
         public string? AWBNumber1 { get; set; }
         public string? AWBNumber2 { get; set; }
@@ -34,10 +34,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? GrinDocuments { get; set; }
         public DateTime? AWBDate1 { get; set; }
         public DateTime? AWBDate2 { get; set; }
-
         public DateTime? BEDate { get; set; }
-         
-
         public string Unit { get; set; }
         public bool IsDeleted { get; set; } = false;
         public string? CreatedBy { get; set; }
@@ -47,7 +44,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public List<IQCConfirmationItemsDto>? IQCConfirmationItems { get; set; }
 
-}
+    }
     public class IQCConfirmationPostDto
     {
         public string GrinNumber { get; set; }
@@ -59,7 +56,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
         public List<IQCConfirmationItemsPostDto>? IQCConfirmationItemsPostDtos { get; set; }
-
 
     }
 
@@ -77,8 +73,5 @@ namespace Tips.Grin.Api.Entities.DTOs
         public List<IQCConfirmationItemsUpdateDto>? IQCConfirmationItemsUpdateDtos { get; set; }
 
     }
-
-
-
 
 }

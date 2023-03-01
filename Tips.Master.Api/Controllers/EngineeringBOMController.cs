@@ -137,34 +137,34 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        [HttpGet("{itemNumber}")]
-        public async Task<IActionResult> GetEnggBomByItemNumber(string itemNumber)
+        [HttpGet]
+        public async Task<IActionResult> GetEnggBomByItemNoAndRevNo(string itemNumber,decimal revisionNumber)
         {
             ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
 
             try
             {
-                var enggBomDetailByItemNumber = await _repository.EnggBomRepository.GetEnggBomByItemNumber(itemNumber);
+                var enggBomDetailByItemNoAndRevNo = await _repository.EnggBomRepository.GetEnggBomByItemNoAndRevNo(itemNumber, revisionNumber);
 
-                if (enggBomDetailByItemNumber == null)
+                if (enggBomDetailByItemNoAndRevNo == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Engineering Bom with id hasn't been found";
+                    serviceResponse.Message = $"Engineering Bom with ItemNoAndRevNo hasn't been found";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"Engineering Bom with id: {itemNumber}, hasn't been found in db.");
+                    _logger.LogError($"Engineering Bom with ItemNoAndRevNo: {itemNumber}, hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned Engineering Bom with id: {itemNumber}");
-                    EnggBomDto enggBomDto = _mapper.Map<EnggBomDto>(enggBomDetailByItemNumber);
+                    _logger.LogInfo($"Returned Engineering Bom with ItemNoAndRevNo: {itemNumber},{revisionNumber}");
+                    EnggBomDto enggBomDto = _mapper.Map<EnggBomDto>(enggBomDetailByItemNoAndRevNo);
                     List<EnggChildItemDto> childItemsDtos = new List<EnggChildItemDto>();
-                    enggBomDto.BomNREConsumableDto = _mapper.Map<List<BomNREConsumableDto>>(enggBomDetailByItemNumber.NREConsumable);
+                    enggBomDto.BomNREConsumableDto = _mapper.Map<List<BomNREConsumableDto>>(enggBomDetailByItemNoAndRevNo.NREConsumable);
 
-                    if (enggBomDetailByItemNumber.EnggChildItems != null)
+                    if (enggBomDetailByItemNoAndRevNo.EnggChildItems != null)
                     {
-                        foreach (var itemDetails in enggBomDetailByItemNumber.EnggChildItems)
+                        foreach (var itemDetails in enggBomDetailByItemNoAndRevNo.EnggChildItems)
                         {
                             EnggChildItemDto enggChildItemDto = _mapper.Map<EnggChildItemDto>(itemDetails);
                             enggChildItemDto.EnggAlternatesDtos = _mapper.Map<List<EnggAlternatesDto>>(itemDetails.EnggAlternates);
@@ -173,7 +173,7 @@ namespace Tips.Master.Api.Controllers
                     }
                     enggBomDto.EnggChildItemDtos = childItemsDtos;
                     serviceResponse.Data = enggBomDto;
-                    serviceResponse.Message = $"Returned EngineeringBomByItemNumber Successfully ";
+                    serviceResponse.Message = $"Returned EnggBomByItemNoAndRevNo Successfully ";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -182,7 +182,7 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetEnggBomByItemNumber action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetEnggBomByItemNoAndRevNo action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
