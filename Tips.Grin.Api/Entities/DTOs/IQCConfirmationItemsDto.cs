@@ -30,12 +30,12 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ManufactureDate { get; set; }
         public string? ReceivedQty { get; set; }
         public string? AcceptedQty { get; set; }
-        public string? RejectedQty { get; set; }  
+        public string? RejectedQty { get; set; }
 
     }
 
     public class IQCConfirmationItemsPostDto
-    { 
+    {
         public string? ItemNumber { get; set; }
         public int GrinPartId { get; set; }
         public string? ReceivedQty { get; set; }
@@ -44,7 +44,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     }
     public class IQCConfirmationItemsUpdateDto
     {
-        public int? Id { get; set; } 
+        public int? Id { get; set; }
         public string? ItemNumber { get; set; }
         public int GrinPartId { get; set; }
         public string? ReceivedQty { get; set; }

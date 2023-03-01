@@ -13,7 +13,7 @@ namespace Contracts
     {
         Task<PagedList<EnggBom>> GetAllEnggBOM(PagingParameter pagingParameter);
         Task<EnggBom> GetEnggBomById(int id);
-        Task<EnggBom> GetEnggBomByItemNumber(string itemNumber);
+        Task<EnggBom> GetEnggBomByItemNoAndRevNo(string itemNumber,decimal revisionNumber);
         Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber);
         Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom);
         Task<IEnumerable<EnggBom>> GetAllActiveEnggBom();
@@ -22,6 +22,6 @@ namespace Contracts
         Task<string> DeleteEnggBom(EnggBom enggBom); 
         Task <IEnumerable<object>> GetAllEnggBomItemNumberVersionList();
         Task<EnggBom> ReleasedEnggBomByItemAndRevisionNumber(string itemNumber,decimal revisionNumber);
-        Task<IEnumerable<object>> GetAllEnggBomVersionListByItemNumber(string itemNumber);
+        Task<IEnumerable<EngineeringBom>> GetAllEnggBomVersionListByItemNumber(string itemNumber);
     }
 }
