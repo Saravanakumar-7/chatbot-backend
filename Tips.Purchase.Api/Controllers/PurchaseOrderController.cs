@@ -541,25 +541,10 @@ namespace Tips.Purchase.Api.Controllers
 
 
                 foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
-                {
-
-
-                    //string path = "~/Upload/PODocument/" + getDownloadUrlByFilename.FileName;
-
-
-                    //if (System.IO.File.Exists(path))
-                    //{
-                    //    getDownloadUrlByFilename.DownloadUrl = Url.Action("StageDocumentDownloadFile", "StageDocumentUpload", new { id = uploadedFile.Id }, protocol: HttpContext.Request.Scheme);
-
-                    //}
-                    //getDownloadUrlByFilename.DownloadUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}";
-
-                    //Uri resourceFullPath = new Uri(baseUri, VirtualPathUtility.ToAbsolute(resourceRelative));
-                    //getDownloadUrlByFilename.DownloadUrl = Url.Action(new { id = uploadedFile.Id }, protocol: HttpContext.Request.Scheme);
-
-                    getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
-                    //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/TipsPurchasePublish/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
-
+                { 
+                    getDownloadUrlByFilename.DownloadUrl = Url.Action("DownloadFile", "PurchaseOrder", new { Filename = getDownloadUrlByFilename.FileName }, protocol: HttpContext.Request.Scheme);
+                    //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+ 
                 }
                 if (getDownloadDetailByPoNumber == null)
                 {

@@ -90,13 +90,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
 
         [Precision(18, 3)]
-        public decimal? Qty { get; set; }
-
-        //[Precision(13, 3)]
-        //public decimal AcceptedQty { get; set; }
-
-        //[Precision(13, 3)]
-        //public decimal RejectedQty { get; set; }
+        public decimal? Qty { get; set; } 
 
         [Required(ErrorMessage = "MftrItemNumber is required")]
         public string MftrItemNumber { get; set; }

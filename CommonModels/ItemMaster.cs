@@ -63,6 +63,10 @@ namespace Entities
         public bool IsShelfLife { get; set; }
         [DefaultValue(false)]
         public bool IsReachItem { get; set; }
+        public List<FileUpload>? FileUpload { get; set; }
+
+        public FileUpload? ImageUpload { get; set; }
+
         public decimal NetWeight { get; set; }
         public string? NetUom { get; set; }
         public decimal GrossWeight { get; set; }

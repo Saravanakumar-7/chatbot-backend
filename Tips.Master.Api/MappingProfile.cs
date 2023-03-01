@@ -354,8 +354,9 @@ namespace Tips.Master.Api
             CreateMap<RoomNames, RoomNamePostDto>().ReverseMap();
             CreateMap<RoomNames, RoomNameUpdateDto>().ReverseMap();
 
-            
-
+            CreateMap<FileUpload, FileUploadDto>().ReverseMap();
+            CreateMap<FileUpload, FileUploadPostDto>().ReverseMap();
+            CreateMap<FileUpload, FileUploadUpdateDto>().ReverseMap();
 
         }
     }

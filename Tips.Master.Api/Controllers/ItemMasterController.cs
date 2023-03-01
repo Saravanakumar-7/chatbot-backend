@@ -17,13 +17,14 @@ namespace Tips.Master.Api.Controllers
     public class ItemMasterController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
-          private ILoggerManager _logger;
+        private ILoggerManager _logger;
         private IMapper _mapper;
-
-        public ItemMasterController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        private IFileUploadRepository _fileUploadRepository;
+        public ItemMasterController(IRepositoryWrapperForMaster repository, IFileUploadRepository fileUploadRepository,ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
+            _fileUploadRepository = fileUploadRepository;
             _mapper = mapper;
         }
 
@@ -251,6 +252,94 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
+                var fileUploadList = new List<FileUpload>();
+
+                //single file upload 
+
+                var ImageUploadDetails = itemMasterDtoPost.ImageUpload;
+
+                var imageContent = ImageUploadDetails.FileByte;
+                var itemNumbers = itemMasterDtoPost.ItemNumber;
+                string imageName = ImageUploadDetails.FileName + "." + ImageUploadDetails.FileExtension;
+                string imageExt = Path.GetExtension(imageName).ToUpper();
+                if (imageExt == ".PNG" || imageExt == ".JPG" || imageExt == ".JPEG" || imageExt == ".GIF")
+                {
+                    Guid guid = Guid.NewGuid();
+                    string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", guid.ToString() + "_" + imageName);
+                    using (MemoryStream ms = new MemoryStream(imageContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(imagePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                        var uploadedFile = new FileUpload
+                        {
+                            FileName = imageName,
+                            FileExtension = imageExt,
+                            FilePath = imagePath,
+                            ParentId = itemNumbers,
+                            DocumentFrom = "ItemMaster Image Document",
+                        };
+                        _repository.FileUploadRepository.CreateFileUploadDocument(uploadedFile);
+                        _repository.SaveAsync();
+                        if (uploadedFile != null)
+                        {
+                            FileUpload itemmasterFileDetails = _mapper.Map<FileUpload>(uploadedFile);
+                            fileUploadList.Add(itemmasterFileDetails);
+                        }
+
+                    }
+                }
+                else
+                {
+                    _logger.LogError("Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                //multiple file upload
+
+                var FileUploadDetails = itemMasterDtoPost.FileUpload;
+                foreach (var FileUploadDetail in FileUploadDetails)
+                {
+                    var fileContent = FileUploadDetail.FileByte;
+                    var itemNumber = itemMasterDtoPost.ItemNumber;
+                    string fileName = FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                    Guid guids = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload",guids.ToString() + "_" + fileName);
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                        var uploadedFile = new FileUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            ParentId = itemNumber,
+                            DocumentFrom = "ItemMaster File Document",
+                        }; 
+                        _repository.FileUploadRepository.CreateFileUploadDocument(uploadedFile);
+                        _repository.SaveAsync();
+                        if (uploadedFile != null)
+                        {
+                            FileUpload itemmasterFileDetails = _mapper.Map<FileUpload>(uploadedFile);
+                            fileUploadList.Add(itemmasterFileDetails);
+                        }
+
+                    }
+
+                }
+
                 var itemMasterEntity = _mapper.Map<ItemMaster>(itemMasterDtoPost);
                 var itemMasterAlternate = _mapper.Map<IEnumerable<ItemmasterAlternate>>(itemMasterDtoPost.ItemmasterAlternate);
                 var itemMasterApprovedVendor = _mapper.Map<IEnumerable<ItemMasterApprovedVendor>>(itemMasterDtoPost.ItemMasterApprovedVendor);

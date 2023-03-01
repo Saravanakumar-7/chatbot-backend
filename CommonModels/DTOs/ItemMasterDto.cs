@@ -63,6 +63,11 @@ namespace Entities.DTOs
         public bool IsShelfLife { get; set; }
         [DefaultValue(false)]
         public bool IsReachItem { get; set; }
+
+        public FileUploadDto? ImageUpload { get; set; }
+
+        public List<FileUploadDto>? FileUpload { get; set; }
+
         public decimal NetWeight { get; set; }
         public string? NetUom { get; set; }
         public decimal GrossWeight { get; set; }
@@ -166,6 +171,11 @@ namespace Entities.DTOs
         public bool IsShelfLife { get; set; }
         [DefaultValue(false)]
         public bool IsReachItem { get; set; }
+
+        public List<FileUploadPostDto>? FileUpload { get; set; }
+
+        public FileUploadPostDto? ImageUpload { get; set; }
+
         public decimal NetWeight { get; set; }
         public string? NetUom { get; set; }
         public decimal GrossWeight { get; set; }
@@ -266,6 +276,11 @@ namespace Entities.DTOs
         public bool IsShelfLife { get; set; }
         [DefaultValue(false)]
         public bool IsReachItem { get; set; }
+
+        public List<FileUploadUpdateDto>? FileUpload { get; set; }
+
+        public FileUploadUpdateDto? ImageUpload { get; set; }
+
         public decimal NetWeight { get; set; }
         public string? NetUom { get; set; }
         public decimal GrossWeight { get; set; }

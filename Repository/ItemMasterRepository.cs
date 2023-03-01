@@ -158,6 +158,24 @@ namespace Repository
             return getItemMasterByItemNo;
         }
 
-    } 
-
     }
+
+    public class FileUploadDocumentRepository : RepositoryBase<FileUpload>, IFileUploadRepository
+    {
+         public FileUploadDocumentRepository(TipsMasterDbContext tipsMasterDbContext) : base(tipsMasterDbContext)
+        {
+
+        } 
+        public async Task<int?> CreateFileUploadDocument(FileUpload fileUpload)
+        {
+            fileUpload.CreatedBy = "Admin";
+            fileUpload.CreatedOn = DateTime.Now;
+            fileUpload.LastModifiedBy = "Admin";
+            fileUpload.LastModifiedOn = DateTime.Now;
+            var result = await Create(fileUpload);
+            return result.Id;
+        }
+         
+    }
+
+}

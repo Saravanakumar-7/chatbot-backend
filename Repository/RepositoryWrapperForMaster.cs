@@ -17,6 +17,7 @@ namespace Repository
         private IMaterialTypeRepository _materialTypeRepo;
         private IProcurementTypeRepository _procurementTypeRepo;
         private IItemMasterRepository _itemMasterRepo;
+        private IFileUploadRepository _fileUploadRepo;
         private IEnggBomRepository? _enggBomRepository;
         private ITypeSolutionRepository _typeSolutionRepository;
         private IProductTypeRepository? _productTypeRepository;
@@ -107,6 +108,20 @@ namespace Repository
                 return _enggBomRepository;
             }
         }
+
+        public IFileUploadRepository FileUploadRepository
+        {
+            get
+            {
+                if (_fileUploadRepo == null)
+                {
+                    _fileUploadRepo = new FileUploadDocumentRepository(_tipsMasterDbContext);
+                }
+                return _fileUploadRepo;
+            }
+        }
+
+         
 
         public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository
         {

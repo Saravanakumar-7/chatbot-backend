@@ -13,8 +13,8 @@ LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nl
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
-//builder.Services.ConfigureMSSqlContext(builder.Configuration);
-builder.Services.ConfigureMySqlContext(builder.Configuration);
+builder.Services.ConfigureMSSqlContext(builder.Configuration);
+//builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.ConfigureRepositoryWrapper();
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -28,6 +28,9 @@ builder.Services.AddScoped<IReleaseEnggBomRepository, ReleaseEnggBomRepository>(
 builder.Services.AddScoped<IEnggBomGroupRepository, EnggBomGroupRepository>();
 builder.Services.AddScoped<IEnggBomRepository, EngineeringBomRepository>();
 builder.Services.AddScoped<ILeadRepository, LeadRepository>();
+builder.Services.AddScoped<IFileUploadRepository, FileUploadDocumentRepository>();
+
+
 
 builder.Services.AddScoped<IRoomNameRepository, RoomNameRepository>();
 builder.Services.AddScoped<IProductTypeRepository, ProductTypeRepository>();

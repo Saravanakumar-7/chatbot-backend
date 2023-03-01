@@ -115,5 +115,7 @@ namespace Entities
         public DbSet<RoomNames>? RoomNames { get; set; }
         public DbSet<TypeSolution> TypeSolutions { get; set; }
 
+        public DbSet<FileUpload>? fileUploads { get; set; }
+
     }
 }
