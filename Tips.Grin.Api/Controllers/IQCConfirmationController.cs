@@ -23,12 +23,13 @@ namespace Tips.Grin.Api.Controllers
         private IIQCConfirmationRepository _iQCConfirmationRepository;
         private IIQCConfirmationItemsRepository _iQCConfirmationItemsRepository;
         private IGrinPartsRepository _grinPartsRepository;
+        private IGrinRepository _grinRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public IQCConfirmationController(IIQCConfirmationRepository iQCConfirmationRepository, IIQCConfirmationItemsRepository iQCConfirmationItemsRepository, IGrinPartsRepository grinPartsRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        public IQCConfirmationController(IGrinRepository grinRepository,IIQCConfirmationRepository iQCConfirmationRepository, IIQCConfirmationItemsRepository iQCConfirmationItemsRepository, IGrinPartsRepository grinPartsRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _logger = logger;
             _iQCConfirmationRepository = iQCConfirmationRepository;
@@ -37,6 +38,7 @@ namespace Tips.Grin.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _grinPartsRepository = grinPartsRepository;
+            _grinRepository = grinRepository;
         }
 
         [HttpGet]
@@ -364,7 +366,7 @@ namespace Tips.Grin.Api.Controllers
                 {
                     _logger.LogError($"IQCConfirmation details with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"IQCConfirmation details with id hasn't been found in db.";
+                    serviceResponse.Message = $"IQCConfirmation details with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
@@ -372,23 +374,24 @@ namespace Tips.Grin.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned IQCConfirmation details with id: {id}");
-                    var iQCConformationDetailsDtos = _mapper.Map<GrinDto>(iQCDetailsbyId);
-                    
                     List<IQCConfirmationItemsDto> iQCConfirmationItemsList = new List<IQCConfirmationItemsDto>();
-                    List<GrinPartsDto> grinPartDto = _mapper.Map<List<GrinPartsDto>>(iQCConfirmationItemsList);
-                    if (iQCDetailsbyId.IQCConfirmationItems != null)
+                    var iQcGrinNo = iQCDetailsbyId.GrinNumber;
+                    var grinDetailsbyGrinNo = await _grinRepository.GetGrinByGrinNo(iQcGrinNo);
+                    
+                    var iQCConformationDetailsDto = _mapper.Map<IQCConfirmationDto>(grinDetailsbyGrinNo);
+
+                    if (grinDetailsbyGrinNo.GrinParts.Count() != 0)
                     {
-                        
-                        foreach (var iqc in iQCDetailsbyId.IQCConfirmationItems)
+                        foreach (var grinDetails in grinDetailsbyGrinNo.GrinParts)
                         {
-                            GrinPartsDto iQCConfirmationItemsDto = _mapper.Map<GrinPartsDto>(iqc);
-                            grinPartDto.Add(iQCConfirmationItemsDto);
+                            IQCConfirmationItemsDto grinPartDtos = _mapper.Map<IQCConfirmationItemsDto>(grinDetails);
+                            grinPartDtos.ReceivedQty = grinDetails.Qty;
+                            iQCConfirmationItemsList.Add(grinPartDtos);
                         }
                     }
-
-                    iQCConformationDetailsDtos.GrinParts = grinPartDto;
-                    //serviceResponse.Data = iQCConformationDetailsDtos;
-                    serviceResponse.Message = "Success";
+                    iQCConformationDetailsDto.IQCConfirmationItems = iQCConfirmationItemsList;
+                    serviceResponse.Data = iQCConformationDetailsDto;
+                    serviceResponse.Message = "IQCConfirmationById Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);

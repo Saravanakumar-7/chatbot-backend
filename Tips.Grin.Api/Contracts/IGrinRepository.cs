@@ -18,7 +18,7 @@ namespace Tips.Grin.Api.Contracts
         Task<PagedList<Grins>> GetAllActiveGrin( PagingParameter pagingParameter, SearchParams searchParams);
         Task<int?> CreateGrin(Grins grins);
         Task<int?> GetGrinNumberAutoIncrementCount(DateTime date);
-
+        Task<Grins> GetGrinByGrinNo(string grinNumber);
         Task<string> UpdateGrin(Grins grins);
         Task<string> DeleteGrin(Grins grins);
 
