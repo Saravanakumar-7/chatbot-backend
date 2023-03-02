@@ -35,6 +35,11 @@ namespace Tips.Grin.Api.Repository
             return result.Id;
         }
 
+        /// <summary>
+        /// This Method should be changed ,because it will create duplicate GrinNumber
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
         public async Task<int?> GetGrinNumberAutoIncrementCount(DateTime date)
         {
             var getGrinNumberAutoIncrementCount = _tipsGrinDbContext.Grins.Where(x => x.CreatedOn == date.Date).Count();
@@ -80,7 +85,7 @@ namespace Tips.Grin.Api.Repository
                  inv.VendorId.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))))
               .Include(t => t.GrinDocuments)
               .Include(t => t.GrinParts)
-              .ThenInclude(c=>c.CoCUpload)
+              //.ThenInclude(c=>c.CoCUpload)
               .Include(t => t.GrinParts)
                .ThenInclude(d => d.ProjectNumbers);
 
@@ -97,14 +102,23 @@ namespace Tips.Grin.Api.Repository
             var grinDetailsbyId = await _tipsGrinDbContext.Grins.Where(x => x.Id == id)
                                     .Include(t => t.GrinDocuments)
               .Include(t => t.GrinParts)
-              .ThenInclude(c => c.CoCUpload)
+              //.ThenInclude(c => c.CoCUpload)
               .Include(t => t.GrinParts)
                .ThenInclude(d => d.ProjectNumbers)
                                .FirstOrDefaultAsync();
 
             return grinDetailsbyId;
         }
-         
+        public async Task<Grins> GetGrinByGrinNo(string grinNumber)
+        {
+            var grinDetailsbyGrin = await _tipsGrinDbContext.Grins.Where(x => x.GrinNumber == grinNumber)
+                                    
+              .Include(t => t.GrinParts)
+              
+                               .FirstOrDefaultAsync();
+
+            return grinDetailsbyGrin;
+        }
 
         public async Task<string> UpdateGrin(Grins grins)
         {

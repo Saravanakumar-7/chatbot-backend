@@ -60,7 +60,8 @@ namespace Tips.Grin.Api
 
             CreateMap<GrinPartsPostDto, GrinUpdateQtyDetailsDto>().ReverseMap();
 
-
+            CreateMap<Grins, IQCConfirmationDto>().ReverseMap();
+            CreateMap<GrinParts, IQCConfirmationItemsDto>().ReverseMap();
 
 
         }
