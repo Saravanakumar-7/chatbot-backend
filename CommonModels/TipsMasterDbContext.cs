@@ -117,5 +117,8 @@ namespace Entities
 
         public DbSet<FileUpload>? fileUploads { get; set; }
 
+        public DbSet<ImageUpload>? imageUploads { get; set; }
+
+
     }
 }

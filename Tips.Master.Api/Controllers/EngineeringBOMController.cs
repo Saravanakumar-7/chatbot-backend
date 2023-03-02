@@ -1688,11 +1688,11 @@ namespace Tips.Master.Api.Controllers
         [HttpGet("{itemNumber}")]
         public async Task<IActionResult> GetAllEnggBomRevisionNumberList(string itemNumber)
         {
-            ServiceResponse<IEnumerable<EnggBomRevisionNumberList>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomRevisionNumberList>>();
+            ServiceResponse<IEnumerable<ReleaseEnggBomDto>> serviceResponse = new ServiceResponse<IEnumerable<ReleaseEnggBomDto>>();
             try
             {
                 var costingBomVersionDetails = await _enggBomRepository.GetAllEnggBomVersionListByItemNumber(itemNumber);
-                var result = _mapper.Map<IEnumerable<EnggBomRevisionNumberList>>(costingBomVersionDetails);
+                var result = _mapper.Map<IEnumerable<ReleaseEnggBomDto>>(costingBomVersionDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all EnggBomRevisionNumbers";
                 serviceResponse.Success = true;
@@ -1713,11 +1713,11 @@ namespace Tips.Master.Api.Controllers
         [HttpGet("{itemNumber}")]
         public async Task<IActionResult> GetAllCostingBomRevisionNumberList(string itemNumber)
         {
-            ServiceResponse<IEnumerable<CostingBomRevisionNumberList>> serviceResponse = new ServiceResponse<IEnumerable<CostingBomRevisionNumberList>>();
+            ServiceResponse<IEnumerable<CostingBomDto>> serviceResponse = new ServiceResponse<IEnumerable<CostingBomDto>>();
             try
             {
                 var costingBomVersionDetails = await _releaseCostBomRepository.GetAllCostingBomVersionListByItemNumber(itemNumber);
-                var result = _mapper.Map<IEnumerable<CostingBomRevisionNumberList>>(costingBomVersionDetails);
+                var result = _mapper.Map<IEnumerable<CostingBomDto>>(costingBomVersionDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all CostingBomRevisionNumbers";
                 serviceResponse.Success = true;
@@ -1738,11 +1738,11 @@ namespace Tips.Master.Api.Controllers
         [HttpGet("{itemNumber}")]
         public async Task<IActionResult> GetAllProductionBomRevisionNumberList(string itemNumber)
         {
-            ServiceResponse<IEnumerable<ProductionBomRevisionNumberList>> serviceResponse = new ServiceResponse<IEnumerable<ProductionBomRevisionNumberList>>();
+            ServiceResponse<IEnumerable<ReleaseProductBomDto>> serviceResponse = new ServiceResponse<IEnumerable<ReleaseProductBomDto>>();
             try
             {
                 var productionBomVersionDetails = await _releaseProductBomRepository.GetAllProductionBomVersionListByItemNumber(itemNumber);
-                var result = _mapper.Map<IEnumerable<ProductionBomRevisionNumberList>>(productionBomVersionDetails);
+                var result = _mapper.Map<IEnumerable<ReleaseProductBomDto>>(productionBomVersionDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ProductionBomRevisionNumbers";
                 serviceResponse.Success = true;

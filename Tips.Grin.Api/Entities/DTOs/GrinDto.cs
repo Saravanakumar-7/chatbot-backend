@@ -25,7 +25,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Required]
         public string InvoiceNumber { get; set; }
 
-        public string? InvoiceValue { get; set; }
+        public decimal? InvoiceValue { get; set; }
 
         public DateTime? InvoiceDate { get; set; }
 
@@ -43,7 +43,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public decimal? TotalInvoiceValue { get; set; }
 
-        public List<DocumentUploadDto> GrinDocuments { get; set; }
+        public List<DocumentUploadDto>? GrinDocuments { get; set; }
 
         //public string? GrinDocuments { get; set; }
 
@@ -79,7 +79,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
         public string InvoiceNumber { get; set; }
 
-        public string? InvoiceValue { get; set; }
+        public decimal? InvoiceValue { get; set; }
 
         public DateTime? InvoiceDate { get; set; }
 
@@ -97,7 +97,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public decimal? TotalInvoiceValue { get; set; }
 
-        public List<DocumentUploadPostDto> GrinDocuments { get; set; }
+        public List<DocumentUploadPostDto>? GrinDocuments { get; set; }
 
         //public string? GrinDocuments { get; set; }
 
@@ -123,7 +123,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public string InvoiceNumber { get; set; }
 
-        public string? InvoiceValue { get; set; }
+        public decimal? InvoiceValue { get; set; }
 
         public DateTime? InvoiceDate { get; set; }
 
@@ -140,7 +140,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? BEDate { get; set; }
 
         public decimal? TotalInvoiceValue { get; set; }
-        public List<DocumentUploadUpdateDto> GrinDocuments { get; set; }
+        public List<DocumentUploadUpdateDto>? GrinDocuments { get; set; }
 
         //public string? GrinDocuments { get; set; }
 

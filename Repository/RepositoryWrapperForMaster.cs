@@ -13,6 +13,7 @@ namespace Repository
     {
         private TipsMasterDbContext _tipsMasterDbContext;
         private ILeadTimeRepository _leadTimeRepo;
+        private IImageUploadRepository _imageUploadRepository;
         private ICustomerTypeRepository _customerTypeRepo;
         private IMaterialTypeRepository _materialTypeRepo;
         private IProcurementTypeRepository _procurementTypeRepo;
@@ -120,8 +121,18 @@ namespace Repository
                 return _fileUploadRepo;
             }
         }
+        public IImageUploadRepository ImageUploadRepository
+        {
+            get
+            {
+                if (_imageUploadRepository == null)
+                {
+                    _imageUploadRepository = new ImageUploadDocumentRepository(_tipsMasterDbContext);
+                }
+                return _imageUploadRepository;
+            }
+        }
 
-         
 
         public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository
         {

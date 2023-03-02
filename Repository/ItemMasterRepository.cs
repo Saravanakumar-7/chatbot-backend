@@ -44,6 +44,8 @@ namespace Repository
         public async Task<PagedList<ItemMaster>> GetAllItemMasters(PagingParameter pagingParameter)
         {
             var getAllItemMasters = PagedList<ItemMaster>.ToPagedList(FindAll()
+                .Include(c=>c.FileUpload)
+                .Include(x=>x.ImageUpload)
                                 .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(m => m.ItemMasterFileUpload)
@@ -59,6 +61,8 @@ namespace Repository
         public async Task<IEnumerable<ItemMaster>> GetAllFGItems()
         {
             var getAllFGItems = await FindAll().Where(a => a.ItemType == "Fg")
+                 .Include(c => c.FileUpload)
+                .Include(x => x.ImageUpload)
                                 .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(m => m.ItemMasterFileUpload)
@@ -71,6 +75,8 @@ namespace Repository
         public async Task<IEnumerable<ItemMaster>> GetAllSAItems()
         {
             var getAllSAItems = await FindAll().Where(a => a.ItemType == "Sa")
+                 .Include(c => c.FileUpload)
+                .Include(x => x.ImageUpload)
                                 .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(m => m.ItemMasterFileUpload)
@@ -83,7 +89,9 @@ namespace Repository
         public async Task<IEnumerable<ItemMaster>> GetAllFgSaItems()
         {
             var getAllFGSAItems = await FindAll().Where(a => a.ItemType == "Sa" || a.ItemType == "Fg")
-                                .Include(t => t.ItemmasterAlternate)
+                 .Include(c => c.FileUpload)
+                .Include(x => x.ImageUpload)
+                .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(m => m.ItemMasterFileUpload)
                                 .Include(s => s.ItemMasterRouting)
@@ -98,7 +106,9 @@ namespace Repository
         public async Task<IEnumerable<ItemMaster>> GetAllFgSaFruItems()
         {
             var getAllFGSAItems = await FindAll().Where(a => a.ItemType == "SA" || a.ItemType == "FG" || a.ItemType == "FRU")
-                                .Include(t => t.ItemmasterAlternate)
+                 .Include(c => c.FileUpload)
+                .Include(x => x.ImageUpload)
+                .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(m => m.ItemMasterFileUpload)
                                 .Include(s => s.ItemMasterRouting)
@@ -112,12 +122,14 @@ namespace Repository
         {
             var getItemMasterById = await TipsMasterDbContext.ItemMasters
                             .Where(x => x.Id == id)
-                             .Include(t => t.ItemmasterAlternate)
-                                .Include(x => x.ItemMasterApprovedVendor)
-                                .Include(m => m.ItemMasterFileUpload)
-                                .Include(s => s.ItemMasterRouting)
-                                .Include(p => p.ItemMasterWarehouse)
-                             .FirstOrDefaultAsync();
+                            .Include(c=>c.FileUpload)
+                            .Include(b=>b.ImageUpload)
+                            .Include(t => t.ItemmasterAlternate)
+                            .Include(x => x.ItemMasterApprovedVendor)
+                            .Include(m => m.ItemMasterFileUpload)
+                            .Include(s => s.ItemMasterRouting)
+                            .Include(p => p.ItemMasterWarehouse)
+                            .FirstOrDefaultAsync();
 
 
             return getItemMasterById;
@@ -148,6 +160,8 @@ namespace Repository
         public async Task<ItemMaster> GetItemMasterByItemNumber(string ItemNumber)
         {
             var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == ItemNumber)
+                 .Include(c => c.FileUpload)
+                .Include(x => x.ImageUpload)
                  .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(m => m.ItemMasterFileUpload)
@@ -175,7 +189,36 @@ namespace Repository
             var result = await Create(fileUpload);
             return result.Id;
         }
-         
+
+        public async Task<int?> CreateImageUploadDocument(FileUpload fileUpload)
+        {
+            fileUpload.CreatedBy = "Admin";
+            fileUpload.CreatedOn = DateTime.Now;
+            fileUpload.LastModifiedBy = "Admin";
+            fileUpload.LastModifiedOn = DateTime.Now;
+            var result = await Create(fileUpload);
+            return result.Id;
+        }
+
+    }
+
+    public class ImageUploadDocumentRepository : RepositoryBase<ImageUpload>, IImageUploadRepository
+    {
+        public ImageUploadDocumentRepository(TipsMasterDbContext tipsMasterDbContext) : base(tipsMasterDbContext)
+        {
+
+        } 
+
+        public async Task<int?> ImageUploadDocument(ImageUpload imageUpload)
+        {
+            imageUpload.CreatedBy = "Admin";
+            imageUpload.CreatedOn = DateTime.Now;
+            imageUpload.LastModifiedBy = "Admin";
+            imageUpload.LastModifiedOn = DateTime.Now;
+            var result = await Create(imageUpload);
+            return result.Id;
+        }
+
     }
 
 }

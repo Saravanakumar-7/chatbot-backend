@@ -64,7 +64,7 @@ namespace Entities.DTOs
         [DefaultValue(false)]
         public bool IsReachItem { get; set; }
 
-        public FileUploadDto? ImageUpload { get; set; }
+        public List<ImageUploadDto>? ImageUpload { get; set; }
 
         public List<FileUploadDto>? FileUpload { get; set; }
 
@@ -174,7 +174,7 @@ namespace Entities.DTOs
 
         public List<FileUploadPostDto>? FileUpload { get; set; }
 
-        public FileUploadPostDto? ImageUpload { get; set; }
+        public List<ImageUploadPostDto>? ImageUpload { get; set; }
 
         public decimal NetWeight { get; set; }
         public string? NetUom { get; set; }
@@ -279,7 +279,7 @@ namespace Entities.DTOs
 
         public List<FileUploadUpdateDto>? FileUpload { get; set; }
 
-        public FileUploadUpdateDto? ImageUpload { get; set; }
+        public List<ImageUploadUpdateDto>? ImageUpload { get; set; }
 
         public decimal NetWeight { get; set; }
         public string? NetUom { get; set; }

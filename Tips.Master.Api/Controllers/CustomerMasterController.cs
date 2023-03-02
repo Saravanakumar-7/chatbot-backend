@@ -152,7 +152,7 @@ namespace Tips.Master.Api.Controllers
                //var customerDetailss = await _repository.CustomerMasterRepository.GetLatestCustomerMasterDetail();
                 //customerDetails.Id = customerDetailss.Id;
                 // var customerMasterDetailDto = _mapper.Map<CustomerMasterDto>(customerMaster);
-                 serviceResponse.Data = customerMaster;
+                 serviceResponse.Data = null;
                 serviceResponse.Message = "CustomerMaster Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.Created;

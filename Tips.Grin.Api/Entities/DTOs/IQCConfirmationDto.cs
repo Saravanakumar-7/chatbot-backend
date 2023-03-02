@@ -16,22 +16,23 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public string? GrinNumber { get; set; }
 
-        public string? VendorName { get; set; }
+        public int GrinId { get; set; }
 
-        public int? VendorId { get; set; }
+        public string VendorName { get; set; }
+
+        public string VendorId { get; set; }
 
         public DateTime? InvoiceDate { get; set; }
 
-        [Precision(13, 3)]
         public decimal? InvoiceValue { get; set; }
 
-        public string? InvoiceNumber { get; set; }
+        public string InvoiceNumber { get; set; }
 
         public string? AWBNumber1 { get; set; }
         public string? AWBNumber2 { get; set; }
         public string? BENumber { get; set; }
-        public int? TotalInvoice { get; set; }
-        public string? GrinDocuments { get; set; }
+        public decimal? TotalInvoiceValue { get; set; }
+        //public string? GrinDocuments { get; set; }
         public DateTime? AWBDate1 { get; set; }
         public DateTime? AWBDate2 { get; set; }
         public DateTime? BEDate { get; set; }
@@ -48,12 +49,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class IQCConfirmationPostDto
     {
         public string GrinNumber { get; set; }
-        public int GrinId { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public int GrinId { get; set; } 
 
         public List<IQCConfirmationItemsPostDto>? IQCConfirmationItemsPostDtos { get; set; }
 
@@ -65,11 +61,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public int Id { get; set; }
         public string GrinNumber { get; set; }
         public int GrinId { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public string Unit { get; set; } 
         public List<IQCConfirmationItemsUpdateDto>? IQCConfirmationItemsUpdateDtos { get; set; }
 
     }

@@ -10,6 +10,7 @@ namespace Contracts
     public interface IFileUploadRepository : IRepositoryBase<FileUpload>
     {
         Task<int?> CreateFileUploadDocument(FileUpload fileUpload);
+        Task<int?> CreateImageUploadDocument(FileUpload fileUpload);        
 
     } 
 }

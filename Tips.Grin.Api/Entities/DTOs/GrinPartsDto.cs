@@ -16,6 +16,8 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public string? ItemNumber { get; set; }
 
+       public int GrinPartId { get; set; }  
+
         [Required]
         [Precision(18, 3)]
         public decimal? Qty { get; set; }
@@ -188,8 +190,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
 
-        //public List<DocumentUploadDto> COCUpload { get; set; }
-        public string? COCUpload { get; set; }
+        public List<DocumentUploadDto> COCUpload { get; set; }
+        //public string? COCUpload { get; set; }
         public decimal? SGST { get; set; }
 
         public decimal? IGST { get; set; }

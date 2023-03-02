@@ -20,11 +20,13 @@ namespace Tips.Master.Api.Controllers
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IFileUploadRepository _fileUploadRepository;
-        public ItemMasterController(IRepositoryWrapperForMaster repository, IFileUploadRepository fileUploadRepository,ILoggerManager logger, IMapper mapper)
+        private IImageUploadRepository _imageUploadRepository;
+        public ItemMasterController(IRepositoryWrapperForMaster repository, IImageUploadRepository imageUploadRepository, IFileUploadRepository fileUploadRepository,ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _fileUploadRepository = fileUploadRepository;
+            _imageUploadRepository = imageUploadRepository;
             _mapper = mapper;
         }
 
@@ -206,6 +208,20 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
+                    List<FileUpload> fileUplaodDtoList = new List<FileUpload>();
+                    FileUpload ImageUplaodDtoList = new FileUpload();
+
+                    if (getItemMaster.FileUpload.Count() != 0)
+                    {
+                        foreach (var fileUploadDetails in getItemMaster.FileUpload)
+                        {
+                            FileUpload fileUpload = _mapper.Map<FileUpload>(fileUploadDetails);
+                            fileUplaodDtoList.Add(fileUpload);
+                        }
+                    }
+                    getItemMaster.FileUpload = fileUplaodDtoList;
+                     
+
                     _logger.LogInfo($"Returned ItemMaster with id: {id}");
                     var result = _mapper.Map<ItemMasterDto>(getItemMaster);
                     serviceResponse.Data = result;
@@ -252,56 +268,72 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var fileUploadList = new List<FileUpload>();
+
+                var itemMasterEntity = _mapper.Map<ItemMaster>(itemMasterDtoPost);
+                var itemMasterAlternate = _mapper.Map<IEnumerable<ItemmasterAlternate>>(itemMasterDtoPost.ItemmasterAlternate);
+                var itemMasterApprovedVendor = _mapper.Map<IEnumerable<ItemMasterApprovedVendor>>(itemMasterDtoPost.ItemMasterApprovedVendor);
+                var itemMasterFileUpload = _mapper.Map<IEnumerable<ItemMasterFileUpload>>(itemMasterDtoPost.ItemMasterFileUpload);
+                var itemMasterRouting=_mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoPost.ItemMasterRouting);
+                var itemMasterWarehouse = _mapper.Map<IEnumerable<ItemMasterWarehouse>>(itemMasterDtoPost.ItemMasterWarehouse);
+
+
 
                 //single file upload 
+                var imageUploadDtoList = new List<ImageUpload>();
+
 
                 var ImageUploadDetails = itemMasterDtoPost.ImageUpload;
 
-                var imageContent = ImageUploadDetails.FileByte;
-                var itemNumbers = itemMasterDtoPost.ItemNumber;
-                string imageName = ImageUploadDetails.FileName + "." + ImageUploadDetails.FileExtension;
-                string imageExt = Path.GetExtension(imageName).ToUpper();
-                if (imageExt == ".PNG" || imageExt == ".JPG" || imageExt == ".JPEG" || imageExt == ".GIF")
+                foreach (var ImageUploadDetail in ImageUploadDetails)
                 {
-                    Guid guid = Guid.NewGuid();
-                    string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", guid.ToString() + "_" + imageName);
-                    using (MemoryStream ms = new MemoryStream(imageContent))
+                    var imageContent = ImageUploadDetail.FileByte;
+                    var itemNumbers = itemMasterDtoPost.ItemNumber;
+                    string imageName = ImageUploadDetail.FileName + "." + ImageUploadDetail.FileExtension;
+                    string imageExt = Path.GetExtension(imageName).ToUpper();
+                    if (imageExt == ".PNG" || imageExt == ".JPG" || imageExt == ".JPEG" || imageExt == ".GIF")
                     {
-                        ms.Position = 0;
-                        using (var fileStream = new FileStream(imagePath, FileMode.Create, FileAccess.Write))
+                        //Guid guid = Guid.NewGuid();
+                        string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", /*guid.ToString() + "_" +*/ imageName);
+                        using (MemoryStream ms = new MemoryStream(imageContent))
                         {
-                            ms.WriteTo(fileStream);
-                        }
-                        var uploadedFile = new FileUpload
-                        {
-                            FileName = imageName,
-                            FileExtension = imageExt,
-                            FilePath = imagePath,
-                            ParentId = itemNumbers,
-                            DocumentFrom = "ItemMaster Image Document",
-                        };
-                        _repository.FileUploadRepository.CreateFileUploadDocument(uploadedFile);
-                        _repository.SaveAsync();
-                        if (uploadedFile != null)
-                        {
-                            FileUpload itemmasterFileDetails = _mapper.Map<FileUpload>(uploadedFile);
-                            fileUploadList.Add(itemmasterFileDetails);
-                        }
+                            ms.Position = 0;
+                            using (var fileStream = new FileStream(imagePath, FileMode.Create, FileAccess.Write))
+                            {
+                                ms.WriteTo(fileStream);
+                            }
+                            var uploadedFiles = new ImageUpload
+                            {
+                                FileName = imageName,
+                                FileExtension = imageExt,
+                                FilePath = imagePath,
+                                ParentId = itemNumbers,
+                                DocumentFrom = "ItemMaster Image Document"
+                            };
+                            _repository.ImageUploadRepository.ImageUploadDocument(uploadedFiles);
+                            _repository.SaveAsync();
+                            if (uploadedFiles != null)
+                            {
+                                ImageUpload itemmasterImageDetails = _mapper.Map<ImageUpload>(uploadedFiles);
+                                imageUploadDtoList.Add(itemmasterImageDetails);
+                            }
 
+                        }
                     }
+                    else
+                    {
+                        _logger.LogError("Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                        return BadRequest(serviceResponse);
+                    }
+
                 }
-                else
-                {
-                    _logger.LogError("Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(serviceResponse);
-                }
+                var fileUploadDtoList = new List<FileUpload>();          
 
                 //multiple file upload
+
 
                 var FileUploadDetails = itemMasterDtoPost.FileUpload;
                 foreach (var FileUploadDetail in FileUploadDetails)
@@ -311,8 +343,8 @@ namespace Tips.Master.Api.Controllers
                     string fileName = FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                    Guid guids = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload",guids.ToString() + "_" + fileName);
+                    //Guid guids = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload",/*guids.ToString() + "_" +*/ fileName);
                     using (MemoryStream ms = new MemoryStream(fileContent))
                     {
                         ms.Position = 0;
@@ -333,20 +365,16 @@ namespace Tips.Master.Api.Controllers
                         if (uploadedFile != null)
                         {
                             FileUpload itemmasterFileDetails = _mapper.Map<FileUpload>(uploadedFile);
-                            fileUploadList.Add(itemmasterFileDetails);
+                            fileUploadDtoList.Add(itemmasterFileDetails);
                         }
 
                     }
 
                 }
 
-                var itemMasterEntity = _mapper.Map<ItemMaster>(itemMasterDtoPost);
-                var itemMasterAlternate = _mapper.Map<IEnumerable<ItemmasterAlternate>>(itemMasterDtoPost.ItemmasterAlternate);
-                var itemMasterApprovedVendor = _mapper.Map<IEnumerable<ItemMasterApprovedVendor>>(itemMasterDtoPost.ItemMasterApprovedVendor);
-                var itemMasterFileUpload = _mapper.Map<IEnumerable<ItemMasterFileUpload>>(itemMasterDtoPost.ItemMasterFileUpload);
-                var itemMasterRouting=_mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoPost.ItemMasterRouting);
-                var itemMasterWarehouse = _mapper.Map<IEnumerable<ItemMasterWarehouse>>(itemMasterDtoPost.ItemMasterWarehouse);
-                _repository.ItemMasterRepository.CreateItemMaster(itemMasterEntity);
+                itemMasterEntity.FileUpload = fileUploadDtoList;
+                itemMasterEntity.ImageUpload = imageUploadDtoList;
+                 _repository.ItemMasterRepository.CreateItemMaster(itemMasterEntity);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ItemMaster Successfully Created";

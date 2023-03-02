@@ -25,7 +25,8 @@ namespace Tips.Grin.Api.Entities
         [Required]
         public string InvoiceNumber { get; set; }
 
-        public string? InvoiceValue { get; set; }
+        [Precision(13,3)]
+        public decimal? InvoiceValue { get; set; }
 
         public DateTime? InvoiceDate { get; set; }
 

@@ -329,8 +329,14 @@ namespace Tips.Master.Api
             CreateMap<EngineeringBom, ReleaseEnggBomDtoUpdate>().ReverseMap();
 
             CreateMap<CostingBom, CostingBomDtoPost>().ReverseMap();
+            CreateMap<CostingBom, CostingBomDto>().ReverseMap();
+            CreateMap<CostingBom, CostingBomDtoUpdate>().ReverseMap();
+
 
             CreateMap<ProductionBom, ReleaseProductBomDtoPost>().ReverseMap();
+            CreateMap<ProductionBom, ReleaseProductBomDtoUpdate>().ReverseMap();
+            CreateMap<ProductionBom, ReleaseProductBomDto>().ReverseMap();
+
 
             CreateMap<EnggBomGroup, EnggBomGroupDto>().ReverseMap();
             CreateMap<EnggBomGroup, EnggBomGroupDtoPost>().ReverseMap();
@@ -357,6 +363,10 @@ namespace Tips.Master.Api
             CreateMap<FileUpload, FileUploadDto>().ReverseMap();
             CreateMap<FileUpload, FileUploadPostDto>().ReverseMap();
             CreateMap<FileUpload, FileUploadUpdateDto>().ReverseMap();
+
+            CreateMap<ImageUpload, ImageUploadDto>().ReverseMap();
+            CreateMap<ImageUpload, ImageUploadPostDto>().ReverseMap();
+            CreateMap<ImageUpload, ImageUploadUpdateDto>().ReverseMap();
 
         }
     }
