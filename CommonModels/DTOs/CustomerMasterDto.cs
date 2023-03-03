@@ -138,10 +138,7 @@ namespace Entities.DTOs
         public List<CustomerMasterHeadCountingDto>? CustomerMasterHeadCountings { get; set; }
     }
     public class CustomerMasterDtoPost
-    {
-        [Required(ErrorMessage = "CustomerNumber is required")]
-        public string? CustomerNumber { get; set; }
-
+    { 
         [Required(ErrorMessage = "CustomerName is required")]
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
@@ -261,9 +258,8 @@ namespace Entities.DTOs
     public class CustomerMasterDtoUpdate
     {
 
-    public int Id { get; set; }
-        [Required(ErrorMessage = "CustomerNumber is required")]
-        public string? CustomerNumber { get; set; }
+    public int Id { get; set; } 
+
         [Required(ErrorMessage = "CustomerName is required")]
         public string? CustomerName { get; set; }
     public string? CustomerAliasName { get; set; }
