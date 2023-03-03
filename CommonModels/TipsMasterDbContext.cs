@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Runtime.InteropServices;
 
 namespace Entities
 {
@@ -118,6 +119,23 @@ namespace Entities
         public DbSet<FileUpload>? fileUploads { get; set; }
 
         public DbSet<ImageUpload>? imageUploads { get; set; }
+
+        public DbSet<BHK>? BHKs { get; set; }
+        public DbSet<StateOfConstruction>? StateOfConstructions { get; set; }
+        public DbSet<SourceDetails>? sourceDetails { get; set; }
+        public DbSet<State>? states { get; set; }
+        public DbSet<Architectures>? Architectures { get; set; }
+        public DbSet<PmcContractor>? PmcContractors { get; set; }
+        public DbSet<LightningDesigner>? LightningDesigners { get; set; }
+  public DbSet<City>? Cities { get; set; }
+
+ public DbSet<TypeOfHome> typeOfHomes { get; set; }
+
+  public DbSet<SFT> SFTs { get; set; }
+
+  public DbSet<ProjectName>? ProjectNames { get; set; }
+
+
 
 
     }

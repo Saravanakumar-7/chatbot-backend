@@ -30,7 +30,16 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal TotalFinalAmount { get; set; }
         public string? PaymentTerms { get; set; }
-        public string? QuoteType { get; set; }
+        public string? ProductType { get; set; }
+        public string? TypeOfSolution { get; set; }
+        [Precision(13, 3)]
+        public decimal? InstallationCharges { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? TotalAmountWithInstallationCharges { get; set; }
+
+        public string? ReasonForModification { get; set; }
+
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
@@ -74,7 +83,14 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? TotalFinalAmount { get; set; }
         public string? PaymentTerms { get; set; }
-        public string? QuoteType { get; set; } 
+        public string? ProductType { get; set; }
+        public string? TypeOfSolution { get; set; }
+        [Precision(13, 3)]
+        public decimal? InstallationCharges { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? TotalAmountWithInstallationCharges { get; set; }
+
 
         [Precision(13, 3)]
         public decimal? GeneralDiscount { get; set; } 
@@ -93,7 +109,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         public string? CustomerId { get; set; }
         public string? RoomName { get; set; }
-
+        public string? ReasonForModification { get; set; }
+ 
         public string? QuoteRef { get; set; }
 
         [Precision(18, 3)]
@@ -111,7 +128,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal TotalFinalAmount { get; set; }
         public string? PaymentTerms { get; set; }
-        public string? QuoteType { get; set; }     
+        public string? ProductType { get; set; }
+        public string? TypeOfSolution { get; set; }
+        [Precision(13, 3)]
+        public decimal? InstallationCharges { get; set; }
+        [Precision(13, 3)]
+        public decimal? TotalAmountWithInstallationCharges { get; set; }        
 
         [Precision(13, 3)]
         public decimal? GeneralDiscount { get; set; }

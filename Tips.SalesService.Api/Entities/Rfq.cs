@@ -23,6 +23,7 @@ namespace Tips.SalesService.Api.Entities
         public string? CustomerRfqNumber { get; set; }
         public string? CustomerId { get; set; }
         public DateTime? RequestReceivedate { get; set; }
+        public string? ReasonForModification { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }

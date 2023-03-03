@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Org.BouncyCastle.Crypto.Macs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -112,6 +113,20 @@ namespace Contracts
 
         IRoomNameRepository RoomNameRepository { get; }
 
-        void SaveAsync();
+        ICityRepository CityRepository { get; }
+        IBHKRepository BHKRepository { get; }
+        IStateOfConstructionRepository StateOfConstructionRepository { get; }
+        ILightningDesignerRepository LightningDesignerRepository { get; }
+        IPmcContractorRepository PmcContractorRepository { get; }
+        IStateRepository StateRepository { get; }
+        IArchitectureRepository ArchitectureRepository { get; }
+        IProjectNameRepository ProjectNameRepository { get; }
+        ISourceDetailsRepository SourceDetailsRepository { get; }
+        ISFTRepository SFTRepository { get; }
+         ITypeOfHomeRepository TypeOfHomeRepository { get; }
+
+
+
+    void SaveAsync();
     }
 }

@@ -30,6 +30,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [DefaultValue(0)]
         public CsRelease ReleaseStatus { get; set; }
 
+        public string? ReasonForModification { get; set; }
+
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public string? TypeOfSolution { get; set; }
@@ -62,6 +64,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerAliasName { get; set; }
         //[Required]
         //public string RfqNumber { get; set; }
+        public string? ReasonForModification { get; set; }
+
         public string? CustomerId { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceivedate { get; set; }

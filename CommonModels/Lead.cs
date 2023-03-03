@@ -62,6 +62,7 @@ namespace Entities
         public string? LeadType { get; set; }
 
         public string? CustomerSegment { get; set; }
+        public string? Salutation { get; set; }        
 
         public string? SecondarySource { get; set; }
 

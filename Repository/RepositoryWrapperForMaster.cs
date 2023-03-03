@@ -25,7 +25,18 @@ namespace Repository
  
         private IRoomNameRepository? _roomNameRepository;
         private IEnggBomNREConsumableRepository? _enggBomNREConsumableRepository;
-         
+
+        private ITypeOfHomeRepository? _typeOfHome;
+        private IBHKRepository? _bHKRepository;
+        private ISourceDetailsRepository? _sourceDetailsRepository;
+        private IProjectNameRepository? _projectNameRepository;
+        private ISFTRepository? _sFTRepository;
+        private IStateRepository? _stateRepository;
+        private ICityRepository? _cityRepository;
+        private IPmcContractorRepository? _pmcContractorRepository;
+        private IArchitectureRepository? _architectureRepository;
+        private ILightningDesignerRepository? _lightningDesignerRepository;
+        private IStateOfConstructionRepository? _stateOfConstructionRepository;
 
         private IItemMasterRoutingRepository? _itemmasterRoutingRepository;
 
@@ -107,6 +118,129 @@ namespace Repository
                     _enggBomRepository = new EngineeringBomRepository(_tipsMasterDbContext);
                 }
                 return _enggBomRepository;
+            }
+        }
+
+        public ISourceDetailsRepository SourceDetailsRepository
+        {
+            get
+            {
+                if (_sourceDetailsRepository == null)
+                {
+                    _sourceDetailsRepository = new SourceDetailsRepository(_tipsMasterDbContext);
+                }
+                return _sourceDetailsRepository;
+            }
+        }
+        public IStateOfConstructionRepository StateOfConstructionRepository
+        {
+            get
+            {
+                if (_stateOfConstructionRepository == null)
+                {
+                    _stateOfConstructionRepository = new StateOfConstructionRepository(_tipsMasterDbContext);
+                }
+                return _stateOfConstructionRepository;
+            }
+        }
+        public IPmcContractorRepository PmcContractorRepository
+        {
+            get
+            {
+                if (_pmcContractorRepository == null)
+                {
+                    _pmcContractorRepository = new PmcContractorRepository(_tipsMasterDbContext);
+                }
+                return _pmcContractorRepository;
+            }
+        }
+        public ICityRepository CityRepository
+        {
+            get
+            {
+                if (_cityRepository == null)
+                {
+                    _cityRepository = new CityRepository(_tipsMasterDbContext);
+                }
+                return _cityRepository;
+            }
+        }
+        public IArchitectureRepository ArchitectureRepository
+        {
+            get
+            {
+                if (_architectureRepository == null)
+                {
+                    _architectureRepository = new ArchitectureRepository(_tipsMasterDbContext);
+                }
+                return _architectureRepository;
+            }
+        }
+        public ILightningDesignerRepository LightningDesignerRepository
+        {
+            get
+            {
+                if (_lightningDesignerRepository == null)
+                {
+                    _lightningDesignerRepository = new LightningDesignerRepository(_tipsMasterDbContext);
+                }
+                return _lightningDesignerRepository;
+            }
+        }
+        public IStateRepository StateRepository
+        {
+            get
+            {
+                if (_stateRepository == null)
+                {
+                    _stateRepository = new StateRepository(_tipsMasterDbContext);
+                }
+                return _stateRepository;
+            }
+        }
+        public IProjectNameRepository ProjectNameRepository
+        {
+            get
+            {
+                if (_projectNameRepository == null)
+                {
+                    _projectNameRepository = new ProjectNameRepository(_tipsMasterDbContext);
+                }
+                return _projectNameRepository;
+            }
+        }
+
+        public IBHKRepository BHKRepository
+        {
+            get
+            {
+                if (_bHKRepository == null)
+                {
+                    _bHKRepository = new BHKRepository(_tipsMasterDbContext);
+                }
+                return _bHKRepository;
+            }
+        }
+        public ISFTRepository SFTRepository
+        {
+            get
+            {
+                if (_sFTRepository == null)
+                {
+                    _sFTRepository = new SFTRepository(_tipsMasterDbContext);
+                }
+                return _sFTRepository;
+            }
+        }
+        public ITypeOfHomeRepository TypeOfHomeRepository
+        {
+            get
+            {
+                if (_typeOfHome == null)
+                {
+                    _typeOfHome = new TypeOfHomeRepository(_tipsMasterDbContext);
+                }
+                return _typeOfHome;
             }
         }
 

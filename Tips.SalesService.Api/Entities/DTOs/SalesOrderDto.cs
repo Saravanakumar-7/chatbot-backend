@@ -41,8 +41,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? ShortClosedOn { get; set; }
 
         public decimal? Total { get; set; }
+        public string? ReasonForModification { get; set; }
 
-        
+
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -100,6 +101,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? PaymentTerms { get; set; }
         public string? Remarks { get; set; }
         public decimal? Total { get; set; }
+        public string? ReasonForModification { get; set; }
 
 
         [Required]
