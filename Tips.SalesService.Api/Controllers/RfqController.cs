@@ -1013,6 +1013,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
                 var createRfq = _mapper.Map<Rfq>(rfqPostDto);
+                createRfq.RevisionNumber = 1;
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
                 var months = Convert.ToString(date.Month.ToString("D2"));
@@ -1021,7 +1022,7 @@ namespace Tips.SalesService.Api.Controllers
 
 
                 var newcount = await _rfqRepository.GetRfqNumberAutoIncrementCount(date);
-
+            
                 if (newcount > 0)
                 {
                     var number = newcount + 1;
@@ -1179,8 +1180,8 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         //update rfq function
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRfq(int id, [FromBody] RfqUpdateDto rfqUpdateDto)
+        [HttpPut]
+        public async Task<IActionResult> UpdateRfq([FromBody] RfqUpdateDto rfqUpdateDto)
         {
             ServiceResponse<RfqDto> serviceResponse = new ServiceResponse<RfqDto>();
 
@@ -1204,23 +1205,15 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var getRfqById = await _rfqRepository.GetRfqById(id);
-                if (getRfqById is null)
-                {
-                    _logger.LogError($"Rfq with id: {id}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update Rfq with id: {id}, hasn't been found in db.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
-                }
+                
 
-                var updaterfq = _mapper.Map(rfqUpdateDto, getRfqById);
-                string result = await _rfqRepository.UpdateRfq(updaterfq);
-                _logger.LogInfo(result);
+                var updaterfq = _mapper.Map<Rfq>(rfqUpdateDto);
+                await _rfqRepository.UpdateRfqRevNo(updaterfq);
+                updaterfq.RevisionNumber += 1;
+                //_logger.LogInfo(result);
                 _rfqRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = "Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -1415,7 +1408,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 var rfqDetailsByRfqNumber = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
 
-                var version = Convert.ToDecimal(0.1);
+                var version = 1;
 
                 rfqDetailsByRfqNumber.RevisionNumber = rfqDetailsByRfqNumber.RevisionNumber + version;
 

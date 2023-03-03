@@ -226,8 +226,8 @@ namespace Tips.SalesService.Api.Repository
             var date = DateTime.Now;
             rfq.CreatedBy = "Admin";
             rfq.CreatedOn = date.Date;
-            var version = 1.0;
-            rfq.RevisionNumber = Convert.ToDecimal(version);
+            var version = 1;
+            rfq.RevisionNumber = version;
             //Guid rfqNumber = Guid.NewGuid();
             //rfq.RfqNumber = "RFQ-" + rfqNumber.ToString();
             rfq.Unit = "Bangalore";
@@ -314,6 +314,22 @@ namespace Tips.SalesService.Api.Repository
                         .Where(x => x.RfqNumber == rfqnumber)
                                   .FirstOrDefaultAsync();
             return getCustomerId;
+        }
+
+        public async Task<Rfq> UpdateRfqRevNo(Rfq rfq)
+        {
+            rfq.CreatedBy = "Admin";
+            rfq.CreatedOn = DateTime.Now;
+            rfq.Unit = "Bangalore";
+            var getOldRevisionNumber = _tipsSalesServiceDbContext.Rfqs
+                .Where(x => x.RfqNumber == rfq.RfqNumber)
+                .OrderByDescending(x => x.Id)
+                .Select(x => x.RevisionNumber)
+                .FirstOrDefault();
+
+            rfq.RevisionNumber = getOldRevisionNumber;
+            var result = await Create(rfq);
+            return result;
         }
     }
     public class RfqEnggRepository : RepositoryBase<RfqEngg>, IRfqEnggRepository

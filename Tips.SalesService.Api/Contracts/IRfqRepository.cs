@@ -24,6 +24,6 @@ namespace Tips.SalesService.Api.Contracts
 
         Task<Rfq> RfqLpcostingByRfqNumbers(string id);
         Task<Rfq> RfqLpCostingReleaseByRfqNumbers(string id);
-
+        Task<Rfq> UpdateRfqRevNo(Rfq rfq);
     }
 }

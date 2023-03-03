@@ -16,9 +16,7 @@ namespace Tips.SalesService.Api.Entities
         public int Id { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
-
-        [Precision(13,1)]
-        public decimal? RevisionNumber { get; set; }
+        public int RevisionNumber { get; set; }
         public string RfqNumber { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public string? CustomerId { get; set; }
