@@ -63,7 +63,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         //[Required]
-        //public string RfqNumber { get; set; }
+        public string RfqNumber { get; set; }
         public string? ReasonForModification { get; set; }
 
         public string? CustomerId { get; set; }
