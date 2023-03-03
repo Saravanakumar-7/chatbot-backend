@@ -6,6 +6,7 @@ namespace Tips.Grin.Api.Entities
     {
         [Key]
         public int Id { get; set; }
+        public string? ProjectNumber { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         public int? Qty { get; set; }

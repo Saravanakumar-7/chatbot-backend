@@ -30,6 +30,19 @@ builder.Services.AddScoped<IEnggBomRepository, EngineeringBomRepository>();
 builder.Services.AddScoped<ILeadRepository, LeadRepository>();
 builder.Services.AddScoped<IFileUploadRepository, FileUploadDocumentRepository>();
 
+builder.Services.AddScoped<IImageUploadRepository, ImageUploadDocumentRepository>();
+
+builder.Services.AddScoped<ITypeOfHomeRepository, TypeOfHomeRepository>();
+builder.Services.AddScoped<IBHKRepository, BHKRepository>();
+builder.Services.AddScoped<ICityRepository, CityRepository>();
+builder.Services.AddScoped<ISFTRepository, SFTRepository>();
+builder.Services.AddScoped<IProjectNameRepository, ProjectNameRepository>();
+builder.Services.AddScoped<IPmcContractorRepository, PmcContractorRepository>();
+builder.Services.AddScoped<IArchitectureRepository, ArchitectureRepository>();
+builder.Services.AddScoped<ILightningDesignerRepository, LightningDesignerRepository>();
+builder.Services.AddScoped<IStateOfConstructionRepository, StateOfConstructionRepository>();
+builder.Services.AddScoped<IStateRepository, StateRepository>();
+builder.Services.AddScoped<ISourceDetailsRepository, SourceDetailsRepository>();
 
 
 builder.Services.AddScoped<IRoomNameRepository, RoomNameRepository>();

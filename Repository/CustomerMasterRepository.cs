@@ -27,6 +27,11 @@ namespace Repository
             
             return result;
         }
+        public async Task<CustomerMaster> GetCSNumberAutoIncrementCount()
+        {
+            var cSNumberAutoIncrementCount = await TipsMasterDbContext.CustomerMasters.OrderByDescending(x => x.Id).FirstOrDefaultAsync();
+            return cSNumberAutoIncrementCount;
+        }
 
         public async Task<string> DeleteCustomerMaster(CustomerMaster customerMaster)
         {

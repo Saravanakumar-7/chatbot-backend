@@ -32,7 +32,15 @@ namespace Tips.SalesService.Api.Entities
         [Precision(18, 3)]
         public decimal TotalFinalAmount { get; set; }
         public string? PaymentTerms { get; set; }
-        public string? QuoteType { get; set; }
+        public string? ProductType { get; set; }
+        public string? TypeOfSolution { get; set; }
+        [Precision(13, 3)]
+        public decimal? InstallationCharges { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? TotalAmountWithInstallationCharges { get; set; }
+
+        public string? ReasonForModification { get; set; }
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }

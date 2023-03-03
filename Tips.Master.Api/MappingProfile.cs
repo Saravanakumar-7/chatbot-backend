@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Entities;
 using Entities.DTOs;
+using System.Runtime.InteropServices;
 
 namespace Tips.Master.Api
 {
@@ -368,6 +369,49 @@ namespace Tips.Master.Api
             CreateMap<ImageUpload, ImageUploadPostDto>().ReverseMap();
             CreateMap<ImageUpload, ImageUploadUpdateDto>().ReverseMap();
 
+            CreateMap<BHK, BHKDto>().ReverseMap();
+            CreateMap<BHK, BHKPostDto>().ReverseMap();
+            CreateMap<BHK, BHKUpdateDto>().ReverseMap(); 
+
+            CreateMap<State, StateDto>().ReverseMap();
+            CreateMap<State, StatePostDto>().ReverseMap();
+            CreateMap<State, StateUpdateDto>().ReverseMap(); 
+
+            CreateMap<City, CityDto>().ReverseMap();
+            CreateMap<City, CityPostDto>().ReverseMap();
+            CreateMap<City, CityUpdateDto>().ReverseMap(); 
+
+            CreateMap<Architectures, ArchitectureDto>().ReverseMap();
+            CreateMap<Architectures, ArchitecturePostDto>().ReverseMap();
+            CreateMap<Architectures, ArchitectureUpdateDto>().ReverseMap(); 
+
+            CreateMap<PmcContractor, PmcContractorDto>().ReverseMap();
+            CreateMap<PmcContractor, PmcContractorPostDto>().ReverseMap();
+            CreateMap<PmcContractor, PmcContractorUpdateDto>().ReverseMap(); 
+
+            CreateMap<LightningDesigner, LightningDesignerDto>().ReverseMap();
+            CreateMap<LightningDesigner, LightningDesignerPostDto>().ReverseMap();
+            CreateMap<LightningDesigner, LightningDesignerUpdateDto>().ReverseMap(); 
+
+            CreateMap<StateOfConstruction, StateOfConstructionDto>().ReverseMap();
+            CreateMap<StateOfConstruction, StateOfConstructionPostDto>().ReverseMap();
+            CreateMap<StateOfConstruction, StateOfConstructionUpdateDto>().ReverseMap();
+
+            CreateMap<TypeOfHome, TypeOfHomeDto>().ReverseMap();
+            CreateMap<TypeOfHome, TypeOfHomePostDto>().ReverseMap();
+            CreateMap<TypeOfHome, TypeOfHomeUpdateDto>().ReverseMap();
+
+            CreateMap<ProjectName, ProjectNameDto>().ReverseMap();
+            CreateMap<ProjectName, ProjectNamePostDto>().ReverseMap();
+            CreateMap<ProjectName, ProjectNameUpdateDto>().ReverseMap();
+
+            CreateMap<SourceDetails, SourceDetailsDto>().ReverseMap();
+            CreateMap<SourceDetails, SourceDetailsPostDto>().ReverseMap();
+            CreateMap<SourceDetails, SourceDetailsUpdateDto>().ReverseMap();
+
+            CreateMap<SFT, SFTDto>().ReverseMap();
+            CreateMap<SFT, SFTPostDto>().ReverseMap();
+            CreateMap<SFT, SFTUpdateDto>().ReverseMap();
         }
     }
 }

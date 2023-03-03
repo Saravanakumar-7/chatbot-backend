@@ -272,10 +272,9 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 grins.GrinParts = grinPartsList;
-                grins.GrinDocuments = grinDocumentUploadDtoList;
-
-                await _repository.CreateGrin(grins);
-                _repository.SaveAsync();
+                //grins.GrinDocuments = grinDocumentUploadDtoList;
+                //grins.GrinDocuments = grinPostDto.GrinDocuments;
+                
 
                 if (grins.GrinDocuments != null && grins.GrinDocuments.Count > 0)
                 {
@@ -287,12 +286,16 @@ namespace Tips.Grin.Api.Controllers
                     {
                         if (grinPartsDto[i].COCUpload != null && grinPartsDto[i].COCUpload.Count > 0)
                         {
-                            CoCDocumentSave(grinPartsDto, i);
+                            CoCDocumentSave(grinPartsDto, grins, i, grinPartsDocumentUploadDtoList);
+                            
+
                         }
-                       
+
                     }
                 }
 
+                await _repository.CreateGrin(grins);
+                _repository.SaveAsync();
 
 
 
@@ -350,7 +353,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-        private void CoCDocumentSave(List<GrinPartsPostDto>? grinPartsDto, int i)
+        private void CoCDocumentSave(List<GrinPartsPostDto>? grinPartsDto, Grins grins, int i, List<DocumentUpload> grinPartsDocumentUploadDtoList)
         {
             var cocUploadDocs = grinPartsDto[i].COCUpload;
 
@@ -381,7 +384,15 @@ namespace Tips.Grin.Api.Controllers
 
                     _documentUploadRepository.CreateUploadDocumentGrin(uploadedFile);
                     _documentUploadRepository.SaveAsync();
+
+                    if (uploadedFile != null)
+                    {
+                        DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
+                        grinPartsDocumentUploadDtoList.Add(poFileDetails);
+                    }
+
                 }
+                grins.GrinParts[i].CoCUpload = grinPartsDocumentUploadDtoList;
 
             }
         }
@@ -426,7 +437,7 @@ namespace Tips.Grin.Api.Controllers
                         grinDocumentUploadDtoList.Add(poFileDetails);
                     }
                 }
-
+                grins.GrinDocuments = grinDocumentUploadDtoList;
             }
         }
 

@@ -47,6 +47,7 @@ namespace Tips.SalesService.Api.Entities
         public string? ShortClosedBy { get; set; }
 
         public DateTime? ShortClosedOn { get; set; }
+        public string? ReasonForModification { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

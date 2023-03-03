@@ -15,7 +15,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
-        public int RevisionNumber { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
         public string RfqNumber { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public string? CustomerId { get; set; }
@@ -27,6 +29,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [DefaultValue(0)]
         public CsRelease ReleaseStatus { get; set; }
+
+        public string? ReasonForModification { get; set; }
 
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
@@ -55,11 +59,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqUpdateDto
     {
-        //public int Id { get; set; }
+        public int Id { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         //[Required]
-        public string RfqNumber { get; set; }
+        //public string RfqNumber { get; set; }
+        public string? ReasonForModification { get; set; }
+
         public string? CustomerId { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceivedate { get; set; }

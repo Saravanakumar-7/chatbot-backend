@@ -106,7 +106,7 @@ namespace Tips.Master.Api.Controllers
         public async Task<IActionResult> CreateCustomerMaster([FromBody] CustomerMasterDtoPost customerMasterDtoPost)
         {
             ServiceResponse<CustomerMaster> serviceResponse = new ServiceResponse<CustomerMaster>();
-            CustomerMaster customerDetails = null;
+            //CustomerMaster customerDetails = null;
 
             try
             {
@@ -144,7 +144,23 @@ namespace Tips.Master.Api.Controllers
                 customerMaster.CustomerBanking = banking.ToList();
                 customerMaster.CustomerMasterHeadCountings= headcount.ToList();
 
-                customerDetails = await _repository.CustomerMasterRepository.CreateCustomerMaster(customerMaster);
+                var customerDetails = await _repository.CustomerMasterRepository.GetCSNumberAutoIncrementCount();
+                var newcount = customerDetails?.Id;
+                if (newcount > 0)
+                {
+                    var number = newcount + 1;
+                    string e = String.Format("{0:D4}", number);
+                    customerMaster.CustomerNumber = "CS" + (e);
+                }
+                else
+                {
+                    var count = 1;
+                    var e = count.ToString("D4");
+                    customerMaster.CustomerNumber = "CS" + (e);
+                }
+
+
+                await _repository.CustomerMasterRepository.CreateCustomerMaster(customerMaster);
 
 
                 _repository.SaveAsync();

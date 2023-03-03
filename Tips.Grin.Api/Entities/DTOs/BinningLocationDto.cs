@@ -5,6 +5,8 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class BinningLocationDto
     {
         public int Id { get; set; }
+        public string? ProjectNumber { get; set; }
+
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         public int? Qty { get; set; }
@@ -16,6 +18,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     }
     public class BinningLocationPostDto
     {
+        public string? ProjectNumber { get; set; }
 
         public string? Warehouse { get; set; }
  
@@ -27,7 +30,8 @@ namespace Tips.Grin.Api.Entities.DTOs
 
     public class BinningLocationUpdateDto
     {
-        
+        public string? ProjectNumber { get; set; }
+
         public string? Warehouse { get; set; }
  
         public string? Location { get; set; }
