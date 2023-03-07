@@ -15,8 +15,12 @@ namespace Tips.SalesService.Api.Entities
         public string? CustomerItemNumber { get; set; }
         public string Description { get; set; }
         public bool ReleaseStatus { get; set; } = false;
-        public int? Qty { get;set;}
-        public string? CostingBomVersionNo { get;}
+
+        [Precision(13,3)]
+        public decimal Qty { get;set;}
+
+        [Precision(13, 3)]
+        public decimal? CostingBomVersionNo { get; set; }
         public string? ItemNumber { get; set; }       
         public int RfqEnggId { get; set; }
         public RfqEngg? RfqEngg { get; set; }

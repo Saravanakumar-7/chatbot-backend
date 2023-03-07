@@ -1,4 +1,5 @@
 ﻿using Entities.DTOs;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,10 +14,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string? CustomerItemNumber { get; set; }
         public string Description { get; set; }
-        public int? Quantity { get; set; }
+
+        [Precision(13, 3)]
+        public decimal Quantity { get; set; }
         public bool ReleaseStatus { get; set; }
 
-        public string? CostingBomVersionNo { get; set; }
+        [Precision(13, 3)]
+        public decimal? CostingBomVersionNo { get; }
         public string? ItemNumber { get; set; }
        
 
@@ -28,8 +32,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string Description { get; set; }
-        public int? Quantity { get; set; }
-        public string? CostingBomVersionNo { get; set; }
+        
+        [Precision(13,3)]
+        public decimal Quantity { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? CostingBomVersionNo { get; }
         public string? ItemNumber { get; set; }
     }
     public class RfqEnggItemDtoUpdate
@@ -39,8 +47,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Required]
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string Description { get; set; }
-        public int? Quantity { get; set; }
-        public string? CostingBomVersionNo { get; set; }
+
+        [Precision(13, 3)]
+        public decimal Quantity { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? CostingBomVersionNo { get; }
         public string? ItemNumber { get; set; }
       
     
