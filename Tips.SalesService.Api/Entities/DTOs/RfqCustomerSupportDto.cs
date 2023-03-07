@@ -50,7 +50,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13,1)]
         public decimal? RevisionNumber { get; set; }
-
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
         public DateTime? RequestReceiveDate { get; set; }
         public DateTime? QuoteExpectDate { get; set; }       
         public List<RfqCustomerSupportItemPostDto>? RfqCustomerSupportItems { get; set; }
@@ -71,6 +72,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
         public string? CustomerRfqNumber { get; set; }
 
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
@@ -91,7 +94,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string RFQNumber { get; set; }
  
         [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
-        public string? CustomerRfqNumber { get; set; }
+        public string? CustomerRfqNumber { get; set; } 
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; } 

@@ -58,8 +58,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
     }
     public class RfqUpdateDto
-    {
-        public int Id { get; set; }
+    { 
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         //[Required]

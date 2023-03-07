@@ -9,7 +9,7 @@ namespace Entities.DTOs
     public class PmcContractorDto
     {
         public int Id { get; set; }
-        public string? Name { get; set; }
+        public string? PmcContractorName { get; set; }
         public int? Code { get; set; }
         public int? MobileNumber { get; set; }
         public string? Description { get; set; }
@@ -24,7 +24,7 @@ namespace Entities.DTOs
     }
     public class PmcContractorPostDto
     {
-        public string? Name { get; set; }
+        public string? PmcContractorName { get; set; }
         public int? Code { get; set; }
         public int? MobileNumber { get; set; }
         public string? Description { get; set; }
@@ -35,7 +35,7 @@ namespace Entities.DTOs
     public class PmcContractorUpdateDto
     {
         public int? Id { get; set; }
-        public string? Name { get; set; }
+        public string? PmcContractorName { get; set; }
         public int? Code { get; set; }
         public int? MobileNumber { get; set; }
         public string? Description { get; set; }

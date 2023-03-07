@@ -9,9 +9,10 @@ namespace Entities.DTOs
     public class LightningDesignerDto
     {
         public int Id { get; set; }
-        public string? Name { get; set; }
-        public string? EmailId { get; set; }
-        public int? MobileNumber { get; set; }
+        public string? LightningDesignerName { get; set; }
+
+        public int? PhoneNumber { get; set; }
+        public string? EmailId { get; set; } 
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool? IsActive { get; set; } = true;
@@ -24,9 +25,10 @@ namespace Entities.DTOs
     }
     public class LightningDesignerPostDto
     {
-        public string? Name { get; set; }
-        public string? EmailId { get; set; }
-        public int? MobileNumber { get; set; }
+        public string? LightningDesignerName { get; set; }
+
+        public int? PhoneNumber { get; set; }
+        public string? EmailId { get; set; } 
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool? IsActive { get; set; } = true;
@@ -35,9 +37,10 @@ namespace Entities.DTOs
     public class LightningDesignerUpdateDto
     {
         public int Id { get; set; }
-        public string? Name { get; set; }
-        public string? EmailId { get; set; }
-        public int? MobileNumber { get; set; }
+        public string? LightningDesignerName { get; set; }
+
+        public int? PhoneNumber { get; set; }
+        public string? EmailId { get; set; } 
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool? IsActive { get; set; } = true;

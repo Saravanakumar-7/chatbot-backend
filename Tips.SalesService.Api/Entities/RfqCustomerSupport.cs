@@ -24,6 +24,9 @@ namespace Tips.SalesService.Api.Entities
         public DateTime? RequestReceiveDate { get; set; }
         public DateTime? QuoteExpectDate { get; set; }
 
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

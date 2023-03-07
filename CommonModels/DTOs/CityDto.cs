@@ -8,8 +8,10 @@ namespace Entities.DTOs
 {
     public class CityDto
     {
-        public int Id { get; set; }
-        public string? Name { get; set; }
+        public int Id { get; set; } 
+ public string? CityName { get; set; }
+
+
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool? IsActive { get; set; } = true;
@@ -21,8 +23,9 @@ namespace Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
     }
     public class CityPostDto
-    {
-        public string? Name { get; set; }
+    { 
+        public string? CityName { get; set; }
+
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool? IsActive { get; set; } = true;
@@ -30,8 +33,9 @@ namespace Entities.DTOs
     }
     public class CityUpdateDto
     {
-        public int? Id { get; set; }
-        public string? Name { get; set; }
+        public int? Id { get; set; } 
+        public string? CityName { get; set; }
+
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool? IsActive { get; set; } = true;

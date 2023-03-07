@@ -8,7 +8,7 @@ namespace Entities
     public class State
     {
         public int Id { get; set; }
-        public string? Name { get; set; }
+        public string? StateName { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool? IsActive { get; set; } = true;

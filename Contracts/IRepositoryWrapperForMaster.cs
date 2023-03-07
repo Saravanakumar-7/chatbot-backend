@@ -13,7 +13,8 @@ namespace Contracts
         ILeadTimeRepository leadTimeRepository { get; }
         IFileUploadRepository FileUploadRepository { get; }
         IImageUploadRepository ImageUploadRepository { get; }
-         ICustomerTypeRepository CustomerTypeRepository { get; }
+        IStageOfConstructionRepository StageOfConstructionRepository { get; }
+        ICustomerTypeRepository CustomerTypeRepository { get; }
         IPurchaseGroupRepository PurchaseGroupRepository { get; }
         ICostCenterRepository CostCenterRepository { get; }
         ICostingMethodRepository CostingMethodRepository { get; }
@@ -114,8 +115,7 @@ namespace Contracts
         IRoomNameRepository RoomNameRepository { get; }
 
         ICityRepository CityRepository { get; }
-        IBHKRepository BHKRepository { get; }
-        IStateOfConstructionRepository StateOfConstructionRepository { get; }
+        IBHKRepository BHKRepository { get; } 
         ILightningDesignerRepository LightningDesignerRepository { get; }
         IPmcContractorRepository PmcContractorRepository { get; }
         IStateRepository StateRepository { get; }

@@ -391,11 +391,11 @@ namespace Tips.Master.Api
 
             CreateMap<LightningDesigner, LightningDesignerDto>().ReverseMap();
             CreateMap<LightningDesigner, LightningDesignerPostDto>().ReverseMap();
-            CreateMap<LightningDesigner, LightningDesignerUpdateDto>().ReverseMap(); 
+            CreateMap<LightningDesigner, LightningDesignerUpdateDto>().ReverseMap();
 
-            CreateMap<StateOfConstruction, StateOfConstructionDto>().ReverseMap();
-            CreateMap<StateOfConstruction, StateOfConstructionPostDto>().ReverseMap();
-            CreateMap<StateOfConstruction, StateOfConstructionUpdateDto>().ReverseMap();
+            CreateMap<StageOfConstruction, StageOfConstructionDto>().ReverseMap();
+            CreateMap<StageOfConstruction, StageOfConstructionPostDto>().ReverseMap();
+            CreateMap<StageOfConstruction, StageOfConstructionUpdateDto>().ReverseMap();
 
             CreateMap<TypeOfHome, TypeOfHomeDto>().ReverseMap();
             CreateMap<TypeOfHome, TypeOfHomePostDto>().ReverseMap();
