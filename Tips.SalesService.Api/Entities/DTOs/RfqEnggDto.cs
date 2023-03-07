@@ -12,6 +12,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class RfqEnggDto
     {
         public int Id { get; set; }
+        public String? CustomerName { get; set; }
+
+        public String? CustomerAliaseName { get; set; }
+         
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
@@ -30,8 +34,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqEnggDtoPost
     {
-        [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
-        public string? CustomerName { get; set; }
+        public String? CustomerName { get; set; }
+        public String? CustomerAliaseName { get; set; }
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
@@ -51,8 +55,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int Id { get; set; }
 
-        [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
-        public string? CustomerName { get; set; }
+        public String? CustomerName { get; set; }
+
+        public String? CustomerAliaseName { get; set; }
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
