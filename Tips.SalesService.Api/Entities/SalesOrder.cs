@@ -19,7 +19,7 @@ namespace Tips.SalesService.Api.Entities
         [Precision(13, 1)]
         public int? RevisionNumber { get; set; }
 
-        public bool? SOStatus { get; set; } = false;
+        public OrderStatus SOStatus { get; set; } = 0;
 
 
         //PO Details

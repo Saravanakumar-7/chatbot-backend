@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
+using Entities.DTOs;
 using Entities.Helper;
 
 namespace Contracts
@@ -15,5 +16,6 @@ namespace Contracts
         Task<int?> CreateReleaseProductBom(ProductionBom releaseProductBom);
         Task<IEnumerable<object>> GetAllReleaseProductBomItemNumberVersionList();
         Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber);
+        Task<IEnumerable<ProductionBomRevisionNumberList>> GetAllProductionBomFGListByItemNumber(string itemNumber);
     }
 }

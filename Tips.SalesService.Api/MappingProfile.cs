@@ -269,9 +269,9 @@ namespace Tips.SalesService.Api
             CreateMap<ItemPriceList, ItemNumberAndPriceNameListDto>().ReverseMap(); 
 
             CreateMap<SalesOrderItems, SalesOrderDispatchQtyDto>().ReverseMap();
-
-
-
+  
+            CreateMap<ItemDetailsForShopOrderDto, ProductionBomRevisionNumberList>().ReverseMap();
+            
 
         }
     }

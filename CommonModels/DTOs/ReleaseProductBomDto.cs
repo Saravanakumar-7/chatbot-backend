@@ -12,6 +12,7 @@ namespace Entities.DTOs
         public int Id { get; set; }
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
+        public string? ItemType { get; set; }
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; }
         public string? CreatedBy { get; set; }
@@ -24,6 +25,7 @@ namespace Entities.DTOs
     {
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
+        public string? ItemType { get; set; }
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; }
 
@@ -33,6 +35,7 @@ namespace Entities.DTOs
         public int Id { get; set; }
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
+        public string? ItemType { get; set; }
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; } 
 
@@ -45,7 +48,9 @@ namespace Entities.DTOs
     }
     public class ProductionBomRevisionNumberList
     {
-        public decimal[] ReleaseVersion { get; set; }
+        public string itemNumber { get; set; }
+        public string itemType { get; set; }
+        public decimal[] bomVersionNo { get; set; }
 
     }
 }

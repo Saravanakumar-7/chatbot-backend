@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using Tips.SalesService.Api.Entities.Dto;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Entities.Dto
 {
@@ -193,5 +194,26 @@ namespace Tips.SalesService.Api.Entities.Dto
         public int SalesOrderId { get; set; }
         public decimal Qty { get; set; }
 
+    }
+    public class ItemDetailsForShopOrderDto
+    {
+        public string itemNumber { get; set; }
+        public string itemType { get; set; }
+        public decimal[] bomVersionNo { get; set; }
+        public List<ProjectSODetailDto>? ProjectSODetails { get; set; }
+    }
+    public class ProjectSODetailDto
+    {
+        public string ProjectNumber { get; set; }
+        public string CustomerName { get; set; }
+        public int CustomerId { get; set; }
+        public string CustomerAliasName { get; set; }
+        public List<SalesOrderQtyDto> SalesOrderQtyDetails { get; set; }
+    }
+    public class SalesOrderQtyDto
+    {
+        public string SalesOrderNo { get; set; }
+        public string SalesOrderQty { get; set; }
+        public string OpenSalesOrderQty { get; set; }
     }
 }

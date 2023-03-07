@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http;
 using System.Text;
 using AutoMapper;
 using Contracts;
@@ -24,13 +25,17 @@ namespace Tips.SalesService.Api.Controllers
         private ILoggerManager _logger;
         private IMapper _mapper;
         private ISalesOrderHistoryRepository _salesOrderHistory;
-        public SalesOrderController(ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
+        public SalesOrderController(IConfiguration config,HttpClient httpClient,ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _salesOrderItemsRepository = salesOrderItemsRepository;
             _salesOrderHistory = salesOrderHistoryRepository;
+            _httpClient = httpClient;
+            _config = config;
         }
 
         // GET: api/<SalesOrderController>
@@ -198,8 +203,7 @@ namespace Tips.SalesService.Api.Controllers
 
 
                 await _repository.CreateSalesOrder(createSalesOrder);
-                _repository.SaveAsync();          
-
+                _repository.SaveAsync();
 
 
                 serviceResponse.Data = null;
@@ -276,7 +280,7 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderHistory.CustomerName = getSalesOrderById.CustomerName;
                         salesOrderHistory.CustomerId = getSalesOrderById.CustomerId;
                         salesOrderHistory.RevisionNumber = getSalesOrderById.RevisionNumber;
-                        salesOrderHistory.SOStatus = getSalesOrderById.SOStatus;
+                        //salesOrderHistory.SOStatus = getSalesOrderById.SOStatus;
                         salesOrderHistory.PONumber = getSalesOrderById.PONumber;
                         salesOrderHistory.PODate = getSalesOrderById.PODate;
                         salesOrderHistory.ReceivedDate = getSalesOrderById.ReceivedDate;
@@ -681,7 +685,37 @@ namespace Tips.SalesService.Api.Controllers
 
         //getsalesorderdetailbyitemnoandsalesorderId
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllProductionBomRevisionNumberList(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<ItemDetailsForShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemDetailsForShopOrderDto>>();
+            try
+            {
+                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomFGListByItemNumber?", "ItemNumber=", itemNumber));
+                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                dynamic inventoryObject = inventoryObjectData.data;
 
+                //var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var result = _mapper.Map<IEnumerable<ItemDetailsForShopOrderDto>>(inventoryObject);
+                var getSalesDetail = await _repository.GetProjectDetailsByItemNo(itemNumber);
+                var projectDetails = _mapper.Map<IEnumerable<ProjectSODetailDto>>(getSalesDetail);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ProductionBomRevisionNumbers";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllProductionBomRevisionNumberList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 
 

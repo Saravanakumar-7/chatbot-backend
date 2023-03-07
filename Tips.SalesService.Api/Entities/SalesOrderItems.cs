@@ -11,16 +11,7 @@ namespace Tips.SalesService.Api.Entities
         public string? Description { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
-        public OrderStatus StatusEnum { get; set; }
-
-        [Precision(13,3)]
-        public decimal? BalanceQty { get; set; }
-
-        [Precision(13, 3)]
-        public decimal DispatchQty { get; set; }
-
-        [Precision(13, 3)]
-        public decimal? ShopOrderQty { get; set; }
+        public OrderStatus StatusEnum { get; set; }       
         public string? UOM { get; set; }
         public string? Currency { get; set; }
 
@@ -34,9 +25,16 @@ namespace Tips.SalesService.Api.Entities
 
         [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
-
         [Precision(13, 3)]
         public decimal? OrderQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? BalanceQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal DispatchQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? ShopOrderQty { get; set; }
 
         [Precision(13, 3)]
         public decimal? SGST { get; set; }

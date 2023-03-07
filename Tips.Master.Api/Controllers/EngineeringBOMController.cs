@@ -1760,5 +1760,42 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllProductionBomFGListByItemNumber(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<ProductionBomRevisionNumberList>> serviceResponse = new ServiceResponse<IEnumerable<ProductionBomRevisionNumberList>>();
+            try
+            {
+                var productionBomDetails = await _releaseProductBomRepository.GetAllProductionBomFGListByItemNumber(itemNumber);
+                if (productionBomDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ProductionBom ItemType is Invalid.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ProductionBomDetails with id: {itemNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var result = _mapper.Map<IEnumerable<ProductionBomRevisionNumberList>>(productionBomDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned all ProductionBomRevisionNumberList";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllProductionBomFGListByItemNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 }

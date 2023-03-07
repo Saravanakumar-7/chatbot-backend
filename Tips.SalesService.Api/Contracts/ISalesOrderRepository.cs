@@ -20,8 +20,7 @@ namespace Tips.SalesService.Api.Contracts
         //Task<string> UpdateSOBasedOnCreatingDO();
 
         //Task<string> UpdateSOBasedOnCreatingShopOrder();
-
-        
+        Task<IEnumerable<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber);
 
 
     }

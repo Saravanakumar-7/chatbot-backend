@@ -374,6 +374,34 @@ namespace Repository
 
             return productionBomDetails;
         }
+
+        public async Task<IEnumerable<ProductionBomRevisionNumberList>> GetAllProductionBomFGListByItemNumber(string itemNumber)
+        {
+            var releaseProductBomDetails = _tipsMasterDbContext.ProductionBoms
+                 .Where(x => x.ItemNumber == itemNumber)
+                 .GroupBy(bom => bom.ItemNumber)
+                 .Select(group => new
+                 {
+                     ItemNumber = group.Key,
+                     RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
+                 })
+                 .ToList();
+            var itemType = await _tipsMasterDbContext.ProductionBoms
+                 .Where(x => x.ItemNumber == itemNumber && x.ItemType == "FG").Select(x => x.ItemType).FirstOrDefaultAsync();
+            if (itemType == "FG")
+            {
+                var releaseProductBomItemNumberList = releaseProductBomDetails
+                   .Select(bom => new ProductionBomRevisionNumberList
+                   {
+                       itemNumber = bom.ItemNumber,
+                       itemType = itemType,
+                       bomVersionNo = bom.RevisionNumbers
+                   }).ToList();
+                return releaseProductBomItemNumberList;
+            }
+            return null;
+           
+        }
     }
 
         public class EnggBomGroupRepository : RepositoryBase<EnggBomGroup>, IEnggBomGroupRepository

@@ -101,6 +101,23 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
+        public async Task<IEnumerable<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber)
+        {
+            var projectSODetails = from e in _tipsSalesServiceDbContext.SalesOrders
+                                join d in _tipsSalesServiceDbContext.SalesOrdersItems on e.SalesOrderNumber equals d.SalesOrderNumber
+                                where d.ItemNumber == itemNumber
+                                select new ProjectSODetailDto
+                                {
+                                    ProjectNumber = e.ProjectNumber,
+                                    CustomerName = e.CustomerName,
+                                    CustomerId = e.CustomerId,
+                                    CustomerAliasName = e.CustomerName
+
+                                };
+            var projectSODetailList = projectSODetails.ToList();
+
+            return projectSODetailList;
+        }
     }
     public class SalesOrderItemRepository : RepositoryBase<SalesOrderItems>, ISalesOrderItemsRepository
     {
