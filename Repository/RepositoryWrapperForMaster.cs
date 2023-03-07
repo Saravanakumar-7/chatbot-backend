@@ -26,6 +26,7 @@ namespace Repository
         private IRoomNameRepository? _roomNameRepository;
         private IEnggBomNREConsumableRepository? _enggBomNREConsumableRepository;
 
+        private IStageOfConstructionRepository? _stageOfConstructionRepository;
         private ITypeOfHomeRepository? _typeOfHome;
         private IBHKRepository? _bHKRepository;
         private ISourceDetailsRepository? _sourceDetailsRepository;
@@ -36,8 +37,7 @@ namespace Repository
         private IPmcContractorRepository? _pmcContractorRepository;
         private IArchitectureRepository? _architectureRepository;
         private ILightningDesignerRepository? _lightningDesignerRepository;
-        private IStateOfConstructionRepository? _stateOfConstructionRepository;
-
+ 
         private IItemMasterRoutingRepository? _itemmasterRoutingRepository;
 
         private IDeliveryTermRepository? _deliveryTermRepo;
@@ -132,15 +132,15 @@ namespace Repository
                 return _sourceDetailsRepository;
             }
         }
-        public IStateOfConstructionRepository StateOfConstructionRepository
+        public IStageOfConstructionRepository StageOfConstructionRepository
         {
             get
             {
-                if (_stateOfConstructionRepository == null)
+                if (_stageOfConstructionRepository == null)
                 {
-                    _stateOfConstructionRepository = new StateOfConstructionRepository(_tipsMasterDbContext);
+                    _stageOfConstructionRepository = new StageOfConstructionRepository(_tipsMasterDbContext);
                 }
-                return _stateOfConstructionRepository;
+                return _stageOfConstructionRepository;
             }
         }
         public IPmcContractorRepository PmcContractorRepository

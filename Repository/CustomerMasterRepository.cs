@@ -18,14 +18,14 @@ namespace Repository
         {
         }
 
-        public async Task<CustomerMaster> CreateCustomerMaster(CustomerMaster customerMaster)
+        public async Task<int?> CreateCustomerMaster(CustomerMaster customerMaster)
         {
             customerMaster.CreatedBy = "Admin";
             customerMaster.CreatedOn = DateTime.Now;
             customerMaster.Unit = "Bangalore";
             var result = await Create(customerMaster);
             
-            return result;
+            return result.Id;
         }
         public async Task<CustomerMaster> GetCSNumberAutoIncrementCount()
         {

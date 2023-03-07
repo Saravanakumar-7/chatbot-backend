@@ -121,7 +121,7 @@ namespace Entities
         public DbSet<ImageUpload>? imageUploads { get; set; }
 
         public DbSet<BHK>? BHKs { get; set; }
-        public DbSet<StateOfConstruction>? StateOfConstructions { get; set; }
+        public DbSet<StageOfConstruction>? StageOfConstructions { get; set; }
         public DbSet<SourceDetails>? sourceDetails { get; set; }
         public DbSet<State>? states { get; set; }
         public DbSet<Architectures>? Architectures { get; set; }

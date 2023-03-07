@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Entities.DTOs
 {
-    public class StateOfConstructionDto
+    public class StageOfConstructionDto
     {
         public int Id { get; set; }
         public string? Name { get; set; }
@@ -21,7 +21,7 @@ namespace Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
-    public class StateOfConstructionPostDto
+    public class StageOfConstructionPostDto
     {
         public string? Name { get; set; }
         public string? Code { get; set; }
@@ -30,7 +30,7 @@ namespace Entities.DTOs
         public bool? IsActive { get; set; } = true;
         public string? Unit { get; set; }
     }
-    public class StateOfConstructionUpdateDto
+    public class StageOfConstructionUpdateDto
     {
         public int Id { get; set; }
         public string? Name { get; set; }

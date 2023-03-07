@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,13 +13,16 @@ namespace Entities.DTOs
         public int Id { get; set; }
         public string? ArchitectName { get; set; }
 
-        public int? PhoneNumber { get; set; }
+        [DataType(DataType.PhoneNumber)]
+        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{1,12})$", ErrorMessage = "Not a valid phone number")]
+        public string MobileNumber { get; set; }
         public string? EmailId { get; set; }
         public string? FirmName { get; set; }
         public string? SalesPerson { get; set; }
 
         public DateTime? DateOfBirth { get; set; }
-        public DateTime? MarraigeAnniversery { get; set; }
+        public DateTime? MarriageAnniversery { get; set; }
+        public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool? IsActive { get; set; } = true;
         public string? Unit { get; set; }
@@ -32,13 +36,16 @@ namespace Entities.DTOs
     {
         public string? ArchitectName { get; set; }
 
-        public int? PhoneNumber { get; set; }
+        [DataType(DataType.PhoneNumber)]
+        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{1,12})$", ErrorMessage = "Not a valid phone number")]
+        public string MobileNumber { get; set; }
         public string? EmailId { get; set; }
         public string? FirmName { get; set; }
         public string? SalesPerson { get; set; }
 
         public DateTime? DateOfBirth { get; set; }
-        public DateTime? MarraigeAnniversery { get; set; }
+        public DateTime? MarriageAnniversery { get; set; }
+        public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool? IsActive { get; set; } = true;
         public string? Unit { get; set; }
@@ -48,13 +55,16 @@ namespace Entities.DTOs
         public int Id { get; set; }
         public string? ArchitectName { get; set; }
 
-        public int? PhoneNumber { get; set; }
+        [DataType(DataType.PhoneNumber)]
+        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{1,12})$", ErrorMessage = "Not a valid phone number")]
+        public string MobileNumber { get; set; }
         public string? EmailId { get; set; }
         public string? FirmName { get; set; }
         public string? SalesPerson { get; set; }
 
         public DateTime? DateOfBirth { get; set; }
-        public DateTime? MarraigeAnniversery { get; set; }
+        public DateTime? MarriageAnniversery { get; set; }
+        public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool? IsActive { get; set; } = true;
         public string? Unit { get; set; }
