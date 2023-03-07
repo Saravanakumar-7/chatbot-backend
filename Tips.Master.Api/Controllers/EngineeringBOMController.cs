@@ -1619,7 +1619,7 @@ namespace Tips.Master.Api.Controllers
                 var enggBomDetails = await _enggBomRepository.GetAllEnggBomItemNumberVersionList();
                 var result = _mapper.Map<IEnumerable<EnggBomItemRevisionList>>(enggBomDetails);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all enggBomItemNumberVersionlist";
+                serviceResponse.Message = "Returned all EnggBomItemNumberVersionlist";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -1644,7 +1644,7 @@ namespace Tips.Master.Api.Controllers
                 var releaseCostBomDetails = await _releaseCostBomRepository.GetAllReleaseCostBomItemNumberVersionList();
                 var result = _mapper.Map<IEnumerable<CostingBomItemRevisionList>>(releaseCostBomDetails);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all releaseCostBomItemNumberVersionlist";
+                serviceResponse.Message = "Returned all ReleaseCostBomItemNumberVersionlist";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -1669,7 +1669,7 @@ namespace Tips.Master.Api.Controllers
                 var releaseProductBomDetails = await _releaseProductBomRepository.GetAllReleaseProductBomItemNumberVersionList();
                 var result = _mapper.Map<IEnumerable<GetAllReleaseProductBomItemNumberVersionList>>(releaseProductBomDetails);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all releaseProductBomItemNumberVersionlist";
+                serviceResponse.Message = "Returned all ReleaseProductBomItemNumberVersionlist";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -1694,7 +1694,7 @@ namespace Tips.Master.Api.Controllers
                 var costingBomVersionDetails = await _enggBomRepository.GetAllEnggBomVersionListByItemNumber(itemNumber);
                 var result = _mapper.Map<IEnumerable<ReleaseEnggBomDto>>(costingBomVersionDetails);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all EnggBomRevisionNumbers";
+                serviceResponse.Message = "Returned all EnggBomRevisionNumberList";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -1719,7 +1719,7 @@ namespace Tips.Master.Api.Controllers
                 var costingBomVersionDetails = await _releaseCostBomRepository.GetAllCostingBomVersionListByItemNumber(itemNumber);
                 var result = _mapper.Map<IEnumerable<CostingBomDto>>(costingBomVersionDetails);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all CostingBomRevisionNumbers";
+                serviceResponse.Message = "Returned all CostingBomRevisionNumberList";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -1744,7 +1744,7 @@ namespace Tips.Master.Api.Controllers
                 var productionBomVersionDetails = await _releaseProductBomRepository.GetAllProductionBomVersionListByItemNumber(itemNumber);
                 var result = _mapper.Map<IEnumerable<ReleaseProductBomDto>>(productionBomVersionDetails);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all ProductionBomRevisionNumbers";
+                serviceResponse.Message = "Returned all ProductionBomRevisionNumberList";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -1780,7 +1780,7 @@ namespace Tips.Master.Api.Controllers
                 {
                     var result = _mapper.Map<IEnumerable<ProductionBomRevisionNumberList>>(productionBomDetails);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned all ProductionBomRevisionNumberList";
+                    serviceResponse.Message = "Returned all ProductionBomFGList";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -1791,6 +1791,43 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetAllProductionBomFGListByItemNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllProductionBomSAListByItemNumber(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<ProductionBomRevisionNumberList>> serviceResponse = new ServiceResponse<IEnumerable<ProductionBomRevisionNumberList>>();
+            try
+            {
+                var productionBomDetails = await _releaseProductBomRepository.GetAllProductionBomSAListByItemNumber(itemNumber);
+                if (productionBomDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ProductionBom ItemType is Invalid.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ProductionBomDetails with id: {itemNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var result = _mapper.Map<IEnumerable<ProductionBomRevisionNumberList>>(productionBomDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned all ProductionBomSAList";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllProductionBomSAListByItemNumber action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
