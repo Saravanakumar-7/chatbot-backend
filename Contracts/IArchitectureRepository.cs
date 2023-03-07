@@ -11,9 +11,9 @@ namespace Contracts
 {
     public interface IArchitectureRepository : IRepositoryBase<Architectures>
     {
-        Task<PagedList<Architectures>> GetAllArchitectures(PagingParameter pagingParameter,SearchParams searchParams);
+        Task<IEnumerable<Architectures>> GetAllArchitectures();
         Task<Architectures> GetArchitectureById(int id);
-        Task<PagedList<Architectures>> GetAllActiveArchitectures();
+        Task<IEnumerable<Architectures>> GetAllActiveArchitectures();
         Task<int?> CreateArchitecture(Architectures architecture);
         Task<string> UpdateArchitecture(Architectures architecture);
         Task<string> DeleteArchitecture(Architectures architecture);

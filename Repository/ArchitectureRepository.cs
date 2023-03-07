@@ -1,8 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Helper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,20 +27,17 @@ namespace Repository
             string result = $"architecture details of {architecture.Id} is deleted successfully!";
             return result;
         }
-        public async Task<PagedList<Architectures>> GetAllActiveArchitectures([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        public async Task<IEnumerable<Architectures>> GetAllActiveArchitectures()
         {
-            var getAllArchitectures = FindAll()
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ArchitectName.Contains(searchParams.SearchValue) ||
-            inv.MobileNumber.Contains(searchParams.SearchValue) || inv.FirmName.Contains(searchParams.SearchValue))));
-            return PagedList<Architectures>.ToPagedList(getAllArchitectures, pagingParameter.PageNumber, pagingParameter.PageSize);
-        }
-        public async Task<PagedList<Architectures>> GetAllArchitectures([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
-        {
-            var getAllArchitectDetails = FindAll().OrderByDescending(x => x.Id)
-              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ArchitectName.Contains(searchParams.SearchValue) ||
-                 inv.MobileNumber.Contains(searchParams.SearchValue) || inv.FirmName.Contains(searchParams.SearchValue))));
+            var getAllArchitectures = await FindAll().ToListAsync();
 
-            return PagedList<Architectures>.ToPagedList(getAllArchitectDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            return getAllArchitectures;
+        }
+        public async Task<IEnumerable<Architectures>> GetAllArchitectures()
+        {
+            var getAllArchitectDetails = await FindAll().ToListAsync();             
+
+            return getAllArchitectDetails;
         }
         public async Task<Architectures> GetArchitectureById(int id)
         {

@@ -162,11 +162,15 @@ namespace Tips.Master.Api.Controllers
 
                 await _repository.CustomerMasterRepository.CreateCustomerMaster(customerMaster);
 
-                var customerData = _mapper.Map<CustomerMasterDto>(customerMaster);
 
                 _repository.SaveAsync();
-                 
-                 serviceResponse.Data = customerData;
+
+                var customerMasterDetails = await _repository.CustomerMasterRepository.GetCSNumberAutoIncrementCount();
+                var customerData = _mapper.Map<CustomerMasterDto>(customerMasterDetails);
+
+
+
+                serviceResponse.Data = customerData;
                 serviceResponse.Message = "CustomerMaster Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.Created;
