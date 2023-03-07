@@ -393,9 +393,9 @@ namespace Repository
                 var releaseProductBomItemNumberList = releaseProductBomDetails
                    .Select(bom => new ProductionBomRevisionNumberList
                    {
-                       itemNumber = bom.ItemNumber,
-                       itemType = itemType,
-                       bomVersionNo = bom.RevisionNumbers
+                       ItemNumber = bom.ItemNumber,
+                       ItemType = itemType,
+                       BomVersionNo = bom.RevisionNumbers
                    }).ToList();
                 return releaseProductBomItemNumberList;
             }

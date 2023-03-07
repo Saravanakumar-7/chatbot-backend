@@ -48,9 +48,9 @@ namespace Entities.DTOs
     }
     public class ProductionBomRevisionNumberList
     {
-        public string itemNumber { get; set; }
-        public string itemType { get; set; }
-        public decimal[] bomVersionNo { get; set; }
+        public string ItemNumber { get; set; }
+        public string ItemType { get; set; }
+        public decimal[] BomVersionNo { get; set; }
 
     }
 }

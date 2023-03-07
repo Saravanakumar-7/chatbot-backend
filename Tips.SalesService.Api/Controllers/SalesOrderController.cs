@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using AutoMapper;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
@@ -686,21 +688,33 @@ namespace Tips.SalesService.Api.Controllers
         //getsalesorderdetailbyitemnoandsalesorderId
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProductionBomRevisionNumberList(string itemNumber)
+        public async Task<IActionResult> GetAllFGSalesOrderDetailsByItemNo(string itemNumber)
         {
-            ServiceResponse<IEnumerable<ItemDetailsForShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemDetailsForShopOrderDto>>();
+            ServiceResponse<ItemDetailsForShopOrderDto> serviceResponse = new ServiceResponse<ItemDetailsForShopOrderDto>();
             try
             {
-                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomFGListByItemNumber?", "ItemNumber=", itemNumber));
-                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                dynamic inventoryObject = inventoryObjectData.data;
+                var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomFGListByItemNumber?", "ItemNumber=", itemNumber));
+                var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
+                dynamic bomDetailsStringData = JsonConvert.DeserializeObject(bomDetailsString);
+                dynamic bomData = bomDetailsStringData.data;
+                string jsonString = JsonConvert.SerializeObject(bomData[0].bomVersionNo);
+                JArray jArray = JArray.Parse(jsonString);
+                decimal[] bomVersionNo = jArray.ToObject<decimal[]>();
 
-                //var data = new StringContent(json, Encoding.UTF8, "application/json");
-                var result = _mapper.Map<IEnumerable<ItemDetailsForShopOrderDto>>(inventoryObject);
-                var getSalesDetail = await _repository.GetProjectDetailsByItemNo(itemNumber);
-                var projectDetails = _mapper.Map<IEnumerable<ProjectSODetailDto>>(getSalesDetail);
-                serviceResponse.Data = result;
+                ItemDetailsForShopOrderDto itemDetailsDto = new ItemDetailsForShopOrderDto();
+                itemDetailsDto.ItemNumber = bomData[0].itemNumber;
+                itemDetailsDto.ItemType = bomData[0].itemType;
+                itemDetailsDto.BomVersionNo = bomVersionNo;
+                
+                var projectSODetails = await _repository.GetProjectDetailsByItemNo(itemNumber);
+                foreach (var project in projectSODetails)
+                {
+                    project.SalesOrderQtyDetails = await _repository.GetSalesOrderQtyDetailsByItemNo(itemNumber,project.ProjectNumber);
+                }
+                itemDetailsDto.ProjectSODetails = projectSODetails;
+
+
+                serviceResponse.Data = itemDetailsDto;
                 serviceResponse.Message = "Returned all ProductionBomRevisionNumbers";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;

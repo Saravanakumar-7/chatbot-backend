@@ -24,17 +24,17 @@ namespace Tips.SalesService.Api.Entities
         public string? Discount { get; set; }
 
         [Precision(18, 3)]
-        public decimal? UnitPrice { get; set; }
+        public decimal UnitPrice { get; set; }
         [Precision(13, 3)]
-        public decimal? OrderQty { get; set; }
+        public decimal OrderQty { get; set; }
         [Precision(13, 3)]
-        public decimal? BalanceQty { get; set; }
+        public decimal BalanceQty { get; set; }
 
         [Precision(13, 3)]
         public decimal DispatchQty { get; set; }
 
         [Precision(13, 3)]
-        public decimal? ShopOrderQty { get; set; }
+        public decimal ShopOrderQty { get; set; }
 
         [Precision(13, 3)]
         public decimal? SGST { get; set; }

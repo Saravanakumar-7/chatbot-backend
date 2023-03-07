@@ -17,13 +17,13 @@ namespace Tips.SalesService.Api.Entities.Dto
         public OrderStatus StatusEnum { get; set; }
 
         [Precision(13, 3)]
-        public decimal? BalanceQty { get; set; }
+        public decimal BalanceQty { get; set; }
 
         [Precision(13, 3)]
-        public decimal? DispatchQty { get; set; }
+        public decimal DispatchQty { get; set; }
 
         [Precision(13, 3)]
-        public decimal? ShopOrderQty { get; set; }
+        public decimal ShopOrderQty { get; set; }
         public string? UOM { get; set; }
         public string? Currency { get; set; }
 
@@ -31,7 +31,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal? UnitPrice { get; set; }
 
         [Precision(13, 3)]
-        public decimal? OrderQty { get; set; }
+        public decimal OrderQty { get; set; }
 
         [Precision(13, 3)]
         public decimal? SGST { get; set; }
@@ -69,7 +69,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         //public decimal? DispatchQty { get; set; }
 
         [Precision(13, 3)]
-        public decimal? ShopOrderQty { get; set; }
+        public decimal ShopOrderQty { get; set; }
         public string? UOM { get; set; }
         public string? Currency { get; set; }
 
@@ -77,7 +77,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal? UnitPrice { get; set; }
 
         [Precision(13, 3)]
-        public decimal? OrderQty { get; set; }
+        public decimal OrderQty { get; set; }
 
         [Precision(13, 3)]
         public decimal? SGST { get; set; }
@@ -107,10 +107,10 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? ProjectNumber { get; set; }
  
         [Precision(13, 3)]
-        public decimal? BalanceQty { get; set; }
+        public decimal BalanceQty { get; set; }
 
         [Precision(13, 3)]
-        public decimal? DispatchQty { get; set; }
+        public decimal DispatchQty { get; set; }
 
         [Precision(18, 3)]
         public decimal? BasicAmount { get; set; }
@@ -118,7 +118,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? Discount { get; set; }
 
         [Precision(13, 3)]
-        public decimal? ShopOrderQty { get; set; }
+        public decimal ShopOrderQty { get; set; }
         public string? UOM { get; set; }
         public string? Currency { get; set; }
 
@@ -126,7 +126,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal? UnitPrice { get; set; }
 
         [Precision(13, 3)]
-        public decimal? OrderQty { get; set; }
+        public decimal OrderQty { get; set; }
 
         [Precision(13, 3)]
         public decimal? SGST { get; set; }
@@ -197,9 +197,9 @@ namespace Tips.SalesService.Api.Entities.Dto
     }
     public class ItemDetailsForShopOrderDto
     {
-        public string itemNumber { get; set; }
-        public string itemType { get; set; }
-        public decimal[] bomVersionNo { get; set; }
+        public string ItemNumber { get; set; }
+        public string ItemType { get; set; }
+        public decimal[] BomVersionNo { get; set; }
         public List<ProjectSODetailDto>? ProjectSODetails { get; set; }
     }
     public class ProjectSODetailDto
@@ -207,13 +207,12 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string ProjectNumber { get; set; }
         public string CustomerName { get; set; }
         public int CustomerId { get; set; }
-        public string CustomerAliasName { get; set; }
         public List<SalesOrderQtyDto> SalesOrderQtyDetails { get; set; }
     }
     public class SalesOrderQtyDto
     {
         public string SalesOrderNo { get; set; }
-        public string SalesOrderQty { get; set; }
-        public string OpenSalesOrderQty { get; set; }
+        public decimal SalesOrderQty { get; set; }
+        public decimal OpenSalesOrderQty { get; set; }
     }
 }

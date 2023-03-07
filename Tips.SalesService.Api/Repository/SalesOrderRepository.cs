@@ -27,7 +27,7 @@ namespace Tips.SalesService.Api.Repository
             var result = await Create(salesOrder);
             return result.Id;
         }
-      
+
         public async Task<int?> GetSONumberAutoIncrementCount(DateTime date)
         {
             var getSONumberAutoIncrementCount = _tipsSalesServiceDbContext.SalesOrders.Where(x => x.CreatedOn == date.Date).Count();
@@ -86,14 +86,14 @@ namespace Tips.SalesService.Api.Repository
         public async Task<string> UpdateSalesOrder(SalesOrder salesOrder)
         {
             salesOrder.LastModifiedBy = "Admin";
-            salesOrder.LastModifiedOn = DateTime.Now; 
+            salesOrder.LastModifiedOn = DateTime.Now;
             var oldRevisionNumber = _tipsSalesServiceDbContext.SalesOrders
                .Where(x => x.SalesOrderNumber == salesOrder.SalesOrderNumber)
                .OrderByDescending(x => x.Id)
                .Select(x => x.RevisionNumber)
                .FirstOrDefault();
 
-            var increaseVersionNumber = 1; 
+            var increaseVersionNumber = 1;
             var version = oldRevisionNumber + increaseVersionNumber;
             salesOrder.RevisionNumber = (version);
             Update(salesOrder);
@@ -101,22 +101,37 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber)
+        public async Task<List<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber)
         {
-            var projectSODetails = from e in _tipsSalesServiceDbContext.SalesOrders
-                                join d in _tipsSalesServiceDbContext.SalesOrdersItems on e.SalesOrderNumber equals d.SalesOrderNumber
-                                where d.ItemNumber == itemNumber
-                                select new ProjectSODetailDto
+            var projectNumbers = await _tipsSalesServiceDbContext.SalesOrdersItems
+                                .Where(x => x.ItemNumber == itemNumber)
+                                .Select(m => m.ProjectNumber).Distinct().ToListAsync();
+
+
+            var projectSODetails = await _tipsSalesServiceDbContext.SalesOrders
+                                .Where(m => projectNumbers.Contains(m.ProjectNumber) && m.SOStatus != OrderStatus.Closed && m.IsShortClosed == false)
+                                .Select(s => new ProjectSODetailDto()
                                 {
-                                    ProjectNumber = e.ProjectNumber,
-                                    CustomerName = e.CustomerName,
-                                    CustomerId = e.CustomerId,
-                                    CustomerAliasName = e.CustomerName
+                                    ProjectNumber = s.ProjectNumber,
+                                    CustomerName = s.CustomerName,
+                                    CustomerId = s.CustomerId
+                                }).ToListAsync();
+            return projectSODetails;    
+        }
 
-                                };
-            var projectSODetailList = projectSODetails.ToList();
+        public async Task<List<SalesOrderQtyDto>> GetSalesOrderQtyDetailsByItemNo(string itemNumber,string projectNo)
+        {
+            var salesOrderQtyDetails = await _tipsSalesServiceDbContext.SalesOrdersItems
+                               .Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo)
+                               .Select(m => new SalesOrderQtyDto()
+                               {
+                                   SalesOrderNo = m.SalesOrderNumber,
+                                   SalesOrderQty = m.OrderQty,
+                                   OpenSalesOrderQty = m.BalanceQty
 
-            return projectSODetailList;
+                               }).ToListAsync();
+
+            return salesOrderQtyDetails;
         }
     }
     public class SalesOrderItemRepository : RepositoryBase<SalesOrderItems>, ISalesOrderItemsRepository
