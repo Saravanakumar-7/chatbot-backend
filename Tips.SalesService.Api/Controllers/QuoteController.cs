@@ -79,7 +79,7 @@ namespace Tips.SalesService.Api.Controllers
             {
                 var quoteDetails = await _repository.GetQuoteById(id);
                 var rfqnumber = quoteDetails.RFQNumber;
-                var customerId = await _rfqRepository.GetCustomerIdByRfqNumber(rfqnumber);
+                //var customerId = await _rfqRepository.GetCustomerIdByRfqNumber(rfqnumber);
 
                 if (quoteDetails == null)
                 {
@@ -100,7 +100,7 @@ namespace Tips.SalesService.Api.Controllers
                     var quoteRFQNotesList = _mapper.Map<IEnumerable<QuoteRFQNotesDto>>(quoteDetails.QuoteRFQNotes);
                     var quoteSpecialTermslist = _mapper.Map<IEnumerable<QuoteSpecialTermsDto>>(quoteDetails.QuoteSpecialTerms);
                     var quote = _mapper.Map<QuoteDto>(quoteDetails);
-                    quote.CustomerId = customerId.CustomerId;
+                    //quote.CustomerId = customerId.CustomerId;
                     quote.QuoteGeneralDtos = quoteGeneralList.ToList();
                     quote.QuoteAdditionalChargesDtos = quoteAdditionalChargesList.ToList();
                     quote.QuoteOtherTermsDtos = quoteOtherTermsList.ToList();

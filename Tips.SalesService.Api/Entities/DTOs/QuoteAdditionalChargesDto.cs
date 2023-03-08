@@ -45,8 +45,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? SGST { get; set; }
     }
     public class QuoteAdditionalChargesUpdateDto
-    {
-        public int Id { get; set; }
+    { 
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
 
