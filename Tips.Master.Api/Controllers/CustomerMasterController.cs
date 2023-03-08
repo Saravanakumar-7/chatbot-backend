@@ -102,7 +102,46 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-         [HttpPost]
+        [HttpGet]
+        public async Task<IActionResult> GetCustomerMasterByCustomerNo(string customerNumber)
+        {
+            ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();
+            try
+            {
+                var customerMasterDetails = await _repository.CustomerMasterRepository.GetCustomerMasterByCustomerNo(customerNumber);
+
+                if (customerMasterDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CustomerMaster with CustomerNumber hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CustomerMaster with CustomerNumber: {customerNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned CustomerMaster with CustomerNumber: {customerNumber}");
+                    var result = _mapper.Map<CustomerMasterDto>(customerMasterDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned CustomerMasterByCustomerNo Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetCustomerMasterByCustomerNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetCustomerMasterByCustomerNo action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> CreateCustomerMaster([FromBody] CustomerMasterDtoPost customerMasterDtoPost)
         {
             ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();

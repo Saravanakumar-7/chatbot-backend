@@ -19,8 +19,8 @@ namespace Contracts
         Task<string> DeleteCustomerMaster(CustomerMaster customerMaster);
         Task<IEnumerable<CustomerIdNameListDto>> GetAllActiveCustomerMasterIdNameList();
         
-    Task<CustomerMaster> GetCSNumberAutoIncrementCount();
-
+        Task<CustomerMaster> GetCSNumberAutoIncrementCount();
+        Task<CustomerMaster> GetCustomerMasterByCustomerNo(string customerNumber);
 
     }
 }

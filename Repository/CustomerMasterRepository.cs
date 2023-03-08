@@ -106,5 +106,18 @@ namespace Repository
             string result = $"CustomerMaster details are updated successfully!";
             return result;
         }
+
+        public async Task<CustomerMaster> GetCustomerMasterByCustomerNo(string customerNumber)
+        {
+            var customerMasterDetails = await TipsMasterDbContext.CustomerMasters.Where(x => x.CustomerNumber == customerNumber)
+                              .Include(x => x.CustomerAddresses)
+                              .Include(x => x.CustomerShippingAddresses)
+                              .Include(m => m.CustomerContacts)
+                              .Include(s => s.CustomerBanking)
+                              .Include(v => v.CustomerMasterHeadCountings)
+                              .FirstOrDefaultAsync();
+
+            return customerMasterDetails;
+        }
     }
 }
