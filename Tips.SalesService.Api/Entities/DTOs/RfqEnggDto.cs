@@ -12,15 +12,16 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class RfqEnggDto
     {
         public int Id { get; set; }
-        public String? CustomerName { get; set; }
+        public string? CustomerName { get; set; }
 
-        public String? CustomerAliaseName { get; set; }
+        public string? CustomerAliaseName { get; set; }
          
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
-        public String? RfqNumber { get; set; }
+        public string? RfqNumber { get; set; }
         public string? CustomerRfqNumber { get; set; }
+ 
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public string Unit { get; set; }
@@ -34,8 +35,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqEnggDtoPost
     {
-        public String? CustomerName { get; set; }
-        public String? CustomerAliaseName { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerAliaseName { get; set; }
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
@@ -55,9 +56,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int Id { get; set; }
 
-        public String? CustomerName { get; set; }
+        public string? CustomerName { get; set; }
 
-        public String? CustomerAliaseName { get; set; }
+        public string? CustomerAliaseName { get; set; }
+
+
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }

@@ -206,7 +206,7 @@ namespace Tips.SalesService.Api.Entities.Dto
     {
         public string ProjectNumber { get; set; }
         public string CustomerName { get; set; }
-        public int CustomerId { get; set; }
+        public string CustomerId { get; set; }
         public List<SalesOrderQtyDto> SalesOrderQtyDetails { get; set; }
     }
     public class SalesOrderQtyDto

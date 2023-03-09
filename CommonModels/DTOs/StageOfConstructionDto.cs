@@ -9,7 +9,7 @@ namespace Entities.DTOs
     public class StageOfConstructionDto
     {
         public int Id { get; set; }
-        public string? Name { get; set; }
+        public string? StageOfConstructionName { get; set; }
         public string? Code { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
@@ -23,7 +23,7 @@ namespace Entities.DTOs
     }
     public class StageOfConstructionPostDto
     {
-        public string? Name { get; set; }
+        public string? StageOfConstructionName { get; set; }
         public string? Code { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
@@ -33,7 +33,7 @@ namespace Entities.DTOs
     public class StageOfConstructionUpdateDto
     {
         public int Id { get; set; }
-        public string? Name { get; set; }
+        public string? StageOfConstructionName { get; set; }
         public string? Code { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
