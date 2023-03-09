@@ -5,6 +5,7 @@ using Tips.Production.Api.Entities;
 using Entities;
 using Entities.Helper;
 using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Repository
 {

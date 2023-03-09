@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Entities.Enums
 {
-    public  enum PartType
+    public enum PartType
     {
         PurchasePart,
         FG,
         TG,
         SA,
-        FRU
+        FRU,
+        Phantom
     }
 }

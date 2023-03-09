@@ -1,4 +1,4 @@
-﻿namespace Tips.Production.Api.Entities
+﻿namespace Tips.Production.Api.Entities.Enums
 {
     public enum OrderStatus
     {

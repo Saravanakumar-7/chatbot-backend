@@ -140,9 +140,8 @@ namespace Tips.Production.Api.Controllers
                     {
                         ShopOrderItem shopOrderItemDetail = _mapper.Map<ShopOrderItem>(shopOrderDto[i]);
                         ShoporderItemList.Add(shopOrderItemDetail);
-
                     }
-                }
+                }   
                 shopOrder.ShopOrderItems= ShoporderItemList;               
                 await _shopOrderRepository.CreateShopOrder(shopOrder);
 
@@ -194,7 +193,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogError($"ShopOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update ShopOrder with id hasn't been found.";
+                    serviceResponse.Message = $"ShopOrder with id={id} hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);

@@ -47,20 +47,20 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
             try
             {
-                var getAllSalesOrder = await _repository.GetAllSalesOrder(pagingParameter);
+                var salesOrderList = await _repository.GetAllSalesOrder(pagingParameter);
                 var metadata = new
                 {
-                    getAllSalesOrder.TotalCount,
-                    getAllSalesOrder.PageSize,
-                    getAllSalesOrder.CurrentPage,
-                    getAllSalesOrder.HasNext,
-                    getAllSalesOrder.HasPreviuos
+                    salesOrderList.TotalCount,
+                    salesOrderList.PageSize,
+                    salesOrderList.CurrentPage,
+                    salesOrderList.HasNext,
+                    salesOrderList.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all SalesOrders");
-                var result = _mapper.Map<IEnumerable<SalesOrderDto>>(getAllSalesOrder);
+                var result = _mapper.Map<IEnumerable<SalesOrderDto>>(salesOrderList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all SalesOrders";
                 serviceResponse.Success = true;
@@ -251,8 +251,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var getSalesOrderById = await _repository.GetSalesOrderById(id);
-                if (getSalesOrderById is null)
+                var salesOrderDetail = await _repository.GetSalesOrderById(id);
+                if (salesOrderDetail is null)
                 {
                     _logger.LogError($"Update SalesOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -274,50 +274,50 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderItemsList.Add(salesOrderItemsDetail);
 
                         SalesOrderHistory salesOrderHistory = new SalesOrderHistory();
-                        salesOrderHistory.SalesOrderNumber = getSalesOrderById.SalesOrderNumber;
-                        salesOrderHistory.ProjectNumber = getSalesOrderById.ProjectNumber;
-                        salesOrderHistory.QuoteNumber = getSalesOrderById.QuoteNumber;
-                        salesOrderHistory.OrderDate = getSalesOrderById.OrderDate;
-                        salesOrderHistory.OrderType = getSalesOrderById.OrderType;
-                        salesOrderHistory.CustomerName = getSalesOrderById.CustomerName;
-                        salesOrderHistory.CustomerId = getSalesOrderById.CustomerId;
-                        salesOrderHistory.RevisionNumber = getSalesOrderById.RevisionNumber;
-                        //salesOrderHistory.SOStatus = getSalesOrderById.SOStatus;
-                        salesOrderHistory.PONumber = getSalesOrderById.PONumber;
-                        salesOrderHistory.PODate = getSalesOrderById.PODate;
-                        salesOrderHistory.ReceivedDate = getSalesOrderById.ReceivedDate;
-                        salesOrderHistory.BillTo = getSalesOrderById.BillTo;
-                        salesOrderHistory.BillToId = getSalesOrderById.BillToId;
-                        salesOrderHistory.ShipTo = getSalesOrderById.ShipTo;
-                        salesOrderHistory.ShipToId = getSalesOrderById.ShipToId;
-                        salesOrderHistory.PaymentTerms = getSalesOrderById.PaymentTerms;
-                        salesOrderHistory.Total = getSalesOrderById.Total;
-                        salesOrderHistory.Unit = getSalesOrderById.Unit;
-                        salesOrderHistory.IsShortClosed = getSalesOrderById.IsShortClosed;
-                        salesOrderHistory.ShortClosedBy = getSalesOrderById.ShortClosedBy;
-                        salesOrderHistory.ShortClosedOn = getSalesOrderById.ShortClosedOn;
-                        salesOrderHistory.CreatedBy = getSalesOrderById.CreatedBy;
-                        salesOrderHistory.CreatedOn = getSalesOrderById.CreatedOn;
-                        salesOrderHistory.LastModifiedBy = getSalesOrderById.LastModifiedBy;
-                        salesOrderHistory.LastModifiedOn = getSalesOrderById.LastModifiedOn;
-                        salesOrderHistory.ItemNumber = getSalesOrderById.SalesOrdersItems[i].ItemNumber;
-                        salesOrderHistory.Description = getSalesOrderById.SalesOrdersItems[i].Description;
-                        salesOrderHistory.BalanceQty = getSalesOrderById.SalesOrdersItems[i].BalanceQty;
-                        salesOrderHistory.DispatchQty = getSalesOrderById.SalesOrdersItems[i].DispatchQty;
-                        salesOrderHistory.ShopOrderQty = getSalesOrderById.SalesOrdersItems[i].ShopOrderQty;
-                        salesOrderHistory.UOM = getSalesOrderById.SalesOrdersItems[i].UOM;
-                        salesOrderHistory.Currency = getSalesOrderById.SalesOrdersItems[i].Currency;
-                        salesOrderHistory.TotalAmount = getSalesOrderById.SalesOrdersItems[i].TotalAmount;
-                        salesOrderHistory.BasicAmount = getSalesOrderById.SalesOrdersItems[i].BasicAmount;
-                        salesOrderHistory.Discount = getSalesOrderById.SalesOrdersItems[i].Discount;
-                        salesOrderHistory.UnitPrice = getSalesOrderById.SalesOrdersItems[i].UnitPrice;
-                        salesOrderHistory.OrderQty = getSalesOrderById.SalesOrdersItems[i].OrderQty;
-                        salesOrderHistory.SGST = getSalesOrderById.SalesOrdersItems[i].SGST;
-                        salesOrderHistory.UTGST = getSalesOrderById.SalesOrdersItems[i].UTGST;
-                        salesOrderHistory.CGST = getSalesOrderById.SalesOrdersItems[i].CGST;
-                        salesOrderHistory.IGST = getSalesOrderById.SalesOrdersItems[i].IGST;
-                        salesOrderHistory.ReceivedDate = getSalesOrderById.SalesOrdersItems[i].RequestedDate;
-                        salesOrderHistory.Remarks = getSalesOrderById.SalesOrdersItems[i].Remarks;
+                        salesOrderHistory.SalesOrderNumber = salesOrderDetail.SalesOrderNumber;
+                        salesOrderHistory.ProjectNumber = salesOrderDetail.ProjectNumber;
+                        salesOrderHistory.QuoteNumber = salesOrderDetail.QuoteNumber;
+                        salesOrderHistory.OrderDate = salesOrderDetail.OrderDate;
+                        salesOrderHistory.OrderType = salesOrderDetail.OrderType;
+                        salesOrderHistory.CustomerName = salesOrderDetail.CustomerName;
+                        salesOrderHistory.CustomerId = salesOrderDetail.CustomerId;
+                        salesOrderHistory.RevisionNumber = salesOrderDetail.RevisionNumber;
+                        //salesOrderHistory.SOStatus = salesOrderDetail.SOStatus;
+                        salesOrderHistory.PONumber = salesOrderDetail.PONumber;
+                        salesOrderHistory.PODate = salesOrderDetail.PODate;
+                        salesOrderHistory.ReceivedDate = salesOrderDetail.ReceivedDate;
+                        salesOrderHistory.BillTo = salesOrderDetail.BillTo;
+                        salesOrderHistory.BillToId = salesOrderDetail.BillToId;
+                        salesOrderHistory.ShipTo = salesOrderDetail.ShipTo;
+                        salesOrderHistory.ShipToId = salesOrderDetail.ShipToId;
+                        salesOrderHistory.PaymentTerms = salesOrderDetail.PaymentTerms;
+                        salesOrderHistory.Total = salesOrderDetail.Total;
+                        salesOrderHistory.Unit = salesOrderDetail.Unit;
+                        salesOrderHistory.IsShortClosed = salesOrderDetail.IsShortClosed;
+                        salesOrderHistory.ShortClosedBy = salesOrderDetail.ShortClosedBy;
+                        salesOrderHistory.ShortClosedOn = salesOrderDetail.ShortClosedOn;
+                        salesOrderHistory.CreatedBy = salesOrderDetail.CreatedBy;
+                        salesOrderHistory.CreatedOn = salesOrderDetail.CreatedOn;
+                        salesOrderHistory.LastModifiedBy = salesOrderDetail.LastModifiedBy;
+                        salesOrderHistory.LastModifiedOn = salesOrderDetail.LastModifiedOn;
+                        salesOrderHistory.ItemNumber = salesOrderDetail.SalesOrdersItems[i].ItemNumber;
+                        salesOrderHistory.Description = salesOrderDetail.SalesOrdersItems[i].Description;
+                        salesOrderHistory.BalanceQty = salesOrderDetail.SalesOrdersItems[i].BalanceQty;
+                        salesOrderHistory.DispatchQty = salesOrderDetail.SalesOrdersItems[i].DispatchQty;
+                        salesOrderHistory.ShopOrderQty = salesOrderDetail.SalesOrdersItems[i].ShopOrderQty;
+                        salesOrderHistory.UOM = salesOrderDetail.SalesOrdersItems[i].UOM;
+                        salesOrderHistory.Currency = salesOrderDetail.SalesOrdersItems[i].Currency;
+                        salesOrderHistory.TotalAmount = salesOrderDetail.SalesOrdersItems[i].TotalAmount;
+                        salesOrderHistory.BasicAmount = salesOrderDetail.SalesOrdersItems[i].BasicAmount;
+                        salesOrderHistory.Discount = salesOrderDetail.SalesOrdersItems[i].Discount;
+                        salesOrderHistory.UnitPrice = salesOrderDetail.SalesOrdersItems[i].UnitPrice;
+                        salesOrderHistory.OrderQty = salesOrderDetail.SalesOrdersItems[i].OrderQty;
+                        salesOrderHistory.SGST = salesOrderDetail.SalesOrdersItems[i].SGST;
+                        salesOrderHistory.UTGST = salesOrderDetail.SalesOrdersItems[i].UTGST;
+                        salesOrderHistory.CGST = salesOrderDetail.SalesOrdersItems[i].CGST;
+                        salesOrderHistory.IGST = salesOrderDetail.SalesOrdersItems[i].IGST;
+                        salesOrderHistory.ReceivedDate = salesOrderDetail.SalesOrdersItems[i].RequestedDate;
+                        salesOrderHistory.Remarks = salesOrderDetail.SalesOrdersItems[i].Remarks;
 
 
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
@@ -328,7 +328,7 @@ namespace Tips.SalesService.Api.Controllers
                     }
                 }
 
-                var updateData = _mapper.Map(salesOrderDtoUpdate, getSalesOrderById);
+                var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetail);
                 updateData.SalesOrdersItems = salesOrderItemsList;
 
                 string result = await _repository.UpdateSalesOrder(updateData);
@@ -688,7 +688,7 @@ namespace Tips.SalesService.Api.Controllers
         //getsalesorderdetailbyitemnoandsalesorderId
 
         [HttpGet]
-        public async Task<IActionResult> GetAllFGSalesOrderDetailsByItemNo(string itemNumber)
+        public async Task<IActionResult> GetFGSalesOrderDetailsByItemNo(string itemNumber)
         {
             ServiceResponse<ItemDetailsForShopOrderDto> serviceResponse = new ServiceResponse<ItemDetailsForShopOrderDto>();
             try
@@ -724,7 +724,7 @@ namespace Tips.SalesService.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllFGSalesOrderDetailsByItemNo action";
+                serviceResponse.Message = $"Something went wrong inside GetFGSalesOrderDetailsByItemNo action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -732,7 +732,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllSASalesOrderDetailsByItemNo(string itemNumber)
+        public async Task<IActionResult> GetSASalesOrderDetailsByItemNo(string itemNumber)
         {
             ServiceResponse<ItemDetailsForShopOrderDto> serviceResponse = new ServiceResponse<ItemDetailsForShopOrderDto>();
             try
@@ -768,7 +768,7 @@ namespace Tips.SalesService.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllSASalesOrderDetailsByItemNo action";
+                serviceResponse.Message = $"Something went wrong inside GetSASalesOrderDetailsByItemNo action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

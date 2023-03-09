@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities
 {
@@ -10,17 +12,20 @@ namespace Tips.Production.Api.Entities
         [Key]      
         public int Id { get; set; }       
         public string? ShopOrderNumber { get; set; }
-        public string? SalesOrderNumber { get; set; }
         [Required]
         public string? ProjectType { get; set; }
         [Required]
-        public string? ItemType { get; set; }
         public string? ItemNumber { get; set; }
+        [Required]
+        public PartType  ItemType { get; set; }
+        
         [Precision(13,3)]
         public decimal? TotalSOReleaseQty { get; set; }
         [Required]
-        public DateTime SOClosedDate { get; set; }
-        public string? SAItemNumber { get; set; }       
+        public DateTime SOCloseDate { get; set; }
+        [Required]
+        public decimal BomRevisionNo { get; set; }
+
         [Precision(13,3)]
         public decimal? CanCreateQty { get; set; }
         [Precision(13, 3)]
@@ -29,20 +34,19 @@ namespace Tips.Production.Api.Entities
         public decimal? OqcQty { get; set; }
         [Precision(13, 3)]
         public decimal? ScrapQty { get; set; }
-        [Precision(13, 3)]
-        public decimal? SOReleaseQty { get; set; }
+        
         [DefaultValue(0)]
-        public OrderStatus FGDoneStatus { get; set; }      
+        public OrderStatus FGDoneStatus { get; set; } = OrderStatus.Open;
         public bool IsDeleted { get; set; } = false;
         [DefaultValue(0)]
-        public OrderStatus Status { get; set; }
+        public OrderStatus Status { get; set; } = OrderStatus.Open;
         [DefaultValue(false)]
-        public bool IsShortClosed { get; set; }
+        public bool IsShortClosed { get; set; } = false;
         public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }     
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
-        public DateTime CreatedOn { get; set; }
+        public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public List<ShopOrderItem>? ShopOrderItems { get; set; }

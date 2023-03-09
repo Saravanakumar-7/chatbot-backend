@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities
 {
@@ -56,7 +57,7 @@ namespace Tips.Production.Api.Entities
         [MaxLength(100)]
         public string? ShorClosedBy { get; set; }
         [DefaultValue(0)]
-        public IssueStatus MaterialIssueStatus { get; set; }
+        public IssuedStatus MaterialIssueStatus { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
