@@ -68,7 +68,7 @@ namespace Tips.SalesService.Api.Repository
             return getSalesOrderbyId;
         }
 
-        public async Task<IEnumerable<ListofSalesOrderDetails>> GetSalesOrderDetailsByCustomerId(int Customerid)
+        public async Task<IEnumerable<ListofSalesOrderDetails>> GetSalesOrderDetailsByCustomerId(string Customerid)
         {
 
             IEnumerable<ListofSalesOrderDetails> getSalesorderList = await _tipsSalesServiceDbContext.SalesOrders

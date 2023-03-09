@@ -470,7 +470,7 @@ namespace Tips.SalesService.Api.Controllers
         //get salesorder Detais by CustomerId
 
         [HttpGet]
-        public async Task<IActionResult> GetSalesOrderDetailsByCustomerId(int Customerid)
+        public async Task<IActionResult> GetSalesOrderDetailsByCustomerId(string Customerid)
         {
             ServiceResponse<IEnumerable<ListofSalesOrderDetails>> serviceResponse = new ServiceResponse<IEnumerable<ListofSalesOrderDetails>>();
 

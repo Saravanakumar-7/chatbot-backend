@@ -16,11 +16,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string Description { get; set; }
 
         [Precision(13, 3)]
-        public decimal Quantity { get; set; }
+        public decimal Qty { get; set; }
         public bool ReleaseStatus { get; set; }
 
         [Precision(13, 3)]
-        public decimal? CostingBomVersionNo { get; }
+        public decimal? CostingBomVersionNo { get; set; }
         public string? ItemNumber { get; set; }
        
 
@@ -34,10 +34,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string Description { get; set; }
         
         [Precision(13,3)]
-        public decimal Quantity { get; set; }
+        public decimal Qty { get; set; }
 
         [Precision(13, 3)]
-        public decimal? CostingBomVersionNo { get; }
+        public decimal? CostingBomVersionNo { get; set; }
         public string? ItemNumber { get; set; }
     }
     public class RfqEnggItemDtoUpdate
@@ -49,10 +49,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string Description { get; set; }
 
         [Precision(13, 3)]
-        public decimal Quantity { get; set; }
+        public decimal Qty { get; set; }
 
         [Precision(13, 3)]
-        public decimal? CostingBomVersionNo { get; }
+        public decimal? CostingBomVersionNo { get; set; }
         public string? ItemNumber { get; set; }
       
     
