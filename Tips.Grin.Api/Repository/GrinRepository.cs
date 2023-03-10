@@ -179,6 +179,12 @@ namespace Tips.Grin.Api.Repository
             return PagedList<GrinParts>.ToPagedList(getAllGrinParts, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
+        public async Task<GrinParts> GetGrinPartsDetailsbyGrinPartId(int GrinPartId)
+        {
+            var grinPartsDetails = await _tipsGrinDbContexts.GrinParts.Where(x => x.Id == GrinPartId).FirstOrDefaultAsync();
+            return grinPartsDetails;
+        }
+
         public async Task<GrinParts> UpdateGrinPartsQty(int GrinPartId, string AcceptedQty, string RejectedQty)
         {
             var data = await _tipsGrinDbContexts.GrinParts.Where(x => x.Id == GrinPartId).FirstOrDefaultAsync();
@@ -195,6 +201,17 @@ namespace Tips.Grin.Api.Repository
             string result = $"Grin Detail {grinParts.Id} is updated successfully!";
             return result;
         }
+
+        //pass grinparts id and get the details
+
+        //public async Task<string> GetGrinPartsDetailsByPartsId(GrinParts grinParts)
+        //{
+        //    grinParts.LastModifiedBy = "Admin";
+        //    grinParts.LastModifiedOn = DateTime.Now;
+        //    Update(grinParts);
+        //    string result = $"Grin Detail {grinParts.Id} is updated successfully!";
+        //    return result;
+        //}
 
     }
 }

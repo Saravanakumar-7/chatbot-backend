@@ -22,7 +22,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
-        public DateTime? RequestReceiveDate { get; set; }
+        public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
@@ -42,8 +42,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }        
 
         [Required]
-        public string RFQNumber { get; set; }     
+        public string RFQNumber { get; set; }
 
+        public string? CustomerAliasName { get; set; }
 
         [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
         public string? CustomerRfqNumber { get; set; }
@@ -52,8 +53,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? RevisionNumber { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
-        public DateTime? RequestReceiveDate { get; set; }
-        public DateTime? QuoteExpectDate { get; set; }       
+        public DateTime? RequestReceivedate { get; set; }
+        public DateTime? QuoteExpectdate { get; set; }
         public List<RfqCustomerSupportItemPostDto>? RfqCustomerSupportItems { get; set; }
         public List<RfqCustomerSupportNotesPostDto>? RfqCustomerSupportNotes { get; set; }
 
@@ -64,6 +65,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
         public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
 
 
         [Required]
@@ -77,9 +79,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
-         
-        public DateTime? RequestReceiveDate { get; set; }
-        public DateTime? QuoteExpectDate { get; set; }
+
+        public DateTime? RequestReceivedate { get; set; }
+        public DateTime? QuoteExpectdate { get; set; }
         public string Unit { get; set; }
         public List<RfqCustomerSupportItemUpdateDto>? RfqCustomerSupportItems { get; set; }
         public List<RfqCustomerSupportNotesUpdateDto>? RfqCustomerSupportNotes { get; set; }
@@ -91,15 +93,18 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
         public string? CustomerName { get; set; }
+
+        public string? CustomerAliasName { get; set; }
+
         public string RFQNumber { get; set; }
  
         [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
         public string? CustomerRfqNumber { get; set; } 
 
         [Precision(13, 1)]
-        public decimal? RevisionNumber { get; set; } 
-        public DateTime? RequestReceiveDate { get; set; }
-        public DateTime? QuoteExpectDate { get; set; }
+        public decimal? RevisionNumber { get; set; }
+        public DateTime? RequestReceivedate { get; set; }
+        public DateTime? QuoteExpectdate { get; set; }
 
         [Required]
         public string Unit { get; set; }

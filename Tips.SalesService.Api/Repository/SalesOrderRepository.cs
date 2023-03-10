@@ -109,13 +109,14 @@ namespace Tips.SalesService.Api.Repository
 
 
             var projectSODetails = await _tipsSalesServiceDbContext.SalesOrders
-                                .Where(m => projectNumbers.Contains(m.ProjectNumber) && m.SOStatus != OrderStatus.Closed && m.IsShortClosed == false)
+                                .Where(m => projectNumbers.Contains(m.ProjectNumber) 
+                                && m.SOStatus != OrderStatus.Closed && m.IsShortClosed == false)                                
                                 .Select(s => new ProjectSODetailDto()
                                 {
                                     ProjectNumber = s.ProjectNumber,
                                     CustomerName = s.CustomerName,
                                     CustomerId = s.CustomerId
-                                }).ToListAsync();
+                                }).Distinct().ToListAsync();
             return projectSODetails;    
         }
 
@@ -126,8 +127,8 @@ namespace Tips.SalesService.Api.Repository
                                .Select(m => new SalesOrderQtyDto()
                                {
                                    SalesOrderNo = m.SalesOrderNumber,
-                                   SalesOrderQty = m.OrderQty,
-                                   OpenSalesOrderQty = m.BalanceQty
+                                   SalesOrderQty = m.OrderQty, //we have to change sum of ordered qty
+                                   OpenSalesOrderQty = m.BalanceQty //we have to change sum of balanced qty
 
                                }).ToListAsync();
 

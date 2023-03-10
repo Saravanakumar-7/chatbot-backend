@@ -17,7 +17,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public decimal? OpenSalesOrderQty { get; set; }
         
-        public decimal? ReleaseQty { get; set; }
+        public decimal? ReleaseQty { get; set; } 
     }
     public class ShopOrderItemPostDto
     {
@@ -35,6 +35,8 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? ReleaseQty { get; set; }
+        public decimal? RequiredQty { get; set; }
+
     }
     public class ShopOrderItemUpdateDto   
     {
@@ -52,5 +54,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? ReleaseQty { get; set; }
+        public decimal? RequiredQty { get; set; }
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Grin.Api.Entities
 {
@@ -9,7 +10,9 @@ namespace Tips.Grin.Api.Entities
         public string? ProjectNumber { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
-        public int? Qty { get; set; }
+
+        [Precision(13,3)]
+        public decimal? Qty { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

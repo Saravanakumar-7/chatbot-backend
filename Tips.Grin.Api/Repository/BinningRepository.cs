@@ -30,8 +30,7 @@ namespace Tips.Grin.Api.Repository
         {
 
             var getAllBinningDetails = FindAll()
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue) ||
-                   inv.InvoiceNumber.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))))
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue))))
                  .Include(t => t.BinningItems)
                  .ThenInclude(t => t.BinningLocations);
                 return PagedList<Binning>.ToPagedList(getAllBinningDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
@@ -88,9 +87,8 @@ namespace Tips.Grin.Api.Repository
         public async Task<PagedList<BinningItems>> GetAllBinningItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             var getAllBinningItems = FindAll()
-               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-               inv.Description.Contains(searchParams.SearchValue) || inv.MftrItemNumber.Contains(searchParams.SearchValue)
-               || inv.ProjectNumber.Contains(searchParams.SearchValue) || inv.ManufactureBatchNumber.Contains(searchParams.SearchValue))))
+               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue)
+               )))
               .Include(t => t.BinningLocations);
 
 

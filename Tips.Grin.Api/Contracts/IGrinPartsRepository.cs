@@ -17,6 +17,7 @@ namespace Tips.Grin.Api.Contracts
         Task<string> UpdateGrinQty(GrinParts grinparts);
 
         Task<PagedList<GrinParts>> GetAllGrinParts([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams);
+        Task<GrinParts> GetGrinPartsDetailsbyGrinPartId(int GrinPartId);
 
     }
 }
