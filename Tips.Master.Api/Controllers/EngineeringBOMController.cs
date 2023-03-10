@@ -1744,7 +1744,7 @@ namespace Tips.Master.Api.Controllers
                 var productionBomVersionDetails = await _releaseProductBomRepository.GetAllProductionBomVersionListByItemNumber(itemNumber);
                 var result = _mapper.Map<IEnumerable<ReleaseProductBomDto>>(productionBomVersionDetails);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all ProductionBomRevisionNumberList";
+                serviceResponse.Message = "Returned all ProductionBomRevisionNumber";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -1763,7 +1763,7 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllProductionBomFGListByItemNumber(string itemNumber)
         {
-            ServiceResponse<IEnumerable<ProductionBomRevisionNumberList>> serviceResponse = new ServiceResponse<IEnumerable<ProductionBomRevisionNumberList>>();
+            ServiceResponse<IEnumerable<ProductionBomRevisionNumber>> serviceResponse = new ServiceResponse<IEnumerable<ProductionBomRevisionNumber>>();
             try
             {
                 var productionBomDetails = await _releaseProductBomRepository.GetAllProductionBomFGListByItemNumber(itemNumber);
@@ -1778,7 +1778,7 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
-                    var result = _mapper.Map<IEnumerable<ProductionBomRevisionNumberList>>(productionBomDetails);
+                    var result = _mapper.Map<IEnumerable<ProductionBomRevisionNumber>>(productionBomDetails);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned all ProductionBomFGList";
                     serviceResponse.Success = true;
@@ -1800,7 +1800,7 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllProductionBomSAListByItemNumber(string itemNumber)
         {
-            ServiceResponse<IEnumerable<ProductionBomRevisionNumberList>> serviceResponse = new ServiceResponse<IEnumerable<ProductionBomRevisionNumberList>>();
+            ServiceResponse<IEnumerable<ProductionBomRevisionNumber>> serviceResponse = new ServiceResponse<IEnumerable<ProductionBomRevisionNumber>>();
             try
             {
                 var productionBomDetails = await _releaseProductBomRepository.GetAllProductionBomSAListByItemNumber(itemNumber);
@@ -1815,7 +1815,7 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
-                    var result = _mapper.Map<IEnumerable<ProductionBomRevisionNumberList>>(productionBomDetails);
+                    var result = _mapper.Map<IEnumerable<ProductionBomRevisionNumber>>(productionBomDetails);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned all ProductionBomSAList";
                     serviceResponse.Success = true;

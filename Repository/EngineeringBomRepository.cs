@@ -366,6 +366,15 @@ namespace Repository
             return productionBomDetailsbyId;
         }
 
+        public async Task<ProductionBom> GetProductionBomByItemNumber(string itemNumber, decimal bomRevisonNumber)
+        {
+            var productionBomDetail = await _tipsMasterDbContext.ProductionBoms
+                                    .Where(x => x.ItemNumber == itemNumber && x.ReleaseVersion == bomRevisonNumber)
+                                  .FirstOrDefaultAsync();
+
+            return productionBomDetail;
+        }
+
         public async Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber)
         {
             var productionBomDetails =await _tipsMasterDbContext.ProductionBoms
@@ -375,7 +384,7 @@ namespace Repository
             return productionBomDetails;
         }
 
-        public async Task<IEnumerable<ProductionBomRevisionNumberList>> GetAllProductionBomFGListByItemNumber(string itemNumber)
+        public async Task<IEnumerable<ProductionBomRevisionNumber>> GetAllProductionBomFGListByItemNumber(string itemNumber)
         {
             var releaseProductBomDetails = _tipsMasterDbContext.ProductionBoms
                  .Where(x => x.ItemNumber == itemNumber)
@@ -386,12 +395,12 @@ namespace Repository
                      RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
                  })
                  .ToList();
-            var itemType = await _tipsMasterDbContext.ProductionBoms
-                 .Where(x => x.ItemNumber == itemNumber && x.ItemType == "FG").Select(x => x.ItemType).FirstOrDefaultAsync();
+            var itemType = await _tipsMasterDbContext.ItemMasters
+                 .Where(x => x.ItemNumber == itemNumber).Select(x => x.ItemType).FirstOrDefaultAsync();
             if (itemType == "FG")
             {
                 var releaseProductBomItemNumberList = releaseProductBomDetails
-                   .Select(bom => new ProductionBomRevisionNumberList
+                   .Select(bom => new ProductionBomRevisionNumber
                    {
                        ItemNumber = bom.ItemNumber,
                        ItemType = itemType,
@@ -403,7 +412,7 @@ namespace Repository
            
         }
 
-        public async Task<IEnumerable<ProductionBomRevisionNumberList>> GetAllProductionBomSAListByItemNumber(string itemNumber)
+        public async Task<IEnumerable<ProductionBomRevisionNumber>> GetAllProductionBomSAListByItemNumber(string itemNumber)
         {
             var releaseProductBomDetails = _tipsMasterDbContext.ProductionBoms
                  .Where(x => x.ItemNumber == itemNumber)
@@ -414,12 +423,12 @@ namespace Repository
                      RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
                  })
                  .ToList();
-            var itemType = await _tipsMasterDbContext.ProductionBoms
-                 .Where(x => x.ItemNumber == itemNumber && x.ItemType == "SA").Select(x => x.ItemType).FirstOrDefaultAsync();
+            var itemType = await _tipsMasterDbContext.ItemMasters
+                 .Where(x => x.ItemNumber == itemNumber).Select(x => x.ItemType).FirstOrDefaultAsync();
             if (itemType == "SA")
             {
                 var releaseProductBomItemNumberList = releaseProductBomDetails
-                   .Select(bom => new ProductionBomRevisionNumberList
+                   .Select(bom => new ProductionBomRevisionNumber
                    {
                        ItemNumber = bom.ItemNumber,
                        ItemType = itemType,

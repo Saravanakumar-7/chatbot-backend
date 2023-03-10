@@ -270,7 +270,7 @@ namespace Tips.SalesService.Api
 
             CreateMap<SalesOrderItems, SalesOrderDispatchQtyDto>().ReverseMap();
   
-            CreateMap<ItemDetailsForShopOrderDto, ProductionBomRevisionNumberList>().ReverseMap();
+            CreateMap<ItemDetailsForShopOrderDto, ProductionBomRevisionNumber>().ReverseMap();
             
 
         }
