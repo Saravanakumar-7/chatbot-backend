@@ -196,5 +196,16 @@ namespace Tips.Grin.Api.Repository
             return result;
         }
 
+        //pass grinparts id and get the details
+
+        //public async Task<string> GetGrinPartsDetailsByPartsId(GrinParts grinParts)
+        //{
+        //    grinParts.LastModifiedBy = "Admin";
+        //    grinParts.LastModifiedOn = DateTime.Now;
+        //    Update(grinParts);
+        //    string result = $"Grin Detail {grinParts.Id} is updated successfully!";
+        //    return result;
+        //}
+
     }
 }

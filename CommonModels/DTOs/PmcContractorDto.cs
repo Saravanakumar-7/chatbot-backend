@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,10 @@ namespace Entities.DTOs
         public int Id { get; set; }
         public string? PmcContractorName { get; set; }
         public int? Code { get; set; }
-        public int? MobileNumber { get; set; }
+
+        [DataType(DataType.PhoneNumber)]
+        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{1,12})$", ErrorMessage = "Not a valid phone number")]
+        public string? MobileNumber { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool? IsActive { get; set; } = true;
@@ -26,7 +30,10 @@ namespace Entities.DTOs
     {
         public string? PmcContractorName { get; set; }
         public int? Code { get; set; }
-        public int? MobileNumber { get; set; }
+
+        [DataType(DataType.PhoneNumber)]
+        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{1,12})$", ErrorMessage = "Not a valid phone number")]
+        public string? MobileNumber { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool? IsActive { get; set; } = true;
@@ -37,7 +44,10 @@ namespace Entities.DTOs
         public int? Id { get; set; }
         public string? PmcContractorName { get; set; }
         public int? Code { get; set; }
-        public int? MobileNumber { get; set; }
+
+        [DataType(DataType.PhoneNumber)]
+        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{1,12})$", ErrorMessage = "Not a valid phone number")]
+        public string? MobileNumber { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool? IsActive { get; set; } = true;

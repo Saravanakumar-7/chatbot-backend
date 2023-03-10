@@ -16,13 +16,14 @@ namespace Tips.SalesService.Api.Entities
         public string? CustomerName { get; set; }
 
         [Precision(13, 1)]
-        public decimal? RevisionNumber { get; set; } 
+        public decimal? RevisionNumber { get; set; }
+        public string? CustomerAliasName { get; set; }
 
         public string RfqNumber { get; set; }
 
         public string? CustomerRfqNumber { get; set; }
-        public DateTime? RequestReceiveDate { get; set; }
-        public DateTime? QuoteExpectDate { get; set; }
+        public DateTime? RequestReceivedate { get; set; }
+        public DateTime? QuoteExpectdate { get; set; } 
 
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }

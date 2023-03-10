@@ -233,7 +233,9 @@ namespace Tips.Grin.Api.Controllers
                 for(int  i=0; i< iQCDto.Count;i++)
                 {
                     IQCConfirmationItems iQCConfirmationItems = _mapper.Map<IQCConfirmationItems>(iQCDto[i]);
+                  
                     iQCItemList.Add(iQCConfirmationItems);
+ 
                 }
                 iQCCreate.IQCConfirmationItems = iQCItemList;
                 await _iQCConfirmationRepository.CreateIqc(iQCCreate);
