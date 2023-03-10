@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using Microsoft.EntityFrameworkCore;
+using Tips.Production.Api.Entities.Enums;
+using Entities.Enums;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
@@ -9,36 +11,30 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? ShopOrderNumber { get; set; }
-        public string? SalesOrderNumber { get; set; }
-        [Required]
-        public string? ProjectType { get; set; }
-        [Required]
-        public string? ItemType { get; set; }
+
+        public ProjectType ProjectType { get; set; }
+        public PartType ItemType { get; set; }
         public string? ItemNumber { get; set; }
-        [Precision(13, 3)]
         public decimal? TotalSOReleaseQty { get; set; }
-        [Required]
-        public DateTime SOClosedDate { get; set; }
-        public string? SAItemNumber { get; set; }
-        [Precision(13, 3)]
+        public DateTime SOCloseDate { get; set; }
         public decimal? CanCreateQty { get; set; }
-        [Precision(13, 3)]
+
         public decimal? WipQty { get; set; }
-        [Precision(13, 3)]
+
         public decimal? OqcQty { get; set; }
-        [Precision(13, 3)]
+
         public decimal? ScrapQty { get; set; }
-        [Precision(13, 3)]
-        public decimal? SOReleaseQty { get; set; }
-        [DefaultValue(0)]
+
         public OrderStatus FGDoneStatus { get; set; }
         public bool IsDeleted { get; set; } = false;
-        [DefaultValue(0)]
+
         public OrderStatus Status { get; set; }
-        [DefaultValue(false)]
+
         public bool IsShortClosed { get; set; }
         public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }
+        [Required]
+        public decimal BomRevisionNo { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
@@ -50,18 +46,17 @@ namespace Tips.Production.Api.Entities.DTOs
 
     public class ShopOrderPostDto
     {
-        public string? ShopOrderNumber { get; set; }
-        public string? SalesOrderNumber { get; set; }
         [Required]
-        public string? ProjectType { get; set; }
+        public ProjectType ProjectType { get; set; }
         [Required]
-        public string? ItemType { get; set; }
+        public PartType ItemType { get; set; }
         public string? ItemNumber { get; set; }
         [Precision(13, 3)]
         public decimal? TotalSOReleaseQty { get; set; }
         [Required]
-        public DateTime SOClosedDate { get; set; }
-        public string? SAItemNumber { get; set; }
+        public DateTime SOCloseDate { get; set; }
+        [Required]
+        public decimal BomRevisionNo { get; set; }
         [Precision(13, 3)]
         public decimal? CanCreateQty { get; set; }
 
@@ -71,18 +66,19 @@ namespace Tips.Production.Api.Entities.DTOs
     public class ShopOrderUpdateDto
     {
         public int Id { get; set; }
+        [Required]
         public string? ShopOrderNumber { get; set; }
-        public string? SalesOrderNumber { get; set; }
         [Required]
-        public string? ProjectType { get; set; }
+        public ProjectType ProjectType { get; set; }
         [Required]
-        public string? ItemType { get; set; }
+        public PartType ItemType { get; set; }
         public string? ItemNumber { get; set; }
         [Precision(13, 3)]
         public decimal? TotalSOReleaseQty { get; set; }
         [Required]
-        public DateTime SOClosedDate { get; set; }
-        public string? SAItemNumber { get; set; }
+        public DateTime SOCloseDate { get; set; }
+        [Required]
+        public decimal BomRevisionNo { get; set; }
         [Precision(13, 3)]
         public decimal? CanCreateQty { get; set; }
         public string? Unit { get; set; }
