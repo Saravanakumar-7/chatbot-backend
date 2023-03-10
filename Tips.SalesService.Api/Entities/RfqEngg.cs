@@ -14,7 +14,7 @@ namespace Tips.SalesService.Api.Entities
         [Key]
         public int Id { get; set; }
         public string? CustomerName { get; set;}
-        public string? CustomerAliaseName { get; set; }
+        public string? CustomerAliasName { get; set; }
         public string? RFQNumber { get; set;}
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceiveDate { get; set; }
