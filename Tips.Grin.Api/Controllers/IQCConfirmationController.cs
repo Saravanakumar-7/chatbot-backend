@@ -233,7 +233,12 @@ namespace Tips.Grin.Api.Controllers
                 for(int  i=0; i< iQCDto.Count;i++)
                 {
                     IQCConfirmationItems iQCConfirmationItems = _mapper.Map<IQCConfirmationItems>(iQCDto[i]);
+                    var grinPartId = iQCDto[i].GrinPartId;
+                    var grinPartsDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinPartId);
+                    grinPartsDetails.AcceptedQty = iQCConfirmationItems.AcceptedQty;
+                    grinPartsDetails.RejectedQty = iQCConfirmationItems.RejectedQty;
                     iQCItemList.Add(iQCConfirmationItems);
+                    _grinPartsRepository.SaveAsync();
                 }
                 iQCCreate.IQCConfirmationItems = iQCItemList;
                 await _iQCConfirmationRepository.CreateIqc(iQCCreate);
@@ -384,9 +389,9 @@ namespace Tips.Grin.Api.Controllers
                     {
                         foreach (var grinDetails in grinDetailsbyGrinNo.GrinParts)
                         {
-                            IQCConfirmationItemsDto grinPartDtos = _mapper.Map<IQCConfirmationItemsDto>(grinDetails);
-                            grinPartDtos.ReceivedQty = grinDetails.Qty;
-                            iQCConfirmationItemsList.Add(grinPartDtos);
+                            IQCConfirmationItemsDto iQCConfirmationItemsDtos = _mapper.Map<IQCConfirmationItemsDto>(grinDetails);
+                            iQCConfirmationItemsDtos.ReceivedQty = grinDetails.Qty;
+                            iQCConfirmationItemsList.Add(iQCConfirmationItemsDtos);
                         }
                     }
                     iQCConformationDetailsDto.IQCConfirmationItems = iQCConfirmationItemsList;

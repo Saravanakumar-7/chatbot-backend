@@ -129,8 +129,42 @@ namespace Tips.SalesService.Api.Repository
 
             return postdata;
         }
-        
 
+        public async Task<IEnumerable<rfqEnggItemDetailsForQuoteDto>> GetAllRfqEnggDetailsByRfqNo(string rfqNumber)
+        {
+
+            var releaseLpDetails = from e in _tipsSalesServiceDbContext.RfqEnggItems                                
+                                join d in _tipsSalesServiceDbContext.ReleaseLps on e.ItemNumber equals d.ItemNo
+                                where d.RfqNumber == rfqNumber
+                                select new rfqEnggItemDetailsForQuoteDto
+                                {
+                                    RfqNumber = d.RfqNumber,
+                                    CustomerName = d.CustomerName,
+                                    Rev = d.Rev,
+                                    DateOnLpCreation = d.DateOnLpCreation,
+                                    CustomerItemNumber = e.CustomerItemNumber,
+                                    ItemNumber = d.ItemNo,
+                                    RLpItemNo = d.RLpItemNo,
+                                    Description = d.Description,
+                                    CostingBomVersionNo = e.CostingBomVersionNo,
+                                    ReleaseStatus = e.ReleaseStatus,
+                                    Qty = d.Qty,
+                                    UOC = d.UOC,
+                                    LeastCost = d.LeastCost,
+                                    LeastCostPlus = d.LeastCostPlus,
+                                    LeastCostminus = d.LeastCostminus,
+                                    DiscountPlus = d.DiscountPlus,
+                                    DiscountMinus = d.DiscountMinus,
+                                    Markup = d.Markup,
+                                    PriceList = d.PriceList,
+                                    ValidThrough = d.ValidThrough,
+                                    IsDiscountApplicable = d.IsDiscountApplicable
+                                };
+
+            var releaseLpList = releaseLpDetails.ToList();
+
+            return releaseLpList;
+        }
 
         public async Task<PagedList<Quote>> GetAllQuote(PagingParameter pagingParameter)
         {

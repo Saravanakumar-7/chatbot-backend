@@ -26,8 +26,8 @@ namespace Tips.Grin.Api.Controllers
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-
-        public BinningController(IBinningRepository binningRepository, IBinningItemsRepository binningItemsRepository,ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        private IGrinRepository _grinRepository;
+        public BinningController(IGrinRepository grinRepository,IBinningRepository binningRepository, IBinningItemsRepository binningItemsRepository,ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _logger = logger;
             _binningRepository = binningRepository;
@@ -35,6 +35,7 @@ namespace Tips.Grin.Api.Controllers
             _mapper = mapper;
             _httpClient = httpClient;
             _config = config;
+            _grinRepository = grinRepository;
         }
 
         [HttpGet]
@@ -329,7 +330,7 @@ namespace Tips.Grin.Api.Controllers
                 {
                     _logger.LogError($"Binning details with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Binning details with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Binning details hasn't been found";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
@@ -337,26 +338,27 @@ namespace Tips.Grin.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Binnings with id: {id}");
-                    
-                    BinningDto binningDto = _mapper.Map<BinningDto>(binningsById);
+                    List<BinningItemsDto> binningItemList = new List<BinningItemsDto>();
+                    var binningGrinNo = binningsById.GrinNumber;
+                    var grinDetailsbyGrinNo = await _grinRepository.GetGrinByGrinNo(binningGrinNo);
+                    var binningDetailsDto = _mapper.Map<BinningDto>(grinDetailsbyGrinNo);
 
-                   
-
-                    List<BinningItemsDto> binningItemDtos = new List<BinningItemsDto>();
-
-                    if (binningsById.BinningItems != null)
+                    if (grinDetailsbyGrinNo.GrinParts .Count!=0)
                     {
-                        foreach (var binningitemDetails in binningsById.BinningItems)
+                        foreach (var grinDetails in grinDetailsbyGrinNo.GrinParts)
                         {
-                            BinningItemsDto binningItemDto = _mapper.Map<BinningItemsDto>(binningitemDetails);
-                            binningItemDto.BinningLocations = _mapper.Map<List<BinningLocationDto>>(binningitemDetails.BinningLocations);
-                            binningItemDtos.Add(binningItemDto);
+                            BinningItemsDto binningItemDtos = _mapper.Map<BinningItemsDto>(grinDetails);
+                            binningItemDtos.BinningLocations = _mapper.Map<List<BinningLocationDto>>(grinDetails);
+                            binningItemDtos.ReceivedQty = grinDetails.Qty;
+                            binningItemDtos.AcceptedQty = grinDetails.AcceptedQty;
+                            binningItemDtos.RejectedQty = grinDetails.RejectedQty;
+                            binningItemList.Add(binningItemDtos);
                         }
                     }
 
-                    binningDto.BinningItems = binningItemDtos;
-                    serviceResponse.Data = binningDto;
-                    serviceResponse.Message = $"Returned BinningbyId with id: {id}";
+                    binningDetailsDto.BinningItems = binningItemList;
+                    serviceResponse.Data = binningDetailsDto;
+                    serviceResponse.Message = $"Returned BinningbyId Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);

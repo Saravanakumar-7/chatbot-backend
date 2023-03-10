@@ -179,6 +179,12 @@ namespace Tips.Grin.Api.Repository
             return PagedList<GrinParts>.ToPagedList(getAllGrinParts, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
+        public async Task<GrinParts> GetGrinPartsDetailsbyGrinPartId(int GrinPartId)
+        {
+            var grinPartsDetails = await _tipsGrinDbContexts.GrinParts.Where(x => x.Id == GrinPartId).FirstOrDefaultAsync();
+            return grinPartsDetails;
+        }
+
         public async Task<GrinParts> UpdateGrinPartsQty(int GrinPartId, string AcceptedQty, string RejectedQty)
         {
             var data = await _tipsGrinDbContexts.GrinParts.Where(x => x.Id == GrinPartId).FirstOrDefaultAsync();
