@@ -21,6 +21,8 @@ namespace Tips.Production.Api.Entities
 
         [Precision(13, 3)]
         public decimal? ReleaseQty { get; set; }
+        public int ShopOrderId { get; set; }
+        public ShopOrder ShopOrder { get; set; }
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
@@ -14,20 +15,19 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public string? SalesOrderNumber { get; set; }
 
-        [Precision(13, 3)]
         public decimal? OpenSalesOrderQty { get; set; }
-
-        [Precision(13, 3)]
+        
         public decimal? ReleaseQty { get; set; }
     }
     public class ShopOrderItemPostDto
-    {       
+    {
+        [Required]
         public string? FGItemNumber { get; set; }
-
+        [Required]
         public string? Description { get; set; }
-
+        [Required]
         public string? ProjectNumber { get; set; }
-
+        [Required]
         public string? SalesOrderNumber { get; set; }
 
         [Precision(13, 3)]
@@ -38,12 +38,13 @@ namespace Tips.Production.Api.Entities.DTOs
     }
     public class ShopOrderItemUpdateDto   
     {
+        [Required]
         public string? FGItemNumber { get; set; }
-
+        [Required]
         public string? Description { get; set; }
-
+        [Required]
         public string? ProjectNumber { get; set; }
-
+        [Required]
         public string? SalesOrderNumber { get; set; }
 
         [Precision(13, 3)]

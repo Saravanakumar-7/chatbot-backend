@@ -10,6 +10,8 @@ namespace Entities.DTOs
     {
         public int Id { get; set; }
         public string TypeSolutionName { get; set; }
+        public string? Code { get; set; }
+
         public string? Description { get; set; }
         public string? Remarks { get; set; }
 
@@ -25,6 +27,8 @@ namespace Entities.DTOs
     public class TypeSolutionPostDto
     {
         public string TypeSolutionName { get; set; }
+        public string? Code { get; set; }
+
         public string? Description { get; set; }
         public string? Remarks { get; set; }
 
@@ -35,6 +39,8 @@ namespace Entities.DTOs
     {
         public int Id { get; set; }
         public string TypeSolutionName { get; set; }
+        public string? Code { get; set; }
+
         public string? Description { get; set; }
         public string? Remarks { get; set; }
 
