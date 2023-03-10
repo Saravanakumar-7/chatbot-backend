@@ -6,6 +6,7 @@ using Entities;
 using Entities.Helper;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
+using Entities.Enums;
 
 namespace Tips.Production.Api.Repository
 {
@@ -64,7 +65,7 @@ namespace Tips.Production.Api.Repository
         {
             var shopOrderBySalesOrderNo = await _tipsProductionDbContext.ShopOrders
                 .Include (x => x.ShopOrderItems)
-                .Where (z => z.SalesOrderNumber == salesOrderNo)
+                .Where (z => z.ShopOrderItems.FirstOrDefault().SalesOrderNumber == salesOrderNo)
                              .FirstOrDefaultAsync();
             return shopOrderBySalesOrderNo;
         }
@@ -81,7 +82,7 @@ namespace Tips.Production.Api.Repository
         public async Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByItemType(string itemType)
         {
             IEnumerable<ListOfShopOrderDto> shopOrderByItemType = await _tipsProductionDbContext.ShopOrders
-                           .Where(x => x.ItemType == itemType).Select(x => new ListOfShopOrderDto()
+                           .Where(x => x.ItemType == (PartType)Enum.Parse(typeof(PartType),itemType)).Select(x => new ListOfShopOrderDto()
                            {
                                Id = x.Id,
                                ShopOrderNumber = x.ShopOrderNumber,
@@ -94,7 +95,7 @@ namespace Tips.Production.Api.Repository
         public async Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFGNo(string fGNumber)
         {
             IEnumerable<ListOfShopOrderDto> shopOrderByFGNo = await _tipsProductionDbContext.ShopOrders
-                           .Where(x => x.ItemNumber == fGNumber && x.ItemType == "Fg").Select(x => new ListOfShopOrderDto()
+                           .Where(x => x.ItemNumber == fGNumber && x.ItemType == PartType.FG).Select(x => new ListOfShopOrderDto()
                            {
                                Id = x.Id,
                                ShopOrderNumber = x.ShopOrderNumber,
@@ -108,7 +109,7 @@ namespace Tips.Production.Api.Repository
         public async Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFGNoAndSANo(string fGNumber, string sANumber)
         {
             IEnumerable<ListOfShopOrderDto> shopOrderByFGNoAndSANo = await _tipsProductionDbContext.ShopOrders
-                           .Where(x => x.ItemNumber == fGNumber && x.SAItemNumber == sANumber && x.ItemType == "Sa").Select(x => new ListOfShopOrderDto()
+                           .Where(x => x.ItemNumber == fGNumber && x.ItemNumber == sANumber && x.ItemType == PartType.SA).Select(x => new ListOfShopOrderDto()
                            {
                                Id = x.Id,
                                ShopOrderNumber = x.ShopOrderNumber,

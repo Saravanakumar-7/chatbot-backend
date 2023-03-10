@@ -410,6 +410,7 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         ItemNumber = item.ItemNumber,
                         Description = item.Description,
+                        CustomerItemNumber = item.CustomerItemNumber,
                         TotalCost = 0,
                         MaterialCost =0,
                         MarkUpForMaterial =0,

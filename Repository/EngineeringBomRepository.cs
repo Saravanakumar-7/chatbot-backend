@@ -386,7 +386,7 @@ namespace Repository
                      RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
                  })
                  .ToList();
-            var itemType = await _tipsMasterDbContext.ProductionBoms
+            var itemType = await _tipsMasterDbContext.ItemMasters
                  .Where(x => x.ItemNumber == itemNumber && x.ItemType == "FG").Select(x => x.ItemType).FirstOrDefaultAsync();
             if (itemType == "FG")
             {
@@ -414,7 +414,7 @@ namespace Repository
                      RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
                  })
                  .ToList();
-            var itemType = await _tipsMasterDbContext.ProductionBoms
+            var itemType = await _tipsMasterDbContext.ItemMasters
                  .Where(x => x.ItemNumber == itemNumber && x.ItemType == "SA").Select(x => x.ItemType).FirstOrDefaultAsync();
             if (itemType == "SA")
             {
