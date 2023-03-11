@@ -19,7 +19,9 @@ namespace Tips.SalesService.Api.Entities
         [Precision(18, 3)]
         public decimal? Qty { get; set; }
         public string? UOC { get; set; }
-        public string? LeastCost { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? LeastCost { get; set; }
 
         [Precision(13,3)]
         public decimal? LeastCostPlus { get; set; }

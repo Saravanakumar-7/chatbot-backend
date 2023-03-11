@@ -189,23 +189,25 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int? Id { get; set; }
         public string? RfqNumber { get; set; }
         public string? CustomerName { get; set; }
-        public string? Rev { get; set; }
+        public decimal? Rev { get; set; }
         public DateTime? DateOnLpCreation { get; set; }
         public string? CustomerItemNumber { get; set; }
-        public string? ItemNumber { get; set; }
-        public string? RLpItemNo { get; set; }
+        public string? ItemNumber { get; set; } 
         public string Description { get; set; }
         public bool ReleaseStatus { get; set; } = false;
         [Precision(18, 3)]
         public decimal? Qty { get; set; }
         public string? UOC { get; set; }
-        public string? LeastCost { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? LeastCost { get; set; }
 
         [Precision(13, 3)]
         public decimal? LeastCostPlus { get; set; }
 
         [Precision(13, 3)]
         public decimal? LeastCostminus { get; set; }
+
         public decimal? CostingBomVersionNo { get; set; }
 
         [Precision(13, 3)]

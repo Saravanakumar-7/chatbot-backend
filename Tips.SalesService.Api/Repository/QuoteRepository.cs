@@ -133,22 +133,22 @@ namespace Tips.SalesService.Api.Repository
         public async Task<IEnumerable<rfqEnggItemDetailsForQuoteDto>> GetAllRfqEnggDetailsByRfqNo(string rfqNumber)
         {
 
-            var releaseLpDetails = from e in _tipsSalesServiceDbContext.RfqEnggItems                                
-                                join d in _tipsSalesServiceDbContext.ReleaseLps on e.ItemNumber equals d.ItemNo
-                                where d.RfqNumber == rfqNumber
-                                select new rfqEnggItemDetailsForQuoteDto
+            var releaseLpDetails = from e in _tipsSalesServiceDbContext.RfqEnggItems
+                                   where e.RfqEngg.RFQNumber == rfqNumber
+                                   join d in _tipsSalesServiceDbContext.ReleaseLps on e.ItemNumber equals d.ItemNo
+                                   where d.RfqNumber == rfqNumber    
+                                   select new rfqEnggItemDetailsForQuoteDto
                                 {
                                     RfqNumber = d.RfqNumber,
                                     CustomerName = d.CustomerName,
-                                    Rev = d.Rev,
+                                    Rev = e.RfqEngg.RevisionNumber,
                                     DateOnLpCreation = d.DateOnLpCreation,
                                     CustomerItemNumber = e.CustomerItemNumber,
-                                    ItemNumber = d.ItemNo,
-                                    RLpItemNo = d.RLpItemNo,
+                                    ItemNumber = d.ItemNo, 
                                     Description = d.Description,
                                     CostingBomVersionNo = e.CostingBomVersionNo,
                                     ReleaseStatus = e.ReleaseStatus,
-                                    Qty = d.Qty,
+                                    Qty = e.Qty,
                                     UOC = d.UOC,
                                     LeastCost = d.LeastCost,
                                     LeastCostPlus = d.LeastCostPlus,
@@ -161,7 +161,7 @@ namespace Tips.SalesService.Api.Repository
                                     IsDiscountApplicable = d.IsDiscountApplicable
                                 };
 
-            var releaseLpList = releaseLpDetails.ToList();
+            var releaseLpList = releaseLpDetails.Distinct().ToList();
 
             return releaseLpList;
         }
