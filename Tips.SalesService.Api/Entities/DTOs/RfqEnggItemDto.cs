@@ -39,6 +39,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? CostingBomVersionNo { get; set; }
         public string? ItemNumber { get; set; }
+        public string? CustomFields { get; set; }
+
     }
     public class RfqEnggItemDtoUpdate
     {
@@ -54,7 +56,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? CostingBomVersionNo { get; set; }
         public string? ItemNumber { get; set; }
-      
-    
+        public string? CustomFields { get; set; }
+
+
     }
 }

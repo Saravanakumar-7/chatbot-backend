@@ -11,5 +11,6 @@ namespace Tips.Production.Api.Contracts
         Task<int> CreateMaterialIssue(MaterialIssue materialIssue);
         Task<string> UpdateMaterialIssue(MaterialIssue materialIssue);
         Task<string> DeleteMaterialIssue(MaterialIssue materialIssue);
+        Task<MaterialIssue> GetMaterialIssueByShopOrderNo(string shopOrderNo);
     }
 }

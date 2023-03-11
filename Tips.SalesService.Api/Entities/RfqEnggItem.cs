@@ -21,7 +21,10 @@ namespace Tips.SalesService.Api.Entities
 
         [Precision(13, 3)]
         public decimal? CostingBomVersionNo { get; set; }
-        public string? ItemNumber { get; set; }       
+        public string? ItemNumber { get; set; }
+
+        public string? CustomFields { get; set; }
+
         public int RfqEnggId { get; set; }
         public RfqEngg? RfqEngg { get; set; }
       

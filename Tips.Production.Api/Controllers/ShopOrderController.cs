@@ -1,13 +1,16 @@
 ﻿using System.Net;
+using System.Net.Http;
 using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Controllers
 {
@@ -19,13 +22,19 @@ namespace Tips.Production.Api.Controllers
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IMaterialIssueRepository _materialIssueRepository;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
 
-        public ShopOrderController(IShopOrderRepository shopOrderRepository, IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IMapper mapper)
+        public ShopOrderController(IShopOrderRepository shopOrderRepository, 
+            IMaterialIssueRepository materialIssueRepository, ILoggerManager logger,
+            IMapper mapper, IConfiguration config, HttpClient httpClient)
         {
             _logger = logger;
             _shopOrderRepository = shopOrderRepository;
             _mapper = mapper;
             _materialIssueRepository = materialIssueRepository;
+            _httpClient = httpClient;
+            _config = config;
         }
 
         [HttpGet]
@@ -141,11 +150,15 @@ namespace Tips.Production.Api.Controllers
                         ShopOrderItem shopOrderItemDetail = _mapper.Map<ShopOrderItem>(shopOrderDto[i]);
                         ShoporderItemList.Add(shopOrderItemDetail);
                     }
-                }   
-                shopOrder.ShopOrderItems= ShoporderItemList;               
+                }
+                shopOrder.ShopOrderItems = ShoporderItemList;
                 await _shopOrderRepository.CreateShopOrder(shopOrder);
 
                 _shopOrderRepository.SaveAsync();
+
+                // After Shop Order Creation Material Issue also should be created.
+                await CreateMaterialIssueDetails(shopOrder);
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ShopOrder Successfully Created";
                 serviceResponse.Success = true;
@@ -160,6 +173,48 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
+            }
+        }
+
+        private async Task CreateMaterialIssueDetails(ShopOrder shopOrder)
+        {
+            var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetProductionBomByItemAndBomVersionNo?",
+                                                    "itemNumber=", shopOrder.ItemNumber, "&bomVersionNo=", shopOrder.BomRevisionNo));
+            var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
+            dynamic bomDetailsData = JsonConvert.DeserializeObject(bomDetailsString);
+            dynamic bomData = bomDetailsData.data;
+            if (bomData != null)
+            {
+                MaterialIssue materialIssue = new MaterialIssue();
+                materialIssue.ShopOrderNumber = shopOrder.ShopOrderNumber;
+                materialIssue.ShopOrderDate = shopOrder.CreatedOn;
+                materialIssue.ItemType = shopOrder.ItemType;
+                materialIssue.ShopOrderQty = shopOrder.TotalSOReleaseQty;
+                materialIssue.ItemNumber = shopOrder.ItemNumber;
+                materialIssue.MaterialIssuedStatus = IssuedStatus.Open;
+                List<MaterialIssueItem> materialIssueItemList = new List<MaterialIssueItem>();
+                foreach (var bom in bomData)
+                {
+                    MaterialIssueItem materialIssueItem = new MaterialIssueItem();
+                    materialIssueItem.PartNumber = bom.EnggChildItems.ItemNumber;
+                    materialIssueItem.Description = bom.EnggChildItems.Description;
+                    materialIssueItem.PartType = bom.EnggChildItems.PartType;
+                    materialIssueItem.UOM = bom.EnggChildItems.UOM;
+                    materialIssueItem.RequiredQty = (bom.EnggChildItems.Quantity * shopOrder.TotalSOReleaseQty);
+                    materialIssueItem.AvailableQty = 0;
+                    materialIssueItem.IssuedQty = 0;
+                    materialIssueItem.MaterialIssuedStatus = IssuedStatus.Open;
+                    materialIssueItem.CreatedBy = "Admin";
+                    materialIssueItem.CreatedOn = DateTime.Now;
+                    materialIssueItem.LastModifiedBy = "Admin";
+                    materialIssueItem.LastModifiedOn = DateTime.Now;
+                    materialIssueItemList.Add(materialIssueItem);
+                    
+
+                }
+                materialIssue.MaterialIssueItems = materialIssueItemList;
+                await _materialIssueRepository.CreateMaterialIssue(materialIssue);
+                _materialIssueRepository.SaveAsync();
             }
         }
 

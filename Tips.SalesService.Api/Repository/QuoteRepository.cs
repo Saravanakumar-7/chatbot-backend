@@ -142,6 +142,7 @@ namespace Tips.SalesService.Api.Repository
                                     RfqNumber = d.RfqNumber,
                                     CustomerName = d.CustomerName,
                                     Rev = e.RfqEngg.RevisionNumber,
+                                    CustomFields = e.CustomFields,
                                     DateOnLpCreation = d.DateOnLpCreation,
                                     CustomerItemNumber = e.CustomerItemNumber,
                                     ItemNumber = d.ItemNo, 

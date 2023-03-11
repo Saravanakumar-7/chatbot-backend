@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,6 +23,8 @@ namespace Entities
         public decimal Quantity { get; set; }
 
         public string? Description { get; set; }
+
+        public PartType PartType { get; set; }
 
         public string? Remarks { get; set; }
 
