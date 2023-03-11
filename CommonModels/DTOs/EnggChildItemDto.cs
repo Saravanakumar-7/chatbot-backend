@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,6 +22,7 @@ namespace Entities.DTOs
         public decimal Quantity { get; set; }
 
         public string? Description { get; set; }
+        public PartType PartType { get; set; }
 
         public string? Remarks { get; set; }
 
@@ -59,6 +61,8 @@ namespace Entities.DTOs
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
 
+        public PartType PartType { get; set; }
+
         [StringLength(500, ErrorMessage = "Remark can't be longer than 500 characters")]
         public string? Remarks { get; set; }
 
@@ -90,6 +94,8 @@ namespace Entities.DTOs
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
 
+        public PartType PartType { get; set; }
+
         [StringLength(500, ErrorMessage = "Remark can't be longer than 500 characters")]
         public string? Remarks { get; set; }
 
@@ -102,13 +108,7 @@ namespace Entities.DTOs
 
         [DefaultValue(true)]
         public bool IsActive { get; set; }
-        //public string Unit { get; set; }
-
-        //public string? CreatedBy { get; set; }
-        //public DateTime? CreatedOn { get; set; }
-        //public string? LastModifiedBy { get; set; }
-        //public DateTime? LastModifiedOn { get; set; }
-
+        
         public List<EnggAlternatesUpdateDto>? EnggAlternatesUpdateDtos { get; set; }
 
 

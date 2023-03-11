@@ -366,6 +366,17 @@ namespace Repository
             return productionBomDetailsbyId;
         }
 
+        public async Task<EnggBom> GetProductionBomByItemAndBomVersionNo(string itemNumber , decimal bomVersionNo)
+        {
+            var productionBomDetails = await _tipsMasterDbContext.EnggBoms
+                                  .Where(x => x.ItemNumber == itemNumber && x.RevisionNumber == bomVersionNo)
+                                  .Include(x => x.EnggChildItems)
+                                  .Include(x => x.NREConsumable)
+                                  .FirstOrDefaultAsync();
+
+            return productionBomDetails;
+        }
+
         public async Task<ProductionBom> GetProductionBomByItemNumber(string itemNumber, decimal bomRevisonNumber)
         {
             var productionBomDetail = await _tipsMasterDbContext.ProductionBoms
