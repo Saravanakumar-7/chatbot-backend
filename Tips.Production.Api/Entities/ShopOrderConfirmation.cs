@@ -12,9 +12,13 @@ namespace Tips.Production.Api.Entities
     {
         [Required]
         public int Id { get; set; }
-        [Required]
-        [MaxLength(100)]
+
+        [Required] 
         public string? ShopOrderNumber { get; set; }
+
+        public string? ItemNumber { get; set; }
+        public string? ItemDescription { get; set; }
+
         [Required]
         public string? ItemType { get; set; }
         [Required]
