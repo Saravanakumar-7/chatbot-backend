@@ -27,7 +27,8 @@ namespace Tips.Grin.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private IGrinRepository _grinRepository;
-        public BinningController(IGrinRepository grinRepository,IBinningRepository binningRepository, IBinningItemsRepository binningItemsRepository,ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        private IGrinPartsRepository _grinPartsRepository;
+        public BinningController(IGrinPartsRepository grinPartsRepository, IGrinRepository grinRepository,IBinningRepository binningRepository, IBinningItemsRepository binningItemsRepository,ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _logger = logger;
             _binningRepository = binningRepository;
@@ -36,6 +37,7 @@ namespace Tips.Grin.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _grinRepository = grinRepository;
+            _grinPartsRepository = grinPartsRepository;
         }
 
         [HttpGet]
@@ -226,7 +228,7 @@ namespace Tips.Grin.Api.Controllers
 
                 var binningCreation = _mapper.Map<Binning>(binningPostDto);
                 var binningsDto = binningPostDto.BinningItems;
-
+                
                 var binningItemList = new List<BinningItems>();
                 if (binningsDto != null)
                 {
@@ -259,7 +261,7 @@ namespace Tips.Grin.Api.Controllers
                         {
                             if (j == 0)
                             {
-                                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByGrinNo?", "GrinNo=", binningCreation.GrinNumber, "&ItemNumber=", binningsDto[i].ItemNumber, "&ProjectNumber=", binningsDto[i].ProjectNumber));
+                                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByGrinNo?", "GrinNo=", binningCreation.GrinNumber, "&ItemNumber=", binningsDto[i].ItemNumber, "&ProjectNumber=", binningLocations[i].ProjectNumber));
                                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                 dynamic inventoryObject = inventoryObjectData.data;
@@ -274,13 +276,15 @@ namespace Tips.Grin.Api.Controllers
                             }
                             else
                             {
+                                var grinId = binningsDto[i].GrinPartId;
+                                var grinDetails =await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinId);
                                 dynamic inventoryObject = new ExpandoObject();
                                 inventoryObject.PartNumber = binningsDto[i].ItemNumber;
-                                inventoryObject.MftrPartNumber = binningsDto[i].MftrItemNumber;
-                                inventoryObject.Description = binningsDto[i].Description;
-                                inventoryObject.ProjectNumber = binningsDto[i].ProjectNumber;
+                                inventoryObject.MftrPartNumber = grinDetails.MftrItemNumber;
+                                inventoryObject.Description = grinDetails.ItemDescription;
+                                inventoryObject.ProjectNumber = binningLocations[i].ProjectNumber;
                                 inventoryObject.Balance_Quantity = binningLocations[j].Qty;
-                                inventoryObject.UOM = binningsDto[i].UOM;
+                                inventoryObject.UOM = grinDetails.UOM;
                                 inventoryObject.IsStockAvailable = true;
                                 inventoryObject.Warehouse = binningLocations[j].Warehouse;
                                 inventoryObject.Location = binningLocations[j].Location;
