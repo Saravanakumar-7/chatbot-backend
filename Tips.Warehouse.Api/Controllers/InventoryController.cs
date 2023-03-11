@@ -220,7 +220,7 @@ namespace Tips.Warehouse.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var getInventoryById = await _inventoryRepository.GetInventoryById(id);
-                if (getInventoryById is null)
+                 if (getInventoryById is null)
                 {
                     _logger.LogError($"Inventory with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
