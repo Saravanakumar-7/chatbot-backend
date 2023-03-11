@@ -11,7 +11,7 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? ShopOrderNumber { get; set; }
-
+        public string? Description { get; set; }
         public ProjectType ProjectType { get; set; }
         public PartType ItemType { get; set; }
         public string? ItemNumber { get; set; }
@@ -51,6 +51,7 @@ namespace Tips.Production.Api.Entities.DTOs
         [Required]
         public PartType ItemType { get; set; }
         public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
         [Precision(13, 3)]
         public decimal? TotalSOReleaseQty { get; set; }
         [Required]
@@ -73,6 +74,7 @@ namespace Tips.Production.Api.Entities.DTOs
         [Required]
         public PartType ItemType { get; set; }
         public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
         [Precision(13, 3)]
         public decimal? TotalSOReleaseQty { get; set; }
         [Required]

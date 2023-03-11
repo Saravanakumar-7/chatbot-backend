@@ -1,6 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
+using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Repository
 {
@@ -60,7 +63,50 @@ namespace Tips.Production.Api.Repository
             return openDataForOqcByShopOrderNoList;
 
         }
-        
-   }
+
+        public async Task<IEnumerable<ShopOrderItemNoListDto>> GetShopOrderItemNoByFGItemType()
+        {
+            var shopOrderItmNoList =await _tipsProductionDbContext.ShopOrders
+                .Where(x => x.ItemType == PartType.FG && x.FGDoneStatus != OrderStatus.Closed && x.Status != OrderStatus.Closed && x.IsShortClosed == false)
+                .Select(s => new ShopOrderItemNoListDto()
+                 {
+                    ItemNumber = s.ItemNumber,
+                    Description = s.Description
+                })
+                .ToListAsync();
+
+            return shopOrderItmNoList;
+        }
+
+        public async Task<IEnumerable<ShopOrderItemNoListDto>> GetShopOrderItemNoBySAItemType()
+        {
+            var shopOrderItmNoList = await _tipsProductionDbContext.ShopOrders
+                .Where(x => x.ItemType == PartType.SA && x.FGDoneStatus != OrderStatus.Closed && x.Status != OrderStatus.Closed && x.IsShortClosed == false)
+                .Select(s => new ShopOrderItemNoListDto()
+                {
+                    ItemNumber = s.ItemNumber,
+                    Description = s.Description
+                })
+                .ToListAsync();
+
+            return shopOrderItmNoList;
+        }
+
+        public async Task<IEnumerable<ShopOrderDetailsDto>> GetShopOrderDetailsByItemNo(string itemNumber)
+        {
+            var shopOrderDetails = await _tipsProductionDbContext.ShopOrders
+                .Where(x => x.ItemNumber == itemNumber)
+                .Select(s => new ShopOrderDetailsDto()
+                {
+                    ShopOrderNumber = s.ShopOrderNumber,
+                    ShopOrderReleaseQty = s.TotalSOReleaseQty,
+                    WipQty = s.WipQty,
+                    
+                })
+                .ToListAsync();
+
+            return shopOrderDetails;
+        }
+    }
     
 }

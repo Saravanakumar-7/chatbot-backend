@@ -16,6 +16,7 @@ namespace Tips.Production.Api.Entities
         public string? ProjectType { get; set; }
         [Required]
         public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
         [Required]
         public PartType  ItemType { get; set; }
         

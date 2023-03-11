@@ -6,6 +6,7 @@ using System.Net;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Entities.Enums;
 using Tips.Production.Api.Migrations;
 using Tips.Production.Api.Repository;
 
@@ -16,17 +17,17 @@ namespace Tips.Production.Api.Controllers
     public class ShopOrderConfirmationController : ControllerBase
     {
         private IShopOrderConfirmationRepository _shopOrderConfirmationRepository;
-       // private IShopOrderRepository _shopOrderRepo;
+       private IShopOrderRepository _shopOrderRepo;
 
         private ILoggerManager _logger;
         private IMapper _mapper;
 
         public ShopOrderConfirmationController(IShopOrderConfirmationRepository shopOrderConfirmationRepository,
-            ILoggerManager logger, IMapper mapper) // IShopOrderRepository shopOrderRepository)
+            ILoggerManager logger, IMapper mapper, IShopOrderRepository shopOrderRepository)
         {
             _logger = logger;
             _shopOrderConfirmationRepository = shopOrderConfirmationRepository;
-            //_shopOrderRepo = shopOrderRepository;
+            _shopOrderRepo = shopOrderRepository;
             _mapper = mapper;
         }
 
@@ -98,7 +99,7 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateShopOrderConfirmation([FromBody] ShopOrderConfirmationPostDto shopOrderConfirmationPostDto)
+        public async Task<IActionResult> CreateShopOrderConfirmation([FromBody] ShopOrderConfirmationPostDto shopOrderConfirmationPostDto)
         {
             ServiceResponse<ShopOrderConfirmationPostDto> serviceResponse = new ServiceResponse<ShopOrderConfirmationPostDto>();
 
@@ -122,9 +123,17 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
- 
+                
                 var shopOrderConfirmation = _mapper.Map<ShopOrderConfirmation>(shopOrderConfirmationPostDto);
-                _shopOrderConfirmationRepository.CreateShopOrderConfirmation(shopOrderConfirmation);
+                var shopOrderNumber = shopOrderConfirmation.ShopOrderNumber;
+                var shopOrderDetails = await _shopOrderRepo.GetShopOrderDetailsByShopOrderNo(shopOrderNumber);
+                shopOrderDetails.WipQty = shopOrderDetails.WipQty + shopOrderConfirmation.WipConfirmedQty;
+                if(shopOrderDetails.TotalSOReleaseQty == shopOrderDetails.WipQty)
+                {
+                    shopOrderDetails.Status = OrderStatus.Closed;
+                }
+                _shopOrderRepo.SaveAsync();
+                await _shopOrderConfirmationRepository.CreateShopOrderConfirmation(shopOrderConfirmation);
                 _shopOrderConfirmationRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ShopOrderConfirmation Successfully Created";
@@ -315,7 +324,125 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
-        
+        [HttpGet]
+        public async Task<IActionResult> GetShopOrderItemNoByFGItemType()
+        {
+            ServiceResponse<IEnumerable<ShopOrderItemNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderItemNoListDto>>();
+
+            try
+            {
+                var shopOrderItemNoList = await _shopOrderConfirmationRepository.GetShopOrderItemNoByFGItemType();
+                if (shopOrderItemNoList == null)
+                {
+                    _logger.LogError($"FGItemType hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"FGItemType hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+            
+                    _logger.LogInfo($"Returned ShopOrderItemNo By FGItemType");
+                    var result = _mapper.Map<IEnumerable<ShopOrderItemNoListDto>>(shopOrderItemNoList);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "ShopOrderItemNoList By FGItemType  Successfully Returned";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetShopOrderItemNoByFGItemType action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetShopOrderItemNoBySAItemType()
+        {
+            ServiceResponse<IEnumerable<ShopOrderItemNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderItemNoListDto>>();
+
+            try
+            {
+                var shopOrderItemNoList = await _shopOrderConfirmationRepository.GetShopOrderItemNoBySAItemType();
+                if (shopOrderItemNoList == null)
+                {
+                    _logger.LogError($"SAItemType hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SAItemType hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    _logger.LogInfo($"Returned ShopOrderItemNo By SAItemType");
+                    var result = _mapper.Map<IEnumerable<ShopOrderItemNoListDto>>(shopOrderItemNoList);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "ShopOrderItemNoList By SAItemType  Successfully Returned";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetShopOrderItemNoBySAItemType action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetShopOrderDetailsByItemNo(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<ShopOrderDetailsDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderDetailsDto>>();
+
+            try
+            {
+                var shopOrderDeails = await _shopOrderConfirmationRepository.GetShopOrderDetailsByItemNo(itemNumber);
+                if (shopOrderDeails == null)
+                {
+                    _logger.LogError($"ShopOrderItemNo hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ShopOrderItemNo hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    _logger.LogInfo($"Returned ShopOrderDetails By ItemNo");
+                    var result = _mapper.Map<IEnumerable<ShopOrderDetailsDto>>(shopOrderDeails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "ShopOrderDetails ByItemNo Successfully Returned";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetShopOrderDetailsByItemNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
     }
 

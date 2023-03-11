@@ -224,7 +224,6 @@ namespace Tips.Grin.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-
                 var iQCCreate = _mapper.Map<IQCConfirmation>(iQCConfirmationPostDto);
                 var iQCDto = iQCConfirmationPostDto.IQCConfirmationItemsPostDtos;
 
@@ -234,11 +233,33 @@ namespace Tips.Grin.Api.Controllers
                 {
                     IQCConfirmationItems iQCConfirmationItems = _mapper.Map<IQCConfirmationItems>(iQCDto[i]);
                     var grinPartId = iQCDto[i].GrinPartId;
+                   
                     var grinPartsDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinPartId);
-                    grinPartsDetails.AcceptedQty = iQCConfirmationItems.AcceptedQty;
-                    grinPartsDetails.RejectedQty = iQCConfirmationItems.RejectedQty;
+                    if (iQCCreate.GrinId != grinPartsDetails.GrinsId)
+                    {
+                        _logger.LogError($"Invalid Grin Part Id {grinPartId}");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"Invalid Grin Part Id {grinPartId}";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                        return BadRequest(serviceResponse);
+                    }
+                    if (grinPartsDetails.Qty <= (iQCConfirmationItems.AcceptedQty + iQCConfirmationItems.RejectedQty))
+                    {
+                        grinPartsDetails.AcceptedQty = iQCConfirmationItems.AcceptedQty;
+                        grinPartsDetails.RejectedQty = iQCConfirmationItems.RejectedQty;                      
+                        _grinPartsRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError("Grinpart Quantity should not be lesser than accepted + rejected Quantity .");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Grinpart Quantity should not be lesser than accepted + rejected Quantity ";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                        return BadRequest(serviceResponse);
+                    }
                     iQCItemList.Add(iQCConfirmationItems);
-                    _grinPartsRepository.SaveAsync();
                 }
                 iQCCreate.IQCConfirmationItems = iQCItemList;
                 await _iQCConfirmationRepository.CreateIqc(iQCCreate);
@@ -384,13 +405,16 @@ namespace Tips.Grin.Api.Controllers
                     var grinDetailsbyGrinNo = await _grinRepository.GetGrinByGrinNo(iQcGrinNo);
                     
                     var iQCConformationDetailsDto = _mapper.Map<IQCConfirmationDto>(grinDetailsbyGrinNo);
-
+                    iQCConformationDetailsDto.Id = id;
+                    iQCConformationDetailsDto.GrinId = iQCConformationDetailsDto.Id;
                     if (grinDetailsbyGrinNo.GrinParts.Count() != 0)
                     {
                         foreach (var grinDetails in grinDetailsbyGrinNo.GrinParts)
                         {
                             IQCConfirmationItemsDto iQCConfirmationItemsDtos = _mapper.Map<IQCConfirmationItemsDto>(grinDetails);
+                            iQCConfirmationItemsDtos.Id = iQCConfirmationItemsDtos.Id;
                             iQCConfirmationItemsDtos.ReceivedQty = grinDetails.Qty;
+                            iQCConfirmationItemsDtos.GrinPartId = grinDetails.Id; 
                             iQCConfirmationItemsList.Add(iQCConfirmationItemsDtos);
                         }
                     }

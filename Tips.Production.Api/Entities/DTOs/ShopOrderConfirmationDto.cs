@@ -74,4 +74,16 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
     }
+    public class ShopOrderItemNoListDto
+    {
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
+    }
+    public class ShopOrderDetailsDto
+    {
+        public string? ShopOrderNumber { get; set; }
+        public decimal? ShopOrderReleaseQty { get; set; }
+        public decimal? WipQty { get; set; }
+
+    }
 }
