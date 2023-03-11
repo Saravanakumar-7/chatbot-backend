@@ -1,0 +1,20 @@
+﻿using Entities.Helper;
+using Entities;
+using Tips.Production.Api.Entities;
+using Tips.Production.Api.Entities.DTOs;
+
+namespace Tips.Production.Api.Contracts
+{
+    public interface IOQCRepository
+    {
+        Task<IEnumerable<OQC>> GetAllOQC();
+        Task<OQC> GetOQCById(int id);
+        Task<int?> CreateOQC(OQC oqc);
+        Task<string> UpdateOQC(OQC oqc);
+        Task<string> DeleteOQC(OQC oqc);
+        void SaveAsync();
+        Task<IEnumerable<ShopOrderConfirmationItemNoListDto>> GetShopOrderConfirmationItemNoByFGItemType();
+        Task<IEnumerable<ShopOrderConfirmationItemNoListDto>> GetShopOrderConfirmationItemNoBySAItemType();
+        Task<IEnumerable<ShopOrderConfirmationDetailsDto>> GetShopOrderConfirmationDetailsByItemNo(string itemNumber);
+    }
+}

@@ -405,14 +405,14 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetShopOrderDetailsByItemNo(string itemNumber)
+        public async Task<IActionResult> GetShopOrderFGSAItemTypeDetailsByItemNo(string itemNumber)
         {
             ServiceResponse<IEnumerable<ShopOrderDetailsDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderDetailsDto>>();
 
             try
             {
-                var shopOrderDeails = await _shopOrderConfirmationRepository.GetShopOrderDetailsByItemNo(itemNumber);
-                if (shopOrderDeails == null)
+                var shopOrderDetails = await _shopOrderConfirmationRepository.GetShopOrderDetailsByItemNo(itemNumber);
+                if (shopOrderDetails == null)
                 {
                     _logger.LogError($"ShopOrderItemNo hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -425,7 +425,7 @@ namespace Tips.Production.Api.Controllers
                 {
 
                     _logger.LogInfo($"Returned ShopOrderDetails By ItemNo");
-                    var result = _mapper.Map<IEnumerable<ShopOrderDetailsDto>>(shopOrderDeails);
+                    var result = _mapper.Map<IEnumerable<ShopOrderDetailsDto>>(shopOrderDetails);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "ShopOrderDetails ByItemNo Successfully Returned";
                     serviceResponse.Success = true;
@@ -435,7 +435,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetShopOrderDetailsByItemNo action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetShopOrderFGSAItemTypeDetailsByItemNo action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;

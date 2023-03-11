@@ -23,6 +23,7 @@ namespace Tips.Production.Api.Entities
         public DbSet<MaterialReturnNote> MaterialReturnNotes { get; set; }
         public DbSet<MaterialReturnNoteItem> MaterialReturnNoteItems { get; set; }
         public DbSet<MaterialIssue> MaterialIssue { get; set; }
+        public DbSet<OQC> oQCs { get; set; }
 
     }
 }
