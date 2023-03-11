@@ -79,6 +79,15 @@ namespace Tips.Production.Api.Repository
             return shopOrderByShopOrderNo;
         }
 
+        public async Task<ShopOrder> GetShopOrderDetailsByShopOrderNo(string shopOrderNo)
+        {
+            var shopOrderById = await _tipsProductionDbContext.ShopOrders.Where(x => x.ShopOrderNumber == shopOrderNo)
+
+                          .FirstOrDefaultAsync();
+
+            return shopOrderById;
+        }
+
         public async Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByItemType(string itemType)
         {
             IEnumerable<ListOfShopOrderDto> shopOrderByItemType = await _tipsProductionDbContext.ShopOrders

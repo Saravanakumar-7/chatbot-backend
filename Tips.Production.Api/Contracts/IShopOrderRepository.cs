@@ -12,7 +12,7 @@ namespace Tips.Production.Api.Contracts
         Task<ShopOrder> GetShopOrderById(int id);
         Task<int?> CreateShopOrder(ShopOrder shopOrder);
         Task<string> UpdateShopOrder(ShopOrder shopOrder);
-        
+        Task<ShopOrder> GetShopOrderDetailsByShopOrderNo(string shopOrderNo);
         Task<ShopOrder> GetShopOrderBySalesOrderNo(string salesOrderNo);
         Task<ShopOrder> GetShopOrderByShopOrderNo(string shopOrderNo);
         Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByItemType(string itemType);
