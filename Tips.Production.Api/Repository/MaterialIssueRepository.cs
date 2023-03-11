@@ -40,11 +40,22 @@ namespace Tips.Production.Api.Repository
 
         public async Task<MaterialIssue> GetMaterialIssueById(int id)
         {
-            var materialIssueDetailById = await _tipsProductionDbContext.MaterialIssue.Where(x => x.Id == id)                           
+            var materialIssueDetail = await _tipsProductionDbContext.MaterialIssue
+                                    .Where(x => x.Id == id)                           
+                                    .Include(m=> m.MaterialIssueItems)
+                                    .FirstOrDefaultAsync();
 
-                              .FirstOrDefaultAsync();
+            return materialIssueDetail;
+        }
 
-            return materialIssueDetailById;
+        public async Task<MaterialIssue> GetMaterialIssueByShopOrderNo(string shopOrderNo)
+        {
+            var materialIssueDetail = await _tipsProductionDbContext.MaterialIssue
+                                    .Where(x => x.ShopOrderNumber == shopOrderNo)
+                                    .Include(m => m.MaterialIssueItems)
+                                    .FirstOrDefaultAsync();
+
+            return materialIssueDetail;
         }
 
         public  async Task<string> UpdateMaterialIssue(MaterialIssue materialIssue)

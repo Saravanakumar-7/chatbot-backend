@@ -29,7 +29,9 @@ namespace Tips.SalesService.Api.Controllers
         private ISalesOrderHistoryRepository _salesOrderHistory;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        public SalesOrderController(IConfiguration config,HttpClient httpClient,ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
+        public SalesOrderController(IConfiguration config,HttpClient httpClient,
+            ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, 
+            ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
