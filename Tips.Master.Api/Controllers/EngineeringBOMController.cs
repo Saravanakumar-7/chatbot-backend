@@ -954,7 +954,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                //var productionBomDetailsById = await _repository.releaseEnggBomRepository.GetReleaseEnggBomById(id);
+                
                 var productionBomDetailsById = await _releaseProductBomRepository.GetProductionBomById(id);
 
 
@@ -981,6 +981,49 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetProductionBomById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetProductionBomByItemAndBomVersionNo(string itemNumber,decimal bomVersionNo)
+        {
+            ServiceResponse<EnggBom> serviceResponse = new ServiceResponse<EnggBom>();
+
+            try
+            {
+                
+                var productionBomDetailsById = await _releaseProductBomRepository
+                                               .GetProductionBomByItemAndBomVersionNo(itemNumber,bomVersionNo);
+
+
+                if (productionBomDetailsById == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ProductionBomDetails hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ProductionBomDetails with ItemNumber : {itemNumber} and BOM Version : {bomVersionNo}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned ProductionBomDetails with ItemNumber : {itemNumber} and BOM Version : {bomVersionNo}");
+                    var result = _mapper.Map<ProductionBom>(productionBomDetailsById);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = $"Returned ProductionBomDetails Successfully.";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetProductionBomByItemAndBomVersionNo ItemNumber : {itemNumber} and BOM Version : {bomVersionNo} action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
