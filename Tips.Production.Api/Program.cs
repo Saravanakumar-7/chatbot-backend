@@ -15,8 +15,8 @@ LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nl
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
-//builder.Services.ConfigureMSSqlContext(builder.Configuration);
-builder.Services.ConfigureMySqlContext(builder.Configuration);
+builder.Services.ConfigureMSSqlContext(builder.Configuration);
+//builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers();
@@ -27,11 +27,16 @@ builder.Services.AddTransient<ISAShopOrderMaterialIssueRepository, SAShopOrderMa
 builder.Services.AddTransient<IFGShopOrderMaterialIssueRepository, FGShopOrderMaterialIssueRepository>();
 builder.Services.AddTransient<IMaterialReturnNoteRepository, MaterialReturnNoteRepository>();
 builder.Services.AddScoped<IMaterialIssueRepository, MaterialIssueRepository>();
+builder.Services.AddScoped<IOQCRepository, OQCRepository>();
+
+
 
 //builder.Services.AddTransient<IMaterialReturnNoteItemRepository, Mater>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

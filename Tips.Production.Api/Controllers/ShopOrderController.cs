@@ -20,7 +20,7 @@ namespace Tips.Production.Api.Controllers
     {
         private IShopOrderRepository _shopOrderRepository;
         private ILoggerManager _logger;
-        private IMapper _mapper;
+        private IMapper _mapper; 
         private IMaterialIssueRepository _materialIssueRepository;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
@@ -179,45 +179,50 @@ namespace Tips.Production.Api.Controllers
         private async Task CreateMaterialIssueDetails(ShopOrder shopOrder)
         {
             var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetProductionBomByItemAndBomVersionNo?",
-                                                    "itemNumber=", shopOrder.ItemNumber, "&bomVersionNo=", shopOrder.BomRevisionNo));
+            "itemNumber=", shopOrder.ItemNumber, "&bomVersionNo=", shopOrder.BomRevisionNo));
             var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
             dynamic bomDetailsData = JsonConvert.DeserializeObject(bomDetailsString);
             dynamic bomData = bomDetailsData.data;
-            if (bomData != null)
+            try
             {
-                MaterialIssue materialIssue = new MaterialIssue();
-                materialIssue.ShopOrderNumber = shopOrder.ShopOrderNumber;
-                materialIssue.ShopOrderDate = shopOrder.CreatedOn;
-                materialIssue.ItemType = shopOrder.ItemType;
-                materialIssue.ShopOrderQty = shopOrder.TotalSOReleaseQty;
-                materialIssue.ItemNumber = shopOrder.ItemNumber;
-                materialIssue.MaterialIssuedStatus = IssuedStatus.Open;
-                List<MaterialIssueItem> materialIssueItemList = new List<MaterialIssueItem>();
-                foreach (var bom in bomData)
+                if (bomData != null)
                 {
-                    MaterialIssueItem materialIssueItem = new MaterialIssueItem();
-                    materialIssueItem.PartNumber = bom.EnggChildItems.ItemNumber;
-                    materialIssueItem.Description = bom.EnggChildItems.Description;
-                    materialIssueItem.PartType = bom.EnggChildItems.PartType;
-                    materialIssueItem.UOM = bom.EnggChildItems.UOM;
-                    materialIssueItem.RequiredQty = (bom.EnggChildItems.Quantity * shopOrder.TotalSOReleaseQty);
-                    materialIssueItem.AvailableQty = 0;
-                    materialIssueItem.IssuedQty = 0;
-                    materialIssueItem.MaterialIssuedStatus = IssuedStatus.Open;
-                    materialIssueItem.CreatedBy = "Admin";
-                    materialIssueItem.CreatedOn = DateTime.Now;
-                    materialIssueItem.LastModifiedBy = "Admin";
-                    materialIssueItem.LastModifiedOn = DateTime.Now;
-                    materialIssueItemList.Add(materialIssueItem);
-                    
+                    MaterialIssue materialIssue = new MaterialIssue();
+                    materialIssue.ShopOrderNumber = shopOrder.ShopOrderNumber;
+                    materialIssue.ShopOrderDate = shopOrder.CreatedOn;
+                    materialIssue.ItemType = shopOrder.ItemType;
+                    materialIssue.ShopOrderQty = shopOrder.TotalSOReleaseQty;
+                    materialIssue.ItemNumber = shopOrder.ItemNumber;
+                    materialIssue.MaterialIssuedStatus = IssuedStatus.Open;
+                    List<MaterialIssueItem> materialIssueItemList = new List<MaterialIssueItem>();
+                    foreach (var bom in bomData)
+                    {
+                        MaterialIssueItem materialIssueItem = new MaterialIssueItem();
+                        materialIssueItem.PartNumber = bom.EnggChildItems.ItemNumber;
+                        materialIssueItem.Description = bom.EnggChildItems.Description;
+                        materialIssueItem.PartType = bom.EnggChildItems.PartType;
+                        materialIssueItem.UOM = bom.EnggChildItems.UOM;
+                        materialIssueItem.RequiredQty = (bom.EnggChildItems.Quantity * shopOrder.TotalSOReleaseQty);
+                        materialIssueItem.AvailableQty = 0;
+                        materialIssueItem.IssuedQty = 0;
+                        materialIssueItem.MaterialIssuedStatus = IssuedStatus.Open;
+                        materialIssueItem.CreatedBy = "Admin";
+                        materialIssueItem.CreatedOn = DateTime.Now;
+                        materialIssueItem.LastModifiedBy = "Admin";
+                        materialIssueItem.LastModifiedOn = DateTime.Now;
+                        materialIssueItemList.Add(materialIssueItem);
 
+
+                    }
+                    materialIssue.MaterialIssueItems = materialIssueItemList;
+                    await _materialIssueRepository.CreateMaterialIssue(materialIssue);
+                    _materialIssueRepository.SaveAsync();
                 }
-                materialIssue.MaterialIssueItems = materialIssueItemList;
-                await _materialIssueRepository.CreateMaterialIssue(materialIssue);
-                _materialIssueRepository.SaveAsync();
             }
-        }
-
+            catch (Exception ex)
+            {
+            }
+            }
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateShopOrder(int id, [FromBody] ShopOrderUpdateDto ShopOrderDtoUpdate)
         {
