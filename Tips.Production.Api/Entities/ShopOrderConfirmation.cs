@@ -1,5 +1,6 @@
 ﻿
 
+using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -20,7 +21,7 @@ namespace Tips.Production.Api.Entities
         public string? ItemDescription { get; set; }
 
         [Required]
-        public string? ItemType { get; set; }
+        public PartType ItemType { get; set; }
         [Required]
         [Precision(13, 3)]
         public decimal? ShopOrderReleaseQty { get; set; }
