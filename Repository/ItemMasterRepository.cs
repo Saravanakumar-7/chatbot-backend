@@ -51,7 +51,7 @@ namespace Repository
                                 .Include(m => m.ItemMasterFileUpload)
                                 .Include(s => s.ItemMasterRouting)
                                 .Include(f => f.ItemMasterWarehouse)
-                                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+                                .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
             return getAllItemMasters;
         }

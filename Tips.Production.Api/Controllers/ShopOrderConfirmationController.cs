@@ -1,14 +1,16 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using System.Net.Http;
+using AutoMapper;
 using Contracts;
-using Microsoft.AspNetCore.Http;
+using Entities;
+using Entities.DTOs;
+using Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
+using Newtonsoft.Json;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
-using Tips.Production.Api.Migrations;
-using Tips.Production.Api.Repository;
 
 namespace Tips.Production.Api.Controllers
 {
@@ -32,13 +34,25 @@ namespace Tips.Production.Api.Controllers
         }
 
        [HttpGet]
-        public async Task<IActionResult> GetAllShopOrderConfirmations()
+        public async Task<IActionResult> GetAllShopOrderConfirmations([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<ShopOrderConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderConfirmationDto>>();
 
             try
             {
-                var shopOrderConfirmationDetails = await _shopOrderConfirmationRepository.GetAllShopOrderConfirmations();
+                var shopOrderConfirmationDetails = await _shopOrderConfirmationRepository.GetAllShopOrderConfirmations(pagingParameter);
+
+                var metadata = new
+                {
+                    shopOrderConfirmationDetails.TotalCount,
+                    shopOrderConfirmationDetails.PageSize,
+                    shopOrderConfirmationDetails.CurrentPage,
+                    shopOrderConfirmationDetails.HasNext,
+                    shopOrderConfirmationDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
                 _logger.LogInfo("Returned all ShopOrderConfirmationdetails");
                 var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(shopOrderConfirmationDetails);
                 serviceResponse.Data = result;
@@ -128,10 +142,10 @@ namespace Tips.Production.Api.Controllers
                 var shopOrderNumber = shopOrderConfirmation.ShopOrderNumber;
                 var shopOrderDetails = await _shopOrderRepo.GetShopOrderDetailsByShopOrderNo(shopOrderNumber);
                 shopOrderDetails.WipQty = shopOrderDetails.WipQty + shopOrderConfirmation.WipConfirmedQty;
-                if(shopOrderDetails.TotalSOReleaseQty == shopOrderDetails.WipQty)
-                {
-                    shopOrderDetails.Status = OrderStatus.Closed;
-                }
+                //if(shopOrderDetails.TotalSOReleaseQty == shopOrderDetails.WipQty)
+                //{
+                //    shopOrderDetails.Status = OrderStatus.Closed;
+                //}
                 _shopOrderRepo.SaveAsync();
                 await _shopOrderConfirmationRepository.CreateShopOrderConfirmation(shopOrderConfirmation);
                 _shopOrderConfirmationRepository.SaveAsync();

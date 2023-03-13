@@ -62,7 +62,7 @@ namespace Repository
                                 .Include(x => x.CompanyContacts)
                                 .Include(m => m.CompanyBankings)
                                 .Include(v => v.CompanyMasterHeadCountings)
-                                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+                                .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
             return getAllCompanyMastersList;

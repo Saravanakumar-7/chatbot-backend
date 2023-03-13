@@ -21,7 +21,7 @@ namespace Tips.Production.Api.Entities
         public PartType  ItemType { get; set; }
         
         [Precision(13,3)]
-        public decimal? TotalSOReleaseQty { get; set; }
+        public decimal TotalSOReleaseQty { get; set; }
         [Required]
         public DateTime SOCloseDate { get; set; }
         [Required]
@@ -30,11 +30,11 @@ namespace Tips.Production.Api.Entities
         [Precision(13,3)]
         public decimal? CanCreateQty { get; set; }
         [Precision(13, 3)]
-        public decimal? WipQty { get; set; }
+        public decimal WipQty { get; set; }
         [Precision(13, 3)]
-        public decimal? OqcQty { get; set; }
+        public decimal OqcQty { get; set; }
         [Precision(13, 3)]
-        public decimal? ScrapQty { get; set; }
+        public decimal ScrapQty { get; set; }
         
         [DefaultValue(0)]
         public OrderStatus FGDoneStatus { get; set; } = OrderStatus.Open;

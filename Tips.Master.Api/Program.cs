@@ -40,7 +40,7 @@ builder.Services.AddScoped<IProjectNameRepository, ProjectNameRepository>();
 builder.Services.AddScoped<IPmcContractorRepository, PmcContractorRepository>();
 builder.Services.AddScoped<IArchitectureRepository, ArchitectureRepository>();
 builder.Services.AddScoped<ILightningDesignerRepository, LightningDesignerRepository>();
-builder.Services.AddScoped<IStateOfConstructionRepository, StateOfConstructionRepository>();
+builder.Services.AddScoped<IStageOfConstructionRepository, StageOfConstructionRepository>();
 builder.Services.AddScoped<IStateRepository, StateRepository>();
 builder.Services.AddScoped<ISourceDetailsRepository, SourceDetailsRepository>();
 

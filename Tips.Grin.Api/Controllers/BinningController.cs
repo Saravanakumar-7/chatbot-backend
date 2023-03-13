@@ -13,6 +13,8 @@ using System.Text;
 using System.Dynamic;
 using System.IO;
 using Tips.Grin.Api.Repository;
+using Entities.DTOs;
+using MySqlX.XDevAPI.Common;
 
 namespace Tips.Grin.Api.Controllers
 {
@@ -358,7 +360,9 @@ namespace Tips.Grin.Api.Controllers
                         foreach (var grinDetails in grinDetailsbyGrinNo.GrinParts)
                         {
                             BinningItemsDto binningItemDtos = _mapper.Map<BinningItemsDto>(grinDetails);
-                            binningItemDtos.BinningLocations = _mapper.Map<List<BinningLocationDto>>(grinDetails);
+
+                            var binningDetails = _mapper.Map<List<BinningLocationDto>>(binningItemDtos.BinningLocations);
+                            binningItemDtos.BinningLocations = binningDetails;
                             binningItemDtos.ReceivedQty = grinDetails.Qty;
                             binningItemDtos.AcceptedQty = grinDetails.AcceptedQty;
                             binningItemDtos.RejectedQty = grinDetails.RejectedQty;

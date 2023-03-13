@@ -989,10 +989,10 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
         public async Task<IActionResult> GetProductionBomByItemAndBomVersionNo(string itemNumber,decimal bomVersionNo)
         {
-            ServiceResponse<EnggBom> serviceResponse = new ServiceResponse<EnggBom>();
+            ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
 
             try
             {
@@ -1013,7 +1013,9 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned ProductionBomDetails with ItemNumber : {itemNumber} and BOM Version : {bomVersionNo}");
-                    var result = _mapper.Map<ProductionBom>(productionBomDetailsById);
+                    var result = _mapper.Map<EnggBomDto>(productionBomDetailsById);
+                    var enggChildItemList = _mapper.Map<List<EnggChildItemDto>>(productionBomDetailsById.EnggChildItems);
+                    result.EnggChildItemDtos = enggChildItemList;
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned ProductionBomDetails Successfully.";
                     serviceResponse.Success = true;

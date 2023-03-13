@@ -45,6 +45,17 @@ namespace Tips.Production.Api.Controllers
             try
             {
                 var shopOrderDetails = await _shopOrderRepository.GetAllShopOrders(pagingParameter);
+                var metadata = new
+                {
+                    shopOrderDetails.TotalCount,
+                    shopOrderDetails.PageSize,
+                    shopOrderDetails.CurrentPage,
+                    shopOrderDetails.HasNext,
+                    shopOrderDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
                 _logger.LogInfo("Returned all ShopOrders()s");
                 var result = _mapper.Map<IEnumerable<ShopOrderDto>>(shopOrderDetails);
                 serviceResponse.Data = result;
@@ -167,62 +178,75 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateShopOrder action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateShopOrder action: {ex.Message},{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"{ex.Message},{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
 
-        private async Task CreateMaterialIssueDetails(ShopOrder shopOrder)
+        private async Task<IActionResult> CreateMaterialIssueDetails(ShopOrder shopOrder)
         {
-            var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetProductionBomByItemAndBomVersionNo?",
-            "itemNumber=", shopOrder.ItemNumber, "&bomVersionNo=", shopOrder.BomRevisionNo));
-            var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
-            dynamic bomDetailsData = JsonConvert.DeserializeObject(bomDetailsString);
-            dynamic bomData = bomDetailsData.data;
+            ServiceResponse<MaterialIssueDto> serviceResponse = new ServiceResponse<MaterialIssueDto>();
             try
             {
-                if (bomData != null)
+                for (int i = 0; i < shopOrder.ShopOrderItems.Count();i++)
                 {
-                    MaterialIssue materialIssue = new MaterialIssue();
-                    materialIssue.ShopOrderNumber = shopOrder.ShopOrderNumber;
-                    materialIssue.ShopOrderDate = shopOrder.CreatedOn;
-                    materialIssue.ItemType = shopOrder.ItemType;
-                    materialIssue.ShopOrderQty = shopOrder.TotalSOReleaseQty;
-                    materialIssue.ItemNumber = shopOrder.ItemNumber;
-                    materialIssue.MaterialIssuedStatus = IssuedStatus.Open;
-                    List<MaterialIssueItem> materialIssueItemList = new List<MaterialIssueItem>();
-                    foreach (var bom in bomData)
+                    var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
+                    "GetProductionBomByItemAndBomVersionNo?",
+                "itemNumber=", shopOrder.ShopOrderItems[i].FGItemNumber, "&bomVersionNo=", shopOrder.BomRevisionNo));
+                    var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
+                    dynamic bomDetailsData = JsonConvert.DeserializeObject(bomDetailsString);
+                    dynamic bomData = bomDetailsData.data;
+
+                    if (bomData != null)
                     {
-                        MaterialIssueItem materialIssueItem = new MaterialIssueItem();
-                        materialIssueItem.PartNumber = bom.EnggChildItems.ItemNumber;
-                        materialIssueItem.Description = bom.EnggChildItems.Description;
-                        materialIssueItem.PartType = bom.EnggChildItems.PartType;
-                        materialIssueItem.UOM = bom.EnggChildItems.UOM;
-                        materialIssueItem.RequiredQty = (bom.EnggChildItems.Quantity * shopOrder.TotalSOReleaseQty);
-                        materialIssueItem.AvailableQty = 0;
-                        materialIssueItem.IssuedQty = 0;
-                        materialIssueItem.MaterialIssuedStatus = IssuedStatus.Open;
-                        materialIssueItem.CreatedBy = "Admin";
-                        materialIssueItem.CreatedOn = DateTime.Now;
-                        materialIssueItem.LastModifiedBy = "Admin";
-                        materialIssueItem.LastModifiedOn = DateTime.Now;
-                        materialIssueItemList.Add(materialIssueItem);
+                        MaterialIssue materialIssue = new MaterialIssue();
+                        materialIssue.ShopOrderNumber = shopOrder.ShopOrderNumber;
+                        materialIssue.ShopOrderDate = shopOrder.CreatedOn;
+                        materialIssue.ItemType = shopOrder.ItemType;
+                        materialIssue.ShopOrderQty = shopOrder.TotalSOReleaseQty;
+                        materialIssue.ItemNumber = shopOrder.ItemNumber;
+                        materialIssue.MaterialIssuedStatus = IssuedStatus.Open;
+                        List<MaterialIssueItem> materialIssueItemList = new List<MaterialIssueItem>();
+                        foreach (var bom in bomData.enggChildItemDtos)
+                        {
+                            MaterialIssueItem materialIssueItem = new MaterialIssueItem();
+                            materialIssueItem.PartNumber = bom.itemNumber;
+                            materialIssueItem.Description = bom.description;
+                            materialIssueItem.PartType = bom.partType;
+                            materialIssueItem.UOM = bom.uom;
+                            materialIssueItem.RequiredQty = (bom.quantity * shopOrder.TotalSOReleaseQty);
+                            materialIssueItem.AvailableQty = 0;
+                            materialIssueItem.IssuedQty = 0;
+                            materialIssueItem.MaterialIssuedStatus = IssuedStatus.Open;
+                            materialIssueItem.CreatedBy = "Admin";
+                            materialIssueItem.CreatedOn = DateTime.Now;
+                            materialIssueItem.LastModifiedBy = "Admin";
+                            materialIssueItem.LastModifiedOn = DateTime.Now;
+                            materialIssueItemList.Add(materialIssueItem);
 
 
+                        }
+                        materialIssue.MaterialIssueItems = materialIssueItemList;
+                        await _materialIssueRepository.CreateMaterialIssue(materialIssue);
+                        _materialIssueRepository.SaveAsync();
                     }
-                    materialIssue.MaterialIssueItems = materialIssueItemList;
-                    await _materialIssueRepository.CreateMaterialIssue(materialIssue);
-                    _materialIssueRepository.SaveAsync();
                 }
+                return Ok();
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Something went wrong inside CreateShopOrder action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong {ex.Message},{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
-            }
+          }
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateShopOrder(int id, [FromBody] ShopOrderUpdateDto ShopOrderDtoUpdate)
         {

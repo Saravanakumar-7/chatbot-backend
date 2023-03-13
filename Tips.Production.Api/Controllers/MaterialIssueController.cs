@@ -5,10 +5,13 @@ using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Repository;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,12 +23,16 @@ namespace Tips.Production.Api.Controllers
     {
         private IMaterialIssueRepository  _materialIssueRepository;
         private ILoggerManager _logger;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
         private IMapper _mapper;
 
-        public MaterialIssueController(IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IMapper mapper)
+        public MaterialIssueController(IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _materialIssueRepository = materialIssueRepository;
             _logger = logger;
+            _httpClient = httpClient;
+            _config = config;
             _mapper = mapper;
         }
 
@@ -193,8 +200,39 @@ namespace Tips.Production.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                 var updateMaterialIssue = _mapper.Map(materialIssueUpdateDto, materialIssueDetailsById);
-                _mapper.Map(materialIssueUpdateDto, materialIssueDetailsById);
+                //_mapper.Map(materialIssueUpdateDto, materialIssueDetailsById);
+
+                
+
+                List<MaterialIssueItem> materialIssueItems = new List<MaterialIssueItem>();
+
+                foreach (var item in materialIssueUpdateDto.MaterialIssueItems)
+                {
+                    MaterialIssueItem materialIssueItem = _mapper.Map<MaterialIssueItem>(item);
+                    materialIssueItem.IssuedQty += item.NewIssueQty;
+                    materialIssueItems.Add(materialIssueItem);
+
+                    //update inventory 
+
+                    var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                     "GetInventoryDetailsByItemNo?", "&ItemNumber=", materialIssueItem.PartNumber));
+                    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                    dynamic inventoryObject = inventoryObjectData.data;
+                    inventoryObject.Balance_Quantity -= item.NewIssueQty; 
+                    if(inventoryObject.Balance_Quantity == item.NewIssueQty)
+                    {
+                        inventoryObject.IsStockAvailable = false;
+                    }
+                    var json = JsonConvert.SerializeObject(inventoryObject);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
+                        "UpdateInventory/", inventoryObject.id), data);
+
+                }
+                updateMaterialIssue.MaterialIssueItems = materialIssueItems;
                 string result = await _materialIssueRepository.UpdateMaterialIssue(updateMaterialIssue);
+
                 _logger.LogInfo(result);
                 _materialIssueRepository.SaveAsync();
                 serviceResponse.Data = null;

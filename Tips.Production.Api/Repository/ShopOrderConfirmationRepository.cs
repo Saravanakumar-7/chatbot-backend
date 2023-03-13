@@ -1,4 +1,6 @@
-﻿using Entities.Enums;
+﻿using Entities;
+using Entities.Enums;
+using Entities.Helper;
 using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
@@ -26,12 +28,13 @@ namespace Tips.Production.Api.Repository
             return result.Id;
         }
 
-        public async Task<IEnumerable<ShopOrderConfirmation>> GetAllShopOrderConfirmations()
+        public async Task<PagedList<ShopOrderConfirmation>> GetAllShopOrderConfirmations(PagingParameter pagingParameter)
         {
-            var shopOrderConfirmationDetails = await FindAll().ToListAsync();
-            return (shopOrderConfirmationDetails);
-
+            var shopOrderConfirmationDetails = PagedList<ShopOrderConfirmation>.ToPagedList(FindAll()
+             .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            return shopOrderConfirmationDetails;
         }
+         
 
         public async Task<ShopOrderConfirmation> GetShopOrderConfirmationById(int id)
         {
