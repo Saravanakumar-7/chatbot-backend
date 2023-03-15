@@ -131,17 +131,17 @@ namespace Tips.Warehouse.Api.Repository
         {
             _tipsWarehouseDbContexts = repositoryContext;
         }
-        public async Task<BTODeliveryOrderItems> UpdateBtoDelieveryOrderBalanceQty(string itemNumber, string BtoDeliveryNumber, string Qty)
+        public async Task<BTODeliveryOrderItems> UpdateBtoDelieveryOrderBalanceQty(string itemNumber, string BtoDeliveryNumber, decimal Qty)
         {
-            var getSalesOrderDetailsBySOandItemNo = await _tipsWarehouseDbContexts.bTODeliveryOrderItems
+            var btoDeliveryOrderDetails = await _tipsWarehouseDbContexts.bTODeliveryOrderItems
                     .Where(x => x.FGItemNumber == itemNumber && x.BTONumber == BtoDeliveryNumber)
                           .FirstOrDefaultAsync();
-            decimal Quantity = Convert.ToDecimal(Qty);
-            getSalesOrderDetailsBySOandItemNo.InvoicedQty += Quantity;
-            getSalesOrderDetailsBySOandItemNo.BalanceDoQty = getSalesOrderDetailsBySOandItemNo.DispatchQty - getSalesOrderDetailsBySOandItemNo.InvoicedQty;
+            //var Quantity = Convert.ToDecimal(Qty);
+            btoDeliveryOrderDetails.InvoicedQty = btoDeliveryOrderDetails.InvoicedQty + Qty;
+            btoDeliveryOrderDetails.BalanceDoQty = btoDeliveryOrderDetails.DispatchQty - btoDeliveryOrderDetails.InvoicedQty;
             
-            Update(getSalesOrderDetailsBySOandItemNo);
-            return getSalesOrderDetailsBySOandItemNo;
+            Update(btoDeliveryOrderDetails);
+            return btoDeliveryOrderDetails;
         }
         public async Task<BTODeliveryOrderItems> GetBtoDelieveryOrderItemDetails(int btoDeliveryOrderPartsId)
         {

@@ -3,7 +3,7 @@ using Entities;
 using Entities.DTOs;
 using Entities.Helper;
 using Microsoft.EntityFrameworkCore;
-
+using Org.BouncyCastle.Asn1.Misc;
 using Tips.Purchase.Api.Contracts;
 using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.Dto;
@@ -57,6 +57,7 @@ namespace Tips.Purchase.Api.Repository
                                 .Where(b => b.ParentNumber == poNumber)
                                 .Select(x => new GetDownloadUrlDto()
                                 {
+                                    Id = x.Id,
                                     FileName = x.FileName,
                                     FileExtension = x.FileExtension,
                                     FilePath = x.FilePath
@@ -65,6 +66,8 @@ namespace Tips.Purchase.Api.Repository
 
             return getDownloadDetails;
         }
+
+
         public async Task<int?> GetPONumberAutoIncrementCount(DateTime date)
         {
             var getPONumberAutoIncrementCount = _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.CreatedOn == date.Date).Count();
@@ -238,6 +241,19 @@ namespace Tips.Purchase.Api.Repository
 
             var result = await Create(documentUpload);
             return result.Id;
+        }
+        public async Task<DocumentUpload> GetUploadDocById(int id)
+        {
+            var pOUploadDocFileNameById = await _tipsPurchaseDbContext.DocumentUploads
+                .Where(x => x.Id == id).FirstOrDefaultAsync();
+
+            return pOUploadDocFileNameById;
+        }
+        public async Task<string> DeleteUploadFile(DocumentUpload documentUpload)
+        {
+            Delete(documentUpload);
+            string result = $"DocumentUpload details of {documentUpload.Id} is deleted successfully!";
+            return result;
         }
     }
 

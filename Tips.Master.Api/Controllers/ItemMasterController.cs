@@ -242,6 +242,35 @@ namespace Tips.Master.Api.Controllers
              }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllSAPurchasePartItems()
+        {
+            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+
+            try
+            {
+                var sAPurchasePartItemsList = await _repository.ItemMasterRepository.GetAllSAPurchasePartItems();
+                _logger.LogInfo("Returned all SA & PurchasePartItemsListItemMasters");
+
+                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(sAPurchasePartItemsList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SA and PurchasePartItemsListItemMasters Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         // POST api/<ItemMasterController>
         [HttpPost]
         public IActionResult CreateItemMaster([FromBody] ItemMasterDtoPost itemMasterDtoPost)

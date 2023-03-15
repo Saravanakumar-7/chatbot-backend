@@ -179,9 +179,10 @@ namespace Tips.Warehouse.Api.Controllers
                     {
                         InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
                         invoiceChildItemsDtoList.Add(invoiceChildItem);
-                        string qty = Convert.ToString(invoiceChildItem.InvoicedQty);
+
+                        //string qty = Convert.ToString(invoiceChildItem.InvoicedQty);
                         var doNumber = invoiceitemsDto[i].DONumber;
-                        var getAllInvoicesList = await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderBalanceQty(invoiceChildItem.FGItemNumber, doNumber, qty);
+                        var getAllInvoicesList = await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderBalanceQty(invoiceChildItem.FGItemNumber, doNumber, invoiceChildItem.InvoicedQty);
                         _bTODeliveryOrderItemsRepository.SaveAsync();
 
                         //Add inventory Transaction Table

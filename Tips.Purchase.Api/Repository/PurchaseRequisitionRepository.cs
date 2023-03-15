@@ -155,7 +155,23 @@ namespace Tips.Purchase.Api.Repository
             string result = $"PurchaseRequisitions of Detail {purchaseRequisitions.Id} is updated successfully!";
             return result;
         }
-        
+
+        public async Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string prNumber)
+        { 
+            IEnumerable<GetDownloadUrlDto> getDownloadDetails = await _tipsPurchaseDbContext.DocumentUploads
+                                .Where(b => b.ParentNumber == prNumber)
+                                .Select(x => new GetDownloadUrlDto()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath
+                                })
+                              .ToListAsync();
+
+            return getDownloadDetails;
+        }
+
     }
 
     public class PRUploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository
@@ -175,6 +191,19 @@ namespace Tips.Purchase.Api.Repository
 
             var result = await Create(documentUpload);
             return result.Id;
+        }
+        public async Task<DocumentUpload> GetUploadDocById(int id)
+        {
+            var uploadDocFileNameById = await _tipsPurchaseDbContext.DocumentUploads
+                .Where(x => x.Id == id).FirstOrDefaultAsync();
+
+            return uploadDocFileNameById;
+        }
+        public async Task<string> DeleteUploadFile(DocumentUpload documentUpload)
+        {
+            Delete(documentUpload);
+            string result = $"DocumentUpload details of {documentUpload.Id} is deleted successfully!";
+            return result;
         }
     }
 

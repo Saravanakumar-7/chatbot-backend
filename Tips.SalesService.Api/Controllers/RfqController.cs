@@ -922,7 +922,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 var rfqIsCsCompleteUpdate = await _rfqRepository.RfqCsByRfqNumbers(rfqCsData);
 
-                rfqIsCsCompleteUpdate.IsCsComplete = true;
+                //rfqIsCsCompleteUpdate.IsCsComplete = true;
 
                 var rfqCSItemDto = rfqCustomerSupportDto.RfqCustomerSupportItems;
 

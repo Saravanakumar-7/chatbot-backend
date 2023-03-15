@@ -16,6 +16,7 @@ namespace Contracts
         Task<IEnumerable<ItemMaster>> GetAllSAItems();
         Task<IEnumerable<ItemMaster>> GetAllFgSaItems();
         Task<IEnumerable<ItemMaster>> GetAllFgSaFruItems();
+        Task<IEnumerable<ItemMaster>> GetAllSAPurchasePartItems();
         Task<ItemMaster> GetItemMasterById(int id);
         Task<IEnumerable<ItemMaster>> GetAllActiveItemMasters();
         Task<long> CreateItemMaster(ItemMaster itemMaster);

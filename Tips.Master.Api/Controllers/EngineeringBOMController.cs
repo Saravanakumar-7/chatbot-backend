@@ -990,6 +990,42 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetAllEnggBomFGItemNoListByItemNumber(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<EnggBomFGItemNumber>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomFGItemNumber>>();
+            try
+            {
+                var enggBomFGItemNoDetails = await _enggBomRepository.GetAllEnggBomFGItemNoListByItemNumber(itemNumber);
+                if (enggBomFGItemNoDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"EnggBom FGItemNumber is Invalid.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ProductionBomDetails with id: {itemNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var result = _mapper.Map<IEnumerable<EnggBomFGItemNumber>>(enggBomFGItemNoDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned all EnggBomFGItemNumberList";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllEnggBomFGItemNoListByItemNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+            [HttpGet]
         public async Task<IActionResult> GetProductionBomByItemAndBomVersionNo(string itemNumber,decimal bomVersionNo)
         {
             ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();

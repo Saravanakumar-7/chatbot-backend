@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Enums;
 using Entities.Helper;
 using Microsoft.EntityFrameworkCore;
 
@@ -60,7 +61,7 @@ namespace Repository
 
         public async Task<IEnumerable<ItemMaster>> GetAllFGItems()
         {
-            var getAllFGItems = await FindAll().Where(a => a.ItemType == "Fg")
+            var getAllFGItems = await FindAll().Where(a => a.ItemType == PartType.FG)
                  .Include(c => c.FileUpload)
                 .Include(x => x.ImageUpload)
                                 .Include(t => t.ItemmasterAlternate)
@@ -72,9 +73,23 @@ namespace Repository
 
             return getAllFGItems;
         }
+        public async Task<IEnumerable<ItemMaster>> GetAllSAPurchasePartItems()
+        {
+            var getAllFGSAItems = await FindAll().Where(a => a.ItemType == PartType.SA || a.ItemType == PartType.PurchasePart)
+                 .Include(c => c.FileUpload)
+                .Include(x => x.ImageUpload)
+                .Include(t => t.ItemmasterAlternate)
+                                .Include(x => x.ItemMasterApprovedVendor)
+                                .Include(m => m.ItemMasterFileUpload)
+                                .Include(s => s.ItemMasterRouting)
+                                .Include(f => f.ItemMasterWarehouse)
+                                .ToListAsync();
+
+            return getAllFGSAItems;
+        }
         public async Task<IEnumerable<ItemMaster>> GetAllSAItems()
         {
-            var getAllSAItems = await FindAll().Where(a => a.ItemType == "Sa")
+            var getAllSAItems = await FindAll().Where(a => a.ItemType == PartType.SA)
                  .Include(c => c.FileUpload)
                 .Include(x => x.ImageUpload)
                                 .Include(t => t.ItemmasterAlternate)
@@ -88,7 +103,7 @@ namespace Repository
         }
         public async Task<IEnumerable<ItemMaster>> GetAllFgSaItems()
         {
-            var getAllFGSAItems = await FindAll().Where(a => a.ItemType == "Sa" || a.ItemType == "Fg")
+            var getAllFGSAItems = await FindAll().Where(a => a.ItemType == PartType.SA || a.ItemType == PartType.FG)
                  .Include(c => c.FileUpload)
                 .Include(x => x.ImageUpload)
                 .Include(t => t.ItemmasterAlternate)
@@ -105,7 +120,7 @@ namespace Repository
 
         public async Task<IEnumerable<ItemMaster>> GetAllFgSaFruItems()
         {
-            var getAllFGSAItems = await FindAll().Where(a => a.ItemType == "SA" || a.ItemType == "FG" || a.ItemType == "FRU")
+            var getAllFGSAItems = await FindAll().Where(a => a.ItemType == PartType.SA || a.ItemType == PartType.FG|| a.ItemType == PartType.FRU)
                  .Include(c => c.FileUpload)
                 .Include(x => x.ImageUpload)
                 .Include(t => t.ItemmasterAlternate)

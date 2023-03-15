@@ -364,6 +364,7 @@ namespace Tips.Warehouse.Api.Controllers
                         int getBtoPartsId = returnBtoDeliveryOrderitemsDto[i].BtoDeliveryOrderPartsId;
                         var getBtoDeliveryOrderDetails = await _bTODeliveryOrderItemsRepository.GetBtoDelieveryOrderItemDetails(getBtoPartsId);
                         getBtoDeliveryOrderDetails.BalanceDoQty -= ReturnQty;
+                        getBtoDeliveryOrderDetails.OrderBalanceQty += ReturnQty;
                         getBtoDeliveryOrderDetails.DispatchQty -= ReturnQty;
                         
 

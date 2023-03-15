@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Enums;
 using Entities.Helper;
 using Entities.Migrations;
 using Microsoft.EntityFrameworkCore;
@@ -74,6 +75,37 @@ namespace Repository
 
 
             return GetallEnggbomDetails;
+        }
+        //public async Task<IEnumerable<EnggBom>> GetAllEnggBomFGItemNoListByItemNumber(string itemNumber)
+        //{
+
+        //    var bomId = await _tipsMasterDbContext.EnggBoms
+        //                        .Where(x => x.ItemNumber == itemNumber)
+        //                        .Select(x => x.BOMId).FirstOrDefaultAsync();
+
+        //    var bomDetails = await _tipsMasterDbContext.EnggChildItems
+        //                        .Where(x => x.EnggBomId == bomId)
+        //                        .Select(x => x.ItemNumber).ToListAsync();
+
+        //    return bomDetails;
+        //}
+
+        public async Task<IEnumerable<EnggBomFGItemNumber>> GetAllEnggBomFGItemNoListByItemNumber(string itemNumber)
+        {
+            List<int>bomDetails = await _tipsMasterDbContext.EnggChildItems
+                                .Where(x => x.ItemNumber == itemNumber && x.PartType == PartType.SA || x.PartType == PartType.PurchasePart)
+                                .Select(x => x.EnggBomId).Distinct().ToListAsync();
+
+            IEnumerable<EnggBomFGItemNumber> getAllBomGroupList = await _tipsMasterDbContext.EnggBoms
+                .Where(x => bomDetails.Contains(x.BOMId) )
+                .Select(c => new EnggBomFGItemNumber()
+                               { 
+                                   ItemNumber = c.ItemNumber
+
+                               }) 
+                             .ToListAsync();
+
+            return getAllBomGroupList;
         }
 
         public async Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber)
@@ -366,6 +398,7 @@ namespace Repository
             return productionBomDetailsbyId;
         }
 
+      
         public async Task<EnggBom> GetProductionBomByItemAndBomVersionNo(string itemNumber , decimal bomVersionNo)
         {
             var productionBomDetails = await _tipsMasterDbContext.EnggBoms
@@ -408,7 +441,7 @@ namespace Repository
                  .ToList();
             var itemType = await _tipsMasterDbContext.ItemMasters
                  .Where(x => x.ItemNumber == itemNumber).Select(x => x.ItemType).FirstOrDefaultAsync();
-            if (itemType == "FG")
+            if (itemType == PartType.FG)
             {
                 var releaseProductBomItemNumberList = releaseProductBomDetails
                    .Select(bom => new ProductionBomRevisionNumber
@@ -436,7 +469,7 @@ namespace Repository
                  .ToList();
             var itemType = await _tipsMasterDbContext.ItemMasters
                  .Where(x => x.ItemNumber == itemNumber).Select(x => x.ItemType).FirstOrDefaultAsync();
-            if (itemType == "SA")
+            if (itemType == PartType.SA)
             {
                 var releaseProductBomItemNumberList = releaseProductBomDetails
                    .Select(bom => new ProductionBomRevisionNumber
