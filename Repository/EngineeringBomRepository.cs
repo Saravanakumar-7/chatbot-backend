@@ -75,20 +75,7 @@ namespace Repository
 
 
             return GetallEnggbomDetails;
-        }
-        //public async Task<IEnumerable<EnggBom>> GetAllEnggBomFGItemNoListByItemNumber(string itemNumber)
-        //{
-
-        //    var bomId = await _tipsMasterDbContext.EnggBoms
-        //                        .Where(x => x.ItemNumber == itemNumber)
-        //                        .Select(x => x.BOMId).FirstOrDefaultAsync();
-
-        //    var bomDetails = await _tipsMasterDbContext.EnggChildItems
-        //                        .Where(x => x.EnggBomId == bomId)
-        //                        .Select(x => x.ItemNumber).ToListAsync();
-
-        //    return bomDetails;
-        //}
+        } 
 
         public async Task<IEnumerable<EnggBomFGItemNumber>> GetAllEnggBomFGItemNoListByItemNumber(string itemNumber)
         {

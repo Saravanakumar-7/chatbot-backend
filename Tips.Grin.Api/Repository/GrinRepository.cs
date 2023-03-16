@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Linq.Expressions;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Tips.Grin.Api.Migrations;
 
 namespace Tips.Grin.Api.Repository
 {
@@ -46,6 +47,7 @@ namespace Tips.Grin.Api.Repository
 
             return getGrinNumberAutoIncrementCount;
         }
+
 
 
         public async Task<string> DeleteGrin(Grins grins)
@@ -147,6 +149,43 @@ namespace Tips.Grin.Api.Repository
         //    Update(data);
         //    return result;
         //}
+        public async Task<IEnumerable<GetDownloadUrlDto>> GetGrinDownloadUrlDetails(string grinNumber)
+        {
+            //int bomDetail = await _tipsGrinDbContext.Grins
+            //                   .Where(x => x.GrinNumber == grinNumber)
+            //                   .Select(x => x.Id).Distinct().FirstOrDefaultAsync();
+ 
+            IEnumerable<GetDownloadUrlDto> getDownloadDetails = await _tipsGrinDbContext.DocumentUploads
+                                .Where(x => x.ParentId == grinNumber)
+                                .Select(x => new GetDownloadUrlDto()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath
+                                })
+                              .ToListAsync();
+
+            return getDownloadDetails;
+        }
+
+        public async Task<IEnumerable<GetDownloadUrlDto>> GetGrinPartsDownloadUrlDetails(string grinNumber)
+        {
+            var grinNumbers = grinNumber + "-" + "I";
+
+            IEnumerable<GetDownloadUrlDto> getDownloadDetails = await _tipsGrinDbContext.DocumentUploads
+                                .Where(x => x.ParentId == grinNumbers)
+                                .Select(x => new GetDownloadUrlDto()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath
+                                })
+                              .ToListAsync();
+
+            return getDownloadDetails;
+        }
 
         public async Task<int?> CreateUploadDocumentGrin(DocumentUpload documentUpload)
         {

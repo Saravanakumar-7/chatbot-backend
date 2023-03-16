@@ -23,6 +23,7 @@ using System.Net.Http;
 using System.Text;
 using System.Dynamic;
 using Azure.Core;
+using Microsoft.AspNetCore.StaticFiles;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -286,7 +287,7 @@ namespace Tips.Grin.Api.Controllers
                     {
                         if (grinPartsDto[i].COCUpload != null && grinPartsDto[i].COCUpload.Count > 0)
                         {
-                            CoCDocumentSave(grinPartsDto, grins, i, grinPartsDocumentUploadDtoList);
+                            CoCDocumentSave(grinPartsDto, grins, grins.GrinNumber, i, grinPartsDocumentUploadDtoList);
                             
 
                         }
@@ -353,7 +354,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-        private void CoCDocumentSave(List<GrinPartsPostDto>? grinPartsDto, Grins grins, int i, List<DocumentUpload> grinPartsDocumentUploadDtoList)
+        private void CoCDocumentSave(List<GrinPartsPostDto>? grinPartsDto, Grins grins, string number, int i, List<DocumentUpload> grinPartsDocumentUploadDtoList)
         {
             var cocUploadDocs = grinPartsDto[i].COCUpload;
 
@@ -364,8 +365,8 @@ namespace Tips.Grin.Api.Controllers
                 string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
                 string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                Guid guid = Guid.NewGuid();
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload", guid.ToString() + "_" + fileName);
+                //Guid guid = Guid.NewGuid();
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload",/* guid.ToString() + "_" +*/ fileName);
                 using (MemoryStream ms = new MemoryStream(fileContent))
                 {
                     ms.Position = 0;
@@ -378,7 +379,7 @@ namespace Tips.Grin.Api.Controllers
                         FileName = fileName,
                         FileExtension = FileExt,
                         FilePath = filePath,
-                        ParentId = grinPartsDto[i].ItemNumber,          //It Should be changed to GrinPartsId
+                        ParentId = number + "-" + "I",          //It Should be changed to GrinPartsId
                         DocumentFrom = "GrinCoCDocument",
                     };
 
@@ -559,6 +560,121 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<ActionResult> DownloadFile(string Filename)
+        {
+            ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", Filename);
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out var ContentType))
+            {
+                ContentType = "application/octet-stream";
+            }
+            var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+
+            return File(bytes, ContentType, Path.GetFileName(filePath));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetGrinDownloadUrlDetails(string grinNumber)
+        {
+            ServiceResponse<IEnumerable<GetDownloadUrlDto>> serviceResponse = new ServiceResponse<IEnumerable<GetDownloadUrlDto>>();
+
+            try
+            {
+                var getDownloadDetailByGrinNumber = await _documentUploadRepository.GetGrinDownloadUrlDetails(grinNumber);
+
+
+                foreach (var getDownloadUrlByFilename in getDownloadDetailByGrinNumber)
+                {
+                    getDownloadUrlByFilename.DownloadUrl = Url.Action("DownloadFile", "Grin", new { Filename = getDownloadUrlByFilename.FileName }, protocol: HttpContext.Request.Scheme);
+                    //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+
+                }
+                if (getDownloadDetailByGrinNumber == null)
+                {
+                    _logger.LogError($"DownloadDetail with id: {grinNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {grinNumber}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned DownloadDetail with id: {grinNumber}");
+                    var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(getDownloadDetailByGrinNumber);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        //get parts download list
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetGrinPartsDownloadUrlDetails(string grinNumber)
+        {
+            ServiceResponse<IEnumerable<GetDownloadUrlDto>> serviceResponse = new ServiceResponse<IEnumerable<GetDownloadUrlDto>>();
+
+            try
+            {
+                var getDownloadDetailByGrinNumber = await _documentUploadRepository.GetGrinPartsDownloadUrlDetails(grinNumber);
+
+
+                foreach (var getDownloadUrlByFilename in getDownloadDetailByGrinNumber)
+                {
+                    getDownloadUrlByFilename.DownloadUrl = Url.Action("DownloadFile", "Grin", new { Filename = getDownloadUrlByFilename.FileName }, protocol: HttpContext.Request.Scheme);
+                    //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+
+                }
+                if (getDownloadDetailByGrinNumber == null)
+                {
+                    _logger.LogError($"DownloadDetail with id: {grinNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {grinNumber}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned DownloadDetail with id: {grinNumber}");
+                    var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(getDownloadDetailByGrinNumber);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> GetAllActiveGrinNoList()
         {

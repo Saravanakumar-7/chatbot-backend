@@ -12,7 +12,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<PurchaseRequisition> GetPurchaseRequisitionById(int id);
         Task<PurchaseRequisition> GetPurchaseRequisitionByPRNumber(string prNumber);
 
-        Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string prNumber);
+        Task<IEnumerable<GetPRDownloadUrlDto>> GetDownloadUrlDetail(string prNumber);
         Task<IEnumerable<PurchaseRequisition>> GetAllActivePurchaseRequisitions();
         Task<long> CreatePurchaseRequisition(PurchaseRequisition purchaseRequisition);
         Task<PurchaseRequisition> ChangePurchaseRequisitionVersion(PurchaseRequisition purchaseRequisition);

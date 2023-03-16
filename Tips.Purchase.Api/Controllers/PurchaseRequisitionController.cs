@@ -1,10 +1,19 @@
-﻿using System.Net;
+﻿using System;
+using System.Buffers.Text;
+using System.IO.Compression;
+using System.Linq;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 using AutoMapper;
+using Azure;
 using Contracts;
 using Entities;
-using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Tips.Purchase.Api.Contracts;
 using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.Dto;
@@ -20,17 +29,18 @@ namespace Tips.Purchase.Api.Controllers
         private IPurchaseRequisitionRepository _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        private IDocumentUploadRepository _prdocumentUploadRepository; 
+        private IDocumentUploadRepository _prdocumentUploadRepository;
+        public static IWebHostEnvironment _webHostEnvironment { get; set; }
 
 
 
-        public PurchaseRequisitionController(IPurchaseRequisitionRepository repository, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper)
+        public PurchaseRequisitionController(IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _prdocumentUploadRepository = prdocumentUploadRepository;
-
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
@@ -706,40 +716,63 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetDownloadUrlDetails(string prNumber)
+        public async Task<ActionResult> DownloadFile(string Filename)
         {
-            ServiceResponse<IEnumerable<GetDownloadUrlDto>> serviceResponse = new ServiceResponse<IEnumerable<GetDownloadUrlDto>>();
+            ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", Filename);
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out var ContentType))
+            {
+                ContentType = "application/octet-stream";
+            }
+            var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+
+            return File(bytes, ContentType, Path.GetFileName(filePath));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDownloadUrlDetail(string prNumber)
+        {
+            ServiceResponse<IEnumerable<GetPRDownloadUrlDto>> serviceResponse = new ServiceResponse<IEnumerable<GetPRDownloadUrlDto>>();
 
             try
             {
-                var downloadDetailByPrNumber = await _repository.GetDownloadUrlDetails(prNumber);
-
-
-                foreach (var getDownloadUrlByFilename in downloadDetailByPrNumber)
-                {
-                    getDownloadUrlByFilename.DownloadUrl = Url.Action("DownloadFile", "PurchaseRequisition", new { Filename = getDownloadUrlByFilename.FileName }, protocol: HttpContext.Request.Scheme);
-                    //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
-
-                }
-                if (downloadDetailByPrNumber == null)
+                var downloadDetailByPrNumber = await _repository.GetDownloadUrlDetail(prNumber);
+                if (downloadDetailByPrNumber.Count() == 0)
                 {
                     _logger.LogError($"DownloadDetail with id: {prNumber}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"DownloadDetail hasn't been found in db.";
+                    serviceResponse.Message = $"DownloadDetail with id: {prNumber}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                else
+                if (!ModelState.IsValid)
                 {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseRequisition UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseRequisition UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+
+                foreach (var getDownloadUrlByFilenames in downloadDetailByPrNumber)
+                {
+ 
+                    getDownloadUrlByFilenames.DownloadUrl = Url.Action("DownloadFile", "PurchaseRequisition", new { Filename = getDownloadUrlByFilenames.FileName }, protocol: HttpContext.Request.Scheme);
+                    //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+
+                } 
                     _logger.LogInfo($"Returned DownloadDetail with id: {prNumber}");
-                    var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(downloadDetailByPrNumber);
+                    var result = _mapper.Map<IEnumerable<GetPRDownloadUrlDto>>(downloadDetailByPrNumber);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Successfully Returned PRDownloadUrlDetail";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
-                }
+                
             }
             catch (Exception ex)
             {
