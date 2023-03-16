@@ -11,5 +11,8 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<GetDownloadUrlDto>> GetGrinDownloadUrlDetails(string grinNumber);
 
         Task<IEnumerable<GetDownloadUrlDto>> GetGrinPartsDownloadUrlDetails(string grinNumber);
+
+        Task<DocumentUpload> GetUploadDocById(int id);
+        Task<string> DeleteUploadFile(DocumentUpload documentUpload); 
     }
 }
