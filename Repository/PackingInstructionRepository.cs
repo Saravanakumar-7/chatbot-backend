@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -33,19 +35,23 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<PackingInstruction>> GetAllActivePackingInstruction()
+        public async Task<PagedList<PackingInstruction>> GetAllActivePackingInstruction([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var AllActivePackingInstructions = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActivePackingInstructions;
+            var natureOfRelationshipDetails = FindAll()
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PackingInstructionsName.Contains(searchParams.SearchValue) ||
+           inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<PackingInstruction>.ToPagedList(natureOfRelationshipDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<PackingInstruction>> GetAllPackingInstruction()
+        public async Task<PagedList<PackingInstruction>> GetAllPackingInstruction([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var GetallPackingInstructions= await FindAll().ToListAsync();
+            var natureOfRelationshipDetails = FindAll().OrderByDescending(x => x.Id)
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PackingInstructionsName.Contains(searchParams.SearchValue) ||
+           inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallPackingInstructions;
+            return PagedList<PackingInstruction>.ToPagedList(natureOfRelationshipDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<PackingInstruction> GetPackingInstructionById(int id)

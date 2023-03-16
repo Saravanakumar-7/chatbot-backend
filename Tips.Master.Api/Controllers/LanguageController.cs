@@ -3,6 +3,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
 
@@ -25,13 +26,24 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<LanguageController>
         [HttpGet]
-        public async Task<IActionResult> GetAllLanguages()
+        public async Task<IActionResult> GetAllLanguages([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LanguageDto>> serviceResponse = new ServiceResponse<IEnumerable<LanguageDto>>();
             try
             {
 
-                var LanguageList = await _repository.LanguageRepository.GetAllLanguages();
+                var LanguageList = await _repository.LanguageRepository.GetAllLanguages(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    LanguageList.TotalCount,
+                    LanguageList.PageSize,
+                    LanguageList.CurrentPage,
+                    LanguageList.HasNext,
+                    LanguageList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all Languages");
                 var result = _mapper.Map<IEnumerable<LanguageDto>>(LanguageList);
                 serviceResponse.Data = result;
@@ -52,13 +64,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveLanguages()
+        public async Task<IActionResult> GetAllActiveLanguages([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LanguageDto>> serviceResponse = new ServiceResponse<IEnumerable<LanguageDto>>();
 
             try
             {
-                var Languages = await _repository.LanguageRepository.GetAllActiveLanguages();
+                var Languages = await _repository.LanguageRepository.GetAllActiveLanguages(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all Languages");
                 var result = _mapper.Map<IEnumerable<LanguageDto>>(Languages);
                 serviceResponse.Data = result;
@@ -75,7 +87,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500,  serviceResponse);
+                return StatusCode(500, serviceResponse);
 
             }
         }

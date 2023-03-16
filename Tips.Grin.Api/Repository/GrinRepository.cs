@@ -63,7 +63,7 @@ namespace Tips.Grin.Api.Repository
 
             return getDownloadDetails;
         }
-
+       
         public async Task<string> DeleteGrin(Grins grins)
         {
             Delete(grins);
@@ -167,7 +167,9 @@ namespace Tips.Grin.Api.Repository
             Delete(documentUpload);
             string result = $"DocumentUpload details of {documentUpload.Id} is deleted successfully!";
             return result;
-        } 
+        }
+
+       
 
         public async Task<int?> CreateUploadDocumentGrin(DocumentUpload documentUpload)
         {

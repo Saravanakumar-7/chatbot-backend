@@ -4,6 +4,7 @@ using Entities.DTOs;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,13 +26,24 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<DemoStatusController>
         [HttpGet]
-        public async Task<IActionResult> GetAllLightningDesigners()
+        public async Task<IActionResult> GetAllLightningDesigners([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LightningDesignerDto>> serviceResponse = new ServiceResponse<IEnumerable<LightningDesignerDto>>();
             try
             {
 
-                var lightningDesigners = await _repository.LightningDesignerRepository.GetAllLightningDesigners();
+                var lightningDesigners = await _repository.LightningDesignerRepository.GetAllLightningDesigners(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    lightningDesigners.TotalCount,
+                    lightningDesigners.PageSize,
+                    lightningDesigners.CurrentPage,
+                    lightningDesigners.HasNext,
+                    lightningDesigners.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all lightningDesigners");
                 var result = _mapper.Map<IEnumerable<LightningDesignerDto>>(lightningDesigners);
                 serviceResponse.Data = result;
@@ -52,13 +64,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveLightningDesigners()
+        public async Task<IActionResult> GetAllActiveLightningDesigners([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LightningDesignerDto>> serviceResponse = new ServiceResponse<IEnumerable<LightningDesignerDto>>();
 
             try
             {
-                var lightningDesigners = await _repository.LightningDesignerRepository.GetAllActiveLightningDesigners();
+                var lightningDesigners = await _repository.LightningDesignerRepository.GetAllActiveLightningDesigners(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all lightningDesigners");
                 var result = _mapper.Map<IEnumerable<LightningDesignerDto>>(lightningDesigners);
                 serviceResponse.Data = result;

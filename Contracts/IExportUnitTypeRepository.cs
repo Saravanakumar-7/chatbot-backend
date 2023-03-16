@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace Contracts
 {
     public interface IExportUnitTypeRepository : IRepositoryBase<ExportUnitType>
     {
-        Task<IEnumerable<ExportUnitType>> GetAllExportUnitTypes();
+        Task<PagedList<ExportUnitType>> GetAllExportUnitTypes(PagingParameter pagingParameter, SearchParames searchParams);
         Task<ExportUnitType> GetExportUnitTypeById(int id);
-        Task<IEnumerable<ExportUnitType>> GetAllActiveExportUnitTypes();
+        Task<PagedList<ExportUnitType>> GetAllActiveExportUnitTypes(PagingParameter pagingParameter, SearchParames searchParams);
         Task<int?> CreateExportUnitType(ExportUnitType exportUnitType);
         Task<string> UpdateExportUnitType(ExportUnitType exportUnitType);
         Task<string> DeleteExportUnitType(ExportUnitType exportUnitType);

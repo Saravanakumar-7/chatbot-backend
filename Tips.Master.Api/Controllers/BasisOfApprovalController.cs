@@ -3,6 +3,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
 
@@ -28,13 +29,24 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<BasisOfApprovalController>
         [HttpGet]
-        public async Task<IActionResult> GetAllBasisOfApproval()
+        public async Task<IActionResult> GetAllBasisOfApproval([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<BasisOfApprovalDto>> serviceResponse = new ServiceResponse<IEnumerable<BasisOfApprovalDto>>();
 
             try
             {
-                var basisOfApprovals = await _repository.BasisOfApprovalRepository.GetAllBasisOfApproval();
+                var basisOfApprovals = await _repository.BasisOfApprovalRepository.GetAllBasisOfApproval(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    basisOfApprovals.TotalCount,
+                    basisOfApprovals.PageSize,
+                    basisOfApprovals.CurrentPage,
+                    basisOfApprovals.HasNext,
+                    basisOfApprovals.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all BasisOfApproval");
                 var result = _mapper.Map<IEnumerable<BasisOfApprovalDto>>(basisOfApprovals);
                 serviceResponse.Data = result;
@@ -53,14 +65,15 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveBasisOfApprovals()
+        public async Task<IActionResult> GetAllActiveBasisOfApprovals([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<BasisOfApprovalDto>> serviceResponse = new ServiceResponse<IEnumerable<BasisOfApprovalDto>>();
 
             try
             {
-                var basisOfApprovals = await _repository.BasisOfApprovalRepository.GetAllBasisOfApproval();
+                var basisOfApprovals = await _repository.BasisOfApprovalRepository.GetAllBasisOfApproval(pagingParameter,searchParams);
                 _logger.LogInfo("Returned all BasisOfApproval");
                 var result = _mapper.Map<IEnumerable<BasisOfApprovalDto>>(basisOfApprovals);
                 serviceResponse.Data = result;

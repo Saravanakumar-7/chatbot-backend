@@ -28,12 +28,12 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<CompanyMasterController>
         [HttpGet]
-        public async Task<IActionResult> GetAllCompanyMaster([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllCompanyMaster([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CompanyMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<CompanyMasterDto>>();
             try
             {
-                var getallCompanyMasters = await _repository.CompanyMasterRepository.GetAllCompanyMasters(pagingParameter);
+                var getallCompanyMasters = await _repository.CompanyMasterRepository.GetAllCompanyMasters(pagingParameter, searchParams);
                 var metadata = new
                 {
                     getallCompanyMasters.TotalCount,
@@ -62,6 +62,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+        
         }
 
         // GET api/<CompanyMasterController>/5

@@ -1,7 +1,8 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Helper;
- using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,17 +28,20 @@ namespace Repository
             string result = $"architecture details of {architecture.Id} is deleted successfully!";
             return result;
         }
-        public async Task<IEnumerable<Architectures>> GetAllActiveArchitectures()
+        public async Task<PagedList<Architectures>> GetAllActiveArchitectures([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var getAllArchitectures = await FindAll().ToListAsync();
-
-            return getAllArchitectures;
+            var getAllArchitectures = FindAll()
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ArchitectName.Contains(searchParams.SearchValue) ||
+            inv.MobileNumber.Contains(searchParams.SearchValue) || inv.FirmName.Contains(searchParams.SearchValue))));
+            return PagedList<Architectures>.ToPagedList(getAllArchitectures, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-        public async Task<IEnumerable<Architectures>> GetAllArchitectures()
+        public async Task<PagedList<Architectures>> GetAllArchitectures([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var getAllArchitectDetails = await FindAll().ToListAsync();             
+            var getAllArchitectDetails = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ArchitectName.Contains(searchParams.SearchValue) ||
+                 inv.MobileNumber.Contains(searchParams.SearchValue) || inv.FirmName.Contains(searchParams.SearchValue))));
 
-            return getAllArchitectDetails;
+            return PagedList<Architectures>.ToPagedList(getAllArchitectDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
         public async Task<Architectures> GetArchitectureById(int id)
         {

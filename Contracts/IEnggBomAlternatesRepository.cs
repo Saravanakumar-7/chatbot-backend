@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace Contracts
 {
     public interface IEnggBomAlternatesRepository
     {
-        Task<IEnumerable<EnggAlternates>> GetAllEnggAlternate();
+        Task<PagedList<EnggAlternates>> GetAllEnggAlternate(PagingParameter pagingParameter, SearchParames searchParams);
         Task<EnggAlternates> GetEnggAlternateById(int id);
-        Task<IEnumerable<EnggAlternates>> GetAllActiveEnggAlternate();
+        Task<PagedList<EnggAlternates>> GetAllActiveEnggAlternate(PagingParameter pagingParameter, SearchParames searchParams);
         Task<int?> CreateEnggAlternate(EnggAlternates enggAlternates);
         Task<string> UpdateEnggAlternate(EnggAlternates enggAlternates);
         Task<string> DeleteEnggAlternate(EnggAlternates enggAlternates);

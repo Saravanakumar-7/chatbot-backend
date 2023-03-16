@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace Contracts
 {
     public interface ILanguageRepository : IRepositoryBase<Language>
     {
-        Task<IEnumerable<Language>> GetAllLanguages();
+        Task<PagedList<Language>> GetAllLanguages(PagingParameter pagingParameter, SearchParames searchParames);
         Task<Language> GetLanguageById(int id);
-        Task<IEnumerable<Language>> GetAllActiveLanguages();
+        Task<PagedList<Language>> GetAllActiveLanguages(PagingParameter pagingParameter, SearchParames searchParames);
         Task<int?> CreateLanguage(Language language);
         Task<string> UpdateLanguage(Language language);
         Task<string> DeleteLanguage(Language language);

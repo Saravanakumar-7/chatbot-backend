@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -33,17 +35,21 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<LeadTime>> GetAllActiveLeadTime()
+        public async Task<PagedList<LeadTime>> GetAllActiveLeadTime([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActiveLeadTime = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveLeadTime;
+            var leadTimeDetails = FindAll()
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Days.Contains(searchParams.SearchValue) ||
+            inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<LeadTime>.ToPagedList(leadTimeDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<LeadTime>> GetAllLeadTime()
+        public async Task<PagedList<LeadTime>> GetAllLeadTime([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var GetallLeadTime = await FindAll().ToListAsync();
+            var leadTimeDetails = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Days.Contains(searchParams.SearchValue) ||
+                 inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallLeadTime;
+            return PagedList<LeadTime>.ToPagedList(leadTimeDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<LeadTime> GetLeadTimeById(int id)

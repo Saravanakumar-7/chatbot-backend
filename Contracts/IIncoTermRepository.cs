@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace Contracts
 {
     public interface IIncoTermRepository : IRepositoryBase<IncoTerm>
     {
-        Task<IEnumerable<IncoTerm>> GetAllIncoTerm();
+        Task<PagedList<IncoTerm>> GetAllIncoTerm(PagingParameter pagingParameter, SearchParames searchParams);
         Task<IncoTerm> GetIncoTermById(int id);
-        Task<IEnumerable<IncoTerm>> GetAllActiveIncoTerm();
+        Task<PagedList<IncoTerm>> GetAllActiveIncoTerm(PagingParameter pagingParameter, SearchParames searchParams);
         Task<int?> CreateIncoTerm(IncoTerm incoTerm);
         Task<string> UpdateIncoTerm(IncoTerm incoTerm);
         Task<string> DeleteIncoTerm(IncoTerm incoTerm);

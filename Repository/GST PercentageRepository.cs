@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -33,19 +35,22 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<GST_Percentage>> GetAllActiveGST_Percentages()
+        public async Task<PagedList<GST_Percentage>> GetAllActiveGST_Percentages([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActiveGst_PercentageList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveGst_PercentageList;
+            var gstPercentDetails = FindAll()
+                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GSTPercentage.Contains(searchParams.SearchValue) ||
+                       inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<GST_Percentage>.ToPagedList(gstPercentDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<GST_Percentage>> GetAllGST_Percentages()
+        public async Task<PagedList<GST_Percentage>> GetAllGST_Percentages([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var GetallGst_PercentageList = await FindAll().ToListAsync();
+            var gstPercentDetails = FindAll().OrderByDescending(x => x.Id)
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GSTPercentage.Contains(searchParams.SearchValue) ||
+             inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallGst_PercentageList;
+            return PagedList<GST_Percentage>.ToPagedList(gstPercentDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-
         public async Task<GST_Percentage> GetGST_PercentageById(int id)
         {
             var Gst_PercentagebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();

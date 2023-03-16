@@ -1,6 +1,8 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -32,18 +34,23 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Bank>> GetAllActiveBank()
+        public async Task<PagedList<Bank>> GetAllActiveBank([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActiveBanks = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveBanks;
+            var getAllAActiveBanks = FindAll()
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BankName.Contains(searchParams.SearchValue) ||
+            inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<Bank>.ToPagedList(getAllAActiveBanks, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<Bank>> GetAllBank()
+        public async Task<PagedList<Bank>> GetAllBank([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var Getallbanks = await FindAll().ToListAsync();
+            var getAllBanksDetails = FindAll().OrderByDescending(x => x.Id)
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BankName.Contains(searchParams.SearchValue) ||
+                inv.Description.Contains(searchParams.SearchValue))));
 
-            return Getallbanks;
+            return PagedList<Bank>.ToPagedList(getAllBanksDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
 
         public async Task<Bank> GetBankById(int id)
         {

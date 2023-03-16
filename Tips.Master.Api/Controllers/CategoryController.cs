@@ -5,6 +5,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -24,12 +25,23 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<CategoryController>
         [HttpGet]
-        public async Task<IActionResult> GetAllCategory()
+        public async Task<IActionResult> GetAllCategory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParames)
         {
             ServiceResponse<IEnumerable<CategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<CategoryDto>>();
             try
             {
-                var GetallCategoryList = await _repository.CategoryRepository.GetAllCategory();
+                var GetallCategoryList = await _repository.CategoryRepository.GetAllCategory(pagingParameter, searchParames);
+
+                var metadata = new
+                {
+                    GetallCategoryList.TotalCount,
+                    GetallCategoryList.PageSize,
+                    GetallCategoryList.CurrentPage,
+                    GetallCategoryList.HasNext,
+                    GetallCategoryList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all Category");
                 var result = _mapper.Map<IEnumerable<CategoryDto>>(GetallCategoryList);
 
@@ -45,7 +57,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong,Try again ";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }

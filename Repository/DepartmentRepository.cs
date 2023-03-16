@@ -1,6 +1,8 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -33,17 +35,21 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Department>> GetAllActiveDepartment()
+        public async Task<PagedList<Department>> GetAllActiveDepartment([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActiveDepartment = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveDepartment;
+            var departmentDetails = FindAll()
+                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DepartmentName.Contains(searchParams.SearchValue) ||
+                       inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<Department>.ToPagedList(departmentDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<Department>> GetAllDepartment()
+        public async Task<PagedList<Department>> GetAllDepartment([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var GetallDepartments= await FindAll().ToListAsync();
+            var departmentDetails = FindAll().OrderByDescending(x => x.Id)
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DepartmentName.Contains(searchParams.SearchValue) ||
+             inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallDepartments;
+            return PagedList<Department>.ToPagedList(departmentDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<Department> GetDepartmentById(int id)

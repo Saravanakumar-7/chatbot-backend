@@ -32,13 +32,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<ItemMasterController>
         [HttpGet]
-        public async Task<IActionResult> GetAllItemMasters([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllItemMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var getAllItemMastersList = await _repository.ItemMasterRepository.GetAllItemMasters(pagingParameter);
+                var getAllItemMastersList = await _repository.ItemMasterRepository.GetAllItemMasters(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all ItemMasters");
                 var metadata = new
                 {
@@ -70,15 +70,15 @@ namespace Tips.Master.Api.Controllers
         }
         //GET All FG items
         [HttpGet]
-        public async Task<IActionResult> GetAllFGItems()
+        public async Task<IActionResult> GetAllFGItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var getAllFGItemsList = await _repository.ItemMasterRepository.GetAllFGItems();
+                var getAllFGItemsList = await _repository.ItemMasterRepository.GetAllFGItems(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all FGItemMasters");
-               
+
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGItemsList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all FGItemMasters Successfully";
@@ -98,20 +98,20 @@ namespace Tips.Master.Api.Controllers
         }
         //passing items number and get process records
 
-      
+
 
 
         //GET All Sa items
         [HttpGet]
-        public async Task<IActionResult> GetAllSAItems()
+        public async Task<IActionResult> GetAllSAItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var getAllSAItemsList = await _repository.ItemMasterRepository.GetAllSAItems();
+                var getAllSAItemsList = await _repository.ItemMasterRepository.GetAllSAItems(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all SAItemMasters");
-               
+
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllSAItemsList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all SAItemMasters Successfully";
@@ -131,15 +131,15 @@ namespace Tips.Master.Api.Controllers
         }
         //GET All FG&SAItems
         [HttpGet]
-        public async Task<IActionResult> GetAllFGSAItems()
+        public async Task<IActionResult> GetAllFGSAItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaItems();
+                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaItems(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all FGSAItemMasters");
-               
+
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGSAItemsList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all FGSAItemMasters Successfully";
@@ -161,13 +161,13 @@ namespace Tips.Master.Api.Controllers
         // get all fg,sa,fru item list
 
         [HttpGet]
-        public async Task<IActionResult> getAllBomItems()
+        public async Task<IActionResult> getAllBomItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaFruItems();
+                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaFruItems(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all FGSAFRUItemMasters");
 
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGSAItemsList);
@@ -243,13 +243,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllSAPurchasePartItems()
+        public async Task<IActionResult> GetAllSAPurchasePartItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var sAPurchasePartItemsList = await _repository.ItemMasterRepository.GetAllSAPurchasePartItems();
+                var sAPurchasePartItemsList = await _repository.ItemMasterRepository.GetAllSAPurchasePartItems(pagingParameter,searchParams);
                 _logger.LogInfo("Returned all SA & PurchasePartItemsListItemMasters");
 
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(sAPurchasePartItemsList);

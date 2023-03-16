@@ -8,6 +8,7 @@ using Entities;
 using Entities.DTOs;
 using Entities.Helper;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -57,10 +58,18 @@ namespace Repository
             return getAllActiveCustomerIdNameList;
         }
 
-        public async Task<IEnumerable<CustomerMaster>> GetAllActiveCustomerMasters()
+        public async Task<PagedList<CustomerMaster>> GetAllActiveCustomerMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var getAllActiveCustomermasterList = await FindAll().OrderByDescending(x=>x.Id).ToListAsync();
-            return getAllActiveCustomermasterList;
+            var customermasterDetails = FindAll()
+                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue) ||
+                    inv.CustomerAliasName.Contains(searchParams.SearchValue))))
+                   .Include(t => t.CustomerAddresses)
+             .Include(t => t.CustomerShippingAddresses)
+             .Include(t => t.CustomerContacts)
+              .Include(d => d.CustomerBanking)
+              .Include(d => d.CustomerMasterHeadCountings);
+
+            return PagedList<CustomerMaster>.ToPagedList(customermasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<CustomerMaster> GetLatestCustomerMasterDetail()
@@ -70,22 +79,22 @@ namespace Repository
         }
 
         
+            public async Task<PagedList<CustomerMaster>> GetAllCustomerMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+            {
+                var customermasterDetails = FindAll().OrderByDescending(x => x.Id)
+                  .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue) ||
+                                         inv.CustomerAliasName.Contains(searchParams.SearchValue))))
+                    .Include(t => t.CustomerAddresses)
+                 .Include(t => t.CustomerShippingAddresses)
+                 .Include(t => t.CustomerContacts)
+                  .Include(d => d.CustomerBanking)
+                  .Include(d => d.CustomerMasterHeadCountings);
 
-        public async Task<PagedList<CustomerMaster>> GetAllCustomerMasters(PagingParameter pagingParameter)
-        {
-            var getAllCustomerMasterList = PagedList<CustomerMaster>.ToPagedList(FindAll()
-                                .Include(t => t.CustomerAddresses)
-                                .Include(x => x.CustomerShippingAddresses)
-                                .Include(m => m.CustomerContacts)
-                                .Include(s => s.CustomerBanking)
-                                .Include(v => v.CustomerMasterHeadCountings)
-                                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+                return PagedList<CustomerMaster>.ToPagedList(customermasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            }
 
 
-            return getAllCustomerMasterList;
-        }         
-
-        public async Task<CustomerMaster> GetCustomerMasterById(int id)
+            public async Task<CustomerMaster> GetCustomerMasterById(int id)
         {
             var getCustomerMasterById = await TipsMasterDbContext.CustomerMasters.Where(x => x.Id == id)
                               .Include(x => x.CustomerAddresses)

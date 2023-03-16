@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -25,14 +27,20 @@ namespace Repository
             string result = $"city details of {city.Id} is deleted successfully!";
             return result;
         }
-        public async Task<IEnumerable<City>> GetAllActiveCities()
+        public async Task<PagedList<City>> GetAllActiveCities([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActivecities = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActivecities;
+            var cITYDetails = FindAll()
+                                  .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CityName.Contains(searchParams.SearchValue) ||
+                                  inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<City>.ToPagedList(cITYDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-        public async Task<IEnumerable<City>> GetAllCities()
+        public async Task<PagedList<City>> GetAllCities([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var GetallCities = await FindAll().ToListAsync(); return GetallCities;
+            var cITYDetails = FindAll().OrderByDescending(x => x.Id)
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CityName.Contains(searchParams.SearchValue) ||
+            inv.Description.Contains(searchParams.SearchValue))));
+
+            return PagedList<City>.ToPagedList(cITYDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
         public async Task<City> GetCityById(int id)
         {

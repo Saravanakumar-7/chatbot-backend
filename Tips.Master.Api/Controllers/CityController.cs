@@ -4,6 +4,7 @@ using Entities.DTOs;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -24,13 +25,24 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<DemoStatusController>
         [HttpGet]
-        public async Task<IActionResult> GetAllCities()
+        public async Task<IActionResult> GetAllCities([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CityDto>> serviceResponse = new ServiceResponse<IEnumerable<CityDto>>();
             try
             {
 
-                var cities = await _repository.CityRepository.GetAllCities();
+                var cities = await _repository.CityRepository.GetAllCities(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    cities.TotalCount,
+                    cities.PageSize,
+                    cities.CurrentPage,
+                    cities.HasNext,
+                    cities.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all cities");
                 var result = _mapper.Map<IEnumerable<CityDto>>(cities);
                 serviceResponse.Data = result;
@@ -51,13 +63,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCities()
+        public async Task<IActionResult> GetAllActiveCities([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CityDto>> serviceResponse = new ServiceResponse<IEnumerable<CityDto>>();
 
             try
             {
-                var citiesList = await _repository.CityRepository.GetAllActiveCities();
+                var citiesList = await _repository.CityRepository.GetAllActiveCities(pagingParameter,searchParams);
                 _logger.LogInfo("Returned all cities");
                 var result = _mapper.Map<IEnumerable<CityDto>>(citiesList);
                 serviceResponse.Data = result;

@@ -3,6 +3,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
 
@@ -25,19 +26,30 @@ namespace Tips.Master.Api.Controllers
         }
  
         [HttpGet]
-         public async Task<IActionResult> GetAllCostingMethods()
+        public async Task<IActionResult> GetAllCostingMethods([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CostingMethodDto>> serviceResponse = new ServiceResponse<IEnumerable<CostingMethodDto>>();
             try
             {
 
-                var GetallCostingMethod = await _repository.CostingMethodRepository.GetAllCostingMethods();
+                var GetallCostingMethod = await _repository.CostingMethodRepository.GetAllCostingMethods(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    GetallCostingMethod.TotalCount,
+                    GetallCostingMethod.PageSize,
+                    GetallCostingMethod.CurrentPage,
+                    GetallCostingMethod.HasNext,
+                    GetallCostingMethod.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all CostingMethods");
                 var result = _mapper.Map<IEnumerable<CostingMethodDto>>(GetallCostingMethod);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all CostingMethods Successfully";
                 serviceResponse.Success = true;
-                serviceResponse.StatusCode=HttpStatusCode.OK;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
@@ -52,13 +64,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCostingMethods()
+        public async Task<IActionResult> GetAllActiveCostingMethods([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CostingMethodDto>> serviceResponse = new ServiceResponse<IEnumerable<CostingMethodDto>>();
 
             try
             {
-                var AllActiveCostingMethods = await _repository.CostingMethodRepository.GetAllActiveCostingMethods();
+                var AllActiveCostingMethods = await _repository.CostingMethodRepository.GetAllActiveCostingMethods(pagingParameter,searchParams);
                 _logger.LogInfo("Returned all CostingMethods");
                 var result = _mapper.Map<IEnumerable<CostingMethodDto>>(AllActiveCostingMethods);
                 serviceResponse.Data = result;
