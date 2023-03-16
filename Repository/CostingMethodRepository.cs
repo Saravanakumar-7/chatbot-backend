@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -33,17 +35,21 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<CostingMethod>> GetAllActiveCostingMethods()
+        public async Task<PagedList<CostingMethod>> GetAllActiveCostingMethods([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActiveCostingmethods = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveCostingmethods;
+            var costCenterDetails = FindAll()
+                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CostingMethodName.Contains(searchParams.SearchValue) ||
+                      inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<CostingMethod>.ToPagedList(costCenterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<CostingMethod>> GetAllCostingMethods()
+        public async Task<PagedList<CostingMethod>> GetAllCostingMethods([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var GetallCostingMethods = await FindAll().ToListAsync();
+            var costCenterDetails = FindAll().OrderByDescending(x => x.Id)
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CostingMethodName.Contains(searchParams.SearchValue) ||
+            inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallCostingMethods;
+            return PagedList<CostingMethod>.ToPagedList(costCenterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<CostingMethod> GetCostingMethodById(int id)

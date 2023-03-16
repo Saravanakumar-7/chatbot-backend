@@ -3,6 +3,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
 
@@ -29,13 +30,24 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<DeliveryTermController>
         [HttpGet]
-        public async Task<IActionResult> GetAllDeliveryTerms()
+        public async Task<IActionResult> GetAllDeliveryTerms([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<DeliveryTermGetDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryTermGetDto>>();
 
             try
             {
-                var deliveryTermsList = await _repository.DeliveryTermRepo.GetAllDeliveryTerms();
+                var deliveryTermsList = await _repository.DeliveryTermRepo.GetAllDeliveryTerms(pagingParameter,searchParams);
+
+                var metadata = new
+                {
+                    deliveryTermsList.TotalCount,
+                    deliveryTermsList.PageSize,
+                    deliveryTermsList.CurrentPage,
+                    deliveryTermsList.HasNext,
+                    deliveryTermsList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all DeliveryTerms");
                 var result = _mapper.Map<IEnumerable<DeliveryTermGetDto>>(deliveryTermsList);
                 serviceResponse.Data = result;
@@ -55,13 +67,13 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveDeliveryTerms()
+        public async Task<IActionResult> GetAllActiveDeliveryTerms([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<DeliveryTermGetDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryTermGetDto>>();
 
             try
             {
-                var deliveryTerms = await _repository.DeliveryTermRepo.GetAllActiveDeliveryTerms();
+                var deliveryTerms = await _repository.DeliveryTermRepo.GetAllActiveDeliveryTerms(pagingParameter,searchParams);
                 _logger.LogInfo("Returned all DeliveryTerms");
                 var result = _mapper.Map<IEnumerable<DeliveryTermGetDto>>(deliveryTerms);
                 serviceResponse.Data = result;

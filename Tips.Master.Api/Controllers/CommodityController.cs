@@ -4,6 +4,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Net;
 
 namespace Tips.Master.Api.Controllers
@@ -25,13 +26,24 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<CommodityController>
         [HttpGet]
-        public async Task<IActionResult> GetAllCommodity()
+        public async Task<IActionResult> GetAllCommodity([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CommodityDto>> serviceResponse = new ServiceResponse<IEnumerable<CommodityDto>>();
 
             try
             {
-                var GetallCommodity = await _repository.CommodityRepository.GetAllCommodity();
+                var GetallCommodity = await _repository.CommodityRepository.GetAllCommodity(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    GetallCommodity.TotalCount,
+                    GetallCommodity.PageSize,
+                    GetallCommodity.CurrentPage,
+                    GetallCommodity.HasNext,
+                    GetallCommodity.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all Commodity");
                 var result = _mapper.Map<IEnumerable<CommodityDto>>(GetallCommodity);
                 serviceResponse.Data = result;
@@ -52,13 +64,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCommoditys()
+        public async Task<IActionResult> GetAllActiveCommoditys([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CommodityDto>> serviceResponse = new ServiceResponse<IEnumerable<CommodityDto>>();
 
             try
             {
-                var AllActiveCommodity = await _repository.CommodityRepository.GetAllActiveCommodity();
+                var AllActiveCommodity = await _repository.CommodityRepository.GetAllActiveCommodity(pagingParameter,searchParams);
                 _logger.LogInfo("Returned all Commodity");
                 var result = _mapper.Map<IEnumerable<CommodityDto>>(AllActiveCommodity);
                 serviceResponse.Data = result;

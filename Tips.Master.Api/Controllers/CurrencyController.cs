@@ -3,6 +3,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
 
@@ -29,13 +30,24 @@ namespace Tips.Master.Api.Controllers
         }
 
          [HttpGet]
-        public async Task<IActionResult> GetAllCurrency()
+        public async Task<IActionResult> GetAllCurrency([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CurrencyDto>> serviceResponse = new ServiceResponse<IEnumerable<CurrencyDto>>();
 
             try
             {
-                var currencies = await _repository.CurrencyRepository.GetAllCurrency();
+                var currencies = await _repository.CurrencyRepository.GetAllCurrency(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    currencies.TotalCount,
+                    currencies.PageSize,
+                    currencies.CurrentPage,
+                    currencies.HasNext,
+                    currencies.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all Currencies");
                 var result = _mapper.Map<IEnumerable<CurrencyDto>>(currencies);
                 serviceResponse.Data = result;
@@ -49,19 +61,20 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
-                serviceResponse.Success = false; 
+                serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCurrency()
+        public async Task<IActionResult> GetAllActiveCurrency([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CurrencyDto>> serviceResponse = new ServiceResponse<IEnumerable<CurrencyDto>>();
 
             try
             {
-                var currencies = await _repository.CurrencyRepository.GetAllActiveCurrency();
+                var currencies = await _repository.CurrencyRepository.GetAllActiveCurrency(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all Currency");
                 var result = _mapper.Map<IEnumerable<CurrencyDto>>(currencies);
                 serviceResponse.Data = result;

@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -33,16 +35,21 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Category>> GetAllActiveCategory()
+        public async Task<PagedList<Category>> GetAllActiveCategory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActiveCategories = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return AllActiveCategories;
+            var categoryDetails = FindAll()
+                                    .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CategoryName.Contains(searchParams.SearchValue) ||
+                                    inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<Category>.ToPagedList(categoryDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<Category>> GetAllCategory()
+        public async Task<PagedList<Category>> GetAllCategory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParames)
         {
-            var GetallCategories = await FindAll().ToListAsync();
-            return GetallCategories;
+            var allcategoryDetails = FindAll().OrderByDescending(x => x.Id)
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParames.SearchValue) || inv.CategoryName.Contains(searchParames.SearchValue) ||
+            inv.Description.Contains(searchParames.SearchValue))));
+
+            return PagedList<Category>.ToPagedList(allcategoryDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<Category> GetCategoryById(int id)

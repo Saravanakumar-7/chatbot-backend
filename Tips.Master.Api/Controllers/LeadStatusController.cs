@@ -4,6 +4,7 @@ using Entities.DTOs;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -24,13 +25,24 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<DemoStatusController>
         [HttpGet]
-        public async Task<IActionResult> GetAllLeadStatus()
+        public async Task<IActionResult> GetAllLeadStatus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LeadStatusDto>> serviceResponse = new ServiceResponse<IEnumerable<LeadStatusDto>>();
             try
             {
 
-                var leadStatusList = await _repository.LeadStatusRepository.GetAllLeadStatus();
+                var leadStatusList = await _repository.LeadStatusRepository.GetAllLeadStatus(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    leadStatusList.TotalCount,
+                    leadStatusList.PageSize,
+                    leadStatusList.CurrentPage,
+                    leadStatusList.HasNext,
+                    leadStatusList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all DemoStatus");
                 var result = _mapper.Map<IEnumerable<LeadStatusDto>>(leadStatusList);
                 serviceResponse.Data = result;
@@ -49,15 +61,15 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpGet]
 
-        public async Task<IActionResult> GetAllActiveLeadStatus()
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveLeadStatus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LeadStatusDto>> serviceResponse = new ServiceResponse<IEnumerable<LeadStatusDto>>();
 
             try
             {
-                var leadStatus = await _repository.LeadStatusRepository.GetAllActiveLeadStatus();
+                var leadStatus = await _repository.LeadStatusRepository.GetAllActiveLeadStatus(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all leadStatus");
                 var result = _mapper.Map<IEnumerable<LeadStatusDto>>(leadStatus);
                 serviceResponse.Data = result;

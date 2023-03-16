@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -33,19 +35,23 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<ExportUnitType>> GetAllActiveExportUnitTypes()
+        public async Task<PagedList<ExportUnitType>> GetAllActiveExportUnitTypes([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var AllActiveExportUnitTypes = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveExportUnitTypes;
+            var exportUnitDetails = FindAll()
+                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ExportUnitTypeName.Contains(searchParams.SearchValue) ||
+                       inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<ExportUnitType>.ToPagedList(exportUnitDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<ExportUnitType>> GetAllExportUnitTypes()
+        public async Task<PagedList<ExportUnitType>> GetAllExportUnitTypes([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var GetallExportUnitTypes = await FindAll().ToListAsync();
+            var exportUnitDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ExportUnitTypeName.Contains(searchParams.SearchValue) ||
+                inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallExportUnitTypes;
+            return PagedList<ExportUnitType>.ToPagedList(exportUnitDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<ExportUnitType> GetExportUnitTypeById(int id)

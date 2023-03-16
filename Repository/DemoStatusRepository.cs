@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -34,20 +36,25 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<DemoStatus>> GetAllActiveDemoStatus()
+        public async Task<PagedList<DemoStatus>> GetAllActiveDemoStatus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var AllActiveDemoStatus = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveDemoStatus;
+            var demostatusDetails = FindAll()
+                                  .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DemoStatusName.Contains(searchParams.SearchValue) ||
+                                  inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<DemoStatus>.ToPagedList(demostatusDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<DemoStatus>> GetAllDemoStatus()
+        public async Task<PagedList<DemoStatus>> GetAllDemoStatus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var GetallDemoStatus= await FindAll().ToListAsync();
+            var demostatusDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DemoStatusName.Contains(searchParams.SearchValue) ||
+                inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallDemoStatus;
+            return PagedList<DemoStatus>.ToPagedList(demostatusDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
 
         public async Task<DemoStatus> GetDemoStatusById(int id)
         {

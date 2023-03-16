@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,9 @@ namespace Contracts
 {
     public interface IBHKRepository : IRepositoryBase<BHK>
     {
-        Task<IEnumerable<BHK>> GetAllBHK();
+        Task<PagedList<BHK>> GetAllBHK(PagingParameter pagingParameter, SearchParames searchParams);
         Task<BHK> GetBHKById(int id);
-        Task<IEnumerable<BHK>> GetAllActiveBHK();
+        Task<PagedList<BHK>> GetAllActiveBHK(PagingParameter pagingParameter, SearchParames searchParams);
         Task<int?> CreateBHK(BHK bHK);
         Task<string> UpdateBHK(BHK bHK);
         Task<string> DeleteBHK(BHK bHK);

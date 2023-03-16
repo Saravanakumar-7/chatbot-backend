@@ -3,6 +3,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
 
@@ -25,15 +26,26 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<MaterialTypeController>
         [HttpGet]
-        public async Task<IActionResult> GetAllMaterialType()
+        public async Task<IActionResult> GetAllMaterialType([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<MaterialTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialTypeDto>>();
 
             try
             {
-                var MaterialTypeList = await _repository.MaterialTypeRepository.GetAllMaterialType();
+                var materialTypeList = await _repository.MaterialTypeRepository.GetAllMaterialType(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    materialTypeList.TotalCount,
+                    materialTypeList.PageSize,
+                    materialTypeList.CurrentPage,
+                    materialTypeList.HasNext,
+                    materialTypeList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all MaterialTypes");
-                var result = _mapper.Map<IEnumerable<MaterialTypeDto>>(MaterialTypeList);
+                var result = _mapper.Map<IEnumerable<MaterialTypeDto>>(materialTypeList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all MaterialTypes Successfully";
                 serviceResponse.Success = true;
@@ -52,13 +64,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveMaterialTypes()
+        public async Task<IActionResult> GetAllActiveMaterialTypes([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<MaterialTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialTypeDto>>();
 
             try
             {
-                var MaterialTypes = await _repository.MaterialTypeRepository.GetAllActiveMaterialType();
+                var MaterialTypes = await _repository.MaterialTypeRepository.GetAllActiveMaterialType(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all MaterialTypes");
                 var result = _mapper.Map<IEnumerable<MaterialTypeDto>>(MaterialTypes);
                 serviceResponse.Data = result;

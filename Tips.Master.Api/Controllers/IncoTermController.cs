@@ -3,6 +3,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
 
@@ -28,13 +29,24 @@ namespace Tips.Master.Api.Controllers
         }
  
         [HttpGet]
-        public async Task<IActionResult> GetAllIncoTerms()
+        public async Task<IActionResult> GetAllIncoTerms([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<IncoTermDto>> serviceResponse = new ServiceResponse<IEnumerable<IncoTermDto>>();
 
             try
             {
-                var incoTerms = await _repository.IncoTermRepository.GetAllIncoTerm();
+                var incoTerms = await _repository.IncoTermRepository.GetAllIncoTerm(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    incoTerms.TotalCount,
+                    incoTerms.PageSize,
+                    incoTerms.CurrentPage,
+                    incoTerms.HasNext,
+                    incoTerms.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all Inco Term");
                 var result = _mapper.Map<IEnumerable<IncoTermDto>>(incoTerms);
                 serviceResponse.Data = result;
@@ -55,13 +67,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveIncoTerms()
+        public async Task<IActionResult> GetAllActiveIncoTerms([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<IncoTermDto>> serviceResponse = new ServiceResponse<IEnumerable<IncoTermDto>>();
 
             try
             {
-                var incoTerms = await _repository.IncoTermRepository.GetAllActiveIncoTerm();
+                var incoTerms = await _repository.IncoTermRepository.GetAllActiveIncoTerm(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all IncoTerms");
                 var result = _mapper.Map<IEnumerable<IncoTermDto>>(incoTerms);
                 serviceResponse.Data = result;
@@ -83,7 +95,8 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
- 
+
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetIncoTermById(int id)
         {

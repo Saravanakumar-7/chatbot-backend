@@ -8,6 +8,7 @@ using Entities;
 using Entities.DTOs;
 using Entities.Helper;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -49,25 +50,38 @@ namespace Repository
             return getAllActiveCompanyMasterIdNameList;
         }
 
-        public async Task<IEnumerable<CompanyMaster>> GetAllActiveCompanyMasters()
+        public async Task<PagedList<CompanyMaster>> GetAllActiveCompanyMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var getAllActiveCompanyMastersList = await FindAll().ToListAsync();
-            return getAllActiveCompanyMastersList;
+            var companymasterDetails = FindAll()
+                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
+                 || inv.CompanyName.Contains(searchParams.SearchValue)
+                 || inv.CompanyAliasName.Contains(searchParams.SearchValue)
+                 || inv.CompanyId.Contains(searchParams.SearchValue)
+                 || inv.CompanyType.Contains(searchParams.SearchValue)
+                 || inv.PurchaseGroup.Contains(searchParams.SearchValue))))
+                   .Include(t => t.CompanyAddresses)
+             .Include(t => t.CompanyBankings)
+             .Include(t => t.CompanyContacts)
+              .Include(d => d.CompanyMasterHeadCountings);
+
+            return PagedList<CompanyMaster>.ToPagedList(companymasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<PagedList<CompanyMaster>> GetAllCompanyMasters(PagingParameter pagingParameter)
+        public async Task<PagedList<CompanyMaster>> GetAllCompanyMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var getAllCompanyMastersList = PagedList<CompanyMaster>.ToPagedList(FindAll()
-                                .Include(t => t.CompanyAddresses)
-                                .Include(x => x.CompanyContacts)
-                                .Include(m => m.CompanyBankings)
-                                .Include(v => v.CompanyMasterHeadCountings)
-                                .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var companymasterDetails = FindAll().OrderByDescending(x => x.Id)
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CompanyName.Contains(searchParams.SearchValue) ||
+                inv.CompanyId.Contains(searchParams.SearchValue) || inv.CompanyType.Contains(searchParams.SearchValue) || inv.PurchaseGroup.Contains(searchParams.SearchValue)
+                                 || inv.CompanyAliasName.Contains(searchParams.SearchValue))))
+                                                                                                                                                                            
+             .Include(t => t.CompanyAddresses)
+             .Include(t => t.CompanyBankings)
+             .Include(t => t.CompanyContacts)
+              .Include(d => d.CompanyMasterHeadCountings);
 
-
-            return getAllCompanyMastersList;
+            return PagedList<CompanyMaster>.ToPagedList(companymasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-         
+
 
         public async Task<CompanyMaster> GetCompanyMasterById(int id)
         {

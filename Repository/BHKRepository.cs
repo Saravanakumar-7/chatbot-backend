@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -25,14 +27,20 @@ namespace Repository
             string result = $"bHK details of {bHK.Id} is deleted successfully!";
             return result;
         }
-        public async Task<IEnumerable<BHK>> GetAllActiveBHK()
+        public async Task<PagedList<BHK>> GetAllActiveBHK([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActiveBHK = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveBHK;
+            var bhkDetails = FindAll()
+                        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BHKType.Contains(searchParams.SearchValue) ||
+                        inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<BHK>.ToPagedList(bhkDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-        public async Task<IEnumerable<BHK>> GetAllBHK()
+        public async Task<PagedList<BHK>> GetAllBHK([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var GetallBhk = await FindAll().ToListAsync(); return GetallBhk;
+            var bhkDetails = FindAll().OrderByDescending(x => x.Id)
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BHKType.Contains(searchParams.SearchValue) ||
+              inv.Description.Contains(searchParams.SearchValue))));
+
+            return PagedList<BHK>.ToPagedList(bhkDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
         public async Task<BHK> GetBHKById(int id)
         {
