@@ -35,6 +35,8 @@
     <Folder Include="Entities\Migrations\" />
     <Folder Include="Upload\GrinDocument\" />
     <Folder Include="Upload\GrinCoCUpload\" />
+    <Folder Include="Upload\GrinCoCUpload\" />
+    <Folder Include="Upload\GrinDocument\" />
   </ItemGroup>
 
 </Project>

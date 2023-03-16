@@ -17,8 +17,8 @@ LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nl
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
-//builder.Services.ConfigureMSSqlContext(builder.Configuration);
-builder.Services.ConfigureMySqlContext(builder.Configuration);
+builder.Services.ConfigureMSSqlContext(builder.Configuration);
+//builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers();
