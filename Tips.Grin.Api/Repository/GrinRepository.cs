@@ -202,7 +202,7 @@ namespace Tips.Grin.Api.Repository
         {
             var grinnumbers = grinNumber + "-" + "I";
             IEnumerable<GetDownloadUrlDto> getDownloadDetails = await _tipsGrinDbContext.DocumentUploads
-                                .Where(x => x.ParentId == grinNumber)
+                                .Where(x => x.ParentId == grinnumbers)
                                 .Select(x => new GetDownloadUrlDto()
                                 {
                                     Id = x.Id,
@@ -214,6 +214,22 @@ namespace Tips.Grin.Api.Repository
 
             return getDownloadDetails;
         }
+
+        public async Task<string> DeleteGrinPartsUploadDocByGrinNo(string grinnumber)
+        {
+            var documentDetails = await _tipsGrinDbContext.DocumentUploads.Where(x => x.ParentId == grinnumber).FirstOrDefaultAsync();
+            Delete(documentDetails);
+            string result = $"DocumentUpload details of {documentDetails.Id} is deleted successfully!";
+            return result;
+        }
+        public async Task<int?> GetDocumentDetailsByGrinNo(string grinnumber)
+        {
+            var grinUploadDocFileNameById =  _tipsGrinDbContext.DocumentUploads
+               .Where(x => x.ParentId == grinnumber).Count();
+
+            return grinUploadDocFileNameById;
+        }
+
     }
     public class GrinPartsRepository : RepositoryBase<GrinParts>, IGrinPartsRepository
     {
@@ -236,6 +252,10 @@ namespace Tips.Grin.Api.Repository
         }
         public async Task<string> DeleteGrinParts(GrinParts grinParts)
         {
+            //var grinPartDetails = await _tipsGrinDbContexts.GrinParts
+            //    .Include(t => t.ProjectNumbers)
+            //    .Include(t => t.CoCUpload).FirstOrDefaultAsync();
+
             Delete(grinParts);
             string result = $"GrinParts details of {grinParts.Id} is deleted successfully!";
             return result;
@@ -249,6 +269,18 @@ namespace Tips.Grin.Api.Repository
 
             return grinPartsDetailsbyId;
         }
+
+        public async Task<GrinParts> DeleteGrinPartsById(int id)
+        {
+            var grinPartsDetailsbyId = await _tipsGrinDbContexts.GrinParts.Where(x => x.Id == id)
+
+               .Include(d => d.ProjectNumbers)
+               .Include(d => d.CoCUpload)
+                               .FirstOrDefaultAsync();
+
+            return grinPartsDetailsbyId;
+        }
+
         public async Task<GrinParts> GetGrinPartsDetailsbyGrinPartId(int GrinPartId)
         {
             var grinPartsDetails = await _tipsGrinDbContexts.GrinParts.Where(x => x.Id == GrinPartId).FirstOrDefaultAsync();
