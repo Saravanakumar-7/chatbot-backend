@@ -4,6 +4,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Net;
 
 namespace Tips.Master.Api.Controllers
@@ -25,13 +26,24 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<LocationsController>
         [HttpGet]
-        public async Task<IActionResult> GetAllLocations()
+        public async Task<IActionResult> GetAllLocations([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LocationsDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationsDto>>();
 
             try
             {
-                var LocationsList = await _repository.LocationsRepository.GetAllLocations();
+                var LocationsList = await _repository.LocationsRepository.GetAllLocations(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    LocationsList.TotalCount,
+                    LocationsList.PageSize,
+                    LocationsList.CurrentPage,
+                    LocationsList.HasNext,
+                    LocationsList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all Locations");
                 var result = _mapper.Map<IEnumerable<LocationsDto>>(LocationsList);
                 serviceResponse.Data = result;
@@ -50,15 +62,14 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveLocations()
+        public async Task<IActionResult> GetAllActiveLocations([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LocationsDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationsDto>>();
 
             try
             {
-                var locations = await _repository.LocationsRepository.GetAllActiveLocations();
+                var locations = await _repository.LocationsRepository.GetAllActiveLocations(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all departments");
                 var result = _mapper.Map<IEnumerable<LocationsDto>>(locations);
                 serviceResponse.Data = result;
@@ -79,6 +90,7 @@ namespace Tips.Master.Api.Controllers
 
             }
         }
+
         [HttpGet("{Warehouse}")]
         public async Task<IActionResult> GetListofLocationsByWarehouse(string Warehouse)
         {

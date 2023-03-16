@@ -11,9 +11,9 @@ namespace Contracts
 {
     public interface IReleaseEnggBomRepository : IRepositoryBase<EngineeringBom>
     {
-        Task<PagedList<EngineeringBom>> GetAllReleaseEnggBom(PagingParameter pagingParameter);
+        Task<PagedList<EngineeringBom>> GetAllReleaseEnggBom(PagingParameter pagingParameter,SearchParames searchParams);
         Task<EngineeringBom> GetReleaseEnggBomById(int id);
-        Task<IEnumerable<EngineeringBom>> GetAllActiveReleaseEnggBom();
+        Task<PagedList<EngineeringBom>> GetAllActiveReleaseEnggBom(PagingParameter pagingParameter, SearchParames searchParams);
         Task<int?> CreateReleaseEnggBom(EngineeringBom releaseEnggBom);
         Task<string> UpdateReleaseEnggBom(EngineeringBom releaseEnggBom);
         Task<string> DeleteReleaseEnggBom(EngineeringBom releaseEnggBom);

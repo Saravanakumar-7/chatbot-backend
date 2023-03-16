@@ -3,6 +3,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
 
@@ -26,13 +27,25 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<AuditFrequencyController>
         [HttpGet]
-        public async Task<IActionResult> GetAllAuditFrequencies()
+        public async Task<IActionResult> GetAllAuditFrequencies([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<AuditFrequencyDto>> serviceResponse = new ServiceResponse<IEnumerable<AuditFrequencyDto>>();
             try
             {
 
-                var GetallAuditFrequencies = await _repository.AuditFrequencyRepository.GetAllAuditFrequencies();
+                var GetallAuditFrequencies = await _repository.AuditFrequencyRepository.GetAllAuditFrequencies(pagingParameter, searchParams);
+
+
+                var metadata = new
+                {
+                    GetallAuditFrequencies.TotalCount,
+                    GetallAuditFrequencies.PageSize,
+                    GetallAuditFrequencies.CurrentPage,
+                    GetallAuditFrequencies.HasNext,
+                    GetallAuditFrequencies.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all AuditFrequencies");
                 var result = _mapper.Map<IEnumerable<AuditFrequencyDto>>(GetallAuditFrequencies);
                 serviceResponse.Data = result;
@@ -51,15 +64,17 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
         [HttpGet]
 
-        public async Task<IActionResult> GetAllActiveAuditFrequencies()
+        public async Task<IActionResult> GetAllActiveAuditFrequencies([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<AuditFrequencyDto>> serviceResponse = new ServiceResponse<IEnumerable<AuditFrequencyDto>>();
 
             try
             {
-                var AllActiveAuditFrequencies = await _repository.AuditFrequencyRepository.GetAllActiveAuditFrequencies();
+                var AllActiveAuditFrequencies = await _repository.AuditFrequencyRepository.GetAllActiveAuditFrequencies(pagingParameter,searchParams);
                 _logger.LogInfo("Returned all AuditFrequencies");
                 var result = _mapper.Map<IEnumerable<AuditFrequencyDto>>(AllActiveAuditFrequencies);
                 serviceResponse.Data = result;

@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace Contracts
 {
     public interface ILeadTypeRepository : IRepositoryBase<LeadType>
     {
-        Task<IEnumerable<LeadType>> GetAllLeadTypes();
+        Task<PagedList<LeadType>> GetAllLeadTypes(PagingParameter pagingParameter, SearchParames searchParames);
         Task<LeadType> GetLeadTypeById(int id);
-        Task<IEnumerable<LeadType>> GetAllActiveLeadTypes();
+        Task<PagedList<LeadType>> GetAllActiveLeadTypes(PagingParameter pagingParameter, SearchParames searchParames);
         Task<int?> CreateLeadType(LeadType leadType);
         Task<string> UpdateLeadType(LeadType leadType);
         Task<string> DeleteLeadType(LeadType leadType);

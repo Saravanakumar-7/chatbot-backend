@@ -3,6 +3,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
 
@@ -26,15 +27,26 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<PackingInstructionController>
         [HttpGet]
-        public async Task<IActionResult> GetAllPackingInstructions()
+        public async Task<IActionResult> GetAllPackingInstructions([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PackingInstructionDto>> serviceResponse = new ServiceResponse<IEnumerable<PackingInstructionDto>>();
             try
             {
 
-                var PackingInstructionList = await _repository.PackingInstructionRepository.GetAllPackingInstruction();
+                var packingInstructionList = await _repository.PackingInstructionRepository.GetAllPackingInstruction(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    packingInstructionList.TotalCount,
+                    packingInstructionList.PageSize,
+                    packingInstructionList.CurrentPage,
+                    packingInstructionList.HasNext,
+                    packingInstructionList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all PackingInstructions");
-                var result = _mapper.Map<IEnumerable<PackingInstructionDto>>(PackingInstructionList);
+                var result = _mapper.Map<IEnumerable<PackingInstructionDto>>(packingInstructionList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PackingInstructions Successfully";
                 serviceResponse.Success = true;
@@ -52,14 +64,15 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+
         [HttpGet]
-        public async Task<IActionResult> GetAllActivePackingInstructions()
+        public async Task<IActionResult> GetAllActivePackingInstructions([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PackingInstructionDto>> serviceResponse = new ServiceResponse<IEnumerable<PackingInstructionDto>>();
 
             try
             {
-                var PackingInstructionList = await _repository.PackingInstructionRepository.GetAllActivePackingInstruction();
+                var PackingInstructionList = await _repository.PackingInstructionRepository.GetAllActivePackingInstruction(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all PackingInstructions");
                 var result = _mapper.Map<IEnumerable<PackingInstructionDto>>(PackingInstructionList);
                 serviceResponse.Data = result;

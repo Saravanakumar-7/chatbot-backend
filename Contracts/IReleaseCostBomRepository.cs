@@ -11,7 +11,7 @@ namespace Contracts
 {
     public interface IReleaseCostBomRepository : IRepositoryBase<CostingBom>
     {
-        Task<PagedList<CostingBom>> GetAllCostingBom(PagingParameter pagingParameter);
+        Task<PagedList<CostingBom>> GetAllCostingBom(PagingParameter pagingParameter,SearchParames searchParams);
         Task<CostingBom> GetCostingBomById(int id);
         Task<int?> CreateReleaseCostBom(CostingBom releaseCostBom);
         Task<IEnumerable<object>> GetAllReleaseCostBomItemNumberVersionList();

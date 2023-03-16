@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -46,13 +47,15 @@ namespace Repository
             return getBTONumberAutoIncrementCount;
         }
 
-        public async Task<PagedList<Lead>> GetAllLeads(PagingParameter pagingParameter)
+        public async Task<PagedList<Lead>> GetAllLeads([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var GetallleadDetails = PagedList<Lead>.ToPagedList(FindAll()
-                                .Include(x => x.LeadAddress)
-                                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return GetallleadDetails;
-        }      
+            var leadDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ContactName.Contains(searchParams.SearchValue) ||
+                 inv.CompanyName.Contains(searchParams.SearchValue))))
+                .Include(t => t.LeadAddress);
+
+            return PagedList<Lead>.ToPagedList(leadDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
 
         public async Task<Lead> GetLeadById(int id)
         {

@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace Contracts
 {
     public interface ICustomerTypeRepository
     {
-        Task<IEnumerable<CustomerType>> GetAllCustomerTypes();
+        Task<PagedList<CustomerType>> GetAllCustomerTypes(PagingParameter pagingParameter, SearchParames searchParams);
         Task<CustomerType> GetCustomerTypeById(int id);
-        Task<IEnumerable<CustomerType>> GetAllActiveCustomerTypes();
+        Task<PagedList<CustomerType>> GetAllActiveCustomerTypes(PagingParameter pagingParameter, SearchParames searchParams);
         Task<int?> CreateCustomerType(CustomerType customerType);
         Task<string> UpdateCustomerType(CustomerType customerType);
         Task<string> DeleteCustomerType(CustomerType customerType);

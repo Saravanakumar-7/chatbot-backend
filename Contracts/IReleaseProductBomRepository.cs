@@ -11,7 +11,7 @@ namespace Contracts
 {
     public interface IReleaseProductBomRepository : IRepositoryBase<ProductionBom>
     {
-        Task<PagedList<ProductionBom>> GetAllProductionBom(PagingParameter pagingParameter);
+        Task<PagedList<ProductionBom>> GetAllProductionBom(PagingParameter pagingParameter,SearchParames searchParams);
         Task<ProductionBom> GetProductionBomById(int id);
         Task<int?> CreateReleaseProductBom(ProductionBom releaseProductBom);
         Task<IEnumerable<object>> GetAllReleaseProductBomItemNumberVersionList();

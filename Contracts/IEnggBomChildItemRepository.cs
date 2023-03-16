@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace Contracts
 {
     public interface IEnggBomChildItemRepository
     {
-        Task<IEnumerable<EnggChildItem>> GetAllChildItem();
+        Task<PagedList<EnggChildItem>> GetAllChildItem(PagingParameter pagingParameter, SearchParames searchParams);
         Task<EnggChildItem> GetChildItemById(int id);
-        Task<IEnumerable<EnggChildItem>> GetAllActiveChildItem();
+        Task<PagedList<EnggChildItem>> GetAllActiveChildItem(PagingParameter pagingParameter, SearchParames searchParams);
         Task<int?> CreateChildItem(EnggChildItem enggChildItem);
         Task<string> UpdateChildItem(EnggChildItem enggChildItem);
         Task<string> DeleteChildItem(EnggChildItem enggChildItem);

@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace Contracts
 {
     public interface ICustomerMasterHeadCountingRepository
     {
-        Task<IEnumerable<CustomerMasterHeadCounting>> GetAllCustomerMasterHeadCountings();
+        Task<PagedList<CustomerMasterHeadCounting>> GetAllCustomerMasterHeadCountings(PagingParameter pagingParameter, SearchParames searchParams);
         Task<CustomerMasterHeadCounting> GetCustomerMasterHeadCountingById(int id);
-        Task<IEnumerable<CustomerMasterHeadCounting>> GetAllActiveCustomerMasterHeadCountings();
+        Task<PagedList<CustomerMasterHeadCounting>> GetAllActiveCustomerMasterHeadCountings(PagingParameter pagingParameter, SearchParames searchParams);
         Task<int?> CreateCustomerMasterHeadCounting(CustomerMasterHeadCounting customerMasterHeadCounting);
         Task<string> UpdateCustomerMasterHeadCounting(CustomerMasterHeadCounting customerMasterHeadCounting);
         Task<string> DeleteCustomerMasterHeadCounting(CustomerMasterHeadCounting customerMasterHeadCounting);

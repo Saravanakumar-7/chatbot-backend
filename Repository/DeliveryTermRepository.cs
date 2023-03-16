@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -31,20 +33,24 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<DeliveryTerm>> GetAllActiveDeliveryTerms()
+        public async Task<PagedList<DeliveryTerm>> GetAllActiveDeliveryTerms([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActiveDeliveryTerm = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveDeliveryTerm;
+            var deliveryTermDetails = FindAll()
+                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DeliveryTermName.Contains(searchParams.SearchValue) ||
+                      inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<DeliveryTerm>.ToPagedList(deliveryTermDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
 
-        public async Task<IEnumerable<DeliveryTerm>> GetAllDeliveryTerms()
+        public async Task<PagedList<DeliveryTerm>> GetAllDeliveryTerms([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var GetallDeliveryTerms = await FindAll().ToListAsync();
+            var deliveryTermDetails = FindAll().OrderByDescending(x => x.Id)
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DeliveryTermName.Contains(searchParams.SearchValue) ||
+             inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallDeliveryTerms;
-            
+            return PagedList<DeliveryTerm>.ToPagedList(deliveryTermDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+
         }
 
         public async Task<DeliveryTerm> GetDeliveryTermById(int id)
