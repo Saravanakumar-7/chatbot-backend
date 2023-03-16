@@ -141,7 +141,19 @@ namespace Tips.Grin.Api.Repository
         {
             _tipsGrinDbContext = tipsGrinDbContext;
         }
+        public async Task<DocumentUpload> GetUploadDocById(int id)
+        {
+            var grinUploadDocFileNameById = await _tipsGrinDbContext.DocumentUploads
+                .Where(x => x.Id == id).FirstOrDefaultAsync();
 
+            return grinUploadDocFileNameById;
+        }
+        public async Task<string> DeleteUploadFile(DocumentUpload documentUpload)
+        {
+            Delete(documentUpload);
+            string result = $"DocumentUpload details of {documentUpload.Id} is deleted successfully!";
+            return result;
+        }
         //public async Task<GrinParts> UpdateQty(int grinParts)
         //{
         //    var data = await _tipsGrinDbContext.GrinParts.Where(x => x.Id == grinParts).FirstOrDefaultAsync();
@@ -217,7 +229,21 @@ namespace Tips.Grin.Api.Repository
 
             return PagedList<GrinParts>.ToPagedList(getAllGrinParts, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        public async Task<string> DeleteGrinParts(GrinParts grinParts)
+        {
+            Delete(grinParts);
+            string result = $"GrinParts details of {grinParts.Id} is deleted successfully!";
+            return result;
+        }
+        public async Task<GrinParts> GetGrinPartsById(int id)
+        {
+            var grinPartsDetailsbyId = await _tipsGrinDbContexts.GrinParts.Where(x => x.Id == id)
 
+               .Include(d => d.ProjectNumbers)
+                               .FirstOrDefaultAsync();
+
+            return grinPartsDetailsbyId;
+        }
         public async Task<GrinParts> GetGrinPartsDetailsbyGrinPartId(int GrinPartId)
         {
             var grinPartsDetails = await _tipsGrinDbContexts.GrinParts.Where(x => x.Id == GrinPartId).FirstOrDefaultAsync();

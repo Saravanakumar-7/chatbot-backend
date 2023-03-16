@@ -673,7 +673,278 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> UpdateGrinUploadDocument([FromBody] List<DocumentUploadPostDto> uploadDocumentDto, string grinNumber)
+        {
+            ServiceResponse<DocumentUploadPostDto> serviceResponse = new ServiceResponse<DocumentUploadPostDto>();
+            try
+            {
+                if (uploadDocumentDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Grin UploadDocument object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Grin UploadDocument sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Grin UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Grin UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
 
+
+                foreach (var cocUpload in uploadDocumentDto)
+                {
+                    var fileContent = cocUpload.FileByte;
+                    string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                    Guid guid = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload", guid.ToString() + "_" + fileName);
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                        var uploadedFile = new DocumentUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            ParentId = grinNumber,
+                            DocumentFrom = "GrinCoCDocument",
+                        };
+                        var grinUploadDoc = _mapper.Map<DocumentUpload>(uploadedFile);
+
+                        await _documentUploadRepository.CreateUploadDocumentGrin(grinUploadDoc);
+                        _documentUploadRepository.SaveAsync();
+                    }
+                }
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = " GrinUploadDocument Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateGrinUploadDocument action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteGrinCoCUploadDocument(int id)
+        {
+            ServiceResponse<IEnumerable<DocumentUploadDto>> serviceResponse = new ServiceResponse<IEnumerable<DocumentUploadDto>>();
+
+            try
+            {
+                var documentUploadDetails = await _documentUploadRepository.GetUploadDocById(id);
+                var fileName = documentUploadDetails.FileName;
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload", /*guid.ToString() + "_" */ fileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                    string result = await _documentUploadRepository.DeleteUploadFile(documentUploadDetails);
+                    _logger.LogInfo(result);
+                    _documentUploadRepository.SaveAsync();
+
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " GrinCoCUploadDocument Deleted Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogError($"Given GrinCoCUploadDocument file is doesn't exist");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Given GrinCoCUploadDocument file is doesn't exist";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeleteGrinCoCUploadDocument action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteGrinUploadDocument(int id)
+        {
+            ServiceResponse<IEnumerable<DocumentUploadDto>> serviceResponse = new ServiceResponse<IEnumerable<DocumentUploadDto>>();
+
+            try
+            {
+                var documentUploadDetails = await _documentUploadRepository.GetUploadDocById(id);
+                var fileName = documentUploadDetails.FileName;
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", /*guid.ToString() + "_" */ fileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                    string result = await _documentUploadRepository.DeleteUploadFile(documentUploadDetails);
+                    _logger.LogInfo(result);
+                    _documentUploadRepository.SaveAsync();
+
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " GrinUploadDocument Deleted Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogError($"Given GrinUploadDocument file is doesn't exist");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Given GrinUploadDocument file is doesn't exist";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeleteGrinUploadDocument action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateGrinParts(int id, [FromBody] GrinPartsUpdateDto grinPartsUpdateDto)
+        {
+            ServiceResponse<GrinPartsDto> serviceResponse = new ServiceResponse<GrinPartsDto>();
+
+            try
+            {
+                if (grinPartsUpdateDto is null)
+                {
+                    _logger.LogError("Update GrinParts object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Update GrinParts object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid Update GrinParts object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update GrinParts object sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                var updateGrinParts = await _grinPartsRepository.GetGrinPartsById(id);
+                if (updateGrinParts is null)
+                {
+                    _logger.LogError($"Update GrinParts with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Update GrinParts with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+
+
+                var projectNumbers = _mapper.Map<IEnumerable<ProjectNumbers>>(grinPartsUpdateDto.ProjectNumbers);
+
+                var grinList = _mapper.Map<GrinParts>(grinPartsUpdateDto);
+
+                var grinPartsDto = grinPartsUpdateDto.ProjectNumbers;
+
+                var GrinpartsList = new List<ProjectNumbers>();
+                for (int i = 0; i < grinPartsDto.Count; i++)
+                {
+                    ProjectNumbers ProjectNumbers = _mapper.Map<ProjectNumbers>(grinPartsDto[i]);
+
+                    GrinpartsList.Add(ProjectNumbers);
+                }
+
+                var data = _mapper.Map(grinPartsUpdateDto, updateGrinParts);
+                data.ProjectNumbers = projectNumbers.ToList();
+
+                string result = await _grinPartsRepository.UpdateGrinQty(data);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "GrinParts Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateGrin action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteGrinParts(int id)
+        {
+            ServiceResponse<GrinPartsDto> serviceResponse = new ServiceResponse<GrinPartsDto>();
+
+            try
+            {
+                var grinPartsById = await _grinPartsRepository.GetGrinPartsById(id);
+                if (grinPartsById == null)
+                {
+                    _logger.LogError($"Delete GrinParts with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Delete GrinParts with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                string result = await _grinPartsRepository.DeleteGrinParts(grinPartsById);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "GrinParts Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeleteGrinParts action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAllActiveGrinNoList()

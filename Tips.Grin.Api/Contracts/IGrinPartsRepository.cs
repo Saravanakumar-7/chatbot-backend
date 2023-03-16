@@ -18,6 +18,8 @@ namespace Tips.Grin.Api.Contracts
 
         Task<PagedList<GrinParts>> GetAllGrinParts([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams);
         Task<GrinParts> GetGrinPartsDetailsbyGrinPartId(int GrinPartId);
+        Task<GrinParts> GetGrinPartsById(int id);
+        Task<string> DeleteGrinParts(GrinParts grinParts);
 
     }
 }
