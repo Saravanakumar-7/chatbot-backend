@@ -929,6 +929,7 @@ namespace Tips.Grin.Api.Controllers
                 string result = await _grinPartsRepository.DeleteGrinParts(grinPartsById);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "GrinParts Deleted Successfully";
                 serviceResponse.Success = true;
