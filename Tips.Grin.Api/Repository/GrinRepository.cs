@@ -47,6 +47,22 @@ namespace Tips.Grin.Api.Repository
             return getGrinNumberAutoIncrementCount;
         }
 
+        public async Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string grinNumber)
+        {
+
+            IEnumerable<GetDownloadUrlDto> getDownloadDetails = await _tipsGrinDbContext.DocumentUploads
+                                .Where(b => b.ParentId == grinNumber)
+                                .Select(x => new GetDownloadUrlDto()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath
+                                })
+                              .ToListAsync();
+
+            return getDownloadDetails;
+        }
 
         public async Task<string> DeleteGrin(Grins grins)
         {
@@ -158,6 +174,43 @@ namespace Tips.Grin.Api.Repository
             var result = await Create(documentUpload);
             return result.Id;
         }
+
+        public async Task<DocumentUpload> GetUploadDocById(int id)
+        {
+            var grinUploadDocFileNameById = await _tipsGrinDbContext.DocumentUploads
+                .Where(x => x.Id == id).FirstOrDefaultAsync();
+
+            return grinUploadDocFileNameById;
+        }
+
+        public async Task<IEnumerable<GetDownloadUrlDto>> GetGrinDownloadUrlDetails(string grinNumber)
+        {
+            var bomDetails = await _tipsGrinDbContext.Grins
+                               .Where(x => x.GrinNumber == grinNumber)
+                               .Select(x => x.Id).Distinct().ToListAsync();
+
+
+            IEnumerable<GetDownloadUrlDto> getDownloadDetails = await _tipsGrinDbContext.DocumentUploads
+                                //.Where(x => bomDetails.Contains(x.GrinsId))
+                                .Select(x => new GetDownloadUrlDto()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath
+                                })
+                              .ToListAsync();
+
+            return getDownloadDetails;
+        }
+
+        public async Task<string> DeleteUploadFile(DocumentUpload documentUpload)
+        {
+            Delete(documentUpload);
+            string result = $"DocumentUpload details of {documentUpload.Id} is deleted successfully!";
+            return result;
+        }
+
     }
     public class GrinPartsRepository : RepositoryBase<GrinParts>, IGrinPartsRepository
     {
@@ -185,6 +238,18 @@ namespace Tips.Grin.Api.Repository
             return grinPartsDetails;
         }
 
+        public async Task<GrinParts> GetGrinPartsById(int id)
+        {
+            var grinPartsDetailsbyId = await _tipsGrinDbContexts.GrinParts.Where(x => x.Id == id)
+            
+               .Include(d => d.ProjectNumbers)
+                               .FirstOrDefaultAsync();
+
+            return grinPartsDetailsbyId;
+        }
+
+        
+
         public async Task<GrinParts> UpdateGrinPartsQty(int GrinPartId, string AcceptedQty, string RejectedQty)
         {
             var data = await _tipsGrinDbContexts.GrinParts.Where(x => x.Id == GrinPartId).FirstOrDefaultAsync();
@@ -198,7 +263,14 @@ namespace Tips.Grin.Api.Repository
             grinParts.LastModifiedBy = "Admin";
             grinParts.LastModifiedOn = DateTime.Now;
             Update(grinParts);
-            string result = $"Grin Detail {grinParts.Id} is updated successfully!";
+            string result = $"GrinParts Detail {grinParts.Id} is updated successfully!";
+            return result;
+        }
+
+        public async Task<string> DeleteGrinParts(GrinParts grinParts)
+        {
+            Delete(grinParts);
+            string result = $"GrinParts details of {grinParts.Id} is deleted successfully!";
             return result;
         }
 
