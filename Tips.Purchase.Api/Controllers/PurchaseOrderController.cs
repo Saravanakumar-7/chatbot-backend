@@ -554,10 +554,7 @@ namespace Tips.Purchase.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid PurchaseOrder UploadDocument sent from client.");
                     return BadRequest(serviceResponse);
-                }
-
-                //var purchaseOrderDetails = await _repository.GetPurchaseOrderByPONumber(poNumber);
-                //var Id = purchaseOrderDetails.Id;
+                } 
 
                 foreach (var poUploadDetail in uploadDocumentDto)
                 {
@@ -665,24 +662,31 @@ namespace Tips.Purchase.Api.Controllers
             {
                 var getDownloadDetailByPoNumber = await _repository.GetDownloadUrlDetails(poNumber);
 
+                if (getDownloadDetailByPoNumber.Count() == 0 )
+                {
+                    _logger.LogError($"DownloadDetail with id: {poNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {poNumber}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseOrder UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseOrder UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
 
                 foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
                 { 
                     getDownloadUrlByFilename.DownloadUrl = Url.Action("DownloadFile", "PurchaseOrder", new { Filename = getDownloadUrlByFilename.FileName }, protocol: HttpContext.Request.Scheme);
                     //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
  
-                }
-                if (getDownloadDetailByPoNumber == null)
-                {
-                    _logger.LogError($"DownloadDetail with id: {poNumber}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"DownloadDetail with id: {poNumber}, hasn't been found in db.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
-                }
-                else
-                {
+                } 
                     _logger.LogInfo($"Returned DownloadDetail with id: {poNumber}");
                     var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(getDownloadDetailByPoNumber);
                     serviceResponse.Data = result;
@@ -690,7 +694,7 @@ namespace Tips.Purchase.Api.Controllers
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
-                }
+                
             }
             catch (Exception ex)
             {

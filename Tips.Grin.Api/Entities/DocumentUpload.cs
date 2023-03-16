@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 namespace Tips.Grin.Api.Entities
 {
          public class DocumentUpload
-        {
-            [Key]
+        { 
+
+        [Key]
             public int Id { get; set; }
 
             public string? FileName { get; set; }
@@ -27,7 +28,7 @@ namespace Tips.Grin.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+         
         //public Grins? GrinsId { get; set; }
         //public GrinParts? GrinParts { get; set; }
 

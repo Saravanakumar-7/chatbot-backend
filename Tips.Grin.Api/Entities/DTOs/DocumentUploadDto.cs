@@ -32,4 +32,12 @@ namespace Tips.Grin.Api.Entities.DTOs
         public byte[] FileByte { get; set; }
 
     }
+    public class GetDownloadUrlDto
+    {
+        public int Id { get; set; }
+        public string FileName { get; set; }
+        public string FileExtension { get; set; }
+        public string FilePath { get; set; }
+        public string DownloadUrl { get; set; }
+    }
 }

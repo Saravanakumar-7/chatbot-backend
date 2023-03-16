@@ -154,13 +154,12 @@ namespace Tips.Purchase.Api.Repository
             Update(purchaseRequisitions);
             string result = $"PurchaseRequisitions of Detail {purchaseRequisitions.Id} is updated successfully!";
             return result;
-        }
-
-        public async Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string prNumber)
+        } 
+        public async Task<IEnumerable<GetPRDownloadUrlDto>> GetDownloadUrlDetail(string prNumber)
         { 
-            IEnumerable<GetDownloadUrlDto> getDownloadDetails = await _tipsPurchaseDbContext.DocumentUploads
+            IEnumerable<GetPRDownloadUrlDto> getDownloadDetails = await _tipsPurchaseDbContext.DocumentUploads
                                 .Where(b => b.ParentNumber == prNumber)
-                                .Select(x => new GetDownloadUrlDto()
+                                .Select(x => new GetPRDownloadUrlDto()
                                 {
                                     Id = x.Id,
                                     FileName = x.FileName,

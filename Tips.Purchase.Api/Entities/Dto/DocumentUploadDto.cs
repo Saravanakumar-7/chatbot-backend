@@ -41,4 +41,12 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string FilePath { get; set; }
         public string DownloadUrl { get; set; }
     }
+    public class GetPRDownloadUrlDto
+    {
+        public int Id { get; set; }
+        public string FileName { get; set; }
+        public string FileExtension { get; set; }
+        public string FilePath { get; set; }
+        public string DownloadUrl { get; set; }
+    }
 }
