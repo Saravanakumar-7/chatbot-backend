@@ -408,8 +408,8 @@ namespace Tips.Grin.Api.Controllers
                 string fileName = grinUploadDetail.FileName + "." + grinUploadDetail.FileExtension;
                 string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                Guid guid = Guid.NewGuid();
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", guid.ToString() + "_" + fileName);
+                //Guid guid = Guid.NewGuid();
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument",/*guid.ToString() + "_" +*/ fileName);
                 using (MemoryStream ms = new MemoryStream(fileContent))
                 {
                     ms.Position = 0;
@@ -673,6 +673,7 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //grin update upload document
         [HttpPost]
         public async Task<IActionResult> UpdateGrinUploadDocument([FromBody] List<DocumentUploadPostDto> uploadDocumentDto, string grinNumber)
         {
@@ -699,6 +700,79 @@ namespace Tips.Grin.Api.Controllers
                 }
 
 
+                foreach (var uploadDoc in uploadDocumentDto)
+                {
+                    var fileContent = uploadDoc.FileByte;
+                    string fileName = uploadDoc.FileName + "." + uploadDoc.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                    Guid guid = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", guid.ToString() + "_" + fileName);
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                        var uploadedFile = new DocumentUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            ParentId = grinNumber,
+                            DocumentFrom = "GrinDocument",
+                        };
+                        var grinUploadDoc = _mapper.Map<DocumentUpload>(uploadedFile);
+
+                        await _documentUploadRepository.CreateUploadDocumentGrin(grinUploadDoc);
+                        _documentUploadRepository.SaveAsync();
+                    }
+                }
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = " GrinUploadDocument Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateGrinUploadDocument action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        //grin item update cocupload document
+        [HttpPost]
+        public async Task<IActionResult> UpdateGrinPartsUploadDocument([FromBody] List<DocumentUploadPostDto> uploadDocumentDto, string grinNumber)
+        {
+            ServiceResponse<DocumentUploadPostDto> serviceResponse = new ServiceResponse<DocumentUploadPostDto>();
+            try
+            {
+                if (uploadDocumentDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Grin COCUploadDocument object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Grin COCUploadDocument sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Grin COCUploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Grin COCUploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+
+
                 foreach (var cocUpload in uploadDocumentDto)
                 {
                     var fileContent = cocUpload.FileByte;
@@ -719,7 +793,7 @@ namespace Tips.Grin.Api.Controllers
                             FileName = fileName,
                             FileExtension = FileExt,
                             FilePath = filePath,
-                            ParentId = grinNumber,
+                            ParentId = grinNumber + "-" + "I",
                             DocumentFrom = "GrinCoCDocument",
                         };
                         var grinUploadDoc = _mapper.Map<DocumentUpload>(uploadedFile);
@@ -730,14 +804,14 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 serviceResponse.Data = null;
-                serviceResponse.Message = " GrinUploadDocument Successfully Created";
+                serviceResponse.Message = " GrinCOCUploadDocument Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateGrinUploadDocument action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside UpdateGrinPartsUploadDocument action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong ,try again";
                 serviceResponse.Success = false;
@@ -916,7 +990,7 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
-                var grinPartsById = await _grinPartsRepository.GetGrinPartsById(id);
+                var grinPartsById = await _grinPartsRepository.DeleteGrinPartsById(id);
                 if (grinPartsById == null)
                 {
                     _logger.LogError($"Delete GrinParts with id: {id}, hasn't been found in db.");
@@ -926,9 +1000,23 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
+                var grinid = grinPartsById.GrinsId;
                 string result = await _grinPartsRepository.DeleteGrinParts(grinPartsById);
                 _logger.LogInfo(result);
-                _repository.SaveAsync();
+                _grinPartsRepository.SaveAsync();
+
+                var grindetails = await _repository.GetGrinById(grinid);
+                var grinnumber = grindetails.GrinNumber;
+                var grinnumbers = grinnumber + "-" + "I";
+                var documentDetails = await _documentUploadRepository.GetDocumentDetailsByGrinNo(grinnumber);
+                for (int i = 0; i < documentDetails; i++)
+                {
+                    
+                    var uploaddocuments = await _documentUploadRepository.DeleteGrinPartsUploadDocByGrinNo(grinnumbers);
+                    _documentUploadRepository.SaveAsync();
+                }
+
+
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "GrinParts Deleted Successfully";
