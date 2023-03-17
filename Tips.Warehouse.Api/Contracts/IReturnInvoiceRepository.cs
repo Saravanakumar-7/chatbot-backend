@@ -6,7 +6,7 @@ namespace Tips.Warehouse.Api.Contracts
 {
     public interface IReturnInvoiceRepository : IRepositoryBase<ReturnInvoice>
     {
-        Task<PagedList<ReturnInvoice>> GetAllReturnInvoice(PagingParameter pagingParameter);
+        Task<PagedList<ReturnInvoice>> GetAllReturnInvoice(PagingParameter pagingParameter, SearchParams searchParams);
 
         Task<long?> CreateReturnInvoice(ReturnInvoice returnInvoice);
         Task<string> UpdateReturnInvoice(ReturnInvoice returnInvoice);

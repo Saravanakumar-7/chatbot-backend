@@ -41,13 +41,13 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllInvoice([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllInvoice([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             ServiceResponse<IEnumerable<InvoiceDto>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceDto>>();
 
             try
             {
-                var getAllInvoicesList = await _invoiceRepository.GetAllInvoices(pagingParameter);
+                var getAllInvoicesList = await _invoiceRepository.GetAllInvoices(pagingParameter, searchParams);
                 var metadata = new
                 {
                     getAllInvoicesList.TotalCount,

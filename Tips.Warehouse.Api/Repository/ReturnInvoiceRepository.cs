@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
@@ -29,13 +30,14 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<ReturnInvoice>> GetAllReturnInvoice(PagingParameter pagingParameter)
+        public async Task<PagedList<ReturnInvoice>> GetAllReturnInvoice([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var getAllReturnInvoiceList = PagedList<ReturnInvoice>.ToPagedList(FindAll()
-               .Include(k => k.ReturnInvoiceItems)
-               .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-
-            return (getAllReturnInvoiceList);
+            var getAllReturnInvoiceList = FindAll().OrderByDescending(x => x.Id)
+               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
+                inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
+                || inv.CompanyName.Contains(searchParams.SearchValue))))
+                .Include(k => k.ReturnInvoiceItems);
+            return PagedList<ReturnInvoice>.ToPagedList(getAllReturnInvoiceList, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<int?> GetReturnInvoiceByInvoiceNo(string InvoiceNumber)

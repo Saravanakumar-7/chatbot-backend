@@ -7,7 +7,7 @@ namespace Tips.Production.Api.Contracts
 {
     public interface IOQCRepository
     {
-        Task<IEnumerable<OQC>> GetAllOQC();
+        Task<PagedList<OQC>> GetAllOQC(PagingParameter pagingParameter, SearchParamess searchParamess);
         Task<OQC> GetOQCById(int id);
         Task<int?> CreateOQC(OQC oqc);
         Task<string> UpdateOQC(OQC oqc);

@@ -5,8 +5,7 @@ using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Repository;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-
-
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -44,15 +43,19 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<OpenDeliveryOrder>> GetAllOpenDeliveryOrders(PagingParameter pagingParameter)
+
+        public async Task<PagedList<OpenDeliveryOrder>> GetAllOpenDeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
 
-            var getAllOpenDeliveryOrderDetails = PagedList<OpenDeliveryOrder>.ToPagedList(FindAll()
-                                .Include(x => x.OpenDeliveryOrderParts)
-               .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return getAllOpenDeliveryOrderDetails;
+
+            var getAllOpenDeliveryOrderDetails = FindAll().OrderByDescending(x => x.Id)
+               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.OpenDONumber.Contains(searchParams.SearchValue) ||
+                inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue))))
+                .Include(x => x.OpenDeliveryOrderParts);
+            return PagedList<OpenDeliveryOrder>.ToPagedList(getAllOpenDeliveryOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
+
 
         public async Task<OpenDeliveryOrder> GetOpenDeliveryOrderById(int id)
         {

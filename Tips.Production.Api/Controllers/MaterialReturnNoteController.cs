@@ -33,13 +33,13 @@ namespace Tips.Production.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllMaterialReturnNote([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllMaterialReturnNotes([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<MaterialReturnNoteDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialReturnNoteDto>>();
 
             try
             {
-                var materialReturnNoteDetails = await _materialReturnNoteRepository.GetAllMaterialReturnNotes(pagingParameter);
+                var materialReturnNoteDetails = await _materialReturnNoteRepository.GetAllMaterialReturnNotes(pagingParameter, searchParamess);
                 var metadata = new
                 {
                     materialReturnNoteDetails.TotalCount,
@@ -70,6 +70,7 @@ namespace Tips.Production.Api.Controllers
             }
 
         }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMaterialReturnNoteById(int id)
         {

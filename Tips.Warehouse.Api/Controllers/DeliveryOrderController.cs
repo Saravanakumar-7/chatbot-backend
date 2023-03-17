@@ -31,12 +31,12 @@ namespace Tips.Warehouse.Api.Controllers
 
         
         [HttpGet]
-        public async Task<IActionResult> GetAllDeliveryOrders([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllDeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             ServiceResponse<IEnumerable<DeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderDto>>();
             try
             {
-                var getAllDeliveryOrderDetails = await _repository.GetAllDeliveryOrders(pagingParameter);
+                var getAllDeliveryOrderDetails = await _repository.GetAllDeliveryOrders(pagingParameter, searchParams);
                 var metadata = new
                 {
                     getAllDeliveryOrderDetails.TotalCount,

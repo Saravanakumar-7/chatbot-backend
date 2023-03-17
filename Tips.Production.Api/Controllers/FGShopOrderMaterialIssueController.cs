@@ -26,12 +26,12 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllFGShopOrderMaterialIssues([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllFGShopOrderMaterialIssues([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<FGShopOrderMaterialIssueDto>> serviceResponse = new ServiceResponse<IEnumerable<FGShopOrderMaterialIssueDto>>();
             try
             {
-                var fGShopOrderMaterialIssueDetails = await _fGShopOrderMaterialIssueRepository.GetAllFGShopOrderMaterialIssues(pagingParameter);
+                var fGShopOrderMaterialIssueDetails = await _fGShopOrderMaterialIssueRepository.GetAllFGShopOrderMaterialIssues(pagingParameter, searchParamess);
                 var metadata = new
                 {
                     fGShopOrderMaterialIssueDetails.TotalCount,

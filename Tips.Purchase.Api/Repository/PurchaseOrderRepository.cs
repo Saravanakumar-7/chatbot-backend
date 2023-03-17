@@ -2,6 +2,7 @@
 using Entities;
 using Entities.DTOs;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1.Misc;
 using Tips.Purchase.Api.Contracts;
@@ -82,12 +83,22 @@ namespace Tips.Purchase.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<PurchaseOrder>> GetAllActivePurchaseOrders()
+        public async Task<PagedList<PurchaseOrder>> GetAllActivePurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
-            var activePurchaseOrderDetails = await FindAll().ToListAsync();
-            return activePurchaseOrderDetails;
-        }
 
+
+
+            var activePurchaseOrderDetails = FindAll()
+               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue)
+               || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
+               || inv.PODate.Equals(int.Parse(searchParams.SearchValue)))))
+                                .Include(o => o.POFiles)
+                                .Include(t => t.POItemList)
+                                .ThenInclude(x => x.POAddprojects)
+                                .Include(m => m.POItemList)
+                                .ThenInclude(i => i.POAddDeliverySchedules);
+            return PagedList<PurchaseOrder>.ToPagedList(activePurchaseOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllActivePurchaseOrderNameList()
         {
             IEnumerable<PurchaseOrderIdNameListDto> activePurchaseOrderNameList = await _tipsPurchaseDbContext.PurchaseOrders
@@ -126,19 +137,20 @@ namespace Tips.Purchase.Api.Repository
             return pendingPOApprovalIINameList;
         }
 
-        public async Task<PagedList<PurchaseOrder>> GetAllPurchaseOrders(PagingParameter pagingParameter)
+        public async Task<PagedList<PurchaseOrder>> GetAllPurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
 
-            var purchaseOrderDetails = PagedList<PurchaseOrder>.ToPagedList(FindAll()
-                                .Include(o=>o.POFiles)
-                                .Include(t => t.POItemList)
-                                .ThenInclude(x => x.POAddprojects)
-                                .Include(m => m.POItemList)
-                                .ThenInclude(i => i.POAddDeliverySchedules)
+            var purchaseOrderDetails = FindAll().OrderByDescending(on => on.Id)
 
-               .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-
-            return purchaseOrderDetails;
+               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue)
+               || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
+               || inv.PODate.Equals(int.Parse(searchParams.SearchValue)))))
+                                .Include(o => o.POFiles)
+                               .Include(t => t.POItemList)
+                               .ThenInclude(x => x.POAddprojects)
+                               .Include(m => m.POItemList)
+                               .ThenInclude(i => i.POAddDeliverySchedules);
+            return PagedList<PurchaseOrder>.ToPagedList(purchaseOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<PurchaseOrder> GetPurchaseOrderById(int id)

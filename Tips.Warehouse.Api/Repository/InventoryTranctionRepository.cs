@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
@@ -29,12 +30,16 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<InventoryTranction>> GetAllInventoryTranction(PagingParameter pagingParameter)
+        public async Task<PagedList<InventoryTranction>> GetAllInventoryTranction([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var getAllInventoryTranction = PagedList<InventoryTranction>.ToPagedList(FindAll()
-            .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return getAllInventoryTranction;
+
+            var getAllInventoryTranction = FindAll().OrderByDescending(x => x.Id)
+                   .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProjectNumber.Contains(searchParams.SearchValue) ||
+                   inv.PartNumber.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue)
+                   || inv.MftrPartNumber.Contains(searchParams.SearchValue))));
+
+            return PagedList<InventoryTranction>.ToPagedList(getAllInventoryTranction, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<InventoryTranction> GetInventoryTranctionById(int id)

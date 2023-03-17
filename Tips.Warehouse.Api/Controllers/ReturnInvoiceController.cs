@@ -50,13 +50,13 @@ namespace Tips.Warehouse.Api.Controllers
         } 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllReturnInvoice([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllReturnInvoice([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             ServiceResponse<IEnumerable<ReturnInvoiceDto>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceDto>>();
 
             try
             {
-                var getAllReturnInvoiceDetails = await _returnInvoiceRepository.GetAllReturnInvoice(pagingParameter);
+                var getAllReturnInvoiceDetails = await _returnInvoiceRepository.GetAllReturnInvoice(pagingParameter,searchParams);
 
                 var metadata = new
                 {

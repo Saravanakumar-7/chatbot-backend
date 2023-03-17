@@ -8,7 +8,7 @@ namespace Tips.Production.Api.Contracts
 {
     public interface IShopOrderConfirmationRepository : IRepositoryBase<ShopOrderConfirmation>
     {
-        Task<PagedList<ShopOrderConfirmation>> GetAllShopOrderConfirmations(PagingParameter pagingParameter);
+        Task<PagedList<ShopOrderConfirmation>> GetAllShopOrderConfirmations(PagingParameter pagingParameter, SearchParamess searchParamess);
 
         Task<ShopOrderConfirmation> GetShopOrderConfirmationById(int id);
         Task<long> CreateShopOrderConfirmation(ShopOrderConfirmation shopOrderConfirmation);

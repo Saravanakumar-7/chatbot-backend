@@ -84,12 +84,12 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllReturnBtoDetails([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllReturnBtoDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             ServiceResponse<IEnumerable<ReturnBtoDeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ReturnBtoDeliveryOrderDto>>();
             try
             {
-                var returnBtoDetails = await _repository.GetAllReturnBtoDeliveryOrderDetails(pagingParameter);
+                var returnBtoDetails = await _repository.GetAllReturnBtoDeliveryOrderDetails(pagingParameter,searchParams);
                 var metadata = new
                 {
                     returnBtoDetails.TotalCount,

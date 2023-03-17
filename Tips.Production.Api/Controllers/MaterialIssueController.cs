@@ -38,12 +38,12 @@ namespace Tips.Production.Api.Controllers
 
         // GET: api/<MaterialIssueController>
         [HttpGet]
-        public async Task<IActionResult> GetAllMaterialIssues([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllMaterialIssues([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<MaterialIssueDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueDto>>();
             try
             {
-                var materialIssueDetails = await _materialIssueRepository.GetAllMaterialIssues(pagingParameter);
+                var materialIssueDetails = await _materialIssueRepository.GetAllMaterialIssues(pagingParameter, searchParamess);
                 var metadata = new
                 {
                     materialIssueDetails.TotalCount,

@@ -9,6 +9,7 @@ using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
 using System;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -44,22 +45,33 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<BTODeliveryOrder>> GetAllActiveBTODeliveryOrders()
+        public async Task<PagedList<BTODeliveryOrder>> GetAllActiveBTODeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var getAllActiveBTODetails = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
-            return getAllActiveBTODetails;
+
+
+            var getAllActiveBTODetails = FindAll()
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
+                || inv.BTONumber.Contains(searchParams.SearchValue)
+                || inv.PONumber.Contains(searchParams.SearchValue)
+                || inv.CustomerName.Contains(searchParams.SearchValue)
+                || inv.SalesOrderId.Equals(int.Parse(searchParams.SearchValue)))))
+                .Include(t => t.BTODeliveryOrderItems);
+
+            return PagedList<BTODeliveryOrder>.ToPagedList(getAllActiveBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrders(PagingParameter pagingParameter)
+        public async Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var getAllBTODetails = PagedList<BTODeliveryOrder>.ToPagedList(FindAll()
-                                 .Include(t => t.BTODeliveryOrderItems)
-                                 //.ThenInclude(s => s.BTOSerialNumbers)
-                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return getAllBTODetails;
+
+            var getAllBTODetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BTONumber.Contains(searchParams.SearchValue) ||
+                 inv.PONumber.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
+                 || inv.SalesOrderId.Equals(int.Parse(searchParams.SearchValue)))))
+                 .Include(t => t.BTODeliveryOrderItems);
+
+            return PagedList<BTODeliveryOrder>.ToPagedList(getAllBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-
         public async Task<IEnumerable<ListofBtoDeliveryOrderDetails>> GetBtoDeliveryOrderNumberList()
         {
 

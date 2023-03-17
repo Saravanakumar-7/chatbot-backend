@@ -5,7 +5,7 @@ using Contracts;
 using Entities;
 using Entities.Helper;
 using Entities.DTOs;
-
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -37,19 +37,20 @@ namespace Tips.Warehouse.Api.Repository
 
             return getInvoiceNumberAutoIncrementCount;
         }
-
-        public async Task<PagedList<Invoice>> GetAllInvoices(PagingParameter pagingParameter)
+        public async Task<PagedList<Invoice>> GetAllInvoices([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var getAllInvoiceList = PagedList<Invoice>.ToPagedList(FindAll()
-                .Include(k => k.InvoiceChildItems)
-                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return (getAllInvoiceList);
+            var getAllInvoiceList = FindAll().OrderByDescending(x => x.Id)
+               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
+                inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
+                || inv.CompanyName.Contains(searchParams.SearchValue))))
+                .Include(k => k.InvoiceChildItems);
+            return PagedList<Invoice>.ToPagedList(getAllInvoiceList, pagingParameter.PageNumber, pagingParameter.PageSize);
 
-         }
+        }
 
 
-        
+
 
         public async Task<Invoice> GetInvoiceById(int id)
         {

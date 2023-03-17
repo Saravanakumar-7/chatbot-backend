@@ -34,13 +34,13 @@ namespace Tips.Production.Api.Controllers
         }
 
        [HttpGet]
-        public async Task<IActionResult> GetAllShopOrderConfirmations([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllShopOrderConfirmations([FromQuery] PagingParameter pagingParameter, SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<ShopOrderConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderConfirmationDto>>();
 
             try
             {
-                var shopOrderConfirmationDetails = await _shopOrderConfirmationRepository.GetAllShopOrderConfirmations(pagingParameter);
+                var shopOrderConfirmationDetails = await _shopOrderConfirmationRepository.GetAllShopOrderConfirmations(pagingParameter, searchParamess);
 
                 var metadata = new
                 {
@@ -52,7 +52,6 @@ namespace Tips.Production.Api.Controllers
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-
                 _logger.LogInfo("Returned all ShopOrderConfirmationdetails");
                 var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(shopOrderConfirmationDetails);
                 serviceResponse.Data = result;

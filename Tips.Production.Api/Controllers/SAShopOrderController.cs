@@ -6,6 +6,7 @@ using System.Net;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities;
+using Entities;
 
 namespace Tips.Production.Api.Controllers
 {
@@ -25,13 +26,13 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllSAShopOrders()
+        public async Task<IActionResult> GetAllSAShopOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<SAShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SAShopOrderDto>>();
 
             try
             {
-                var sAShopOrderDetails = await _sashopOrderRepository.GetAllSAShopOrders();
+                var sAShopOrderDetails = await _sashopOrderRepository.GetAllSAShopOrders(pagingParameter, searchParamess);
                 _logger.LogInfo("Returned all SAShopOrders");
                 var result = _mapper.Map<IEnumerable<SAShopOrderDto>>(sAShopOrderDetails);
                 serviceResponse.Data = result;

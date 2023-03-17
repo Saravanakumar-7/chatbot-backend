@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Helper;
+using Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.Enums;
@@ -29,12 +32,13 @@ namespace Tips.Production.Api.Repository
 
 
 
-        public async Task<IEnumerable<SAShopOrder>> GetAllSAShopOrders()
+        public async Task<PagedList<SAShopOrder>> GetAllSAShopOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
-            var sAShopOrderDetials = await _tipsProductionDbContext.SAShopOrders.ToListAsync();
+            var saShopOrderDetails = FindAll().OrderByDescending(x => x.Id)
+               .Where(inv => ((string.IsNullOrWhiteSpace(searchParamess.SearchValue) || inv.SAShopOrderNumber.Contains(searchParamess.SearchValue) ||
+                  inv.ProjectNumber.Contains(searchParamess.SearchValue) || inv.SAItemNumber.Contains(searchParamess.SearchValue))));
 
-            return (sAShopOrderDetials);
-
+            return PagedList<SAShopOrder>.ToPagedList(saShopOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<SAShopOrder> GetSAShopOrderById(int id)

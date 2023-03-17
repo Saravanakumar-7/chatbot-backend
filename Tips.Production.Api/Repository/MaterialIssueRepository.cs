@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
@@ -30,13 +31,15 @@ namespace Tips.Production.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<MaterialIssue>> GetAllMaterialIssues(PagingParameter pagingParameter)
+        public async Task<PagedList<MaterialIssue>> GetAllMaterialIssues([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
-            var materialIssueDetails = PagedList<MaterialIssue>.ToPagedList(FindAll()                              
-               .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var materialIssueDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ShopOrderNumber.Contains(searchParams.SearchValue) ||
+                   inv.ItemNumber.Contains(searchParams.SearchValue) || inv.ShopOrderQty.Equals(int.Parse(searchParams.SearchValue)) || inv.ShopOrderQty.Equals(int.Parse(searchParams.SearchValue)))));
 
-            return materialIssueDetails;
+            return PagedList<MaterialIssue>.ToPagedList(materialIssueDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
 
         public async Task<MaterialIssue> GetMaterialIssueById(int id)
         {

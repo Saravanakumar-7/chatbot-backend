@@ -44,12 +44,12 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllPurchaseOrders([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllPurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<PurchaseOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderDto>>();
             try
             {
-                var purchaseOrderDetails = await _repository.GetAllPurchaseOrders(pagingParameter);
+                var purchaseOrderDetails = await _repository.GetAllPurchaseOrders(pagingParameter,searchParamess);
                 var metadata = new
                 {
                     purchaseOrderDetails.TotalCount,

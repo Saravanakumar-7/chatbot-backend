@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
@@ -33,13 +34,13 @@ namespace Tips.Production.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<SAShopOrderMaterialIssue>> GetAllSAShopOrderMaterialIssues(PagingParameter pagingParameter)
+        public async Task<PagedList<SAShopOrderMaterialIssue>> GetAllSAShopOrderMaterialIssues([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
-            var sAShopOrderMaterialIssueDetails = PagedList<SAShopOrderMaterialIssue>.ToPagedList(FindAll()
-                              .Include(t => t.SAShopOrderMaterialIssueGeneralList)
-             .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var saShopOrderMaterialIssueDetails = FindAll().OrderByDescending(x => x.Id)
+                           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.SAShopOrderNumber.Contains(searchParams.SearchValue) ||
+                              inv.SAShopOrderQty.Equals(int.Parse(searchParams.SearchValue))  || inv.ShopOrderType.Contains(searchParams.SearchValue))));
 
-            return sAShopOrderMaterialIssueDetails;
+            return PagedList<SAShopOrderMaterialIssue>.ToPagedList(saShopOrderMaterialIssueDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<SAShopOrderMaterialIssue> GetSAShopOrderMaterialIssueById(int id)

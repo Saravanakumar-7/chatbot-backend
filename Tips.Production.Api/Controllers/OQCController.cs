@@ -27,13 +27,13 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllOQC()
+        public async Task<IActionResult> GetAllOQC([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<OQCDto>> serviceResponse = new ServiceResponse<IEnumerable<OQCDto>>();
             try
             {
 
-                var oQCDetails = await _oQCRepository.GetAllOQC();
+                var oQCDetails = await _oQCRepository.GetAllOQC(pagingParameter,searchParamess);
                 _logger.LogInfo("Returned all OQC");
                 var result = _mapper.Map<IEnumerable<OQCDto>>(oQCDetails);
                 serviceResponse.Data = result;

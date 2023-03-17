@@ -7,13 +7,13 @@ namespace Tips.Warehouse.Api.Contracts
 {
     public interface IBTODeliveryOrderRepository : IRepositoryBase<BTODeliveryOrder>
     {
-        Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrders(PagingParameter pagingParameter);
+        Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrders(PagingParameter pagingParameter, SearchParams searchParams);
         Task<BTODeliveryOrder> GetBTODeliveryOrderById(int id);
 
         Task<IEnumerable<ListOfBtoNumberDetails>> GetBtoNumberListByCustomerId(string customerLeadId);
         Task<BTODeliveryOrder> GetBtoDetailsByBtoNo(string BTONumber);
 
-        Task<IEnumerable<BTODeliveryOrder>> GetAllActiveBTODeliveryOrders();
+        Task<PagedList<BTODeliveryOrder>> GetAllActiveBTODeliveryOrders(PagingParameter pagingParameter, SearchParams searchParams);
         Task<long> CreateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder);
         Task<int?> GetBTONumberAutoIncrementCount(DateTime date);
         Task<IEnumerable<ListofBtoDeliveryOrderDetails>> GetBtoDeliveryOrderNumberList();

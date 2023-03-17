@@ -38,13 +38,13 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllShopOrders([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllShopOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<ShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderDto>>();
 
             try
             {
-                var shopOrderDetails = await _shopOrderRepository.GetAllShopOrders(pagingParameter);
+                var shopOrderDetails = await _shopOrderRepository.GetAllShopOrders(pagingParameter,searchParamess);
                 var metadata = new
                 {
                     shopOrderDetails.TotalCount,

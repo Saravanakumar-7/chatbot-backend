@@ -8,12 +8,12 @@ namespace Tips.Purchase.Api.Contracts
 {
     public interface IPurchaseRequisitionRepository : IRepositoryBase<PurchaseRequisition>
     {
-        Task<PagedList<PurchaseRequisition>> GetAllPurchaseRequisitions(PagingParameter pagingParameter);
+        Task<PagedList<PurchaseRequisition>> GetAllPurchaseRequisitions(PagingParameter pagingParameter, SearchParamess searchParamess);
         Task<PurchaseRequisition> GetPurchaseRequisitionById(int id);
         Task<PurchaseRequisition> GetPurchaseRequisitionByPRNumber(string prNumber);
 
         Task<IEnumerable<GetPRDownloadUrlDto>> GetDownloadUrlDetail(string prNumber);
-        Task<IEnumerable<PurchaseRequisition>> GetAllActivePurchaseRequisitions();
+        Task<PagedList<PurchaseRequisition>> GetAllActivePurchaseRequisitions(PagingParameter pagingParameter, SearchParamess searchParamess);
         Task<long> CreatePurchaseRequisition(PurchaseRequisition purchaseRequisition);
         Task<PurchaseRequisition> ChangePurchaseRequisitionVersion(PurchaseRequisition purchaseRequisition);
         Task<string> UpdatePurchaseRequisition(PurchaseRequisition purchaseRequisition);

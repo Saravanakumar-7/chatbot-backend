@@ -1,10 +1,12 @@
-﻿using Tips.Production.Api.Entities;
+﻿using Entities.Helper;
+using Entities;
+using Tips.Production.Api.Entities;
 
 namespace Tips.Production.Api.Contracts
 {
     public interface ISAShopOrderRepository : IRepositoryBase<SAShopOrder>
     {
-        Task<IEnumerable<SAShopOrder>> GetAllSAShopOrders();
+        Task<PagedList<SAShopOrder>> GetAllSAShopOrders(PagingParameter pagingParameter, SearchParamess searchParamess);
         Task<SAShopOrder> GetSAShopOrderById(int id);
         Task<long> CreateSAShopOrder(SAShopOrder sAShopOrder);
         Task<string> UpdateSAShopOrder(SAShopOrder sAShopOrder);

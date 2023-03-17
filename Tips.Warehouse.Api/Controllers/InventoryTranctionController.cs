@@ -30,12 +30,12 @@ namespace Tips.Warehouse.Api.Controllers
 
             // GET: api/<InventoryTranctionController>
             [HttpGet]
-            public async Task<IActionResult> GetAllInventoryTranctions([FromQuery] PagingParameter pagingParameter)
+            public async Task<IActionResult> GetAllInventoryTranctions([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
             {
                 ServiceResponse<IEnumerable<InventoryTranctionDto>> serviceResponse = new ServiceResponse<IEnumerable<InventoryTranctionDto>>();
                 try
                 {
-                    var getAllInventoryTranctions = await _inventoryTranctionRepository.GetAllInventoryTranction(pagingParameter);
+                    var getAllInventoryTranctions = await _inventoryTranctionRepository.GetAllInventoryTranction(pagingParameter, searchParams);
                     var metadata = new
                     {
                         getAllInventoryTranctions.TotalCount,
