@@ -6,7 +6,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IForeCastCustomGroupRepository : IRepositoryBase<ForeCastCustomGroup>
     {
-        Task<PagedList<ForeCastCustomGroup>> GetAllForeCastCustomGroup(PagingParameter pagingParameter);
+        Task<PagedList<ForeCastCustomGroup>> GetAllForeCastCustomGroup(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<ForeCastCustomGroup> GetForeCastCustomGroupById(int id);
         Task<int?> CreateForeCastCustomGroup(ForeCastCustomGroup foreCastCustomGroup);
         Task<string> UpdateForeCastCustomGroup(ForeCastCustomGroup foreCastCustomGroup);

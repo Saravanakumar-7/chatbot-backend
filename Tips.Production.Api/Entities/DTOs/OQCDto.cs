@@ -71,4 +71,11 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal? PendingQty { get; set; }
 
     }
+
+    public class OQCIdNameList
+    {
+        public int Id { get; set; }
+
+        public string? ShopOrderNumber { get; set; }
+    }
 }

@@ -47,4 +47,10 @@
         public DateTime? LastModifiedOn { get; set; }
         public List<DeliveryOrderItemsDtoUpdate>? DeliveryOrderItemsDtoUpdate { get; set; }
     }
+
+    public class DeliveryOrderIdNameList
+    {
+        public int Id { get; set; }
+        public string? DeliveryOrderNumber { get; set; }
+    }
 }

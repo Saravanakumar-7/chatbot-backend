@@ -44,6 +44,22 @@ namespace Tips.Production.Api.Repository
             return PagedList<OQC>.ToPagedList(OQCDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
+        public async Task<IEnumerable<OQCIdNameList>> GetAllOQCIdNameList()
+        {
+            IEnumerable<OQCIdNameList> btoIddNameList = await _tipsProductionDbContext.oQCs
+                               .Select(x => new OQCIdNameList()
+                               {
+                                   Id = x.Id,
+
+                                   ShopOrderNumber = x.ShopOrderNumber
+
+                               })
+                               .OrderByDescending(x => x.Id)
+                             .ToListAsync();
+
+            return btoIddNameList;
+        }
+
         public async Task<OQC> GetOQCById(int id)
         {
             var oQCDedtailsById = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();

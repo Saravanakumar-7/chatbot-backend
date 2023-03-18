@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Entities;
 using Entities.Helper;
 using Org.BouncyCastle.Ocsp;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -38,17 +39,19 @@ namespace Tips.SalesService.Api.Repository
             string result = $"rfqSourcing details of {rfqSourcing.Id} is deleted successfully!";   
              return result;
             
-        }        
+        }
 
-            public async Task<PagedList<RfqSourcing>> GetAllRfqSourcing(PagingParameter pagingParameter)
-
-
+        public async Task<PagedList<RfqSourcing>> GetAllRfqSourcing([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var getAllRfqSourcing =PagedList<RfqSourcing>.ToPagedList(FindAll()
-           .Include(t => t.RfqSourcingItems)
-           .ThenInclude(x => x.RfqSourcingVendors)
-           .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return getAllRfqSourcing;
+
+            var getAllRfqSourcing = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue)
+              || inv.RFQNumber.Contains(searchParammes.SearchValue) 
+              || inv.CustomerName.Contains(searchParammes.SearchValue))))
+                 .Include(t => t.RfqSourcingItems)
+                 .ThenInclude(x => x.RfqSourcingVendors);
+
+            return PagedList<RfqSourcing>.ToPagedList(getAllRfqSourcing, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
 

@@ -50,13 +50,13 @@ namespace Tips.SalesService.Api.Controllers
         }
         // GET: api/<ForeCastController>
         [HttpGet]
-        public async Task<IActionResult> GetAllForeCast([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllForeCast([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<ForeCastDto>> serviceResponse = new ServiceResponse<IEnumerable<ForeCastDto>>();
 
             try
             {
-                var getAllForeCast = await _Forecastrepository.GetAllForeCast(pagingParameter);
+                var getAllForeCast = await _Forecastrepository.GetAllForeCast(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllForeCast.TotalCount,
@@ -88,13 +88,13 @@ namespace Tips.SalesService.Api.Controllers
         }
         // Getall Lpcosting
         [HttpGet]
-        public async Task<IActionResult> GetAllForeCastLpCosting([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllForeCastLpCosting([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<ForecastLpCostingDto>> serviceResponse = new ServiceResponse<IEnumerable<ForecastLpCostingDto>>();
 
             try
             {
-                var getAllForecastLpCosting = await _lpcostingRepository.GetAllForecastLpCosting(pagingParameter);
+                var getAllForecastLpCosting = await _lpcostingRepository.GetAllForecastLpCosting(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllForecastLpCosting.TotalCount,
@@ -126,13 +126,13 @@ namespace Tips.SalesService.Api.Controllers
         }
         // Get all ForeCastEngg 
         [HttpGet]
-        public async Task<IActionResult> GetAllForeCastEngg([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllForeCastEngg([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<ForeCastEnggDto>> serviceResponse = new ServiceResponse<IEnumerable<ForeCastEnggDto>>();
 
             try
             {
-                var getAllForeCastEngg = await _forecastenggRepository.GetAllForeCastEngg(pagingParameter);
+                var getAllForeCastEngg = await _forecastenggRepository.GetAllForeCastEngg(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllForeCastEngg.TotalCount,
@@ -165,13 +165,13 @@ namespace Tips.SalesService.Api.Controllers
         }
         //get Forecastsourcing
         [HttpGet]
-        public async Task<IActionResult> GetAllForeCastSourcings([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllForeCastSourcings([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<ForecastSourcingDto>> serviceResponse = new ServiceResponse<IEnumerable<ForecastSourcingDto>>();
 
             try
             {
-                var getAllForeCastSourcing = await _sourcingrepository.GetAllForeCastSourcing(pagingParameter);
+                var getAllForeCastSourcing = await _sourcingrepository.GetAllForeCastSourcing(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllForeCastSourcing.TotalCount,
@@ -203,13 +203,13 @@ namespace Tips.SalesService.Api.Controllers
 
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllForeCastCustomerSupport([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllForeCastCustomerSupport([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<ForeCastCustomerSupportDto>> serviceResponse = new ServiceResponse<IEnumerable<ForeCastCustomerSupportDto>>();
 
             try
             {
-                var getAllForeCastCustomerSupports = await _repository.GetAllForeCastCustomerSupports(pagingParameter);
+                var getAllForeCastCustomerSupports = await _repository.GetAllForeCastCustomerSupports(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllForeCastCustomerSupports.TotalCount,
@@ -1624,12 +1624,12 @@ namespace Tips.SalesService.Api.Controllers
 
         // GET: api/<ForeCastCustomGroupController> 
         [HttpGet]
-        public async Task<IActionResult> GetAllForeCastCustomGroup([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllForeCastCustomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<ForeCastCustomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<ForeCastCustomGroupDto>>();
             try
             {
-                var getAllForeCastCustomGroup = await _forecastcustomgroupRepository.GetAllForeCastCustomGroup(pagingParameter);
+                var getAllForeCastCustomGroup = await _forecastcustomgroupRepository.GetAllForeCastCustomGroup(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllForeCastCustomGroup.TotalCount,
@@ -1841,12 +1841,12 @@ namespace Tips.SalesService.Api.Controllers
 
         // GET: api/<ForeCastCustomFieldController>
         [HttpGet]
-        public async Task<IActionResult> GetAllForeCastCustomField([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllForeCastCustomField([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<ForeCastCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<ForeCastCustomFieldDto>>();
             try
             {
-                var getAllForeCastCustomField = await _forecastcustomfieldRepository.GetAllForeCastCustomField(pagingParameter);
+                var getAllForeCastCustomField = await _forecastcustomfieldRepository.GetAllForeCastCustomField(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllForeCastCustomField.TotalCount,

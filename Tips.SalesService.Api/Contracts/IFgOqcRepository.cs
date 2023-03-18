@@ -7,7 +7,7 @@ namespace Tips.SalesService.Api.Contracts
     public interface IFgOqcRepository : IRepositoryBase<FgOqc>
     {
 
-        public Task<PagedList<FgOqc>> GetAllFgOqcs(PagingParameter pagingParameter);
+        public Task<PagedList<FgOqc>> GetAllFgOqcs(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<FgOqc> GetFgOqcById(int id);
         Task<int?> CreateFgOqc(FgOqc fgOqc);
         Task<string> UpdateFgOqc(FgOqc fgOqc);

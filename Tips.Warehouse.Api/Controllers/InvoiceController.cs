@@ -331,7 +331,30 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
+        [HttpGet]
+        public async Task<IActionResult> GetAllInvoiceIdNameList()
+        {
+            ServiceResponse<IEnumerable<InvoiceIdNameList>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceIdNameList>>();
+            try
+            {
+                var listOfInvoiceIdNames = await _invoiceRepository.GetAllInvoiceIdNameList();
+                var result = _mapper.Map<IEnumerable<InvoiceIdNameList>>(listOfInvoiceIdNames);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All listOfInvoiceIdNames";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllInvoiceIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }
 

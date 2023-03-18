@@ -13,6 +13,7 @@ using Tips.SalesService.Api.Entities.DTOs;
 using System.Collections.Immutable;
 using Entities.DTOs;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -42,18 +43,23 @@ namespace Tips.SalesService.Api.Repository
             string result = $"RFQ details of {rfqCustomerSupport.Id} is deleted successfully!";
             return result;
         }
-         
 
-        public async Task<PagedList<RfqCustomerSupport>> GetAllRfqCustomerSupport(PagingParameter pagingParameter)
-       {
-           var getAllRfqCS = PagedList<RfqCustomerSupport>.ToPagedList(FindAll()
-           .Include(t => t.RfqCustomerSupportItems)
-           .ThenInclude(u=>u.RfqCSDeliverySchedule)
-           .Include(x=>x.RfqCustomerSupportNotes)
-           .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return getAllRfqCS;
-        } 
 
+        public async Task<PagedList<RfqCustomerSupport>> GetAllRfqCustomerSupport([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
+        {
+
+            var rfqCustomerSupportDetails = FindAll().OrderByDescending(x => x.Id)
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue)
+            || inv.RfqNumber.Contains(searchParammes.SearchValue)
+            || inv.CustomerRfqNumber.Contains(searchParammes.SearchValue)
+            || inv.CustomerName.Contains(searchParammes.SearchValue))))
+                                .Include(t => t.RfqCustomerSupportItems)
+            .ThenInclude(u => u.RfqCSDeliverySchedule)
+            .Include(x => x.RfqCustomerSupportNotes);
+
+
+            return PagedList<RfqCustomerSupport>.ToPagedList(rfqCustomerSupportDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
 
         public async Task<RfqCustomerSupport> GetRfqCustomerSupportById(int id)
         {
@@ -262,12 +268,17 @@ namespace Tips.SalesService.Api.Repository
             return getAllActiveRfqNumberList;
         }
 
-        public async Task<PagedList<Rfq>> GetAllRfq(PagingParameter pagingParameter)
+        public async Task<PagedList<Rfq>> GetAllRfq([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var getAllRfq = PagedList<Rfq>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
-           , pagingParameter.PageNumber, pagingParameter.PageSize);
-            return getAllRfq;
+            var rfqDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.RfqNumber.Contains(searchParammes.SearchValue)
+                || inv.CustomerName.Contains(searchParammes.SearchValue)
+                || inv.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue)))));
+               
+
+            return PagedList<Rfq>.ToPagedList(rfqDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
 
         public async Task<Rfq> GetRfqById(int id)
         {
@@ -357,13 +368,18 @@ namespace Tips.SalesService.Api.Repository
         }
 
 
-        public async Task<PagedList<RfqEngg>> GetAllRfqEngg(PagingParameter pagingParameter)
+        public async Task<PagedList<RfqEngg>> GetAllRfqEngg([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var getAllRfqEngg = PagedList<RfqEngg>.ToPagedList(FindAll()
-            .Include(t => t.RfqEnggItems)            
-            .Include(x => x.RfqEnggRiskIdentifications)
-            .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return getAllRfqEngg;
+
+            var getAllRfqEngg = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.RFQNumber.Contains(searchParammes.SearchValue)
+                || inv.CustomerName.Contains(searchParammes.SearchValue)
+                || inv.CustomerRfqNumber.Contains(searchParammes.SearchValue)
+                || inv.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue)))))
+                .Include(t => t.RfqEnggItems)
+            .Include(x => x.RfqEnggRiskIdentifications);
+
+            return PagedList<RfqEngg>.ToPagedList(getAllRfqEngg, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
 
@@ -450,9 +466,13 @@ namespace Tips.SalesService.Api.Repository
             return rfqEnggItems;
         }
 
-        public Task<IEnumerable<RfqEnggItem>> GetAllRfqEnggItems()
+        public async Task<PagedList<RfqEnggItem>> GetAllRfqEnggItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            throw new NotImplementedException();
+            var getAllRfqEnggItems = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.CustomerItemNumber.Contains(searchParammes.SearchValue)
+                || inv.Description.Contains(searchParammes.SearchValue))));
+
+            return PagedList<RfqEnggItem>.ToPagedList(getAllRfqEnggItems, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<RfqEnggItem> GetRfqEnggItemById(int id)
@@ -491,20 +511,24 @@ namespace Tips.SalesService.Api.Repository
                 string result = $"RFQLPCosting details of {rfqLPCosting.Id} is deleted successfully!";
                 return result;
             }
-            public async Task<PagedList<RfqLPCosting>> GetAllRfqLPCosting(PagingParameter pagingParameter)
-            {
-                var rfqLPCosting = PagedList<RfqLPCosting>.ToPagedList(FindAll()
-                    .Include(x => x.RfqLPCostingItems)
-                    .ThenInclude(u => u.RfqLPCostingProcesses)
-                     .Include(x => x.RfqLPCostingItems)
-                     .ThenInclude(v => v.RfqLPCostingNREConsumables)
-                     .Include(x => x.RfqLPCostingItems)
-                     .ThenInclude(w => w.RfqLPCostingOtherCharges)
-               .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-                return rfqLPCosting;
-            }
+        public async Task<PagedList<RfqLPCosting>> GetAllRfqLPCosting([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
+        {
 
-            public async Task<RfqLPCosting> GetRfqLPCostingById(int id)
+            var rfqLPCosting = FindAll().OrderByDescending(x => x.Id)
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.RfqNumber.Contains(searchParammes.SearchValue)
+           || inv.CustomerName.Contains(searchParammes.SearchValue))))
+               .Include(x => x.RfqLPCostingItems)
+            .ThenInclude(u => u.RfqLPCostingProcesses)
+             .Include(x => x.RfqLPCostingItems)
+             .ThenInclude(v => v.RfqLPCostingNREConsumables)
+             .Include(x => x.RfqLPCostingItems)
+             .ThenInclude(w => w.RfqLPCostingOtherCharges);
+
+            return PagedList<RfqLPCosting>.ToPagedList(rfqLPCosting, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+        }
+
+        public async Task<RfqLPCosting> GetRfqLPCostingById(int id)
             {
                 var rfqLPCosting = await _tipsSalesServiceDbContext.RfqLPCostings.Where(x => x.Id == id)
                      .Include(x => x.RfqLPCostingItems)
@@ -578,14 +602,15 @@ namespace Tips.SalesService.Api.Repository
                 return result;
             }
 
-            public async Task<PagedList<RfqCustomGroup>> GetAllRfqCustomGroup(PagingParameter pagingParameter)
-            {
-                var getAllRfqCustomGroup = PagedList<RfqCustomGroup>.ToPagedList(FindAll()
-               .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-                return getAllRfqCustomGroup;
-            }
+        public async Task<PagedList<RfqCustomGroup>> GetAllRfqCustomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
+        {
+            var RfqCustomGroups = FindAll().OrderByDescending(x => x.Id)
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.CustomGroupName.Contains(searchParammes.SearchValue))));
 
-            public async Task<RfqCustomGroup> GetRfqCustomGroupById(int id)
+            return PagedList<RfqCustomGroup>.ToPagedList(RfqCustomGroups, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        public async Task<RfqCustomGroup> GetRfqCustomGroupById(int id)
             {
                 var getRfqCustomGroupById = await _tipsSalesServiceDbContext.RfqCustomGroups.Where(x => x.Id == id).FirstOrDefaultAsync();
                 return getRfqCustomGroupById;
@@ -634,14 +659,15 @@ namespace Tips.SalesService.Api.Repository
             return getRfqCustomFieldByCustomGroupp;
         }
 
-        public async Task<PagedList<RfqCustomField>> GetAllRfqCustomField(PagingParameter pagingParameter)
-            {
-                var getAllRfqCustomField = PagedList<RfqCustomField>.ToPagedList(FindAll()
-               .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-                return getAllRfqCustomField;
-            }
+        public async Task<PagedList<RfqCustomField>> GetAllRfqCustomField([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
+        {
+            var rfqCustomFields = FindAll().OrderByDescending(x => x.Id)
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.CustomGroupName.Contains(searchParammes.SearchValue))));
 
-            public async Task<RfqCustomField> GetRfqCustomFieldById(int id)
+            return PagedList<RfqCustomField>.ToPagedList(rfqCustomFields, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        public async Task<RfqCustomField> GetRfqCustomFieldById(int id)
             {
                 var getRfqCustomFieldById = await _tipsSalesServiceDbContext.RfqCustomFields.Where(x => x.Id == id).FirstOrDefaultAsync();
                 return getRfqCustomFieldById;

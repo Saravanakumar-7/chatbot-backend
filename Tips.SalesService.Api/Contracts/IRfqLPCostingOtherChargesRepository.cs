@@ -12,7 +12,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IRfqLPCostingOtherChargesRepository
     {
-        Task<PagedList<RfqLPCostingOtherCharges>> GetAllRfqLPCostingOtherCharges(PagingParameter pagingParameter);
+        Task<PagedList<RfqLPCostingOtherCharges>> GetAllRfqLPCostingOtherCharges(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<RfqLPCostingOtherCharges> GetRfqLPCostingOtherChargesById(int id);
         Task<int?> CreateRfqLPCostingOtherCharges(RfqLPCostingOtherCharges rfqLPCostingOtherCharges);
         Task<string> UpdateRfqLPCostingOtherCharges(RfqLPCostingOtherCharges rfqLPCostingOtherCharges);

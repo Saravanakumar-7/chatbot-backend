@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
@@ -41,20 +42,41 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<SalesOrder>> GetAllActiveSalesOrder()
+        public async Task<PagedList<SalesOrder>> GetAllActiveSalesOrder([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var getAllActiveSalesOrder = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
-            return getAllActiveSalesOrder;
+            var getAllActiveSalesOrder = FindAll()
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue)
+                     || inv.SalesOrderNumber.Contains(searchParammes.SearchValue)
+                     || inv.ProjectNumber.Contains(searchParammes.SearchValue)
+                     || inv.OrderType.Contains(searchParammes.SearchValue)
+                     || inv.CustomerName.Contains(searchParammes.SearchValue)
+                     || inv.OrderDate.Equals(int.Parse(searchParammes.SearchValue))
+                     || inv.ReceivedDate.Equals(int.Parse(searchParammes.SearchValue))
+                     || inv.PODate.Equals(int.Parse(searchParammes.SearchValue))
+                     || inv.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
+                     || inv.CustomerId.Equals(int.Parse(searchParammes.SearchValue)))))
+                   .Include(t => t.SalesOrdersItems);
+            return PagedList<SalesOrder>.ToPagedList(getAllActiveSalesOrder, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<PagedList<SalesOrder>> GetAllSalesOrder(PagingParameter pagingParameter)
+        public async Task<PagedList<SalesOrder>> GetAllSalesOrder([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
+            var salesOrderDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue)
+                     || inv.SalesOrderNumber.Contains(searchParammes.SearchValue)
+                     || inv.ProjectNumber.Contains(searchParammes.SearchValue)
+                     || inv.OrderType.Contains(searchParammes.SearchValue)
+                     || inv.CustomerName.Contains(searchParammes.SearchValue)
+                     || inv.OrderDate.Equals(int.Parse(searchParammes.SearchValue))
+                     || inv.ReceivedDate.Equals(int.Parse(searchParammes.SearchValue))
+                     || inv.PODate.Equals(int.Parse(searchParammes.SearchValue))
+                     || inv.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
+                     || inv.CustomerId.Equals(int.Parse(searchParammes.SearchValue)))))
+                   .Include(t => t.SalesOrdersItems);
+            ;
 
-            var getAllSalesOrders = PagedList<SalesOrder>.ToPagedList(FindAll()
-                                .Include(t => t.SalesOrdersItems)
-               .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            return PagedList<SalesOrder>.ToPagedList(salesOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return getAllSalesOrders;
         }
 
 

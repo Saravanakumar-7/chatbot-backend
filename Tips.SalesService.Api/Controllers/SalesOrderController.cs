@@ -44,25 +44,25 @@ namespace Tips.SalesService.Api.Controllers
 
         // GET: api/<SalesOrderController>
         [HttpGet]
-        public async Task<IActionResult> GetAllSalesOrder([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllSalesOrder([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
             try
             {
-                var salesOrderList = await _repository.GetAllSalesOrder(pagingParameter);
+                var getAllSalesOrder = await _repository.GetAllSalesOrder(pagingParameter, searchParammes);
                 var metadata = new
                 {
-                    salesOrderList.TotalCount,
-                    salesOrderList.PageSize,
-                    salesOrderList.CurrentPage,
-                    salesOrderList.HasNext,
-                    salesOrderList.HasPreviuos
+                    getAllSalesOrder.TotalCount,
+                    getAllSalesOrder.PageSize,
+                    getAllSalesOrder.CurrentPage,
+                    getAllSalesOrder.HasNext,
+                    getAllSalesOrder.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all SalesOrders");
-                var result = _mapper.Map<IEnumerable<SalesOrderDto>>(salesOrderList);
+                var result = _mapper.Map<IEnumerable<SalesOrderDto>>(getAllSalesOrder);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all SalesOrders";
                 serviceResponse.Success = true;

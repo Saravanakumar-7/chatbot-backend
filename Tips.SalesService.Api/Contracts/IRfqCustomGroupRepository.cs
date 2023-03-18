@@ -15,7 +15,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IRfqCustomGroupRepository:IRepositoryBase<RfqCustomGroup>
     {
-        Task<PagedList<RfqCustomGroup>> GetAllRfqCustomGroup(PagingParameter pagingParameter);
+        Task<PagedList<RfqCustomGroup>> GetAllRfqCustomGroup(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<RfqCustomGroup> GetRfqCustomGroupById(int id);
         Task<int?> CreateRfqCustomGroup(RfqCustomGroup rfqCustomGroup);
         Task<string> UpdateRfqCustomGroup(RfqCustomGroup rfqCustomGroup);

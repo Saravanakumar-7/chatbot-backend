@@ -6,7 +6,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IMaterialRequestItemRepository : IRepositoryBase<MaterialRequestItem>
     {
-        Task<PagedList<MaterialRequestItem>> GetAllMaterialRequestItem(PagingParameter pagingParameter);
+        Task<PagedList<MaterialRequestItem>> GetAllMaterialRequestItem(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<MaterialRequestItem> GetMaterialRequestItemById(int id);
         Task<int?> CreateMaterialRequestItem(MaterialRequestItem mri);
         Task<string> UpdateMaterialRequestItem(MaterialRequestItem mri);

@@ -12,7 +12,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IRfqSourcingRepository 
     {
-        Task<PagedList<RfqSourcing>> GetAllRfqSourcing(PagingParameter pagingParameter);
+        Task<PagedList<RfqSourcing>> GetAllRfqSourcing(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<RfqSourcing> GetRfqSourcingById(int id);
         Task<int?> CreateRfqSourcing(RfqSourcing rfqSourcing);
         Task<string> UpdateRfqSourcing(RfqSourcing rfqSourcing);

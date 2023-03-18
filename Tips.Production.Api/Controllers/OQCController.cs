@@ -353,5 +353,30 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllOQCIdNameList()
+        {
+            ServiceResponse<IEnumerable<OQCIdNameList>> serviceResponse = new ServiceResponse<IEnumerable<OQCIdNameList>>();
+            try
+            {
+                var listOfAllOQCIdNames = await _oQCRepository.GetAllOQCIdNameList();
+                var result = _mapper.Map<IEnumerable<OQCIdNameList>>(listOfAllOQCIdNames);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All listOfAllOQCIdNames";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllOQCIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
     }
 }

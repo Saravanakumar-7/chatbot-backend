@@ -10,6 +10,7 @@ using Tips.Warehouse.Api.Entities.DTOs;
 using System;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
+using Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -134,7 +135,21 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
+        public async Task<IEnumerable<BtoIDNameList>> GetAllBTOIdNameIdNameList()
+        {
+            IEnumerable<BtoIDNameList> btoIddNameList = await _tipsWarehouseDbContext.bTODeliveryOrder
+                               .Select(x => new BtoIDNameList()
+                               {
+                                   Id = x.Id,
+                                   
+                                   BTONumber = x.BTONumber
 
+                               })
+                               .OrderByDescending(x => x.Id)
+                             .ToListAsync();
+
+            return btoIddNameList;
+        }
     }
     public class BTODeliveryOrderItemRepository : RepositoryBase<BTODeliveryOrderItems>, IBTODeliveryOrderItemsRepository
     {

@@ -6,7 +6,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IQuoteAdditionalChargesRepository : IRepositoryBase<QuoteAdditionalCharges>
     {
-        Task<PagedList<QuoteAdditionalCharges>> GetAllQuoteAdditionalCharges(PagingParameter pagingParameter);
+        Task<PagedList<QuoteAdditionalCharges>> GetAllQuoteAdditionalCharges(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<QuoteAdditionalCharges> GetQuoteAdditionalChargesById(int id);
         Task<IEnumerable<QuoteAdditionalCharges>> GetAllActiveQuoteAdditionalCharges();
         Task<long> CreateQuoteAdditionalCharges(QuoteAdditionalCharges quoteAdditionalCharges);

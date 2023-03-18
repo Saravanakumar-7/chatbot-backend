@@ -32,12 +32,12 @@ namespace Tips.SalesService.Api.Controllers
         }
         // GET: api/<ItemPriceListController>
         [HttpGet]
-        public async Task<IActionResult> GetAllItemPriceList([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllItemPriceList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<ItemPriceListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemPriceListDto>>();
             try
             {
-                var GetAllItemPriceList = await _repository.GetAllItemPriceList(pagingParameter);
+                var GetAllItemPriceList = await _repository.GetAllItemPriceList(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     GetAllItemPriceList.TotalCount,

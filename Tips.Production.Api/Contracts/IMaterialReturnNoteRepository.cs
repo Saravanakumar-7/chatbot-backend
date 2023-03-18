@@ -1,6 +1,7 @@
 ﻿using Entities.Helper;
 using Entities;
 using Tips.Production.Api.Entities;
+using Tips.Production.Api.Entities.DTOs;
 
 namespace Tips.Production.Api.Contracts
 {
@@ -12,6 +13,8 @@ namespace Tips.Production.Api.Contracts
         Task<int?> CreateMaterialReturnNote(MaterialReturnNote materialReturnNote);
         Task<string> UpdateMaterialReturnNote(MaterialReturnNote materialReturnNote);
         Task<string> DeleteMaterialReturnNote(MaterialReturnNote materialReturnNote);
+
+        Task<IEnumerable<MaterialReturnNoteIdNameList>> GetAllMaterialReturnNoteIdNameList();
 
         public void SaveAsync();
     }

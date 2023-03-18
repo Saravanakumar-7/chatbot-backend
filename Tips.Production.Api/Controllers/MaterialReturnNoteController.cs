@@ -301,7 +301,30 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllMaterialReturnNoteIdNameList()
+        {
+            ServiceResponse<IEnumerable<MaterialReturnNoteIdNameList>> serviceResponse = new ServiceResponse<IEnumerable<MaterialReturnNoteIdNameList>>();
+            try
+            {
+                var listOfAllmaterialReturnNotesIdNames = await _materialReturnNoteRepository.GetAllMaterialReturnNoteIdNameList();
+                var result = _mapper.Map<IEnumerable<MaterialReturnNoteIdNameList>>(listOfAllmaterialReturnNotesIdNames);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All listOfAllmaterialReturnNotesIdNames";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllMaterialReturnNoteIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
 
-
+        }
     }
 }
