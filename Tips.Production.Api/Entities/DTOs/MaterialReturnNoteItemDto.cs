@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
@@ -8,7 +9,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
         public string? MftrPartNumber { get; set; }
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         [Precision(13, 3)]
@@ -21,7 +22,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
         public string? MftrPartNumber { get; set; }
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         [Precision(13, 3)]
@@ -34,7 +35,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
         public string? MftrPartNumber { get; set; }
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         [Precision(13, 3)]
