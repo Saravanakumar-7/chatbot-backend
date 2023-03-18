@@ -39,10 +39,10 @@ namespace Repository
 
         public async Task<PagedList<ItemMaster>> GetAllActiveItemMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var itemmasterDetails = FindAll()
+            var itemmasterDetails = FindAll().OrderByDescending(x => x.Id)
                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-                                inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)) || inv.Commodity.Contains(searchParams.SearchValue)
-                                || inv.MaterialGroup.Contains(searchParams.SearchValue))))
+                                inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)) 
+                                || inv.Commodity.Contains(searchParams.SearchValue) || inv.MaterialGroup.Contains(searchParams.SearchValue))))
                                .Include(t => t.ItemmasterAlternate)
                          .Include(t => t.ItemMasterApprovedVendor)
                          .Include(t => t.ItemMasterFileUpload)
@@ -56,7 +56,8 @@ namespace Repository
         {
             var itemmasterDetails = FindAll().OrderByDescending(x => x.Id)
                  .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-             inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)) || inv.Commodity.Contains(searchParams.SearchValue) || inv.MaterialGroup.Contains(searchParams.SearchValue))))
+             inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue))
+             || inv.Commodity.Contains(searchParams.SearchValue) || inv.MaterialGroup.Contains(searchParams.SearchValue))))
                           .Include(t => t.ItemmasterAlternate)
                          .Include(t => t.ItemMasterApprovedVendor)
                          .Include(t => t.ItemMasterFileUpload)
@@ -73,9 +74,10 @@ namespace Repository
         {
              
 
-             var itemmasterFgDetails = FindAll().OrderByDescending(a => a.ItemType == PartType.FG)
+             var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id)
                   .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-              inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))))
+              inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue) )
+              )) && inv.ItemType == PartType.FG )
                            .Include(t => t.ItemmasterAlternate)
                           .Include(t => t.ItemMasterApprovedVendor)
                           .Include(t => t.ItemMasterFileUpload)
@@ -93,9 +95,9 @@ namespace Repository
             
 
 
-            var itemmasterSADetails = FindAll().OrderByDescending(a => a.ItemType == PartType.SA || a.ItemType == PartType.PurchasePart)
+            var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id)
                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))))
+            inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))) && (inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart))
                          .Include(t => t.ItemmasterAlternate)
                         .Include(t => t.ItemMasterApprovedVendor)
                         .Include(t => t.ItemMasterFileUpload)
@@ -112,9 +114,9 @@ namespace Repository
         {
             
 
-            var itemmasterSADetails = FindAll().OrderByDescending(a => a.ItemType == PartType.SA)
+            var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id)
                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))))
+            inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))) && inv.ItemType == PartType.SA)
                          .Include(t => t.ItemmasterAlternate)
                         .Include(t => t.ItemMasterApprovedVendor)
                         .Include(t => t.ItemMasterFileUpload)
@@ -127,9 +129,9 @@ namespace Repository
         public async Task<PagedList<ItemMaster>> GetAllFgSaItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         { 
 
-            var itemmasterFgSADetails = FindAll().OrderByDescending(a => a.ItemType == PartType.SA || a.ItemType == PartType.FG)
+            var itemmasterFgSADetails = FindAll().OrderByDescending(a => a.Id)
                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-           inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))))
+           inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))) && (inv.ItemType == PartType.SA || inv.ItemType == PartType.FG))
                          .Include(c => c.FileUpload)
                             .Include(x => x.ImageUpload)
                             .Include(t => t.ItemmasterAlternate)
@@ -148,9 +150,10 @@ namespace Repository
         {
 
 
-            var itemmasterFgSaFRUDetails = FindAll().OrderByDescending(a => a.ItemType == PartType.SA || a.ItemType == PartType.FG || a.ItemType == PartType.FRU)
+            var itemmasterFgSaFRUDetails = FindAll().OrderByDescending(a => a.Id)
                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-           inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))))
+           inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue))))
+           && (inv.ItemType == PartType.SA || inv.ItemType == PartType.FG || inv.ItemType == PartType.FRU))
                          .Include(c => c.FileUpload)
                             .Include(x => x.ImageUpload)
                             .Include(t => t.ItemmasterAlternate)
