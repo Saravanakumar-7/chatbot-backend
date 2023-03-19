@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,7 +19,7 @@ namespace Entities
 
         public string? ItemDescription { get; set; }
 
-        public string? ItemType { get; set; }
+        public PartType ItemType { get; set; }
 
         [Precision(5, 2)]
         public decimal RevisionNumber { get; set; }

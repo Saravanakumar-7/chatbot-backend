@@ -2,6 +2,7 @@
 using Entities;
 using Entities.Enums;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
@@ -33,11 +34,30 @@ namespace Tips.Production.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<OQC>> GetAllOQC()
+        public async Task<PagedList<OQC>> GetAllOQC([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
-            var oQCDedtails = await FindAll().ToListAsync();
+            var OQCDetails = FindAll().OrderByDescending(x => x.Id)
+                           .Where(inv => ((string.IsNullOrWhiteSpace(searchParamess.SearchValue) || inv.ShopOrderNumber.Contains(searchParamess.SearchValue) ||
+                              inv.ItemNumber.Contains(searchParamess.SearchValue) || inv.ShopOrderQty.Equals(int.Parse(searchParamess.SearchValue)) ||
+                              inv.ItemType.Equals(int.Parse(searchParamess.SearchValue)))));
 
-            return oQCDedtails;
+            return PagedList<OQC>.ToPagedList(OQCDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        public async Task<IEnumerable<OQCIdNameList>> GetAllOQCIdNameList()
+        {
+            IEnumerable<OQCIdNameList> btoIddNameList = await _tipsProductionDbContext.oQCs
+                               .Select(x => new OQCIdNameList()
+                               {
+                                   Id = x.Id,
+
+                                   ShopOrderNumber = x.ShopOrderNumber
+
+                               })
+                               .OrderByDescending(x => x.Id)
+                             .ToListAsync();
+
+            return btoIddNameList;
         }
 
         public async Task<OQC> GetOQCById(int id)

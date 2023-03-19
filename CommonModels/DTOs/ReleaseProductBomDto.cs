@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Entities.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -49,7 +50,7 @@ namespace Entities.DTOs
     public class ProductionBomRevisionNumber
     {
         public string ItemNumber { get; set; }
-        public string ItemType { get; set; }
+        public PartType ItemType { get; set; }
         public decimal[] BomVersionNo { get; set; }
 
     }

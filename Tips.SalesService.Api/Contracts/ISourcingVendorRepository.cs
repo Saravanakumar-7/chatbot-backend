@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Entities.Helper;
+using Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -10,7 +12,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface ISourcingVendorRepository
     {
-        Task<IEnumerable<SourcingVendor>> GetAllSourcingVendor();
+        Task<PagedList<SourcingVendor>> GetAllSourcingVendor(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<SourcingVendor> GetSourcingVendorById(int id);
         Task<int?> CreateSourcingVendor(SourcingVendor sourcingVendor);
         Task<string> UpdateSourcingVendor(SourcingVendor sourcingVendor);

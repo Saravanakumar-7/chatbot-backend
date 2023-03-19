@@ -31,12 +31,12 @@ namespace Tips.Warehouse.Api.Controllers
 
         
         [HttpGet]
-        public async Task<IActionResult> GetAllDeliveryOrders([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllDeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             ServiceResponse<IEnumerable<DeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderDto>>();
             try
             {
-                var getAllDeliveryOrderDetails = await _repository.GetAllDeliveryOrders(pagingParameter);
+                var getAllDeliveryOrderDetails = await _repository.GetAllDeliveryOrders(pagingParameter, searchParams);
                 var metadata = new
                 {
                     getAllDeliveryOrderDetails.TotalCount,
@@ -331,5 +331,29 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllDeliveryOrderIdNameList()
+        {
+            ServiceResponse<IEnumerable<BtoIDNameList>> serviceResponse = new ServiceResponse<IEnumerable<BtoIDNameList>>();
+            try
+            {
+                var listOfAllDeliveryOrderIdNames = await _repository.GetAllDeliveryOrderIdNameList();
+                var result = _mapper.Map<IEnumerable<BtoIDNameList>>(listOfAllDeliveryOrderIdNames);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All listOfAllDeliveryOrderIdNames";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllDeliveryOrderIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

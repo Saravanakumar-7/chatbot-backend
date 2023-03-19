@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -33,18 +35,22 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<NatureOfRelationship>> GetAllActiveNatureOfRelationships()
+        public async Task<PagedList<NatureOfRelationship>> GetAllActiveNatureOfRelationships([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var AllActiveNatureOfRelationships = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveNatureOfRelationships;
+            var natureOfRelationshipDetails = FindAll()
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.NatureOfRelationshipName.Contains(searchParams.SearchValue) ||
+            inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<NatureOfRelationship>.ToPagedList(natureOfRelationshipDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<NatureOfRelationship>> GetAllNatureOfRelationships()
+        public async Task<PagedList<NatureOfRelationship>> GetAllNatureOfRelationships([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var GetallNatureOfRelationships = await FindAll().ToListAsync();
+            var natureOfRelationshipDetails = FindAll().OrderByDescending(x => x.Id)
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.NatureOfRelationshipName.Contains(searchParams.SearchValue) ||
+            inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallNatureOfRelationships;
+            return PagedList<NatureOfRelationship>.ToPagedList(natureOfRelationshipDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<NatureOfRelationship> GetNatureOfRelationshipById(int id)

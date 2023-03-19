@@ -56,6 +56,10 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal AvailableQty { get; set; }
         [Precision(13, 3)]
         public decimal IssuedQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal NewIssueQty { get; set; }
+
         [Precision(13, 3)]
         public string? Unit { get; set; }
         public IssuedStatus MaterialIssuedStatus { get; set; }

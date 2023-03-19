@@ -7,7 +7,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IRfqCustomFieldRepository : IRepositoryBase<RfqCustomField>
     {
-        Task<PagedList<RfqCustomField>> GetAllRfqCustomField(PagingParameter pagingParameter);
+        Task<PagedList<RfqCustomField>> GetAllRfqCustomField(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<RfqCustomField> GetRfqCustomFieldById(int id);
         Task<int?> CreateRfqCustomField(RfqCustomField rfqCustomField);
         Task<string> UpdateRfqCustomField(RfqCustomField rfqCustomField);

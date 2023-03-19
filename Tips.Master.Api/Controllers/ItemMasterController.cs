@@ -32,13 +32,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<ItemMasterController>
         [HttpGet]
-        public async Task<IActionResult> GetAllItemMasters([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllItemMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var getAllItemMastersList = await _repository.ItemMasterRepository.GetAllItemMasters(pagingParameter);
+                var getAllItemMastersList = await _repository.ItemMasterRepository.GetAllItemMasters(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all ItemMasters");
                 var metadata = new
                 {
@@ -70,15 +70,15 @@ namespace Tips.Master.Api.Controllers
         }
         //GET All FG items
         [HttpGet]
-        public async Task<IActionResult> GetAllFGItems()
+        public async Task<IActionResult> GetAllFGItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var getAllFGItemsList = await _repository.ItemMasterRepository.GetAllFGItems();
+                var getAllFGItemsList = await _repository.ItemMasterRepository.GetAllFGItems(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all FGItemMasters");
-               
+
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGItemsList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all FGItemMasters Successfully";
@@ -98,20 +98,20 @@ namespace Tips.Master.Api.Controllers
         }
         //passing items number and get process records
 
-      
+
 
 
         //GET All Sa items
         [HttpGet]
-        public async Task<IActionResult> GetAllSAItems()
+        public async Task<IActionResult> GetAllSAItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var getAllSAItemsList = await _repository.ItemMasterRepository.GetAllSAItems();
+                var getAllSAItemsList = await _repository.ItemMasterRepository.GetAllSAItems(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all SAItemMasters");
-               
+
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllSAItemsList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all SAItemMasters Successfully";
@@ -131,15 +131,15 @@ namespace Tips.Master.Api.Controllers
         }
         //GET All FG&SAItems
         [HttpGet]
-        public async Task<IActionResult> GetAllFGSAItems()
+        public async Task<IActionResult> GetAllFGSAItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaItems();
+                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaItems(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all FGSAItemMasters");
-               
+
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGSAItemsList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all FGSAItemMasters Successfully";
@@ -161,13 +161,13 @@ namespace Tips.Master.Api.Controllers
         // get all fg,sa,fru item list
 
         [HttpGet]
-        public async Task<IActionResult> getAllBomItems()
+        public async Task<IActionResult> getAllBomItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaFruItems();
+                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaFruItems(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all FGSAFRUItemMasters");
 
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGSAItemsList);
@@ -242,6 +242,35 @@ namespace Tips.Master.Api.Controllers
              }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllSAPurchasePartItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+
+            try
+            {
+                var sAPurchasePartItemsList = await _repository.ItemMasterRepository.GetAllSAPurchasePartItems(pagingParameter,searchParams);
+                _logger.LogInfo("Returned all SA & PurchasePartItemsListItemMasters");
+
+                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(sAPurchasePartItemsList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SA and PurchasePartItemsListItemMasters Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         // POST api/<ItemMasterController>
         [HttpPost]
         public IActionResult CreateItemMaster([FromBody] ItemMasterDtoPost itemMasterDtoPost)
@@ -282,98 +311,98 @@ namespace Tips.Master.Api.Controllers
                 var imageUploadDtoList = new List<ImageUpload>();
 
 
-                var ImageUploadDetails = itemMasterDtoPost.ImageUpload;
+                //var ImageUploadDetails = itemMasterDtoPost.ImageUpload;
+                
+                //foreach (var ImageUploadDetail in ImageUploadDetails)
+                //{
+                //    var imageContent = ImageUploadDetail.FileByte;
+                //    var itemNumbers = itemMasterDtoPost.ItemNumber;
+                //    string imageName = ImageUploadDetail.FileName + "." + ImageUploadDetail.FileExtension;
+                //    string imageExt = Path.GetExtension(imageName).ToUpper();
+                //    if (imageExt == ".PNG" || imageExt == ".JPG" || imageExt == ".JPEG" || imageExt == ".GIF")
+                //    {
+                //        //Guid guid = Guid.NewGuid();
+                //        string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", /*guid.ToString() + "_" +*/ imageName);
+                //        using (MemoryStream ms = new MemoryStream(imageContent))
+                //        {
+                //            ms.Position = 0;
+                //            using (var fileStream = new FileStream(imagePath, FileMode.Create, FileAccess.Write))
+                //            {
+                //                ms.WriteTo(fileStream);
+                //            }
+                //            var uploadedFiles = new ImageUpload
+                //            {
+                //                FileName = imageName,
+                //                FileExtension = imageExt,
+                //                FilePath = imagePath,
+                //                ParentId = itemNumbers,
+                //                DocumentFrom = "ItemMaster Image Document"
+                //            };
+                //            _repository.ImageUploadRepository.ImageUploadDocument(uploadedFiles);
+                //            _repository.SaveAsync();
+                //            if (uploadedFiles != null)
+                //            {
+                //                ImageUpload itemmasterImageDetails = _mapper.Map<ImageUpload>(uploadedFiles);
+                //                imageUploadDtoList.Add(itemmasterImageDetails);
+                //            }
 
-                foreach (var ImageUploadDetail in ImageUploadDetails)
-                {
-                    var imageContent = ImageUploadDetail.FileByte;
-                    var itemNumbers = itemMasterDtoPost.ItemNumber;
-                    string imageName = ImageUploadDetail.FileName + "." + ImageUploadDetail.FileExtension;
-                    string imageExt = Path.GetExtension(imageName).ToUpper();
-                    if (imageExt == ".PNG" || imageExt == ".JPG" || imageExt == ".JPEG" || imageExt == ".GIF")
-                    {
-                        //Guid guid = Guid.NewGuid();
-                        string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", /*guid.ToString() + "_" +*/ imageName);
-                        using (MemoryStream ms = new MemoryStream(imageContent))
-                        {
-                            ms.Position = 0;
-                            using (var fileStream = new FileStream(imagePath, FileMode.Create, FileAccess.Write))
-                            {
-                                ms.WriteTo(fileStream);
-                            }
-                            var uploadedFiles = new ImageUpload
-                            {
-                                FileName = imageName,
-                                FileExtension = imageExt,
-                                FilePath = imagePath,
-                                ParentId = itemNumbers,
-                                DocumentFrom = "ItemMaster Image Document"
-                            };
-                            _repository.ImageUploadRepository.ImageUploadDocument(uploadedFiles);
-                            _repository.SaveAsync();
-                            if (uploadedFiles != null)
-                            {
-                                ImageUpload itemmasterImageDetails = _mapper.Map<ImageUpload>(uploadedFiles);
-                                imageUploadDtoList.Add(itemmasterImageDetails);
-                            }
+                //        }
+                //    }
+                //    else
+                //    {
+                //        _logger.LogError("Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....");
+                //        serviceResponse.Data = null;
+                //        serviceResponse.Message = "Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....";
+                //        serviceResponse.Success = false;
+                //        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                //        return BadRequest(serviceResponse);
+                //    }
 
-                        }
-                    }
-                    else
-                    {
-                        _logger.LogError("Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....");
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = "Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....";
-                        serviceResponse.Success = false;
-                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                        return BadRequest(serviceResponse);
-                    }
+                //}
+                //var fileUploadDtoList = new List<FileUpload>();          
 
-                }
-                var fileUploadDtoList = new List<FileUpload>();          
-
-                //multiple file upload
+                ////multiple file upload
 
 
-                var FileUploadDetails = itemMasterDtoPost.FileUpload;
-                foreach (var FileUploadDetail in FileUploadDetails)
-                {
-                    var fileContent = FileUploadDetail.FileByte;
-                    var itemNumber = itemMasterDtoPost.ItemNumber;
-                    string fileName = FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
-                    string FileExt = Path.GetExtension(fileName).ToUpper();
+                //var FileUploadDetails = itemMasterDtoPost.FileUpload;
+                //foreach (var FileUploadDetail in FileUploadDetails)
+                //{
+                //    var fileContent = FileUploadDetail.FileByte;
+                //    var itemNumber = itemMasterDtoPost.ItemNumber;
+                //    string fileName = FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
+                //    string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                    //Guid guids = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload",/*guids.ToString() + "_" +*/ fileName);
-                    using (MemoryStream ms = new MemoryStream(fileContent))
-                    {
-                        ms.Position = 0;
-                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                        {
-                            ms.WriteTo(fileStream);
-                        }
-                        var uploadedFile = new FileUpload
-                        {
-                            FileName = fileName,
-                            FileExtension = FileExt,
-                            FilePath = filePath,
-                            ParentId = itemNumber,
-                            DocumentFrom = "ItemMaster File Document",
-                        }; 
-                        _repository.FileUploadRepository.CreateFileUploadDocument(uploadedFile);
-                        _repository.SaveAsync();
-                        if (uploadedFile != null)
-                        {
-                            FileUpload itemmasterFileDetails = _mapper.Map<FileUpload>(uploadedFile);
-                            fileUploadDtoList.Add(itemmasterFileDetails);
-                        }
+                //    //Guid guids = Guid.NewGuid();
+                //    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload",/*guids.ToString() + "_" +*/ fileName);
+                //    using (MemoryStream ms = new MemoryStream(fileContent))
+                //    {
+                //        ms.Position = 0;
+                //        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                //        {
+                //            ms.WriteTo(fileStream);
+                //        }
+                //        var uploadedFile = new FileUpload
+                //        {
+                //            FileName = fileName,
+                //            FileExtension = FileExt,
+                //            FilePath = filePath,
+                //            ParentId = itemNumber,
+                //            DocumentFrom = "ItemMaster File Document",
+                //        }; 
+                //        _repository.FileUploadRepository.CreateFileUploadDocument(uploadedFile);
+                //        _repository.SaveAsync();
+                //        if (uploadedFile != null)
+                //        {
+                //            FileUpload itemmasterFileDetails = _mapper.Map<FileUpload>(uploadedFile);
+                //            fileUploadDtoList.Add(itemmasterFileDetails);
+                //        }
 
-                    }
+                //    }
 
-                }
+                //}
 
-                itemMasterEntity.FileUpload = fileUploadDtoList;
-                itemMasterEntity.ImageUpload = imageUploadDtoList;
+                //itemMasterEntity.FileUpload = fileUploadDtoList;
+                //itemMasterEntity.ImageUpload = imageUploadDtoList;
                  _repository.ItemMasterRepository.CreateItemMaster(itemMasterEntity);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;

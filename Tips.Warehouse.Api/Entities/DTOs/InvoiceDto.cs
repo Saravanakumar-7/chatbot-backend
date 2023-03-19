@@ -58,4 +58,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public List<InvoiceChildItemUpdateDto>? InvoiceChildItems { get; set; }
     }
 
+    public class InvoiceIdNameList
+    {
+        public int Id { get; set; }
+        public string? InvoiceNumber { get; set; }
+    }
+
 }

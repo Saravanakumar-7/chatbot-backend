@@ -1,8 +1,10 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -38,22 +40,33 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<DeliveryOrder>> GetAllActiveDeliveryOrders()
+        public async Task<PagedList<DeliveryOrder>> GetAllActiveDeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var allActiveDeliveryOrderDetails = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
-            return allActiveDeliveryOrderDetails;
+
+
+            var allActiveDeliveryOrderDetails = FindAll()
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
+                || inv.ProjectNumber.Contains(searchParams.SearchValue)
+                || inv.DeliveryOrderNumber.Contains(searchParams.SearchValue)
+                || inv.CustomerName.Contains(searchParams.SearchValue))))
+                .Include(t => t.DeliveryOrderItems)
+                .ThenInclude(y => y.DoSerialNumbers);
+
+            return PagedList<DeliveryOrder>.ToPagedList(allActiveDeliveryOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<PagedList<DeliveryOrder>> GetAllDeliveryOrders(PagingParameter pagingParameter)
+        public async Task<PagedList<DeliveryOrder>> GetAllDeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var allDeliveryOrderDetails = PagedList<DeliveryOrder>.ToPagedList(FindAll()
-                                .Include(t => t.DeliveryOrderItems)
-                                .ThenInclude(y => y.DoSerialNumbers)
-              .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return allDeliveryOrderDetails;
+
+            var allDeliveryOrderDetails = FindAll().OrderByDescending(x => x.Id)
+               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DeliveryOrderNumber.Contains(searchParams.SearchValue) ||
+                inv.ProjectNumber.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue))))
+                .Include(t => t.DeliveryOrderItems)
+                .ThenInclude(y => y.DoSerialNumbers);
+
+            return PagedList<DeliveryOrder>.ToPagedList(allDeliveryOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-
         public async Task<DeliveryOrder> GetDeliveryOrderById(int id)
         {
             var deliveryOrderDetailsbyId = await _tipsWarehouseDbContext.DeliveryOrder.Where(x => x.Id == id)
@@ -74,5 +87,20 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
+        public async Task<IEnumerable<DeliveryOrderIdNameList>> GetAllDeliveryOrderIdNameList()
+        {
+            IEnumerable<DeliveryOrderIdNameList> DeliveryOrderIddNameList = await _tipsWarehouseDbContext.DeliveryOrder
+                                .Select(x => new DeliveryOrderIdNameList()
+                                {
+                                    Id = x.Id,
+
+                                    DeliveryOrderNumber = x.DeliveryOrderNumber
+
+                                })
+                                .OrderByDescending(x => x.Id)
+                              .ToListAsync();
+
+            return DeliveryOrderIddNameList;
+        }
     }
 }

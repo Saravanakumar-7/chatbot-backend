@@ -1,6 +1,8 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -34,18 +36,23 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<IncoTerm>> GetAllActiveIncoTerm()
+        public async Task<PagedList<IncoTerm>> GetAllActiveIncoTerm([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActiveIncoTerms = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveIncoTerms;
+            var incotermDetails = FindAll()
+                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.IncoTermName.Contains(searchParams.SearchValue) ||
+                       inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<IncoTerm>.ToPagedList(incotermDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<IncoTerm>> GetAllIncoTerm()
+        public async Task<PagedList<IncoTerm>> GetAllIncoTerm([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var GetallIncoTerms = await FindAll().ToListAsync();
+            var incotermDetails = FindAll().OrderByDescending(x => x.Id)
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.IncoTermName.Contains(searchParams.SearchValue) ||
+                inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallIncoTerms;
+            return PagedList<IncoTerm>.ToPagedList(incotermDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
 
         public async Task<IncoTerm> GetIncoTermById(int id)
         {

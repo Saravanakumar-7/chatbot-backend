@@ -11,9 +11,9 @@ namespace Contracts
 {
     public interface IEnggBomGroupRepository : IRepositoryBase<EnggBomGroup>
     {
-        Task<PagedList<EnggBomGroup>> GetAllEnggBomGroup(PagingParameter pagingParameter);
+        Task<PagedList<EnggBomGroup>> GetAllEnggBomGroup(PagingParameter pagingParameter, SearchParames searchParams);
         Task<EnggBomGroup> GetEnggBomGroupById(int id);
-        Task<IEnumerable<EnggBomGroup>> GetAllActiveEnggBomGroup();
+        Task<PagedList<EnggBomGroup>> GetAllActiveEnggBomGroup(PagingParameter pagingParameter, SearchParames searchParams);
         Task<int?> CreateEnggBomGroup(EnggBomGroup enggbomGroup);
         Task<string> UpdateEnggBomGroup(EnggBomGroup enggbomGroup);
         Task<string> DeleteEnggBomGroup(EnggBomGroup enggbomGroup);

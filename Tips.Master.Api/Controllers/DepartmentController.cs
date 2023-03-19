@@ -3,6 +3,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -27,13 +28,24 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<DepartmentController>
         [HttpGet]
-        public async Task<IActionResult> GetAllDepartment()
+        public async Task<IActionResult> GetAllDepartment([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<DepartmentDto>> serviceResponse = new ServiceResponse<IEnumerable<DepartmentDto>>();
 
             try
             {
-                var departments = await _repository.DepartmentRepository.GetAllDepartment();
+                var departments = await _repository.DepartmentRepository.GetAllDepartment(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    departments.TotalCount,
+                    departments.PageSize,
+                    departments.CurrentPage,
+                    departments.HasNext,
+                    departments.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all Department");
                 var result = _mapper.Map<IEnumerable<DepartmentDto>>(departments);
                 serviceResponse.Data = result;
@@ -52,14 +64,15 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveDepartments()
+        public async Task<IActionResult> GetAllActiveDepartments([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<DepartmentDto>> serviceResponse = new ServiceResponse<IEnumerable<DepartmentDto>>();
 
             try
             {
-                var departments = await _repository.DepartmentRepository.GetAllActiveDepartment();
+                var departments = await _repository.DepartmentRepository.GetAllActiveDepartment(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all departments");
                 var result = _mapper.Map<IEnumerable<DepartmentDto>>(departments);
                 serviceResponse.Data = result;
@@ -79,8 +92,9 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
 
             }
+
         }
-        // GET api/<DepartmentController>/5
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDepartmentById(int id)
         {

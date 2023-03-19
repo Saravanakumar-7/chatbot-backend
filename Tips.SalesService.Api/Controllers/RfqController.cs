@@ -63,13 +63,13 @@ namespace Tips.SalesService.Api.Controllers
 
         //rfq getall 
         [HttpGet]
-        public async Task<IActionResult> GetAllRfq([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllRfq([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<RfqDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqDto>>();
 
             try
             {
-                var getAllRfq = await _rfqRepository.GetAllRfq(pagingParameter);
+                var getAllRfq = await _rfqRepository.GetAllRfq(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllRfq.TotalCount,
@@ -104,13 +104,13 @@ namespace Tips.SalesService.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllRfqCustomerSupport([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllRfqCustomerSupport([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<RfqCustomerSupportDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqCustomerSupportDto>>();
 
             try
             {
-                var getAllRfqCS = await _repository.GetAllRfqCustomerSupport(pagingParameter);
+                var getAllRfqCS = await _repository.GetAllRfqCustomerSupport(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllRfqCS.TotalCount,
@@ -169,13 +169,13 @@ namespace Tips.SalesService.Api.Controllers
         //Get all RfqLPCosting
 
         [HttpGet]
-        public async Task<IActionResult> GetAllRfqLPCosting([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllRfqLPCosting([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<RfqLPCostingDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqLPCostingDto>>();
 
             try
             {
-                var getAllRfqLPCosting = await _rfqlpcostingRepository.GetAllRfqLPCosting(pagingParameter);
+                var getAllRfqLPCosting = await _rfqlpcostingRepository.GetAllRfqLPCosting(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllRfqLPCosting.TotalCount,
@@ -208,13 +208,13 @@ namespace Tips.SalesService.Api.Controllers
         }
         // Get all Rfq Engg 
         [HttpGet]
-        public async Task<IActionResult> GetAllRfqEngg([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllRfqEngg([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<RfqEnggDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqEnggDto>>();
 
             try
             {
-                var getAllRfqengg = await _rfqenggRepository.GetAllRfqEngg(pagingParameter);
+                var getAllRfqengg = await _rfqenggRepository.GetAllRfqEngg(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllRfqengg.TotalCount,
@@ -922,7 +922,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 var rfqIsCsCompleteUpdate = await _rfqRepository.RfqCsByRfqNumbers(rfqCsData);
 
-                rfqIsCsCompleteUpdate.IsCsComplete = true;
+                //rfqIsCsCompleteUpdate.IsCsComplete = true;
 
                 var rfqCSItemDto = rfqCustomerSupportDto.RfqCustomerSupportItems;
 
@@ -1796,12 +1796,12 @@ namespace Tips.SalesService.Api.Controllers
 
         // GET: api/<RfqCustomGroupController>
         [HttpGet]
-        public async Task<IActionResult> GetAllRfqCustomGroup([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllRfqCustomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<RfqCustomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqCustomGroupDto>>();
             try
             {
-                var getAllRfqCustomGroup = await _rfqCustomGroupRepository.GetAllRfqCustomGroup(pagingParameter);
+                var getAllRfqCustomGroup = await _rfqCustomGroupRepository.GetAllRfqCustomGroup(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllRfqCustomGroup.TotalCount,
@@ -2046,12 +2046,12 @@ namespace Tips.SalesService.Api.Controllers
 
         // GET: api/<RfqCustomFieldController>
         [HttpGet]
-        public async Task<IActionResult> GetAllRfqCustomField([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllRfqCustomField([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<RfqCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqCustomFieldDto>>();
             try
             {
-                var getAllRfqCustomField = await _rfqCustomFieldRepository.GetAllRfqCustomField(pagingParameter);
+                var getAllRfqCustomField = await _rfqCustomFieldRepository.GetAllRfqCustomField(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllRfqCustomField.TotalCount,
@@ -2080,7 +2080,8 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
-        }
+        
+    }
 
 
         // GET: api/<RfqCustomFieldController>

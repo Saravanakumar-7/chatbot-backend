@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using Org.BouncyCastle.Ocsp;
@@ -81,10 +82,20 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<Quote>> GetAllActiveQuote()
+        public async Task<PagedList<Quote>> GetAllActiveQuote([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var quoteDetails = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
-            return quoteDetails;
+            var activeQuote = FindAll()
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.QuoteNumber.Contains(searchParammes.SearchValue)
+            || inv.RFQNumber.Contains(searchParammes.SearchValue)
+            || inv.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
+            || inv.TotalAmount.Equals(int.Parse(searchParammes.SearchValue))
+            || inv.CustomerName.Contains(searchParammes.SearchValue))))
+                                .Include(t => t.QuoteGenerals)
+                                .Include(x => x.QuoteAdditionalCharges)
+                                .Include(m => m.QuoteOtherTerms)
+                                .Include(i => i.QuoteRFQNotes)
+                                .Include(i => i.QuoteSpecialTerms);
+            return PagedList<Quote>.ToPagedList(activeQuote, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<IEnumerable<CsItemDetailsForQuoteDto>> GetCsItemDetailsForQuote(string rfqNumber)
@@ -167,22 +178,26 @@ namespace Tips.SalesService.Api.Repository
             return releaseLpList;
         }
 
-        public async Task<PagedList<Quote>> GetAllQuote(PagingParameter pagingParameter)
+        public async Task<PagedList<Quote>> GetAllQuote([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var quoteDetails = PagedList<Quote>.ToPagedList(FindAll()
-                               .Include(t => t.QuoteGenerals)
-                               .Include(x => x.QuoteAdditionalCharges)
-                               .Include(m => m.QuoteOtherTerms)
-                               .Include(i => i.QuoteRFQNotes)
-                               .Include(i => i.QuoteSpecialTerms)
 
-              .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var quoteDetails = FindAll().OrderByDescending(x => x.Id)
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.QuoteNumber.Contains(searchParammes.SearchValue)
+            || inv.RFQNumber.Contains(searchParammes.SearchValue)
+            || inv.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
+            || inv.TotalAmount.Equals(int.Parse(searchParammes.SearchValue))
+            || inv.CustomerName.Contains(searchParammes.SearchValue))))
+                                .Include(t => t.QuoteGenerals)
+                                .Include(x => x.QuoteAdditionalCharges)
+                                .Include(m => m.QuoteOtherTerms)
+                                .Include(i => i.QuoteRFQNotes)
+                                .Include(i => i.QuoteSpecialTerms);
 
-            return quoteDetails;
+
+            return PagedList<Quote>.ToPagedList(quoteDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-
-        public async Task<Quote> GetQuoteById(int id)
+            public async Task<Quote> GetQuoteById(int id)
         {
             var quoteDetails = await _tipsSalesServiceDbContext.Quotes.Where(x => x.Id == id)
                                .Include(t => t.QuoteGenerals)

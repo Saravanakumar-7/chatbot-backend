@@ -8,7 +8,7 @@ namespace Tips.Warehouse.Api.Contracts
 {
     public interface IInventoryTranctionRepository : IRepositoryBase<InventoryTranction>
     {
-        Task<PagedList<InventoryTranction>> GetAllInventoryTranction(PagingParameter pagingParameter);
+        Task<PagedList<InventoryTranction>> GetAllInventoryTranction(PagingParameter pagingParameter, SearchParams searchParams);
 
         Task<InventoryTranction> CreateInventoryTransaction(InventoryTranction inventoryTranction);
         Task<string> UpdateInventoryTraction(InventoryTranction inventoryTranction);

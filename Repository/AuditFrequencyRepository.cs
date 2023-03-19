@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -34,19 +36,23 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<AuditFrequency>> GetAllActiveAuditFrequencies()
+        public async Task<PagedList<AuditFrequency>> GetAllActiveAuditFrequencies([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var AllActiveAuditFrequencies = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveAuditFrequencies;
+            var getAllActiveAuditFrequencies = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.AuditFrequencyName.Contains(searchParams.SearchValue) ||
+          inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<AuditFrequency>.ToPagedList(getAllActiveAuditFrequencies, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<AuditFrequency>> GetAllAuditFrequencies()
+        public async Task<PagedList<AuditFrequency>> GetAllAuditFrequencies([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var GetallAuditFrequencies = await FindAll().ToListAsync();
+            var getAllAuditFrequencies = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.AuditFrequencyName.Contains(searchParams.SearchValue) ||
+                    inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallAuditFrequencies;
+            return PagedList<AuditFrequency>.ToPagedList(getAllAuditFrequencies, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<AuditFrequency> GetAuditFrequenyById(int id)

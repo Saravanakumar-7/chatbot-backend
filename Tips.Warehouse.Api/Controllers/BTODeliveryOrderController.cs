@@ -5,6 +5,7 @@ using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
+using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -45,12 +46,12 @@ namespace Tips.Warehouse.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllBTODeliveryOrders([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllBTODeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             ServiceResponse<IEnumerable<BTODeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderDto>>();
             try
             {
-                var getAllBTODeliveryOrdersDetails = await _repository.GetAllBTODeliveryOrders(pagingParameter);
+                var getAllBTODeliveryOrdersDetails = await _repository.GetAllBTODeliveryOrders(pagingParameter,searchParams);
                 var metadata = new
                 {
                     getAllBTODeliveryOrdersDetails.TotalCount,
@@ -743,6 +744,31 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllBTOIdNameIdNameList()
+        {
+            ServiceResponse<IEnumerable<BtoIDNameList>> serviceResponse = new ServiceResponse<IEnumerable<BtoIDNameList>>();
+            try
+            {
+                var listOfAllBtoIdNames = await _repository.GetAllBTOIdNameIdNameList();
+                var result = _mapper.Map<IEnumerable<BtoIDNameList>>(listOfAllBtoIdNames);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All GetAllBTOIdNameIdNameList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllBTOIdNameIdNameList action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

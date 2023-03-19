@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -33,17 +35,24 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<MaterialType>> GetAllActiveMaterialType()
+        public async Task<PagedList<MaterialType>> GetAllActiveMaterialType([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActiveMaterialTypes = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveMaterialTypes;
+            var materialTypeDetails = FindAll()
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.MaterialTypeName.Contains(searchParams.SearchValue) ||
+            inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<MaterialType>.ToPagedList(materialTypeDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<MaterialType>> GetAllMaterialType()
+
+        public async Task<PagedList<MaterialType>> GetAllMaterialType([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var GetallmaterialTypes = await FindAll().ToListAsync();
-            return GetallmaterialTypes;
+            var materialTypeDetails = FindAll().OrderByDescending(x => x.Id)
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.MaterialTypeName.Contains(searchParams.SearchValue) ||
+            inv.Description.Contains(searchParams.SearchValue))));
+
+            return PagedList<MaterialType>.ToPagedList(materialTypeDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
 
         public async Task<MaterialType> GetMaterialTypeById(int id)
         {

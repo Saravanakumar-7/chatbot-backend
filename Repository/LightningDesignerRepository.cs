@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -25,14 +27,20 @@ namespace Repository
             string result = $"lightningDesigner details of {lightningDesigner.Id} is deleted successfully!";
             return result;
         }
-        public async Task<IEnumerable<LightningDesigner>> GetAllActiveLightningDesigners()
+        public async Task<PagedList<LightningDesigner>> GetAllActiveLightningDesigners([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActivelightningDesigner = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActivelightningDesigner;
+            var lightningDesignerDetails = FindAll()
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LightningDesignerName.Contains(searchParams.SearchValue) ||
+            inv.Description.Contains(searchParams.SearchValue) || inv.EmailId.Contains(searchParams.SearchValue))));
+            return PagedList<LightningDesigner>.ToPagedList(lightningDesignerDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-        public async Task<IEnumerable<LightningDesigner>> GetAllLightningDesigners()
+        public async Task<PagedList<LightningDesigner>> GetAllLightningDesigners([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var GetallLightningDesigner = await FindAll().ToListAsync(); return GetallLightningDesigner;
+            var lightningDesignerDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LightningDesignerName.Contains(searchParams.SearchValue) ||
+                   inv.Description.Contains(searchParams.SearchValue) || inv.EmailId.Contains(searchParams.SearchValue))));
+
+            return PagedList<LightningDesigner>.ToPagedList(lightningDesignerDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
         public async Task<LightningDesigner> GetLightningDesignerById(int id)
         {

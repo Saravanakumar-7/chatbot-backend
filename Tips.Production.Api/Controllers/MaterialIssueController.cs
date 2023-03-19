@@ -5,10 +5,13 @@ using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Repository;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,23 +23,27 @@ namespace Tips.Production.Api.Controllers
     {
         private IMaterialIssueRepository  _materialIssueRepository;
         private ILoggerManager _logger;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
         private IMapper _mapper;
 
-        public MaterialIssueController(IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IMapper mapper)
+        public MaterialIssueController(IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _materialIssueRepository = materialIssueRepository;
             _logger = logger;
+            _httpClient = httpClient;
+            _config = config;
             _mapper = mapper;
         }
 
         // GET: api/<MaterialIssueController>
         [HttpGet]
-        public async Task<IActionResult> GetAllMaterialIssues([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllMaterialIssues([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<MaterialIssueDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueDto>>();
             try
             {
-                var materialIssueDetails = await _materialIssueRepository.GetAllMaterialIssues(pagingParameter);
+                var materialIssueDetails = await _materialIssueRepository.GetAllMaterialIssues(pagingParameter, searchParamess);
                 var metadata = new
                 {
                     materialIssueDetails.TotalCount,
@@ -193,8 +200,39 @@ namespace Tips.Production.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                 var updateMaterialIssue = _mapper.Map(materialIssueUpdateDto, materialIssueDetailsById);
-                _mapper.Map(materialIssueUpdateDto, materialIssueDetailsById);
+                //_mapper.Map(materialIssueUpdateDto, materialIssueDetailsById);
+
+                
+
+                List<MaterialIssueItem> materialIssueItems = new List<MaterialIssueItem>();
+
+                foreach (var item in materialIssueUpdateDto.MaterialIssueItems)
+                {
+                    MaterialIssueItem materialIssueItem = _mapper.Map<MaterialIssueItem>(item);
+                    materialIssueItem.IssuedQty += item.NewIssueQty;
+                    materialIssueItems.Add(materialIssueItem);
+
+                    //update inventory 
+
+                    var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                     "GetInventoryDetailsByItemNo?", "&ItemNumber=", materialIssueItem.PartNumber));
+                    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                    dynamic inventoryObject = inventoryObjectData.data;
+                    inventoryObject.Balance_Quantity -= item.NewIssueQty; 
+                    if(inventoryObject.Balance_Quantity == item.NewIssueQty)
+                    {
+                        inventoryObject.IsStockAvailable = false;
+                    }
+                    var json = JsonConvert.SerializeObject(inventoryObject);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
+                        "UpdateInventory/", inventoryObject.id), data);
+
+                }
+                updateMaterialIssue.MaterialIssueItems = materialIssueItems;
                 string result = await _materialIssueRepository.UpdateMaterialIssue(updateMaterialIssue);
+
                 _logger.LogInfo(result);
                 _materialIssueRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -246,6 +284,31 @@ namespace Tips.Production.Api.Controllers
                 _logger.LogError($"Something went wrong inside DeleteMaterialIssue action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllMaterialIssueIdNameList()
+        {
+            ServiceResponse<IEnumerable<MaterialIssueIdNameList>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueIdNameList>>();
+            try
+            {
+                var listOfAllMaterialIssueIdNames = await _materialIssueRepository.GetAllMaterialIssueIdNameList();
+                var result = _mapper.Map<IEnumerable<MaterialIssueIdNameList>>(listOfAllMaterialIssueIdNames);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All listOfAllMaterialIssueIdNames";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllMaterialIssueIdNameList action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

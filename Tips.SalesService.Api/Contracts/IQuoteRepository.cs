@@ -7,7 +7,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IQuoteRepository : IRepositoryBase<Quote>
     {
-        Task<PagedList<Quote>> GetAllQuote(PagingParameter pagingParameter);
+        Task<PagedList<Quote>> GetAllQuote(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<Quote> GetQuoteById(int id);
 
  
@@ -16,7 +16,7 @@ namespace Tips.SalesService.Api.Contracts
 
         Task<int?> GetQuoteNumberAutoIncrementCount(DateTime date);
 
-        Task<IEnumerable<Quote>> GetAllActiveQuote();
+        Task<PagedList<Quote>> GetAllActiveQuote(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<long> CreateQuote(Quote quote);       
         Task<Quote> ChangeQuoteVersion(Quote quote);
          Task<string> UpdateQuote(Quote quote);

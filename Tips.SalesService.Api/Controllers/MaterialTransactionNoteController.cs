@@ -29,13 +29,13 @@ namespace Tips.SalesService.Api.Controllers
             _mapper = mapper;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllMaterialTransactionNote([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllMaterialTransactionNote([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<MaterialTransactionNoteDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialTransactionNoteDto>>();
 
             try
             {
-                var listOfmtn = await _materialTransactionNoteRepository.GetAllMaterialTransactionNote(pagingParameter);
+                var listOfmtn = await _materialTransactionNoteRepository.GetAllMaterialTransactionNote(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     listOfmtn.TotalCount,

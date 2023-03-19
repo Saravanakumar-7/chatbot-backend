@@ -2,8 +2,9 @@
 using Entities;
 using Entities.DTOs;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using Org.BouncyCastle.Asn1.Misc;
 using Tips.Purchase.Api.Contracts;
 using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.Dto;
@@ -52,11 +53,13 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string poNumber)
         {
-
+            //grin 
+            
             IEnumerable<GetDownloadUrlDto> getDownloadDetails = await _tipsPurchaseDbContext.DocumentUploads
                                 .Where(b => b.ParentNumber == poNumber)
                                 .Select(x => new GetDownloadUrlDto()
                                 {
+                                    Id = x.Id,
                                     FileName = x.FileName,
                                     FileExtension = x.FileExtension,
                                     FilePath = x.FilePath
@@ -65,6 +68,8 @@ namespace Tips.Purchase.Api.Repository
 
             return getDownloadDetails;
         }
+
+
         public async Task<int?> GetPONumberAutoIncrementCount(DateTime date)
         {
             var getPONumberAutoIncrementCount = _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.CreatedOn == date.Date).Count();
@@ -78,12 +83,22 @@ namespace Tips.Purchase.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<PurchaseOrder>> GetAllActivePurchaseOrders()
+        public async Task<PagedList<PurchaseOrder>> GetAllActivePurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
-            var activePurchaseOrderDetails = await FindAll().ToListAsync();
-            return activePurchaseOrderDetails;
-        }
 
+
+
+            var activePurchaseOrderDetails = FindAll()
+               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue)
+               || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
+               || inv.PODate.Equals(int.Parse(searchParams.SearchValue)))))
+                                .Include(o => o.POFiles)
+                                .Include(t => t.POItemList)
+                                .ThenInclude(x => x.POAddprojects)
+                                .Include(m => m.POItemList)
+                                .ThenInclude(i => i.POAddDeliverySchedules);
+            return PagedList<PurchaseOrder>.ToPagedList(activePurchaseOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllActivePurchaseOrderNameList()
         {
             IEnumerable<PurchaseOrderIdNameListDto> activePurchaseOrderNameList = await _tipsPurchaseDbContext.PurchaseOrders
@@ -122,19 +137,20 @@ namespace Tips.Purchase.Api.Repository
             return pendingPOApprovalIINameList;
         }
 
-        public async Task<PagedList<PurchaseOrder>> GetAllPurchaseOrders(PagingParameter pagingParameter)
+        public async Task<PagedList<PurchaseOrder>> GetAllPurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
 
-            var purchaseOrderDetails = PagedList<PurchaseOrder>.ToPagedList(FindAll()
-                                .Include(o=>o.POFiles)
-                                .Include(t => t.POItemList)
-                                .ThenInclude(x => x.POAddprojects)
-                                .Include(m => m.POItemList)
-                                .ThenInclude(i => i.POAddDeliverySchedules)
+            var purchaseOrderDetails = FindAll().OrderByDescending(on => on.Id)
 
-               .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-
-            return purchaseOrderDetails;
+               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue)
+               || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
+               || inv.PODate.Equals(int.Parse(searchParams.SearchValue)))))
+                                .Include(o => o.POFiles)
+                               .Include(t => t.POItemList)
+                               .ThenInclude(x => x.POAddprojects)
+                               .Include(m => m.POItemList)
+                               .ThenInclude(i => i.POAddDeliverySchedules);
+            return PagedList<PurchaseOrder>.ToPagedList(purchaseOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<PurchaseOrder> GetPurchaseOrderById(int id)
@@ -238,6 +254,19 @@ namespace Tips.Purchase.Api.Repository
 
             var result = await Create(documentUpload);
             return result.Id;
+        }
+        public async Task<DocumentUpload> GetUploadDocById(int id)
+        {
+            var pOUploadDocFileNameById = await _tipsPurchaseDbContext.DocumentUploads
+                .Where(x => x.Id == id).FirstOrDefaultAsync();
+
+            return pOUploadDocFileNameById;
+        }
+        public async Task<string> DeleteUploadFile(DocumentUpload documentUpload)
+        {
+            Delete(documentUpload);
+            string result = $"DocumentUpload details of {documentUpload.Id} is deleted successfully!";
+            return result;
         }
     }
 

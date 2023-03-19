@@ -4,6 +4,7 @@ using Entities.DTOs;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -24,13 +25,24 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<DemoStatusController>
         [HttpGet]
-        public async Task<IActionResult> GetAllBHK()
+        public async Task<IActionResult> GetAllBHK([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<BHKDto>> serviceResponse = new ServiceResponse<IEnumerable<BHKDto>>();
             try
             {
 
-                var bHKList = await _repository.BHKRepository.GetAllBHK();
+                var bHKList = await _repository.BHKRepository.GetAllBHK(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    bHKList.TotalCount,
+                    bHKList.PageSize,
+                    bHKList.CurrentPage,
+                    bHKList.HasNext,
+                    bHKList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all BHK");
                 var result = _mapper.Map<IEnumerable<BHKDto>>(bHKList);
                 serviceResponse.Data = result;
@@ -49,14 +61,15 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveBHK()
+        public async Task<IActionResult> GetAllActiveBHK([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<BHKDto>> serviceResponse = new ServiceResponse<IEnumerable<BHKDto>>();
 
             try
             {
-                var bHKList = await _repository.BHKRepository.GetAllActiveBHK();
+                var bHKList = await _repository.BHKRepository.GetAllActiveBHK(pagingParameter,searchParams);
                 _logger.LogInfo("Returned all BHK");
                 var result = _mapper.Map<IEnumerable<BHKDto>>(bHKList);
                 serviceResponse.Data = result;

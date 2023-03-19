@@ -33,13 +33,13 @@ namespace Tips.Master.Api.Controllers
         // GET: api/<CustomerInfoController>
 
         [HttpGet]
-        public async Task<IActionResult> GetAllLeads([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllLeads([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LeadDto>> serviceResponse = new ServiceResponse<IEnumerable<LeadDto>>();
 
             try
             {
-                var listOfLeads = await _repository.LeadRepository.GetAllLeads(pagingParameter);
+                var listOfLeads = await _repository.LeadRepository.GetAllLeads(pagingParameter, searchParams);
 
                 var metadata = new
                 {

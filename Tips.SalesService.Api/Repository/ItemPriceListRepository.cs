@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
@@ -42,15 +43,15 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<ItemPriceList>> GetAllItemPriceList(PagingParameter pagingParameter)
+        public async Task<PagedList<ItemPriceList>> GetAllItemPriceList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
 
-            var getAllItemPriceList = PagedList<ItemPriceList>.ToPagedList(FindAll()
-                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var itemPrices = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.ItemNumber.Contains(searchParammes.SearchValue) || inv.Description.Contains(searchParammes.SearchValue))));
 
-            return getAllItemPriceList;
+            return PagedList<ItemPriceList>.ToPagedList(itemPrices, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-         
+
         public async Task<IEnumerable<ItemPriceListNameDto>> GetAllItemPriceNameList()
         {
             IEnumerable<ItemPriceListNameDto> getAllItemPriceListName = await _tipsSalesServiceDbContext.ItemPriceLists

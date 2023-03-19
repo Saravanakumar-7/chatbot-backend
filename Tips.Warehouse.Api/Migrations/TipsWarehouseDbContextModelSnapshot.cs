@@ -31,7 +31,6 @@ namespace Tips.Warehouse.Api.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BTONumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")
@@ -41,22 +40,18 @@ namespace Tips.Warehouse.Api.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CustomerAliasName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DODate")
+                    b.Property<DateTime?>("DODate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("IssuedTo")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastModifiedBy")
@@ -66,14 +61,12 @@ namespace Tips.Warehouse.Api.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("PONumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SalesOrderId")
+                    b.Property<int?>("SalesOrderId")
                         .HasColumnType("int");
 
                     b.Property<string>("Unit")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -92,7 +85,7 @@ namespace Tips.Warehouse.Api.Migrations
                     b.Property<string>("BTONumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("BalanceDoQty")
+                    b.Property<decimal?>("BalanceDoQty")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("CreatedBy")
@@ -102,45 +95,39 @@ namespace Tips.Warehouse.Api.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CustomerAliasName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DODate")
+                    b.Property<DateTime?>("DODate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Discount")
+                    b.Property<decimal?>("Discount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("DispatchQty")
+                    b.Property<decimal?>("DispatchQty")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("FGItemNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("FGOrderQty")
+                    b.Property<decimal?>("FGOrderQty")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("FGStock")
+                    b.Property<decimal?>("FGStock")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("InvoicedQty")
+                    b.Property<decimal?>("InvoicedQty")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("IssuedTo")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastModifiedBy")
@@ -149,20 +136,19 @@ namespace Tips.Warehouse.Api.Migrations
                     b.Property<DateTime?>("LastModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("NetValue")
+                    b.Property<decimal?>("NetValue")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("OrderBalanceQty")
+                    b.Property<decimal?>("OrderBalanceQty")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("PONumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Remark")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SalesOrderId")
+                    b.Property<int?>("SalesOrderId")
                         .HasColumnType("int");
 
                     b.Property<string>("SerialNo")
@@ -174,10 +160,13 @@ namespace Tips.Warehouse.Api.Migrations
                     b.Property<string>("UOM")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UniqeId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Unit")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("UnitPrice")
+                    b.Property<decimal?>("UnitPrice")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -199,7 +188,7 @@ namespace Tips.Warehouse.Api.Migrations
                     b.Property<string>("BTONumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("BalanceDoQty")
+                    b.Property<decimal?>("BalanceDoQty")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("CreatedBy")
@@ -209,23 +198,21 @@ namespace Tips.Warehouse.Api.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Discount")
+                    b.Property<decimal?>("Discount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("DispatchQty")
+                    b.Property<decimal?>("DispatchQty")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("FGItemNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("FGOrderQty")
+                    b.Property<decimal?>("FGOrderQty")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("FGStock")
+                    b.Property<decimal?>("FGStock")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("InvoicedQty")
@@ -237,13 +224,16 @@ namespace Tips.Warehouse.Api.Migrations
                     b.Property<DateTime?>("LastModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("NetValue")
+                    b.Property<decimal?>("NetValue")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("OrderBalanceQty")
+                    b.Property<decimal?>("OrderBalanceQty")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("SalesOrderId")
+                    b.Property<string>("PartType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SalesOrderId")
                         .HasColumnType("int");
 
                     b.Property<string>("SerialNo")
@@ -255,7 +245,7 @@ namespace Tips.Warehouse.Api.Migrations
                     b.Property<string>("UOM")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("UnitPrice")
+                    b.Property<decimal?>("UnitPrice")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -668,9 +658,6 @@ namespace Tips.Warehouse.Api.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SerialNumber")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Unit")
                         .HasColumnType("nvarchar(max)");
 
@@ -687,6 +674,9 @@ namespace Tips.Warehouse.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BtoDeliveryOrderPartsId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("CGST")
                         .HasPrecision(13, 3)
                         .HasColumnType("decimal(13,3)");
@@ -694,12 +684,11 @@ namespace Tips.Warehouse.Api.Migrations
                     b.Property<string>("DONumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FGItemNumber")
+                    b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("GST")
-                        .HasPrecision(13, 3)
-                        .HasColumnType("decimal(13,3)");
+                    b.Property<string>("FGItemNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("IGST")
                         .HasPrecision(13, 3)
@@ -708,15 +697,21 @@ namespace Tips.Warehouse.Api.Migrations
                     b.Property<int>("InvoiceId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("Qty")
+                    b.Property<decimal>("InvoicedQty")
                         .HasPrecision(13, 3)
                         .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("PartType")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("SGST")
                         .HasPrecision(13, 3)
                         .HasColumnType("decimal(13,3)");
 
-                    b.Property<string>("SalesOrderID")
+                    b.Property<int?>("SalesOrderID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SerialNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("TotalValue")
@@ -728,10 +723,15 @@ namespace Tips.Warehouse.Api.Migrations
                         .HasColumnType("decimal(13,3)");
 
                     b.Property<string>("UOC")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UOM")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("UTGST")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
 
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(13, 3)
@@ -863,6 +863,9 @@ namespace Tips.Warehouse.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("SerialNo")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("StockAvailable")
                         .HasColumnType("int");
 
@@ -922,10 +925,10 @@ namespace Tips.Warehouse.Api.Migrations
                     b.Property<string>("PONumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("ReturnDODate")
+                    b.Property<DateTime?>("ReturnBTODate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ReturnDONumber")
+                    b.Property<string>("ReturnBTONumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Unit")
@@ -989,6 +992,9 @@ namespace Tips.Warehouse.Api.Migrations
                         .HasPrecision(13, 2)
                         .HasColumnType("decimal(13,2)");
 
+                    b.Property<string>("PartType")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
@@ -1003,12 +1009,13 @@ namespace Tips.Warehouse.Api.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UOC")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UOM")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal?>("UnitPrice")
+                    b.Property<decimal>("UnitPrice")
                         .HasPrecision(13, 2)
                         .HasColumnType("decimal(13,2)");
 
@@ -1054,9 +1061,6 @@ namespace Tips.Warehouse.Api.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ReturnPdfPrint")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Unit")
                         .HasColumnType("nvarchar(max)");
 
@@ -1072,10 +1076,6 @@ namespace Tips.Warehouse.Api.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal?>("ActualQty")
-                        .HasPrecision(13, 3)
-                        .HasColumnType("decimal(13,3)");
 
                     b.Property<decimal>("CGST")
                         .HasPrecision(13, 3)
@@ -1098,9 +1098,12 @@ namespace Tips.Warehouse.Api.Migrations
                         .HasPrecision(13, 3)
                         .HasColumnType("decimal(13,3)");
 
-                    b.Property<decimal?>("Qty")
+                    b.Property<decimal>("InvoicedQty")
                         .HasPrecision(13, 3)
                         .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("PartType")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
@@ -1108,7 +1111,7 @@ namespace Tips.Warehouse.Api.Migrations
                     b.Property<int>("ReturnInvoiceId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("ReturnQty")
+                    b.Property<decimal>("ReturnQty")
                         .HasPrecision(13, 3)
                         .HasColumnType("decimal(13,3)");
 
@@ -1116,23 +1119,27 @@ namespace Tips.Warehouse.Api.Migrations
                         .HasPrecision(13, 3)
                         .HasColumnType("decimal(13,3)");
 
-                    b.Property<string>("SalesOrderId")
+                    b.Property<int?>("SalesOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SerialNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TotalValue")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("TotalValue")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("TotalValueWithTax")
                         .HasPrecision(13, 3)
                         .HasColumnType("decimal(13,3)");
 
+                    b.Property<string>("UOC")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UOM")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UnitOfCurrency")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("UnitPrice")
+                    b.Property<decimal>("UnitPrice")
                         .HasPrecision(13, 3)
                         .HasColumnType("decimal(13,3)");
 

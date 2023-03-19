@@ -7,6 +7,7 @@ using Entities.Helper;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
 using Entities.Enums;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Production.Api.Repository
 {
@@ -34,13 +35,14 @@ namespace Tips.Production.Api.Repository
         }
 
 
-        public async Task<PagedList<ShopOrder>> GetAllShopOrders(PagingParameter pagingParameter)
+        public async Task<PagedList<ShopOrder>> GetAllShopOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
-            var shopOrderDetails =  PagedList<ShopOrder>.ToPagedList(FindAll()
-            .Include(t => t.ShopOrderItems)
-            .OrderByDescending(on => on.Id),pagingParameter.PageNumber,pagingParameter.PageSize);
-            return shopOrderDetails;
+            var allShopOrderDetails = FindAll().OrderByDescending(x => x.Id)
+                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParamess.SearchValue) || inv.ShopOrderNumber.Contains(searchParamess.SearchValue) ||
+                      inv.ProjectType.Contains(searchParamess.SearchValue) || inv.ItemType.Equals(int.Parse(searchParamess.SearchValue)) || inv.TotalSOReleaseQty.Equals(int.Parse(searchParamess.SearchValue)))))
+                     .Include(t => t.ShopOrderItems);
 
+            return PagedList<ShopOrder>.ToPagedList(allShopOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<ShopOrder> GetShopOrderById(int id)

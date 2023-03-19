@@ -31,13 +31,13 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllLocationTransfer([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllLocationTransfer([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<LocationTransferDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferDto>>();
 
             try
             {
-                var getAllLocationTransfers = await _locationTransferRepository.GetAllLocationTransfer(pagingParameter);
+                var getAllLocationTransfers = await _locationTransferRepository.GetAllLocationTransfer(pagingParameter, searchParammes);
 
                 var metadata = new
                 {
@@ -250,6 +250,32 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllLocationTransferIdNameList()
+        {
+            ServiceResponse<IEnumerable<LocationTransferIdNameList>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferIdNameList>>();
+            try
+            {
+                var listOfAllLocationTransferIdNames = await _locationTransferRepository.GetAllLocationTransferIdNameList();
+                var result = _mapper.Map<IEnumerable<LocationTransferIdNameList>>(listOfAllLocationTransferIdNames);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All listOfAllLocationTransferIdNames";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllLocationTransferIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
         }
     }
 }

@@ -9,6 +9,8 @@ using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
 using System;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc;
+using Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -44,22 +46,33 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<BTODeliveryOrder>> GetAllActiveBTODeliveryOrders()
+        public async Task<PagedList<BTODeliveryOrder>> GetAllActiveBTODeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var getAllActiveBTODetails = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
-            return getAllActiveBTODetails;
+
+
+            var getAllActiveBTODetails = FindAll()
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
+                || inv.BTONumber.Contains(searchParams.SearchValue)
+                || inv.PONumber.Contains(searchParams.SearchValue)
+                || inv.CustomerName.Contains(searchParams.SearchValue)
+                || inv.SalesOrderId.Equals(int.Parse(searchParams.SearchValue)))))
+                .Include(t => t.BTODeliveryOrderItems);
+
+            return PagedList<BTODeliveryOrder>.ToPagedList(getAllActiveBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrders(PagingParameter pagingParameter)
+        public async Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var getAllBTODetails = PagedList<BTODeliveryOrder>.ToPagedList(FindAll()
-                                 .Include(t => t.BTODeliveryOrderItems)
-                                 //.ThenInclude(s => s.BTOSerialNumbers)
-                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return getAllBTODetails;
+
+            var getAllBTODetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BTONumber.Contains(searchParams.SearchValue) ||
+                 inv.PONumber.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
+                 || inv.SalesOrderId.Equals(int.Parse(searchParams.SearchValue)))))
+                 .Include(t => t.BTODeliveryOrderItems);
+
+            return PagedList<BTODeliveryOrder>.ToPagedList(getAllBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-
         public async Task<IEnumerable<ListofBtoDeliveryOrderDetails>> GetBtoDeliveryOrderNumberList()
         {
 
@@ -122,7 +135,21 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
+        public async Task<IEnumerable<BtoIDNameList>> GetAllBTOIdNameIdNameList()
+        {
+            IEnumerable<BtoIDNameList> btoIddNameList = await _tipsWarehouseDbContext.bTODeliveryOrder
+                               .Select(x => new BtoIDNameList()
+                               {
+                                   Id = x.Id,
+                                   
+                                   BTONumber = x.BTONumber
 
+                               })
+                               .OrderByDescending(x => x.Id)
+                             .ToListAsync();
+
+            return btoIddNameList;
+        }
     }
     public class BTODeliveryOrderItemRepository : RepositoryBase<BTODeliveryOrderItems>, IBTODeliveryOrderItemsRepository
     {
@@ -131,17 +158,17 @@ namespace Tips.Warehouse.Api.Repository
         {
             _tipsWarehouseDbContexts = repositoryContext;
         }
-        public async Task<BTODeliveryOrderItems> UpdateBtoDelieveryOrderBalanceQty(string itemNumber, string BtoDeliveryNumber, string Qty)
+        public async Task<BTODeliveryOrderItems> UpdateBtoDelieveryOrderBalanceQty(string itemNumber, string BtoDeliveryNumber, decimal Qty)
         {
-            var getSalesOrderDetailsBySOandItemNo = await _tipsWarehouseDbContexts.bTODeliveryOrderItems
+            var btoDeliveryOrderDetails = await _tipsWarehouseDbContexts.bTODeliveryOrderItems
                     .Where(x => x.FGItemNumber == itemNumber && x.BTONumber == BtoDeliveryNumber)
                           .FirstOrDefaultAsync();
-            decimal Quantity = Convert.ToDecimal(Qty);
-            getSalesOrderDetailsBySOandItemNo.InvoicedQty += Quantity;
-            getSalesOrderDetailsBySOandItemNo.BalanceDoQty = getSalesOrderDetailsBySOandItemNo.DispatchQty - getSalesOrderDetailsBySOandItemNo.InvoicedQty;
+            //var Quantity = Convert.ToDecimal(Qty);
+            btoDeliveryOrderDetails.InvoicedQty = btoDeliveryOrderDetails.InvoicedQty + Qty;
+            btoDeliveryOrderDetails.BalanceDoQty = btoDeliveryOrderDetails.DispatchQty - btoDeliveryOrderDetails.InvoicedQty;
             
-            Update(getSalesOrderDetailsBySOandItemNo);
-            return getSalesOrderDetailsBySOandItemNo;
+            Update(btoDeliveryOrderDetails);
+            return btoDeliveryOrderDetails;
         }
         public async Task<BTODeliveryOrderItems> GetBtoDelieveryOrderItemDetails(int btoDeliveryOrderPartsId)
         {

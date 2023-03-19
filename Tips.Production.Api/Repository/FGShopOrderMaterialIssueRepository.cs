@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
@@ -33,14 +34,15 @@ namespace Tips.Production.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<FGShopOrderMaterialIssue>> GetAllFGShopOrderMaterialIssues(PagingParameter pagingParameter)
+        public async Task<PagedList<FGShopOrderMaterialIssue>> GetAllFGShopOrderMaterialIssues([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
-            var fGShopOrderMaterialIssueDetails = PagedList<FGShopOrderMaterialIssue>.ToPagedList(FindAll()
-                               .Include(t => t.FGShopOrderMaterialIssueGeneralList)
-              .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-
-            return fGShopOrderMaterialIssueDetails;
+            var fgShopOrderDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParamess.SearchValue) || inv.ShopOrderNumber.Contains(searchParamess.SearchValue) ||
+                   inv.FGPartNumber.Contains(searchParamess.SearchValue) || inv.ProjectNumber.Contains(searchParamess.SearchValue) || inv.ShopOrderType.Contains(searchParamess.SearchValue)
+                   || inv.ShopOrderQty.Equals(int.Parse(searchParamess.SearchValue)))));
+            return PagedList<FGShopOrderMaterialIssue>.ToPagedList(fgShopOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
 
         public async Task<FGShopOrderMaterialIssue> GetFGShopOrderMaterialIssueById(int id)
         {

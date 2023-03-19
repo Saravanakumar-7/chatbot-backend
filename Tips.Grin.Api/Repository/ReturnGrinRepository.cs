@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
@@ -62,13 +63,21 @@ namespace Tips.Grin.Api.Repository
             return getReturnGrinPartsByPartNo;
         }
 
-        public async Task<PagedList<ReturnGrin>> GetAllReturnGrin(PagingParameter pagingParameter)
+        public async Task<PagedList<ReturnGrin>> GetAllReturnGrin([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var getAllReturnGrinDetails = PagedList<ReturnGrin>.ToPagedList(FindAll()
-                                .Include(t => t.ReturnGrinParts)
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            /* var getAllReturnGrinDetails = PagedList<ReturnGrin>.ToPagedList(FindAll()
+                                 .Include(t => t.ReturnGrinParts)
+                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return getAllReturnGrinDetails;
+             return getAllReturnGrinDetails;*/
+
+            var getAllReturnGrins = FindAll()
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Customername.Contains(searchParams.SearchValue)
+             || inv.CustomerId.Equals(int.Parse(searchParams.SearchValue)))))
+             .Include(t => t.ReturnGrinParts);
+
+
+            return PagedList<ReturnGrin>.ToPagedList(getAllReturnGrins, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
     }
 }

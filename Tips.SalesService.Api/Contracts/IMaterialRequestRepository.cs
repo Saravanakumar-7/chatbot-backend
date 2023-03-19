@@ -8,7 +8,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IMaterialRequestRepository : IRepositoryBase<MaterialRequest>
     {
-        Task<PagedList<MaterialRequest>> GetAllMaterialRequest(PagingParameter pagingParameter);
+        Task<PagedList<MaterialRequest>> GetAllMaterialRequest(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<MaterialRequest> GetMaterialRequestById(int id);
         Task<MaterialRequest> GetMaterialReqByMRNumber(string MRnumber);
         Task<int?> GetMRNumberAutoIncrementCount(DateTime date);

@@ -10,6 +10,10 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.1">
       <PrivateAssets>all</PrivateAssets>
@@ -29,6 +33,8 @@
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="DTO\" />
+    <Folder Include="Upload\ImageUpload\" />
+    <Folder Include="Upload\FileUpload\" />
   </ItemGroup>
 
 </Project>

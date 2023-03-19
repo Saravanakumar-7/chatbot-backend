@@ -47,6 +47,8 @@ namespace Tips.Purchase.Api
             CreateMap<DocumentUpload, DocumentUploadPostDto>().ReverseMap();
             CreateMap<DocumentUpload, DocumentUploadUpdateDto>().ReverseMap();
             CreateMap<DocumentUpload, GetDownloadUrlDto>().ReverseMap();
+            CreateMap<DocumentUpload, GetPRDownloadUrlDto>().ReverseMap();
+
 
             CreateMap<PurchaseOrderDto, DocumentUploadDto>().ReverseMap();
              

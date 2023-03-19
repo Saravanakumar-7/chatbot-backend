@@ -27,13 +27,12 @@ namespace Tips.Master.Api.Controllers
             }
  
         [HttpGet]
-        public async Task<IActionResult> GetAllCustomerMaster([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllCustomerMaster([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CustomerMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerMasterDto>>();
             try
             {
-                var getAllCustomerMastersList = await _repository.CustomerMasterRepository.GetAllCustomerMasters(pagingParameter);
-                //_logger.LogInfo("Returned all CustomerMaster");
+                var getAllCustomerMastersList = await _repository.CustomerMasterRepository.GetAllCustomerMasters(pagingParameter, searchParams);
                 var metadata = new
                 {
                     getAllCustomerMastersList.TotalCount,
@@ -55,7 +54,7 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                 serviceResponse.Data = null;
+                serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetAllCustomerMasters action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
@@ -63,7 +62,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-         [HttpGet("{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomerMasterById(int id)
         {
             ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();

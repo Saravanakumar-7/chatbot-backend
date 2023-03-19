@@ -267,6 +267,7 @@ namespace Tips.Master.Api
             CreateMap<EnggBom, EnggBomUpdateDto>().ReverseMap();
 
 
+
             CreateMap<EnggChildItem, EnggChildItemDto>().ReverseMap();
             CreateMap<EnggChildItem, EnggChildItemPostDto>().ReverseMap();
             CreateMap<EnggChildItem, EnggChildItemUpdateDto>().ReverseMap();

@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -33,19 +35,22 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Language>> GetAllActiveLanguages()
+        public async Task<PagedList<Language>> GetAllActiveLanguages([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActivelanguages = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActivelanguages;
+            var languageDetails = FindAll()
+                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LanguageName.Contains(searchParams.SearchValue) ||
+                      inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<Language>.ToPagedList(languageDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-    
 
-        public async Task<IEnumerable<Language>> GetAllLanguages()
+
+        public async Task<PagedList<Language>> GetAllLanguages([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
+            var languageDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LanguageName.Contains(searchParams.SearchValue) ||
+                inv.Description.Contains(searchParams.SearchValue))));
 
-        var GetallLanguage = await FindAll().ToListAsync();
-
-        return GetallLanguage;
+            return PagedList<Language>.ToPagedList(languageDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<Language> GetLanguageById(int id)

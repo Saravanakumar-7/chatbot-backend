@@ -37,13 +37,13 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<EngineeringBOMController>
         [HttpGet]
-        public async Task<IActionResult> GetAllEnggBOM([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllEnggBOM([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<EnggBomDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomDto>>();
 
             try
             {
-                var listOfBoms = await _repository.EnggBomRepository.GetAllEnggBOM(pagingParameter);
+                var listOfBoms = await _repository.EnggBomRepository.GetAllEnggBOM(pagingParameter, searchParams);
 
                 var metadata = new
                 {
@@ -79,6 +79,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
 
         // GET api/<EngineeringBOMController>/5
         [HttpGet("{id}")]
@@ -541,13 +542,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<ReleaseEnggBomController>
         [HttpGet]
-        public async Task<IActionResult> GetAllReleaseEnggBom([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllReleaseEnggBom([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ReleaseEnggBomDto>> serviceResponse = new ServiceResponse<IEnumerable<ReleaseEnggBomDto>>();
 
             try
             {
-                var listOfReleaseEnggBom = await _releaseEnggBomRepository.GetAllReleaseEnggBom(pagingParameter);
+                var listOfReleaseEnggBom = await _releaseEnggBomRepository.GetAllReleaseEnggBom(pagingParameter, searchParams);
 
                 var metadata = new
                 {
@@ -767,13 +768,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllCostingBOM([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllCostingBOM([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CostingBom>> serviceResponse = new ServiceResponse<IEnumerable<CostingBom>>();
 
             try
             {
-                var costingBomDetails = await _releaseCostBomRepository.GetAllCostingBom(pagingParameter);
+                var costingBomDetails = await _releaseCostBomRepository.GetAllCostingBom(pagingParameter, searchParams);
 
                 var metadata = new
                 {
@@ -904,13 +905,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProductionBOM([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllProductionBOM([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ProductionBom>> serviceResponse = new ServiceResponse<IEnumerable<ProductionBom>>();
 
             try
             {
-                var productionBomDetails = await _releaseProductBomRepository.GetAllProductionBom(pagingParameter);
+                var productionBomDetails = await _releaseProductBomRepository.GetAllProductionBom(pagingParameter, searchParams);
 
                 var metadata = new
                 {
@@ -989,10 +990,46 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllEnggBomFGItemNoListByItemNumber(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<EnggBomFGItemNumber>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomFGItemNumber>>();
+            try
+            {
+                var enggBomFGItemNoDetails = await _enggBomRepository.GetAllEnggBomFGItemNoListByItemNumber(itemNumber);
+                if (enggBomFGItemNoDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"EnggBom FGItemNumber is Invalid.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ProductionBomDetails with id: {itemNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var result = _mapper.Map<IEnumerable<EnggBomFGItemNumber>>(enggBomFGItemNoDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned all EnggBomFGItemNumberList";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllEnggBomFGItemNoListByItemNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+            [HttpGet]
         public async Task<IActionResult> GetProductionBomByItemAndBomVersionNo(string itemNumber,decimal bomVersionNo)
         {
-            ServiceResponse<EnggBom> serviceResponse = new ServiceResponse<EnggBom>();
+            ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
 
             try
             {
@@ -1013,7 +1050,9 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned ProductionBomDetails with ItemNumber : {itemNumber} and BOM Version : {bomVersionNo}");
-                    var result = _mapper.Map<ProductionBom>(productionBomDetailsById);
+                    var result = _mapper.Map<EnggBomDto>(productionBomDetailsById);
+                    var enggChildItemList = _mapper.Map<List<EnggChildItemDto>>(productionBomDetailsById.EnggChildItems);
+                    result.EnggChildItemDtos = enggChildItemList;
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned ProductionBomDetails Successfully.";
                     serviceResponse.Success = true;
@@ -1114,12 +1153,12 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<EnggBomGroupController>
         [HttpGet]
-        public async Task<IActionResult> GetAllEnggBomGroup([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllEnggBomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<EnggBomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomGroupDto>>();
             try
             {
-                var listOfEnggBomGroup = await _repository.EnggBomGroupRepository.GetAllEnggBomGroup(pagingParameter);
+                var listOfEnggBomGroup = await _repository.EnggBomGroupRepository.GetAllEnggBomGroup(pagingParameter, searchParams);
                 var metadata = new
                 {
                     listOfEnggBomGroup.TotalCount,
@@ -1152,13 +1191,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<EnggBomGroupController>
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveEnggBomGroup()
+        public async Task<IActionResult> GetAllActiveEnggBomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<EnggBomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomGroupDto>>();
 
             try
             {
-                var enggBomGroupList = await _repository.EnggBomGroupRepository.GetAllActiveEnggBomGroup();
+                var enggBomGroupList = await _repository.EnggBomGroupRepository.GetAllActiveEnggBomGroup(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all ActiveEnggBomGroup");
                 var enggbomGroupEntity = _mapper.Map<IEnumerable<EnggBomGroupDto>>(enggBomGroupList);
                 serviceResponse.Data = enggbomGroupEntity;
@@ -1361,12 +1400,12 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<EnggCustomFieldController>
         [HttpGet]
-        public async Task<IActionResult> GetAllEnggCustomField([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllEnggCustomField([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<EnggCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggCustomFieldDto>>();
             try
             {
-                var listOfEnggCustomField = await _repository.EnggCustomFieldRepository.GetAllEnggCustomFields(pagingParameter);
+                var listOfEnggCustomField = await _repository.EnggCustomFieldRepository.GetAllEnggCustomFields(pagingParameter, searchParams);
                 var metadata = new
                 {
                     listOfEnggCustomField.TotalCount,
@@ -1399,13 +1438,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<EnggCustomFieldController>
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveEnggCustomField()
+        public async Task<IActionResult> GetAllActiveEnggCustomField([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<EnggCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggCustomFieldDto>>();
 
             try
             {
-                var enggCustomFieldEntityList = await _repository.EnggCustomFieldRepository.GetAllActiveEnggCustomFields();
+                var enggCustomFieldEntityList = await _repository.EnggCustomFieldRepository.GetAllActiveEnggCustomFields(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all EnggActiveCustomField");
                 var enggCustomFieldEntity = _mapper.Map<IEnumerable<EnggCustomFieldDto>>(enggCustomFieldEntityList);
                 serviceResponse.Data = enggCustomFieldEntity;
@@ -1426,6 +1465,7 @@ namespace Tips.Master.Api.Controllers
 
             }
         }
+
         //get: EnggCustomFiedDetails by BomgeoupName
 
         [HttpGet("{BomgroupName}")]

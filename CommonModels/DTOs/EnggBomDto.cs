@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,7 +18,7 @@ namespace Entities.DTOs
 
         public string? ItemDescription { get; set; }
 
-        public string? ItemType { get; set; }
+        public PartType ItemType { get; set; }
 
         [Precision(5,2)]
         public decimal? RevisionNumber { get; set; }
@@ -45,9 +46,9 @@ namespace Entities.DTOs
         [StringLength(500, ErrorMessage = "ItemDescription can't be longer than 500 characters")]
         public string? ItemDescription { get; set; }
 
-        public string? ItemType { get; set; }
-         
-        
+        public PartType ItemType { get; set; }
+
+
         [DefaultValue(true)]
         public bool IsActive { get; set; }
 
@@ -69,8 +70,8 @@ namespace Entities.DTOs
         [StringLength(500, ErrorMessage = "ItemDescription can't be longer than 500 characters")]
         public string? ItemDescription { get; set; }
 
-        public string? ItemType { get; set; }
-         
+        public PartType ItemType { get; set; }
+
 
         [DefaultValue(true)]
         public bool IsActive { get; set; }
@@ -110,6 +111,12 @@ namespace Entities.DTOs
     public class EnggBomRevisionNumberList
     {
         public decimal[] RevisionNumber { get; set; }
+
+    }
+
+    public class EnggBomFGItemNumber
+    {
+        public string ItemNumber { set; get; } 
 
     }
 }

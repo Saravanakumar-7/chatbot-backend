@@ -15,15 +15,15 @@ namespace Tips.Production.Api.Entities.DTOs
         public ProjectType ProjectType { get; set; }
         public PartType ItemType { get; set; }
         public string? ItemNumber { get; set; }
-        public decimal? TotalSOReleaseQty { get; set; }
+        public decimal TotalSOReleaseQty { get; set; }
         public DateTime SOCloseDate { get; set; }
         public decimal? CanCreateQty { get; set; }
 
-        public decimal? WipQty { get; set; }
+        public decimal WipQty { get; set; }
 
-        public decimal? OqcQty { get; set; }
+        public decimal OqcQty { get; set; }
 
-        public decimal? ScrapQty { get; set; }
+        public decimal ScrapQty { get; set; }
 
         public OrderStatus FGDoneStatus { get; set; }
         public bool IsDeleted { get; set; } = false;
@@ -53,7 +53,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
         [Precision(13, 3)]
-        public decimal? TotalSOReleaseQty { get; set; }
+        public decimal TotalSOReleaseQty { get; set; }
         [Required]
         public DateTime SOCloseDate { get; set; }
         [Required]
@@ -76,7 +76,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
         [Precision(13, 3)]
-        public decimal? TotalSOReleaseQty { get; set; }
+        public decimal TotalSOReleaseQty { get; set; }
         [Required]
         public DateTime SOCloseDate { get; set; }
         [Required]

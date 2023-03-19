@@ -41,13 +41,13 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllInvoice([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllInvoice([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             ServiceResponse<IEnumerable<InvoiceDto>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceDto>>();
 
             try
             {
-                var getAllInvoicesList = await _invoiceRepository.GetAllInvoices(pagingParameter);
+                var getAllInvoicesList = await _invoiceRepository.GetAllInvoices(pagingParameter, searchParams);
                 var metadata = new
                 {
                     getAllInvoicesList.TotalCount,
@@ -179,9 +179,10 @@ namespace Tips.Warehouse.Api.Controllers
                     {
                         InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
                         invoiceChildItemsDtoList.Add(invoiceChildItem);
-                        string qty = Convert.ToString(invoiceChildItem.InvoicedQty);
+
+                        //string qty = Convert.ToString(invoiceChildItem.InvoicedQty);
                         var doNumber = invoiceitemsDto[i].DONumber;
-                        var getAllInvoicesList = await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderBalanceQty(invoiceChildItem.FGItemNumber, doNumber, qty);
+                        var getAllInvoicesList = await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderBalanceQty(invoiceChildItem.FGItemNumber, doNumber, invoiceChildItem.InvoicedQty);
                         _bTODeliveryOrderItemsRepository.SaveAsync();
 
                         //Add inventory Transaction Table
@@ -330,7 +331,30 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
+        [HttpGet]
+        public async Task<IActionResult> GetAllInvoiceIdNameList()
+        {
+            ServiceResponse<IEnumerable<InvoiceIdNameList>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceIdNameList>>();
+            try
+            {
+                var listOfInvoiceIdNames = await _invoiceRepository.GetAllInvoiceIdNameList();
+                var result = _mapper.Map<IEnumerable<InvoiceIdNameList>>(listOfInvoiceIdNames);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All listOfInvoiceIdNames";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllInvoiceIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }
 

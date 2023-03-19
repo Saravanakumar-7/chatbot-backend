@@ -1,10 +1,19 @@
-﻿using System.Net;
+﻿using System;
+using System.Buffers.Text;
+using System.IO.Compression;
+using System.Linq;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 using AutoMapper;
+using Azure;
 using Contracts;
 using Entities;
-using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Tips.Purchase.Api.Contracts;
 using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.Dto;
@@ -21,24 +30,26 @@ namespace Tips.Purchase.Api.Controllers
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IDocumentUploadRepository _prdocumentUploadRepository;
+        public static IWebHostEnvironment _webHostEnvironment { get; set; }
 
 
-        public PurchaseRequisitionController(IPurchaseRequisitionRepository repository, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper)
+
+        public PurchaseRequisitionController(IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _prdocumentUploadRepository = prdocumentUploadRepository;
-
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllPurchaseRequistions([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllPurchaseRequistions([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<PurchaseRequisitionDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionDto>>();
             try
             {
-                var purchaseRequisitionDetails = await _repository.GetAllPurchaseRequisitions(pagingParameter);
+                var purchaseRequisitionDetails = await _repository.GetAllPurchaseRequisitions(pagingParameter,searchParamess);
                 var metadata = new
                 {
                     purchaseRequisitionDetails.TotalCount,
@@ -186,8 +197,8 @@ namespace Tips.Purchase.Api.Controllers
                     string fileName = prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                    Guid guid = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", guid.ToString() + "_" + fileName);
+                    //Guid guid = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", /*guid.ToString() + "_" +*/ fileName);
                     using (MemoryStream ms = new MemoryStream(fileContent))
                     {
                         ms.Position = 0;
@@ -242,7 +253,7 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreatePurchaseRequisition action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreatePurchaseRequisition action: {ex.Message},{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong ,try again";
                 serviceResponse.Success = false;
@@ -574,6 +585,202 @@ namespace Tips.Purchase.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 _logger.LogError($"Something went wrong inside ActivatePurchaseRequisitionApprovalII action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        //pr updated uploaded file
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePRUploadDocument([FromBody] List<DocumentUploadPostDto> uploadDocumentDto, string prNumber)
+        {
+            ServiceResponse<DocumentUploadPostDto> serviceResponse = new ServiceResponse<DocumentUploadPostDto>();
+            try
+            {
+                if (uploadDocumentDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "PurchaseRequisition UploadDocument object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("PurchaseRequisition UploadDocument sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseRequisition UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseRequisition UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+
+
+                //var purchaseOrderDetails = await _repository.GetPurchaseRequisitionByPRNumber(prNumber);
+                //var Id = purchaseOrderDetails.Id;
+
+                foreach (var prUploadDetail in uploadDocumentDto)
+                {
+                    var fileContent = prUploadDetail.FileByte;
+                    string fileName = prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                    Guid guid = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", guid.ToString() + "_" + fileName);
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                        var uploadedFile = new DocumentUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            ParentNumber = prNumber,
+                            //PurchaseOrderId = Id,
+                            DocumentFrom = "PRDocument",
+                        };
+                        var prUploadDoc = _mapper.Map<DocumentUpload>(uploadedFile);
+
+                        await _prdocumentUploadRepository.CreateUploadDocumentPO(prUploadDoc);
+                        _prdocumentUploadRepository.SaveAsync();
+
+                    }
+                }
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = " PRUploadDocument Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdatePRUploadDocument action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        //delete upload document
+         
+        [HttpDelete]
+        public async Task<IActionResult> DeletePRUploadDocument(int id)
+        {
+            ServiceResponse<IEnumerable<DocumentUploadDto>> serviceResponse = new ServiceResponse<IEnumerable<DocumentUploadDto>>();
+
+            try
+            {
+                var documentUploadDetails = await _prdocumentUploadRepository.GetUploadDocById(id);
+                var fileName = documentUploadDetails.FileName;
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", /*guid.ToString() + "_" */ fileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                    string result = await _prdocumentUploadRepository.DeleteUploadFile(documentUploadDetails);
+                    _logger.LogInfo(result);
+                    _prdocumentUploadRepository.SaveAsync();
+
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " UploadDocument Deleted Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogError($"Given UploadDocument file is doesn't exist");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Given UploadDocument file is doesn't exist";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateUploadDocument action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> DownloadFile(string Filename)
+        {
+            ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", Filename);
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out var ContentType))
+            {
+                ContentType = "application/octet-stream";
+            }
+            var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+
+            return File(bytes, ContentType, Path.GetFileName(filePath));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDownloadUrlDetail(string prNumber)
+        {
+            ServiceResponse<IEnumerable<GetPRDownloadUrlDto>> serviceResponse = new ServiceResponse<IEnumerable<GetPRDownloadUrlDto>>();
+
+            try
+            {
+                var downloadDetailByPrNumber = await _repository.GetDownloadUrlDetail(prNumber);
+                if (downloadDetailByPrNumber.Count() == 0)
+                {
+                    _logger.LogError($"DownloadDetail with id: {prNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {prNumber}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseRequisition UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseRequisition UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+
+                foreach (var getDownloadUrlByFilenames in downloadDetailByPrNumber)
+                {
+ 
+                    getDownloadUrlByFilenames.DownloadUrl = Url.Action("DownloadFile", "PurchaseRequisition", new { Filename = getDownloadUrlByFilenames.FileName }, protocol: HttpContext.Request.Scheme);
+                    //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+
+                } 
+                    _logger.LogInfo($"Returned DownloadDetail with id: {prNumber}");
+                    var result = _mapper.Map<IEnumerable<GetPRDownloadUrlDto>>(downloadDetailByPrNumber);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Successfully Returned PRDownloadUrlDetail";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetDownloadUrlDetails action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }

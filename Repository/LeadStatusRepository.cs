@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -34,19 +36,23 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<LeadStatus>> GetAllActiveLeadStatus()
+        public async Task<PagedList<LeadStatus>> GetAllActiveLeadStatus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var AllActiveLeadStatus = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveLeadStatus;
+            var LeadStatusDetails = FindAll()
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LeadStatusName.Contains(searchParams.SearchValue) ||
+             inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<LeadStatus>.ToPagedList(LeadStatusDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<LeadStatus>> GetAllLeadStatus()
+        public async Task<PagedList<LeadStatus>> GetAllLeadStatus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var GetallLeadStatus = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
+            var LeadStatusDetails = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LeadStatusName.Contains(searchParams.SearchValue) ||
+                 inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallLeadStatus;
+            return PagedList<LeadStatus>.ToPagedList(LeadStatusDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<LeadStatus> GetLeadStatusById(int id)

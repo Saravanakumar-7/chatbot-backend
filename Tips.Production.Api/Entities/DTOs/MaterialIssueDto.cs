@@ -48,4 +48,9 @@ namespace Tips.Production.Api.Entities.DTOs
         public IssuedStatus MaterialIssuedStatus { get; set; }
         public List<MaterialIssueItemUpdateDto> MaterialIssueItems { get; set; }
     }
+    public class MaterialIssueIdNameList
+    {
+        public int Id { get; set; }
+        public string? ShopOrderNumber { get; set; }
+    }
 }

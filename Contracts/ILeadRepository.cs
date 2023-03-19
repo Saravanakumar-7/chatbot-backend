@@ -10,7 +10,7 @@ namespace Contracts
 {
     public interface ILeadRepository : IRepositoryBase<Lead>
     {
-        Task<PagedList<Lead>> GetAllLeads(PagingParameter pagingParameter);
+        Task<PagedList<Lead>> GetAllLeads(PagingParameter pagingParameter, SearchParames searchParames);
         Task<Lead> GetLeadById(int id);
         Task<int?> GetLeadIDIncrementCount(DateTime date);
         Task<Lead> CreateLead(Lead lead);

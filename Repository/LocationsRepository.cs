@@ -9,6 +9,7 @@ using Entities.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Entities.Helper;
 using System.Collections.Immutable;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Repository
 {
@@ -36,19 +37,23 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Locations>> GetAllActiveLocations()
+        public async Task<PagedList<Locations>> GetAllActiveLocations([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActivelocations = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return AllActivelocations;
+            var LocationsDetails = FindAll()
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Warehouse.Contains(searchParams.SearchValue) ||
+            inv.LocationName.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<Locations>.ToPagedList(LocationsDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<Locations>> GetAllLocations()
+        public async Task<PagedList<Locations>> GetAllLocations([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var GetallLocations = await FindAll().ToListAsync();
-            return GetallLocations;
-        }
+            var LocationsDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Warehouse.Contains(searchParams.SearchValue) ||
+                   inv.LocationName.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
+            return PagedList<Locations>.ToPagedList(LocationsDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
         public async Task<Locations> GetLocationsById(int id)
         {
             var LocationsbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();

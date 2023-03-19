@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -33,17 +35,23 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Commodity>> GetAllActiveCommodity()
+        public async Task<PagedList<Commodity>> GetAllActiveCommodity([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActiveCommodities = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveCommodities;
+            var commodityDetails = FindAll()
+                                  .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CommodityType.Contains(searchParams.SearchValue) ||
+                                  inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<Commodity>.ToPagedList(commodityDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<Commodity>> GetAllCommodity()
+        public async Task<PagedList<Commodity>> GetAllCommodity([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var Getallcommodities = await FindAll().ToListAsync();
-            return Getallcommodities;
+            var commodityDetails = FindAll().OrderByDescending(x => x.Id)
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CommodityType.Contains(searchParams.SearchValue) ||
+            inv.Description.Contains(searchParams.SearchValue))));
+
+            return PagedList<Commodity>.ToPagedList(commodityDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
 
         public async Task<Commodity> GetCommodityById(int id)
         {

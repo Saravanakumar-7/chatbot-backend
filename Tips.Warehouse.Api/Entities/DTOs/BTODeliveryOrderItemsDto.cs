@@ -7,7 +7,7 @@
         public int? SalesOrderId { get; set; }
         public string? Description { get; set; }
         public decimal? BalanceDoQty { get; set; }
-        public decimal? InvoicedQty { get; set; }
+        public decimal InvoicedQty { get; set; }
         public decimal? UnitPrice { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Purchase.Api.Entities
@@ -12,7 +13,7 @@ namespace Tips.Purchase.Api.Entities
         public string? Description { get; set; }
         public string? UOM { get; set; }
 
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
 
         [Precision(13, 3)]
         public decimal? Qty { get; set; }

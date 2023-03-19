@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,9 @@ namespace Contracts
 {
     public interface ILightningDesignerRepository : IRepositoryBase<LightningDesigner>
     {
-        Task<IEnumerable<LightningDesigner>> GetAllLightningDesigners();
+        Task<PagedList<LightningDesigner>> GetAllLightningDesigners(PagingParameter pagingParameter, SearchParames searchParames);
         Task<LightningDesigner> GetLightningDesignerById(int id);
-        Task<IEnumerable<LightningDesigner>> GetAllActiveLightningDesigners();
+        Task<PagedList<LightningDesigner>> GetAllActiveLightningDesigners(PagingParameter pagingParameter, SearchParames searchParames);
         Task<int?> CreateLightningDesigner(LightningDesigner lightningDesigner);
         Task<string> UpdateLightningDesigner(LightningDesigner lightningDesigner);
         Task<string> DeleteLightningDesigner(LightningDesigner lightningDesigner);

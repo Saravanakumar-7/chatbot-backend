@@ -6,7 +6,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IQuoteGeneralRepository : IRepositoryBase<QuoteGeneral>
     {
-        Task<PagedList<QuoteGeneral>> GetAllQuoteGeneral(PagingParameter pagingParameter);
+        Task<PagedList<QuoteGeneral>> GetAllQuoteGeneral(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<QuoteGeneral> GetQuoteGeneralById(int id);
         Task<IEnumerable<QuoteGeneral>> GetAllActiveQuoteGeneral();
         Task<long> CreateQuoteGeneral(QuoteGeneral quoteGeneral);

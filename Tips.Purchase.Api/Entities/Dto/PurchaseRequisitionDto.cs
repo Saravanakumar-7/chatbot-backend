@@ -29,10 +29,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? PaymentTerms { get; set; }
 
         public string? ShippingMode { get; set; }
-
-        public string? ShipTo { get; set; }
-
-        public string? BillTo { get; set; }
+         
 
         public string? RetentionPeriod { get; set; }
 
@@ -67,10 +64,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? PaymentTerms { get; set; }
 
         public string? ShippingMode { get; set; }
-
-        public string? ShipTo { get; set; }
-
-        public string? BillTo { get; set; }
+         
 
         public string? RetentionPeriod { get; set; }
 
@@ -101,10 +95,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? PaymentTerms { get; set; }
 
         public string? ShippingMode { get; set; }
-
-        public string? ShipTo { get; set; }
-
-        public string? BillTo { get; set; }
+         
 
         public string? RetentionPeriod { get; set; }
 

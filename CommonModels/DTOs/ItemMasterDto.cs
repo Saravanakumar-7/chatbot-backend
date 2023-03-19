@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Entities.Enums;
 
 namespace Entities.DTOs
 {
@@ -24,9 +25,7 @@ namespace Entities.DTOs
         public bool IsActive { get; set; }
         [DefaultValue(false)]
         public bool IsObsolete { get; set; }
-        [Required(ErrorMessage = "ItemType is required")]
-        [MaxLength(50)]
-        public string? ItemType { get; set; }
+        public PartType ItemType { get; set; }
         [MaxLength(20)]
         public string? Uom { get; set; }
         [MaxLength(50)]
@@ -132,9 +131,7 @@ namespace Entities.DTOs
         public bool IsActive { get; set; }
         [DefaultValue(false)]
         public bool IsObsolete { get; set; }
-        [Required(ErrorMessage = "ItemType is required")]
-        [MaxLength(50)]
-        public string? ItemType { get; set; }
+        public PartType ItemType { get; set; }
         [MaxLength(20)]
         public string? Uom { get; set; }
         [MaxLength(50)]
@@ -237,9 +234,7 @@ namespace Entities.DTOs
         public bool IsActive { get; set; }
         [DefaultValue(false)]
         public bool IsObsolete { get; set; }
-        [Required(ErrorMessage = "ItemType is required")]
-        [MaxLength(50)]
-        public string? ItemType { get; set; }
+        public PartType ItemType { get; set; }
         [MaxLength(20)]
         public string? Uom { get; set; }
         [MaxLength(50)]

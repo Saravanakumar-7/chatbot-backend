@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface IEnggCustomFieldRepository:IRepositoryBase<EnggCustomField>
     {
-        Task<PagedList<EnggCustomField>> GetAllEnggCustomFields(PagingParameter pagingParameter);
+        Task<PagedList<EnggCustomField>> GetAllEnggCustomFields(PagingParameter pagingParameter, SearchParames searchParams);
         Task<EnggCustomField> GetEnggCustomFieldById(int id);
-        Task<IEnumerable<EnggCustomField>> GetAllActiveEnggCustomFields();
+        Task<PagedList<EnggCustomField>> GetAllActiveEnggCustomFields(PagingParameter pagingParameter, SearchParames searchParams);
         Task<int?> CreateEnggCustomField(EnggCustomField enggcustomFields);
         Task<string> UpdateEnggCustomField(EnggCustomField enggcustomFields);
         Task<string> DeleteEnggCustomField(EnggCustomField enggcustomFields);

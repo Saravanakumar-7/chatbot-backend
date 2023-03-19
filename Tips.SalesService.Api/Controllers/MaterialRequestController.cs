@@ -35,13 +35,13 @@ namespace Tips.SalesService.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllMaterialRequest([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllMaterialRequest([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<MaterialRequestDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestDto>>();
 
             try
             {
-                var getAllMaterialRequest = await _materialRequestRepository.GetAllMaterialRequest(pagingParameter);
+                var getAllMaterialRequest = await _materialRequestRepository.GetAllMaterialRequest(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllMaterialRequest.TotalCount,

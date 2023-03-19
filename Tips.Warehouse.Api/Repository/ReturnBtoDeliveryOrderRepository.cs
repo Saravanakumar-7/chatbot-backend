@@ -24,15 +24,18 @@ namespace Tips.Warehouse.Api.Repository
             var result = await Create(returnBtoDeliveryOrder);
             return result.Id;
         }
-      
 
-        public async Task<PagedList<ReturnBtoDeliveryOrder>> GetAllReturnBtoDeliveryOrderDetails(PagingParameter pagingParameter)
+
+        public async Task<PagedList<ReturnBtoDeliveryOrder>> GetAllReturnBtoDeliveryOrderDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var getAllBTODetails = PagedList<ReturnBtoDeliveryOrder>.ToPagedList(FindAll()
-                                 .Include(t => t.ReturnBtoDeliveryOrderItems)               
-                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return getAllBTODetails;
+
+            var getAllReturnBTODetails = FindAll().OrderByDescending(x => x.Id)
+               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ReturnBTONumber.Contains(searchParams.SearchValue) ||
+                inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue))))
+                .Include(t => t.ReturnBtoDeliveryOrderItems);
+            return PagedList<ReturnBtoDeliveryOrder>.ToPagedList(getAllReturnBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+
         }
 
         public async Task<string> DeleteReturnBtoDeliveryOrder(ReturnBtoDeliveryOrder returnBtoDeliveryOrder)

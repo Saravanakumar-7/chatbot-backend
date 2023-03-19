@@ -33,13 +33,13 @@ namespace Tips.SalesService.Api.Controllers
         }
         // GET: api/<RfqSourcingController>
         [HttpGet]
-        public async Task<IActionResult> GetAllRfqSourcings([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllRfqSourcings([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<RfqSourcingDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqSourcingDto>>();
 
             try
             {
-                var getAllRfqSourcing = await _repository.GetAllRfqSourcing(pagingParameter);
+                var getAllRfqSourcing = await _repository.GetAllRfqSourcing(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllRfqSourcing.TotalCount,

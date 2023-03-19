@@ -15,10 +15,11 @@ namespace Tips.Grin.Api.Contracts
     { 
         Task<GrinParts> UpdateGrinPartsQty(int GrinPartId, string AcceptedQty, string RejectedQty);
         Task<string> UpdateGrinQty(GrinParts grinparts);
-
-        Task<PagedList<GrinParts>> GetAllGrinParts([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams);
+        Task<GrinParts> GetGrinPartsById(int id);
+        Task<GrinParts> DeleteGrinPartsById(int id);
+        Task<PagedList<GrinParts>> GetAllGrinParts( PagingParameter pagingParameter, SearchParams searchParams);
         Task<GrinParts> GetGrinPartsDetailsbyGrinPartId(int GrinPartId);
-
+        Task<string> DeleteGrinParts(GrinParts grinParts);
     }
 }
 

@@ -1,8 +1,10 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
+using Tips.Production.Api.Entities.DTOs;
 
 namespace Tips.Production.Api.Repository
 {
@@ -30,13 +32,31 @@ namespace Tips.Production.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<MaterialIssue>> GetAllMaterialIssues(PagingParameter pagingParameter)
+        public async Task<IEnumerable<MaterialIssueIdNameList>> GetAllMaterialIssueIdNameList()
         {
-            var materialIssueDetails = PagedList<MaterialIssue>.ToPagedList(FindAll()                              
-               .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            IEnumerable<MaterialIssueIdNameList> DeliveryOrderIddNameList = await _tipsProductionDbContext.MaterialIssue
+                                .Select(x => new MaterialIssueIdNameList()
+                                {
+                                    Id = x.Id,
 
-            return materialIssueDetails;
+                                    ShopOrderNumber = x.ShopOrderNumber
+
+                                })
+                                .OrderByDescending(x => x.Id)
+                              .ToListAsync();
+
+            return DeliveryOrderIddNameList;
         }
+
+        public async Task<PagedList<MaterialIssue>> GetAllMaterialIssues([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            var materialIssueDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ShopOrderNumber.Contains(searchParams.SearchValue) ||
+                   inv.ItemNumber.Contains(searchParams.SearchValue) || inv.ShopOrderQty.Equals(int.Parse(searchParams.SearchValue)) || inv.ShopOrderQty.Equals(int.Parse(searchParams.SearchValue)))));
+
+            return PagedList<MaterialIssue>.ToPagedList(materialIssueDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
 
         public async Task<MaterialIssue> GetMaterialIssueById(int id)
         {

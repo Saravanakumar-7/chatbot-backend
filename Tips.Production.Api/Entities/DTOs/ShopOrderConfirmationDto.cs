@@ -15,10 +15,10 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ItemType { get; set; }
         [Required]
         [Precision(13, 3)]
-        public decimal? ShopOrderReleaseQty { get; set; }
+        public decimal ShopOrderReleaseQty { get; set; }
         [Required]
         [Precision(13, 3)]
-        public decimal? WipConfirmedQty { get; set; }
+        public decimal WipConfirmedQty { get; set; }
         [DefaultValue(false)]
         public bool IsOQCDone { get; set; }
         [DefaultValue(false)]
@@ -40,14 +40,11 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ItemType { get; set; }
         [Required]
         [Precision(13, 3)]
-        public decimal? ShopOrderReleaseQty { get; set; }
+        public decimal ShopOrderReleaseQty { get; set; }
         [Required]
         [Precision(13, 3)]
-        public decimal? WipConfirmedQty { get; set; }
-        [DefaultValue(false)]
-        public bool IsOQCDone { get; set; }
-        [DefaultValue(false)]
-        public bool IsDeleted { get; set; }
+        public decimal WipConfirmedQty { get; set; }
+        
     }
 
     public class ShopOrderConfirmationUpdateDto
@@ -61,14 +58,10 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ItemType { get; set; }
         [Required]
         [Precision(13, 3)]
-        public decimal? ShopOrderReleaseQty { get; set; }
+        public decimal ShopOrderReleaseQty { get; set; }
         [Required]
         [Precision(13, 3)]
-        public decimal? WipConfirmedQty { get; set; }
-        [DefaultValue(false)]
-        public bool IsOQCDone { get; set; }
-        [DefaultValue(false)]
-        public bool IsDeleted { get; set; }
+        public decimal WipConfirmedQty { get; set; } 
         public string? Unit { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
@@ -82,8 +75,8 @@ namespace Tips.Production.Api.Entities.DTOs
     public class ShopOrderDetailsDto
     {
         public string? ShopOrderNumber { get; set; }
-        public decimal? ShopOrderReleaseQty { get; set; }
-        public decimal? WipQty { get; set; }
+        public decimal ShopOrderReleaseQty { get; set; }
+        public decimal WipQty { get; set; }
 
     }
 }

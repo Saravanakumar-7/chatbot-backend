@@ -47,7 +47,23 @@ namespace Tips.Grin.Api.Repository
             return getGrinNumberAutoIncrementCount;
         }
 
+        public async Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string grinNumber)
+        {
 
+            IEnumerable<GetDownloadUrlDto> getDownloadDetails = await _tipsGrinDbContext.DocumentUploads
+                                .Where(b => b.ParentId == grinNumber)
+                                .Select(x => new GetDownloadUrlDto()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath
+                                })
+                              .ToListAsync();
+
+            return getDownloadDetails;
+        }
+       
         public async Task<string> DeleteGrin(Grins grins)
         {
             Delete(grins);
@@ -139,14 +155,21 @@ namespace Tips.Grin.Api.Repository
         {
             _tipsGrinDbContext = tipsGrinDbContext;
         }
+        public async Task<DocumentUpload> GetUploadDocById(int id)
+        {
+            var grinUploadDocFileNameById = await _tipsGrinDbContext.DocumentUploads
+                .Where(x => x.Id == id).FirstOrDefaultAsync();
 
-        //public async Task<GrinParts> UpdateQty(int grinParts)
-        //{
-        //    var data = await _tipsGrinDbContext.GrinParts.Where(x => x.Id == grinParts).FirstOrDefaultAsync();
-        //    data.grin = grinParts;
-        //    Update(data);
-        //    return result;
-        //}
+            return grinUploadDocFileNameById;
+        }
+        public async Task<string> DeleteUploadFile(DocumentUpload documentUpload)
+        {
+            Delete(documentUpload);
+            string result = $"DocumentUpload details of {documentUpload.Id} is deleted successfully!";
+            return result;
+        }
+
+       
 
         public async Task<int?> CreateUploadDocumentGrin(DocumentUpload documentUpload)
         {
@@ -158,6 +181,57 @@ namespace Tips.Grin.Api.Repository
             var result = await Create(documentUpload);
             return result.Id;
         }
+ 
+
+        public async Task<IEnumerable<GetDownloadUrlDto>> GetGrinDownloadUrlDetails(string grinNumber)
+        { 
+
+            IEnumerable<GetDownloadUrlDto> getDownloadDetails = await _tipsGrinDbContext.DocumentUploads
+                                .Where(x =>x.ParentId == grinNumber)
+                                .Select(x => new GetDownloadUrlDto()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath
+                                })
+                              .ToListAsync();
+
+            return getDownloadDetails;
+        }
+
+        public async Task<IEnumerable<GetDownloadUrlDto>> GetGrinPartsDownloadUrlDetails(string grinNumber)
+        {
+            var grinnumbers = grinNumber + "-" + "I";
+            IEnumerable<GetDownloadUrlDto> getDownloadDetails = await _tipsGrinDbContext.DocumentUploads
+                                .Where(x => x.ParentId == grinnumbers)
+                                .Select(x => new GetDownloadUrlDto()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath
+                                })
+                              .ToListAsync();
+
+            return getDownloadDetails;
+        }
+
+        public async Task<string> DeleteGrinPartsUploadDocByGrinNo(string grinnumber)
+        {
+            var documentDetails = await _tipsGrinDbContext.DocumentUploads.Where(x => x.ParentId == grinnumber).FirstOrDefaultAsync();
+            Delete(documentDetails);
+            string result = $"DocumentUpload details of {documentDetails.Id} is deleted successfully!";
+            return result;
+        }
+        public async Task<int?> GetDocumentDetailsByGrinNo(string grinnumber)
+        {
+            var grinUploadDocFileNameById =  _tipsGrinDbContext.DocumentUploads
+               .Where(x => x.ParentId == grinnumber).Count();
+
+            return grinUploadDocFileNameById;
+        }
+
     }
     public class GrinPartsRepository : RepositoryBase<GrinParts>, IGrinPartsRepository
     {
@@ -178,12 +252,45 @@ namespace Tips.Grin.Api.Repository
 
             return PagedList<GrinParts>.ToPagedList(getAllGrinParts, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        public async Task<string> DeleteGrinParts(GrinParts grinParts)
+        {
+            //var grinPartDetails = await _tipsGrinDbContexts.GrinParts
+            //    .Include(t => t.ProjectNumbers)
+            //    .Include(t => t.CoCUpload).FirstOrDefaultAsync();
+
+            Delete(grinParts);
+            string result = $"GrinParts details of {grinParts.Id} is deleted successfully!";
+            return result;
+        }
+        public async Task<GrinParts> GetGrinPartsById(int id)
+        {
+            var grinPartsDetailsbyId = await _tipsGrinDbContexts.GrinParts.Where(x => x.Id == id)
+
+               .Include(d => d.ProjectNumbers)
+                               .FirstOrDefaultAsync();
+
+            return grinPartsDetailsbyId;
+        }
+
+        public async Task<GrinParts> DeleteGrinPartsById(int id)
+        {
+            var grinPartsDetailsbyId = await _tipsGrinDbContexts.GrinParts.Where(x => x.Id == id)
+
+               .Include(d => d.ProjectNumbers)
+               .Include(d => d.CoCUpload)
+                               .FirstOrDefaultAsync();
+
+            return grinPartsDetailsbyId;
+        }
 
         public async Task<GrinParts> GetGrinPartsDetailsbyGrinPartId(int GrinPartId)
         {
             var grinPartsDetails = await _tipsGrinDbContexts.GrinParts.Where(x => x.Id == GrinPartId).FirstOrDefaultAsync();
             return grinPartsDetails;
         }
+         
+
+        
 
         public async Task<GrinParts> UpdateGrinPartsQty(int GrinPartId, string AcceptedQty, string RejectedQty)
         {
@@ -198,9 +305,10 @@ namespace Tips.Grin.Api.Repository
             grinParts.LastModifiedBy = "Admin";
             grinParts.LastModifiedOn = DateTime.Now;
             Update(grinParts);
-            string result = $"Grin Detail {grinParts.Id} is updated successfully!";
+            string result = $"GrinParts Detail {grinParts.Id} is updated successfully!";
             return result;
         }
+         
 
         //pass grinparts id and get the details
 

@@ -1,8 +1,10 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
+using Tips.Production.Api.Entities.DTOs;
 //using Tips.Warehouse.Api.Entities;
 
 namespace Tips.Production.Api.Repository
@@ -32,12 +34,29 @@ namespace Tips.Production.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<MaterialReturnNote>> GetAllMaterialReturnNotes(PagingParameter pagingParameter)
+        public async Task<IEnumerable<MaterialReturnNoteIdNameList>> GetAllMaterialReturnNoteIdNameList()
         {
-            var materialReturnNoteDetails = PagedList<MaterialReturnNote>.ToPagedList(FindAll()
-                               .Include(x => x.MaterialReturnNoteItems)
-              .OrderByDescending(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return materialReturnNoteDetails;
+            IEnumerable<MaterialReturnNoteIdNameList> materialReturnNoteIdNameList = await _tipsProductionDbContext.MaterialReturnNotes
+                                .Select(x => new MaterialReturnNoteIdNameList()
+                                {
+                                    Id = x.Id,
+
+                                    MRNNumber = x.MRNNumber,
+
+                                })
+                                .OrderByDescending(x => x.Id)
+                              .ToListAsync();
+
+            return materialReturnNoteIdNameList;
+        }
+
+        public async Task<PagedList<MaterialReturnNote>> GetAllMaterialReturnNotes([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            var materialReturnNoteDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProjectNumber.Contains(searchParams.SearchValue) ||
+                   inv.MRNNumber.Contains(searchParams.SearchValue))));
+
+            return PagedList<MaterialReturnNote>.ToPagedList(materialReturnNoteDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<MaterialReturnNote> GetMaterialReturnNoteById(int id)

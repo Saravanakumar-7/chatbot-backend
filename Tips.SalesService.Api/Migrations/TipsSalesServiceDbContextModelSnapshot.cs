@@ -17,12 +17,133 @@ namespace Tips.SalesService.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "7.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Tips.SalesService.Api.Entities.Quote", b =>
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.FgOqc", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+
+                    b.Property<decimal?>("AcceptedQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FGItemNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("PendingQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("ProjectNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("RejectedQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("ShopOrderNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("ShopOrderQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FgOqcs");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.FinalOqc", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+
+                    b.Property<decimal?>("AcceptedQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FGItemNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ItemType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("PendingQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("ProjectNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("RejectedQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("SAShopOrderNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("SAShopOrderQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("ShopOrderNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("ShopOrderQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("SubAssemblyItemNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FinalOqcs");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCast", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -36,10 +157,23 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CustomerForeCastRefrence")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CustomerName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsTheseRequiredToBePrintedInQuote")
+                    b.Property<string>("ForeCastNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsLpCosting")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsLpCostingRelease")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsSourcing")
                         .HasColumnType("bit");
 
                     b.Property<string>("LastModifiedBy")
@@ -48,309 +182,17 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<DateTime?>("LastModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("PaymentTerms")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("QuoteRef")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RFQNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("SpecialDiscountAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("SpecialDiscountType")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalAdditionalCharges")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalFinalAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("quotes");
-                });
-
-            modelBuilder.Entity("Tips.SalesService.Api.Entities.QuoteAdditionalCharges", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AdditionalChargesLabelName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("AddtionalChargesValueAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("AddtionalChargesValueType")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("CGST")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("IGST")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("QuoteId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("SGST")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("UTGST")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuoteId");
-
-                    b.ToTable("QuoteAdditionalCharges");
-                });
-
-            modelBuilder.Entity("Tips.SalesService.Api.Entities.QuoteGeneral", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("BasicAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("CGST")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("DiscountAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("DiscountType")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("DiscountedUnitPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("HSNNo")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("IGST")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ItemNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PriceList")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("QuoteId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("SGST")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("SpecialDiscountAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("SpecialDiscountType")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Total")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalDiscountedUnitPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("UTGST")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuoteId");
-
-                    b.ToTable("QuoteGeneral");
-                });
-
-            modelBuilder.Entity("Tips.SalesService.Api.Entities.QuoteOtherTerms", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("OtherTerms")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("QuoteId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuoteId");
-
-                    b.ToTable("QuoteOtherTerms");
-                });
-
-            modelBuilder.Entity("Tips.SalesService.Api.Entities.QuoteRFQNotes", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("QuoteId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RFQNotes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuoteId");
-
-                    b.ToTable("QuoteRFQNotes");
-                });
-
-            modelBuilder.Entity("Tips.SalesService.Api.Entities.QuoteSpecialTerms", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("QuoteId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SpecialTerms")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuoteId");
-
-                    b.ToTable("QuoteSpecialTerms");
-                });
-
-            modelBuilder.Entity("Tips.SalesService.Api.Entities.Rfq", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CustomerName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerRfqNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("QuoteExpectdate")
+                    b.Property<DateTime?>("QuoteExpectedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("ReleaseStatus")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("RequestReceivedate")
+                    b.Property<DateTime?>("RequestReceivedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("RevisionNumber")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RfqNumber")
-                        .HasColumnType("int");
 
                     b.Property<string>("Unit")
                         .IsRequired()
@@ -358,10 +200,41 @@ namespace Tips.SalesService.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("rfqs");
+                    b.ToTable("ForeCasts");
                 });
 
-            modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCSDeliverySchedule", b =>
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastCSDeliverySchedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ForeCastCustomerSupportItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Qty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ForeCastCustomerSupportItemId");
+
+                    b.ToTable("ForeCastCSDeliverySchedules");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastCustomField", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -375,8 +248,13 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("CustomGroupName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LabelName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
@@ -384,12 +262,13 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<DateTime?>("LastModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("Quantity")
-                        .HasPrecision(13, 3)
-                        .HasColumnType("decimal(13,3)");
+                    b.Property<string>("MaxLength")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RfqCustomerSupportItemsId")
-                        .HasColumnType("int");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Unit")
                         .IsRequired()
@@ -397,12 +276,10 @@ namespace Tips.SalesService.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RfqCustomerSupportItemsId");
-
-                    b.ToTable("rfqCSDeliverySchedules");
+                    b.ToTable("ForeCastCustomFields");
                 });
 
-            modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCustomGroup", b =>
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastCustomGroup", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -426,50 +303,7 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<DateTime?>("LastModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Remark")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("rfqCustomGroups");
-                });
-
-            modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCustomerSupport", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CustomerName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerRfqNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("QuoteExpectDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("RequestReceiveDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RevisionNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RfqNumber")
+                    b.Property<string>("Remarks")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -479,10 +313,10 @@ namespace Tips.SalesService.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("rfqCustomerSupports");
+                    b.ToTable("ForeCastCustomGroups");
                 });
 
-            modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCustomerSupportItems", b =>
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastCustomerSupport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -496,7 +330,55 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CustomerForecastReference")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ForecastNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("QuoteExpectedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("RequestReceivedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RevisionNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ForeCastCustomerSupports");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastCustomerSupportItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ForeCastCustomerSupportId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ForecastNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ItemNumber")
@@ -508,27 +390,21 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<DateTime?>("LastModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("Quantity")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("Qty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
 
                     b.Property<bool>("ReleaseStatus")
                         .HasColumnType("bit");
 
-                    b.Property<int>("RfqCustomerSupportId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("RfqCustomerSupportId");
+                    b.HasIndex("ForeCastCustomerSupportId");
 
-                    b.ToTable("rfqCustomerSupportItems");
+                    b.ToTable("foreCastCustomerSupportItems");
                 });
 
-            modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCustomerSupportNotes", b =>
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastCustomerSupportNotes", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -536,17 +412,14 @@ namespace Tips.SalesService.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("CustomerSupportCategory")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerSupportNotes")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ForeCastCustomerSupportId")
+                        .HasColumnType("int");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
@@ -554,21 +427,14 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<DateTime?>("LastModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("RfqCustomerSupportId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("RfqCustomerSupportId");
+                    b.HasIndex("ForeCastCustomerSupportId");
 
-                    b.ToTable("rfqCustomerSupportNotes");
+                    b.ToTable("ForeCastCustomerSupportNotes");
                 });
 
-            modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqEngg", b =>
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastEngg", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -585,19 +451,19 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<string>("CustomerName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ForecastNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("LastModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("QuoteExpectDate")
+                    b.Property<DateTime?>("QuoteExpectedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("RFQNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("RequestReceiveDate")
+                    b.Property<DateTime?>("RequestReceivedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("RevisionNumber")
@@ -609,10 +475,10 @@ namespace Tips.SalesService.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RfqEnggs");
+                    b.ToTable("ForeCastEnggs");
                 });
 
-            modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqEnggItem", b =>
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastEnggItems", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -633,6 +499,9 @@ namespace Tips.SalesService.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ForeCastEnggId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ItemNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -642,15 +511,1575 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<DateTime?>("LastModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("Quantity")
+                    b.Property<decimal?>("Qty")
+                        .HasPrecision(13, 8)
+                        .HasColumnType("decimal(13,8)");
+
+                    b.Property<bool>("ReleaseStatus")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ForeCastEnggId");
+
+                    b.ToTable("ForeCastEnggItems");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastEnggRiskIdentification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("RfqEnggId")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ForeCastEnggId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ForeCastEnggId");
+
+                    b.ToTable("ForeCastEnggRiskIdentifications");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastReleaseLp", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateOnLpCreation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ForeCastNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDiscountApplicable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ItemNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LeastCost")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Markup")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("PriceList")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Qty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("RLpItemNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Rev")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UOC")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ValidThrough")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ForeCastReleaseLps");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastLPCostingNREConsumable", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ForeCastLPCostingItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("NRECost")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<int?>("NREQty")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ForeCastLPCostingItemId");
+
+                    b.ToTable("ForecastLPCostingNREConsumables");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastLpCosting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ForeCastNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ForecastLpCostings");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastLpCostingItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ForecastLpCostingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ItemNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("MarkUpForMaterial")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<decimal?>("MaterialCost")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<decimal?>("TotalCost")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ForecastLpCostingId");
+
+                    b.ToTable("ForecastLpCostingItems");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastLpCostingOtherCharges", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ForeCastLPCostingItemId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Value")
+                        .HasPrecision(13, 8)
+                        .HasColumnType("decimal(13,8)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ForeCastLPCostingItemId");
+
+                    b.ToTable("ForecastLpCostingOtherCharges");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastLpCostingProcess", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ForeCastLPCostingItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LabourHrs")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("LabourHrsCost")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MachineHrs")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("MachineHrsCost")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("MarkUpForProcessSteps")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProcessSteps")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ForeCastLPCostingItemId");
+
+                    b.ToTable("ForecastLpCostingProcesses");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastSourcing", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ForeCastNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ForecastSourcings");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastSourcingItems", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("Count")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<int>("ForeCastSourcingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ItemDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ItemNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("QtyReq")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ForeCastSourcingId");
+
+                    b.ToTable("ForecastSourcingItems");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastSourcingVendor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Currency")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Duties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ForeCastSourcingItemsId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Freight")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LeadTime")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MOQ")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("QuoteDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("QuoteQuantity")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<DateTime?>("QuoteValidity")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("UnitPrice")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("UnitPricePer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UploadFile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Vendor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ForeCastSourcingItemsId");
+
+                    b.ToTable("ForecastSourcingVendors");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ItemPriceList", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("DiscountMinus")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("DiscountPlus")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<bool?>("IsDiscountApplicable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ItemNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("LeastCost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("LeastCostPlus")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("LeastCostminus")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("Markup")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("PriceListName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Qty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<int?>("ReleaseLpId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UOC")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ValidThrough")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReleaseLpId");
+
+                    b.ToTable("ItemPriceLists");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.LocationTransfer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("AvailableStockInLocation")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FromDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FromLocation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FromPartNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FromPartType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FromUOM")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ToDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ToLocation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ToPartNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ToPartType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ToUOM")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("TransferQty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("locationTransfers");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.MaterialRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FGItemNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IssuedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("IssuedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IssuedStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MRNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProjectNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShopOrderNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShopOrderType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StatusOfShort")
                         .HasColumnType("int");
 
                     b.Property<string>("Unit")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MaterialRequests");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.MaterialRequestItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IssueStatus")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LocationStock")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("MaterialRequestId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MftrPartNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PartDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PartNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PartType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("RequiredQty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("Stock")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Warehouse")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaterialRequestId");
+
+                    b.ToTable("MaterialRequestItems");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.MaterialTransactionNote", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MTNNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProjectNUmber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MaterialTransactionNotes");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.MaterialTransactionNoteItem", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+
+                    b.Property<string>("FromLocation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FromPartNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsClosed")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MaterialTransactionNoteId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Stock")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ToPartNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ToProject")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("TransferQty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaterialTransactionNoteId");
+
+                    b.ToTable("MaterialTransactionNoteItems");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.Quote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerAliasName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("GeneralDiscount")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<decimal?>("InstallationCharges")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<bool?>("IsTheseRequiredToBePrintedInQuote")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentTerms")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("QuoteNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("QuoteRef")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RFQNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReasonForModification")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("RevisionNumber")
+                        .HasPrecision(13, 1)
+                        .HasColumnType("decimal(13,1)");
+
+                    b.Property<string>("RoomName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("SpecialDiscountAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("SpecialDiscountType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("TotalAdditionalCharges")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("TotalAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("TotalAmountWithInstallationCharges")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<decimal>("TotalFinalAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("TypeOfSolution")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("generalDiscountType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Quotes");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.QuoteAdditionalCharges", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdditionalChargesLabelName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("AddtionalChargesValueAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("AddtionalChargesValueType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("CGST")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("IGST")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int>("QuoteId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("SGST")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("UTGST")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuoteId");
+
+                    b.ToTable("QuoteAdditionalCharges");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.QuoteGeneral", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("BasicAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("CGST")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("CustomFields")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("DiscountAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("DiscountType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("DiscountedUnitPrice")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("HSNNo")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("IGST")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("ItemNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PriceList")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Qty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<int>("QuoteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RoomName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("SGST")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("SpecialDiscountAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("SpecialDiscountType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Total")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("TotalDiscountedUnitPrice")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("UTGST")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("UnitPrice")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuoteId");
+
+                    b.ToTable("QuoteGenerals");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.QuoteOtherTerms", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("OtherTerms")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("QuoteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuoteId");
+
+                    b.ToTable("QuoteOtherTerms");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.QuoteRFQNotes", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("QuoteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RFQNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuoteId");
+
+                    b.ToTable("QuoteRFQNotes");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.QuoteSpecialTerms", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("QuoteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SpecialTerms")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuoteId");
+
+                    b.ToTable("QuoteSpecialTerms");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ReleaseLp", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateOnLpCreation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("DiscountMinus")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<decimal?>("DiscountPlus")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<bool?>("IsDiscountApplicable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ItemNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("LeastCost")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<decimal?>("LeastCostPlus")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<decimal?>("LeastCostminus")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<decimal?>("Markup")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("PriceList")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Qty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("RLpItemNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Rev")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RfqNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UOC")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ValidThrough")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ReleaseLps");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.Rfq", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerAliasName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerRfqNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsCsComplete")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsEnggComplete")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsLpCosting")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsLpCostingRelease")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsSourcing")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ProductType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("QuoteExpectdate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReasonForModification")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReleaseStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RequestReceivedate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RevisionNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RfqNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TypeOfSolution")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("isSourcingAvailable")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Rfqs");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCSDeliverySchedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Qty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<int>("RfqCustomerSupportItemsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RfqCustomerSupportItemsId");
+
+                    b.ToTable("RfqCSDeliverySchedules");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCustomField", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomGroupName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LabelName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MaxLength")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Unit")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RfqCustomFields");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCustomGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomGroupName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Unit")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RfqCustomGroups");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCustomerSupport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerAliasName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerRfqNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ProductType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("QuoteExpectdate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("RequestReceivedate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("RevisionNumber")
+                        .HasPrecision(13, 1)
+                        .HasColumnType("decimal(13,1)");
+
+                    b.Property<string>("RfqNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TypeOfSolution")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RfqCustomerSupports");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCustomerSupportItems", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CustomFields")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ItemNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Qty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<bool>("ReleaseStatus")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RfqCustomerSupportId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RfqNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoomName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RfqCustomerSupportId");
+
+                    b.ToTable("RfqCustomerSupportItems");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCustomerSupportNotes", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CustomerSupportCategory")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerSupportNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RfqCustomerSupportId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RfqCustomerSupportId");
+
+                    b.ToTable("RfqCustomerSupportNotes");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqEngg", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerAliasName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerRfqNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("QuoteExpectDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RFQNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RequestReceiveDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("RevisionNumber")
+                        .HasPrecision(13, 1)
+                        .HasColumnType("decimal(13,1)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RfqEnggs");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqEnggItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("CostingBomVersionNo")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("CustomFields")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerItemNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ItemNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Qty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<bool>("ReleaseStatus")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RfqEnggId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -670,27 +2099,11 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<string>("Category")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RfqEnggId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -742,11 +2155,8 @@ namespace Tips.SalesService.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CreatedBy")
+                    b.Property<string>("CustomerItemNumber")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -764,6 +2174,9 @@ namespace Tips.SalesService.Api.Migrations
                         .HasPrecision(13, 3)
                         .HasColumnType("decimal(13,3)");
 
+                    b.Property<string>("MarkUpForProcessSteps")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal?>("MaterialCost")
                         .HasPrecision(13, 3)
                         .HasColumnType("decimal(13,3)");
@@ -775,10 +2188,6 @@ namespace Tips.SalesService.Api.Migrations
                         .HasPrecision(13, 3)
                         .HasColumnType("decimal(13,3)");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("RfqLPCostingId");
@@ -788,17 +2197,11 @@ namespace Tips.SalesService.Api.Migrations
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqLPCostingNREConsumable", b =>
                 {
-                    b.Property<int>("NREId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NREId"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
@@ -816,11 +2219,7 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<int>("RfqLPCostingItemId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("NREId");
+                    b.HasKey("Id");
 
                     b.HasIndex("RfqLPCostingItemId");
 
@@ -829,21 +2228,15 @@ namespace Tips.SalesService.Api.Migrations
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqLPCostingOtherCharges", b =>
                 {
-                    b.Property<int>("OthersId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OthersId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal?>("CostOfLable")
                         .HasPrecision(13, 8)
                         .HasColumnType("decimal(13,8)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
@@ -857,11 +2250,7 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<int>("RfqLPCostingItemId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("OthersId");
+                    b.HasKey("Id");
 
                     b.HasIndex("RfqLPCostingItemId");
 
@@ -870,17 +2259,11 @@ namespace Tips.SalesService.Api.Migrations
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqLPCostingProcess", b =>
                 {
-                    b.Property<int>("ProcessId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProcessId"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("LabourHrs")
                         .HasColumnType("nvarchar(max)");
@@ -902,20 +2285,13 @@ namespace Tips.SalesService.Api.Migrations
                         .HasPrecision(13, 3)
                         .HasColumnType("decimal(13,3)");
 
-                    b.Property<string>("MarkUpForProcessSteps")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ProcessSteps")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RfqLPCostingItemId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ProcessId");
+                    b.HasKey("Id");
 
                     b.HasIndex("RfqLPCostingItemId");
 
@@ -978,14 +2354,9 @@ namespace Tips.SalesService.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
+                    b.Property<decimal?>("Count")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
 
                     b.Property<string>("ItemDescription")
                         .HasColumnType("nvarchar(max)");
@@ -993,21 +2364,12 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<string>("ItemNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("QuantityReq")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("QtyReq")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
 
                     b.Property<int>("RfqSourcingId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -1024,12 +2386,6 @@ namespace Tips.SalesService.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Currency")
                         .HasColumnType("nvarchar(max)");
 
@@ -1042,12 +2398,6 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("LeadTime")
                         .HasColumnType("nvarchar(max)");
 
@@ -1057,8 +2407,9 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<DateTime?>("QuoteDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("QuoteQuantity")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("QuoteQty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
 
                     b.Property<DateTime?>("QuoteValidity")
                         .HasColumnType("datetime2");
@@ -1066,17 +2417,11 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<int>("RfqSourcingItemsId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal?>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
 
                     b.Property<string>("UnitPricePer")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UploadFile")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Vendor")
@@ -1086,7 +2431,7 @@ namespace Tips.SalesService.Api.Migrations
 
                     b.HasIndex("RfqSourcingItemsId");
 
-                    b.ToTable("RfqSourcingVendor");
+                    b.ToTable("RfqSourcingVendors");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.SalesOrder", b =>
@@ -1100,7 +2445,7 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<string>("BillTo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("BillToId")
+                    b.Property<int?>("BillToId")
                         .HasColumnType("int");
 
                     b.Property<string>("CreatedBy")
@@ -1109,11 +2454,14 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsShortClosed")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
@@ -1121,13 +2469,13 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<DateTime?>("LastModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("OrderDate")
+                    b.Property<DateTime?>("OrderDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("OrderType")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PODate")
+                    b.Property<DateTime?>("PODate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("PONumber")
@@ -1142,24 +2490,211 @@ namespace Tips.SalesService.Api.Migrations
                     b.Property<string>("QuoteNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ReceivedDate")
+                    b.Property<string>("ReasonForModification")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ReceivedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RevNo")
+                    b.Property<int?>("RevisionNumber")
+                        .HasPrecision(13, 1)
+                        .HasColumnType("int");
+
+                    b.Property<int>("SOStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SalesOrderNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ShipTo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ShipToId")
+                    b.Property<int?>("ShipToId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ShortClosedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ShortClosedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("Total")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("salesOrders");
+                    b.ToTable("SalesOrders");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.SalesOrderHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("BalanceQty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<decimal?>("BasicAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("BillTo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("BillToId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("CGST")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Currency")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Discount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("DispatchQty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<decimal?>("IGST")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<bool>("IsShortClosed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ItemNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("OrderQty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("OrderType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("PODate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PONumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentTerms")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProjectNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("QuoteNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ReceivedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RequestedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("RevisionNumber")
+                        .HasPrecision(13, 1)
+                        .HasColumnType("decimal(13,1)");
+
+                    b.Property<decimal?>("SGST")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<bool?>("SOStatus")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SalesOrderNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShipTo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ShipToId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("ShopOrderQty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("ShortClosedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ShortClosedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StatusEnum")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Total")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("TotalAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("UOM")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("UTGST")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("UnitPrice")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("salesOrderHistories");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.SalesOrderItems", b =>
@@ -1170,60 +2705,88 @@ namespace Tips.SalesService.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("CGST")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<decimal>("BalanceQty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
 
-                    b.Property<string>("CreatedBy")
+                    b.Property<decimal?>("BasicAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("CGST")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("Currency")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Currency")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LastModifiedBy")
+                    b.Property<string>("Discount")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
+                    b.Property<decimal>("DispatchQty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<decimal?>("IGST")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("ItemNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("OrderQty")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<string>("ProjectNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("RequestedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("SAItemNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("SGST")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<decimal?>("SGST")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
 
                     b.Property<int>("SalesOrderId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("UOM")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("SalesOrderNumber")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("UTGST")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<decimal>("ShopOrderQty")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
+
+                    b.Property<int>("StatusEnum")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("TotalAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("UOM")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("UTGST")
+                        .HasPrecision(13, 3)
+                        .HasColumnType("decimal(13,3)");
 
                     b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SalesOrderId");
 
-                    b.ToTable("SalesOrderItems");
+                    b.ToTable("SalesOrdersItems");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.SourcingVendor", b =>
@@ -1290,10 +2853,160 @@ namespace Tips.SalesService.Api.Migrations
                     b.ToTable("sourcingVendors");
                 });
 
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastCSDeliverySchedule", b =>
+                {
+                    b.HasOne("Tips.SalesService.Api.Entities.ForeCastCustomerSupportItem", "ForeCastCustomerSupportItems")
+                        .WithMany("ForeCastCSDeliverySchedule")
+                        .HasForeignKey("ForeCastCustomerSupportItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ForeCastCustomerSupportItems");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastCustomerSupportItem", b =>
+                {
+                    b.HasOne("Tips.SalesService.Api.Entities.ForeCastCustomerSupport", "ForeCastCustomerSupport")
+                        .WithMany("ForeCastCustomerSupportItems")
+                        .HasForeignKey("ForeCastCustomerSupportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ForeCastCustomerSupport");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastCustomerSupportNotes", b =>
+                {
+                    b.HasOne("Tips.SalesService.Api.Entities.ForeCastCustomerSupport", "ForeCastCustomerSupport")
+                        .WithMany("ForeCastCustomerSupportNotes")
+                        .HasForeignKey("ForeCastCustomerSupportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ForeCastCustomerSupport");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastEnggItems", b =>
+                {
+                    b.HasOne("Tips.SalesService.Api.Entities.ForeCastEngg", "ForeCastEngg")
+                        .WithMany("ForeCastEnggItems")
+                        .HasForeignKey("ForeCastEnggId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ForeCastEngg");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastEnggRiskIdentification", b =>
+                {
+                    b.HasOne("Tips.SalesService.Api.Entities.ForeCastEngg", "ForeCastEngg")
+                        .WithMany("ForeCastEnggRiskIdentifications")
+                        .HasForeignKey("ForeCastEnggId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ForeCastEngg");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastLPCostingNREConsumable", b =>
+                {
+                    b.HasOne("Tips.SalesService.Api.Entities.ForecastLpCostingItem", "ForecastLpCostingItem")
+                        .WithMany("ForecastLPCostingNREConsumables")
+                        .HasForeignKey("ForeCastLPCostingItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ForecastLpCostingItem");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastLpCostingItem", b =>
+                {
+                    b.HasOne("Tips.SalesService.Api.Entities.ForecastLpCosting", "ForecastLpCosting")
+                        .WithMany("ForecastLpCostingItems")
+                        .HasForeignKey("ForecastLpCostingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ForecastLpCosting");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastLpCostingOtherCharges", b =>
+                {
+                    b.HasOne("Tips.SalesService.Api.Entities.ForecastLpCostingItem", "ForecastLpCostingItem")
+                        .WithMany("ForecastLpCostingOtherCharges")
+                        .HasForeignKey("ForeCastLPCostingItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ForecastLpCostingItem");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastLpCostingProcess", b =>
+                {
+                    b.HasOne("Tips.SalesService.Api.Entities.ForecastLpCostingItem", "ForecastLpCostingItem")
+                        .WithMany("ForecastLpCostingProcesses")
+                        .HasForeignKey("ForeCastLPCostingItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ForecastLpCostingItem");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastSourcingItems", b =>
+                {
+                    b.HasOne("Tips.SalesService.Api.Entities.ForecastSourcing", "ForecastSourcing")
+                        .WithMany("ForecastSourcingItems")
+                        .HasForeignKey("ForeCastSourcingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ForecastSourcing");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastSourcingVendor", b =>
+                {
+                    b.HasOne("Tips.SalesService.Api.Entities.ForecastSourcingItems", "ForecastSourcingItems")
+                        .WithMany("ForecastSourcingVendors")
+                        .HasForeignKey("ForeCastSourcingItemsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ForecastSourcingItems");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ItemPriceList", b =>
+                {
+                    b.HasOne("Tips.SalesService.Api.Entities.ReleaseLp", "ReleaseLp")
+                        .WithMany()
+                        .HasForeignKey("ReleaseLpId");
+
+                    b.Navigation("ReleaseLp");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.MaterialRequestItem", b =>
+                {
+                    b.HasOne("Tips.SalesService.Api.Entities.MaterialRequest", "MaterialRequest")
+                        .WithMany("MaterialRequestItems")
+                        .HasForeignKey("MaterialRequestId");
+
+                    b.Navigation("MaterialRequest");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.MaterialTransactionNoteItem", b =>
+                {
+                    b.HasOne("Tips.SalesService.Api.Entities.MaterialTransactionNote", "MaterialTransactionNote")
+                        .WithMany("MaterialTransactionNoteItems")
+                        .HasForeignKey("MaterialTransactionNoteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MaterialTransactionNote");
+                });
+
             modelBuilder.Entity("Tips.SalesService.Api.Entities.QuoteAdditionalCharges", b =>
                 {
                     b.HasOne("Tips.SalesService.Api.Entities.Quote", "Quote")
-                        .WithMany("quoteAdditionalCharges")
+                        .WithMany("QuoteAdditionalCharges")
                         .HasForeignKey("QuoteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1304,7 +3017,7 @@ namespace Tips.SalesService.Api.Migrations
             modelBuilder.Entity("Tips.SalesService.Api.Entities.QuoteGeneral", b =>
                 {
                     b.HasOne("Tips.SalesService.Api.Entities.Quote", "Quote")
-                        .WithMany("quoteGenerals")
+                        .WithMany("QuoteGenerals")
                         .HasForeignKey("QuoteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1315,7 +3028,7 @@ namespace Tips.SalesService.Api.Migrations
             modelBuilder.Entity("Tips.SalesService.Api.Entities.QuoteOtherTerms", b =>
                 {
                     b.HasOne("Tips.SalesService.Api.Entities.Quote", "Quote")
-                        .WithMany("quoteOtherTerms")
+                        .WithMany("QuoteOtherTerms")
                         .HasForeignKey("QuoteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1326,7 +3039,7 @@ namespace Tips.SalesService.Api.Migrations
             modelBuilder.Entity("Tips.SalesService.Api.Entities.QuoteRFQNotes", b =>
                 {
                     b.HasOne("Tips.SalesService.Api.Entities.Quote", "Quote")
-                        .WithMany("quoteRFQNotes")
+                        .WithMany("QuoteRFQNotes")
                         .HasForeignKey("QuoteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1337,7 +3050,7 @@ namespace Tips.SalesService.Api.Migrations
             modelBuilder.Entity("Tips.SalesService.Api.Entities.QuoteSpecialTerms", b =>
                 {
                     b.HasOne("Tips.SalesService.Api.Entities.Quote", "Quote")
-                        .WithMany("quoteSpecialTerms")
+                        .WithMany("QuoteSpecialTerms")
                         .HasForeignKey("QuoteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1347,107 +3060,107 @@ namespace Tips.SalesService.Api.Migrations
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCSDeliverySchedule", b =>
                 {
-                    b.HasOne("Tips.SalesService.Api.Entities.RfqCustomerSupportItems", "rfqCustomerSupportItems")
-                        .WithMany("rfqCSDeliverySchedule")
+                    b.HasOne("Tips.SalesService.Api.Entities.RfqCustomerSupportItems", "RfqCustomerSupportItems")
+                        .WithMany("RfqCSDeliverySchedule")
                         .HasForeignKey("RfqCustomerSupportItemsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("rfqCustomerSupportItems");
+                    b.Navigation("RfqCustomerSupportItems");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCustomerSupportItems", b =>
                 {
-                    b.HasOne("Tips.SalesService.Api.Entities.RfqCustomerSupport", "rfqCustomerSupport")
-                        .WithMany("rfqCustomerSupportItems")
+                    b.HasOne("Tips.SalesService.Api.Entities.RfqCustomerSupport", "RfqCustomerSupport")
+                        .WithMany("RfqCustomerSupportItems")
                         .HasForeignKey("RfqCustomerSupportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("rfqCustomerSupport");
+                    b.Navigation("RfqCustomerSupport");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCustomerSupportNotes", b =>
                 {
-                    b.HasOne("Tips.SalesService.Api.Entities.RfqCustomerSupport", "rfqCustomerSupport")
-                        .WithMany("rfqCustomerSupportNotes")
+                    b.HasOne("Tips.SalesService.Api.Entities.RfqCustomerSupport", "RfqCustomerSupport")
+                        .WithMany("RfqCustomerSupportNotes")
                         .HasForeignKey("RfqCustomerSupportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("rfqCustomerSupport");
+                    b.Navigation("RfqCustomerSupport");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqEnggItem", b =>
                 {
-                    b.HasOne("Tips.SalesService.Api.Entities.RfqEngg", "rfqEngg")
-                        .WithMany("rfqEnggItems")
+                    b.HasOne("Tips.SalesService.Api.Entities.RfqEngg", "RfqEngg")
+                        .WithMany("RfqEnggItems")
                         .HasForeignKey("RfqEnggId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("rfqEngg");
+                    b.Navigation("RfqEngg");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqEnggRiskIdentification", b =>
                 {
-                    b.HasOne("Tips.SalesService.Api.Entities.RfqEngg", "rfqEngg")
-                        .WithMany("rfqEnggRiskIdentifications")
+                    b.HasOne("Tips.SalesService.Api.Entities.RfqEngg", "RfqEngg")
+                        .WithMany("RfqEnggRiskIdentifications")
                         .HasForeignKey("RfqEnggId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("rfqEngg");
+                    b.Navigation("RfqEngg");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqLPCostingItem", b =>
                 {
-                    b.HasOne("Tips.SalesService.Api.Entities.RfqLPCosting", "rfqLPCosting")
-                        .WithMany("rfqLPCostingItems")
+                    b.HasOne("Tips.SalesService.Api.Entities.RfqLPCosting", "RfqLPCosting")
+                        .WithMany("RfqLPCostingItems")
                         .HasForeignKey("RfqLPCostingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("rfqLPCosting");
+                    b.Navigation("RfqLPCosting");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqLPCostingNREConsumable", b =>
                 {
-                    b.HasOne("Tips.SalesService.Api.Entities.RfqLPCostingItem", "rfqLPCostingItem")
-                        .WithMany("rfqLPCostingNREConsumables")
+                    b.HasOne("Tips.SalesService.Api.Entities.RfqLPCostingItem", "RfqLPCostingItem")
+                        .WithMany("RfqLPCostingNREConsumables")
                         .HasForeignKey("RfqLPCostingItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("rfqLPCostingItem");
+                    b.Navigation("RfqLPCostingItem");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqLPCostingOtherCharges", b =>
                 {
-                    b.HasOne("Tips.SalesService.Api.Entities.RfqLPCostingItem", "rfqLPCostingItem")
-                        .WithMany("rfqLPCostingOtherCharges")
+                    b.HasOne("Tips.SalesService.Api.Entities.RfqLPCostingItem", "RfqLPCostingItem")
+                        .WithMany("RfqLPCostingOtherCharges")
                         .HasForeignKey("RfqLPCostingItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("rfqLPCostingItem");
+                    b.Navigation("RfqLPCostingItem");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqLPCostingProcess", b =>
                 {
-                    b.HasOne("Tips.SalesService.Api.Entities.RfqLPCostingItem", "rfqLPCostingItem")
-                        .WithMany("rfqLPCostingProcesses")
+                    b.HasOne("Tips.SalesService.Api.Entities.RfqLPCostingItem", "RfqLPCostingItem")
+                        .WithMany("RfqLPCostingProcesses")
                         .HasForeignKey("RfqLPCostingItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("rfqLPCostingItem");
+                    b.Navigation("RfqLPCostingItem");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqSourcingItems", b =>
                 {
                     b.HasOne("Tips.SalesService.Api.Entities.RfqSourcing", "RfqSourcing")
-                        .WithMany("rfqSourcingItems")
+                        .WithMany("RfqSourcingItems")
                         .HasForeignKey("RfqSourcingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1458,7 +3171,7 @@ namespace Tips.SalesService.Api.Migrations
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqSourcingVendor", b =>
                 {
                     b.HasOne("Tips.SalesService.Api.Entities.RfqSourcingItems", "RfqSourcingItems")
-                        .WithMany("rfqSourcingVendors")
+                        .WithMany("RfqSourcingVendors")
                         .HasForeignKey("RfqSourcingItemsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1469,7 +3182,7 @@ namespace Tips.SalesService.Api.Migrations
             modelBuilder.Entity("Tips.SalesService.Api.Entities.SalesOrderItems", b =>
                 {
                     b.HasOne("Tips.SalesService.Api.Entities.SalesOrder", "SalesOrder")
-                        .WithMany("salesOrdersItems")
+                        .WithMany("SalesOrdersItems")
                         .HasForeignKey("SalesOrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1477,65 +3190,118 @@ namespace Tips.SalesService.Api.Migrations
                     b.Navigation("SalesOrder");
                 });
 
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastCustomerSupport", b =>
+                {
+                    b.Navigation("ForeCastCustomerSupportItems");
+
+                    b.Navigation("ForeCastCustomerSupportNotes");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastCustomerSupportItem", b =>
+                {
+                    b.Navigation("ForeCastCSDeliverySchedule");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForeCastEngg", b =>
+                {
+                    b.Navigation("ForeCastEnggItems");
+
+                    b.Navigation("ForeCastEnggRiskIdentifications");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastLpCosting", b =>
+                {
+                    b.Navigation("ForecastLpCostingItems");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastLpCostingItem", b =>
+                {
+                    b.Navigation("ForecastLPCostingNREConsumables");
+
+                    b.Navigation("ForecastLpCostingOtherCharges");
+
+                    b.Navigation("ForecastLpCostingProcesses");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastSourcing", b =>
+                {
+                    b.Navigation("ForecastSourcingItems");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.ForecastSourcingItems", b =>
+                {
+                    b.Navigation("ForecastSourcingVendors");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.MaterialRequest", b =>
+                {
+                    b.Navigation("MaterialRequestItems");
+                });
+
+            modelBuilder.Entity("Tips.SalesService.Api.Entities.MaterialTransactionNote", b =>
+                {
+                    b.Navigation("MaterialTransactionNoteItems");
+                });
+
             modelBuilder.Entity("Tips.SalesService.Api.Entities.Quote", b =>
                 {
-                    b.Navigation("quoteAdditionalCharges");
+                    b.Navigation("QuoteAdditionalCharges");
 
-                    b.Navigation("quoteGenerals");
+                    b.Navigation("QuoteGenerals");
 
-                    b.Navigation("quoteOtherTerms");
+                    b.Navigation("QuoteOtherTerms");
 
-                    b.Navigation("quoteRFQNotes");
+                    b.Navigation("QuoteRFQNotes");
 
-                    b.Navigation("quoteSpecialTerms");
+                    b.Navigation("QuoteSpecialTerms");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCustomerSupport", b =>
                 {
-                    b.Navigation("rfqCustomerSupportItems");
+                    b.Navigation("RfqCustomerSupportItems");
 
-                    b.Navigation("rfqCustomerSupportNotes");
+                    b.Navigation("RfqCustomerSupportNotes");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqCustomerSupportItems", b =>
                 {
-                    b.Navigation("rfqCSDeliverySchedule");
+                    b.Navigation("RfqCSDeliverySchedule");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqEngg", b =>
                 {
-                    b.Navigation("rfqEnggItems");
+                    b.Navigation("RfqEnggItems");
 
-                    b.Navigation("rfqEnggRiskIdentifications");
+                    b.Navigation("RfqEnggRiskIdentifications");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqLPCosting", b =>
                 {
-                    b.Navigation("rfqLPCostingItems");
+                    b.Navigation("RfqLPCostingItems");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqLPCostingItem", b =>
                 {
-                    b.Navigation("rfqLPCostingNREConsumables");
+                    b.Navigation("RfqLPCostingNREConsumables");
 
-                    b.Navigation("rfqLPCostingOtherCharges");
+                    b.Navigation("RfqLPCostingOtherCharges");
 
-                    b.Navigation("rfqLPCostingProcesses");
+                    b.Navigation("RfqLPCostingProcesses");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqSourcing", b =>
                 {
-                    b.Navigation("rfqSourcingItems");
+                    b.Navigation("RfqSourcingItems");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.RfqSourcingItems", b =>
                 {
-                    b.Navigation("rfqSourcingVendors");
+                    b.Navigation("RfqSourcingVendors");
                 });
 
             modelBuilder.Entity("Tips.SalesService.Api.Entities.SalesOrder", b =>
                 {
-                    b.Navigation("salesOrdersItems");
+                    b.Navigation("SalesOrdersItems");
                 });
 #pragma warning restore 612, 618
         }

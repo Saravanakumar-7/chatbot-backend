@@ -2,12 +2,13 @@
 using Entities;
 using Entities.Helper;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Contracts
 {
     public interface IInvoiceRepository : IRepositoryBase<Invoice>
     {
-        Task<PagedList<Invoice>> GetAllInvoices(PagingParameter pagingParameter);
+        Task<PagedList<Invoice>> GetAllInvoices(PagingParameter pagingParameter, SearchParams searchParams);
         Task<int?> GetInvoiceNumberAutoIncrementCount(DateTime date);
 
         Task<long?> CreateInvoice(Invoice invoice);
@@ -15,6 +16,9 @@ namespace Tips.Warehouse.Api.Contracts
         Task<string> DeleteInvoice(Invoice invoice);
 
         Task<Invoice> GetInvoiceById(int id);
-    
+
+        Task<IEnumerable<InvoiceIdNameList>> GetAllInvoiceIdNameList();
+
+
     }
 }

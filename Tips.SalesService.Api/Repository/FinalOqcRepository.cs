@@ -4,6 +4,7 @@ using Entities;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -36,11 +37,13 @@ namespace Tips.SalesService.Api.Repository
         }
 
 
-        public async Task<PagedList<FinalOqc>> GetAllFinalOqc(PagingParameter pagingParameter)
+        public async Task<PagedList<FinalOqc>> GetAllFinalOqc([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var getAllFinalOqc = PagedList<FinalOqc>.ToPagedList(FindAll()
-           .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return getAllFinalOqc;
+            var getAllFinalFgoqcDetails = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.ProjectNumber.Contains(searchParammes.SearchValue) ||
+                 inv.FGItemNumber.Contains(searchParammes.SearchValue) || inv.ShopOrderNumber.Contains(searchParammes.SearchValue))));
+
+            return PagedList<FinalOqc>.ToPagedList(getAllFinalFgoqcDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
 

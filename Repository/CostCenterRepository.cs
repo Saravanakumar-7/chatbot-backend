@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -34,18 +36,22 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<CostCenter>> GetAllActiveCostCenters()
+        public async Task<PagedList<CostCenter>> GetAllActiveCostCenters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var AllActiveCostcenters = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveCostcenters;
+            var costCenterDetails = FindAll()
+                                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CostCenterName.Contains(searchParams.SearchValue) ||
+                                inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<CostCenter>.ToPagedList(costCenterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<CostCenter>> GetAllCostCenters()
+        public async Task<PagedList<CostCenter>> GetAllCostCenters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var GetallCostcenters = await FindAll().ToListAsync();
+            var costCenterDetails = FindAll().OrderByDescending(x => x.Id)
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CostCenterName.Contains(searchParams.SearchValue) ||
+            inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallCostcenters;
+            return PagedList<CostCenter>.ToPagedList(costCenterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<CostCenter> GetCostCenterById(int id)

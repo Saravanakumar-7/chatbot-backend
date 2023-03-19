@@ -33,13 +33,13 @@ namespace Tips.SalesService.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllFgOqcs([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllFgOqcs([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<FgOqcDto>> serviceResponse = new ServiceResponse<IEnumerable<FgOqcDto>>();
 
             try
             {
-                var getAllFgOqcs = await _fgOqcRepository.GetAllFgOqcs(pagingParameter);
+                var getAllFgOqcs = await _fgOqcRepository.GetAllFgOqcs(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllFgOqcs.TotalCount,
