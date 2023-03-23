@@ -81,43 +81,6 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> SearchSalesOrderItem([FromQuery] SearchParammes searchParams)
-        {
-            ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
-            try
-            {
-                var salesOrderList = await _repository.SearchSalesOrderItem(searchParams);
-         
-                _logger.LogInfo("Returned all SalesOrders");
-                var config = new MapperConfiguration(cfg =>
-                {
-                    cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<SalesOrderDto, SalesOrder>().ReverseMap()
-                        .ForMember(dest => dest.SalesOrderItemsDtos, opt => opt.MapFrom(src => src.SalesOrdersItems));
-                });
-
-                var mapper = config.CreateMapper();
-
-
-                var result = mapper.Map<IEnumerable<SalesOrderDto>>(salesOrderList);
-                serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all SalesOrderItems";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
-
         //[HttpGet]
         //public async Task<IActionResult> GetAllSalesOrderWithItems([FromQuery] PagingParameter pagingParameter, List<string> salesOrderNumber,List<string> projectNumber, List<string> customerName)
         //{

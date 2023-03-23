@@ -127,6 +127,18 @@ namespace Tips.SalesService.Api.Repository
             //return null;
         }
 
+        public async Task<IEnumerable<SalesOrderIdNameListDto>> GetAllActiveSalesOrderNameList()
+        {
+            IEnumerable<SalesOrderIdNameListDto> activeSalesOrderNameList = await _tipsSalesServiceDbContext.SalesOrders
+                                .Select(x => new SalesOrderIdNameListDto()
+                                {
+                                    Id = x.Id,
+                                    SalesOrderNumber = x.SalesOrderNumber,
+                                })
+                              .ToListAsync();
+
+            return activeSalesOrderNameList;
+        }
 
         public async Task<SalesOrder> GetSalesOrderById(int id)
         {
