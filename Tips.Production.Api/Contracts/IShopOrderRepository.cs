@@ -22,6 +22,7 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<ShopOrder>> GetAllOpenShopOrders();
         Task<IEnumerable<ListOfShopOrderDto>> GetAllFGShopOrderNoList();
         Task<IEnumerable<ListOfShopOrderDto>> GetAllSAShopOrderNoList();
+        Task<IEnumerable<ListOfShopOrderDto>> GetAllActiveShopOrderNoList();
         public void SaveAsync();
     }
 }
