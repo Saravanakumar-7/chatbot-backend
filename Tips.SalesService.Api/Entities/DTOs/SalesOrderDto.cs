@@ -49,7 +49,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<SalesOrderItemsDto>? SalesOrderItemsDtos { get; set; }
+        public List<SalesOrderItemsDto>? SalesOrdersItems { get; set; }
     }
 
     public class SalesOrderPostDto

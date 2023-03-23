@@ -29,7 +29,7 @@ namespace Tips.Production.Api.Repository
             return result.Id;
         }
 
-        public async Task<PagedList<ShopOrderConfirmation>> GetAllShopOrderConfirmations([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        public async Task<PagedList<ShopOrderConfirmation>> GetAllShopOrderConfirmation([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
             var shopOrderCOnfirmationDetails = FindAll().OrderByDescending(x => x.Id)
                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ShopOrderNumber.Contains(searchParams.SearchValue) ||
@@ -39,7 +39,7 @@ namespace Tips.Production.Api.Repository
 
             return PagedList<ShopOrderConfirmation>.ToPagedList(shopOrderCOnfirmationDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
-        }
+        } 
 
 
         public async Task<ShopOrderConfirmation> GetShopOrderConfirmationById(int id)
@@ -110,7 +110,7 @@ namespace Tips.Production.Api.Repository
                     ShopOrderNumber = s.ShopOrderNumber,
                     ShopOrderReleaseQty = s.TotalSOReleaseQty,
                     WipQty = s.WipQty,
-                    
+                    OqcQty = s.OqcQty
                 })
                 .ToListAsync();
 

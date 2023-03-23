@@ -110,7 +110,7 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderItemsDtoList.Add(salesOrderItemsDtos);
                     }
 
-                    salesOrderDto.SalesOrderItemsDtos = salesOrderItemsDtoList;
+                    salesOrderDto.SalesOrdersItems = salesOrderItemsDtoList;
                     serviceResponse.Data = salesOrderDto;
                     serviceResponse.Message = $"Returned SalesOrder with id: {id}";
                     serviceResponse.Success = true;
@@ -163,7 +163,7 @@ namespace Tips.SalesService.Api.Controllers
                 //{
                 //    for (int i = 0; i < salesOrderItemsDto.Count; i++)
                 //    {
-                //        SalesOrderItems salesOrderItems = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
+                //        SalesOrdersItems salesOrderItems = _mapper.Map<SalesOrdersItems>(salesOrderItemsDto[i]);
                 //        salesOrderItemsList.Add(salesOrderItems);
                 //    }
                 //}
@@ -222,6 +222,80 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        //From Date and To Date filter 
+        [HttpGet]
+        public async Task<IActionResult> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParams)
+        {
+            ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
+            try
+            {
+                var salesOrderList = await _repository.SearchSalesOrderDate(searchDateParams);
+
+                _logger.LogInfo("Returned all SalesOrders");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<SalesOrderDto, SalesOrder>().ReverseMap()
+                        .ForMember(dest => dest.SalesOrdersItems, opt => opt.MapFrom(src => src.SalesOrdersItems));
+                });
+
+                var mapper = config.CreateMapper();
+
+
+                var result = mapper.Map<IEnumerable<SalesOrderDto>>(salesOrderList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SalesOrdersItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchSalesOrderItem([FromQuery] SearchParammes searchParams)
+        {
+            ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
+            try
+            {
+                var salesOrderList = await _repository.SearchSalesOrderItem(searchParams);
+
+                _logger.LogInfo("Returned all SalesOrders");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<SalesOrderDto, SalesOrder>().ReverseMap()
+                        .ForMember(dest => dest.SalesOrdersItems, opt => opt.MapFrom(src => src.SalesOrdersItems));
+                });
+
+                var mapper = config.CreateMapper();
+
+
+                var result = mapper.Map<IEnumerable<SalesOrderDto>>(salesOrderList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SalesOrdersItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

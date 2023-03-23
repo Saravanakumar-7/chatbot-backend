@@ -2,6 +2,7 @@
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
@@ -72,13 +73,59 @@ namespace Tips.SalesService.Api.Repository
                      || inv.PODate.Equals(int.Parse(searchParammes.SearchValue))
                      || inv.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
                      || inv.CustomerId.Equals(int.Parse(searchParammes.SearchValue)))))
-                   .Include(t => t.SalesOrdersItems);
-            ;
-
+                   .Include(t => t.SalesOrdersItems); 
             return PagedList<SalesOrder>.ToPagedList(salesOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
+        public async Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParams)
+        {
+            var salesOrderDetails = _tipsSalesServiceDbContext.SalesOrders
+                             .Where(inv => ((inv.CreatedOn.Equals(searchDateParams.SearchFromDate) ||
+                                inv.CreatedOn.Equals(searchDateParams.SearchToDate) 
+                                )))
+                             .Include(itm => itm.SalesOrdersItems)
+                             .ToList();
+            return salesOrderDetails;
+        }
 
+            public async Task<IEnumerable<SalesOrder>> SearchSalesOrderItem([FromQuery] SearchParammes searchParams)
+        {
+            var salesOrderDetails = _tipsSalesServiceDbContext.SalesOrders
+                             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
+                                || inv.SalesOrderNumber.Contains(searchParams.SearchValue)
+                                || inv.ProjectNumber.Contains(searchParams.SearchValue)
+                                || inv.CustomerName.Contains(searchParams.SearchValue)
+                                || inv.PONumber.Contains(searchParams.SearchValue)
+                                )))
+                                .Include(itm => itm.SalesOrdersItems).ToList();
+
+            var salesOrderItemsDetails = _tipsSalesServiceDbContext.SalesOrders
+                                .Include(x => x.SalesOrdersItems
+                                .Where(i => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
+                                || i.ItemNumber.Contains(searchParams.SearchValue)
+                                )))).ToList();
+
+            var salesOrderUnionList = salesOrderDetails.Union(salesOrderItemsDetails);
+
+
+            return salesOrderUnionList;
+
+            //var query1 = from t1 in _tipsSalesServiceDbContext.SalesOrders
+            //             join t2 in _tipsSalesServiceDbContext.SalesOrdersItems on t1.SalesOrderNumber equals t2.SalesOrderNumber
+            //             where t1.SalesOrderNumber.Contains(searchParams.SearchValue)
+            //             select new { t1,t2 };
+
+            //var query2 = from t2 in _tipsSalesServiceDbContext.SalesOrdersItems
+            //             join t1 in _tipsSalesServiceDbContext.SalesOrders on t2.SalesOrderNumber equals t1.SalesOrderNumber into dept
+            //             from SalesOrder in dept.DefaultIfEmpty()
+            //             where t2.ItemNumber.Contains(searchParams.SearchValue)
+            //             select new { SalesOrder, t2 };
+
+            ////var result = query1.Union(query2);
+
+            ////return (IEnumerable<SalesOrder>)result;
+            //return null;
+        }
 
 
         public async Task<SalesOrder> GetSalesOrderById(int id)

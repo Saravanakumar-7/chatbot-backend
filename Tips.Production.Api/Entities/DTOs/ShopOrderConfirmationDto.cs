@@ -77,6 +77,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ShopOrderNumber { get; set; }
         public decimal ShopOrderReleaseQty { get; set; }
         public decimal WipQty { get; set; }
+        public decimal OqcQty { get; set; }
 
     }
 }

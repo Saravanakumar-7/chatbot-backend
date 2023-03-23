@@ -555,6 +555,11 @@ namespace Tips.SalesService.Api.Repository
             {
                 var LpCostingByRfqNumber = await _tipsSalesServiceDbContext.RfqLPCostings
                     .Include(t => t.RfqLPCostingItems)
+                    .ThenInclude(c=>c.RfqLPCostingProcesses)
+                    .Include(t => t.RfqLPCostingItems)
+                    .ThenInclude(v=>v.RfqLPCostingNREConsumables)
+                    .Include(t => t.RfqLPCostingItems)
+                    .ThenInclude(b=>b.RfqLPCostingOtherCharges)
                   .Where(x => x.RfqNumber == RfqNumber)
                             .FirstOrDefaultAsync();
                 return LpCostingByRfqNumber;

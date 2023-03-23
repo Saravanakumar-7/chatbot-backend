@@ -3,6 +3,7 @@ using Entities;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.SalesService.Api.Contracts
 {
@@ -16,6 +17,12 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> GetSONumberAutoIncrementCount(DateTime date);
         Task<IEnumerable<ListofSalesOrderDetails>> GetSalesOrderDetailsByCustomerId(string Customerid);
         Task<string> DeleteSalesOrder(SalesOrder salesOrder);
+
+        Task<IEnumerable<SalesOrder>> SearchSalesOrderItem([FromQuery] SearchParammes searchParams);
+
+        Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchParams);
+
+        
 
         //Task<string> UpdateSOBasedOnCreatingDO();
 

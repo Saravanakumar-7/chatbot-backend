@@ -34,13 +34,13 @@ namespace Tips.Production.Api.Controllers
         }
 
        [HttpGet]
-        public async Task<IActionResult> GetAllShopOrderConfirmations([FromQuery] PagingParameter pagingParameter, SearchParamess searchParamess)
+        public async Task<IActionResult> GetAllShopOrderConfirmation([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<ShopOrderConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderConfirmationDto>>();
 
             try
             {
-                var shopOrderConfirmationDetails = await _shopOrderConfirmationRepository.GetAllShopOrderConfirmations(pagingParameter, searchParamess);
+                var shopOrderConfirmationDetails = await _shopOrderConfirmationRepository.GetAllShopOrderConfirmation(pagingParameter, searchParamess);
 
                 var metadata = new
                 {
