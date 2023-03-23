@@ -15,6 +15,7 @@ using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -79,6 +80,81 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchSalesOrderItem([FromQuery] SearchParammes searchParams)
+        {
+            ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
+            try
+            {
+                var salesOrderList = await _repository.SearchSalesOrderItem(searchParams);
+         
+                _logger.LogInfo("Returned all SalesOrders");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<SalesOrderDto, SalesOrder>().ReverseMap()
+                        .ForMember(dest => dest.SalesOrderItemsDtos, opt => opt.MapFrom(src => src.SalesOrdersItems));
+                });
+
+                var mapper = config.CreateMapper();
+
+
+                var result = mapper.Map<IEnumerable<SalesOrderDto>>(salesOrderList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SalesOrderItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllSalesOrderWithItems([FromQuery] PagingParameter pagingParameter, List<string> salesOrderNumber,List<string> projectNumber, List<string> customerName)
+        //{
+        //    ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
+        //    try
+        //    {
+        //        var salesOrderList = await _repository.GetAllSalesOrderWithItems(pagingParameter, salesOrderNumber, projectNumber, customerName);
+        //        var metadata = new
+        //        {
+        //            salesOrderList.TotalCount,
+        //            salesOrderList.PageSize,
+        //            salesOrderList.CurrentPage,
+        //            salesOrderList.HasNext,
+        //            salesOrderList.HasPreviuos
+        //        };
+
+        //        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+        //        _logger.LogInfo("Returned all SalesOrders");
+        //        var result = _mapper.Map<IEnumerable<SalesOrderDto>>(salesOrderList);
+        //        serviceResponse.Data = result;
+        //        serviceResponse.Message = "Returned all SalesOrderItems";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal Server Error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
         // GET api/<PurchaseOrderController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSalesOrderById(int id)
@@ -776,6 +852,33 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveSalesOrderIdNameList()
+        {
+            ServiceResponse<IEnumerable<SalesOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderIdNameListDto>>();
+            try
+            {
+                var listOfActiveSalesOrderName= await _repository.GetAllActiveSalesOrderNameList();
+           
+                var result = _mapper.Map<IEnumerable<SalesOrderIdNameListDto>>(listOfActiveSalesOrderName);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All ActiveSalesOrderIdNameList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveSalesOrderIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
     }
 

@@ -49,7 +49,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal? BasicAmount { get; set; }
 
          public string? Discount { get; set; }
-
+        //public int SalesOrderId { get; set; }
 
         public DateTime RequestedDate { get; set; }
         public string? Remarks { get; set; }

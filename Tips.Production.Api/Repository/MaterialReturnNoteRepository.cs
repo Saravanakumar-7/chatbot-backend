@@ -26,6 +26,13 @@ namespace Tips.Production.Api.Repository
             return result.Id;
         }
 
+        public async Task<int?> GetMRNumberAutoIncrementCount(DateTime date)
+        {
+            var mRNumberAutoIncrementCount = _tipsProductionDbContext.MaterialReturnNotes.Where(x => x.CreatedOn == date.Date).Count();
+
+            return mRNumberAutoIncrementCount;
+        }
+
         public async Task<string> DeleteMaterialReturnNote(MaterialReturnNote materialReturnNote)
         {
             Delete(materialReturnNote);
@@ -46,6 +53,7 @@ namespace Tips.Production.Api.Repository
         {
             var materialReturnNoteDetailById = await _tipsProductionDbContext.MaterialReturnNotes.Where(x => x.Id == id)
                               .Include(x => x.MaterialReturnNoteItems)
+                              .ThenInclude(s => s.MRNWarehouseList)
 
                               .FirstOrDefaultAsync();
 

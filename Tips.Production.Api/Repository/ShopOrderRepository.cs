@@ -8,6 +8,7 @@ using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
 using Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Entities.DTOs;
 
 namespace Tips.Production.Api.Repository
 {
@@ -43,6 +44,34 @@ namespace Tips.Production.Api.Repository
                      .Include(t => t.ShopOrderItems);
 
             return PagedList<ShopOrder>.ToPagedList(allShopOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetAllFGShopOrderNoList()
+        {
+            IEnumerable<ListOfShopOrderDto> fGShopOrderNoList = await _tipsProductionDbContext.ShopOrders
+                                .Where(x => x.ItemType == PartType.FG)
+                                .Select(c => new ListOfShopOrderDto()
+                                {
+                                    Id = c.Id,
+                                    ShopOrderNumber = c.ShopOrderNumber,
+                                })
+                              .ToListAsync();
+
+            return fGShopOrderNoList;
+        }
+
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetAllSAShopOrderNoList()
+        {
+            IEnumerable<ListOfShopOrderDto> sAShopOrderNoList = await _tipsProductionDbContext.ShopOrders
+                                .Where(x => x.ItemType == PartType.SA)
+                                .Select(c => new ListOfShopOrderDto()
+                                {
+                                    Id = c.Id,
+                                    ShopOrderNumber = c.ShopOrderNumber,
+                                })
+                              .ToListAsync();
+
+            return sAShopOrderNoList;
         }
 
         public async Task<ShopOrder> GetShopOrderById(int id)

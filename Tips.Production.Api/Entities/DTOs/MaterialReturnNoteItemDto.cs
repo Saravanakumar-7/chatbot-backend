@@ -9,10 +9,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? PartDescription { get; set; }
         public string? MftrPartNumber { get; set; }
         public string? PartType { get; set; }
-        public string? Warehouse { get; set; }
-        public string? Location { get; set; }
-        [Precision(13, 3)]
-        public decimal? ReturnQty { get; set; }
+        public List<MRNWarehouseDetailsDto> MRNWarehouseList { get; set; }
 
     }
 
@@ -22,10 +19,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? PartDescription { get; set; }
         public string? MftrPartNumber { get; set; }
         public string? PartType { get; set; }
-        public string? Warehouse { get; set; }
-        public string? Location { get; set; }
-        [Precision(13, 3)]
-        public decimal? ReturnQty { get; set; }
+        public List<MRNWarehouseDetailsPostDto> MRNWarehouseList { get; set; }
 
     }
 
@@ -35,11 +29,8 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? PartDescription { get; set; }
         public string? MftrPartNumber { get; set; }
         public string? PartType { get; set; }
-        public string? Warehouse { get; set; }
-        public string? Location { get; set; }
-        [Precision(13, 3)]
-        public decimal? ReturnQty { get; set; }
-       
+        public List<MRNWarehouseDetailsUpdateDto> MRNWarehouseList { get; set; }
+
     }
 
 }

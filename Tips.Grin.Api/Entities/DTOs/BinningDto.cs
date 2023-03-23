@@ -56,4 +56,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         
 
     }
+    public class BinningIdNameListDto
+    {
+        public int Id { get; set; }
+        public string? GrinNumber { get; set; }
+    }
 }

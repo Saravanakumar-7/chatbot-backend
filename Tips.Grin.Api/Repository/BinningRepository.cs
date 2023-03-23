@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Tips.Grin.Api.Entities.DTOs;
 
 namespace Tips.Grin.Api.Repository
 {
@@ -70,6 +71,20 @@ namespace Tips.Grin.Api.Repository
             return result;
 
         }
+
+        public async Task<IEnumerable<BinningIdNameListDto>> GetAllActiveBinningNameList()
+        {
+            IEnumerable<BinningIdNameListDto> activeBinningNameList = await _tipsGrinDbContext.Binnings
+                                .Select(x => new BinningIdNameListDto()
+                                {
+                                    Id = x.Id,
+                                    GrinNumber = x.GrinNumber,
+                                })
+                              .ToListAsync();
+
+            return activeBinningNameList;
+        }
+
     }
 
 

@@ -117,6 +117,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SalesOrderNumber { get; set; }        
 
     }
-
-   
+    public class SalesOrderIdNameListDto
+    {
+        public int Id { get; set; }
+        public string? SalesOrderNumber { get; set; }
     }
+
+
+}

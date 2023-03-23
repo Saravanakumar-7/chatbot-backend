@@ -88,7 +88,7 @@ namespace Tips.Purchase.Api.Repository
 
 
 
-            var activePurchaseOrderDetails = FindAll()
+            var activePurchaseOrderDetails = FindAll().OrderByDescending(on => on.Id)
                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue)
                || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
                || inv.PODate.Equals(int.Parse(searchParams.SearchValue)))))

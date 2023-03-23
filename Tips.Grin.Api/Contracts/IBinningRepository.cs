@@ -2,6 +2,7 @@
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Tips.Grin.Api.Entities;
+using Tips.Grin.Api.Entities.DTOs;
 
 namespace Tips.Grin.Api.Contracts
 {
@@ -13,7 +14,7 @@ namespace Tips.Grin.Api.Contracts
         Task<Binning> GetBinningDetailsbyId(int id);
         Task<Binning> CreateBinning(Binning binning);
         Task<string> DeleteBinning(Binning binning);
-
+        Task<IEnumerable<BinningIdNameListDto>> GetAllActiveBinningNameList();
 
         public void SaveAsync();
     }

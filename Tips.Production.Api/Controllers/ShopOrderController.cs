@@ -126,6 +126,62 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllFGShopOrderNo()
+        {
+            ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
+
+            try
+            {
+                var fGShopOrderNoList = await _shopOrderRepository.GetAllFGShopOrderNoList();
+                _logger.LogInfo("Returned all FGShopOrderNo");
+
+                var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(fGShopOrderNoList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all FGShopOrderNo Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllSAShopOrderNo()
+        {
+            ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
+
+            try
+            {
+                var fGShopOrderNoList = await _shopOrderRepository.GetAllSAShopOrderNoList();
+                _logger.LogInfo("Returned all SAShopOrderNo");
+
+                var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(fGShopOrderNoList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SAShopOrderNo Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateShopOrder([FromBody] ShopOrderPostDto shopOrderPostDto)
         {
