@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using Entities.Enums;
 
 namespace Tips.Production.Api.Entities
 {
@@ -10,7 +11,7 @@ namespace Tips.Production.Api.Entities
         public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
         public string? MftrPartNumber { get; set; }
-        public string? PartType { get; set; }   
+        public PartType PartType { get; set; }   
         public List<MRNWarehouseDetails> MRNWarehouseList { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
