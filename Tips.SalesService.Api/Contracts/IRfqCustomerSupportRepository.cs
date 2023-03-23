@@ -14,7 +14,7 @@ namespace Tips.SalesService.Api.Contracts
  
     public interface IRfqCustomerSupportRepository : IRepositoryBase<RfqCustomerSupport>
     {
-        Task<PagedList<RfqCustomerSupport>> GetAllRfqCustomerSupport(PagingParameter pagingParameter);
+        Task<PagedList<RfqCustomerSupport>> GetAllRfqCustomerSupport(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<RfqCustomerSupport> GetRfqCustomerSupportById(int id);
         Task<RfqCustomerSupport> GetRfqCustomerSupportDetailsById(int id);        
         Task<int?> CreateRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport);

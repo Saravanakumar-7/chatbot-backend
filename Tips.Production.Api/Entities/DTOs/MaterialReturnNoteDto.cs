@@ -42,5 +42,9 @@ namespace Tips.Production.Api.Entities.DTOs
         public List<MaterialReturnNoteItemUpdateDto>? MaterialReturnNoteItems { get; set; }
     }
 
-
+    public class MaterialReturnNoteIdNameList
+    {
+        public int? Id { get; set; }
+        public string? MRNNumber { get; set; }
+    }
 }

@@ -12,6 +12,7 @@ using Org.BouncyCastle.Ocsp;
 using Tips.SalesService.Api.Entities.DTOs;
 using System.Collections.Immutable;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -73,11 +74,13 @@ namespace Tips.SalesService.Api.Repository
                         .FirstOrDefaultAsync();
             return lpcostingReleaseByForeCastNumber;
         }
-        public async Task<PagedList<ForeCast>> GetAllForeCast(PagingParameter pagingParameter)
+        public async Task<PagedList<ForeCast>> GetAllForeCast([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var forecast = PagedList<ForeCast>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
-            .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return forecast;
+            var getAllForecastDetails = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.ForeCastNumber.Contains(searchParammes.SearchValue) ||
+                 inv.CustomerName.Contains(searchParammes.SearchValue))));
+
+            return PagedList<ForeCast>.ToPagedList(getAllForecastDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<ForeCast> GetForeCastById(int id)
@@ -125,15 +128,20 @@ namespace Tips.SalesService.Api.Repository
         }
 
 
-        public async Task<PagedList<ForeCastCustomerSupport>> GetAllForeCastCustomerSupports(PagingParameter pagingParameter)
+        public async Task<PagedList<ForeCastCustomerSupport>> GetAllForeCastCustomerSupports([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var getAllForeCastCS= PagedList<ForeCastCustomerSupport>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
-            .Include(t => t.ForeCastCustomerSupportItems)
-            .ThenInclude(u => u.ForeCastCSDeliverySchedule)
-            .Include(x => x.ForeCastCustomerSupportNotes)
-            .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return getAllForeCastCS;
+
+
+            var getAllForeCastCS = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.RevisionNumber.Contains(searchParammes.SearchValue) ||
+                 inv.CustomerName.Contains(searchParammes.SearchValue) || inv.ForecastNumber.Contains(searchParammes.SearchValue))))
+               .Include(t => t.ForeCastCustomerSupportItems)
+             .ThenInclude(u => u.ForeCastCSDeliverySchedule)
+             .Include(x => x.ForeCastCustomerSupportNotes);
+
+            return PagedList<ForeCastCustomerSupport>.ToPagedList(getAllForeCastCS, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
 
 
         public async Task<ForeCastCustomerSupport> GetForeCastCustomerSupportById(int id)
@@ -244,13 +252,18 @@ namespace Tips.SalesService.Api.Repository
         }
 
 
-        public async Task<PagedList<ForeCastEngg>> GetAllForeCastEngg(PagingParameter pagingParameter)
+        public async Task<PagedList<ForeCastEngg>> GetAllForeCastEngg([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var getAllForeCastEngg = PagedList<ForeCastEngg>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
-            .Include(t => t.ForeCastEnggItems)
-            .Include(x => x.ForeCastEnggRiskIdentifications)
-            .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return getAllForeCastEngg;
+
+
+
+            var getAllForeCastEngg = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.RevisionNumber.Contains(searchParammes.SearchValue) ||
+                 inv.CustomerName.Contains(searchParammes.SearchValue) || inv.ForecastNumber.Contains(searchParammes.SearchValue))))
+               .Include(t => t.ForeCastEnggItems)
+            .Include(x => x.ForeCastEnggRiskIdentifications);
+
+            return PagedList<ForeCastEngg>.ToPagedList(getAllForeCastEngg, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<ForeCastEngg> GetForeCastEnggById(int id)
@@ -310,13 +323,15 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<ForecastSourcing>> GetAllForeCastSourcing(PagingParameter pagingParameter)
+        public async Task<PagedList<ForecastSourcing>> GetAllForeCastSourcing([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var forecastsourcing = PagedList<ForecastSourcing>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
-           .Include(t => t.ForecastSourcingItems)
-           .ThenInclude(x => x.ForecastSourcingVendors)
-           .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return forecastsourcing;
+            var forecastsourcing = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.ForeCastNumber.Contains(searchParammes.SearchValue) ||
+                 inv.CustomerName.Contains(searchParammes.SearchValue))))
+               .Include(t => t.ForecastSourcingItems)
+           .ThenInclude(x => x.ForecastSourcingVendors);
+
+            return PagedList<ForecastSourcing>.ToPagedList(forecastsourcing, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
 
@@ -374,17 +389,20 @@ namespace Tips.SalesService.Api.Repository
             return getLpCostingByForeCastNumber;
         }
 
-        public async Task<PagedList<ForecastLpCosting>> GetAllForecastLpCosting(PagingParameter pagingParameter)
+        public async Task<PagedList<ForecastLpCosting>> GetAllForecastLpCosting([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var getAllLpCosting = PagedList<ForecastLpCosting>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
+
+            var getAllLpCosting = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.ForeCastNumber.Contains(searchParammes.SearchValue) ||
+                 inv.CustomerName.Contains(searchParammes.SearchValue))))
                .Include(x => x.ForecastLpCostingItems)
                .ThenInclude(u => u.ForecastLpCostingProcesses)
                 .Include(x => x.ForecastLpCostingItems)
                 .ThenInclude(v => v.ForecastLPCostingNREConsumables)
                 .Include(x => x.ForecastLpCostingItems)
-                .ThenInclude(w => w.ForecastLpCostingOtherCharges)
-          .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return getAllLpCosting;
+                .ThenInclude(w => w.ForecastLpCostingOtherCharges);
+
+            return PagedList<ForecastLpCosting>.ToPagedList(getAllLpCosting, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<ForecastLpCosting> GetForecastLpCostingById(int id)
@@ -436,11 +454,13 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<ForeCastCustomGroup>> GetAllForeCastCustomGroup(PagingParameter pagingParameter)
+
+        public async Task<PagedList<ForeCastCustomGroup>> GetAllForeCastCustomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var getAllForeCastCustomGroup = PagedList<ForeCastCustomGroup>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
-                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return getAllForeCastCustomGroup;
+            var forecastCustomGroup = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.CustomGroupName.Contains(searchParammes.SearchValue))));
+
+            return PagedList<ForeCastCustomGroup>.ToPagedList(forecastCustomGroup, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<ForeCastCustomGroup> GetForeCastCustomGroupById(int id)
@@ -484,11 +504,13 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<ForeCastCustomField>> GetAllForeCastCustomField(PagingParameter pagingParameter)
+        public async Task<PagedList<ForeCastCustomField>> GetAllForeCastCustomField([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var getAllForeCastCustomField = PagedList<ForeCastCustomField>.ToPagedList(FindAll().OrderByDescending(x => x.Id)
-                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return getAllForeCastCustomField;
+            var forecastCustomField = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.CustomGroupName.Contains(searchParammes.SearchValue)
+              || inv.Type.Contains(searchParammes.SearchValue))));
+
+            return PagedList<ForeCastCustomField>.ToPagedList(forecastCustomField, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<ForeCastCustomField> GetForeCastCustomFieldById(int id)

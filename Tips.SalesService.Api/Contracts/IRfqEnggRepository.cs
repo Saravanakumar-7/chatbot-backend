@@ -12,7 +12,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IRfqEnggRepository : IRepositoryBase<RfqEngg>
     {
-        Task<PagedList<RfqEngg>> GetAllRfqEngg(PagingParameter pagingParameter);
+        Task<PagedList<RfqEngg>> GetAllRfqEngg(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<RfqEngg> GetRfqEnggById(int id);
         Task<int?> CreateRfqEngg(RfqEngg rfqEngg);
         Task<string> UpdateRfqEngg(RfqEngg rfqEngg);

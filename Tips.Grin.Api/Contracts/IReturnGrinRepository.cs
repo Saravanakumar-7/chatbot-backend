@@ -11,7 +11,7 @@ namespace Tips.Grin.Api.Contracts
         Task<string> UpdateReturnGrin(ReturnGrin returnGrin);
         Task<string> DeleteReturnGrin(ReturnGrin returnGrin);
 
-        Task<PagedList<ReturnGrin>> GetAllReturnGrin(PagingParameter pagingParameter);
+        Task<PagedList<ReturnGrin>> GetAllReturnGrin(PagingParameter pagingParameter,SearchParams searchParams);
 
         Task<ReturnGrin> GetReturnGrinDetailsbyId(int id);
         Task<IEnumerable<ReturnGrinPartsListDto>> ReturnGrinPartsByPartNumber(string partNo);

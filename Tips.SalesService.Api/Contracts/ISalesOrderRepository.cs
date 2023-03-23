@@ -9,14 +9,20 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface ISalesOrderRepository : IRepositoryBase<SalesOrder>
     {
-        Task<PagedList<SalesOrder>> GetAllSalesOrder(PagingParameter pagingParameter);
+        Task<PagedList<SalesOrder>> GetAllSalesOrder(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<SalesOrder> GetSalesOrderById(int id);
-        Task<IEnumerable<SalesOrder>> GetAllActiveSalesOrder();
+        Task<PagedList<SalesOrder>> GetAllActiveSalesOrder(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<long> CreateSalesOrder(SalesOrder salesOrder);
         Task<string> UpdateSalesOrder(SalesOrder salesOrder);
         Task<int?> GetSONumberAutoIncrementCount(DateTime date);
         Task<IEnumerable<ListofSalesOrderDetails>> GetSalesOrderDetailsByCustomerId(string Customerid);
         Task<string> DeleteSalesOrder(SalesOrder salesOrder);
+
+        Task<IEnumerable<SalesOrder>> SearchSalesOrderItem([FromQuery] SearchParammes searchParams);
+
+        Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchParams);
+
+        
 
         //Task<string> UpdateSOBasedOnCreatingDO();
 

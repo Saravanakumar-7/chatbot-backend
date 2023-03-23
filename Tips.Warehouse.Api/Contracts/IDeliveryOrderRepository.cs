@@ -1,6 +1,7 @@
 ﻿using Entities.Helper;
 using Entities;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Contracts
 {
@@ -13,6 +14,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<long> CreateDeliveryOrder(DeliveryOrder deliveryOrder);
         Task<string> UpdateDeliveryOrder(DeliveryOrder deliveryOrder);
         Task<string> DeleteDeliveryOrder(DeliveryOrder deliveryOrder);
-        
+
+        Task<IEnumerable<DeliveryOrderIdNameList>> GetAllDeliveryOrderIdNameList();
+
     }
 }

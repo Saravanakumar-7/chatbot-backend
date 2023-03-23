@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Entities.Helper;
+using Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -10,7 +12,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IForecastLpCostingNREConsumableRepository
     {
-        Task<IEnumerable<ForecastLPCostingNREConsumable>> GetAllForecastLPCostingNREConsumable();
+        Task<PagedList<ForecastLPCostingNREConsumable>> GetAllForecastLPCostingNREConsumable(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<ForecastLPCostingNREConsumable> GetForecastLPCostingNREConsumableById(int id);
         Task<int?> CreateForecastLPCostingNREConsumable(ForecastLPCostingNREConsumable forecastLPCostingNREConsumable);
         Task<string> UpdateForecastLPCostingNREConsumable(ForecastLPCostingNREConsumable forecastLPCostingNREConsumable);

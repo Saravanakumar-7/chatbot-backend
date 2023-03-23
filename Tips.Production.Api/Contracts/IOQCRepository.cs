@@ -16,5 +16,8 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<ShopOrderConfirmationItemNoListDto>> GetShopOrderConfirmationItemNoByFGItemType();
         Task<IEnumerable<ShopOrderConfirmationItemNoListDto>> GetShopOrderConfirmationItemNoBySAItemType();
         Task<IEnumerable<ShopOrderConfirmationDetailsDto>> GetShopOrderConfirmationDetailsByItemNo(string itemNumber);
+
+        Task<IEnumerable<OQCIdNameList>> GetAllOQCIdNameList();
+
     }
 }

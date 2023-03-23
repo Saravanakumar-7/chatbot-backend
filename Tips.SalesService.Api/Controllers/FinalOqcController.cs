@@ -31,13 +31,13 @@ namespace Tips.SalesService.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllFinalOqc([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllFinalOqc([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<FinalOqcDto>> serviceResponse = new ServiceResponse<IEnumerable<FinalOqcDto>>();
 
             try
             {
-                var getAllFinalOqc = await _finalOqcRepository.GetAllFinalOqc(pagingParameter);
+                var getAllFinalOqc = await _finalOqcRepository.GetAllFinalOqc(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     getAllFinalOqc.TotalCount,

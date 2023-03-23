@@ -40,7 +40,7 @@ namespace Tips.Production.Api.Repository
         {
             var allShopOrderDetails = FindAll().OrderByDescending(x => x.Id)
                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParamess.SearchValue) || inv.ShopOrderNumber.Contains(searchParamess.SearchValue) ||
-                      inv.ShopOrderNumber.Contains(searchParamess.SearchValue) || inv.ProjectType.Contains(searchParamess.SearchValue) || inv.ItemType.Equals(int.Parse(searchParamess.SearchValue)))))
+                      inv.ProjectType.Contains(searchParamess.SearchValue) || inv.ItemType.Equals(int.Parse(searchParamess.SearchValue)) || inv.TotalSOReleaseQty.Equals(int.Parse(searchParamess.SearchValue)))))
                      .Include(t => t.ShopOrderItems);
 
             return PagedList<ShopOrder>.ToPagedList(allShopOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);

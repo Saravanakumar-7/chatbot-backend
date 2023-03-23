@@ -6,6 +6,7 @@ using Tips.Warehouse.Api.Repository;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -76,5 +77,20 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
+        public async Task<IEnumerable<OpenDeliveryOrderIdNameList>> GetAllOpenDeliveryOrderIdNameList()
+        {
+            IEnumerable<OpenDeliveryOrderIdNameList> btoIddNameList = await _tipsWarehouseDbContext.OpenDeliveryOrders
+                               .Select(x => new OpenDeliveryOrderIdNameList()
+                               {
+                                   Id = x.Id,
+
+                                   CustomerName = x.CustomerName
+
+                               })
+                               .OrderByDescending(x => x.Id)
+                             .ToListAsync();
+
+            return btoIddNameList;
+        }
     }
 }

@@ -92,4 +92,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? Remarks { get; set; }
         public string Unit { get; set; }
     }
+
+    public class LocationTransferIdNameList
+    {
+        public int Id { get; set; }
+        public string? FromPartNumber { get; set; }
+        public string? ToPartNumber { get; set; }
+    }
 }

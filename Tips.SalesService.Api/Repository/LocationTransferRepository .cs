@@ -1,9 +1,11 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -31,12 +33,31 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<LocationTransfer>> GetAllLocationTransfer(PagingParameter pagingParameter)
+        public async Task<PagedList<LocationTransfer>> GetAllLocationTransfer([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var getAllLocationTransfers = PagedList<LocationTransfer>.ToPagedList(FindAll()
-                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var locationTransfers = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.FromPartNumber.Contains(searchParammes.SearchValue)
+              || inv.FromLocation.Contains(searchParammes.SearchValue)
+              || inv.ToLocation.Contains(searchParammes.SearchValue))));
 
-            return getAllLocationTransfers;
+            return PagedList<LocationTransfer>.ToPagedList(locationTransfers, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        public async Task<IEnumerable<LocationTransferIdNameList>> GetAllLocationTransferIdNameList()
+        {
+            IEnumerable<LocationTransferIdNameList> locationTransferIdNameList = await _tipsSalesServiceDbContext.locationTransfers
+                                .Select(x => new LocationTransferIdNameList()
+                                {
+                                    Id = x.Id,
+
+                                    FromPartNumber = x.FromPartNumber,
+                                    ToPartNumber = x.ToPartNumber
+
+                                })
+                                .OrderByDescending(x => x.Id)
+                              .ToListAsync();
+
+            return locationTransferIdNameList;
         }
 
         public async Task<LocationTransfer> GetLocationTransferById(int id)

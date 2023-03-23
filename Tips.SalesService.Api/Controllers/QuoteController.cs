@@ -34,12 +34,12 @@ namespace Tips.SalesService.Api.Controllers
 
         // GET: api/<QuoteController>
         [HttpGet]
-        public async Task<IActionResult> GetAllQuote([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllQuote([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<QuoteDto>> serviceResponse = new ServiceResponse<IEnumerable<QuoteDto>>();
             try
             {
-                var listOfQuote = await _repository.GetAllQuote(pagingParameter);
+                var listOfQuote = await _repository.GetAllQuote(pagingParameter, searchParammes);
                 var metadata = new
                 {
                     listOfQuote.TotalCount,

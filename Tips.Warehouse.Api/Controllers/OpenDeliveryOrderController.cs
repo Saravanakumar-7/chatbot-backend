@@ -25,7 +25,7 @@ namespace Tips.Warehouse.Api.Controllers
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
-        }     
+        }
         // GET: api/<OpenDeliveryOrderController>
         [HttpGet]
         public async Task<IActionResult> GetAllOpenDeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
@@ -33,7 +33,7 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<IEnumerable<OpenDeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderDto>>();
 
             try
-            { 
+            {
                 var getAllOpenDeliveryOrderDetails = await _repository.GetAllOpenDeliveryOrders(pagingParameter, searchParams);
 
                 var metadata = new
@@ -68,7 +68,7 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
 
-        
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOpenDeliveryOrderById(int id)
         {
@@ -144,13 +144,13 @@ namespace Tips.Warehouse.Api.Controllers
                 var days = Convert.ToString(date.Day.ToString("D2"));
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
- 
+
                 var newcount = await _repository.GetODONumberAutoIncrementCount(date);
 
                 if (newcount > 0)
                 {
-                    var number = newcount + 1; 
-                    string e = String.Format("{0:D4}", number);                    
+                    var number = newcount + 1;
+                    string e = String.Format("{0:D4}", number);
                     openDeliveryorder.OpenDONumber = days + months + years + "ODO" + (e);
                 }
                 else
@@ -247,7 +247,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOpenDeliveryOrder(int id)
         {
@@ -285,5 +285,30 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllOpenDeliveryOrderIdNameList()
+        {
+            ServiceResponse<IEnumerable<BtoIDNameList>> serviceResponse = new ServiceResponse<IEnumerable<BtoIDNameList>>();
+            try
+            {
+                var listOfAllOpenDeliveryOrderIdNames = await _repository.GetAllOpenDeliveryOrderIdNameList();
+                var result = _mapper.Map<IEnumerable<BtoIDNameList>>(listOfAllOpenDeliveryOrderIdNames);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All listOfAllOpenDeliveryOrderIdNames";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllOpenDeliveryOrderIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
     }
 }

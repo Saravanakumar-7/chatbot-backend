@@ -104,7 +104,7 @@ namespace Tips.SalesService.Api
             CreateMap<SalesOrderItems, SalesOrderItemsDto>().ReverseMap();
             CreateMap<SalesOrderItems, SalesOrderItemsPostDto>().ReverseMap();
             CreateMap<SalesOrderItems, SalesOrderItemsUpdateDto>().ReverseMap();
-            CreateMap<List<SalesOrderItems>, List<SalesOrderItemsDto>>().ReverseMap();
+            //CreateMap<List<SalesOrderItems>, List<SalesOrderItemsDto>>().ReverseMap();
 
             CreateMap<Quote, QuoteDto>().ReverseMap();
             CreateMap<Quote, QuotePostDto>().ReverseMap();

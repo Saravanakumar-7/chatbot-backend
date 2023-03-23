@@ -28,9 +28,9 @@ builder.Services.AddScoped<IReleaseEnggBomRepository, ReleaseEnggBomRepository>(
 builder.Services.AddScoped<IEnggBomGroupRepository, EnggBomGroupRepository>();
 builder.Services.AddScoped<IEnggBomRepository, EngineeringBomRepository>();
 builder.Services.AddScoped<ILeadRepository, LeadRepository>();
-builder.Services.AddScoped<IFileUploadRepository, FileUploadDocumentRepository>();
+//builder.Services.AddScoped<IFileUploadRepository, FileUploadDocumentRepository>();
 
-builder.Services.AddScoped<IImageUploadRepository, ImageUploadDocumentRepository>();
+//builder.Services.AddScoped<IImageUploadRepository, ImageUploadDocumentRepository>();
 
 builder.Services.AddScoped<ITypeOfHomeRepository, TypeOfHomeRepository>();
 builder.Services.AddScoped<IBHKRepository, BHKRepository>();

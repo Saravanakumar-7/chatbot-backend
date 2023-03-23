@@ -19,11 +19,14 @@ namespace Tips.Production.Api.Controllers
         private IOQCRepository _oQCRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        public OQCController(IOQCRepository oQCRepository, ILoggerManager logger, IMapper mapper)
+        private IShopOrderRepository _shopOrderRepo;
+
+        public OQCController(IOQCRepository oQCRepository, IShopOrderRepository shopOrderRepository, ILoggerManager logger, IMapper mapper)
         {
             _oQCRepository = oQCRepository;
             _logger = logger;
             _mapper = mapper;
+            _shopOrderRepo = shopOrderRepository;
         }
 
         [HttpGet]
@@ -94,7 +97,7 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateOQC([FromBody] OQCPostDto oQCPostDto)
+        public async Task<IActionResult> CreateOQC([FromBody] OQCPostDto oQCPostDto)
         {
             ServiceResponse<OQCDto> serviceResponse = new ServiceResponse<OQCDto>();
 
@@ -121,7 +124,11 @@ namespace Tips.Production.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var oQCCreate = _mapper.Map<OQC>(oQCPostDto);
-                _oQCRepository.CreateOQC(oQCCreate);
+                var shopOrderNumber = oQCCreate.ShopOrderNumber;
+                var shopOrderDetails = await _shopOrderRepo.GetShopOrderDetailsByShopOrderNo(shopOrderNumber);
+                shopOrderDetails.OqcQty = shopOrderDetails.OqcQty + oQCCreate.AcceptedQty;
+                _shopOrderRepo.SaveAsync();
+                await _oQCRepository.CreateOQC(oQCCreate);
                 _oQCRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "OQC Created Successfully";
@@ -353,5 +360,30 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllOQCIdNameList()
+        {
+            ServiceResponse<IEnumerable<OQCIdNameList>> serviceResponse = new ServiceResponse<IEnumerable<OQCIdNameList>>();
+            try
+            {
+                var listOfAllOQCIdNames = await _oQCRepository.GetAllOQCIdNameList();
+                var result = _mapper.Map<IEnumerable<OQCIdNameList>>(listOfAllOQCIdNames);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All listOfAllOQCIdNames";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllOQCIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
+using Tips.Production.Api.Entities.DTOs;
 
 namespace Tips.Production.Api.Repository
 {
@@ -29,6 +30,22 @@ namespace Tips.Production.Api.Repository
             Delete(materialIssue);
             string result = $"MaterialIssue details of {materialIssue.Id} is deleted successfully!";
             return result;
+        }
+
+        public async Task<IEnumerable<MaterialIssueIdNameList>> GetAllMaterialIssueIdNameList()
+        {
+            IEnumerable<MaterialIssueIdNameList> DeliveryOrderIddNameList = await _tipsProductionDbContext.MaterialIssue
+                                .Select(x => new MaterialIssueIdNameList()
+                                {
+                                    Id = x.Id,
+
+                                    ShopOrderNumber = x.ShopOrderNumber
+
+                                })
+                                .OrderByDescending(x => x.Id)
+                              .ToListAsync();
+
+            return DeliveryOrderIddNameList;
         }
 
         public async Task<PagedList<MaterialIssue>> GetAllMaterialIssues([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)

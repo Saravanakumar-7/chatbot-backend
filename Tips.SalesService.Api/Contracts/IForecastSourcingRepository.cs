@@ -6,7 +6,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IForecastSourcingRepository
     {
-        Task<PagedList<ForecastSourcing>> GetAllForeCastSourcing(PagingParameter pagingParameter);
+        Task<PagedList<ForecastSourcing>> GetAllForeCastSourcing(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<ForecastSourcing> GetForeCastSourcingById(int id);
         Task<int?> CreateForeCastSourcing(ForecastSourcing forecastSourcing);
         Task<string> UpdateForeCastSourcing(ForecastSourcing forecastSourcing);

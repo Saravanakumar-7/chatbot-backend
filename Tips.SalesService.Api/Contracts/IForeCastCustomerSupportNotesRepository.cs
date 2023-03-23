@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Entities.Helper;
+using Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -10,7 +12,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IForeCastCustomerSupportNotesRepository
     {
-        Task<IEnumerable<ForeCastCustomerSupportNotes>> GetAllForeCastNotes();
+        Task<PagedList<ForeCastCustomerSupportNotes>> GetAllForeCastNotes(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<ForeCastCustomerSupportNotes> GetForeCastNotesById(int id);
         Task<int?> CreateForeCastNote(ForeCastCustomerSupportNotes foreCastNotes);
         Task<string> UpdateForeCastNote(ForeCastCustomerSupportNotes foreCastNotes);

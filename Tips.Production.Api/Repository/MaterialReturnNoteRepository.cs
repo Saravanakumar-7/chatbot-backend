@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
+using Tips.Production.Api.Entities.DTOs;
 //using Tips.Warehouse.Api.Entities;
 
 namespace Tips.Production.Api.Repository
@@ -38,6 +39,22 @@ namespace Tips.Production.Api.Repository
             Delete(materialReturnNote);
             string result = $"MaterialReturnNote details of {materialReturnNote.Id} is deleted successfully!";
             return result;
+        }
+
+        public async Task<IEnumerable<MaterialReturnNoteIdNameList>> GetAllMaterialReturnNoteIdNameList()
+        {
+            IEnumerable<MaterialReturnNoteIdNameList> materialReturnNoteIdNameList = await _tipsProductionDbContext.MaterialReturnNotes
+                                .Select(x => new MaterialReturnNoteIdNameList()
+                                {
+                                    Id = x.Id,
+
+                                    MRNNumber = x.MRNNumber,
+
+                                })
+                                .OrderByDescending(x => x.Id)
+                              .ToListAsync();
+
+            return materialReturnNoteIdNameList;
         }
 
         public async Task<PagedList<MaterialReturnNote>> GetAllMaterialReturnNotes([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)

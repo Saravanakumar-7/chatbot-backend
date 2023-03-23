@@ -12,7 +12,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IForecastLpCostingOtherChargesRepository
     {
-        Task<PagedList<ForecastLpCostingOtherCharges>> GetAllForecastLpCostingOtherCharges(PagingParameter pagingParameter);
+        Task<PagedList<ForecastLpCostingOtherCharges>> GetAllForecastLpCostingOtherCharges(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<ForecastLpCostingOtherCharges> GetForecastLpCostingOtherChargesById(int id);
         Task<int?> CreateForecastLpCostingOtherCharges(ForecastLpCostingOtherCharges forecastLpCostingOtherCharges);
         Task<string> UpdateForecastLpCostingOtherCharges(ForecastLpCostingOtherCharges forecastLpCostingOtherCharges);

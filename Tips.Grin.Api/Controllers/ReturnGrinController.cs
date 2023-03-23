@@ -47,14 +47,14 @@ namespace Tips.Grin.Api.Controllers
 
         [HttpGet]
 
-        public async Task<IActionResult> GetAllReturnGrin([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllReturnGrin([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
 
         {
             ServiceResponse<IEnumerable<ReturnGrinDto>> serviceResponse = new ServiceResponse<IEnumerable<ReturnGrinDto>>();
 
             try
             {
-                var GetallReturnGrins = await _repository.GetAllReturnGrin(pagingParameter);
+                var GetallReturnGrins = await _repository.GetAllReturnGrin(pagingParameter, searchParams);
 
                 var metadata = new
                 {

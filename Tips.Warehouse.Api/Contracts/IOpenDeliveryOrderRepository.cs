@@ -3,6 +3,7 @@ using Entities;
 using Entities.Helper;
 using System.Threading.Tasks;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Contracts
 {   
@@ -16,6 +17,9 @@ namespace Tips.Warehouse.Api.Contracts
         Task<int?> GetODONumberAutoIncrementCount(DateTime date);
 
         Task<string> DeleteOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder);
+
+        Task<IEnumerable<OpenDeliveryOrderIdNameList>> GetAllOpenDeliveryOrderIdNameList();
+
     }
 
 }

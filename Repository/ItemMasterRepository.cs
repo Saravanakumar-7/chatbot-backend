@@ -76,8 +76,8 @@ namespace Repository
 
              var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id)
                   .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-              inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue))
-              ))).Where(x=>x.ItemType == PartType.FG)
+              inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue) )
+              )) && inv.ItemType == PartType.FG )
                            .Include(t => t.ItemmasterAlternate)
                           .Include(t => t.ItemMasterApprovedVendor)
                           .Include(t => t.ItemMasterFileUpload)
@@ -97,8 +97,7 @@ namespace Repository
 
             var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id)
                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))))
-                .Where(x=>x.ItemType == PartType.SA || x.ItemType == PartType.PurchasePart)
+            inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))) && (inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart))
                          .Include(t => t.ItemmasterAlternate)
                         .Include(t => t.ItemMasterApprovedVendor)
                         .Include(t => t.ItemMasterFileUpload)
@@ -117,8 +116,7 @@ namespace Repository
 
             var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id)
                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))))
-                .Where(x => x.ItemType == PartType.SA)
+            inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))) && inv.ItemType == PartType.SA)
                          .Include(t => t.ItemmasterAlternate)
                         .Include(t => t.ItemMasterApprovedVendor)
                         .Include(t => t.ItemMasterFileUpload)
@@ -133,8 +131,7 @@ namespace Repository
 
             var itemmasterFgSADetails = FindAll().OrderByDescending(a => a.Id)
                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-           inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))))
-               .Where(x=>x.ItemType == PartType.SA || x.ItemType == PartType.FG)
+           inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))) && (inv.ItemType == PartType.SA || inv.ItemType == PartType.FG))
                          .Include(c => c.FileUpload)
                             .Include(x => x.ImageUpload)
                             .Include(t => t.ItemmasterAlternate)
@@ -155,8 +152,8 @@ namespace Repository
 
             var itemmasterFgSaFRUDetails = FindAll().OrderByDescending(a => a.Id)
                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-           inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))))
-               .Where(x=>x.ItemType == PartType.SA || x.ItemType == PartType.FG || x.ItemType == PartType.FRU)
+           inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue))))
+           && (inv.ItemType == PartType.SA || inv.ItemType == PartType.FG || inv.ItemType == PartType.FRU))
                          .Include(c => c.FileUpload)
                             .Include(x => x.ImageUpload)
                             .Include(t => t.ItemmasterAlternate)

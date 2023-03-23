@@ -6,6 +6,7 @@ using Entities;
 using Entities.Helper;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -77,6 +78,21 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
+        public async Task<IEnumerable<InvoiceIdNameList>> GetAllInvoiceIdNameList()
+        {
+            IEnumerable<InvoiceIdNameList> invoiceIdNameList = await _tipsWarehouseDbContext.invoices
+                                .Select(x => new InvoiceIdNameList()
+                                {
+                                    Id = x.Id,
+
+                                    InvoiceNumber = x.InvoiceNumber
+
+                                })
+                                .OrderByDescending(x => x.Id)
+                              .ToListAsync();
+
+            return invoiceIdNameList;
+        }
     }
 
     public class InvoiceChildRepository : RepositoryBase<InvoiceChildItem>, IInvoiceChildRepository

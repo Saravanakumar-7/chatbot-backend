@@ -2,6 +2,7 @@
 using Entities;
 using Entities.Helper;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Contracts
 {
@@ -15,6 +16,9 @@ namespace Tips.Warehouse.Api.Contracts
         Task<string> DeleteInvoice(Invoice invoice);
 
         Task<Invoice> GetInvoiceById(int id);
-    
+
+        Task<IEnumerable<InvoiceIdNameList>> GetAllInvoiceIdNameList();
+
+
     }
 }

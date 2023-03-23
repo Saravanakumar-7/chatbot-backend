@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -86,5 +87,20 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
+        public async Task<IEnumerable<DeliveryOrderIdNameList>> GetAllDeliveryOrderIdNameList()
+        {
+            IEnumerable<DeliveryOrderIdNameList> DeliveryOrderIddNameList = await _tipsWarehouseDbContext.DeliveryOrder
+                                .Select(x => new DeliveryOrderIdNameList()
+                                {
+                                    Id = x.Id,
+
+                                    DeliveryOrderNumber = x.DeliveryOrderNumber
+
+                                })
+                                .OrderByDescending(x => x.Id)
+                              .ToListAsync();
+
+            return DeliveryOrderIddNameList;
+        }
     }
 }

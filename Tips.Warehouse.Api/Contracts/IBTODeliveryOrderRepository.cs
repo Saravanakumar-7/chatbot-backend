@@ -2,6 +2,7 @@
 using Entities;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
+using Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Contracts
 {
@@ -19,6 +20,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<ListofBtoDeliveryOrderDetails>> GetBtoDeliveryOrderNumberList();
         Task<string> UpdateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder);
         Task<string> DeleteBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder);
-        
+        Task<IEnumerable<BtoIDNameList>> GetAllBTOIdNameIdNameList();
+
+
     }
 }

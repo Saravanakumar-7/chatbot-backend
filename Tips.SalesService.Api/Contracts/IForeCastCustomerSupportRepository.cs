@@ -6,7 +6,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IForeCastCustomerSupportRepository : IRepositoryBase<ForeCastCustomerSupport>
     {
-        Task<PagedList<ForeCastCustomerSupport>> GetAllForeCastCustomerSupports(PagingParameter pagingParameter);
+        Task<PagedList<ForeCastCustomerSupport>> GetAllForeCastCustomerSupports(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<ForeCastCustomerSupport> GetForeCastCustomerSupportById(int id);
         Task<int?> CreateForeCastCustomerSupport(ForeCastCustomerSupport foreCastCustomerSupport);
         Task<string> UpdateForeCastCustomerSupport(ForeCastCustomerSupport foreCastCustomerSupport);

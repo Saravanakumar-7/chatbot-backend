@@ -12,7 +12,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IRfqLPCostingProcessRepository
     {
-        Task<IEnumerable<RfqLPCostingProcess>> GetAllRfqLPCostingProcess();
+        Task<PagedList<RfqLPCostingProcess>> GetAllRfqLPCostingProcess(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<RfqLPCostingProcess> GetRfqLPCostingProcessById(int id);
         Task<int?> CreateRfqLPCostingProcess(RfqLPCostingProcess rfqLPCostingProcess);
         Task<string> UpdateRfqLPCostingProcess(RfqLPCostingProcess rfqLPCostingProcess);

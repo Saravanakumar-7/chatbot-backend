@@ -14,7 +14,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IForeCastRepository : IRepositoryBase<ForeCast>
     {
-        Task<PagedList<ForeCast>> GetAllForeCast(PagingParameter pagingParameter);
+        Task<PagedList<ForeCast>> GetAllForeCast(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<ForeCast> GetForeCastById(int id);
         Task<int?> CreateForeCast(ForeCast foreCast);
         Task<string> UpdateForeCast(ForeCast foreCast);

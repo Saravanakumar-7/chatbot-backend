@@ -2,6 +2,7 @@
 using Entities;
 using Entities.DTOs;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
@@ -39,12 +40,14 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<MaterialRequest>> GetAllMaterialRequest(PagingParameter pagingParameter)
+        public async Task<PagedList<MaterialRequest>> GetAllMaterialRequest([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var getAllMR = PagedList<MaterialRequest>.ToPagedList(FindAll()
-                .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return getAllMR;
+            var materialRequests = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.MRNumber.Contains(searchParammes.SearchValue) || inv.ProjectNumber.Contains(searchParammes.SearchValue))));
+
+            return PagedList<MaterialRequest>.ToPagedList(materialRequests, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
 
         public async Task<MaterialRequest> GetMaterialRequestById(int id)
         {

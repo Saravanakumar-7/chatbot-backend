@@ -7,7 +7,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IRfqRepository : IRepositoryBase<Rfq>
     {
-        Task<PagedList<Rfq>> GetAllRfq(PagingParameter pagingParameter);
+        Task<PagedList<Rfq>> GetAllRfq(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<Rfq> GetRfqById(int id);
         Task<int?> CreateRfq(Rfq rfq);
         Task<string> UpdateRfq(Rfq rfq);
