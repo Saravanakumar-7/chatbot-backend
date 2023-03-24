@@ -18,6 +18,8 @@ namespace Tips.Production.Api.Entities.DTOs
     }
     public class MRNWarehouseDetailsUpdateDto
     {
+        public int Id { get; set; }
+
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         [Precision(13, 3)]

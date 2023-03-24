@@ -1,12 +1,17 @@
-﻿using Entities;
+﻿using AutoMapper.Internal;
+using Entities;
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using Mysqlx.Crud;
+using Org.BouncyCastle.Tls.Crypto.Impl.BC;
 using System.Linq;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -87,44 +92,23 @@ namespace Tips.SalesService.Api.Repository
                              .ToList();
             return salesOrderDetails;
         }
-
+        
             public async Task<IEnumerable<SalesOrder>> SearchSalesOrderItem([FromQuery] SearchParammes searchParams)
         {
-            var salesOrderDetails = _tipsSalesServiceDbContext.SalesOrders
-                             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
-                                || inv.SalesOrderNumber.Contains(searchParams.SearchValue)
-                                || inv.ProjectNumber.Contains(searchParams.SearchValue)
-                                || inv.CustomerName.Contains(searchParams.SearchValue)
-                                || inv.PONumber.Contains(searchParams.SearchValue)
-                                )))
-                                .Include(itm => itm.SalesOrdersItems).ToList();
+            using (var context = _tipsSalesServiceDbContext)
+            {
+                var query = _tipsSalesServiceDbContext.SalesOrders.Include("SalesOrdersItems");
+                if (!string.IsNullOrEmpty(searchParams.SearchValue))
+                {
+                    query = query.Where(so => so.SalesOrderNumber.Contains(searchParams.SearchValue)
+                || so.CustomerName.Contains(searchParams.SearchValue) ||
+                so.OrderDate.ToString().Contains(searchParams.SearchValue) ||
+                so.SalesOrdersItems.Any(s => s.ItemNumber.Contains(searchParams.SearchValue) ||
+                s.Description.Contains(searchParams.SearchValue)));
+                }
+                return query.ToList();
+            }
 
-            var salesOrderItemsDetails = _tipsSalesServiceDbContext.SalesOrders
-                                .Include(x => x.SalesOrdersItems
-                                .Where(i => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
-                                || i.ItemNumber.Contains(searchParams.SearchValue)
-                                )))).ToList();
-
-            var salesOrderUnionList = salesOrderDetails.Union(salesOrderItemsDetails);
-
-
-            return salesOrderUnionList;
-
-            //var query1 = from t1 in _tipsSalesServiceDbContext.SalesOrders
-            //             join t2 in _tipsSalesServiceDbContext.SalesOrdersItems on t1.SalesOrderNumber equals t2.SalesOrderNumber
-            //             where t1.SalesOrderNumber.Contains(searchParams.SearchValue)
-            //             select new { t1,t2 };
-
-            //var query2 = from t2 in _tipsSalesServiceDbContext.SalesOrdersItems
-            //             join t1 in _tipsSalesServiceDbContext.SalesOrders on t2.SalesOrderNumber equals t1.SalesOrderNumber into dept
-            //             from SalesOrder in dept.DefaultIfEmpty()
-            //             where t2.ItemNumber.Contains(searchParams.SearchValue)
-            //             select new { SalesOrder, t2 };
-
-            ////var result = query1.Union(query2);
-
-            ////return (IEnumerable<SalesOrder>)result;
-            //return null;
         }
 
         public async Task<PagedList<SalesOrder>> GetAllSalesOrderWithItems(PagingParameter pagingParameter, List<string> salesOrderNumber, List<string> projectNumber, List<string> customerName)

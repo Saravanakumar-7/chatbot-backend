@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
@@ -6,7 +7,9 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
-        public string? ItemType { get; set; }
+        public string? Description { get; set; }
+
+        public PartType ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
         [Precision(13, 3)]
         public decimal ShopOrderQty { get; set; }
@@ -25,7 +28,9 @@ namespace Tips.Production.Api.Entities.DTOs
     public class OQCPostDto
     {
         public string? ItemNumber { get; set; }
-        public string? ItemType { get; set; }
+        public string? Description { get; set; }
+
+        public PartType ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
         [Precision(13, 3)]
         public decimal ShopOrderQty { get; set; }
@@ -44,7 +49,9 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
-        public string? ItemType { get; set; }
+        public string? Description { get; set; }
+
+        public PartType ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
         [Precision(13, 3)]
         public decimal ShopOrderQty { get; set; }
