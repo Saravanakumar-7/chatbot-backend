@@ -26,6 +26,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
     public class MaterialReturnNoteItemUpdateDto
     {
+        public int Id { get; set; } 
         public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
         public string? MftrPartNumber { get; set; }
