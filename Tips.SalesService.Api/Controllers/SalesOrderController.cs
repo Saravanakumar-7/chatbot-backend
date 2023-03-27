@@ -30,8 +30,8 @@ namespace Tips.SalesService.Api.Controllers
         private ISalesOrderHistoryRepository _salesOrderHistory;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        public SalesOrderController(IConfiguration config,HttpClient httpClient,
-            ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, 
+        public SalesOrderController(IConfiguration config, HttpClient httpClient,
+            ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository,
             ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
@@ -81,42 +81,42 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAllSalesOrderWithItems([FromQuery] PagingParameter pagingParameter, List<string> salesOrderNumber,List<string> projectNumber, List<string> customerName)
-        //{
-        //    ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
-        //    try
-        //    {
-        //        var salesOrderList = await _repository.GetAllSalesOrderWithItems(pagingParameter, salesOrderNumber, projectNumber, customerName);
-        //        var metadata = new
-        //        {
-        //            salesOrderList.TotalCount,
-        //            salesOrderList.PageSize,
-        //            salesOrderList.CurrentPage,
-        //            salesOrderList.HasNext,
-        //            salesOrderList.HasPreviuos
-        //        };
+        [HttpGet]
+        public async Task<IActionResult> GetAllSalesOrderWithItems([FromQuery] PagingParameter pagingParameter, [FromQuery] List<string> salesOrderNumber, [FromQuery] List<string> projectNumber, [FromQuery] List<string> customerName)
+        {
+            ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
+            try
+            {
+                var salesOrderList = await _repository.GetAllSalesOrderWithItems(pagingParameter, salesOrderNumber, projectNumber, customerName);
+                var metadata = new
+                {
+                    salesOrderList.TotalCount,
+                    salesOrderList.PageSize,
+                    salesOrderList.CurrentPage,
+                    salesOrderList.HasNext,
+                    salesOrderList.HasPreviuos
+                };
 
-        //        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-        //        _logger.LogInfo("Returned all SalesOrders");
-        //        var result = _mapper.Map<IEnumerable<SalesOrderDto>>(salesOrderList);
-        //        serviceResponse.Data = result;
-        //        serviceResponse.Message = "Returned all SalesOrderItems";
-        //        serviceResponse.Success = true;
-        //        serviceResponse.StatusCode = HttpStatusCode.OK;
-        //        return Ok(serviceResponse);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex.Message);
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = "Internal Server Error";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    }
-        //}
+                _logger.LogInfo("Returned all SalesOrders");
+                var result = _mapper.Map<IEnumerable<SalesOrderDto>>(salesOrderList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SalesOrderItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         // GET api/<PurchaseOrderController>/5
         [HttpGet("{id}")]
