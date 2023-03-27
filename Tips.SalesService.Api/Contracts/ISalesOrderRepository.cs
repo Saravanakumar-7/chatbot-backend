@@ -18,7 +18,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<ListofSalesOrderDetails>> GetSalesOrderDetailsByCustomerId(string Customerid);
         Task<string> DeleteSalesOrder(SalesOrder salesOrder);
 
-       
+        Task<IEnumerable<SalesOrder>> GetAllSalesOrderWithItems(SalesOrderSearchDto salesOrderSearch);
 
         Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchParams);
 
@@ -30,7 +30,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<List<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber);
         Task<List<SalesOrderQtyDto>> GetSalesOrderQtyDetailsByItemNo(string itemNumber,string projectNo);
         Task<IEnumerable<SalesOrderIdNameListDto>> GetAllActiveSalesOrderNameList();
-        Task<IEnumerable<SalesOrder>> SearchSalesOrderItem([FromQuery] SearchParammes searchParams);
+        Task<IEnumerable<SalesOrder>> SearchSalesOrder([FromQuery] SearchParammes searchParams);
         //Task<PagedList<SalesOrder>> GetAllSalesOrderWithItems(PagingParameter pagingParameter, List<string> salesOrderNumber, List<string> projectNumber, List<string> customerName);
 
     }

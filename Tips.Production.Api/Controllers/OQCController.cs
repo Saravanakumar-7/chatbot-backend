@@ -5,6 +5,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
@@ -28,15 +29,24 @@ namespace Tips.Production.Api.Controllers
             _mapper = mapper;
             _shopOrderRepo = shopOrderRepository;
         }
-
+      
         [HttpGet]
         public async Task<IActionResult> GetAllOQC([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<OQCDto>> serviceResponse = new ServiceResponse<IEnumerable<OQCDto>>();
             try
             {
-
                 var oQCDetails = await _oQCRepository.GetAllOQC(pagingParameter,searchParamess);
+                 var metadata = new
+                {
+                     oQCDetails.TotalCount,
+                     oQCDetails.PageSize,
+                     oQCDetails.CurrentPage,
+                     oQCDetails.HasNext,
+                     oQCDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all OQC");
                 var result = _mapper.Map<IEnumerable<OQCDto>>(oQCDetails);
                 serviceResponse.Data = result;

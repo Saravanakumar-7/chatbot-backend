@@ -305,12 +305,12 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SearchSalesOrderItem([FromQuery] SearchParammes searchParams)
+        public async Task<IActionResult> SearchSalesOrder([FromQuery] SearchParammes searchParams)
         {
             ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
             try
             {
-                var salesOrderList = await _repository.SearchSalesOrderItem(searchParams);
+                var salesOrderList = await _repository.SearchSalesOrder(searchParams);
 
                 _logger.LogInfo("Returned all SalesOrders");
                 var config = new MapperConfiguration(cfg =>
@@ -340,6 +340,88 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        // sales order item level search
+
+        [HttpGet]
+        public async Task<IActionResult> SearchSalesOrderItem([FromQuery] SearchParammes searchParams)
+        {
+            ServiceResponse<IEnumerable<SalesOrderItemsDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderItemsDto>>();
+            try
+            {                
+                var salesOrderList = await _salesOrderItemsRepository.SearchSalesOrderItem(searchParams);
+                if (salesOrderList is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "SalesOrder object sent from client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("SalesOrder object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid SalesOrderItem object sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid SalesOrderItem object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var result = _mapper.Map<IEnumerable<SalesOrderItemsDto>>(salesOrderList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SalesOrdersItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+//sales order with items filter concept
+        [HttpPost]
+        public async Task<IActionResult> GetAllSalesOrderWithItems([FromBody] SalesOrderSearchDto salesOrderSearch)
+        {
+            ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
+            try
+            {
+                var salesOrderList = await _repository.GetAllSalesOrderWithItems(salesOrderSearch);
+
+                _logger.LogInfo("Returned all SalesOrders");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<SalesOrderDto, SalesOrder>().ReverseMap()
+                        .ForMember(dest => dest.SalesOrdersItems, opt => opt.MapFrom(src => src.SalesOrdersItems));
+                });
+
+                var mapper = config.CreateMapper();
+
+
+                var result = mapper.Map<IEnumerable<SalesOrderDto>>(salesOrderList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SalesOrdersItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         // PUT api/<PurchaseOrderController>/5
         [HttpPut("{id}")]

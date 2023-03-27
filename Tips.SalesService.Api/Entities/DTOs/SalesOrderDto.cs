@@ -18,6 +18,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
+        public OrderStatus SOStatus { get; set; } = 0;
 
         //PO Details
         public string? PONumber { get; set; }
@@ -123,5 +124,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SalesOrderNumber { get; set; }
     }
 
-
+    public class SalesOrderSearchDto
+    {
+        public List<string>? ProjectNumber { get; set; }
+        public List<string>? SalesOrderNumber { get; set; }
+        public List<string>? CustomerName { get; set; }
+        public List<OrderStatus>? SOStatus { get; set; }
+    }
 }

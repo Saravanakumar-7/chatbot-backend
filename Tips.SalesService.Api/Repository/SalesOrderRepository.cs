@@ -47,7 +47,27 @@ namespace Tips.SalesService.Api.Repository
             string result = $"SalesOrder details of {salesOrder.Id} is deleted successfully!";
             return result;
         }
+        public async Task<IEnumerable<SalesOrder>> GetAllSalesOrderWithItems(SalesOrderSearchDto salesOrderSearch)
+        {
 
+
+            using (var context = _tipsSalesServiceDbContext)
+            {
+                var query = _tipsSalesServiceDbContext.SalesOrders.Include("SalesOrdersItems");
+                if (salesOrderSearch != null || (salesOrderSearch.SalesOrderNumber.Any())
+                    && salesOrderSearch.ProjectNumber.Any() && salesOrderSearch.CustomerName.Any() && salesOrderSearch.SOStatus.Any())
+
+                {
+                    query = query.Where
+                        (so => (salesOrderSearch.SalesOrderNumber.Any() ? salesOrderSearch.SalesOrderNumber.Contains(so.SalesOrderNumber) : true)
+                        && (salesOrderSearch.ProjectNumber.Any() ? salesOrderSearch.ProjectNumber.Contains(so.ProjectNumber) : true)
+                        && (salesOrderSearch.CustomerName.Any() ? salesOrderSearch.CustomerName.Contains(so.CustomerName) : true)
+                        && (salesOrderSearch.SOStatus.Any() ? salesOrderSearch.SOStatus.Contains(so.SOStatus) : true));
+                }
+                return query.ToList();
+            }
+
+        }
         public async Task<PagedList<SalesOrder>> GetAllActiveSalesOrder([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             var getAllActiveSalesOrder = FindAll()
@@ -93,7 +113,7 @@ namespace Tips.SalesService.Api.Repository
             return salesOrderDetails;
         }
         
-            public async Task<IEnumerable<SalesOrder>> SearchSalesOrderItem([FromQuery] SearchParammes searchParams)
+            public async Task<IEnumerable<SalesOrder>> SearchSalesOrder([FromQuery] SearchParammes searchParams)
         {
             using (var context = _tipsSalesServiceDbContext)
             {
@@ -227,7 +247,20 @@ namespace Tips.SalesService.Api.Repository
 
 
         }
-
+        //serach by item level
+        public async Task<IEnumerable<SalesOrderItems>> SearchSalesOrderItem([FromQuery] SearchParammes searchParams)
+        { 
+            var getSalesOrderItemDetails = await _tipsSalesServiceDbContexts.SalesOrdersItems
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
+                     || inv.ItemNumber.Contains(searchParams.SearchValue)
+                     || inv.ProjectNumber.Contains(searchParams.SearchValue)
+                    || inv.SalesOrderNumber.Contains(searchParams.SearchValue)
+                    || inv.UOM.Contains(searchParams.SearchValue)
+                    || inv.Currency.Contains(searchParams.SearchValue)
+                     )))
+                      .ToListAsync();
+            return getSalesOrderItemDetails;
+        }
 
 
         public async Task<IEnumerable<SalesOrderItems>> GetSalesOrderDetailsByIdandItemNo(string ItemNumber, int SalesOrderId)

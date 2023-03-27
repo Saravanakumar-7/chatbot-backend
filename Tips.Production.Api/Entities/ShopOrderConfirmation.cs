@@ -18,7 +18,7 @@ namespace Tips.Production.Api.Entities
         public string? ShopOrderNumber { get; set; }
 
         public string? ItemNumber { get; set; }
-        public string? ItemDescription { get; set; }
+        public string? Description { get; set; }
 
         [Required]
         public PartType ItemType { get; set; }

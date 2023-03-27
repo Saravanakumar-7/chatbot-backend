@@ -135,8 +135,8 @@ namespace Entities
 
   public DbSet<ProjectName>? ProjectNames { get; set; }
 
-
-
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<RoleAccess> RoleAccesses { get; set; }
 
     }
 }

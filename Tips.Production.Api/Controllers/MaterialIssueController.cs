@@ -209,8 +209,7 @@ namespace Tips.Production.Api.Controllers
                 foreach (var item in materialIssueUpdateDto.MaterialIssueItems)
                 {
                     MaterialIssueItem materialIssueItem = _mapper.Map<MaterialIssueItem>(item);
-                    materialIssueItem.IssuedQty += item.NewIssueQty;
-                    materialIssueItems.Add(materialIssueItem);
+                    
 
                     //update inventory 
 
@@ -228,7 +227,9 @@ namespace Tips.Production.Api.Controllers
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
                     var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
                         "UpdateInventory/", inventoryObject.id), data);
-
+                    materialIssueItem.IssuedQty += item.NewIssueQty;
+                    materialIssueItem.AvailableQty = inventoryObject.Balance_Quantity;
+                    materialIssueItems.Add(materialIssueItem);
                 }
                 updateMaterialIssue.MaterialIssueItems = materialIssueItems;
                 string result = await _materialIssueRepository.UpdateMaterialIssue(updateMaterialIssue);

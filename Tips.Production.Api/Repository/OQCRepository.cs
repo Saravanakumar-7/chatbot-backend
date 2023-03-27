@@ -38,11 +38,10 @@ namespace Tips.Production.Api.Repository
         {
             var OQCDetails = FindAll().OrderByDescending(x => x.Id)
                            .Where(inv => ((string.IsNullOrWhiteSpace(searchParamess.SearchValue) || inv.ShopOrderNumber.Contains(searchParamess.SearchValue) ||
-                              inv.ItemNumber.Contains(searchParamess.SearchValue) || inv.ShopOrderQty.Equals(int.Parse(searchParamess.SearchValue)) ||
-                              inv.ItemType.Equals(int.Parse(searchParamess.SearchValue)))));
+                              inv.ItemNumber.Contains(searchParamess.SearchValue))));
 
             return PagedList<OQC>.ToPagedList(OQCDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-        }
+        } 
 
         public async Task<IEnumerable<OQCIdNameList>> GetAllOQCIdNameList()
         {
@@ -91,7 +90,7 @@ namespace Tips.Production.Api.Repository
                .Select(s => new ShopOrderConfirmationItemNoListDto()
                {
                    ItemNumber = s.ItemNumber,
-                   Description = s.ItemDescription
+                   Description = s.Description
                })
                .ToListAsync();
 
@@ -105,7 +104,7 @@ namespace Tips.Production.Api.Repository
                 .Select(s => new ShopOrderConfirmationItemNoListDto()
                 {
                     ItemNumber = s.ItemNumber,
-                    Description = s.ItemDescription
+                    Description = s.Description
                 })
                 .ToListAsync();
 
