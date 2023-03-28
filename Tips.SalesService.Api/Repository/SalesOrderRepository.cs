@@ -129,26 +129,7 @@ namespace Tips.SalesService.Api.Repository
                 return query.ToList();
             }
 
-        }
-
-        public async Task<PagedList<SalesOrder>> GetAllSalesOrderWithItems(PagingParameter pagingParameter, List<string> salesOrderNumber, List<string> projectNumber, List<string> customerName)
-        {
-            //var salesOrderDetail = FindAll()
-            //.Where(bias => (salesOrderNumber != null ? bias.SalesOrderNumber.Contains(salesOrderNumber.) : bias.SalesOrderNumber == bias.SalesOrderNumber) &&
-            //(projectNumber != null ? bias.ProjectNumber.Equals(projectNumber) : bias.ProjectNumber == bias.ProjectNumber) &&
-            //(customerName != null ? bias.CustomerName.Equals(customerName) : bias.CustomerName == bias.CustomerName))
-            //.Include(x => x.SalesOrdersItems);
-
-        
-
-            var salesOrderDetail = FindAll()
-    .Where(bias => (salesOrderNumber == null || salesOrderNumber.Equals(salesOrderNumber)) &&
-                   (projectNumber == null || bias.ProjectNumber.Equals(projectNumber)) &&
-                   (customerName == null || bias.CustomerName.Equals(customerName)))
-    .Include(x => x.SalesOrdersItems);
-
-            return PagedList<SalesOrder>.ToPagedList(salesOrderDetail, pagingParameter.PageNumber, pagingParameter.PageSize);
-        }
+        } 
 
         public async Task<IEnumerable<SalesOrderIdNameListDto>> GetAllActiveSalesOrderNameList()
         {
@@ -238,6 +219,7 @@ namespace Tips.SalesService.Api.Repository
 
             return salesOrderQtyDetails;
         }
+         
     }
     public class SalesOrderItemRepository : RepositoryBase<SalesOrderItems>, ISalesOrderItemsRepository
     {
