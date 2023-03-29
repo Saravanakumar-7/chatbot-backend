@@ -102,11 +102,11 @@ namespace Tips.SalesService.Api.Repository
             return PagedList<SalesOrder>.ToPagedList(salesOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
-        public async Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParams)
+        public async Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParam)
         {
             var salesOrderDetails = _tipsSalesServiceDbContext.SalesOrders
-                             .Where(inv => ((inv.CreatedOn.Equals(searchDateParams.SearchFromDate) ||
-                                inv.CreatedOn.Equals(searchDateParams.SearchToDate) 
+                             .Where(inv => ((inv.CreatedOn >= searchDateParam.SearchFromDate &&
+                                inv.CreatedOn<= searchDateParam.SearchToDate
                                 )))
                              .Include(itm => itm.SalesOrdersItems)
                              .ToList();

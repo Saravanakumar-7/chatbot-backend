@@ -256,7 +256,7 @@ namespace Tips.Production.Api.Controllers
                     var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
                     dynamic bomDetailsData = JsonConvert.DeserializeObject(bomDetailsString);
                     dynamic bomData = bomDetailsData.data;
-
+                     
                     if (bomData != null)
                     {
                         MaterialIssue materialIssue = new MaterialIssue();
@@ -269,13 +269,14 @@ namespace Tips.Production.Api.Controllers
                         List<MaterialIssueItem> materialIssueItemList = new List<MaterialIssueItem>();
                         foreach (var bom in bomData.enggChildItemDtos)
                         {
+                            var projectNo = shopOrder.ShopOrderItems[i].ProjectNumber;
                             MaterialIssueItem materialIssueItem = new MaterialIssueItem();
                             materialIssueItem.PartNumber = bom.itemNumber;
                             materialIssueItem.Description = bom.description;
+                            materialIssueItem.ProjectNumber = projectNo;
                             materialIssueItem.PartType = bom.partType;
                             materialIssueItem.UOM = bom.uom;
                             materialIssueItem.RequiredQty = (bom.quantity * shopOrder.TotalSOReleaseQty);
-                            materialIssueItem.AvailableQty = 0;
                             materialIssueItem.IssuedQty = 0;
                             materialIssueItem.MaterialIssuedStatus = IssuedStatus.Open;
                             materialIssueItem.CreatedBy = "Admin";

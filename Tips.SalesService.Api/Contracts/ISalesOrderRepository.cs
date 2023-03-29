@@ -20,7 +20,7 @@ namespace Tips.SalesService.Api.Contracts
 
         Task<IEnumerable<SalesOrder>> SearchSalesOrder([FromQuery] SearchParammes searchParammes);
 
-        Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchParams);
+        Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParam);
 
         
 
