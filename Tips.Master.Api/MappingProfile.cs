@@ -413,6 +413,22 @@ namespace Tips.Master.Api
             CreateMap<SFT, SFTDto>().ReverseMap();
             CreateMap<SFT, SFTPostDto>().ReverseMap();
             CreateMap<SFT, SFTUpdateDto>().ReverseMap();
+
+            CreateMap<Role, RoleDto>().ReverseMap();
+            CreateMap<Role, RolePostDto>().ReverseMap();
+            CreateMap<Role, RoleUpdateDto>().ReverseMap();
+
+            CreateMap<RoleAccess, RoleAccessDto>().ReverseMap();
+            CreateMap<RoleAccess, RoleAccessPostDto>().ReverseMap();
+            CreateMap<RoleAccess, RoleAccessUpdateDto>().ReverseMap();
+
+            CreateMap<RegistrationForm, RegistrationFormDto>().ReverseMap();
+            CreateMap<RegistrationForm, RegistrationFormPostDto>().ReverseMap();
+            CreateMap<RegistrationForm, RegistrationFormUpdateDto>().ReverseMap();
+
+            CreateMap<UserAccess, UserAccessDto>().ReverseMap();
+            CreateMap<UserAccess, UserAccessPostDto>().ReverseMap();
+            CreateMap<UserAccess, UserAccessUpdateDto>().ReverseMap();
         }
     }
 }

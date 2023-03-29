@@ -137,6 +137,8 @@ namespace Entities
 
         public DbSet<Role> Roles { get; set; }
         public DbSet<RoleAccess> RoleAccesses { get; set; }
+        public DbSet<RegistrationForm> RegistrationForms { get; set; }
+        public DbSet<UserAccess> UserAccesses { get; set; }
 
     }
 }

@@ -12,6 +12,7 @@ namespace Entities
         [Key]
         public int Id { get; set; }
         public string? RoleName { get; set; }
+        public string Description { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; } 

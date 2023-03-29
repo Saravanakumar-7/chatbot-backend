@@ -103,7 +103,10 @@ namespace Repository
         private IReleaseProductBomRepository? _releaseProductBomRepo;
         private IEnggBomGroupRepository? _enggbomGroupRepo;
         private IEnggCustomFieldRepository? _enggcustomFieldRepo;
-         
+        private IRoleRepository? _roleRepository;
+        private IRoleAccessRepository? _roleAccessRepository; 
+        private IRegistrationFormRepository? _registrationFormRepo;
+        private IUserAccessRepository? _userAccessRepository;
 
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
@@ -1001,6 +1004,54 @@ namespace Repository
                     _enggcustomFieldRepo = new EnggCustomFieldRepository(_tipsMasterDbContext);
                 }
                 return _enggcustomFieldRepo;
+            }
+        }
+
+        public IRoleRepository RoleRepository
+        {
+            get
+            {
+                if (_roleRepository == null)
+                {
+                    _roleRepository = new RoleRepository(_tipsMasterDbContext);
+                }
+                return _roleRepository;
+            }
+        }
+
+        public IRoleAccessRepository RoleAccessRepository
+        {
+            get
+            {
+                if (_roleAccessRepository == null)
+                {
+                    _roleAccessRepository = new RoleAccessRepository(_tipsMasterDbContext);
+                }
+                return _roleAccessRepository;
+            }
+        }
+
+        public IRegistrationFormRepository RegistrationFormRepository
+        {
+            get
+            {
+                if (_registrationFormRepo == null)
+                {
+                    _registrationFormRepo = new RegistrationFormRepository(_tipsMasterDbContext);
+                }
+                return _registrationFormRepo;
+            }
+        }
+
+        public IUserAccessRepository UserAccessRepository
+        {
+            get
+            {
+                if (_userAccessRepository == null)
+                {
+                    _userAccessRepository = new UserAccessRepository(_tipsMasterDbContext);
+                }
+                return _userAccessRepository;
             }
         }
 

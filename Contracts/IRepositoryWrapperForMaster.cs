@@ -124,8 +124,10 @@ namespace Contracts
         ISourceDetailsRepository SourceDetailsRepository { get; }
         ISFTRepository SFTRepository { get; }
          ITypeOfHomeRepository TypeOfHomeRepository { get; }
-
-
+        IRoleRepository RoleRepository { get; }
+        IRoleAccessRepository RoleAccessRepository { get; }
+        IRegistrationFormRepository RegistrationFormRepository { get; }
+        IUserAccessRepository UserAccessRepository { get; }
 
     void SaveAsync();
     }

@@ -10,8 +10,29 @@ namespace Entities.DTOs
     public class RoleDto
     {
       public int Id { get; set; }
-
       public string? RoleName { get; set; }
+      public string Description { get; set; }
+      public string Unit { get; set; }
+      public string? CreatedBy { get; set; }
+      public DateTime? CreatedOn { get; set; }
+
+    }
+    public class RolePostDto
+    {
+        public string? RoleName { get; set; }
+        public string Description { get; set; }
+        public string Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+
+    }
+    public class RoleUpdateDto
+    {
+        public string? RoleName { get; set; }
+        public string Description { get; set; }
+        public string Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
 
     }
 }
