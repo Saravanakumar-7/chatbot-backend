@@ -11,12 +11,12 @@ namespace Tips.Production.Api.Entities
         public string? PartNumber { get; set; }
         [MaxLength(500)]
         public string? Description { get; set; }
+        public string? ProjectNumber { get; set; }
         public PartType PartType { get; set; }
         public string? UOM { get; set; }
         [Precision(13, 3)]
-        public decimal RequiredQty { get; set; }
-        [Precision(13, 3)]
-        public decimal AvailableQty { get; set; }
+        public decimal RequiredQty { get; set; } 
+
         [Precision(13, 3)]
         public decimal IssuedQty { get; set; }
         [Precision(13, 3)]

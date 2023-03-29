@@ -84,6 +84,8 @@ namespace Tips.Production.Api.Controllers
             try
             {
                 var materialIssueDetailById = await _materialIssueRepository.GetMaterialIssueById(id);
+
+
                 if (materialIssueDetailById == null)
                 {
                     serviceResponse.Data = null;
@@ -96,8 +98,20 @@ namespace Tips.Production.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    var result = _mapper.Map<MaterialIssueDto>(materialIssueDetailById);
-                    serviceResponse.Data = result;
+                    var materialIssueDetails = _mapper.Map<MaterialIssueDto>(materialIssueDetailById);
+
+                    for (int i = 0; i < materialIssueDetails.MaterialIssueItems.Count(); i++)
+                    {
+                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                          "GetInventoryDetailsByItemAndProjectNo?", "itemNumber=", materialIssueDetailById.MaterialIssueItems[i].PartNumber, "&projectNumber=", materialIssueDetailById.MaterialIssueItems[i].ProjectNumber));
+                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        dynamic inventoryObject = inventoryObjectData.data;
+                        var balanceQty = inventoryObject.balance_Quantity;
+                        materialIssueDetails.MaterialIssueItems[i].AvailableQty = balanceQty;
+                    }
+
+                    serviceResponse.Data = materialIssueDetails;
                     serviceResponse.Message = "Returned MaterialIssue with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -106,7 +120,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetMaterialIssueById action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetMaterialIssueById action: {ex.Message} {ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
@@ -209,8 +223,9 @@ namespace Tips.Production.Api.Controllers
                 foreach (var item in materialIssueUpdateDto.MaterialIssueItems)
                 {
                     MaterialIssueItem materialIssueItem = _mapper.Map<MaterialIssueItem>(item);
-                    
 
+                    materialIssueItem.IssuedQty += item.NewIssueQty;
+                    materialIssueItems.Add(materialIssueItem);
                     //update inventory 
 
                     var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
@@ -227,9 +242,7 @@ namespace Tips.Production.Api.Controllers
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
                     var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
                         "UpdateInventory/", inventoryObject.id), data);
-                    materialIssueItem.IssuedQty += item.NewIssueQty;
-                    materialIssueItem.AvailableQty = inventoryObject.Balance_Quantity;
-                    materialIssueItems.Add(materialIssueItem);
+                 
                 }
                 updateMaterialIssue.MaterialIssueItems = materialIssueItems;
                 string result = await _materialIssueRepository.UpdateMaterialIssue(updateMaterialIssue);

@@ -61,6 +61,13 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryDetail;
         }
+        public async Task<Inventory> GetInventoryDetailsByItemAndProjectNo(string itemNumber, string projectNumber)
+        {
+            var inventoryDetailsByProjectNo = await _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber && x.IsStockAvailable == true)
+                          .FirstOrDefaultAsync();
+
+            return inventoryDetailsByProjectNo;
+        }
 
         public async Task<IEnumerable<GetInventoryListByItemNo>> GetInventoryListByItemNo( string ItemNumber)
         {
