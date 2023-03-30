@@ -182,6 +182,34 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllShopOrderNoListByProjectNo(string projectNo)
+        //{
+        //    ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
+
+        //    try
+        //    {
+        //        var shopOrderNoList = await _shopOrderRepository.GetAllActiveShopOrderNoListByProjectNo(projectNo);
+        //        _logger.LogInfo("Returned all ShopOrderNoList");
+
+        //        var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(shopOrderNoList);
+        //        serviceResponse.Data = result;
+        //        serviceResponse.Message = "Returned all ShopOrderNoList Successfully";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
         [HttpPost]
         public async Task<IActionResult> CreateShopOrder([FromBody] ShopOrderPostDto shopOrderPostDto)
         {
@@ -459,7 +487,7 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var shopOrderByShopOrderNo = await _shopOrderRepository.GetShopOrderBySalesOrderNo(shopOrderNo);
+                var shopOrderByShopOrderNo = await _shopOrderRepository.GetShopOrderByShopOrderNo(shopOrderNo);
                 if (shopOrderByShopOrderNo == null)
                 {
                     _logger.LogError($"ShopOrder with id: {shopOrderNo}, hasn't been found in db.");
