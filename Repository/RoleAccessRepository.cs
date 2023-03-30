@@ -58,7 +58,7 @@ namespace Repository
             return rolesAccessById;
         }
 
-        public async Task<IEnumerable<RoleAccess>> GetRoleAccessByRoleId(int roleId)
+        public async Task<List<RoleAccess>> GetRoleAccessByRoleId(int roleId)
         {
             var rolesAccessByRoleId = await TipsMasterDbContext.RoleAccesses.Where(x => x.RoleId == roleId)
                  .ToListAsync();

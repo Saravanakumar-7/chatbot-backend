@@ -197,17 +197,12 @@ namespace Tips.Master.Api.Controllers
                 }
                 var roleAccess = _mapper.Map<List<RoleAccess>>(roleAccessPostDto);
                 var roleId = roleAccess[0].RoleId;
-                IEnumerable<RoleAccess> roleAccessDetails = await _repository.RoleAccessRepository.GetRoleAccessByRoleId(roleId);
+                var roleAccessDetails = await _repository.RoleAccessRepository.GetRoleAccessByRoleId(roleId);
                 for (int i = 0; i < roleAccess.Count; i++)
                 {                   
-                    if (roleAccessDetails != null)
-                    {
-                        for (int j = 0; j < roleAccessDetails.Count(); j++)
-                        {
-                             //await UpdateRoleAccess(roleAccessDetails[i].Id, roleAccessPostDto[i]);
-                            //await _repository.RoleAccessRepository.UpdateRoleAccess(roleAccess);
-                            //_repository.SaveAsync();
-                        }
+                    if (roleAccessDetails.Count() != 0)
+                    { 
+                             await UpdateRoleAccess(roleAccessDetails[i].Id, roleAccessPostDto[i]); 
                     }
                     else
                     {
