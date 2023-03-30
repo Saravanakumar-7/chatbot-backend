@@ -138,14 +138,18 @@ namespace Tips.Master.Api.Controllers
             try
             {
                 var roleAccessByRoleId = await _repository.RoleAccessRepository.GetRoleAccessByRoleId(roleId);
+                                
+
                 if (roleAccessByRoleId == null)
                 {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"RoleAccess hasn't been found in db.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"RoleAccess with Roleid: {roleId}, hasn't been found in db.");
-                    return BadRequest(serviceResponse);
+                    //serviceResponse.Data = null;
+                    //serviceResponse.Message = $"RoleAccess hasn't been found in db.";
+                    //serviceResponse.Success = false;
+                    //serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    //_logger.LogError($"RoleAccess with Roleid: {roleId}, hasn't been found in db.");
+                    //return BadRequest(serviceResponse);
+
+                    return null;
                 }
                 else
                 {
