@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
+using Entities.DTOs;
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +63,22 @@ namespace Repository
                  .FirstOrDefaultAsync();
 
             return registrationFormById;
+        }
+
+        public async Task<IEnumerable<RegistrationFormDetailsDto>> GetAllActiveRegistrationFormList()
+        {
+            IEnumerable<RegistrationFormDetailsDto> registrationFormList = await TipsMasterDbContext.RegistrationForms
+                           .Select(x => new RegistrationFormDetailsDto()
+                           {
+                               Id = x.Id,
+                               UserName = x.UserName,
+                               RoleId = x.RoleId,
+                               RoleName = x.RoleName,
+                           }).ToListAsync();
+
+
+            return registrationFormList;
+
         }
 
         public async Task<string> UpdateRegistrationForm(RegistrationForm registrationForm)

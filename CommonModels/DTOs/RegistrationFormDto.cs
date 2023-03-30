@@ -12,6 +12,8 @@ namespace Entities.DTOs
         public int Id { get; set; }
         [Required]
         public string UserName { get; set; }
+        public int RoleId { get; set; }
+        public string? RoleName { get; set; }
         [Required]
         [EmailAddress]
         public string EmailId { get; set; }
@@ -35,6 +37,8 @@ namespace Entities.DTOs
 
         [Required]
         public string UserName { get; set; }
+        public int RoleId { get; set; }
+        public string? RoleName { get; set; }
         [Required]
         [EmailAddress]
         public string EmailId { get; set; }
@@ -47,13 +51,15 @@ namespace Entities.DTOs
         public string Password { get; set; }
         [Required]
         public string PasswordConfirm { get; set; }
-      
+
     }
     public class RegistrationFormUpdateDto
     {
         public int Id { get; set; }
         [Required]
         public string UserName { get; set; }
+        public int RoleId { get; set; }
+        public string? RoleName { get; set; }
         [Required]
         [EmailAddress]
         public string EmailId { get; set; }
@@ -69,5 +75,12 @@ namespace Entities.DTOs
         public string Unit { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+    }
+    public class RegistrationFormDetailsDto
+    {
+        public int Id { get; set; }
+        public string UserName { get; set; }
+        public int RoleId { get; set; }
+        public string? RoleName { get; set; }
     }
 }

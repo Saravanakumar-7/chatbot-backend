@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
+using Entities.DTOs;
 using Entities.Helper;
 
 namespace Contracts
@@ -16,5 +17,6 @@ namespace Contracts
         Task<int?> CreateRegistrationForm(RegistrationForm registrationForm);
         Task<string> UpdateRegistrationForm(RegistrationForm registrationForm);
         Task<string> DeleteRegistrationForm(RegistrationForm registrationForm);
+        Task<IEnumerable<RegistrationFormDetailsDto>> GetAllActiveRegistrationFormList();
     }
 }

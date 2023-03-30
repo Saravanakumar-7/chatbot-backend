@@ -88,20 +88,26 @@ namespace Tips.Production.Api.Repository
 
         }
 
-        //public async Task<IEnumerable<ListOfShopOrderDto>> GetAllActiveShopOrderNoListByProjectNo(string projectNo)
-        //{
-        //    IEnumerable<ListOfShopOrderDto> shopOrderNoListByShopOrderNo = await _tipsProductionDbContext.ShopOrderItems
-        //                   .Where(x => x.ProjectNumber == projectNo)
-        //                   .Select(x => new ListOfShopOrderDto()
-        //                   {
-        //                       Id = x.Id,
-        //                       ShopOrderNumber = x.ShopOrderNumber,
-        //                   }).ToListAsync();
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetAllActiveShopOrderNoListByProjectNo(string projectNo)
+        {
+            var shopOrderItemListByProjectNo = await _tipsProductionDbContext.ShopOrderItems
+                           .Where(x => x.ProjectNumber == projectNo )
+                           .Select(x => x.ShopOrderId)
+                           .Distinct().ToListAsync();
 
 
-        //    return shopOrderNoListByShopOrderNo;
+            var shopOrderNoListByProjectNo = await _tipsProductionDbContext.ShopOrders
+                                .Where(x => shopOrderItemListByProjectNo.Contains(x.Id) 
+                                && x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2)
+                                .Select(s => new ListOfShopOrderDto()
+                                {
+                                    Id = s.Id,
+                                    ShopOrderNumber = s.ShopOrderNumber,
+                                }).Distinct().ToListAsync();
 
-        //}
+            return shopOrderNoListByProjectNo;
+
+        }
 
         public async Task<ShopOrder> GetShopOrderById(int id)
         {
