@@ -58,6 +58,14 @@ namespace Repository
             return rolesAccessById;
         }
 
+        public async Task<IEnumerable<RoleAccess>> GetRoleAccessByRoleId(int roleId)
+        {
+            var rolesAccessByRoleId = await TipsMasterDbContext.RoleAccesses.Where(x => x.RoleId == roleId)
+                 .ToListAsync();
+
+            return rolesAccessByRoleId;
+        }
+
         public async Task<string> UpdateRoleAccess(RoleAccess roleAccess)
         {
             roleAccess.LastModifiedBy = "Admin";

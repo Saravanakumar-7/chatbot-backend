@@ -16,5 +16,6 @@ namespace Contracts
         Task<int?> CreateRoleAccess(RoleAccess roleAccess);
         Task<string> UpdateRoleAccess(RoleAccess roleAccess);
         Task<string> DeleteRoleAccess(RoleAccess roleAccess);
+        Task<IEnumerable<RoleAccess>> GetRoleAccessByRoleId(int roleId);
     }
 }

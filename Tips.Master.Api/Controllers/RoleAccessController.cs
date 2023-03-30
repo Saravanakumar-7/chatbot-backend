@@ -130,8 +130,48 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet("{roleId}")]
+        public async Task<IActionResult> GetRoleAccessByRoleId(int roleId)
+        {
+            ServiceResponse<RoleAccessDto> serviceResponse = new ServiceResponse<RoleAccessDto>();
+
+            try
+            {
+                var roleAccessByRoleId = await _repository.RoleAccessRepository.GetRoleAccessByRoleId(roleId);
+                if (roleAccessByRoleId == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RoleAccess hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"RoleAccess with Roleid: {roleId}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
+                }
+                else
+                {
+
+                    _logger.LogInfo($"Returned RoleAccess with id: {roleId}");
+                    var result = _mapper.Map<RoleAccessDto>(roleAccessByRoleId);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned RoleAccess with Roleid successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetRoleAccessByRoleId action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
-        public IActionResult CreateRoleAccess([FromBody] RoleAccessPostDto roleAccessPostDto)
+        public async Task<IActionResult> CreateRoleAccess([FromBody] List<RoleAccessPostDto> roleAccessPostDto)
         {
             ServiceResponse<RoleAccessPostDto> serviceResponse = new ServiceResponse<RoleAccessPostDto>();
 
@@ -155,9 +195,28 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid RoleAccess object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var roleAccess = _mapper.Map<RoleAccess>(roleAccessPostDto);
-                _repository.RoleAccessRepository.CreateRoleAccess(roleAccess);
-                _repository.SaveAsync();
+                var roleAccess = _mapper.Map<List<RoleAccess>>(roleAccessPostDto);
+                var roleId = roleAccess[0].RoleId;
+                IEnumerable<RoleAccess> roleAccessDetails = await _repository.RoleAccessRepository.GetRoleAccessByRoleId(roleId);
+                for (int i = 0; i < roleAccess.Count; i++)
+                {                   
+                    if (roleAccessDetails != null)
+                    {
+                        for (int j = 0; j < roleAccessDetails.Count(); j++)
+                        {
+                             //await UpdateRoleAccess(roleAccessDetails[i].Id, roleAccessPostDto[i]);
+                            //await _repository.RoleAccessRepository.UpdateRoleAccess(roleAccess);
+                            //_repository.SaveAsync();
+                        }
+                    }
+                    else
+                    {
+                        await _repository.RoleAccessRepository.CreateRoleAccess(roleAccess[i]);
+                        _repository.SaveAsync();
+                    }
+                }
+                //_repository.RoleAccessRepository.CreateRoleAccess(roleAccess);
+                //_repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "RoleAccess Created Successfully";
                 serviceResponse.Success = true;
@@ -176,9 +235,9 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRoleAccess(int id, [FromBody] RoleAccessUpdateDto roleAccessUpdateDto)
+        public async Task<IActionResult> UpdateRoleAccess(int id, [FromBody] RoleAccessPostDto roleAccessUpdateDto)
         {
-            ServiceResponse<RoleAccessUpdateDto> serviceResponse = new ServiceResponse<RoleAccessUpdateDto>();
+            ServiceResponse<RoleAccessPostDto> serviceResponse = new ServiceResponse<RoleAccessPostDto>();
 
             try
             {
