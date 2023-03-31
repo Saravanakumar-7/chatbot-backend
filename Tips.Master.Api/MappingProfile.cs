@@ -133,6 +133,10 @@ namespace Tips.Master.Api
             CreateMap<PaymentTerm, PaymentTermDtoPost>().ReverseMap();
             CreateMap<PaymentTerm, PaymentTermDtoUpdate>().ReverseMap();
 
+            CreateMap<LeadWebsite, LeadWebsiteDto>().ReverseMap();
+            CreateMap<LeadWebsite, LeadWebsitePostDto>().ReverseMap();
+            CreateMap<LeadWebsite, LeadWebsiteUpdateDto>().ReverseMap();
+
 
             CreateMap<PackingInstruction, PackingInstructionDto>().ReverseMap();
             CreateMap<PackingInstruction, PackingInstructionDtoPost>().ReverseMap();

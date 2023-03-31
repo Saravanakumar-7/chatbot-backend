@@ -15,6 +15,7 @@ namespace Repository
         private ILeadTimeRepository _leadTimeRepo;
         private IImageUploadRepository _imageUploadRepository;
         private ICustomerTypeRepository _customerTypeRepo;
+
         private IMaterialTypeRepository _materialTypeRepo;
         private IProcurementTypeRepository _procurementTypeRepo;
         private IItemMasterRepository _itemMasterRepo;
@@ -22,7 +23,7 @@ namespace Repository
         private IEnggBomRepository? _enggBomRepository;
         private ITypeSolutionRepository _typeSolutionRepository;
         private IProductTypeRepository? _productTypeRepository;
- 
+        private ILeadWebsiteRepository _leadWebsiteRepository;
         private IRoomNameRepository? _roomNameRepository;
         private IEnggBomNREConsumableRepository? _enggBomNREConsumableRepository;
 
@@ -123,7 +124,17 @@ namespace Repository
                 return _enggBomRepository;
             }
         }
-
+        public ILeadWebsiteRepository leadWebsiteRepository
+        {
+            get
+            {
+                if (_leadWebsiteRepository == null)
+                {
+                    _leadWebsiteRepository = new LeadWebsiteRepository(_tipsMasterDbContext);
+                }
+                return _leadWebsiteRepository;
+            }
+        }
         public ISourceDetailsRepository SourceDetailsRepository
         {
             get

@@ -13,6 +13,7 @@ namespace Contracts
         ILeadTimeRepository leadTimeRepository { get; }
         IFileUploadRepository FileUploadRepository { get; }
         IImageUploadRepository ImageUploadRepository { get; }
+        ILeadWebsiteRepository leadWebsiteRepository { get; }
         IStageOfConstructionRepository StageOfConstructionRepository { get; }
         ICustomerTypeRepository CustomerTypeRepository { get; }
         IPurchaseGroupRepository PurchaseGroupRepository { get; }
