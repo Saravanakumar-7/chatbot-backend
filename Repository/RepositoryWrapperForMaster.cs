@@ -107,6 +107,7 @@ namespace Repository
         private IRoleAccessRepository? _roleAccessRepository; 
         private IRegistrationFormRepository? _registrationFormRepo;
         private IUserAccessRepository? _userAccessRepository;
+        private IFormsAccessRepository? _formsAccessRepository;
 
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
@@ -1052,6 +1053,18 @@ namespace Repository
                     _userAccessRepository = new UserAccessRepository(_tipsMasterDbContext);
                 }
                 return _userAccessRepository;
+            }
+        }
+
+        public IFormsAccessRepository FormsAccessRepository
+        {
+            get
+            {
+                if (_formsAccessRepository == null)
+                {
+                    _formsAccessRepository = new FormsAccessRepository(_tipsMasterDbContext);
+                }
+                return _formsAccessRepository;
             }
         }
 

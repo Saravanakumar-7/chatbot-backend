@@ -128,6 +128,7 @@ namespace Contracts
         IRoleAccessRepository RoleAccessRepository { get; }
         IRegistrationFormRepository RegistrationFormRepository { get; }
         IUserAccessRepository UserAccessRepository { get; }
+        IFormsAccessRepository FormsAccessRepository { get; }
 
     void SaveAsync();
     }

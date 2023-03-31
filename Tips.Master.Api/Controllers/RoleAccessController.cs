@@ -6,6 +6,7 @@ using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using MySqlX.XDevAPI.Common;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -133,29 +134,28 @@ namespace Tips.Master.Api.Controllers
         [HttpGet("{roleId}")]
         public async Task<IActionResult> GetRoleAccessByRoleId(int roleId)
         {
-            ServiceResponse<RoleAccessDto> serviceResponse = new ServiceResponse<RoleAccessDto>();
+            ServiceResponse<IEnumerable<RoleAccessDto>> serviceResponse = new ServiceResponse<IEnumerable<RoleAccessDto>>();
 
             try
             {
                 var roleAccessByRoleId = await _repository.RoleAccessRepository.GetRoleAccessByRoleId(roleId);
                                 
 
-                if (roleAccessByRoleId == null)
+                if (roleAccessByRoleId.Count() == 0)
                 {
-                    //serviceResponse.Data = null;
-                    //serviceResponse.Message = $"RoleAccess hasn't been found in db.";
-                    //serviceResponse.Success = false;
-                    //serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    //_logger.LogError($"RoleAccess with Roleid: {roleId}, hasn't been found in db.");
-                    //return BadRequest(serviceResponse);
-
-                    return null;
+                    var formAccessList = await _repository.FormsAccessRepository.GetAllFormsAccess();
+                    var formAccess = _mapper.Map<List<RoleAccessDto>>(formAccessList);
+                    serviceResponse.Data = formAccess;
+                    serviceResponse.Message = "Returned FormAccessDetials Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
                 else
                 {
 
                     _logger.LogInfo($"Returned RoleAccess with id: {roleId}");
-                    var result = _mapper.Map<RoleAccessDto>(roleAccessByRoleId);
+                    var result = _mapper.Map<List<RoleAccessDto>>(roleAccessByRoleId);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned RoleAccess with Roleid successfully";
                     serviceResponse.Success = true;

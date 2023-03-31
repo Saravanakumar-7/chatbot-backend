@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Entities.DTOs
 {
-    public class FormsAccess
+    public class FormsAccessDto
     {
         public int Id { get; set; }
         public string? Menu { get; set; }
@@ -27,7 +27,7 @@ namespace Entities
 
         [DefaultValue(false)]
         public bool Download { get; set; }
-       
+
         [DefaultValue(false)]
         public bool ApprovalI { get; set; }
 
@@ -35,7 +35,5 @@ namespace Entities
         public bool ApprovalII { get; set; }
         [DefaultValue(false)]
         public bool Print { get; set; }
-
-
     }
 }
