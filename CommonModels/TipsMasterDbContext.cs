@@ -140,6 +140,7 @@ namespace Entities
         public DbSet<RegistrationForm> RegistrationForms { get; set; }
         public DbSet<UserAccess> UserAccesses { get; set; }
         public DbSet<FormsAccess> FormsAccesses { get; set; }
+        public DbSet<LeadWebsite> LeadWebsites { get; set; } 
 
     }
 }

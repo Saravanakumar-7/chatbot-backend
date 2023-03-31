@@ -28,5 +28,9 @@ namespace Tips.Production.Api.Entities
         public DbSet<MaterialIssue> MaterialIssue { get; set; }
         public DbSet<OQC> oQCs { get; set; }
 
+        public DbSet<MaterialRequests> MaterialRequests { get; set; }
+        public DbSet<MRStockDetails> MRStockDetails { get; set; }
+        public DbSet<MaterialRequestItems> MaterialRequestItems { get; set; }
+
     }
 }

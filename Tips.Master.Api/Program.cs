@@ -31,7 +31,7 @@ builder.Services.AddScoped<ILeadRepository, LeadRepository>();
 //builder.Services.AddScoped<IFileUploadRepository, FileUploadDocumentRepository>();
 
 //builder.Services.AddScoped<IImageUploadRepository, ImageUploadDocumentRepository>();
-
+builder.Services.AddScoped<ILeadWebsiteRepository, LeadWebsiteRepository>();
 builder.Services.AddScoped<ITypeOfHomeRepository, TypeOfHomeRepository>();
 builder.Services.AddScoped<IBHKRepository, BHKRepository>();
 builder.Services.AddScoped<ICityRepository, CityRepository>();
