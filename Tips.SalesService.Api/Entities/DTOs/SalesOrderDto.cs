@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using Tips.SalesService.Api.Entities.Dto;
+using Tips.SalesService.Api.Entities.Enum;
 
 namespace Tips.SalesService.Api.Entities.DTOs
 {
@@ -19,6 +20,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
         public OrderStatus SOStatus { get; set; } = 0;
+        public SalesOrderStatus SalesOrderStatus { get; set; }
 
         //PO Details
         public string? PONumber { get; set; }
@@ -74,7 +76,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int? ShipToId { get; set; }
         public string? PaymentTerms { get; set; }        
         public decimal? Total { get; set; }
-
+        public SalesOrderStatus SalesOrderStatus { get; set; }
 
         public List<SalesOrderItemsPostDto>? SalesOrderItemsPostDtos { get; set; }
     }
