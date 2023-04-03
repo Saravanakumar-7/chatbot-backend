@@ -35,8 +35,8 @@ namespace Entities.DTOs
 
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
-        public int RoleId { get; set; }
-        public string? RoleName { get; set; }
+        public int UserId { get; set; }
+        public string? UserName { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
@@ -65,8 +65,8 @@ namespace Entities.DTOs
 
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
-        public int RoleId { get; set; }
-        public string? RoleName { get; set; }
+        public int UserId { get; set; }
+        public string? UserName { get; set; }
 
     }
     public class UserAccessUpdateDto
@@ -96,6 +96,8 @@ namespace Entities.DTOs
 
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
+        public int UserId { get; set; }
+        public string? UserName { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }

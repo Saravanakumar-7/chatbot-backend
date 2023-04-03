@@ -6,6 +6,7 @@ using Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -130,8 +131,51 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetUserAccessByUserId(int userId)
+        {
+            ServiceResponse<IEnumerable<UserAccessDto>> serviceResponse = new ServiceResponse<IEnumerable<UserAccessDto>>();
+
+            try
+            {
+                var userAccessByRoleId = await _repository.UserAccessRepository.GetUserAccessByUserId(userId);
+
+
+                if (userAccessByRoleId.Count() == 0)
+                {
+                    var formAccessList = await _repository.FormsAccessRepository.GetAllFormsAccess();
+                    var formAccess = _mapper.Map<List<UserAccessDto>>(formAccessList);
+                    serviceResponse.Data = formAccess;
+                    serviceResponse.Message = "Returned FormAccessDetials Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+
+                    _logger.LogInfo($"Returned UserAccess with id: {userId}");
+                    var result = _mapper.Map<List<UserAccessDto>>(userAccessByRoleId);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned UserAccess with Userid successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetUserAccessByUserId action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
-        public IActionResult CreateUserAccess([FromBody] UserAccessPostDto userAccessPostDto)
+        public async Task<IActionResult> CreateUserAccess([FromBody] List<UserAccessPostDto> userAccessPostDto)
         {
             ServiceResponse<UserAccessPostDto> serviceResponse = new ServiceResponse<UserAccessPostDto>();
 
@@ -155,9 +199,21 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid UserAccess object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var userAccess = _mapper.Map<UserAccess>(userAccessPostDto);
-                _repository.UserAccessRepository.CreateUserAccess(userAccess);
-                _repository.SaveAsync();
+                var userAccess = _mapper.Map<List<UserAccess>>(userAccessPostDto);
+                var userId = userAccess[0].UserId;
+                var userAccessDetails = await _repository.UserAccessRepository.GetUserAccessByUserId(userId);
+                for (int i = 0; i < userAccess.Count; i++)
+                {
+                    if (userAccessDetails.Count() != 0)
+                    {
+                        await UpdateUserAccess(userAccessDetails[i].Id, userAccessPostDto[i]);
+                    }
+                    else
+                    {
+                        await _repository.UserAccessRepository.CreateUserAccess(userAccess[i]);
+                        _repository.SaveAsync();
+                    }
+                }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "UserAccess Created Successfully";
                 serviceResponse.Success = true;
@@ -176,7 +232,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUserAccess(int id, [FromBody] UserAccessUpdateDto userAccessUpdateDto)
+        public async Task<IActionResult> UpdateUserAccess(int id, [FromBody] UserAccessPostDto userAccessUpdateDto)
         {
             ServiceResponse<UserAccessUpdateDto> serviceResponse = new ServiceResponse<UserAccessUpdateDto>();
 

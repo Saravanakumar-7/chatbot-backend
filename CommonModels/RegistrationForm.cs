@@ -27,6 +27,7 @@ namespace Entities
           public string Password { get; set; }
           [Required]
           public string PasswordConfirm { get; set; }
+          public bool IsActive { get; set; } = true;
           public string Unit { get; set; }
           public string? CreatedBy { get; set; }
           public DateTime? CreatedOn { get; set; }

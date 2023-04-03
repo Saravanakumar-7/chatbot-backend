@@ -58,6 +58,14 @@ namespace Repository
             return userAccessById;
         }
 
+        public async Task<List<UserAccess>> GetUserAccessByUserId(int userId)
+        {
+            var userAccessByUserId = await TipsMasterDbContext.UserAccesses.Where(x => x.UserId == userId)
+                 .ToListAsync();
+
+            return userAccessByUserId;
+        }
+
         public async Task<string> UpdateUserAccess(UserAccess userAccess)
         {
             userAccess.LastModifiedBy = "Admin";

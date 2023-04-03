@@ -95,7 +95,8 @@ namespace Repository
                                 {
                                     Id = x.Id,
                                     VednorAliasName = x.VendorAliasName,
-                                    VendorName = x.VendorName
+                                    VendorName = x.VendorName,
+                                    VendorId = x.VendorId,
                                 })
                               .ToListAsync();
 

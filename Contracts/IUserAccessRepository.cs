@@ -16,5 +16,6 @@ namespace Contracts
         Task<int?> CreateUserAccess(UserAccess userAccess);
         Task<string> UpdateUserAccess(UserAccess userAccess);
         Task<string> DeleteUserAccess(UserAccess userAccess);
+        Task<List<UserAccess>> GetUserAccessByUserId(int userId);
     }
 }

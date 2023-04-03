@@ -435,6 +435,7 @@ namespace Tips.Master.Api
             CreateMap<UserAccess, UserAccessUpdateDto>().ReverseMap();
 
             CreateMap<FormsAccess, RoleAccessDto>().ReverseMap();
+            CreateMap<FormsAccess, UserAccessDto>().ReverseMap();
         }
     }
 }
