@@ -133,6 +133,10 @@ namespace Tips.Master.Api
             CreateMap<PaymentTerm, PaymentTermDtoPost>().ReverseMap();
             CreateMap<PaymentTerm, PaymentTermDtoUpdate>().ReverseMap();
 
+            CreateMap<LeadWebsite, LeadWebsiteDto>().ReverseMap();
+            CreateMap<LeadWebsite, LeadWebsitePostDto>().ReverseMap();
+            CreateMap<LeadWebsite, LeadWebsiteUpdateDto>().ReverseMap();
+
 
             CreateMap<PackingInstruction, PackingInstructionDto>().ReverseMap();
             CreateMap<PackingInstruction, PackingInstructionDtoPost>().ReverseMap();
@@ -413,6 +417,25 @@ namespace Tips.Master.Api
             CreateMap<SFT, SFTDto>().ReverseMap();
             CreateMap<SFT, SFTPostDto>().ReverseMap();
             CreateMap<SFT, SFTUpdateDto>().ReverseMap();
+
+            CreateMap<Role, RoleDto>().ReverseMap();
+            CreateMap<Role, RolePostDto>().ReverseMap();
+            CreateMap<Role, RoleUpdateDto>().ReverseMap();
+
+            CreateMap<RoleAccess, RoleAccessDto>().ReverseMap();
+            CreateMap<RoleAccess, RoleAccessPostDto>().ReverseMap();
+            CreateMap<RoleAccess, RoleAccessUpdateDto>().ReverseMap();
+
+            CreateMap<RegistrationForm, RegistrationFormDto>().ReverseMap();
+            CreateMap<RegistrationForm, RegistrationFormPostDto>().ReverseMap();
+            CreateMap<RegistrationForm, RegistrationFormUpdateDto>().ReverseMap();
+
+            CreateMap<UserAccess, UserAccessDto>().ReverseMap();
+            CreateMap<UserAccess, UserAccessPostDto>().ReverseMap();
+            CreateMap<UserAccess, UserAccessUpdateDto>().ReverseMap();
+
+            CreateMap<FormsAccess, RoleAccessDto>().ReverseMap();
+            CreateMap<FormsAccess, UserAccessDto>().ReverseMap();
         }
     }
 }

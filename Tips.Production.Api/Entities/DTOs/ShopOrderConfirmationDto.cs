@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using Entities.Enums;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
@@ -11,8 +12,11 @@ namespace Tips.Production.Api.Entities.DTOs
         [Required]
         [MaxLength(100)]
         public string? ShopOrderNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
+
         [Required]
-        public string? ItemType { get; set; }
+        public PartType ItemType { get; set; }
         [Required]
         [Precision(13, 3)]
         public decimal ShopOrderReleaseQty { get; set; }
@@ -36,8 +40,10 @@ namespace Tips.Production.Api.Entities.DTOs
         [Required]
         [MaxLength(100)]
         public string? ShopOrderNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
         [Required]
-        public string? ItemType { get; set; }
+        public PartType ItemType { get; set; }
         [Required]
         [Precision(13, 3)]
         public decimal ShopOrderReleaseQty { get; set; }
@@ -54,8 +60,10 @@ namespace Tips.Production.Api.Entities.DTOs
         [Required]
         [MaxLength(100)]
         public string? ShopOrderNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
         [Required]
-        public string? ItemType { get; set; }
+        public PartType ItemType { get; set; }
         [Required]
         [Precision(13, 3)]
         public decimal ShopOrderReleaseQty { get; set; }
@@ -77,6 +85,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ShopOrderNumber { get; set; }
         public decimal ShopOrderReleaseQty { get; set; }
         public decimal WipQty { get; set; }
+        public decimal OqcQty { get; set; }
 
     }
 }

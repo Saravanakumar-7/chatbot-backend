@@ -8,6 +8,7 @@ using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
 using Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Entities.DTOs;
 
 namespace Tips.Production.Api.Repository
 {
@@ -43,6 +44,69 @@ namespace Tips.Production.Api.Repository
                      .Include(t => t.ShopOrderItems);
 
             return PagedList<ShopOrder>.ToPagedList(allShopOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetAllFGShopOrderNoList()
+        {
+            IEnumerable<ListOfShopOrderDto> fGShopOrderNoList = await _tipsProductionDbContext.ShopOrders
+                                .Where(x => x.ItemType == PartType.FG && x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2)
+                                .Select(c => new ListOfShopOrderDto()
+                                {
+                                    Id = c.Id,
+                                    ShopOrderNumber = c.ShopOrderNumber,
+                                })
+                              .ToListAsync();
+
+            return fGShopOrderNoList;
+        }
+
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetAllSAShopOrderNoList()
+        {
+            IEnumerable<ListOfShopOrderDto> sAShopOrderNoList = await _tipsProductionDbContext.ShopOrders
+                                .Where(x => x.ItemType == PartType.SA && x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2)
+                                .Select(c => new ListOfShopOrderDto()
+                                {
+                                    Id = c.Id,
+                                    ShopOrderNumber = c.ShopOrderNumber,
+                                })
+                              .ToListAsync();
+
+            return sAShopOrderNoList;
+        }
+
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetAllActiveShopOrderNoList()
+        {
+            IEnumerable<ListOfShopOrderDto> shopOrderNoList = await _tipsProductionDbContext.ShopOrders
+                           .Select(x => new ListOfShopOrderDto()
+                           {
+                               Id = x.Id,
+                               ShopOrderNumber = x.ShopOrderNumber,
+                           }).ToListAsync();
+
+
+            return shopOrderNoList;
+
+        }
+
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetAllActiveShopOrderNoListByProjectNo(string projectNo)
+        {
+            var shopOrderItemListByProjectNo = await _tipsProductionDbContext.ShopOrderItems
+                           .Where(x => x.ProjectNumber == projectNo )
+                           .Select(x => x.ShopOrderId)
+                           .Distinct().ToListAsync();
+
+
+            var shopOrderNoListByProjectNo = await _tipsProductionDbContext.ShopOrders
+                                .Where(x => shopOrderItemListByProjectNo.Contains(x.Id) 
+                                && x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2)
+                                .Select(s => new ListOfShopOrderDto()
+                                {
+                                    Id = s.Id,
+                                    ShopOrderNumber = s.ShopOrderNumber,
+                                }).Distinct().ToListAsync();
+
+            return shopOrderNoListByProjectNo;
+
         }
 
         public async Task<ShopOrder> GetShopOrderById(int id)

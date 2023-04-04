@@ -135,8 +135,12 @@ namespace Entities
 
   public DbSet<ProjectName>? ProjectNames { get; set; }
 
-
-
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<RoleAccess> RoleAccesses { get; set; }
+        public DbSet<RegistrationForm> RegistrationForms { get; set; }
+        public DbSet<UserAccess> UserAccesses { get; set; }
+        public DbSet<FormsAccess> FormsAccesses { get; set; }
+        public DbSet<LeadWebsite> LeadWebsites { get; set; } 
 
     }
 }

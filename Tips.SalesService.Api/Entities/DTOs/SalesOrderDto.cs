@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using Tips.SalesService.Api.Entities.Dto;
+using Tips.SalesService.Api.Entities.Enum;
 
 namespace Tips.SalesService.Api.Entities.DTOs
 {
@@ -18,6 +19,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
+        public OrderStatus SOStatus { get; set; } = 0;
+        public SalesOrderStatus SalesOrderStatus { get; set; }
 
         //PO Details
         public string? PONumber { get; set; }
@@ -49,7 +52,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<SalesOrderItemsDto>? SalesOrderItemsDtos { get; set; }
+        public List<SalesOrderItemsDto>? SalesOrdersItems { get; set; }
     }
 
     public class SalesOrderPostDto
@@ -73,7 +76,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int? ShipToId { get; set; }
         public string? PaymentTerms { get; set; }        
         public decimal? Total { get; set; }
-
+        public SalesOrderStatus SalesOrderStatus { get; set; }
 
         public List<SalesOrderItemsPostDto>? SalesOrderItemsPostDtos { get; set; }
     }
@@ -117,6 +120,17 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SalesOrderNumber { get; set; }        
 
     }
-
-   
+    public class SalesOrderIdNameListDto
+    {
+        public int Id { get; set; }
+        public string? SalesOrderNumber { get; set; }
     }
+
+    public class SalesOrderSearchDto
+    {
+        public List<string>? ProjectNumber { get; set; }
+        public List<string>? SalesOrderNumber { get; set; }
+        public List<string>? CustomerName { get; set; }
+        public List<OrderStatus>? SOStatus { get; set; }
+    }
+}

@@ -83,7 +83,20 @@ namespace Tips.Grin.Api.Repository
                                 .FirstOrDefaultAsync();
             return iQCDetailsbyId;
         }
-  
+
+        public async Task<IEnumerable<IQCConfirmationIdNameListDto>> GetAllActiveIQCConfirmationNameList()
+        {
+            IEnumerable<IQCConfirmationIdNameListDto> activeIQCConfirmationNameList = await _tipsGrinDbContext.IQCConfirmations
+                                .Select(x => new IQCConfirmationIdNameListDto()
+                                {
+                                    Id = x.Id,
+                                    GrinNumber = x.GrinNumber,
+                                })
+                              .ToListAsync();
+
+            return activeIQCConfirmationNameList;
+        }
+
     }
 
     public class IQCConfirmationItemsRepository : RepositoryBase<IQCConfirmationItems>, IIQCConfirmationItemsRepository

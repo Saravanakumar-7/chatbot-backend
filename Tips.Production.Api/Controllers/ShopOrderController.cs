@@ -126,6 +126,90 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllFGShopOrderNo()
+        {
+            ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
+
+            try
+            {
+                var fGShopOrderNoList = await _shopOrderRepository.GetAllFGShopOrderNoList();
+                _logger.LogInfo("Returned all FGShopOrderNo");
+
+                var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(fGShopOrderNoList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all FGShopOrderNo Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllSAShopOrderNo()
+        {
+            ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
+
+            try
+            {
+                var fGShopOrderNoList = await _shopOrderRepository.GetAllSAShopOrderNoList();
+                _logger.LogInfo("Returned all SAShopOrderNo");
+
+                var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(fGShopOrderNoList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SAShopOrderNo Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllShopOrderNoListByProjectNo(string projectNo)
+        {
+            ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
+
+            try
+            {
+                var shopOrderNoList = await _shopOrderRepository.GetAllActiveShopOrderNoListByProjectNo(projectNo);
+                _logger.LogInfo("Returned all ShopOrderNoList");
+
+                var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(shopOrderNoList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ShopOrderNoList Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateShopOrder([FromBody] ShopOrderPostDto shopOrderPostDto)
         {
@@ -200,7 +284,7 @@ namespace Tips.Production.Api.Controllers
                     var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
                     dynamic bomDetailsData = JsonConvert.DeserializeObject(bomDetailsString);
                     dynamic bomData = bomDetailsData.data;
-
+                     
                     if (bomData != null)
                     {
                         MaterialIssue materialIssue = new MaterialIssue();
@@ -213,13 +297,14 @@ namespace Tips.Production.Api.Controllers
                         List<MaterialIssueItem> materialIssueItemList = new List<MaterialIssueItem>();
                         foreach (var bom in bomData.enggChildItemDtos)
                         {
+                            var projectNo = shopOrder.ShopOrderItems[i].ProjectNumber;
                             MaterialIssueItem materialIssueItem = new MaterialIssueItem();
                             materialIssueItem.PartNumber = bom.itemNumber;
                             materialIssueItem.Description = bom.description;
+                            materialIssueItem.ProjectNumber = projectNo;
                             materialIssueItem.PartType = bom.partType;
                             materialIssueItem.UOM = bom.uom;
                             materialIssueItem.RequiredQty = (bom.quantity * shopOrder.TotalSOReleaseQty);
-                            materialIssueItem.AvailableQty = 0;
                             materialIssueItem.IssuedQty = 0;
                             materialIssueItem.MaterialIssuedStatus = IssuedStatus.Open;
                             materialIssueItem.CreatedBy = "Admin";
@@ -402,7 +487,7 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var shopOrderByShopOrderNo = await _shopOrderRepository.GetShopOrderBySalesOrderNo(shopOrderNo);
+                var shopOrderByShopOrderNo = await _shopOrderRepository.GetShopOrderByShopOrderNo(shopOrderNo);
                 if (shopOrderByShopOrderNo == null)
                 {
                     _logger.LogError($"ShopOrder with id: {shopOrderNo}, hasn't been found in db.");
@@ -576,6 +661,32 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveShopOrderNoList()
+        {
+            ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
+            try
+            {
+                var listOfActiveShopOrderNo = await _shopOrderRepository.GetAllActiveShopOrderNoList();
+
+                var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(listOfActiveShopOrderNo);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All ActiveShopOrderNoList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveShopOrderNoList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
         }
 
         [HttpGet("{id}")]

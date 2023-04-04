@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -120,7 +121,7 @@ namespace Entities.DTOs
         public string? Upload { get; set; }
 
         public bool ReAudit { get; set; } = true;
-
+        public bool IsActive { get; set; } = true;
         public string? AuditFrequency { get; set; }
         public string? CustomerApprove { get; set; }
 
@@ -247,7 +248,7 @@ namespace Entities.DTOs
 
         public string? AuditFrequency { get; set; }
         public string? CustomerApprove { get; set; }
-        
+        public bool IsActive { get; set; } = true;
 
         public List<CustomerAddressesDtoPost>? CustomerAddress { get; set; }
         public List<CustomerShippingAddressesDtoPost>? CustomerShippingAddresses { get; set; }
@@ -366,6 +367,7 @@ namespace Entities.DTOs
     public bool ReAudit { get; set; } = true;
 
     public string? AuditFrequency { get; set; }
+        public bool IsActive { get; set; } = true;
         public string? CustomerApprove { get; set; }
         //public bool IsActive { get; set; } = true;
         [Required(ErrorMessage = "Unit is required")]

@@ -27,6 +27,7 @@ builder.Services.AddTransient<ISAShopOrderMaterialIssueRepository, SAShopOrderMa
 builder.Services.AddTransient<IFGShopOrderMaterialIssueRepository, FGShopOrderMaterialIssueRepository>();
 builder.Services.AddTransient<IMaterialReturnNoteRepository, MaterialReturnNoteRepository>();
 builder.Services.AddScoped<IMaterialIssueRepository, MaterialIssueRepository>();
+builder.Services.AddScoped<IMaterialRequestsRepository, MaterialRequestsRepository>();
 builder.Services.AddScoped<IOQCRepository, OQCRepository>();
 
 

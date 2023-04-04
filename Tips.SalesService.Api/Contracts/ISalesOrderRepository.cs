@@ -3,6 +3,7 @@ using Entities;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.SalesService.Api.Contracts
 {
@@ -17,11 +18,18 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<ListofSalesOrderDetails>> GetSalesOrderDetailsByCustomerId(string Customerid);
         Task<string> DeleteSalesOrder(SalesOrder salesOrder);
 
+        Task<IEnumerable<SalesOrder>> SearchSalesOrder([FromQuery] SearchParammes searchParammes);
+
+        Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParam);
+
+        
+
         //Task<string> UpdateSOBasedOnCreatingDO();
 
         //Task<string> UpdateSOBasedOnCreatingShopOrder();
         Task<List<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber);
         Task<List<SalesOrderQtyDto>> GetSalesOrderQtyDetailsByItemNo(string itemNumber,string projectNo);
-
+        Task<IEnumerable<SalesOrderIdNameListDto>> GetAllActiveSalesOrderNameList();
+        Task<IEnumerable<SalesOrder>> GetAllSalesOrderWithItems(SalesOrderSearchDto salesOrderSearch);
     }
 }

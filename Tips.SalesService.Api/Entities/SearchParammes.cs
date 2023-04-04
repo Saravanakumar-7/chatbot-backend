@@ -3,5 +3,6 @@
     public class SearchParammes
     {
         public string? SearchValue { get; set; }
+
     }
 }

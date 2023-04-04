@@ -480,7 +480,7 @@ namespace Tips.SalesService.Api.Controllers
                         RfqLPCostingItemDto rfqlpcostingItemDto = _mapper.Map<RfqLPCostingItemDto>(lpCostingitemDetail);
                         rfqlpcostingItemDto.RfqLPCostingProcesses = _mapper.Map<List<RfqLPCostingProcessDto>>(lpCostingitemDetail.RfqLPCostingProcesses);
                         rfqlpcostingItemDto.RfqLPCostingNREConsumables = _mapper.Map<List<RfqLPCostingNREConsumableDto>>(lpCostingitemDetail.RfqLPCostingNREConsumables);
-                        rfqlpcostingItemDto.RfqLPCostingOtherCharges = _mapper.Map<List<RfqLPCostingOtherChargesDto>>(rfqlpcostingItemDto.RfqLPCostingOtherCharges);
+                        rfqlpcostingItemDto.RfqLPCostingOtherCharges = _mapper.Map<List<RfqLPCostingOtherChargesDto>>(lpCostingitemDetail.RfqLPCostingOtherCharges);
 
                         rfqLpCostingItemsDtos.Add(rfqlpcostingItemDto);
                     }

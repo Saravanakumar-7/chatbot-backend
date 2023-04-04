@@ -21,9 +21,16 @@ namespace Tips.Production.Api.Entities
         public DbSet<FGShopOrderMaterialIssue> FGShopOrderMaterialIssues { get; set; }
         public DbSet<FGShopOrderMaterialIssueGeneral> FGShopOrderMaterialIssueGenerals { get; set; }
         public DbSet<MaterialReturnNote> MaterialReturnNotes { get; set; }
+
+        public DbSet<MRNWarehouseDetails> MRNWarehouses { get; set; }
+
         public DbSet<MaterialReturnNoteItem> MaterialReturnNoteItems { get; set; }
         public DbSet<MaterialIssue> MaterialIssue { get; set; }
         public DbSet<OQC> oQCs { get; set; }
+
+        public DbSet<MaterialRequests> MaterialRequests { get; set; }
+        public DbSet<MRStockDetails> MRStockDetails { get; set; }
+        public DbSet<MaterialRequestItems> MaterialRequestItems { get; set; }
 
     }
 }

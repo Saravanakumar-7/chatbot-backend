@@ -15,6 +15,7 @@ namespace Repository
         private ILeadTimeRepository _leadTimeRepo;
         private IImageUploadRepository _imageUploadRepository;
         private ICustomerTypeRepository _customerTypeRepo;
+
         private IMaterialTypeRepository _materialTypeRepo;
         private IProcurementTypeRepository _procurementTypeRepo;
         private IItemMasterRepository _itemMasterRepo;
@@ -22,7 +23,7 @@ namespace Repository
         private IEnggBomRepository? _enggBomRepository;
         private ITypeSolutionRepository _typeSolutionRepository;
         private IProductTypeRepository? _productTypeRepository;
- 
+        private ILeadWebsiteRepository _leadWebsiteRepository;
         private IRoomNameRepository? _roomNameRepository;
         private IEnggBomNREConsumableRepository? _enggBomNREConsumableRepository;
 
@@ -103,7 +104,11 @@ namespace Repository
         private IReleaseProductBomRepository? _releaseProductBomRepo;
         private IEnggBomGroupRepository? _enggbomGroupRepo;
         private IEnggCustomFieldRepository? _enggcustomFieldRepo;
-         
+        private IRoleRepository? _roleRepository;
+        private IRoleAccessRepository? _roleAccessRepository; 
+        private IRegistrationFormRepository? _registrationFormRepo;
+        private IUserAccessRepository? _userAccessRepository;
+        private IFormsAccessRepository? _formsAccessRepository;
 
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
@@ -120,7 +125,17 @@ namespace Repository
                 return _enggBomRepository;
             }
         }
-
+        public ILeadWebsiteRepository leadWebsiteRepository
+        {
+            get
+            {
+                if (_leadWebsiteRepository == null)
+                {
+                    _leadWebsiteRepository = new LeadWebsiteRepository(_tipsMasterDbContext);
+                }
+                return _leadWebsiteRepository;
+            }
+        }
         public ISourceDetailsRepository SourceDetailsRepository
         {
             get
@@ -1001,6 +1016,66 @@ namespace Repository
                     _enggcustomFieldRepo = new EnggCustomFieldRepository(_tipsMasterDbContext);
                 }
                 return _enggcustomFieldRepo;
+            }
+        }
+
+        public IRoleRepository RoleRepository
+        {
+            get
+            {
+                if (_roleRepository == null)
+                {
+                    _roleRepository = new RoleRepository(_tipsMasterDbContext);
+                }
+                return _roleRepository;
+            }
+        }
+
+        public IRoleAccessRepository RoleAccessRepository
+        {
+            get
+            {
+                if (_roleAccessRepository == null)
+                {
+                    _roleAccessRepository = new RoleAccessRepository(_tipsMasterDbContext);
+                }
+                return _roleAccessRepository;
+            }
+        }
+
+        public IRegistrationFormRepository RegistrationFormRepository
+        {
+            get
+            {
+                if (_registrationFormRepo == null)
+                {
+                    _registrationFormRepo = new RegistrationFormRepository(_tipsMasterDbContext);
+                }
+                return _registrationFormRepo;
+            }
+        }
+
+        public IUserAccessRepository UserAccessRepository
+        {
+            get
+            {
+                if (_userAccessRepository == null)
+                {
+                    _userAccessRepository = new UserAccessRepository(_tipsMasterDbContext);
+                }
+                return _userAccessRepository;
+            }
+        }
+
+        public IFormsAccessRepository FormsAccessRepository
+        {
+            get
+            {
+                if (_formsAccessRepository == null)
+                {
+                    _formsAccessRepository = new FormsAccessRepository(_tipsMasterDbContext);
+                }
+                return _formsAccessRepository;
             }
         }
 

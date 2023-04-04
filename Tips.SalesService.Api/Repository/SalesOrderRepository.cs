@@ -1,11 +1,17 @@
-﻿using Entities;
+﻿using AutoMapper.Internal;
+using Entities;
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using Mysqlx.Crud;
+using Org.BouncyCastle.Tls.Crypto.Impl.BC;
+using System.Linq;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -41,7 +47,27 @@ namespace Tips.SalesService.Api.Repository
             string result = $"SalesOrder details of {salesOrder.Id} is deleted successfully!";
             return result;
         }
+        public async Task<IEnumerable<SalesOrder>> GetAllSalesOrderWithItems(SalesOrderSearchDto salesOrderSearch)
+        {
 
+
+            using (var context = _tipsSalesServiceDbContext)
+            {
+                var query = _tipsSalesServiceDbContext.SalesOrders.Include("SalesOrdersItems");
+                if (salesOrderSearch != null || (salesOrderSearch.SalesOrderNumber.Any())
+                    && salesOrderSearch.ProjectNumber.Any() && salesOrderSearch.CustomerName.Any() && salesOrderSearch.SOStatus.Any())
+
+                {
+                    query = query.Where
+                        (so => (salesOrderSearch.SalesOrderNumber.Any() ? salesOrderSearch.SalesOrderNumber.Contains(so.SalesOrderNumber) : true)
+                        && (salesOrderSearch.ProjectNumber.Any() ? salesOrderSearch.ProjectNumber.Contains(so.ProjectNumber) : true)
+                        && (salesOrderSearch.CustomerName.Any() ? salesOrderSearch.CustomerName.Contains(so.CustomerName) : true)
+                        && (salesOrderSearch.SOStatus.Any() ? salesOrderSearch.SOStatus.Contains(so.SOStatus) : true));
+                }
+                return query.ToList();
+            }
+
+        }
         public async Task<PagedList<SalesOrder>> GetAllActiveSalesOrder([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             var getAllActiveSalesOrder = FindAll()
@@ -72,14 +98,51 @@ namespace Tips.SalesService.Api.Repository
                      || inv.PODate.Equals(int.Parse(searchParammes.SearchValue))
                      || inv.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
                      || inv.CustomerId.Equals(int.Parse(searchParammes.SearchValue)))))
-                   .Include(t => t.SalesOrdersItems);
-            ;
-
+                   .Include(t => t.SalesOrdersItems); 
             return PagedList<SalesOrder>.ToPagedList(salesOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
+        public async Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParam)
+        {
+            var salesOrderDetails = _tipsSalesServiceDbContext.SalesOrders
+                             .Where(inv => ((inv.CreatedOn >= searchDateParam.SearchFromDate &&
+                                inv.CreatedOn<= searchDateParam.SearchToDate
+                                )))
+                             .Include(itm => itm.SalesOrdersItems)
+                             .ToList();
+            return salesOrderDetails;
+        }
+        
+            public async Task<IEnumerable<SalesOrder>> SearchSalesOrder([FromQuery] SearchParammes searchParams)
+        {
+            using (var context = _tipsSalesServiceDbContext)
+            {
+                var query = _tipsSalesServiceDbContext.SalesOrders.Include("SalesOrdersItems");
+                if (!string.IsNullOrEmpty(searchParams.SearchValue))
+                {
+                    query = query.Where(so => so.SalesOrderNumber.Contains(searchParams.SearchValue)
+                || so.CustomerName.Contains(searchParams.SearchValue) ||
+                so.OrderDate.ToString().Contains(searchParams.SearchValue) ||
+                so.SalesOrdersItems.Any(s => s.ItemNumber.Contains(searchParams.SearchValue) ||
+                s.Description.Contains(searchParams.SearchValue)));
+                }
+                return query.ToList();
+            }
 
+        } 
 
+        public async Task<IEnumerable<SalesOrderIdNameListDto>> GetAllActiveSalesOrderNameList()
+        {
+            IEnumerable<SalesOrderIdNameListDto> activeSalesOrderNameList = await _tipsSalesServiceDbContext.SalesOrders
+                                .Select(x => new SalesOrderIdNameListDto()
+                                {
+                                    Id = x.Id,
+                                    SalesOrderNumber = x.SalesOrderNumber,
+                                })
+                              .ToListAsync();
+
+            return activeSalesOrderNameList;
+        }
 
         public async Task<SalesOrder> GetSalesOrderById(int id)
         {
@@ -156,6 +219,7 @@ namespace Tips.SalesService.Api.Repository
 
             return salesOrderQtyDetails;
         }
+         
     }
     public class SalesOrderItemRepository : RepositoryBase<SalesOrderItems>, ISalesOrderItemsRepository
     {
@@ -184,7 +248,20 @@ namespace Tips.SalesService.Api.Repository
 
 
         }
-
+        //serach by item level
+        public async Task<IEnumerable<SalesOrderItems>> SearchSalesOrderItem([FromQuery] SearchParammes searchParams)
+        { 
+            var getSalesOrderItemDetails = await _tipsSalesServiceDbContexts.SalesOrdersItems
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
+                     || inv.ItemNumber.Contains(searchParams.SearchValue)
+                     || inv.ProjectNumber.Contains(searchParams.SearchValue)
+                    || inv.SalesOrderNumber.Contains(searchParams.SearchValue)
+                    || inv.UOM.Contains(searchParams.SearchValue)
+                    || inv.Currency.Contains(searchParams.SearchValue)
+                     )))
+                      .ToListAsync();
+            return getSalesOrderItemDetails;
+        }
 
 
         public async Task<IEnumerable<SalesOrderItems>> GetSalesOrderDetailsByIdandItemNo(string ItemNumber, int SalesOrderId)

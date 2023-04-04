@@ -464,5 +464,32 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveBinningIdNameList()
+        {
+            ServiceResponse<IEnumerable<BinningIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningIdNameListDto>>();
+            try
+            {
+                var listOfActiveBinningName = await _binningRepository.GetAllActiveBinningNameList();
+
+                var result = _mapper.Map<IEnumerable<BinningIdNameListDto>>(listOfActiveBinningName);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All ActiveBinningIdNameList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveBinningIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 }

@@ -13,6 +13,7 @@ namespace Contracts
         ILeadTimeRepository leadTimeRepository { get; }
         IFileUploadRepository FileUploadRepository { get; }
         IImageUploadRepository ImageUploadRepository { get; }
+        ILeadWebsiteRepository leadWebsiteRepository { get; }
         IStageOfConstructionRepository StageOfConstructionRepository { get; }
         ICustomerTypeRepository CustomerTypeRepository { get; }
         IPurchaseGroupRepository PurchaseGroupRepository { get; }
@@ -124,8 +125,11 @@ namespace Contracts
         ISourceDetailsRepository SourceDetailsRepository { get; }
         ISFTRepository SFTRepository { get; }
          ITypeOfHomeRepository TypeOfHomeRepository { get; }
-
-
+        IRoleRepository RoleRepository { get; }
+        IRoleAccessRepository RoleAccessRepository { get; }
+        IRegistrationFormRepository RegistrationFormRepository { get; }
+        IUserAccessRepository UserAccessRepository { get; }
+        IFormsAccessRepository FormsAccessRepository { get; }
 
     void SaveAsync();
     }

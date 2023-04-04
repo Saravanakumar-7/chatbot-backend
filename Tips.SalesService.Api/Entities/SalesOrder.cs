@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Tips.SalesService.Api.Entities.Enum;
 
 namespace Tips.SalesService.Api.Entities
 {
@@ -18,6 +19,7 @@ namespace Tips.SalesService.Api.Entities
 
         [Precision(13, 1)]
         public int? RevisionNumber { get; set; }
+        public SalesOrderStatus SalesOrderStatus { get; set; }
 
         public OrderStatus SOStatus { get; set; } = 0;
 

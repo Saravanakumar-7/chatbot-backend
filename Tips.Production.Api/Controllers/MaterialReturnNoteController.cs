@@ -103,6 +103,7 @@ namespace Tips.Production.Api.Controllers
                         foreach (var materialReturnNoteitemDetails in materialReturnNoteDetailbyId.MaterialReturnNoteItems)
                         {
                             MaterialReturnNoteItemDto materialReturnNoteItemDto = _mapper.Map<MaterialReturnNoteItemDto>(materialReturnNoteitemDetails);
+                            materialReturnNoteItemDto.MRNWarehouseList = _mapper.Map<List<MRNWarehouseDetailsDto>>(materialReturnNoteitemDetails.MRNWarehouseList);
                             materialReturnNoteItemDtos.Add(materialReturnNoteItemDto);
                         }
                     }
@@ -157,6 +158,28 @@ namespace Tips.Production.Api.Controllers
                 var materialReturnNoteItemDto = materialReturnNotePostDto.MaterialReturnNoteItems;
 
                 var materialReturnNoteItemList = new List<MaterialReturnNoteItem>();
+
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
+
+
+
+                var newcount = await _materialReturnNoteRepository.GetMRNumberAutoIncrementCount(date);
+
+                if (newcount > 0)
+                {
+                    var number = newcount + 1;
+                    string e = String.Format("{0:D4}", number);
+                    materialReturnNote.MRNNumber = days + months + years + "MRN" + (e);
+                }
+                else
+                {
+                    var count = 1;
+                    var e = count.ToString("D4");
+                    materialReturnNote.MRNNumber = days + months + years + "MRN" + (e);
+                }
 
                 if (materialReturnNoteItemDto != null)
                 {

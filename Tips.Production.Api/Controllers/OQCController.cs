@@ -5,6 +5,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
@@ -19,21 +20,33 @@ namespace Tips.Production.Api.Controllers
         private IOQCRepository _oQCRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        public OQCController(IOQCRepository oQCRepository, ILoggerManager logger, IMapper mapper)
+        private IShopOrderRepository _shopOrderRepo;
+
+        public OQCController(IOQCRepository oQCRepository, IShopOrderRepository shopOrderRepository, ILoggerManager logger, IMapper mapper)
         {
             _oQCRepository = oQCRepository;
             _logger = logger;
             _mapper = mapper;
+            _shopOrderRepo = shopOrderRepository;
         }
-
+      
         [HttpGet]
         public async Task<IActionResult> GetAllOQC([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<OQCDto>> serviceResponse = new ServiceResponse<IEnumerable<OQCDto>>();
             try
             {
-
                 var oQCDetails = await _oQCRepository.GetAllOQC(pagingParameter,searchParamess);
+                 var metadata = new
+                {
+                     oQCDetails.TotalCount,
+                     oQCDetails.PageSize,
+                     oQCDetails.CurrentPage,
+                     oQCDetails.HasNext,
+                     oQCDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all OQC");
                 var result = _mapper.Map<IEnumerable<OQCDto>>(oQCDetails);
                 serviceResponse.Data = result;
@@ -94,7 +107,7 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateOQC([FromBody] OQCPostDto oQCPostDto)
+        public async Task<IActionResult> CreateOQC([FromBody] OQCPostDto oQCPostDto)
         {
             ServiceResponse<OQCDto> serviceResponse = new ServiceResponse<OQCDto>();
 
@@ -121,7 +134,11 @@ namespace Tips.Production.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var oQCCreate = _mapper.Map<OQC>(oQCPostDto);
-                _oQCRepository.CreateOQC(oQCCreate);
+                var shopOrderNumber = oQCCreate.ShopOrderNumber;
+                var shopOrderDetails = await _shopOrderRepo.GetShopOrderDetailsByShopOrderNo(shopOrderNumber);
+                shopOrderDetails.OqcQty = shopOrderDetails.OqcQty + oQCCreate.AcceptedQty;
+                _shopOrderRepo.SaveAsync();
+                await _oQCRepository.CreateOQC(oQCCreate);
                 _oQCRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "OQC Created Successfully";
