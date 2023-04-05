@@ -594,26 +594,26 @@ namespace Tips.SalesService.Api.Controllers
         [HttpGet("ItemNo")]
         public async Task<IActionResult> GetprojectNoByItemNo(string itemNo)
         {
-            ServiceResponse<ListOfProjectNoDto> serviceResponse = new ServiceResponse<ListOfProjectNoDto>();
+            ServiceResponse<IEnumerable<ListOfProjectNoDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfProjectNoDto>>();
 
             try
             {
                 var getProjectByItemNo = await _salesOrderItemsRepository.GetprojectNoByItemNo(itemNo);
-                if (getProjectByItemNo == null)
+                if (getProjectByItemNo.Count() == 0)
                 {
                     _logger.LogError($"ProjectNo with id: {itemNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ProjectNo with id: {itemNo}, hasn't been found in db.";
+                    serviceResponse.Message = $"ProjectNo with itemNo, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned ProjectNumber with id: {itemNo}");
-                    var result = _mapper.Map<ListOfProjectNoDto>(getProjectByItemNo);
+                    _logger.LogInfo($"Returned ProjectNumber with itemNo: {itemNo}");
+                    var result = _mapper.Map<List<ListOfProjectNoDto>>(getProjectByItemNo);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Successfully Returned ListOfProjectNo";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);

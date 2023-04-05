@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.DTOs;
+using Entities.Enums;
 using Entities.Helper;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
@@ -23,7 +24,7 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<ListOfShopOrderDto>> GetAllFGShopOrderNoList();
         Task<IEnumerable<ListOfShopOrderDto>> GetAllSAShopOrderNoList();
         Task<IEnumerable<ListOfShopOrderDto>> GetAllActiveShopOrderNoList();
-        Task<IEnumerable<ListOfShopOrderDto>> GetAllActiveShopOrderNoListByProjectNo(string projectNo);
+        Task<IEnumerable<ListOfShopOrderDto>> GetAllActiveShopOrderNoListByProjectNo(string projectNo, PartType partType);
         public void SaveAsync();
     }
 }

@@ -11,7 +11,9 @@ namespace Tips.Production.Api.Entities
         public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
         public string? MftrPartNumber { get; set; }
-        public PartType PartType { get; set; }   
+        public PartType PartType { get; set; }
+        [Precision(13, 3)]
+        public decimal ReturnQty { get; set; }
         public List<MRNWarehouseDetails> MRNWarehouseList { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

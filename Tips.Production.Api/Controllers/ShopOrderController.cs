@@ -183,13 +183,13 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllShopOrderNoListByProjectNo(string projectNo)
+        public async Task<IActionResult> GetAllShopOrderNoListByProjectNo(string projectNo,PartType partType)
         {
             ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
 
             try
             {
-                var shopOrderNoList = await _shopOrderRepository.GetAllActiveShopOrderNoListByProjectNo(projectNo);
+                var shopOrderNoList = await _shopOrderRepository.GetAllActiveShopOrderNoListByProjectNo(projectNo, partType);
                 _logger.LogInfo("Returned all ShopOrderNoList");
 
                 var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(shopOrderNoList);
