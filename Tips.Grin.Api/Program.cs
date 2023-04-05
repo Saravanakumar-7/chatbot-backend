@@ -20,6 +20,7 @@ builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureMSSqlContext(builder.Configuration);
 //builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AuthenticateByJwtToken(builder.Configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

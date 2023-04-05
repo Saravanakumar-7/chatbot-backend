@@ -31,9 +31,10 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Tips.Grin.Api.Controllers
 {
-    [Authorize]
+    
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class GrinController : ControllerBase
     {
         private IGrinRepository _repository;
@@ -59,8 +60,7 @@ namespace Tips.Grin.Api.Controllers
         }
         // GET: api/<GrinController>
         [HttpGet]
-
-        public async Task<IActionResult> GetAllGrin([FromQuery] PagingParameter pagingParameter,[FromQuery] SearchParams searchParams)
+         public async Task<IActionResult> GetAllGrin([FromQuery] PagingParameter pagingParameter,[FromQuery] SearchParams searchParams)
 
         {
             ServiceResponse<IEnumerable<GrinDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinDto>>();

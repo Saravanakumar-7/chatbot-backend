@@ -76,7 +76,7 @@ namespace Tips.Grin.Api.Extensions
                      ValidateIssuerSigningKey = true,
                      //ValidIssuer = "[Issuer name]", // replace with the actual issuer name used by the Master API Microservice
                      //ValidAudience = "[Audience name]", // replace with the actual audience name used by the Grin Service
-                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)) // replace with the actual secret key used by the Master API Microservice
+                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)) // replace with the actual secret key used by the Master API Microservice
                  };
              });
         }
