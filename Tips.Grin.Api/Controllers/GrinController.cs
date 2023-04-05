@@ -24,12 +24,14 @@ using System.Text;
 using System.Dynamic;
 using Azure.Core;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.AspNetCore.Authorization;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Tips.Grin.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class GrinController : ControllerBase

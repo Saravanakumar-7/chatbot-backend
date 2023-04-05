@@ -178,6 +178,10 @@ namespace Tips.Master.Api
             CreateMap<ItemMasterWarehouse, ItemMasterWarehouseDtoPost>().ReverseMap();
             CreateMap<ItemMasterWarehouse, ItemMasterWarehouseDtoUpdate>().ReverseMap();
 
+            CreateMap<Unit, UnitDto>().ReverseMap();
+            CreateMap<Unit, UnitPostDto>().ReverseMap();
+            CreateMap<Unit, UnitUpdateDto>().ReverseMap();
+
 
 
             CreateMap<DeliveryTerm, DeliveryTermGetDto>().ReverseMap();
