@@ -15,6 +15,7 @@ namespace Repository
         private ILeadTimeRepository _leadTimeRepo;
         private IImageUploadRepository _imageUploadRepository;
         private ICustomerTypeRepository _customerTypeRepo;
+        private IUnitRepository _unitRepository;
 
         private IMaterialTypeRepository _materialTypeRepo;
         private IProcurementTypeRepository _procurementTypeRepo;
@@ -134,6 +135,17 @@ namespace Repository
                     _leadWebsiteRepository = new LeadWebsiteRepository(_tipsMasterDbContext);
                 }
                 return _leadWebsiteRepository;
+            }
+        }
+        public IUnitRepository unitRepository
+        {
+            get
+            {
+                if (_unitRepository == null)
+                {
+                    _unitRepository = new UnitRepository(_tipsMasterDbContext);
+                }
+                return _unitRepository;
             }
         }
         public ISourceDetailsRepository SourceDetailsRepository

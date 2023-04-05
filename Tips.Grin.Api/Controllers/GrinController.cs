@@ -24,14 +24,17 @@ using System.Text;
 using System.Dynamic;
 using Azure.Core;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.AspNetCore.Authorization;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Tips.Grin.Api.Controllers
 {
+    
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class GrinController : ControllerBase
     {
         private IGrinRepository _repository;
@@ -57,8 +60,7 @@ namespace Tips.Grin.Api.Controllers
         }
         // GET: api/<GrinController>
         [HttpGet]
-
-        public async Task<IActionResult> GetAllGrin([FromQuery] PagingParameter pagingParameter,[FromQuery] SearchParams searchParams)
+         public async Task<IActionResult> GetAllGrin([FromQuery] PagingParameter pagingParameter,[FromQuery] SearchParams searchParams)
 
         {
             ServiceResponse<IEnumerable<GrinDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinDto>>();

@@ -50,8 +50,6 @@ namespace Tips.SalesService.Api.Repository
         }
         public async Task<IEnumerable<SalesOrder>> GetAllSalesOrderWithItems(SalesOrderSearchDto salesOrderSearch)
         {
-
-
             using (var context = _tipsSalesServiceDbContext)
             {
                 var query = _tipsSalesServiceDbContext.SalesOrders.Include("SalesOrdersItems");
