@@ -16,6 +16,7 @@ using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using System.Dynamic;
+using Tips.SalesService.Api.Entities.Enum;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -70,6 +71,62 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var getAllRfq = await _rfqRepository.GetAllRfq(pagingParameter, searchParammes);
+                for(int i = 0; i < getAllRfq.Count; i++)
+                {
+                    var rfq = getAllRfq[i].RfqNumber;
+                    var rfqCsCount = await _itemRepository.GetRfqCustomerSupportItemByRfqNumber(rfq);
+                    if (getAllRfq[i].isSourcingAvailable == true)
+                    {
+
+                        var rfqEnggCount = await _rfqenggItemRepository.GetRfqEnggCountByRfqNumber(rfq);
+                        var rfqEnggRelese = await _rfqenggItemRepository.GetRfqEnggRelesedDetailsByRfqNumber(rfq);
+                        var rfqEnggUnRelesedCount = rfqEnggCount.Count() - rfqEnggRelese.Count();
+                        if (rfqEnggRelese.Count() == 0)
+                        {
+                            getAllRfq[i].IsEnggRelease = CsRelease.NotYetReleased;
+                        }
+                        if (rfqEnggUnRelesedCount == 0)
+                        {
+                            getAllRfq[i].IsEnggRelease = CsRelease.FullyRelease;
+                        }
+                        if (rfqEnggUnRelesedCount != 0 && rfqEnggRelese.Count() != 0)
+                        {
+                            getAllRfq[i].IsEnggRelease = CsRelease.PartiallyRelease;
+                        }
+                        if (rfqEnggCount.Count() != 0)
+                        {
+                            getAllRfq[i].EnggComplete = EnggStatus.EnggCompleted;
+                        }
+                        else
+                        {
+                            getAllRfq[i].EnggComplete = EnggStatus.EnggNotYetCompleted;
+                        }
+                    }
+                   
+                    var rfqCsRelesed = await _itemRepository.GetRfqCustomerSupportRelesedDetailsByRfqNumber(rfq);
+            
+                    var rfqCsUnRelesedCount = rfqCsCount.Count() - rfqCsRelesed.Count();
+                    if(rfqCsRelesed.Count() == 0)
+                    {
+                        getAllRfq[i].IsCsRelease = CsRelease.NotYetReleased;
+                    }
+                    if(rfqCsUnRelesedCount == 0)
+                    {
+                        getAllRfq[i].IsCsRelease = CsRelease.FullyRelease;
+                    }
+                    if(rfqCsUnRelesedCount != 0 && rfqCsRelesed.Count() != 0)
+                    {
+                        getAllRfq[i].IsCsRelease = CsRelease.PartiallyRelease;
+                    }
+                    if (rfqCsCount.Count() != 0)
+                    {
+                        getAllRfq[i].CsComplete = CsStatus.CsCompleted;
+                    }
+                    else
+                    {
+                        getAllRfq[i].CsComplete = CsStatus.CsNotYetCompleted;
+                    }
+                }
                 var metadata = new
                 {
                     getAllRfq.TotalCount,

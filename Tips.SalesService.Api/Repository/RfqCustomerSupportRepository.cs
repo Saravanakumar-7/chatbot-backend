@@ -168,6 +168,14 @@ namespace Tips.SalesService.Api.Repository
             return getRfqCSItemRfqnumber;
         }
 
+        public async Task<IEnumerable<RfqCustomerSupportItems>> GetRfqCustomerSupportRelesedDetailsByRfqNumber(string rfqNumber)
+        {
+            var rfqCsRelesedDetails = await _tipsSalesServiceDbContext.RfqCustomerSupportItems.Where(x => x.RfqNumber == rfqNumber
+            && x.ReleaseStatus == true).ToListAsync();
+            return rfqCsRelesedDetails;
+        }
+
+
         public Task<string> UpdateRfqCustomerSupportItem(RfqCustomerSupportItems rfqCustomerSupportItems)
         {
             throw new NotImplementedException();
@@ -466,6 +474,25 @@ namespace Tips.SalesService.Api.Repository
             return rfqEnggItems;
         }
 
+        public async Task<IEnumerable<RfqEnggItem>> GetRfqEnggRelesedDetailsByRfqNumber(string rfqNumber)
+        {
+            List<int> poId = await _tipsSalesServiceDbContext.RfqEnggs
+              .Where(s => s.RFQNumber == rfqNumber).Select(x => x.Id).Distinct().ToListAsync();
+
+            var rfqEnggRelesedDetails = await _tipsSalesServiceDbContext.RfqEnggItems.Where(x => poId.Contains(x.RfqEnggId)
+            && x.ReleaseStatus == true).ToListAsync();
+            return rfqEnggRelesedDetails;
+        }
+
+        public async Task<IEnumerable<RfqEnggItem>> GetRfqEnggCountByRfqNumber(string rfqNumber)
+        {
+            List<int> poId = await _tipsSalesServiceDbContext.RfqEnggs
+              .Where(s => s.RFQNumber == rfqNumber).Select(x => x.Id).Distinct().ToListAsync();
+
+            var rfqEnggCount = await _tipsSalesServiceDbContext.RfqEnggItems.Where(x => poId.Contains(x.RfqEnggId)
+            ).ToListAsync();
+            return rfqEnggCount;
+        }
         public async Task<PagedList<RfqEnggItem>> GetAllRfqEnggItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             var getAllRfqEnggItems = FindAll().OrderByDescending(x => x.Id)

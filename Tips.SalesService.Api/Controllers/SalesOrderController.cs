@@ -675,26 +675,26 @@ namespace Tips.SalesService.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo)
         {
-            ServiceResponse<GetSalesOrderDetailsDto> serviceResponse = new ServiceResponse<GetSalesOrderDetailsDto>();
+            ServiceResponse<IEnumerable<GetSalesOrderDetailsDto>> serviceResponse = new ServiceResponse<IEnumerable<GetSalesOrderDetailsDto>>();
 
             try
             {
                 var getSalesDetail = await _salesOrderItemsRepository.getSalesOrderDetailByProjectNoandItemNo(ItemNo, ProjectNo);
-                if (getSalesDetail == null)
+                if (getSalesDetail.Count() == 0)
                 {
-                    _logger.LogError($"SalesOrderDetail with id: {ItemNo}, hasn't been found in db.");
+                    _logger.LogError($"SalesOrderDetail with ItemNo: {ItemNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"SalesOrderDetail with id: {ItemNo}, hasn't been found in db.";
+                    serviceResponse.Message = $"SalesOrderDetail with ItemNo: {ItemNo}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned SalesOrderDetail with id: {ItemNo}");
-                    var result = _mapper.Map<GetSalesOrderDetailsDto>(getSalesDetail);
+                    _logger.LogInfo($"Returned SalesOrderDetail with ItemNo: {ItemNo}");
+                    var result = _mapper.Map<List<GetSalesOrderDetailsDto>>(getSalesDetail);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Successfully Returned SalesOrderDetail";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);

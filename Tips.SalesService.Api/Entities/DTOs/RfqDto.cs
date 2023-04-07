@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tips.SalesService.Api.Entities.Enum;
 
 namespace Tips.SalesService.Api.Entities.DTOs
 {
@@ -23,7 +24,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerId { get; set; }
         public bool? isSourcingAvailable { get; set; }
         public bool? IsCsComplete { get; set; }
-        public bool? IsEnggComplete { get; set; } 
+        public CsStatus CsComplete { get; set; }
+        public CsRelease IsCsRelease { get; set; }
+        public bool? IsEnggComplete { get; set; }
+        public EnggStatus EnggComplete { get; set; }
+        public CsRelease IsEnggRelease { get; set; }
         public bool? IsSourcing { get; set; }
         public bool? IsLpCosting { get; set; }
 
