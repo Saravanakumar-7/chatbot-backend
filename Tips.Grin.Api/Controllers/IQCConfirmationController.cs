@@ -78,6 +78,97 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> SearchIQCConfirmationDate([FromQuery] SearchDateParames searchDateParam)
+        {
+            ServiceResponse<IEnumerable<IQCConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationDto>>();
+            try
+            {
+                var searchDateParamIQC = await _iQCConfirmationRepository.SearchIQCConfirmationDate(searchDateParam);
+
+                var result = _mapper.Map<IEnumerable<IQCConfirmationDto>>(searchDateParamIQC);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all IQCConfirmations";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchIQCConfirmation([FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<IQCConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationDto>>();
+            try
+            {
+                var iQCList = await _iQCConfirmationRepository.SearchIQCConfirmation(searchParams);
+                _logger.LogInfo("Returned all IQCConfirmation");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<IQCConfirmationDto, IQCConfirmation>().ReverseMap()
+                    .ForMember(dest => dest.IQCConfirmationItems, opt => opt.MapFrom(src => src.IQCConfirmationItems));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<IQCConfirmationDto>>(iQCList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all IQCConfirmation";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetAllIQCConfirmationWithItems([FromBody] IQCConfirmationSearchDto iQCConfirmationSearch)
+        {
+            ServiceResponse<IEnumerable<IQCConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationDto>>();
+            try
+            {
+                var IQCConfirmationList = await _iQCConfirmationRepository.GetAllIQCConfirmationWithItems(iQCConfirmationSearch);
+
+                _logger.LogInfo("Returned all IQCConfirmation");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<IQCConfirmationDto, IQCConfirmation>().ReverseMap()
+                    .ForMember(dest => dest.IQCConfirmationItems, opt => opt.MapFrom(src => src.IQCConfirmationItems));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<IQCConfirmationDto>>(IQCConfirmationList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all IQCConfirmation";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet("{grinNumber}")]
         public async Task<IActionResult> GetIqcDetailsbyGrinNo(string grinNumber)

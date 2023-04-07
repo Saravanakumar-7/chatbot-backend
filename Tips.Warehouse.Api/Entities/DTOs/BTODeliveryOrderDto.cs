@@ -72,4 +72,11 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public int Id { get; set; }
         public string? BTONumber { get; set; }
     }
+    public class BTODeliveryOrderSearchDto
+    {
+        public List<string> CustomerName { get; set; }
+        public List<string>? SalesOrderNumber { get; set; }
+        public List<string> PONumber { get; set; }
+        public List<String>? IssuedTo { get; set; }
+    }
 }

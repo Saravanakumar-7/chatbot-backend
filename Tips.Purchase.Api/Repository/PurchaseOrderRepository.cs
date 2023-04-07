@@ -69,8 +69,62 @@ namespace Tips.Purchase.Api.Repository
             return getDownloadDetails;
         }
 
+        public async Task<IEnumerable<PurchaseOrder>> GetAllPurchaseOrderWithItems(PurchaseOrderSearchDto purchaseOrderSearch)
+        {
+            using (var context = _tipsPurchaseDbContext)
+            {
+                var query = _tipsPurchaseDbContext.PurchaseOrders.Include("POItemList");
+                if (purchaseOrderSearch != null || (purchaseOrderSearch.PONumber.Any())
+               && purchaseOrderSearch.ProjectNumber.Any() && purchaseOrderSearch.VendorName.Any() && purchaseOrderSearch.POStatus.Any())
+               {
+                    query = query.Where
+                    (po => (purchaseOrderSearch.PONumber.Any() ? purchaseOrderSearch.PONumber.Contains(po.PONumber) : true)
+                   //&& (purchaseOrderSearch.ProjectNumber.Any() ? purchaseOrderSearch.ProjectNumber.Contains(po.POItemList.Any(x=>x.ItemNumber)) : true)
+                   && (purchaseOrderSearch.VendorName.Any() ? purchaseOrderSearch.VendorName.Contains(po.VendorName) : true));
+                   //&& (purchaseOrderSearch.POStatus.Any() ? purchaseOrderSearch.POStatus.Contains(po.POStatus) : true));
+                }
+                return query.ToList();
+            }
+        }
 
-        public async Task<int?> GetPONumberAutoIncrementCount(DateTime date)
+        public async Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrder([FromQuery] SearchParamess searchParammes)
+        {
+            using (var context = _tipsPurchaseDbContext)
+            {
+                var query = _tipsPurchaseDbContext.PurchaseOrders.Include("PoItems");
+                if (!string.IsNullOrEmpty(searchParammes.SearchValue))
+                {
+                    query = query.Where(po => po.PONumber.Contains(searchParammes.SearchValue)
+                    || po.VendorName.Contains(searchParammes.SearchValue)
+                    || po.PODate.ToString().Contains(searchParammes.SearchValue)
+                    || po.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
+                    || po.ProcurementType.Contains(searchParammes.SearchValue)
+                    || po.VendorId.Contains(searchParammes.SearchValue)
+                    || po.QuotationDate.ToString().Contains(searchParammes.SearchValue)
+                    || po.QuotationReferenceNumber.Contains(searchParammes.SearchValue)
+                    || po.ShippingMode.Contains(searchParammes.SearchValue)
+                    || po.PaymentTerms.Contains(searchParammes.SearchValue)
+                    || po.DeliveryTerms.Contains(searchParammes.SearchValue)
+                    || po.POItemList.Any(s => s.ItemNumber.Contains(searchParammes.SearchValue) ||
+                    s.Description.Contains(searchParammes.SearchValue)
+                    || s.MftrItemNumber.Contains(searchParammes.SearchValue)
+                    || s.PONumber.Contains(searchParammes.SearchValue)));
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrderDate([FromQuery] SearchDatesParams searchDatesParams)
+        {
+            var purchaseOrderDetails = _tipsPurchaseDbContext.PurchaseOrders
+            .Where(inv => ((inv.CreatedOn >= searchDatesParams.SearchFromDate &&
+            inv.CreatedOn <= searchDatesParams.SearchToDate
+            )))
+            .Include(itm => itm.POItemList)
+            .ToList();
+            return purchaseOrderDetails;        
+    }
+
+    public async Task<int?> GetPONumberAutoIncrementCount(DateTime date)
         {
             var getPONumberAutoIncrementCount = _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.CreatedOn == date.Date).Count();
 

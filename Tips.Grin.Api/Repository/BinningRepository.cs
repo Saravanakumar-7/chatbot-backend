@@ -44,6 +44,49 @@ namespace Tips.Grin.Api.Repository
             return binningDetailsByGrinNo;
         }
 
+        public async Task<IEnumerable<Binning>> GetAllBinningWithItems(BinningSearchDto binningSearchDto)
+        {
+            using (var context = _tipsGrinDbContext)
+            {
+                var query = _tipsGrinDbContext.Binnings.Include("BinningItems");
+                if (binningSearchDto != null || (binningSearchDto.InvoiceNumber.Any())
+               && binningSearchDto.GrinNumber.Any() && binningSearchDto.VendorName.Any() && binningSearchDto.VendorId.Any())
+                {
+                    query = query.Where
+                    (po => (binningSearchDto.GrinNumber.Any() ? binningSearchDto.GrinNumber.Contains(po.GrinNumber) : true));
+                   //&& (binningSearchDto.InvoiceNumber.Any() ? binningSearchDto.InvoiceNumber.Contains(po.InvoiceNumber) : true)
+                   //&& (binningSearchDto.VendorName.Any() ? binningSearchDto.VendorName.Contains(po.VendorName) : true)
+                   //&& (binningSearchDto.VendorId.Any() ? binningSearchDto.VendorId.Contains(po.VendorId) : true));
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<Binning>> SearchBinning([FromQuery] SearchParames searchParames)
+        {
+            using (var context = _tipsGrinDbContext)
+            {
+                var query = _tipsGrinDbContext.Binnings.Include("BinningItems");
+                if (!string.IsNullOrEmpty(searchParames.SearchValue))
+                {
+                    query = query.Where(po => po.GrinNumber.Contains(searchParames.SearchValue)
+                    //|| po.VendorName.Contains(searchParames.SearchValue)
+                    //|| po.InvoiceNumber.Contains(searchParames.SearchValue)
+                    //|| po.VendorId.Contains(searchParames.SearchValue)
+                    || po.BinningItems.Any(s => s.ItemNumber.Contains(searchParames.SearchValue)));
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<Binning>> SearchBinningDate([FromQuery] SearchDateParames searchParames)
+        {
+            var binningDetails = _tipsGrinDbContext.Binnings
+            .Where(inv => ((inv.CreatedOn >= searchParames.SearchFromDate &&
+            inv.CreatedOn <= searchParames.SearchToDate
+            )))
+            .Include(itm => itm.BinningItems)
+            .ToList();
+            return binningDetails;
+        }
         public async Task<string> UpdateBinning(Binning binning)
         {
             binning.LastModifiedBy = "Admin";

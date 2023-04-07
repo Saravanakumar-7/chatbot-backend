@@ -41,7 +41,32 @@ namespace Tips.Production.Api.Repository
                               inv.ItemNumber.Contains(searchParamess.SearchValue))));
 
             return PagedList<OQC>.ToPagedList(OQCDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-        } 
+        }
+        public async Task<IEnumerable<OQC>> SearchOQC([FromQuery] SearchParamess searchParames)
+        {
+            using (var context = _tipsProductionDbContext)
+            {
+                var query = _tipsProductionDbContext.oQCs;
+                //if (!string.IsNullOrEmpty(searchParames.SearchValue))
+                //{
+                //    query = query.Where(po => po.ShopOrderNumber.Contains(searchParames.SearchValue)
+                //    || po.PendingQty.Equals(searchParames.SearchValue)
+                //    || po.ShopOrderQty.Equals(decimal.Parse(searchParames.SearchValue)));
+                //}
+                //return query.ToList();
+                return null;
+            }
+        }
+
+        public Task<IEnumerable<OQC>> SearchOQCDate([FromQuery] SearchDateparames searchsDateParms)
+        {
+            var oQcDetails = _tipsProductionDbContext.oQCs
+            .Where(inv => ((inv.CreatedOn >= searchsDateParms.SearchFromDate &&
+            inv.CreatedOn <= searchsDateParms.SearchToDate
+            )))
+            .ToList();
+            return Task.FromResult<IEnumerable<OQC>>(oQcDetails);
+        }
 
         public async Task<IEnumerable<OQCIdNameList>> GetAllOQCIdNameList()
         {

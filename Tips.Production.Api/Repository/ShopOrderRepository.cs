@@ -59,7 +59,54 @@ namespace Tips.Production.Api.Repository
 
             return fGShopOrderNoList;
         }
-
+        public async Task<IEnumerable<ShopOrder>> GetAllShopOrderWithItems(ShopOrderSearchDto shopOrderSearch)
+        {
+            using (var context = _tipsProductionDbContext)
+            {
+                var query = _tipsProductionDbContext.ShopOrders.Include("ShopOrderItems");
+                if (shopOrderSearch != null || (shopOrderSearch.FGItemNumber.Any())
+               && shopOrderSearch.SAItemNumber.Any() && shopOrderSearch.TotalSOReleaseQty.Any())
+                {
+                   // query = query.Where
+                   // (po => (shopOrderSearch.FGItemNumber.Any() ? shopOrderSearch.FGItemNumber.Contains(po.FGItemNumber) : true)
+                   //&& (shopOrderSearch.SAItemNumber.Any() ? shopOrderSearch.SAItemNumber.Contains(po.SAItemNumber) : true)
+                   //&& (shopOrderSearch.TotalSOReleaseQty.Any() ? shopOrderSearch.TotalSOReleaseQty.Contains(po.TotalSOReleaseQty) : true));
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<ShopOrder>> SearchShopOrder([FromQuery] SearchParamess searchParammes)
+        {
+            using (var context = _tipsProductionDbContext)
+            {
+                var query = _tipsProductionDbContext.ShopOrders.Include("ShopOrderItems");
+                if (!string.IsNullOrEmpty(searchParammes.SearchValue))
+                {
+                    query = query.Where(po => po.ShopOrderNumber.Contains(searchParammes.SearchValue)
+                    || po.TotalSOReleaseQty.ToString().Contains(searchParammes.SearchValue)
+                    || po.ShopOrderNumber.Contains(searchParammes.SearchValue)
+                    || po.ProjectType.Contains(searchParammes.SearchValue)
+                    || po.Description.Contains(searchParammes.SearchValue)
+                    || po.SOCloseDate.ToString().Contains(searchParammes.SearchValue)
+                    || po.ItemNumber.Contains(searchParammes.SearchValue)
+                    || po.ShopOrderItems.Any(s => s.FGItemNumber.Contains(searchParammes.SearchValue) ||
+                    s.Description.Contains(searchParammes.SearchValue)
+                    || s.ProjectNumber.Contains(searchParammes.SearchValue)
+                    || s.SalesOrderNumber.Contains(searchParammes.SearchValue)));
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<ShopOrder>> SearchShopOrderDate([FromQuery] SearchDateparames searchDatesParams)
+        {
+            var shopOrderDetails = _tipsProductionDbContext.ShopOrders
+            .Where(inv => ((inv.CreatedOn >= searchDatesParams.SearchFromDate &&
+            inv.CreatedOn <= searchDatesParams.SearchToDate
+            )))
+            .Include(itm => itm.ShopOrderItems)
+            .ToList();
+            return shopOrderDetails;
+        }
         public async Task<IEnumerable<ListOfShopOrderDto>> GetAllSAShopOrderNoList()
         {
             IEnumerable<ListOfShopOrderDto> sAShopOrderNoList = await _tipsProductionDbContext.ShopOrders

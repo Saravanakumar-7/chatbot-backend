@@ -70,5 +70,11 @@ namespace Tips.Grin.Api.Entities.DTOs
         public int Id { get; set; }
         public string? GrinNumber { get; set; }
     }
-
+    public class IQCConfirmationSearchDto
+    {
+        public List<string>? GrinNumber { get; set; }
+        public List<string>? VendorName { get; set; }
+        public List<string>? PONumber { get; set; }
+        public List<String>? InvoiceNumber { get; set; }
+    }
 }

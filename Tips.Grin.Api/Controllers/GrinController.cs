@@ -99,7 +99,101 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> SearchGrinsDate([FromQuery] SearchDateParames searchDateParam)
+        {
+            ServiceResponse<IEnumerable<GrinDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinDto>>();
+            try
+            {
+                var searchDateParamList = await _repository.SearchGrinsDate(searchDateParam);
 
+                var result = _mapper.Map<IEnumerable<GrinDto>>(searchDateParamList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SearchGrinsDate";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> SearchGrins([FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<GrinDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinDto>>();
+            try
+            {
+                var grinsList = await _repository.SearchGrins(searchParams);
+
+                _logger.LogInfo("Returned all Grins");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<GrinDto, Grins>().ReverseMap()
+                    .ForMember(dest => dest.GrinParts, opt => opt.MapFrom(src => src.GrinParts));
+                });
+                var mapper = config.CreateMapper();
+
+                var result = mapper.Map<IEnumerable<GrinDto>>(grinsList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Grins";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllGrinsWithItems([FromBody] GrinSearchDto grinSearchDto)
+        {
+            ServiceResponse<IEnumerable<GrinDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinDto>>();
+            try
+            {
+                var grinSearchDtoList = await _repository.GetAllGrinsWithItems(grinSearchDto);
+
+
+
+                _logger.LogInfo("Returned all Grins");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<GrinDto, Grins>().ReverseMap()
+                    .ForMember(dest => dest.GrinParts, opt => opt.MapFrom(src => src.GrinParts));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<GrinDto>>(grinSearchDtoList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Grins";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         // GET api/<GrinController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGrinById(int id)

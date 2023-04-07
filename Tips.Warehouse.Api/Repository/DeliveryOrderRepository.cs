@@ -77,7 +77,48 @@ namespace Tips.Warehouse.Api.Repository
 
             return deliveryOrderDetailsbyId;
         }
-
+        public async Task<IEnumerable<DeliveryOrder>> GetAllDeliveryOrderWithItems(DeliveryOrderSearchDto DeliveryOrderSearch)
+        {
+            using (var context = _tipsWarehouseDbContext)
+            {
+                var query = _tipsWarehouseDbContext.DeliveryOrder.Include("DeliveryOrderItems");
+                if (DeliveryOrderSearch != null || (DeliveryOrderSearch.ProjectNumber.Any())
+               && DeliveryOrderSearch.CustomerName.Any() && DeliveryOrderSearch.PONumber.Any())
+                {
+                    query = query.Where
+                    (po => (DeliveryOrderSearch.CustomerName.Any() ? DeliveryOrderSearch.CustomerName.Contains(po.CustomerName) : true)
+                   && (DeliveryOrderSearch.ProjectNumber.Any() ? DeliveryOrderSearch.ProjectNumber.Contains(po.ProjectNumber) : true)
+                   && (DeliveryOrderSearch.PONumber.Any() ? DeliveryOrderSearch.PONumber.Contains(po.PONumber) : true));
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<DeliveryOrder>> SearchDeliveryOrderDate([FromQuery] SearchsDateParms searchsDateParms)
+        {
+            var DeliveryOrderDetails = _tipsWarehouseDbContext.DeliveryOrder
+            .Where(inv => ((inv.CreatedOn >= searchsDateParms.SearchFromDate &&
+            inv.CreatedOn <= searchsDateParms.SearchToDate
+            )))
+            .Include(itm => itm.DeliveryOrderItems)
+            .ToList();
+            return DeliveryOrderDetails;
+        }
+        public async Task<IEnumerable<DeliveryOrder>> SearchDeliveryOrder([FromQuery] SearchParames searchParames)
+        {
+            using (var context = _tipsWarehouseDbContext)
+            {
+                var query = _tipsWarehouseDbContext.DeliveryOrder.Include("DeliveryOrderItems");
+                if (!string.IsNullOrEmpty(searchParames.SearchValue))
+                {
+                    query = query.Where(po => po.CustomerName.Contains(searchParames.SearchValue)
+                    || po.PONumber.Contains(searchParames.SearchValue)
+                    || po.ProjectNumber.Contains(searchParames.SearchValue)
+                    || po.DeliveryOrderItems.Any(s => s.FGItemNumber.Contains(searchParames.SearchValue)
+                    || s.ItemDescription.Contains(searchParames.SearchValue)));
+                }
+                return query.ToList();
+            }
+        }
         public async Task<string> UpdateDeliveryOrder(DeliveryOrder deliveryOrder)
         {
             deliveryOrder.LastModifiedBy = "Admin";

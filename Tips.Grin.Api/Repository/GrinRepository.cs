@@ -93,7 +93,53 @@ namespace Tips.Grin.Api.Repository
 
             return allActiveGrinNoList;
         }
-
+        public async Task<IEnumerable<Grins>> GetAllGrinsWithItems(GrinSearchDto grinSearchDto)
+        {
+            using (var context = _tipsGrinDbContext)
+            {
+                var query = _tipsGrinDbContext.Grins.Include("GrinParts");
+                if (grinSearchDto != null || (grinSearchDto.InvoiceNumber.Any())
+               && grinSearchDto.GrinNumber.Any() && grinSearchDto.VendorName.Any() && grinSearchDto.VendorId.Any())
+                {
+                    query = query.Where
+                    (po => (grinSearchDto.GrinNumber.Any() ? grinSearchDto.GrinNumber.Contains(po.GrinNumber) : true)
+                   && (grinSearchDto.InvoiceNumber.Any() ? grinSearchDto.InvoiceNumber.Contains(po.InvoiceNumber) : true)
+                   && (grinSearchDto.VendorName.Any() ? grinSearchDto.VendorName.Contains(po.VendorName) : true)
+                   && (grinSearchDto.VendorId.Any() ? grinSearchDto.VendorId.Contains(po.VendorId) : true));
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<Grins>> SearchGrinsDate([FromQuery] SearchDateParames searchParames)
+        {
+            var grinDetails = _tipsGrinDbContext.Grins
+            .Where(inv => ((inv.CreatedOn >= searchParames.SearchFromDate &&
+            inv.CreatedOn <= searchParames.SearchToDate
+            )))
+            .Include(itm => itm.GrinParts)
+            .ToList();
+            return grinDetails;
+        }
+        public async Task<IEnumerable<Grins>> SearchGrins([FromQuery] SearchParames searchParames)
+        {
+            using (var context = _tipsGrinDbContext)
+            {
+                var query = _tipsGrinDbContext.Grins.Include("GrinParts");
+                if (!string.IsNullOrEmpty(searchParames.SearchValue))
+                {
+                    query = query.Where(po => po.GrinNumber.Contains(searchParames.SearchValue)
+                    || po.VendorName.Contains(searchParames.SearchValue)
+                    || po.InvoiceDate.ToString().Contains(searchParames.SearchValue)
+                   //|| po.InvoiceNumber.Equals(int.Parse(searchParames.SearchValue))
+                                   || po.VendorId.Contains(searchParames.SearchValue)
+                    || po.GrinParts.Any(s => s.ItemNumber.Contains(searchParames.SearchValue) ||
+                    s.ItemDescription.Contains(searchParames.SearchValue)
+                    || s.MftrItemNumber.Contains(searchParames.SearchValue)
+                    || s.PONumber.Contains(searchParames.SearchValue)));
+                }
+                return query.ToList();
+            }
+        }
         public async Task<PagedList<Grins>> GetAllGrin([FromQuery] PagingParameter pagingParameter,[FromQuery] SearchParams searchParams)
         {
             var getAllGrinDetails = FindAll().OrderByDescending(x=>x.Id)

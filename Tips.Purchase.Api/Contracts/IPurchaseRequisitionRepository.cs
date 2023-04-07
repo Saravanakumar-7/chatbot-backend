@@ -3,6 +3,7 @@ using Entities;
 using Tips.Purchase.Api.Entities;
 using Contracts;
 using Tips.Purchase.Api.Entities.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Purchase.Api.Contracts
 {
@@ -11,6 +12,9 @@ namespace Tips.Purchase.Api.Contracts
         Task<PagedList<PurchaseRequisition>> GetAllPurchaseRequisitions(PagingParameter pagingParameter, SearchParamess searchParamess);
         Task<PurchaseRequisition> GetPurchaseRequisitionById(int id);
         Task<PurchaseRequisition> GetPurchaseRequisitionByPRNumber(string prNumber);
+        Task<IEnumerable<PurchaseRequisition>> GetAllPurchaseRequisitionWithItems(PurchaseRequisitionSearchDto purchaseRequisitionSearch);
+        Task<IEnumerable<PurchaseRequisition>> SearchPurchaseRequisition([FromQuery] SearchParamess searchParammes);
+        Task<IEnumerable<PurchaseRequisition>> SearchPurchaseRequisitionDate([FromQuery] SearchDatesParams searchDatesParams);
 
         Task<IEnumerable<GetPRDownloadUrlDto>> GetDownloadUrlDetail(string prNumber);
         Task<PagedList<PurchaseRequisition>> GetAllActivePurchaseRequisitions(PagingParameter pagingParameter, SearchParamess searchParamess);

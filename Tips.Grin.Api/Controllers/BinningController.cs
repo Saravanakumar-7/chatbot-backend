@@ -118,6 +118,99 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> SearchBinningDate([FromQuery] SearchDateParames searchDateParam)
+        {
+            ServiceResponse<IEnumerable<BinningDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningDto>>();
+            try
+            {
+                var searchDateParamList = await _binningRepository.SearchBinningDate(searchDateParam);
+
+                var result = _mapper.Map<IEnumerable<BinningDto>>(searchDateParamList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all BinningDates";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchBinning([FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<BinningDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningDto>>();
+            try
+            {
+                var binningList = await _binningRepository.SearchBinning(searchParams);
+
+                _logger.LogInfo("Returned all Binnings");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<BinningDto, Binning>().ReverseMap()
+                    .ForMember(dest => dest.BinningItems, opt => opt.MapFrom(src => src.BinningItems));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<BinningDto>>(binningList);
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Binnings";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetAllBinningWithItems([FromBody] BinningSearchDto binningSearchDto)
+        {
+            ServiceResponse<IEnumerable<BinningDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningDto>>();
+            try
+            {
+                var binningSearchs = await _binningRepository.GetAllBinningWithItems(binningSearchDto);
+                _logger.LogInfo("Returned all BInnings");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<BinningDto, Binning>().ReverseMap()
+                    .ForMember(dest => dest.BinningItems, opt => opt.MapFrom(src => src.BinningItems));
+                });
+                var mapper = config.CreateMapper();
+
+                var result = mapper.Map<IEnumerable<BinningDto>>(binningSearchs);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all BInnings";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBinning(int id ,[FromBody] BinningDto binningDto)

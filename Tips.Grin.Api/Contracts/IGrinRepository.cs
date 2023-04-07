@@ -21,10 +21,9 @@ namespace Tips.Grin.Api.Contracts
         Task<Grins> GetGrinByGrinNo(string grinNumber);
         Task<string> UpdateGrin(Grins grins);
         Task<string> DeleteGrin(Grins grins);
-
-
-
-
+        Task<IEnumerable<Grins>> GetAllGrinsWithItems(GrinSearchDto grinSearchDto);
+        Task<IEnumerable<Grins>> SearchGrins([FromQuery] SearchParames searchParames);
+        Task<IEnumerable<Grins>> SearchGrinsDate([FromQuery] SearchDateParames searchParames);
 
         Task<IEnumerable<GrinNumberListDto>> GetAllActiveGrinNoList();
     }

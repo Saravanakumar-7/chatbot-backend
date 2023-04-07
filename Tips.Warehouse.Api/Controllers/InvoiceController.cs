@@ -76,6 +76,104 @@ namespace Tips.Warehouse.Api.Controllers
             }
 
         }
+        [HttpGet]
+        public async Task<IActionResult> SearchInvoiceDate([FromQuery] SearchsDateParms searchDateParam)
+        {
+            ServiceResponse<IEnumerable<InvoiceDto>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceDto>>();
+            try
+            {
+                var invoicesDate = await _invoiceRepository.SearchInvoiceDate(searchDateParam);
+
+                var result = _mapper.Map<IEnumerable<InvoiceDto>>(invoicesDate);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Invoice";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchInvoice([FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<InvoiceDto>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceDto>>();
+            try
+            {
+                var invoicesList = await _invoiceRepository.SearchInvoice(searchParams);
+
+
+
+                _logger.LogInfo("Returned all Invoice");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<InvoiceDto, Invoice>().ReverseMap()
+                    .ForMember(dest => dest.InvoiceChildItems, opt => opt.MapFrom(src => src.InvoiceChildItems));
+                });
+
+
+
+                var mapper = config.CreateMapper();
+
+                var result = mapper.Map<IEnumerable<InvoiceDto>>(invoicesList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Invoices";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetAllInvoiceWithItems([FromBody] InvoiceSearchDto invoiceSearchDto)
+        {
+            ServiceResponse<IEnumerable<InvoiceDto>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceDto>>();
+            try
+            {
+                var invoiceItems = await _invoiceRepository.GetAllInvoiceWithItems(invoiceSearchDto);
+
+                _logger.LogInfo("Returned all Invoices");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<InvoiceDto, Invoice>().ReverseMap()
+                    .ForMember(dest => dest.InvoiceChildItems, opt => opt.MapFrom(src => src.InvoiceChildItems));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<InvoiceDto>>(invoiceItems);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Invoice";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetInvoiceById(int id)
