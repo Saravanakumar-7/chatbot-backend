@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using MySql.EntityFrameworkCore.Extensions;
 //using MySql.EntityFrameworkCore.Extensions;
 using Repository;
+using System.Text;
 
 namespace Tips.Master.Api.Extensions
 {
