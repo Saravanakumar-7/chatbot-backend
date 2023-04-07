@@ -13,9 +13,10 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<RfqCustomerSupportItems>> GetAllRfqCustomerSupportItem();
         Task<RfqCustomerSupportItems> GetRfqCustomerSupportItemById(int id);
         Task<IEnumerable<RfqCustomerSupportItems>> GetRfqCustomerSupportItemByRfqNumber(string rfqNumber);
-
-
+        Task<IEnumerable<RfqCustomerSupportItems>> GetRfqCustomerSupportRelesedDetailsByRfqNumber(string rfqNumber);
         
+
+
 
         Task<int?> CreateRfqCustomerSupportItem(RfqCustomerSupportItems rfqCustomerSupportItems);
         Task<string> UpdateRfqCustomerSupportItem(RfqCustomerSupportItems rfqCustomerSupportItems);

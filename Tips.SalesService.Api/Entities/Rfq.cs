@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tips.SalesService.Api.Entities.Enum;
 
 namespace Tips.SalesService.Api.Entities
 {
@@ -27,6 +28,10 @@ namespace Tips.SalesService.Api.Entities
         public string? ProductType { get; set; }
         public bool? IsSourcing { get; set; } = false;
         public bool? IsCsComplete { get; set; } = false;
+        public CsStatus CsComplete { get; set; } 
+        public CsRelease IsCsRelease { get; set; }
+        public EnggStatus EnggComplete { get; set; }
+        public CsRelease IsEnggRelease { get; set; }
         public bool? IsEnggComplete { get; set; } = false;
         public bool? IsLpCosting { get; set; } = false;
         public bool? IsLpCostingRelease { get; set; } = false;
