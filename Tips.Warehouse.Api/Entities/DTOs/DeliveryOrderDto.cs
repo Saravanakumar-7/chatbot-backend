@@ -53,4 +53,10 @@
         public int Id { get; set; }
         public string? DeliveryOrderNumber { get; set; }
     }
+    public class DeliveryOrderSearchDto
+    {
+        public List<string> CustomerName { get; set; }
+        public List<string> ProjectNumber { get; set; }
+        public List<string> PONumber { get; set; }
+    }
 }

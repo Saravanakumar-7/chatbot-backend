@@ -146,23 +146,34 @@ namespace Repository
 
         //sa,fg, and fru
 
-        public async Task<PagedList<ItemMaster>> GetAllFgSaFruItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<ItemMaster>> GetAllFgSaFruItems()
         {
-
-
             var itemmasterFgSaFRUDetails = FindAll().OrderByDescending(a => a.Id)
-               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-           inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue))))
-           && (inv.ItemType == PartType.SA || inv.ItemType == PartType.FG || inv.ItemType == PartType.FRU))
+               .Where(a=>a.ItemType == PartType.SA || a.ItemType == PartType.FG || a.ItemType == PartType.FRU)
                          .Include(c => c.FileUpload)
                             .Include(x => x.ImageUpload)
                             .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(m => m.ItemMasterFileUpload)
                                 .Include(s => s.ItemMasterRouting)
-                                .Include(f => f.ItemMasterWarehouse);
+                                .Include(f => f.ItemMasterWarehouse).ToList();
+            return itemmasterFgSaFRUDetails;
 
-            return PagedList<ItemMaster>.ToPagedList(itemmasterFgSaFRUDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            // var itemmasterFgSaFRUDetails = FindAll().OrderByDescending(a => a.Id)
+            //    .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
+            //inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue))))
+            //&& (inv.ItemType == PartType.SA || inv.ItemType == PartType.FG || inv.ItemType == PartType.FRU))
+            //              .Include(c => c.FileUpload)
+            //                 .Include(x => x.ImageUpload)
+            //                 .Include(t => t.ItemmasterAlternate)
+            //                     .Include(x => x.ItemMasterApprovedVendor)
+            //                     .Include(m => m.ItemMasterFileUpload)
+            //                     .Include(s => s.ItemMasterRouting)
+            //                     .Include(f => f.ItemMasterWarehouse);
+
+
+
+            //return PagedList<ItemMaster>.ToPagedList(itemmasterFgSaFRUDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
         }

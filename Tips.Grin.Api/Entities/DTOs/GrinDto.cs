@@ -160,4 +160,11 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? GrinNumber { get; set; }
         
     }
+    public class GrinSearchDto
+    {
+        public List<string>? GrinNumber { get; set; }
+        public List<string>? VendorName { get; set; }
+        public List<string>? VendorId { get; set; }
+        public List<String>? InvoiceNumber { get; set; }
+    }
 }

@@ -15,6 +15,9 @@ namespace Tips.Grin.Api.Contracts
         Task<Binning> CreateBinning(Binning binning);
         Task<string> DeleteBinning(Binning binning);
         Task<IEnumerable<BinningIdNameListDto>> GetAllActiveBinningNameList();
+        Task<IEnumerable<Binning>> GetAllBinningWithItems(BinningSearchDto binningSearchDto);
+        Task<IEnumerable<Binning>> SearchBinning([FromQuery] SearchParames searchParames);
+        Task<IEnumerable<Binning>> SearchBinningDate([FromQuery] SearchDateParames searchParames);
 
         public void SaveAsync();
     }

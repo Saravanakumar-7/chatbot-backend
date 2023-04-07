@@ -76,6 +76,98 @@ namespace Tips.Production.Api.Controllers
 
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SearchShopOrderDate([FromQuery] SearchDateparames searchDateParam)
+        {
+            ServiceResponse<IEnumerable<ShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderDto>>();
+            try
+            {
+                var shopOrderDetails = await _shopOrderRepository.SearchShopOrderDate(searchDateParam);
+                var result = _mapper.Map<IEnumerable<ShopOrderDto>>(shopOrderDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all shopOrderDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetAllShopOrderWithItems([FromBody] ShopOrderSearchDto shopOrderSearch)
+        {
+            ServiceResponse<IEnumerable<ShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderDto>>();
+            try
+            {
+                var ShopOrderDetails = await _shopOrderRepository.GetAllShopOrderWithItems(shopOrderSearch);
+
+                _logger.LogInfo("Returned all ShopOrderDetails");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<ShopOrderDto, ShopOrder>().ReverseMap()
+                    .ForMember(dest => dest.ShopOrderItems, opt => opt.MapFrom(src => src.ShopOrderItems));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<ShopOrderDto>>(ShopOrderDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ShopOrderDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> SearchShopOrder([FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<ShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderDto>>();
+            try
+            {
+                var shopOrderDetails = await _shopOrderRepository.SearchShopOrder(searchParams);
+
+                _logger.LogInfo("Returned all ShopOrderDetails");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<ShopOrderDto, ShopOrder>().ReverseMap()
+                    .ForMember(dest => dest.ShopOrderItems, opt => opt.MapFrom(src => src.ShopOrderItems));
+                });
+                var mapper = config.CreateMapper();
+
+                var result = mapper.Map<IEnumerable<ShopOrderDto>>(shopOrderDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ShopOrderDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetShopOrderById(int id)
         {

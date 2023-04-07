@@ -2,6 +2,7 @@
 using Entities;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Production.Api.Contracts
 {
@@ -16,7 +17,8 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<ShopOrderConfirmationItemNoListDto>> GetShopOrderConfirmationItemNoByFGItemType();
         Task<IEnumerable<ShopOrderConfirmationItemNoListDto>> GetShopOrderConfirmationItemNoBySAItemType();
         Task<IEnumerable<ShopOrderConfirmationDetailsDto>> GetShopOrderConfirmationDetailsByItemNo(string itemNumber);
-
+        Task<IEnumerable<OQC>> SearchOQC([FromQuery] SearchParamess searchParames);
+        Task<IEnumerable<OQC>> SearchOQCDate([FromQuery] SearchDateparames searchsDateParms);
         Task<IEnumerable<OQCIdNameList>> GetAllOQCIdNameList();
 
     }

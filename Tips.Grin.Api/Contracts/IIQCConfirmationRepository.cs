@@ -19,7 +19,10 @@ namespace Tips.Grin.Api.Contracts
         Task<string> UpdateIqc(IQCConfirmation iQCConfirmation);
         Task<IEnumerable<IQCConfirmationIdNameListDto>> GetAllActiveIQCConfirmationNameList();
         Task<IQCConfirmation> GetIqcDetailsbyId(int id);              
-        Task<int?> CreateIqc(IQCConfirmation iQCConfirmation);         
+        Task<int?> CreateIqc(IQCConfirmation iQCConfirmation);
+        Task<IEnumerable<IQCConfirmation>> GetAllIQCConfirmationWithItems(IQCConfirmationSearchDto iQCConfirmationSearch);
+        Task<IEnumerable<IQCConfirmation>> SearchIQCConfirmation([FromQuery] SearchParames searchParames);
+        Task<IEnumerable<IQCConfirmation>> SearchIQCConfirmationDate([FromQuery] SearchDateParames searchParames);
 
     }
 }

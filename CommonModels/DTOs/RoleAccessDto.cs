@@ -36,7 +36,7 @@ namespace Entities.DTOs
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
         public int RoleId { get; set; }
-
+        public string RoleName { get; set; }
         public string? LastModifiedBy { get; set; }
 
         public DateTime? LastModifiedOn { get; set; }

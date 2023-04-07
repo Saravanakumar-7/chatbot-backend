@@ -25,7 +25,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public List<DocumentUploadDto>? PrFiles { get; set; }
 
         public string? DeliveryTerms { get; set; }
-
+        public bool PrApprovalI { get; set; }
+        public bool PrApprovalII { get; set; }
         public string? PaymentTerms { get; set; }
 
         public string? ShippingMode { get; set; }
@@ -115,5 +116,11 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public int Id { get; set; }
         public string? PrNumber { get; set; }
     }
-
+    public class PurchaseRequisitionSearchDto
+    {
+        public List<string>? PrNumber { get; set; }
+        public List<string>? ProcurementType { get; set; }
+        public List<string>? ItemNumber { get; set; }
+        public List<Status>? PRStatus { get; set; }
+    }
 }

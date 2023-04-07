@@ -506,6 +506,101 @@ namespace Tips.Purchase.Api.Controllers
         //    return File(stream, "application/octet-stream", DownloadFilesdata.FileName);
         //}
 
+        [HttpGet]
+        public async Task<IActionResult> SearchPurchaseOrderDate([FromQuery] SearchDatesParams searchDateParam)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderDto>>();
+            try
+            {
+                var purchaseOrderList = await _repository.SearchPurchaseOrderDate(searchDateParam);
+
+                var result = _mapper.Map<IEnumerable<PurchaseOrderDto>>(purchaseOrderList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PurchaseOrderItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllPurchaseOrderWithItems([FromBody] PurchaseOrderSearchDto purchaseOrderSearch)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderDto>>();
+            try
+            {
+                var purchaseOrderList = await _repository.GetAllPurchaseOrderWithItems(purchaseOrderSearch);
+
+                _logger.LogInfo("Returned all PurhaseOrders");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<PurchaseOrderDto, PurchaseOrder>().ReverseMap()
+                    .ForMember(dest => dest.POItems, opt => opt.MapFrom(src => src.POItemList));
+                });
+
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<PurchaseOrderDto>>(purchaseOrderList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PurchaseOrderItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchPurchaseOrder([FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderDto>>();
+            try
+            {
+                var purchaseOrderList = await _repository.SearchPurchaseOrder(searchParams);
+                _logger.LogInfo("Returned all PurchaseOrders");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<PurchaseOrderDto, PurchaseOrder>().ReverseMap()
+                    .ForMember(dest => dest.POItems, opt => opt.MapFrom(src => src.POItemList));
+                });
+
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<PurchaseOrderDto>>(purchaseOrderList);
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PurchaseOrderItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet("{filename}")]
         public IActionResult DownloadFiles(string filename)
         {

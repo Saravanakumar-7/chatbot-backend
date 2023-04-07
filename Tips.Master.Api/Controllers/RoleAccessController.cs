@@ -139,7 +139,7 @@ namespace Tips.Master.Api.Controllers
             try
             {
                 var roleAccessByRoleId = await _repository.RoleAccessRepository.GetRoleAccessByRoleId(roleId);
-                                
+                 
 
                 if (roleAccessByRoleId.Count() == 0)
                 {
@@ -156,6 +156,7 @@ namespace Tips.Master.Api.Controllers
 
                     _logger.LogInfo($"Returned RoleAccess with id: {roleId}");
                     var result = _mapper.Map<List<RoleAccessDto>>(roleAccessByRoleId);
+                    
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned RoleAccess with Roleid successfully";
                     serviceResponse.Success = true;

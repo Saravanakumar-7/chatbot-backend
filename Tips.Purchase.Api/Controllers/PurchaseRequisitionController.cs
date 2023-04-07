@@ -79,7 +79,101 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> SearchPurchaseRequisitionDate([FromQuery] SearchDatesParams searchDateParam)
+        {
+            ServiceResponse<IEnumerable<PurchaseRequisitionDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionDto>>();
+            try
+            {
+                var purchaseRequisitionList = await _repository.SearchPurchaseRequisitionDate(searchDateParam);
 
+                var result = _mapper.Map<IEnumerable<PurchaseRequisitionDto>>(purchaseRequisitionList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PurchaseRequisitionItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchPurchaseRequisition([FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<PurchaseRequisitionDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionDto>>();
+            try
+            {
+                var purchaseRequisitionList = await _repository.SearchPurchaseRequisition(searchParams);
+
+                _logger.LogInfo("Returned all purchaseRequisition");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<PurchaseRequisitionDto, PurchaseRequisition>().ReverseMap()
+                    .ForMember(dest => dest.PrItemsDtoList, opt => opt.MapFrom(src => src.PrItemList));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<PurchaseRequisitionDto>>(purchaseRequisitionList);
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PurchaseRequisitions";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllPurchaseRequisitionWithItems([FromBody] PurchaseRequisitionSearchDto purchaseRequisitionSearch)
+        {
+            ServiceResponse<IEnumerable<PurchaseRequisitionDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionDto>>();
+            try
+            {
+                var purchaseRequisitionList = await _repository.GetAllPurchaseRequisitionWithItems(purchaseRequisitionSearch);
+
+                _logger.LogInfo("Returned all PurchaseRequisition");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<PurchaseRequisitionDto, PurchaseRequisition>().ReverseMap()
+                    .ForMember(dest => dest.PrItemsDtoList, opt => opt.MapFrom(src => src.PrItemList));
+                });
+                var mapper = config.CreateMapper();
+
+                var result = mapper.Map<IEnumerable<PurchaseRequisitionDto>>(purchaseRequisitionList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PurchaseRequisition";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPurchaseRequisitionById(int id)

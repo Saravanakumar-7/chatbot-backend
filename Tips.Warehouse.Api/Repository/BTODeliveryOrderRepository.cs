@@ -45,7 +45,52 @@ namespace Tips.Warehouse.Api.Repository
             string result = $"BTODeliveryOrder details of {bTODeliveryOrder.Id} is deleted successfully!";
             return result;
         }
+        public async Task<IEnumerable<BTODeliveryOrder>> GetAllBTODeliveryOrderWithItems(BTODeliveryOrderSearchDto bTODeliveryOrderSearch)
+        {
+            using (var context = _tipsWarehouseDbContext)
+            {
+                var query = _tipsWarehouseDbContext.bTODeliveryOrder.Include("BTODeliveryOrderItems");
+                if (bTODeliveryOrderSearch != null || (bTODeliveryOrderSearch.SalesOrderNumber.Any())
+               && bTODeliveryOrderSearch.CustomerName.Any() && bTODeliveryOrderSearch.PONumber.Any() && bTODeliveryOrderSearch.IssuedTo.Any())
 
+                {
+                    query = query.Where
+                    (po => (bTODeliveryOrderSearch.CustomerName.Any() ? bTODeliveryOrderSearch.CustomerName.Contains(po.CustomerName) : true)
+                   //&& (bTODeliveryOrderSearch.SalesOrderNumber.Any() ? bTODeliveryOrderSearch.SalesOrderNumber.Contains(po.SalesOrderNumber) : true)
+                   && (bTODeliveryOrderSearch.PONumber.Any() ? bTODeliveryOrderSearch.PONumber.Contains(po.PONumber) : true)
+                   && (bTODeliveryOrderSearch.IssuedTo.Any() ? bTODeliveryOrderSearch.IssuedTo.Contains(po.IssuedTo) : true));
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<BTODeliveryOrder>> SearchBTODeliveryOrderDate([FromQuery] SearchsDateParms searchsDateParms)
+        {
+            var btoDeliveryOrderDetails = _tipsWarehouseDbContext.bTODeliveryOrder
+            .Where(inv => ((inv.CreatedOn >= searchsDateParms.SearchFromDate &&
+            inv.CreatedOn <= searchsDateParms.SearchToDate
+            )))
+            .Include(itm => itm.BTODeliveryOrderItems)
+            .ToList();
+            return btoDeliveryOrderDetails;
+        }
+        public async Task<IEnumerable<BTODeliveryOrder>> SearchBTODeliveryOrder([FromQuery] SearchParames searchParames)
+        {
+            using (var context = _tipsWarehouseDbContext)
+            {
+                var query = _tipsWarehouseDbContext.bTODeliveryOrder.Include("BTODeliveryOrderItems");
+                if (!string.IsNullOrEmpty(searchParames.SearchValue))
+                {
+                    //query = query.Where(po => po.SalesOrderNumber.Contains(searchParames.SearchValue)
+                    //|| po.CustomerName.Contains(searchParames.SearchValue)
+                    //|| po.PONumber.Contains(searchParames.SearchValue)
+                    //|| po.IssuedTo.Contains(searchParames.SearchValue)
+                    //|| po.BTODeliveryOrderItems.Any(s => s.FGItemNumber.Contains(searchParames.SearchValue) ||
+                    //s.BTONumber.Contains(searchParames.SearchValue)
+                    //|| s.Description.Contains(searchParames.SearchValue)));
+                }
+                return query.ToList();
+            }
+        }
         public async Task<PagedList<BTODeliveryOrder>> GetAllActiveBTODeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
 

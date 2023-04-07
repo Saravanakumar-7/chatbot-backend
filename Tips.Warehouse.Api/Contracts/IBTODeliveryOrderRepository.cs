@@ -3,6 +3,7 @@ using Entities;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Warehouse.Api.Contracts
 {
@@ -21,7 +22,9 @@ namespace Tips.Warehouse.Api.Contracts
         Task<string> UpdateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder);
         Task<string> DeleteBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder);
         Task<IEnumerable<BtoIDNameList>> GetAllBTOIdNameIdNameList();
-
+        Task<IEnumerable<BTODeliveryOrder>> GetAllBTODeliveryOrderWithItems(BTODeliveryOrderSearchDto bTODeliveryOrderSearch);
+        Task<IEnumerable<BTODeliveryOrder>> SearchBTODeliveryOrder([FromQuery] SearchParames searchParames);
+        Task<IEnumerable<BTODeliveryOrder>> SearchBTODeliveryOrderDate([FromQuery] SearchsDateParms searchsDateParms);
 
     }
 }

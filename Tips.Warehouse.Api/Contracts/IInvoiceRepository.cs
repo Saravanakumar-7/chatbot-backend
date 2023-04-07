@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
 
@@ -16,7 +17,9 @@ namespace Tips.Warehouse.Api.Contracts
         Task<string> DeleteInvoice(Invoice invoice);
 
         Task<Invoice> GetInvoiceById(int id);
-
+        Task<IEnumerable<Invoice>> GetAllInvoiceWithItems(InvoiceSearchDto invoiceSearch);
+        Task<IEnumerable<Invoice>> SearchInvoice([FromQuery] SearchParames searchParames);
+        Task<IEnumerable<Invoice>> SearchInvoiceDate([FromQuery] SearchsDateParms searchsDateParms);
         Task<IEnumerable<InvoiceIdNameList>> GetAllInvoiceIdNameList();
 
 
