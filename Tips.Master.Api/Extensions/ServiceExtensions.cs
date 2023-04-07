@@ -47,12 +47,12 @@ namespace Tips.Master.Api.Extensions
 
         }
 
-        //public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
-        //{
+        public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
+        {
 
-        //    var connectionString = config["MySqlconnection:connectionString"];
-        //    services.AddDbContext<TipsMasterDbContext>(o => o.UseMySQL(connectionString));
-        //}
+            var connectionString = config["MySqlconnection:connectionString"];
+            services.AddDbContext<TipsMasterDbContext>(o => o.UseMySQL(connectionString));
+        }
 
         public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices
         {
