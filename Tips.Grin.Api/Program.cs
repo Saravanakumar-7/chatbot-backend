@@ -61,6 +61,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 
 app.UseCors("CorsPolicy");
 
+app.UseRouting();
 
 app.UseAuthorization();
 
