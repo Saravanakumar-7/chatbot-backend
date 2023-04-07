@@ -11,6 +11,7 @@ using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
+using Tips.SalesService.Api.Entities.Enum;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Tips.SalesService.Api.Repository
@@ -49,8 +50,6 @@ namespace Tips.SalesService.Api.Repository
         }
         public async Task<IEnumerable<SalesOrder>> GetAllSalesOrderWithItems(SalesOrderSearchDto salesOrderSearch)
         {
-
-
             using (var context = _tipsSalesServiceDbContext)
             {
                 var query = _tipsSalesServiceDbContext.SalesOrders.Include("SalesOrdersItems");
@@ -219,7 +218,7 @@ namespace Tips.SalesService.Api.Repository
 
             return salesOrderQtyDetails;
         }
-         
+
     }
     public class SalesOrderItemRepository : RepositoryBase<SalesOrderItems>, ISalesOrderItemsRepository
     {
@@ -231,21 +230,35 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<ListOfProjectNoDto>> GetprojectNoByItemNo(string itemNo)
         {
-            OrderStatus[] status = { OrderStatus.Open, OrderStatus.PartiallyClosed };
+            //OrderStatus[] status = { OrderStatus.Open, OrderStatus.PartiallyClosed };
 
-            IEnumerable<ListOfProjectNoDto> getProjectNumberList = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                                 .Where(b => b.ItemNumber == itemNo && status.Contains(b.StatusEnum))
-                                 .Select(x => new ListOfProjectNoDto()
-                                 {
-                                     Id = x.Id,
-                                     ProjectNumber = x.ProjectNumber
+            var salesOrderNo = await _tipsSalesServiceDbContexts.SalesOrders
+                               .Where(x => x.SalesOrderStatus == SalesOrderStatus.RetailSalesOrder)
+                               .Select(x => x.SalesOrderNumber).Distinct().ToListAsync();
 
-                                 })
-                               .ToListAsync();
+            IEnumerable<ListOfProjectNoDto> salesOrderDetails = await _tipsSalesServiceDbContexts.SalesOrdersItems
+                              .Where(m => salesOrderNo.Contains(m.SalesOrderNumber)&& m.ItemNumber == itemNo)
+                               .Select(x => new ListOfProjectNoDto()
+                               {
+                                   Id = x.Id,
+                                   ProjectNumber = x.ProjectNumber
 
-            return getProjectNumberList;
+                               })
+                               .Distinct().ToListAsync();
 
+            return salesOrderDetails;
 
+                               //IEnumerable<ListOfProjectNoDto> getProjectNumberList = await _tipsSalesServiceDbContexts.SalesOrdersItems
+                               //                     .Where(b => b.ItemNumber == itemNo && status.Contains(b.StatusEnum))
+                               //                     .Select(x => new ListOfProjectNoDto()
+                               //                     {
+                               //                         Id = x.Id,
+                               //                         ProjectNumber = x.ProjectNumber
+
+            //                     })
+            //                   .ToListAsync();
+
+            //return getProjectNumberList;
 
         }
         //serach by item level
@@ -278,18 +291,31 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<GetSalesOrderDetailsDto>> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo)
         {
+             var join = from e in _tipsSalesServiceDbContexts.SalesOrdersItems
+                       where e.ItemNumber == ItemNo && e.ProjectNumber == ProjectNo
+                        join d in _tipsSalesServiceDbContexts.SalesOrders on e.SalesOrderNumber equals d.SalesOrderNumber
+                       where d.SalesOrderStatus == SalesOrderStatus.RetailSalesOrder
+                       select new GetSalesOrderDetailsDto()
+                       {
+                           Id = e.Id,
+                           SalesOrderNumber = e.SalesOrderNumber,
+                           OrderQty = e.OrderQty
 
-            IEnumerable<GetSalesOrderDetailsDto> getSalesorderList = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                                .Where(b => b.ItemNumber == ItemNo && b.ProjectNumber == ProjectNo)
-                                .Select(x => new GetSalesOrderDetailsDto()
-                                {
-                                    Id = x.Id,
-                                    SalesOrderNumber = x.SalesOrderNumber,
-                                    OrderQty = x.OrderQty
-                                })
-                              .ToListAsync();
+                       };
+            var postdata = join.ToList();
 
-            return getSalesorderList;
+            return postdata;
+            //IEnumerable<GetSalesOrderDetailsDto> getSalesorderList = await _tipsSalesServiceDbContexts.SalesOrdersItems
+            //                    .Where(b => b.ItemNumber == ItemNo && b.ProjectNumber == ProjectNo)
+            //                    .Select(x => new GetSalesOrderDetailsDto()
+            //                    {
+            //                        Id = x.Id,
+            //                        SalesOrderNumber = x.SalesOrderNumber,
+            //                        OrderQty = x.OrderQty
+            //                    })
+            //                  .ToListAsync();
+
+            //return getSalesorderList;
         }
 
         public async Task<string> UpdateSalesOrderItem(SalesOrderItems salesOrderItems)

@@ -8,6 +8,6 @@ namespace Tips.Production.Api.Entities
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         [Precision(13, 3)]
-        public decimal? ReturnQty { get; set; }
+        public decimal ReturnQty { get; set; }
     }
 }

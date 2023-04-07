@@ -1,0 +1,19 @@
+﻿using Contracts;
+using Entities;
+using Entities.DTOs;
+using Entities.Helper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Accounts
+{
+    public interface IJwtAuth 
+    {
+        Task<string> GetToken(string userName, string password);
+        
+    }
+}

@@ -1,3 +1,4 @@
+using Accounts;
 using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
@@ -18,6 +19,11 @@ builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.ConfigureRepositoryWrapper();
 builder.Services.AddAutoMapper(typeof(Program));
 
+//var key = builder.Configuration["Jwt:key"];
+//builder.Services.ConfigureJwtToken(builder.Configuration);
+//builder.Services.AddTransient<IJwtAuth, Auth>();
+//builder.Services.AuthenticateByJwtToken(builder.Configuration);
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -28,7 +34,7 @@ builder.Services.AddScoped<IReleaseEnggBomRepository, ReleaseEnggBomRepository>(
 builder.Services.AddScoped<IEnggBomGroupRepository, EnggBomGroupRepository>();
 builder.Services.AddScoped<IEnggBomRepository, EngineeringBomRepository>();
 builder.Services.AddScoped<ILeadRepository, LeadRepository>();
-builder.Services.AddScoped<IFileUploadRepository, FileUploadDocumentRepository>();
+//builder.Services.AddScoped<IFileUploadRepository, FileUploadDocumentRepository>();
 
 builder.Services.AddScoped<IImageUploadRepository, ImageUploadDocumentRepository>();
 builder.Services.AddScoped<ILeadWebsiteRepository, LeadWebsiteRepository>();

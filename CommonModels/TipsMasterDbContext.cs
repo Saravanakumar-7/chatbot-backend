@@ -141,6 +141,11 @@ namespace Entities
         public DbSet<UserAccess> UserAccesses { get; set; }
         public DbSet<FormsAccess> FormsAccesses { get; set; }
         public DbSet<LeadWebsite> LeadWebsites { get; set; } 
+ public DbSet<Unit> Units { get; set; }
+
+
+
+
 
     }
 }
