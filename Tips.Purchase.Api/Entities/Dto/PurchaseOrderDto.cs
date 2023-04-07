@@ -38,7 +38,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }
         public decimal TotalAmount { get; set; }
-
+        public bool POApprovalI { get; set; }
+        public bool POApprovalII { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -122,6 +123,13 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? PONumber { get; set; }
     }
 
-   
+    public class PurchaseOrderSearchDto
+    {
+        public List<string>? PONumber { get; set; }
+        public List<string>? ProjectNumber { get; set; }
+        public List<string>? VendorName { get; set; }
+        public List<Status>? POStatus { get; set; }
+
+    }
 
 }

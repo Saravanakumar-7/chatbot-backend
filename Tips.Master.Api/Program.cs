@@ -14,8 +14,8 @@ LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nl
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
-builder.Services.ConfigureMSSqlContext(builder.Configuration);
-//builder.Services.ConfigureMySqlContext(builder.Configuration);
+//builder.Services.ConfigureMSSqlContext(builder.Configuration);
+builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.ConfigureRepositoryWrapper();
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -33,9 +33,8 @@ builder.Services.AddScoped<IReleaseCostBomRepository, ReleaseCostBomRepository>(
 builder.Services.AddScoped<IReleaseEnggBomRepository, ReleaseEnggBomRepository>();
 builder.Services.AddScoped<IEnggBomGroupRepository, EnggBomGroupRepository>();
 builder.Services.AddScoped<IEnggBomRepository, EngineeringBomRepository>();
-builder.Services.AddScoped<ILeadRepository, LeadRepository>(); 
-builder.Services.AddScoped<IUnitRepository, UnitRepository>();
-builder.Services.AddScoped<IFileUploadRepository, FileUploadDocumentRepository>();
+builder.Services.AddScoped<ILeadRepository, LeadRepository>();
+//builder.Services.AddScoped<IFileUploadRepository, FileUploadDocumentRepository>();
 
 builder.Services.AddScoped<IImageUploadRepository, ImageUploadDocumentRepository>();
 builder.Services.AddScoped<ILeadWebsiteRepository, LeadWebsiteRepository>();
@@ -76,6 +75,8 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 });
 
 app.UseCors("CorsPolicy");
+
+app.UseRouting();
 
 app.UseAuthorization();
 

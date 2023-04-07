@@ -15,7 +15,7 @@ namespace Contracts
         Task<PagedList<ItemMaster>> GetAllFGItems(PagingParameter pagingParameter, SearchParames searchParams);
         Task<PagedList<ItemMaster>> GetAllSAItems(PagingParameter pagingParameter, SearchParames searchParams);
         Task<PagedList<ItemMaster>> GetAllFgSaItems(PagingParameter pagingParameter, SearchParames searchParams);
-        Task<PagedList<ItemMaster>> GetAllFgSaFruItems(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<ItemMaster>> GetAllFgSaFruItems();
         Task<PagedList<ItemMaster>> GetAllSAPurchasePartItems(PagingParameter pagingParameter, SearchParames searchParams);
         Task<ItemMaster> GetItemMasterById(int id);
         Task<PagedList<ItemMaster>> GetAllActiveItemMasters(PagingParameter pagingParameter, SearchParames searchParams);

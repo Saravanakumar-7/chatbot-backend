@@ -5,6 +5,7 @@ using Entities.DTOs;
 using Contracts;
 using Tips.Purchase.Api.Entities.DTOs;
 using Tips.Purchase.Api.Entities.Dto;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Purchase.Api.Contracts
 {
@@ -30,8 +31,9 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PurchaseOrderItemNoListDto>> GetAllPOItemNumberListByPoNumber(string poNumber);
         Task<int?> GetPONumberAutoIncrementCount(DateTime date);
         Task<PurchaseOrder> ChangePurchaseOrderVersion(PurchaseOrder purchaseOrder);
-
-
+        Task<IEnumerable<PurchaseOrder>> GetAllPurchaseOrderWithItems(PurchaseOrderSearchDto purchaseOrderSearch);
+        Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrder([FromQuery] SearchParamess searchParammes);
+        Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrderDate([FromQuery] SearchDatesParams searchDatesParams);
 
     }
 }

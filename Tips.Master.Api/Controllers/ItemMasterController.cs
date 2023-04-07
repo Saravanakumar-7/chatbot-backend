@@ -161,13 +161,14 @@ namespace Tips.Master.Api.Controllers
         // get all fg,sa,fru item list
 
         [HttpGet]
-        public async Task<IActionResult> getAllBomItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //public async Task<IActionResult> getAllBomItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> getAllBomItems()
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 
             try
             {
-                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaFruItems(pagingParameter, searchParams);
+                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaFruItems();
                 _logger.LogInfo("Returned all FGSAFRUItemMasters");
 
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGSAItemsList);

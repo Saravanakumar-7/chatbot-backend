@@ -106,6 +106,63 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SearchOQCDate([FromQuery] SearchDateparames searchDateParam)
+        {
+            ServiceResponse<IEnumerable<OQCDto>> serviceResponse = new ServiceResponse<IEnumerable<OQCDto>>();
+            try
+            {
+                var oqcDate = await _oQCRepository.SearchOQCDate(searchDateParam);
+                var result = _mapper.Map<IEnumerable<OQCDto>>(oqcDate);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all OQCDate";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> SearchOQC([FromQuery] SearchParamess searchParames)
+        {
+            ServiceResponse<IEnumerable<OQCDto>> serviceResponse = new ServiceResponse<IEnumerable<OQCDto>>();
+            try
+            {
+                var oqcList = await _oQCRepository.SearchOQC(searchParames);
+
+                _logger.LogInfo("Returned all OQC");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<OQCDto, OQC>().ReverseMap();
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<OQCDto>>(oqcList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all OQC";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateOQC([FromBody] OQCPostDto oQCPostDto)
         {

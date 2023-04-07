@@ -139,7 +139,97 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
         //get bto number list passing customer leadid
+        [HttpGet]
+        public async Task<IActionResult> SearchBTODeliveryOrderDate([FromQuery] SearchsDateParms searchDateParam)
+        {
+            ServiceResponse<IEnumerable<BTODeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderDto>>();
+            try
+            {
+                var bTODeliveryOrders = await _repository.SearchBTODeliveryOrderDate(searchDateParam);
+                var result = _mapper.Map<IEnumerable<BTODeliveryOrderDto>>(bTODeliveryOrders);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all BTODeliveryOrders";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> SearchBTODeliveryOrder([FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<BTODeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderDto>>();
+            try
+            {
+                var btoDeliveyOrderList = await _repository.SearchBTODeliveryOrder(searchParams);
 
+                _logger.LogInfo("Returned all BTODeliveryOrder");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<BTODeliveryOrderDto, BTODeliveryOrder>().ReverseMap()
+                    .ForMember(dest => dest.BTODeliveryOrderItemsDto, opt => opt.MapFrom(src => src.BTODeliveryOrderItems));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<BTODeliveryOrderDto>>(btoDeliveyOrderList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all BTODeliveryOrder";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllBTODeliveryOrderWithItems([FromBody] BTODeliveryOrderSearchDto bTODeliveryOrderSearch)
+        {
+            ServiceResponse<IEnumerable<BTODeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderDto>>();
+            try
+            {
+                var bTODeliveryOrders = await _repository.GetAllBTODeliveryOrderWithItems(bTODeliveryOrderSearch);
+                _logger.LogInfo("Returned all bTODeliveryOrders");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<BTODeliveryOrderDto, BTODeliveryOrder>().ReverseMap()
+                    .ForMember(dest => dest.BTODeliveryOrderItemsDto, opt => opt.MapFrom(src => src.BTODeliveryOrderItems));
+                });
+
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<BTODeliveryOrderDto>>(bTODeliveryOrderSearch);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all bTODeliveryOrders";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetBtoNumberListByCustomerId(string customerLeadId)

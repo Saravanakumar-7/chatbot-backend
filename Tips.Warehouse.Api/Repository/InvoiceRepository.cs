@@ -50,9 +50,50 @@ namespace Tips.Warehouse.Api.Repository
 
         }
 
+        public async Task<IEnumerable<Invoice>> SearchInvoiceDate([FromQuery] SearchsDateParms searchsDateParms)
+        {
+            var invoiceDetails = _tipsWarehouseDbContext.invoices
+            .Where(inv => ((inv.CreatedOn >= searchsDateParms.SearchFromDate &&
+            inv.CreatedOn <= searchsDateParms.SearchToDate
+            )))
+            .Include(itm => itm.InvoiceChildItems)
+            .ToList();
+            return invoiceDetails;
+        }
 
-
-
+        public async Task<IEnumerable<Invoice>> SearchInvoice([FromQuery] SearchParames searchParames)
+        {
+            using (var context = _tipsWarehouseDbContext)
+            {
+                var query = _tipsWarehouseDbContext.invoices.Include("invoiceChildItems");
+                if (!string.IsNullOrEmpty(searchParames.SearchValue))
+                {
+                    query = query.Where(po => po.InvoiceNumber.Contains(searchParames.SearchValue)
+                    || po.CustomerName.Contains(searchParames.SearchValue)
+                    || po.CompanyName.Contains(searchParames.SearchValue)
+                    || po.InvoiceChildItems.Any(s => s.FGItemNumber.Contains(searchParames.SearchValue) ||
+                    s.DONumber.Contains(searchParames.SearchValue)
+                    || s.Description.Contains(searchParames.SearchValue)));
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<Invoice>> GetAllInvoiceWithItems(InvoiceSearchDto invoiceSearch)
+        {
+            using (var context = _tipsWarehouseDbContext)
+            {
+                var query = _tipsWarehouseDbContext.invoices.Include("invoiceChildItems");
+                if (invoiceSearch != null || (invoiceSearch.InvoiceNumber.Any())
+               && invoiceSearch.CustomerName.Any() && invoiceSearch.CompanyName.Any())
+                {
+                    query = query.Where
+                    (po => (invoiceSearch.CustomerName.Any() ? invoiceSearch.CustomerName.Contains(po.CustomerName) : true)
+                   && (invoiceSearch.InvoiceNumber.Any() ? invoiceSearch.InvoiceNumber.Contains(po.InvoiceNumber) : true)
+                   && (invoiceSearch.CompanyName.Any() ? invoiceSearch.CompanyName.Contains(po.CompanyName) : true));
+                }
+                return query.ToList();
+            }
+        }
         public async Task<Invoice> GetInvoiceById(int id)
         {
         var getInvoiceListById = await _tipsWarehouseDbContext.invoices

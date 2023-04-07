@@ -41,12 +41,12 @@ namespace Tips.Warehouse.Api.Extensions
             services.AddDbContext<TipsWarehouseDbContext>(o => o.UseSqlServer(connectionString));
         }
 
-        //public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
-        //{
+        public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
+        {
 
-        //    var connectionString = config["MySqlconnection:connectionString"];
-        //    services.AddDbContext<TipsWarehouseDbContext>(o => o.UseMySQL(connectionString));
-        //}
+            var connectionString = config["MySqlconnection:connectionString"];
+            services.AddDbContext<TipsWarehouseDbContext>(o => o.UseMySQL(connectionString));
+        }
 
         public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices
         {

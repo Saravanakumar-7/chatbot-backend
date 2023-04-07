@@ -139,6 +139,7 @@ namespace Tips.SalesService.Api.Controllers
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all rfq");
+                
                 var result = _mapper.Map<IEnumerable<RfqDto>>(getAllRfq);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Rfqs Successfully";

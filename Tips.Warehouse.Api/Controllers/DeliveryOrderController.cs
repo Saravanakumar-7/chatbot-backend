@@ -66,6 +66,100 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> SearchDeliveryOrderDate([FromQuery] SearchsDateParms searchDateParam)
+        {
+            ServiceResponse<IEnumerable<DeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderDto>>();
+            try
+            {
+                var DeliveryOrders = await _repository.SearchDeliveryOrderDate(searchDateParam);
+
+                var result = _mapper.Map<IEnumerable<DeliveryOrderDto>>(DeliveryOrders);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all DeliveryOrders";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllDeliveryOrderWithItems([FromBody] DeliveryOrderSearchDto DeliveryOrderSearch)
+        {
+            ServiceResponse<IEnumerable<DeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderDto>>();
+            try
+            {
+                var deliveryOrders = await _repository.GetAllDeliveryOrderWithItems(DeliveryOrderSearch);
+
+                _logger.LogInfo("Returned all DeliveryOrders");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<DeliveryOrderDto, DeliveryOrder>().ReverseMap()
+                    .ForMember(dest => dest.DeliveryOrderItemsDto, opt => opt.MapFrom(src => src.DeliveryOrderItems));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<DeliveryOrderDto>>(deliveryOrders);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all DeliveryOrders";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchDeliveryOrder([FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<DeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderDto>>();
+            try
+            {
+                var DeliveyOrderList = await _repository.SearchDeliveryOrder(searchParams);
+
+                _logger.LogInfo("Returned all DeliveryOrder");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<DeliveryOrderDto, DeliveryOrder>().ReverseMap()
+                    .ForMember(dest => dest.DeliveryOrderItemsDto, opt => opt.MapFrom(src => src.DeliveryOrderItems));
+                });
+                var mapper = config.CreateMapper();
+
+                var result = mapper.Map<IEnumerable<DeliveryOrderDto>>(DeliveyOrderList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all DeliveryOrder";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDeliveryOrderById(int id)

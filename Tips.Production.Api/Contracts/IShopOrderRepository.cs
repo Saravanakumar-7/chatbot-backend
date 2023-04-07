@@ -2,6 +2,7 @@
 using Entities.DTOs;
 using Entities.Enums;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 
@@ -24,6 +25,9 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<ListOfShopOrderDto>> GetAllFGShopOrderNoList();
         Task<IEnumerable<ListOfShopOrderDto>> GetAllSAShopOrderNoList();
         Task<IEnumerable<ListOfShopOrderDto>> GetAllActiveShopOrderNoList();
+        Task<IEnumerable<ShopOrder>> GetAllShopOrderWithItems(ShopOrderSearchDto shopOrderSearch);
+        Task<IEnumerable<ShopOrder>> SearchShopOrder([FromQuery] SearchParamess searchParammes);
+        Task<IEnumerable<ShopOrder>> SearchShopOrderDate([FromQuery] SearchDateparames searchDatesParams);
         Task<IEnumerable<ListOfShopOrderDto>> GetAllActiveShopOrderNoListByProjectNo(string projectNo, PartType partType);
         public void SaveAsync();
     }

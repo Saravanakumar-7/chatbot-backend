@@ -32,7 +32,50 @@ namespace Tips.Grin.Api.Repository
             var result = await Create(iQCConfirmation);
             return result.Id;
         }
+        public async Task<IEnumerable<IQCConfirmation>> SearchIQCConfirmation([FromQuery] SearchParames searchParames)
+        {
+            using (var context = _tipsGrinDbContext)
+            {
+                var query = _tipsGrinDbContext.IQCConfirmations.Include("IQCConfirmationItems");
+                if (!string.IsNullOrEmpty(searchParames.SearchValue))
+                {
+                    query = query.Where(po => po.GrinNumber.Contains(searchParames.SearchValue)
+                    //|| po.VendorName.Contains(searchParames.SearchValue)
+                    //|| po.PONumber.Contains(searchParames.SearchValue)
+                    //|| po.InvoiceNumber.Equals(int.Parse(searchParames.SearchValue))
+                    || po.IQCConfirmationItems.Any(s => s.ItemNumber.Contains(searchParames.SearchValue)));
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<IQCConfirmation>> SearchIQCConfirmationDate([FromQuery] SearchDateParames searchParames)
+        {
+            var iQcDetails = _tipsGrinDbContext.IQCConfirmations
+            .Where(inv => ((inv.CreatedOn >= searchParames.SearchFromDate &&
+            inv.CreatedOn <= searchParames.SearchToDate
+            )))
+            .Include(itm => itm.IQCConfirmationItems)
+            .ToList();
+            return iQcDetails;
+        }
+        public async Task<IEnumerable<IQCConfirmation>> GetAllIQCConfirmationWithItems(IQCConfirmationSearchDto iQCConfirmationSearch)
+        {
+            using (var context = _tipsGrinDbContext)
+            {
+                var query = _tipsGrinDbContext.IQCConfirmations.Include("IQCConfirmationItems");
+                if (iQCConfirmationSearch != null || (iQCConfirmationSearch.InvoiceNumber.Any())
+               && iQCConfirmationSearch.GrinNumber.Any() && iQCConfirmationSearch.VendorName.Any() && iQCConfirmationSearch.InvoiceNumber.Any() && iQCConfirmationSearch.PONumber.Any())
 
+                {
+                    query = query.Where
+                    (po => (iQCConfirmationSearch.GrinNumber.Any() ? iQCConfirmationSearch.GrinNumber.Contains(po.GrinNumber) : true));
+                   //&& (iQCConfirmationSearch.InvoiceNumber.Any() ? iQCConfirmationSearch.InvoiceNumber.Contains(po.InvoiceNumber) : true)
+                   //&& (iQCConfirmationSearch.VendorName.Any() ? iQCConfirmationSearch.VendorName.Contains(po.VendorName) : true)
+                   //&& (iQCConfirmationSearch.PONumber.Any() ? iQCConfirmationSearch.PONumber.Contains(po.PONumber) : true));
+                }
+                return query.ToList();
+            }
+        }
 
         //public async Task<PagedList<IQCConfirmation>> GetAllIqcDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         //{

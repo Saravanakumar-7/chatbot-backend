@@ -36,6 +36,56 @@ namespace Tips.Purchase.Api.Repository
 
             return getPRNumberAutoIncrementCount;
         }
+        public async Task<IEnumerable<PurchaseRequisition>> SearchPurchaseRequisition([FromQuery] SearchParamess searchParammes)
+        {
+            using (var context = _tipsPurchaseDbContext)
+            {
+                var query = _tipsPurchaseDbContext.PurchaseRequisitions.Include("PrItems");
+                if (!string.IsNullOrEmpty(searchParammes.SearchValue))
+                {
+                    query = query.Where(po => po.PrNumber.Contains(searchParammes.SearchValue)
+                    || po.PrDate.ToString().Contains(searchParammes.SearchValue)
+                   //|| po.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
+                                   || po.ProcurementType.Contains(searchParammes.SearchValue)
+                    || po.ShippingMode.Contains(searchParammes.SearchValue)
+                    || po.PaymentTerms.Contains(searchParammes.SearchValue)
+                    || po.DeliveryTerms.Contains(searchParammes.SearchValue)
+                    || po.PrItemList.Any(s => s.ItemNumber.Contains(searchParammes.SearchValue) ||
+                    s.Description.Contains(searchParammes.SearchValue)
+                    || s.MftrItemNumber.Contains(searchParammes.SearchValue)));
+                }
+                return query.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<PurchaseRequisition>> GetAllPurchaseRequisitionWithItems(PurchaseRequisitionSearchDto purchaseRequisitionSearch)
+        {
+            using (var context = _tipsPurchaseDbContext)
+            {
+                var query = _tipsPurchaseDbContext.PurchaseRequisitions.Include("PrItemList");
+                if (purchaseRequisitionSearch != null || (purchaseRequisitionSearch.PrNumber.Any())
+               && purchaseRequisitionSearch.ProcurementType.Any() && purchaseRequisitionSearch.ItemNumber.Any() && purchaseRequisitionSearch.PRStatus.Any())
+                {
+                    query = query.Where
+                    (po => (purchaseRequisitionSearch.PrNumber.Any() ? purchaseRequisitionSearch.PrNumber.Contains(po.PrNumber) : true)
+                   && (purchaseRequisitionSearch.ProcurementType.Any() ? purchaseRequisitionSearch.ProcurementType.Contains(po.ProcurementType) : true)
+                   //&& (purchaseRequisitionSearch.ItemNumber.Any() ? purchaseRequisitionSearch.ItemNumber.Contains(po.PrItemList.)) : true)
+                   && (purchaseRequisitionSearch.PRStatus.Any() ? purchaseRequisitionSearch.PRStatus.Contains(po.Status) : true));
+                }
+                return query.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<PurchaseRequisition>> SearchPurchaseRequisitionDate([FromQuery] SearchDatesParams searchDatesParams)
+        {
+            var purchaseRequsisitionDetails = _tipsPurchaseDbContext.PurchaseRequisitions
+            .Where(inv => ((inv.CreatedOn >= searchDatesParams.SearchFromDate &&
+            inv.CreatedOn <= searchDatesParams.SearchToDate
+            )))
+            .Include(itm => itm.PrItemList)
+            .ToList();
+            return purchaseRequsisitionDetails;
+        }
 
         public async Task<PurchaseRequisition> ChangePurchaseRequisitionVersion(PurchaseRequisition purchaseRequisition)
         {
