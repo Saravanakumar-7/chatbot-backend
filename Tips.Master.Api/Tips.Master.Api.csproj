@@ -33,6 +33,7 @@
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="DTO\" />
+    <Folder Include="Accounts\" />
     <Folder Include="Upload\ImageUpload\" />
     <Folder Include="Upload\FileUpload\" />
   </ItemGroup>
