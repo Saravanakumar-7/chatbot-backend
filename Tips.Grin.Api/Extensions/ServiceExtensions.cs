@@ -6,6 +6,9 @@ using Tips.Grin.Api.Entities;
 using Tips.Grin.Api.Repository;
 using Entities;
 using MySql.EntityFrameworkCore.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Tips.Grin.Api.Extensions
 {
@@ -63,5 +66,25 @@ namespace Tips.Grin.Api.Extensions
         //{
         //    services.AddScoped<IRepositoryWrapperForMaster, RepositoryWrapperForMaster>();
         //}
+
+        public static void AuthenticateByJwtToken(this IServiceCollection services, IConfiguration config)
+        {
+            var key = config["Jwt:key"];
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+             .AddJwtBearer(options =>
+             {
+                 options.TokenValidationParameters = new TokenValidationParameters
+                 {
+                     ValidateIssuer = false,
+                     ValidateAudience = false,
+                     ValidateLifetime = false,
+                     ValidateIssuerSigningKey = true,
+                     //ValidIssuer = "[Issuer name]", // replace with the actual issuer name used by the Master API Microservice
+                     //ValidAudience = "[Audience name]", // replace with the actual audience name used by the Grin Service
+                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)) // replace with the actual secret key used by the Master API Microservice
+                 };
+             });
+        }
     }
 }
