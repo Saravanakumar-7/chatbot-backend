@@ -55,6 +55,9 @@ namespace Tips.SalesService.Api
             CreateMap<RfqSourcingItems, RfqSourcingItemsDto>().ReverseMap();
             CreateMap<RfqSourcingItems, RfqSourcingItemsPostDto>().ReverseMap();
             CreateMap<RfqSourcingItems, RfqSourcingItemsUpdateDto>().ReverseMap();
+            CreateMap<RfqSourcingItemsDto, EnggBomFGItemNumberWithQtyDto>().ReverseMap();
+
+             
 
             CreateMap<RfqSourcingVendor, RfqSourcingVendorDto>().ReverseMap();
             CreateMap<RfqSourcingVendor, RfqSourcingVendorPostDto>().ReverseMap();

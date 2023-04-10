@@ -106,15 +106,17 @@ namespace Tips.SalesService.Api.Controllers
                     var rfqCsRelesed = await _itemRepository.GetRfqCustomerSupportRelesedDetailsByRfqNumber(rfq);
             
                     var rfqCsUnRelesedCount = rfqCsCount.Count() - rfqCsRelesed.Count();
-                    if(rfqCsRelesed.Count() == 0)
+                    if(rfqCsRelesed.Count() == 0 )
                     {
                         getAllRfq[i].IsCsRelease = CsRelease.NotYetReleased;
                     }
-                    if(rfqCsUnRelesedCount == 0)
+                    //if(rfqCsUnRelesedCount == 0 && rfqCsCount.Count() != 0)
+                    if (rfqCsUnRelesedCount == 0)
                     {
                         getAllRfq[i].IsCsRelease = CsRelease.FullyRelease;
                     }
-                    if(rfqCsUnRelesedCount != 0 && rfqCsRelesed.Count() != 0)
+                    //if(rfqCsUnRelesedCount != 0 && rfqCsRelesed.Count() != 0)
+                    if (rfqCsUnRelesedCount != 0)
                     {
                         getAllRfq[i].IsCsRelease = CsRelease.PartiallyRelease;
                     }
@@ -303,6 +305,49 @@ namespace Tips.SalesService.Api.Controllers
             }
 
         }
+        //get list of child item under fg bom
+
+        [HttpGet("{RfqNumber}")]
+        public async Task<IActionResult> GetFGBomChildItemDetails(string RfqNumber)
+        {
+            ServiceResponse<IEnumerable<RfqSourcingItemsDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqSourcingItemsDto>>();
+            try
+            {
+                var getAllRfqEnggRelesedList = await _rfqenggItemRepository.GetRfqEnggRelesedDetailsByRfqNumber(RfqNumber);
+                List<string?>? itemDetails = getAllRfqEnggRelesedList?.Select(x => x.ItemNumber).ToList();
+                List<EnggBomFGItemNumberWithQtyDto>? itemsRoutingDetailsDynamic = new List<EnggBomFGItemNumberWithQtyDto>();
+
+                if (itemDetails != null)
+                {
+                    var itemDetailsString = JsonConvert.SerializeObject(itemDetails);
+                    var content = new StringContent(itemDetailsString, Encoding.UTF8, "application/json");
+                    var inventoryObjectResult = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetFGBomItemsChildDetails"), content);
+                    var itemsRoutingDetailsJsonString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                    dynamic itemsRoutingDetailsJson = JsonConvert.DeserializeObject(itemsRoutingDetailsJsonString);
+                    var data = itemsRoutingDetailsJson.data;
+                    itemsRoutingDetailsDynamic = data.ToObject<List<EnggBomFGItemNumberWithQtyDto>>();
+                }
+                var result = _mapper.Map<IEnumerable<RfqSourcingItemsDto>>(itemsRoutingDetailsDynamic);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all getAllRfqEnggRelesedList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside getAllRfqEnggRelesedList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        
+
+
+
         //pass rfq id and get customer support data
 
         [HttpGet("{RfqNumber}")]

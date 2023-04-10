@@ -64,6 +64,35 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetAllArchitecturesDetails()
+        {
+            ServiceResponse<IEnumerable<ArchitectureDto>> serviceResponse = new ServiceResponse<IEnumerable<ArchitectureDto>>();
+            try
+            {
+
+                var architectList = await _repository.ArchitectureRepository.GetAllArchitecturesDetails();
+
+
+                _logger.LogInfo("Returned all Architectures");
+                var result = _mapper.Map<IEnumerable<ArchitectureDto>>(architectList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Architectures  Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetAllActiveArchitectures([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ArchitectureDto>> serviceResponse = new ServiceResponse<IEnumerable<ArchitectureDto>>();

@@ -92,6 +92,29 @@ namespace Repository
 
             return PagedList<EnggBom>.ToPagedList(enggBomDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
+        //aravind
+        public async Task<List<EnggBomFGItemNumberWithQtyDto>> GetFGBomItemsChildDetails(List<string> itemNumberList)
+        {
+            var itemIdNoList = await TipsMasterDbContext.EnggBoms
+                .Where(im => itemNumberList.Contains(im.ItemNumber) && im.IsEnggBomRelease == true)
+                .Select(x => new { x.ItemNumber,x.BOMId,x.ItemType }).Distinct().ToListAsync();
+
+            List<int> itemNos = itemIdNoList.Where(x=>x.ItemType == PartType.FG).Select(x=>x.BOMId).Distinct().ToList();
+                        
+            List<EnggBomFGItemNumberWithQtyDto> result = _tipsMasterDbContext.EnggChildItems
+                    .Where(x => itemNos.Contains(x.EnggBomId))
+                    .GroupBy(l => new { l.ItemNumber, l.Description })
+                    .Select(group => new EnggBomFGItemNumberWithQtyDto
+                    {
+                        ItemNumber = group.Key.ItemNumber,
+                        QtyReq = group.Sum(c => c.Quantity),
+                        ItemDescription = group.Key.Description
+                    }).ToList();
+
+            return result;
+        }
+
         public async Task<IEnumerable<EnggBomFGItemNumber>> GetAllEnggBomFGItemNoListByItemNumber(string itemNumber)
         {
             List<int>bomDetails = await _tipsMasterDbContext.EnggChildItems

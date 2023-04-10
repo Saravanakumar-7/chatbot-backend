@@ -43,6 +43,13 @@ namespace Repository
 
             return PagedList<Architectures>.ToPagedList(getAllArchitectDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
+        public async Task<IEnumerable<Architectures>> GetAllArchitecturesDetails()
+        {
+            var getallArchitectures = await FindAll().ToListAsync();
+            return getallArchitectures;
+        }
+
         public async Task<Architectures> GetArchitectureById(int id)
         {
             var architectById = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync(); 
