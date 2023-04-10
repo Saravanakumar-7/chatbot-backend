@@ -75,13 +75,15 @@ namespace Tips.Purchase.Api.Repository
             {
                 var query = _tipsPurchaseDbContext.PurchaseOrders.Include("POItemList");
                 if (purchaseOrderSearch != null || (purchaseOrderSearch.PONumber.Any())
-               && purchaseOrderSearch.ProjectNumber.Any() && purchaseOrderSearch.VendorName.Any() && purchaseOrderSearch.POStatus.Any())
+               && purchaseOrderSearch.ProcurementType.Any() && purchaseOrderSearch.ShippingMode.Any() 
+               && purchaseOrderSearch.VendorName.Any() && purchaseOrderSearch.Status.Any())
                {
                     query = query.Where
                     (po => (purchaseOrderSearch.PONumber.Any() ? purchaseOrderSearch.PONumber.Contains(po.PONumber) : true)
-                   //&& (purchaseOrderSearch.ProjectNumber.Any() ? purchaseOrderSearch.ProjectNumber.Contains(po.POItemList.Any(x=>x.ItemNumber)) : true)
-                   && (purchaseOrderSearch.VendorName.Any() ? purchaseOrderSearch.VendorName.Contains(po.VendorName) : true));
-                   //&& (purchaseOrderSearch.POStatus.Any() ? purchaseOrderSearch.POStatus.Contains(po.POStatus) : true));
+                   && (purchaseOrderSearch.ProcurementType.Any() ? purchaseOrderSearch.ProcurementType.Contains(po.ProcurementType) : true)
+                   && (purchaseOrderSearch.ShippingMode.Any() ? purchaseOrderSearch.ShippingMode.Contains(po.ShippingMode) : true)
+                   && (purchaseOrderSearch.VendorName.Any() ? purchaseOrderSearch.VendorName.Contains(po.VendorName) : true)
+                   && (purchaseOrderSearch.Status.Any() ? purchaseOrderSearch.Status.Contains(po.Status) : true));
                 }
                 return query.ToList();
             }

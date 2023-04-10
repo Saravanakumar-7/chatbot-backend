@@ -126,9 +126,10 @@ namespace Tips.Purchase.Api.Entities.DTOs
     public class PurchaseOrderSearchDto
     {
         public List<string>? PONumber { get; set; }
-        public List<string>? ProjectNumber { get; set; }
+        public List<string>? ProcurementType { get; set; }
+        public List<string>? ShippingMode { get; set; }
         public List<string>? VendorName { get; set; }
-        public List<Status>? POStatus { get; set; }
+        public List<Status>? Status { get; set; }
 
     }
 

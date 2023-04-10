@@ -233,7 +233,7 @@ namespace Tips.SalesService.Api.Repository
             //OrderStatus[] status = { OrderStatus.Open, OrderStatus.PartiallyClosed };
 
             var salesOrderNo = await _tipsSalesServiceDbContexts.SalesOrders
-                               .Where(x => x.SalesOrderStatus == SalesOrderStatus.RetailSalesOrder)
+                               .Where(x => x.SalesOrderStatus == SalesOrderStatus.BuildToPrint)
                                .Select(x => x.SalesOrderNumber).Distinct().ToListAsync();
 
             IEnumerable<ListOfProjectNoDto> salesOrderDetails = await _tipsSalesServiceDbContexts.SalesOrdersItems
@@ -294,7 +294,7 @@ namespace Tips.SalesService.Api.Repository
              var join = from e in _tipsSalesServiceDbContexts.SalesOrdersItems
                        where e.ItemNumber == ItemNo && e.ProjectNumber == ProjectNo
                         join d in _tipsSalesServiceDbContexts.SalesOrders on e.SalesOrderNumber equals d.SalesOrderNumber
-                       where d.SalesOrderStatus == SalesOrderStatus.RetailSalesOrder
+                       where d.SalesOrderStatus == SalesOrderStatus.BuildToPrint
                        select new GetSalesOrderDetailsDto()
                        {
                            Id = e.Id,

@@ -83,10 +83,13 @@ namespace Tips.Warehouse.Api.Repository
             {
                 var query = _tipsWarehouseDbContext.DeliveryOrder.Include("DeliveryOrderItems");
                 if (DeliveryOrderSearch != null || (DeliveryOrderSearch.ProjectNumber.Any())
-               && DeliveryOrderSearch.CustomerName.Any() && DeliveryOrderSearch.PONumber.Any())
+                && DeliveryOrderSearch.DeliveryOrderNumber.Any() && DeliveryOrderSearch.CustomerId.Any() 
+                && DeliveryOrderSearch.CustomerName.Any() && DeliveryOrderSearch.PONumber.Any())
                 {
                     query = query.Where
                     (po => (DeliveryOrderSearch.CustomerName.Any() ? DeliveryOrderSearch.CustomerName.Contains(po.CustomerName) : true)
+                   && (DeliveryOrderSearch.CustomerId.Any() ? DeliveryOrderSearch.CustomerId.Contains(po.CustomerId) : true)
+                   && (DeliveryOrderSearch.DeliveryOrderNumber.Any() ? DeliveryOrderSearch.DeliveryOrderNumber.Contains(po.DeliveryOrderNumber) : true)
                    && (DeliveryOrderSearch.ProjectNumber.Any() ? DeliveryOrderSearch.ProjectNumber.Contains(po.ProjectNumber) : true)
                    && (DeliveryOrderSearch.PONumber.Any() ? DeliveryOrderSearch.PONumber.Contains(po.PONumber) : true));
                 }

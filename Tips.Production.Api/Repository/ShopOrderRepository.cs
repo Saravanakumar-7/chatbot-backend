@@ -9,6 +9,7 @@ using Tips.Production.Api.Entities.Enums;
 using Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Entities.DTOs;
+using System.Linq;
 
 namespace Tips.Production.Api.Repository
 {
@@ -65,12 +66,13 @@ namespace Tips.Production.Api.Repository
             {
                 var query = _tipsProductionDbContext.ShopOrders.Include("ShopOrderItems");
                 if (shopOrderSearch != null || (shopOrderSearch.FGItemNumber.Any())
-               && shopOrderSearch.SAItemNumber.Any() && shopOrderSearch.TotalSOReleaseQty.Any())
+               && shopOrderSearch.ShopOrderNumber.Any() && shopOrderSearch.SAItemNumber.Any() && shopOrderSearch.TotalSOReleaseQty.Any())
                 {
-                   // query = query.Where
-                   // (po => (shopOrderSearch.FGItemNumber.Any() ? shopOrderSearch.FGItemNumber.Contains(po.FGItemNumber) : true)
-                   //&& (shopOrderSearch.SAItemNumber.Any() ? shopOrderSearch.SAItemNumber.Contains(po.SAItemNumber) : true)
-                   //&& (shopOrderSearch.TotalSOReleaseQty.Any() ? shopOrderSearch.TotalSOReleaseQty.Contains(po.TotalSOReleaseQty) : true));
+                    query = query.Where
+                  (po => (shopOrderSearch.ShopOrderNumber.Any() ? shopOrderSearch.ShopOrderNumber.Contains(po.ShopOrderNumber) : true)
+                  // && (shopOrderSearch.SAItemNumber.Any() ? shopOrderSearch.SAItemNumber.Contains(po.SAItemNumber) : true)
+                  // && (shopOrderSearch.FGItemNumber.Any() ? shopOrderSearch.FGItemNumber.Contains(po.FGItemNumber) : true)
+                   && (shopOrderSearch.TotalSOReleaseQty.Any() ? shopOrderSearch.TotalSOReleaseQty.Contains(po.TotalSOReleaseQty) : true));
                 }
                 return query.ToList();
             }

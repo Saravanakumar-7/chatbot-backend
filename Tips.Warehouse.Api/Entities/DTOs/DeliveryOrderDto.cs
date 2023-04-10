@@ -56,7 +56,9 @@
     public class DeliveryOrderSearchDto
     {
         public List<string> CustomerName { get; set; }
+        public List<string> CustomerId { get; set; }
         public List<string> ProjectNumber { get; set; }
+        public List<string> DeliveryOrderNumber { get; set; }
         public List<string> PONumber { get; set; }
     }
 }

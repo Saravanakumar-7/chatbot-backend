@@ -63,5 +63,12 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public int Id { get; set; }
         public string? InvoiceNumber { get; set; }
     }
+    public class InvoiceSearchDto
+    {
+        public List<string> InvoiceNumber { get; set; }
+        public List<string> CustomerName { get; set; }
+        public List<string> CompanyName { get; set; }
+ 
+    }
 
 }
