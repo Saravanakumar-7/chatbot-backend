@@ -48,6 +48,8 @@ namespace Tips.SalesService.Api.Entities
         public DateTime RequestedDate { get; set; }
         public string? Remarks { get; set; }       
         public int SalesOrderId { get; set; }
-        public SalesOrder? SalesOrder { get; set; }
+        public SalesOrder? SalesOrder { get; set; } 
+        public List<ScheduleDate>? ScheduleDates { get; set; }
+
     }
 }

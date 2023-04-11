@@ -57,7 +57,10 @@ namespace Tips.SalesService.Api
             CreateMap<RfqSourcingItems, RfqSourcingItemsUpdateDto>().ReverseMap();
             CreateMap<RfqSourcingItemsDto, EnggBomFGItemNumberWithQtyDto>().ReverseMap();
 
-             
+            CreateMap<ScheduleDate, ScheduleDateDto>().ReverseMap();
+            CreateMap<ScheduleDate, ScheduleDatePostDto>().ReverseMap();
+            CreateMap<ScheduleDate, ScheduleDateUpdateDto>().ReverseMap();
+
 
             CreateMap<RfqSourcingVendor, RfqSourcingVendorDto>().ReverseMap();
             CreateMap<RfqSourcingVendor, RfqSourcingVendorPostDto>().ReverseMap();

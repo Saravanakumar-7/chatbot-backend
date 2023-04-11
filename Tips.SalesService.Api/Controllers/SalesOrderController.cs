@@ -111,6 +111,7 @@ namespace Tips.SalesService.Api.Controllers
                     foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
                     {
                         SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
+                        salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
                         salesOrderItemsDtoList.Add(salesOrderItemsDtos);
                     }
 
@@ -206,13 +207,9 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderItemsList.Add(salesOrderItems);
                     }
                 }
-                createSalesOrder.SalesOrdersItems = salesOrderItemsList;
-                createSalesOrder.SalesOrdersItems = salesOrderItemsList;
-
-
+                createSalesOrder.SalesOrdersItems = salesOrderItemsList; 
                 await _repository.CreateSalesOrder(createSalesOrder);
                 _repository.SaveAsync();
-
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = " SalesOrder Successfully Created";

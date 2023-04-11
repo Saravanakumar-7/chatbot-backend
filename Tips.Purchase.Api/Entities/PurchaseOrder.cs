@@ -11,9 +11,8 @@ namespace Tips.Purchase.Api.Entities
         public DateTime PODate { get; set; }
         public int? RevisionNumber { get; set; }
         public string? ProcurementType { get; set; }
-        public string? Currency { get; set; }
-
-
+        public string? Currency { get; set; } 
+        public string? CompanyAliasName { get; set; }
 
         //VendorDetails
         public string? VendorName { get; set; }

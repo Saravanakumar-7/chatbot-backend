@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Mysqlx.Crud;
+using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Tls.Crypto.Impl.BC;
 using System.Linq;
 using Tips.SalesService.Api.Contracts;
@@ -97,7 +98,10 @@ namespace Tips.SalesService.Api.Repository
                      || inv.PODate.Equals(int.Parse(searchParammes.SearchValue))
                      || inv.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
                      || inv.CustomerId.Equals(int.Parse(searchParammes.SearchValue)))))
-                   .Include(t => t.SalesOrdersItems); 
+                   .Include(t => t.SalesOrdersItems)
+                   .ThenInclude(p => p.ScheduleDates);
+
+
             return PagedList<SalesOrder>.ToPagedList(salesOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
@@ -147,6 +151,7 @@ namespace Tips.SalesService.Api.Repository
         {
             var getSalesOrderbyId = await _tipsSalesServiceDbContext.SalesOrders.Where(x => x.Id == id)
                                   .Include(t => t.SalesOrdersItems)
+                                  .ThenInclude(p => p.ScheduleDates)
                                  .FirstOrDefaultAsync();
 
             return getSalesOrderbyId;

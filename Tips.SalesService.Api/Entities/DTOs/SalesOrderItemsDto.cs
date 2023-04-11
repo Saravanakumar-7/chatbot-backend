@@ -52,7 +52,8 @@ namespace Tips.SalesService.Api.Entities.Dto
         //public int SalesOrderId { get; set; }
 
         public DateTime RequestedDate { get; set; }
-        public string? Remarks { get; set; }
+        public string? Remarks { get; set; } 
+        public List<ScheduleDateDto>? ScheduleDates { get; set; }
 
     }
 
@@ -96,7 +97,9 @@ namespace Tips.SalesService.Api.Entities.Dto
 
          public string? Discount { get; set; }
         public DateTime RequestedDate { get; set; }
-        public string? Remarks { get; set; }
+        public string? Remarks { get; set; } 
+        public List<ScheduleDatePostDto>? ScheduleDates { get; set; }
+
     }
     public class SalesOrderItemsUpdateDto
     {
@@ -140,7 +143,8 @@ namespace Tips.SalesService.Api.Entities.Dto
         [Precision(18, 3)]
         public decimal? TotalAmount { get; set; }
         public DateTime RequestedDate { get; set; }
-        public string? Remarks { get; set; }
+        public string? Remarks { get; set; } 
+ public List<ScheduleDateUpdateDto>? ScheduleDates { get; set; }
 
     }
     public class ListOfProjectNoDto
