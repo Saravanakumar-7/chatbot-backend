@@ -53,6 +53,8 @@ namespace Tips.Purchase.Api.Entities
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
+
+        public bool IsModified { get; set; } = false;
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 

@@ -25,6 +25,8 @@ namespace Tips.Purchase.Api.Repository
             var date = DateTime.Now;
             purchaseOrder.CreatedBy = "Admin";
             purchaseOrder.CreatedOn = date.Date;
+            purchaseOrder.LastModifiedBy = "Admin";
+            purchaseOrder.LastModifiedOn = DateTime.Now;
             //Guid purchaseOrderNumber = Guid.NewGuid();
             //purchaseOrder.PONumber = "PO-" + purchaseOrderNumber.ToString();
             purchaseOrder.Unit = "Banglore";
@@ -34,19 +36,29 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<PurchaseOrder> ChangePurchaseOrderVersion(PurchaseOrder purchaseOrder)
         {
-            purchaseOrder.CreatedBy = "Admin";
-            purchaseOrder.CreatedOn = DateTime.Now;
-            purchaseOrder.Unit = "Bangalore";
+            var getOldPODetails = _tipsPurchaseDbContext.PurchaseOrders
+                .Where(x => x.PONumber == purchaseOrder.PONumber && x.IsModified ==  false)
+                .FirstOrDefault();
+
+            if (getOldPODetails != null)
+            {
+                getOldPODetails.IsModified=true;
+                getOldPODetails.LastModifiedBy = "Admin";
+                getOldPODetails.LastModifiedOn = DateTime.Now;
+                Update(getOldPODetails);
+            }
+
+            purchaseOrder.CreatedBy = purchaseOrder.CreatedBy;
+            purchaseOrder.CreatedOn = purchaseOrder.CreatedOn;
+            purchaseOrder.LastModifiedBy = "Admin";
+            purchaseOrder.LastModifiedOn = DateTime.Now;
             var getOldRevisionNumber = _tipsPurchaseDbContext.PurchaseOrders
                 .Where(x => x.PONumber == purchaseOrder.PONumber)
                 .OrderByDescending(x => x.Id)
                 .Select(x => x.RevisionNumber)
                 .FirstOrDefault();
 
-            var increaseVersionNumber = 1;
-            var convertversionnumber = (increaseVersionNumber);
-            var version = getOldRevisionNumber + convertversionnumber;
-            purchaseOrder.RevisionNumber = (version);
+            purchaseOrder.RevisionNumber = (getOldRevisionNumber + 1);
             var result = await Create(purchaseOrder);
             return result;
         }
@@ -167,12 +179,23 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalINameList()
         {
+            //IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders
+            //                .Where(x => x.POApprovalI == false).Select(x => new PurchaseOrderIdNameListDto()
+            //                {
+            //                    Id = x.Id,
+            //                    PONumber = x.PONumber,
+            //                }).Distinct().ToListAsync();
+
             IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders
-                            .Where(x => x.POApprovalI == false).Select(x => new PurchaseOrderIdNameListDto()
-                            {
-                                Id = x.Id,
-                                PONumber = x.PONumber,
-                            }).ToListAsync();
+            .Where(x => x.POApprovalI == false && x.IsModified == false)
+            .GroupBy(x => x.PONumber)
+            .Select(g => new PurchaseOrderIdNameListDto()
+            {
+                Id = g.OrderByDescending(x => x.RevisionNumber).FirstOrDefault().Id,
+                PONumber = g.Key
+            })
+            .ToListAsync();
+
 
 
             return pendingPOApprovalINameList;
@@ -180,12 +203,23 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIINameList()
         {
+            //IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalIINameList = await _tipsPurchaseDbContext.PurchaseOrders
+            //                .Where(x => x.POApprovalII == false && x.IsDeleted == false && x.IsModified ==false).Select(x => new PurchaseOrderIdNameListDto()
+            //                {
+            //                    Id = x.Id,
+            //                    PONumber = x.PONumber,
+            //                }).ToListAsync();
+
+
             IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalIINameList = await _tipsPurchaseDbContext.PurchaseOrders
-                            .Where(x => x.POApprovalII == false).Select(x => new PurchaseOrderIdNameListDto()
-                            {
-                                Id = x.Id,
-                                PONumber = x.PONumber,
-                            }).ToListAsync();
+            .Where(x => x.POApprovalII == false && x.IsDeleted == false && x.IsModified == false)
+            .GroupBy(x => x.PONumber)
+            .Select(g => new PurchaseOrderIdNameListDto()
+            {
+                Id = g.OrderByDescending(x => x.RevisionNumber).FirstOrDefault().Id,
+                PONumber = g.Key
+            })
+            .ToListAsync();
 
 
             return pendingPOApprovalIINameList;
@@ -225,7 +259,8 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<PurchaseOrder> GetPurchaseOrderByPONumber(string poNumber)
         {
-            var purchaseOrderDetailbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.PONumber == poNumber)
+            var purchaseOrderDetailbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders
+                .Where(x => x.PONumber == poNumber && x.IsDeleted== false && x.IsModified == false)
                 .Include(o => o.POFiles)
                 .Include(t => t.POItemList)
                                 .ThenInclude(x => x.POAddprojects)
