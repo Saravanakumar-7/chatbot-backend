@@ -151,7 +151,72 @@ namespace Tips.Purchase.Api.Controllers
 
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetPurchaseOrderByPoNoAndRevNo(string PONumber,int revisionNumber)
+        {
+            ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
+            try
+            {
+                var purchaseOrderDetail = await _repository.GetPurchaseOrderByPONoAndRevNo(PONumber, revisionNumber);
 
+                if (purchaseOrderDetail == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder  hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder with id: {PONumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {PONumber}");
+
+                    PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetail);
+                    List<PoItemsDto> poItemDtoList = new List<PoItemsDto>();
+
+                    List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
+
+                    if (purchaseOrderDto.POFiles.Count() != 0)
+                    {
+                        foreach (var documentUploadDetails in purchaseOrderDto.POFiles)
+                        {
+                            DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
+                            documentUplaodDtoList.Add(poItemDtos);
+                        }
+                    }
+                    purchaseOrderDto.POFiles = documentUplaodDtoList;
+                    if (purchaseOrderDetail.POItemList != null)
+                    {
+                        foreach (var poItemDetails in purchaseOrderDetail.POItemList)
+                        {
+                            PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
+                            poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
+                            poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
+                            poItemDtoList.Add(poItemDtos);
+                        }
+                    }
+
+                    purchaseOrderDto.POItems = poItemDtoList;
+                    serviceResponse.Data = purchaseOrderDto;
+                    serviceResponse.Message = "Returned PurchaseOrderByPONoAndRevNo Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetPurchaseOrderByPoNoAndRevNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPurchaseOrderById(int id)
