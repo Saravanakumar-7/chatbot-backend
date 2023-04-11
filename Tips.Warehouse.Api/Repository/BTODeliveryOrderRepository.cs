@@ -51,13 +51,15 @@ namespace Tips.Warehouse.Api.Repository
             {
                 var query = _tipsWarehouseDbContext.bTODeliveryOrder.Include("BTODeliveryOrderItems");
                 if (bTODeliveryOrderSearch != null || (bTODeliveryOrderSearch.SalesOrderNumber.Any())
-               && bTODeliveryOrderSearch.CustomerName.Any() && bTODeliveryOrderSearch.PONumber.Any() && bTODeliveryOrderSearch.IssuedTo.Any())
+                 && bTODeliveryOrderSearch.BTONumber.Any() && bTODeliveryOrderSearch.CustomerName.Any() 
+                 && bTODeliveryOrderSearch.PONumber.Any() && bTODeliveryOrderSearch.IssuedTo.Any())
 
                 {
                     query = query.Where
                     (po => (bTODeliveryOrderSearch.CustomerName.Any() ? bTODeliveryOrderSearch.CustomerName.Contains(po.CustomerName) : true)
                    //&& (bTODeliveryOrderSearch.SalesOrderNumber.Any() ? bTODeliveryOrderSearch.SalesOrderNumber.Contains(po.SalesOrderNumber) : true)
                    && (bTODeliveryOrderSearch.PONumber.Any() ? bTODeliveryOrderSearch.PONumber.Contains(po.PONumber) : true)
+                   && (bTODeliveryOrderSearch.BTONumber.Any() ? bTODeliveryOrderSearch.BTONumber.Contains(po.BTONumber) : true)
                    && (bTODeliveryOrderSearch.IssuedTo.Any() ? bTODeliveryOrderSearch.IssuedTo.Contains(po.IssuedTo) : true));
                 }
                 return query.ToList();

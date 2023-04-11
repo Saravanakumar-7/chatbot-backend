@@ -120,7 +120,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
     {
         public List<string>? PrNumber { get; set; }
         public List<string>? ProcurementType { get; set; }
-        public List<string>? ItemNumber { get; set; }
+        public List<string>? ShippingMode { get; set; }
         public List<Status>? PRStatus { get; set; }
     }
 }

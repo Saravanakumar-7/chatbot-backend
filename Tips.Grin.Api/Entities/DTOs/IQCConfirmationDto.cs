@@ -74,7 +74,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public List<string>? GrinNumber { get; set; }
         public List<string>? VendorName { get; set; }
-        public List<string>? PONumber { get; set; }
+        public List<string>? VendorId { get; set; }
         public List<String>? InvoiceNumber { get; set; }
     }
 }

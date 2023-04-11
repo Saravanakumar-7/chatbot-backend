@@ -57,7 +57,25 @@ namespace Tips.Production.Api.Repository
                 return null;
             }
         }
-
+        //public async Task<IEnumerable<OQC>> GetAllOQCWithItems(OQCSearchDto oQCSearch)
+        //{
+        //    using (var context = _tipsProductionDbContext)
+        //    {
+        //        var query = _tipsProductionDbContext.oQCs;
+        //        if (oQCSearch != null || (oQCSearch.FGItemNumber.Any())
+        //       && oQCSearch.ShopOrderNumber.Any() && oQCSearch.SAItemNumber.Any() 
+        //       && oQCSearch.PendingQty.Any() && oQCSearch.ShopOrderQty.Any())
+        //        {
+        //            query = query.Where
+        //           (po => (oQCSearch.ShopOrderNumber.Any() ? oQCSearch.ShopOrderNumber.Contains(po.ShopOrderNumber) : true)
+        //           && (oQCSearch.SAItemNumber.Any() ? oQCSearch.SAItemNumber.Contains(po.ItemNumber) : true)
+        //           && (oQCSearch.FGItemNumber.Any() ? oQCSearch.FGItemNumber.Contains(po.ItemNumber) : true)
+        //           && (oQCSearch.PendingQty.Any() ? oQCSearch.PendingQty.Contains(po.PendingQty) : true)
+        //           && (oQCSearch.ShopOrderQty.Any() ? oQCSearch.ShopOrderQty.Contains(po.ShopOrderQty) : true)) ;
+        //        }
+        //        return query.ToList();
+        //    }
+        //}
         public Task<IEnumerable<OQC>> SearchOQCDate([FromQuery] SearchDateparames searchsDateParms)
         {
             var oQcDetails = _tipsProductionDbContext.oQCs

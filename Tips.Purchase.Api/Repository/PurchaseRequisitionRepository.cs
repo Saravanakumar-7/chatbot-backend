@@ -64,12 +64,12 @@ namespace Tips.Purchase.Api.Repository
             {
                 var query = _tipsPurchaseDbContext.PurchaseRequisitions.Include("PrItemList");
                 if (purchaseRequisitionSearch != null || (purchaseRequisitionSearch.PrNumber.Any())
-               && purchaseRequisitionSearch.ProcurementType.Any() && purchaseRequisitionSearch.ItemNumber.Any() && purchaseRequisitionSearch.PRStatus.Any())
+               && purchaseRequisitionSearch.ProcurementType.Any() && purchaseRequisitionSearch.ShippingMode.Any() && purchaseRequisitionSearch.PRStatus.Any())
                 {
                     query = query.Where
                     (po => (purchaseRequisitionSearch.PrNumber.Any() ? purchaseRequisitionSearch.PrNumber.Contains(po.PrNumber) : true)
                    && (purchaseRequisitionSearch.ProcurementType.Any() ? purchaseRequisitionSearch.ProcurementType.Contains(po.ProcurementType) : true)
-                   //&& (purchaseRequisitionSearch.ItemNumber.Any() ? purchaseRequisitionSearch.ItemNumber.Contains(po.PrItemList.)) : true)
+                   && (purchaseRequisitionSearch.ShippingMode.Any() ? purchaseRequisitionSearch.ShippingMode.Contains(po.ShippingMode) : true)
                    && (purchaseRequisitionSearch.PRStatus.Any() ? purchaseRequisitionSearch.PRStatus.Contains(po.Status) : true));
                 }
                 return query.ToList();

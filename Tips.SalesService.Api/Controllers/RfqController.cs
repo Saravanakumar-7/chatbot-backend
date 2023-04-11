@@ -106,15 +106,17 @@ namespace Tips.SalesService.Api.Controllers
                     var rfqCsRelesed = await _itemRepository.GetRfqCustomerSupportRelesedDetailsByRfqNumber(rfq);
             
                     var rfqCsUnRelesedCount = rfqCsCount.Count() - rfqCsRelesed.Count();
-                    if(rfqCsRelesed.Count() == 0)
+                    if(rfqCsRelesed.Count() == 0 )
                     {
                         getAllRfq[i].IsCsRelease = CsRelease.NotYetReleased;
                     }
-                    if(rfqCsUnRelesedCount == 0)
+                    //if(rfqCsUnRelesedCount == 0 && rfqCsCount.Count() != 0)
+                    if (rfqCsUnRelesedCount == 0)
                     {
                         getAllRfq[i].IsCsRelease = CsRelease.FullyRelease;
                     }
-                    if(rfqCsUnRelesedCount != 0 && rfqCsRelesed.Count() != 0)
+                    //if(rfqCsUnRelesedCount != 0 && rfqCsRelesed.Count() != 0)
+                    if (rfqCsUnRelesedCount != 0)
                     {
                         getAllRfq[i].IsCsRelease = CsRelease.PartiallyRelease;
                     }
