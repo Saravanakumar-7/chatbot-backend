@@ -41,6 +41,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? QuoteExpectdate { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
+        public bool IsModified { get; set; }
+
         public string Unit { get; set; }
         public string? Remarks { get; set; }
         public string? CreatedBy { get; set; }

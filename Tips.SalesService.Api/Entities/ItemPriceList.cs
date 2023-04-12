@@ -33,7 +33,8 @@ namespace Tips.SalesService.Api.Entities
         public decimal? Markup { get; set; }
         public string? PriceListName { get; set; }
         public DateTime? ValidThrough { get; set; }
-        public bool? IsDiscountApplicable { get; set; }       
+        public bool? IsDiscountApplicable { get; set; }
+        public bool IsActive { get; set; } = true;
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

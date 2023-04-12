@@ -161,6 +161,48 @@ namespace Tips.SalesService.Api.Controllers
 
         }
 
+        //passing rfqnumber and revision number to get the data
+
+        [HttpGet]
+        public async Task<IActionResult> GetRfqDeatailsByRfqNoAndRevNo(string rfqNumber, int revisionNumber)
+        {
+            ServiceResponse<RfqDto> serviceResponse = new ServiceResponse<RfqDto>();
+            try
+            {
+                var rfqDetail = await _rfqRepository.GetRfqDeatailsByRfqNoAndRevNo(rfqNumber, revisionNumber);
+
+                if (rfqDetail == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Rfq  hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Rfq with id: {rfqNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {rfqNumber}");
+                    RfqDto rfqDto = _mapper.Map<RfqDto>(rfqDetail);
+                    serviceResponse.Data = rfqDto;
+                    serviceResponse.Message = "Returned RfqDetailsByRFQNoAndRevNo Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside RfqDetailsByRFQNoAndRevNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+
+        }
 
 
         [HttpGet]
@@ -1313,7 +1355,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 var updaterfq = _mapper.Map<Rfq>(rfqUpdateDto);
                 await _rfqRepository.UpdateRfqRevNo(updaterfq);
-                updaterfq.RevisionNumber += 1;
+                //updaterfq.RevisionNumber += 1;
                 //_logger.LogInfo(result);
                 _rfqRepository.SaveAsync();
                 serviceResponse.Data = null;
