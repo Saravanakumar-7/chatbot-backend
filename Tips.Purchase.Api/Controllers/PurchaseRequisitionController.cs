@@ -79,6 +79,95 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPurchaseRequisitionByPRNoAndRevNo(string prNumber, int revisionNumber)
+        {
+            ServiceResponse<PurchaseRequisitionDto> serviceResponse = new ServiceResponse<PurchaseRequisitionDto>();
+            try
+            {
+                var purchaseRequisitionDetail = await _repository.GetPurchaseRequisitionByPRNoAndRevNo(prNumber, revisionNumber);
+
+                if (purchaseRequisitionDetail == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseRequisition  hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseRequisition with id: {prNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {prNumber}");
+
+                    PurchaseRequisitionDto purchaseRequisitionDto = _mapper.Map<PurchaseRequisitionDto>(purchaseRequisitionDetail);
+                    List<PrItemsDto> prItemDtoList = new List<PrItemsDto>();
+
+                    List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
+
+                    if (purchaseRequisitionDto.PrFiles.Count() != 0)
+                    {
+                        foreach (var documentUploadDetails in purchaseRequisitionDto.PrFiles)
+                        {
+                            DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
+                            documentUplaodDtoList.Add(poItemDtos);
+                        }
+                    }
+                    purchaseRequisitionDto.PrFiles = documentUplaodDtoList;
+                    if (purchaseRequisitionDetail.PrItemList != null)
+                    {
+                        foreach (var prItemDetails in purchaseRequisitionDetail.PrItemList)
+                        {
+                            PrItemsDto prItemDtos = _mapper.Map<PrItemsDto>(prItemDetails);
+                            prItemDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(prItemDetails.PrAddprojects);
+                            prItemDtos.PrAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliveryScheduleDto>>(prItemDetails.PrAddDeliverySchedules);
+                            prItemDtoList.Add(prItemDtos);
+                        }
+                    }
+                    purchaseRequisitionDto.PrItemsDtoList = prItemDtoList;
+                    serviceResponse.Data = purchaseRequisitionDto;
+                    serviceResponse.Message = "Returned PurchaseRequisitionByPONoAndRevNo Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetPurchaseRequisitionByPONoAndRevNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+        [HttpGet("{PRNumber}")]
+        public async Task<IActionResult> GetAllRevisionNumberListByPRNumber(string PRNumber)
+        {
+            ServiceResponse<IEnumerable<PurchaseRequistionRevNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequistionRevNoListDto>>();
+            try
+            {
+                var revNumberDetailsbyPRNumber = await _repository.GetAllRevisionNumberListByPRNumber(PRNumber);
+                var result = _mapper.Map<IEnumerable<PurchaseRequistionRevNoListDto>>(revNumberDetailsbyPRNumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all RevisionNumberList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllRevisionNumberListByPRNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> SearchPurchaseRequisitionDate([FromQuery] SearchDatesParams searchDateParam)
         {

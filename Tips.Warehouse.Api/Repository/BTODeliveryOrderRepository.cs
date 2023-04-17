@@ -48,7 +48,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<IEnumerable<BTODeliveryOrder>> GetAllBTODeliveryOrderWithItems(BTODeliveryOrderSearchDto bTODeliveryOrderSearch)
         {
             using (var context = _tipsWarehouseDbContext)
-            {
+            { 
                 var query = _tipsWarehouseDbContext.bTODeliveryOrder.Include("BTODeliveryOrderItems");
                 if (bTODeliveryOrderSearch != null || (bTODeliveryOrderSearch.SalesOrderNumber.Any())
                  && bTODeliveryOrderSearch.BTONumber.Any() && bTODeliveryOrderSearch.CustomerName.Any() 

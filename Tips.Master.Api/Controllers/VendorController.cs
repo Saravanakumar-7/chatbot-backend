@@ -30,14 +30,14 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<VendorController>
         [HttpGet]
-        public async Task<IActionResult> GetAllVendorMasters([FromQuery] PagingParameter pagingParameter)
-        {
-            ServiceResponse<IEnumerable<VendorMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<VendorMasterDto>>();
+        
+            public async Task<IActionResult> GetAllVendorMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+            { 
+                ServiceResponse<IEnumerable<VendorMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<VendorMasterDto>>();
 
             try
             {
-                var getAllVendorMastersList = await _repository.VendorRepository.GetAllVendorMasters(pagingParameter);
-
+                 var getAllVendorMastersList = await _repository.VendorRepository.GetAllVendorMasters(pagingParameter, searchParams);
                 var metadata = new
                 {
                     getAllVendorMastersList.TotalCount,
@@ -307,5 +307,78 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> ActivateVendorMaster(int id)
+        {
+            ServiceResponse<VendorMasterDto> serviceResponse = new ServiceResponse<VendorMasterDto>();
+            try
+            {
+                var vendorMasters = await _repository.VendorRepository.GetVendorMasterById(id);
+                if (vendorMasters is null)
+                {
+                    _logger.LogError($"vendorMasters with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "vendorMasters object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                vendorMasters.IsActive = true;
+                string result = await _repository.VendorRepository.UpdateVendorMaster(vendorMasters);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Activate Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ActivateVendorMaster action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> DeactivateVendorMaster(int id)
+        {
+            ServiceResponse<VendorMasterDto> serviceResponse = new ServiceResponse<VendorMasterDto>();
+            try
+            {
+                var vendorMasters = await _repository.VendorRepository.GetVendorMasterById(id);
+                if (vendorMasters is null)
+                {
+                    _logger.LogError($"vendorMasters with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "vendorMasters object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                vendorMasters.IsActive = false;
+                string result = await _repository.VendorRepository.UpdateVendorMaster(vendorMasters);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Deactivate Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeactivateVendorMaster action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

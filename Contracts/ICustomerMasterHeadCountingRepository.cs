@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface ICustomerMasterHeadCountingRepository
     {
-        Task<PagedList<CustomerMasterHeadCounting>> GetAllCustomerMasterHeadCountings(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CustomerMasterHeadCounting>> GetAllCustomerMasterHeadCountings();
         Task<CustomerMasterHeadCounting> GetCustomerMasterHeadCountingById(int id);
-        Task<PagedList<CustomerMasterHeadCounting>> GetAllActiveCustomerMasterHeadCountings(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CustomerMasterHeadCounting>> GetAllActiveCustomerMasterHeadCountings();
         Task<int?> CreateCustomerMasterHeadCounting(CustomerMasterHeadCounting customerMasterHeadCounting);
         Task<string> UpdateCustomerMasterHeadCounting(CustomerMasterHeadCounting customerMasterHeadCounting);
         Task<string> DeleteCustomerMasterHeadCounting(CustomerMasterHeadCounting customerMasterHeadCounting);

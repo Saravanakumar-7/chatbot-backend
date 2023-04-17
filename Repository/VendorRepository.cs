@@ -39,23 +39,17 @@ namespace Repository
             
 
         }
-
-        public async Task<PagedList<VendorMaster>> GetAllVendorMasters(PagingParameter pagingParameter)
+        public async Task<PagedList<VendorMaster>> GetAllVendorMasters(PagingParameter pagingParameter, SearchParames searchParams)
         {
+            var itemmasterDetails = FindAll().OrderByDescending(x => x.Id)
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue) ||
+            inv.VendorType.Contains(searchParams.SearchValue) || inv.VendorAliasName.Contains(searchParams.SearchValue))))
+            .Include(a => a.VendorBankings)
+            .Include(a => a.Addresses)
+            .Include(a => a.HeadCountings)
+            .Include(a => a.Contacts);
 
-            var getAllVendorMastersList = PagedList<VendorMaster>.ToPagedList(FindAll()
-                                .Include(t => t.VendorBankings)
-                                .Include(x => x.Addresses)
-                                .Include(m => m.Contacts)
-                                .Include(v => v.HeadCountings)
-               .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-
-
-
-            return getAllVendorMastersList;
-            
-
-
+            return PagedList<VendorMaster>.ToPagedList(itemmasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<VendorMaster> GetVendorMasterById(int id)
@@ -91,6 +85,7 @@ namespace Repository
         public async Task<IEnumerable<VendorIdNameListDto>> GetAllActiveVendorMasterNameList()
         {
             IEnumerable<VendorIdNameListDto> getAllActiveVendorMasterNameList = await TipsMasterDbContext.VendorMasters
+                                .Where(x => x.IsActive == true)
                                 .Select(x => new VendorIdNameListDto()
                                 {
                                     Id = x.Id,

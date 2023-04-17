@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface IEnggBomAlternatesRepository
     {
-        Task<PagedList<EnggAlternates>> GetAllEnggAlternate(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<EnggAlternates>> GetAllEnggAlternate();
         Task<EnggAlternates> GetEnggAlternateById(int id);
-        Task<PagedList<EnggAlternates>> GetAllActiveEnggAlternate(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<EnggAlternates>> GetAllActiveEnggAlternate();
         Task<int?> CreateEnggAlternate(EnggAlternates enggAlternates);
         Task<string> UpdateEnggAlternate(EnggAlternates enggAlternates);
         Task<string> DeleteEnggAlternate(EnggAlternates enggAlternates);

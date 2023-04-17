@@ -16,7 +16,7 @@ namespace Contracts
         Task<EnggBom> GetEnggBomByItemNoAndRevNo(string itemNumber,decimal revisionNumber);
         Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber);
         Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom);
-        Task<PagedList<EnggBom>> GetAllActiveEnggBom(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<EnggBom>> GetAllActiveEnggBom();
         Task<int?> CreateEnggBom(EnggBom enggBom);
         Task<string> UpdateEnggBom(EnggBom enggBom);
         Task<string> DeleteEnggBom(EnggBom enggBom); 
@@ -24,6 +24,7 @@ namespace Contracts
         Task <IEnumerable<object>> GetAllEnggBomItemNumberVersionList();
         Task<EnggBom> ReleasedEnggBomByItemAndRevisionNumber(string itemNumber,decimal revisionNumber);
         Task<IEnumerable<EngineeringBom>> GetAllEnggBomVersionListByItemNumber(string itemNumber);
+        Task<IEnumerable<EnggBomItemDto>> GetAllEnggBOMItemNumber();
         Task<List<EnggBomFGItemNumberWithQtyDto>> GetFGBomItemsChildDetails(List<string> itemNumberList);
     }
 }

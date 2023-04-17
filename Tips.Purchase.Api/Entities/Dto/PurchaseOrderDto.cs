@@ -135,5 +135,9 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public List<Status>? Status { get; set; }
 
     }
+    public class PurchaseOrderRevNoListDto
+    {
+        public int? RevisionNumber { get; set; }
+    }
 
 }

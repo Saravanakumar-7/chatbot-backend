@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface IItemmasterAlternate
     {
-        Task<PagedList<ItemmasterAlternate>> GetAllItemmasterAlternates(PagingParameter pagingParameter, SearchParames searchParames);
+        Task<IEnumerable<ItemmasterAlternate>> GetAllItemmasterAlternates();
         Task<ItemmasterAlternate> GetItemmasterAlternateById(int id);
-        Task<PagedList<ItemmasterAlternate>> GetAllActiveItemmasterAlternates(PagingParameter pagingParameter, SearchParames searchParames);
+        Task<IEnumerable<ItemmasterAlternate>> GetAllActiveItemmasterAlternates();
         Task<int?> CreateItemmasterAlternate(ItemmasterAlternate itemmasterAlternate);
         Task<string> UpdateItemmasterAlternate(ItemmasterAlternate itemmasterAlternate);
         Task<string> DeleteItemmasterAlternate(ItemmasterAlternate itemmasterAlternate);

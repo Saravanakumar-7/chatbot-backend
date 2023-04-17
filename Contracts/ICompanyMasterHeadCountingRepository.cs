@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface ICompanyMasterHeadCountingRepository
     {
-        Task<PagedList<CompanyMasterHeadCounting>> GetAllCompanyMasterHeadCountings(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CompanyMasterHeadCounting>> GetAllCompanyMasterHeadCountings();
         Task<CompanyMasterHeadCounting> GetCompanyMasterHeadCountingById(int id);
-        Task<PagedList<CompanyMasterHeadCounting>> GetAllActiveCompanyMasterHeadCountings(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CompanyMasterHeadCounting>> GetAllActiveCompanyMasterHeadCountings();
         Task<int?> CreateCompanyMasterHeadCounting(CompanyMasterHeadCounting companyMasterHeadCounting);
         Task<string> UpdateCompanyMasterHeadCounting(CompanyMasterHeadCounting companyMasterHeadCounting);
         Task<string> DeleteCompanyMasterHeadCounting(CompanyMasterHeadCounting companyMasterHeadCounting);

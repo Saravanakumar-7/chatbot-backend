@@ -127,4 +127,9 @@ namespace Entities.DTOs
         public decimal QtyReq { set; get; }
 
     }
+    public class EnggBomItemDto
+    {
+        public string ItemNumber { get; set; }
+
+    }
 }

@@ -35,21 +35,18 @@ namespace Repository
             Delete(itemMaster);
             string result = $"ItemMaster details of {itemMaster.Id} is deleted successfully!";
             return result;
-        }
+        }         
 
-        public async Task<PagedList<ItemMaster>> GetAllActiveItemMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<ItemMaster>> GetAllActiveItemMasters()
         {
-            var itemmasterDetails = FindAll().OrderByDescending(x => x.Id)
-                             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-                                inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)) 
-                                || inv.Commodity.Contains(searchParams.SearchValue) || inv.MaterialGroup.Contains(searchParams.SearchValue))))
-                               .Include(t => t.ItemmasterAlternate)
-                         .Include(t => t.ItemMasterApprovedVendor)
-                         .Include(t => t.ItemMasterFileUpload)
-                          .Include(d => d.ItemMasterRouting)
-                          .Include(d => d.ItemMasterWarehouse);
-
-            return PagedList<ItemMaster>.ToPagedList(itemmasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var allActiveCompanyMasters = await FindByCondition(x => x.IsActive == true)
+            .Include(t => t.ItemmasterAlternate)
+            .Include(t => t.ItemMasterApprovedVendor)
+            .Include(t => t.ItemMasterFileUpload)
+            .Include(d => d.ItemMasterRouting)
+            .Include(d => d.ItemMasterWarehouse)
+            .ToListAsync();
+            return allActiveCompanyMasters;
         }
 
         public async Task<PagedList<ItemMaster>> GetAllItemMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
@@ -67,83 +64,52 @@ namespace Repository
             return PagedList<ItemMaster>.ToPagedList(itemmasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        
-
-
-        public async Task<PagedList<ItemMaster>> GetAllFGItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<ItemMaster>> GetAllFGItems()
         {
-             
-
-             var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id)
-                  .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-              inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue) )
-              )) && inv.ItemType == PartType.FG )
-                           .Include(t => t.ItemmasterAlternate)
-                          .Include(t => t.ItemMasterApprovedVendor)
-                          .Include(t => t.ItemMasterFileUpload)
-                           .Include(d => d.ItemMasterRouting)
-                           .Include(d => d.ItemMasterWarehouse);
-
-             return PagedList<ItemMaster>.ToPagedList(itemmasterFgDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-
-         }
-
-
-
-        public async Task<PagedList<ItemMaster>> GetAllSAPurchasePartItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
-        {
-            
-
-
-            var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id)
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))) && (inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart))
-                         .Include(t => t.ItemmasterAlternate)
-                        .Include(t => t.ItemMasterApprovedVendor)
-                        .Include(t => t.ItemMasterFileUpload)
-                         .Include(d => d.ItemMasterRouting)
-                         .Include(d => d.ItemMasterWarehouse);
-
-            return PagedList<ItemMaster>.ToPagedList(itemmasterSADetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-
-
-
-
-        }
-        public async Task<PagedList<ItemMaster>> GetAllSAItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
-        {
-            
-
-            var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id)
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))) && inv.ItemType == PartType.SA)
-                         .Include(t => t.ItemmasterAlternate)
-                        .Include(t => t.ItemMasterApprovedVendor)
-                        .Include(t => t.ItemMasterFileUpload)
-                         .Include(d => d.ItemMasterRouting)
-                         .Include(d => d.ItemMasterWarehouse);
-
-            return PagedList<ItemMaster>.ToPagedList(itemmasterSADetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-
-        }
-        public async Task<PagedList<ItemMaster>> GetAllFgSaItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
-        { 
-
-            var itemmasterFgSADetails = FindAll().OrderByDescending(a => a.Id)
-               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-           inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue)))) && (inv.ItemType == PartType.SA || inv.ItemType == PartType.FG))
-                         .Include(c => c.FileUpload)
-                            .Include(x => x.ImageUpload)
-                            .Include(t => t.ItemmasterAlternate)
-                                .Include(x => x.ItemMasterApprovedVendor)
-                                .Include(m => m.ItemMasterFileUpload)
-                                .Include(s => s.ItemMasterRouting)
-                                .Include(f => f.ItemMasterWarehouse);
-
-            return PagedList<ItemMaster>.ToPagedList(itemmasterFgSADetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-
+            var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id)
+                .Where(inv => inv.ItemType == PartType.FG)
+            .Include(t => t.ItemmasterAlternate)
+            .Include(t => t.ItemMasterApprovedVendor)
+            .Include(t => t.ItemMasterFileUpload)
+            .Include(d => d.ItemMasterRouting)
+            .Include(d => d.ItemMasterWarehouse);
+            return itemmasterFgDetails;
         }
 
+        public async Task<IEnumerable<ItemMaster>> GetAllSAPurchasePartItems()
+        {
+            var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id).Where(inv => inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart)
+            .Include(t => t.ItemmasterAlternate)
+            .Include(t => t.ItemMasterApprovedVendor)
+            .Include(t => t.ItemMasterFileUpload)
+            .Include(d => d.ItemMasterRouting)
+            .Include(d => d.ItemMasterWarehouse);
+            return itemmasterFgDetails;
+        }
+         
+
+        public async Task<IEnumerable<ItemMaster>> GetAllSAItems()
+        {
+            var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id).Where(inv => inv.ItemType == PartType.SA)
+            .Include(t => t.ItemmasterAlternate)
+            .Include(t => t.ItemMasterApprovedVendor)
+            .Include(t => t.ItemMasterFileUpload)
+            .Include(d => d.ItemMasterRouting)
+            .Include(d => d.ItemMasterWarehouse);
+            return itemmasterSADetails;
+        }
+       public async Task<IEnumerable<ItemMaster>> GetAllFgSaItems()
+        {
+            var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id).Where(inv => inv.ItemType == PartType.SA || inv.ItemType == PartType.FG)
+            .Include(c => c.FileUpload)
+            .Include(x => x.ImageUpload)
+            .Include(t => t.ItemmasterAlternate)
+            .Include(t => t.ItemMasterApprovedVendor)
+            .Include(t => t.ItemMasterFileUpload)
+            .Include(d => d.ItemMasterRouting)
+            .Include(d => d.ItemMasterWarehouse);
+            return itemmasterSADetails;
+        }
         //sa,fg, and fru
 
         public async Task<IEnumerable<ItemMaster>> GetAllFgSaFruItems()
@@ -158,23 +124,7 @@ namespace Repository
                                 .Include(s => s.ItemMasterRouting)
                                 .Include(f => f.ItemMasterWarehouse).ToList();
             return itemmasterFgSaFRUDetails;
-
-            // var itemmasterFgSaFRUDetails = FindAll().OrderByDescending(a => a.Id)
-            //    .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-            //inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue))))
-            //&& (inv.ItemType == PartType.SA || inv.ItemType == PartType.FG || inv.ItemType == PartType.FRU))
-            //              .Include(c => c.FileUpload)
-            //                 .Include(x => x.ImageUpload)
-            //                 .Include(t => t.ItemmasterAlternate)
-            //                     .Include(x => x.ItemMasterApprovedVendor)
-            //                     .Include(m => m.ItemMasterFileUpload)
-            //                     .Include(s => s.ItemMasterRouting)
-            //                     .Include(f => f.ItemMasterWarehouse);
-
-
-
-            //return PagedList<ItemMaster>.ToPagedList(itemmasterFgSaFRUDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-
+             
 
         }
 

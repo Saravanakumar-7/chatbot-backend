@@ -35,7 +35,8 @@ namespace Tips.SalesService.Api.Entities
         public bool? IsEnggComplete { get; set; } = false;
         public bool? IsLpCosting { get; set; } = false;
         public bool? IsLpCostingRelease { get; set; } = false;
-        public bool? isSourcingAvailable { get; set; } = false;       
+        public bool? isSourcingAvailable { get; set; } = false;
+        public bool IsModified { get; set; } = false;
 
         [DefaultValue(0)]
         public CsRelease ReleaseStatus { get; set; }

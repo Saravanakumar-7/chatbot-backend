@@ -123,4 +123,9 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public List<string>? ShippingMode { get; set; }
         public List<Status>? PRStatus { get; set; }
     }
+    public class PurchaseRequistionRevNoListDto
+    {
+        public int? RevisionNumber { get; set; }
+
+    }
 }
