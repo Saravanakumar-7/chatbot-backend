@@ -859,6 +859,7 @@ namespace Tips.SalesService.Api.Controllers
                 string jsonString = JsonConvert.SerializeObject(bomData[0].bomVersionNo);
                 JArray jArray = JArray.Parse(jsonString);
                 decimal[] bomVersionNo = jArray.ToObject<decimal[]>();
+                //List<decimal> bomVersionNo = jArray.ToObject<List<decimal>>();
 
                 ItemDetailsForShopOrderDto itemDetailsDto = new ItemDetailsForShopOrderDto();
                 itemDetailsDto.ItemNumber = bomData[0].itemNumber;
@@ -893,7 +894,7 @@ namespace Tips.SalesService.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetSASalesOrderDetailsByItemNo(string itemNumber)
         {
-            ServiceResponse<ItemDetailsForShopOrderDto> serviceResponse = new ServiceResponse<ItemDetailsForShopOrderDto>();
+            ServiceResponse<SARevisionNumber> serviceResponse = new ServiceResponse<SARevisionNumber>();
             try
             {
                 var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomSAListByItemNumber?", "ItemNumber=", itemNumber));
@@ -904,9 +905,17 @@ namespace Tips.SalesService.Api.Controllers
                 string jsonString = JsonConvert.SerializeObject(bomData[0].bomVersionNo);
                 JArray jArray = JArray.Parse(jsonString);
                 decimal[] bomVersionNo = jArray.ToObject<decimal[]>();
+                //List<decimal> bomVersionNo = jArray.ToObject<List<decimal>>();
+                //decimal bomVersionNo = decimal.Parse(bomData[0].bomVersionNo.ToString());
 
-                ItemDetailsForShopOrderDto itemDetailsDto = new ItemDetailsForShopOrderDto();
+
+                string jString = JsonConvert.SerializeObject(bomData[0].fgItemNumber);
+                JArray jsonArray = JArray.Parse(jString);
+                List<string> fgItemNumber = jsonArray.ToObject<List<string>>();
+
+                SARevisionNumber itemDetailsDto = new SARevisionNumber();
                 itemDetailsDto.ItemNumber = bomData[0].itemNumber;
+                itemDetailsDto.FGItemNumber = fgItemNumber;
                 itemDetailsDto.ItemType = bomData[0].itemType;
                 itemDetailsDto.BomVersionNo = bomVersionNo;
 

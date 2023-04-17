@@ -1,4 +1,5 @@
-﻿using Microsoft.Build.Framework;
+﻿using Entities.Enums;
+using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -199,10 +200,19 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal Qty { get; set; }
 
     }
+    public class SARevisionNumber
+    {
+        public string ItemNumber { get; set; }
+        public List<string> FGItemNumber { get; set; }
+        public PartType ItemType { get; set; }
+        public decimal[] BomVersionNo { get; set; }
+        public List<ProjectSODetailDto>? ProjectSODetails { get; set; }
+
+    }
     public class ItemDetailsForShopOrderDto
     {
         public string ItemNumber { get; set; }
-        public string ItemType { get; set; }
+        public PartType ItemType { get; set; }
         public decimal[] BomVersionNo { get; set; }
         public List<ProjectSODetailDto>? ProjectSODetails { get; set; }
     }

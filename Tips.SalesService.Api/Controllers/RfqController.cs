@@ -110,13 +110,13 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         getAllRfq[i].IsCsRelease = CsRelease.NotYetReleased;
                     }
-                    //if(rfqCsUnRelesedCount == 0 && rfqCsCount.Count() != 0)
-                    if (rfqCsUnRelesedCount == 0)
+                    if(rfqCsUnRelesedCount == 0 && rfqCsCount.Count() != 0)
+                    //if (rfqCsUnRelesedCount == 0)
                     {
                         getAllRfq[i].IsCsRelease = CsRelease.FullyRelease;
                     }
-                    //if(rfqCsUnRelesedCount != 0 && rfqCsRelesed.Count() != 0)
-                    if (rfqCsUnRelesedCount != 0)
+                    if(rfqCsUnRelesedCount != 0 && rfqCsRelesed.Count() != 0)
+                    //if (rfqCsUnRelesedCount != 0)
                     {
                         getAllRfq[i].IsCsRelease = CsRelease.PartiallyRelease;
                     }
