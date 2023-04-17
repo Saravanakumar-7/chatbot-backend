@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface IItemMasterWarehouse
     {
-        Task<PagedList<ItemMasterWarehouse>> GetAllItemMasterWarehouses(PagingParameter pagingParameter, SearchParames searchParames);
+        Task<IEnumerable<ItemMasterWarehouse>> GetAllItemMasterWarehouses();
         Task<ItemMasterWarehouse> GetItemMasterWarehouseById(int id);
-        Task<PagedList<ItemMasterWarehouse>> GetAllActiveItemMasterWarehouses(PagingParameter pagingParameter, SearchParames searchParames);
+        Task<IEnumerable<ItemMasterWarehouse>> GetAllActiveItemMasterWarehouses();
         Task<int?> CreateItemMasterWarehouse(ItemMasterWarehouse itemMasterWarehouse);
         Task<string> UpdateItemMasterWarehouse(ItemMasterWarehouse itemMasterWarehouse);
         Task<string> DeleteItemMasterWarehouse(ItemMasterWarehouse itemMasterWarehouse);

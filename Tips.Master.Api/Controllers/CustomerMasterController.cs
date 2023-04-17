@@ -358,6 +358,82 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> ActivateCustomerMaster(int id)
+        {
+            ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();
+
+            try
+            {
+                var customerMaster = await _repository.CustomerMasterRepository.GetCustomerMasterById(id);
+                if (customerMaster is null)
+                {
+                    _logger.LogError($"customerMaster with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "customerMaster object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                customerMaster.IsActive = true;
+                string result = await _repository.CustomerMasterRepository.UpdateCustomerMaster(customerMaster);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Activate Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ActivateCustomerMaster action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> DeactivateCustomerMaster(int id)
+        {
+            ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();
+
+            try
+            {
+                var customerMaster = await _repository.CustomerMasterRepository.GetCustomerMasterById(id);
+                if (customerMaster is null)
+                {
+                    _logger.LogError($"customerMaster with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "customerMaster object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                customerMaster.IsActive = false;
+                string result = await _repository.CustomerMasterRepository.UpdateCustomerMaster(customerMaster);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "DeActivate Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeactivateCustomerMaster action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
     }
 }

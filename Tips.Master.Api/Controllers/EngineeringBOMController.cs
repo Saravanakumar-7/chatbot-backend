@@ -903,6 +903,35 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllEnggBOMItemNumber()
+        {
+            ServiceResponse<IEnumerable<EnggBomItemDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomItemDto>>();
+            try
+            {
+                var listOfBomItem = await _repository.EnggBomRepository.GetAllEnggBOMItemNumber();
+
+                _logger.LogInfo("Returned all EnggBomsItems");
+                var bomDtoDetails = _mapper.Map<IEnumerable<EnggBomItemDto>>(listOfBomItem);
+                serviceResponse.Data = bomDtoDetails;
+                serviceResponse.Message = "Returned all Engineering BomItems Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         //aravind
         [HttpPost]
         public async Task<IActionResult> GetFGBomItemsChildDetails([FromBody] List<string> itemNumber)
@@ -1191,22 +1220,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<EnggBomGroupController>
         [HttpGet]
-        public async Task<IActionResult> GetAllEnggBomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllEnggBomGroup()
         {
             ServiceResponse<IEnumerable<EnggBomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomGroupDto>>();
             try
             {
-                var listOfEnggBomGroup = await _repository.EnggBomGroupRepository.GetAllEnggBomGroup(pagingParameter, searchParams);
-                var metadata = new
-                {
-                    listOfEnggBomGroup.TotalCount,
-                    listOfEnggBomGroup.PageSize,
-                    listOfEnggBomGroup.CurrentPage,
-                    listOfEnggBomGroup.HasNext,
-                    listOfEnggBomGroup.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                var listOfEnggBomGroup = await _repository.EnggBomGroupRepository.GetAllEnggBomGroup();
+                
 
                 _logger.LogInfo("Returned all EnggBomGroup");
                 var enggbomGroupEntity = _mapper.Map<IEnumerable<EnggBomGroupDto>>(listOfEnggBomGroup);
@@ -1229,13 +1249,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<EnggBomGroupController>
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveEnggBomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveEnggBomGroup()
         {
             ServiceResponse<IEnumerable<EnggBomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomGroupDto>>();
 
             try
             {
-                var enggBomGroupList = await _repository.EnggBomGroupRepository.GetAllActiveEnggBomGroup(pagingParameter, searchParams);
+                var enggBomGroupList = await _repository.EnggBomGroupRepository.GetAllActiveEnggBomGroup();
                 _logger.LogInfo("Returned all ActiveEnggBomGroup");
                 var enggbomGroupEntity = _mapper.Map<IEnumerable<EnggBomGroupDto>>(enggBomGroupList);
                 serviceResponse.Data = enggbomGroupEntity;
@@ -1438,22 +1458,22 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<EnggCustomFieldController>
         [HttpGet]
-        public async Task<IActionResult> GetAllEnggCustomField([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllEnggCustomField()
         {
             ServiceResponse<IEnumerable<EnggCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggCustomFieldDto>>();
             try
             {
-                var listOfEnggCustomField = await _repository.EnggCustomFieldRepository.GetAllEnggCustomFields(pagingParameter, searchParams);
-                var metadata = new
-                {
-                    listOfEnggCustomField.TotalCount,
-                    listOfEnggCustomField.PageSize,
-                    listOfEnggCustomField.CurrentPage,
-                    listOfEnggCustomField.HasNext,
-                    listOfEnggCustomField.HasPreviuos
-                };
+                var listOfEnggCustomField = await _repository.EnggCustomFieldRepository.GetAllEnggCustomFields();
+                //var metadata = new
+                //{
+                //    listOfEnggCustomField.TotalCount,
+                //    listOfEnggCustomField.PageSize,
+                //    listOfEnggCustomField.CurrentPage,
+                //    listOfEnggCustomField.HasNext,
+                //    listOfEnggCustomField.HasPreviuos
+                //};
 
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                //Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all EnggCustomField");
                 var enggcustomFieldEntity = _mapper.Map<IEnumerable<EnggCustomFieldDto>>(listOfEnggCustomField);
@@ -1476,13 +1496,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<EnggCustomFieldController>
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveEnggCustomField([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveEnggCustomField()
         {
             ServiceResponse<IEnumerable<EnggCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggCustomFieldDto>>();
 
             try
             {
-                var enggCustomFieldEntityList = await _repository.EnggCustomFieldRepository.GetAllActiveEnggCustomFields(pagingParameter, searchParams);
+                var enggCustomFieldEntityList = await _repository.EnggCustomFieldRepository.GetAllActiveEnggCustomFields();
                 _logger.LogInfo("Returned all EnggActiveCustomField");
                 var enggCustomFieldEntity = _mapper.Map<IEnumerable<EnggCustomFieldDto>>(enggCustomFieldEntityList);
                 serviceResponse.Data = enggCustomFieldEntity;

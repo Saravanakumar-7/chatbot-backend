@@ -116,7 +116,8 @@ namespace Entities.DTOs
 
     public class EnggBomFGItemNumber
     {
-        public string ItemNumber { set; get; } 
+        public string ItemNumber { set; get; }
+        public string ItemDescription { set; get; }
 
     }
     public class EnggBomFGItemNumberWithQtyDto
@@ -124,6 +125,11 @@ namespace Entities.DTOs
         public string ItemNumber { set; get; }
         public string ItemDescription { set; get; }
         public decimal QtyReq { set; get; }
+
+    }
+    public class EnggBomItemDto
+    {
+        public string ItemNumber { get; set; }
 
     }
 }

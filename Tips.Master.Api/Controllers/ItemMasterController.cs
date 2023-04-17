@@ -76,7 +76,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var getAllFGItemsList = await _repository.ItemMasterRepository.GetAllFGItems(pagingParameter, searchParams);
+                var getAllFGItemsList = await _repository.ItemMasterRepository.GetAllFGItems();
                 _logger.LogInfo("Returned all FGItemMasters");
 
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGItemsList);
@@ -109,7 +109,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var getAllSAItemsList = await _repository.ItemMasterRepository.GetAllSAItems(pagingParameter, searchParams);
+                var getAllSAItemsList = await _repository.ItemMasterRepository.GetAllSAItems();
                 _logger.LogInfo("Returned all SAItemMasters");
 
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllSAItemsList);
@@ -137,7 +137,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaItems(pagingParameter, searchParams);
+                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllFgSaItems();
                 _logger.LogInfo("Returned all FGSAItemMasters");
 
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGSAItemsList);
@@ -250,7 +250,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var sAPurchasePartItemsList = await _repository.ItemMasterRepository.GetAllSAPurchasePartItems(pagingParameter,searchParams);
+                var sAPurchasePartItemsList = await _repository.ItemMasterRepository.GetAllSAPurchasePartItems();
                 _logger.LogInfo("Returned all SA & PurchasePartItemsListItemMasters");
 
                 var result = _mapper.Map<IEnumerable<ItemMasterDto>>(sAPurchasePartItemsList);

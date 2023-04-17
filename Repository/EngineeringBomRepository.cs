@@ -61,17 +61,27 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<EnggBom>> GetAllActiveEnggBom([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //public async Task<PagedList<EnggBom>> GetAllActiveEnggBom([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //{
+        //    var enggBomDetails = FindAll()
+        //                     .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
+        //                        inv.ItemType.Equals(int.Parse(searchParams.SearchValue)) || inv.ItemDescription.Contains(searchParams.SearchValue))))
+        //                       .Include(t => t.EnggChildItems)
+        //                       .ThenInclude(t => t.EnggAlternates)
+        //                        .Include(t => t.NREConsumable);
+
+
+        //    return PagedList<EnggBom>.ToPagedList(enggBomDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
+
+        public async Task<IEnumerable<EnggBom>> GetAllActiveEnggBom()
         {
-            var enggBomDetails = FindAll()
-                             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-                                inv.ItemType.Equals(int.Parse(searchParams.SearchValue)) || inv.ItemDescription.Contains(searchParams.SearchValue))))
-                               .Include(t => t.EnggChildItems)
-                               .ThenInclude(t => t.EnggAlternates)
-                                .Include(t => t.NREConsumable);
-
-
-            return PagedList<EnggBom>.ToPagedList(enggBomDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var allActiveEnggBom = await FindByCondition(x => x.IsActive == true)
+            .Include(t => t.EnggChildItems)
+            .ThenInclude(t => t.EnggAlternates)
+            .Include(t => t.NREConsumable)
+            .ToListAsync();
+            return allActiveEnggBom;
         }
 
         public async Task<PagedList<EnggBom>> GetAllEnggBOM([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
@@ -91,6 +101,17 @@ namespace Repository
 
 
             return PagedList<EnggBom>.ToPagedList(enggBomDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+        public async Task<IEnumerable<EnggBomItemDto>> GetAllEnggBOMItemNumber()
+        {
+            IEnumerable<EnggBomItemDto> getAllEnggBomItems = await _tipsMasterDbContext.EnggBoms
+            .Select(c => new EnggBomItemDto()
+            {
+                ItemNumber = c.ItemNumber,
+            })
+           .ToListAsync();
+            return getAllEnggBomItems;
+
         }
 
         //aravind
@@ -125,9 +146,9 @@ namespace Repository
                 .Where(x => bomDetails.Contains(x.BOMId) )
                 .Select(c => new EnggBomFGItemNumber()
                                { 
-                                   ItemNumber = c.ItemNumber
-
-                               }) 
+                                   ItemNumber = c.ItemNumber,
+                                    ItemDescription = c.ItemDescription
+                                }) 
                              .ToListAsync();
 
             return getAllBomGroupList;
@@ -468,9 +489,9 @@ namespace Repository
                  })
                  .ToList();
             var itemType = await _tipsMasterDbContext.ItemMasters
-                 .Where(x => x.ItemNumber == itemNumber).Select(x => x.ItemType).FirstOrDefaultAsync();
-            if (itemType == PartType.FG)
-            {
+                .Where(x => x.ItemNumber == itemNumber).Select(x => x.ItemType).FirstOrDefaultAsync();
+            //if (itemType == PartType.FG)
+            //{
                 var releaseProductBomItemNumberList = releaseProductBomDetails
                    .Select(bom => new ProductionBomRevisionNumber
                    {
@@ -479,11 +500,12 @@ namespace Repository
                        BomVersionNo = bom.RevisionNumbers
                    }).ToList();
                 return releaseProductBomItemNumberList;
-            }
-            return null;
+            //}
+            //return null;
            
         }
-
+      
+        //aravind
         public async Task<IEnumerable<ProductionBomRevisionNumber>> GetAllProductionBomSAListByItemNumber(string itemNumber)
         {
             var releaseProductBomDetails = _tipsMasterDbContext.ProductionBoms
@@ -497,18 +519,30 @@ namespace Repository
                  .ToList();
             var itemType = await _tipsMasterDbContext.ItemMasters
                  .Where(x => x.ItemNumber == itemNumber).Select(x => x.ItemType).FirstOrDefaultAsync();
-            if (itemType == PartType.SA)
-            {
+
+            var enggChildItem = _tipsMasterDbContext.EnggChildItems
+                .Where(x => x.ItemNumber == itemNumber && x.PartType == PartType.SA)
+                .Select(x => x.EnggBomId).Distinct().ToList();
+
+            var bomDetails = _tipsMasterDbContext.EnggBoms
+                .Where(x => enggChildItem.Contains(x.BOMId) && x.ItemType == PartType.FG)
+                .Select(x=>x.ItemNumber).ToList();
+
+            //if (itemType == PartType.SA)
+            //{
+            
                 var releaseProductBomItemNumberList = releaseProductBomDetails
                    .Select(bom => new ProductionBomRevisionNumber
                    {
                        ItemNumber = bom.ItemNumber,
+                       FGItemNumber = bomDetails,
                        ItemType = itemType,
                        BomVersionNo = bom.RevisionNumbers
                    }).ToList();
+            
                 return releaseProductBomItemNumberList;
-            }
-            return null;
+            //}
+            //return null;
 
         }
 
@@ -539,15 +573,21 @@ namespace Repository
                 return result;
             }
 
-        public async Task<PagedList<EnggBomGroup>> GetAllActiveEnggBomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //public async Task<PagedList<EnggBomGroup>> GetAllActiveEnggBomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //{
+        //    var enggBomGroupDetails = FindAll()
+        //                     .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BomGroupName.Contains(searchParams.SearchValue) ||
+        //                        inv.Remarks.Contains(searchParams.SearchValue))));
+
+        //    return PagedList<EnggBomGroup>.ToPagedList(enggBomGroupDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
+
+        public async Task<IEnumerable<EnggBomGroup>> GetAllActiveEnggBomGroup()
         {
-            var enggBomGroupDetails = FindAll()
-                             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BomGroupName.Contains(searchParams.SearchValue) ||
-                                inv.Remarks.Contains(searchParams.SearchValue))));
-
-            return PagedList<EnggBomGroup>.ToPagedList(enggBomGroupDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var allActiveEnggBomGroup = await FindAll()
+            .ToListAsync();
+            return allActiveEnggBomGroup;
         }
-
 
         public async Task<IEnumerable<ListOfBomGroupDto>> GetAllBomGroupList()
             {
@@ -564,15 +604,19 @@ namespace Repository
                 return getAllBomGroupList;
             }
 
-        public async Task<PagedList<EnggBomGroup>> GetAllEnggBomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //public async Task<PagedList<EnggBomGroup>> GetAllEnggBomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //{
+        //    var enggBomGroupDetails = FindAll().OrderByDescending(x => x.Id)
+        //                             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BomGroupName.Contains(searchParams.SearchValue) ||
+        //                                inv.Remarks.Contains(searchParams.SearchValue))));
+
+        //    return PagedList<EnggBomGroup>.ToPagedList(enggBomGroupDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
+        public async Task<IEnumerable<EnggBomGroup>> GetAllEnggBomGroup()
         {
-            var enggBomGroupDetails = FindAll().OrderByDescending(x => x.Id)
-                                     .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BomGroupName.Contains(searchParams.SearchValue) ||
-                                        inv.Remarks.Contains(searchParams.SearchValue))));
-
-            return PagedList<EnggBomGroup>.ToPagedList(enggBomGroupDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var enggBomGroupDetails = FindAll().OrderByDescending(x => x.Id);
+            return enggBomGroupDetails;
         }
-
         public async Task<EnggBomGroup> GetEnggBomGroupById(int id)
             {
                 var EnggbomGroupDetailsbyId = await _tipsMasterDbContext.BomGroups.Where(x => x.Id == id).FirstOrDefaultAsync();
@@ -613,22 +657,34 @@ namespace Repository
                 return result;
             }
 
-        public async Task<PagedList<EnggCustomField>> GetAllActiveEnggCustomFields([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
-        {
-            var enggCustomFieldDetails = FindAll()
-        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BOMGroupName.Contains(searchParams.SearchValue) ||
-        inv.LabelName.Contains(searchParams.SearchValue))));
+        //public async Task<PagedList<EnggCustomField>> GetAllActiveEnggCustomFields([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //{
+        //    var enggCustomFieldDetails = FindAll()
+        //.Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BOMGroupName.Contains(searchParams.SearchValue) ||
+        //inv.LabelName.Contains(searchParams.SearchValue))));
 
-            return PagedList<EnggCustomField>.ToPagedList(enggCustomFieldDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //    return PagedList<EnggCustomField>.ToPagedList(enggCustomFieldDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
+
+        public async Task<IEnumerable<EnggCustomField>> GetAllActiveEnggCustomFields()
+        {
+            var allActiveEnggCustomField = await FindAll()
+            .ToListAsync();
+            return allActiveEnggCustomField;
         }
 
-        public async Task<PagedList<EnggCustomField>> GetAllEnggCustomFields([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
-        {
-            var enggCustomFieldDetails = FindAll().OrderByDescending(x => x.Id)
-                         .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BOMGroupName.Contains(searchParams.SearchValue) ||
-                            inv.LabelName.Contains(searchParams.SearchValue))));
+        //public async Task<PagedList<EnggCustomField>> GetAllEnggCustomFields([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //{
+        //    var enggCustomFieldDetails = FindAll().OrderByDescending(x => x.Id)
+        //                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BOMGroupName.Contains(searchParams.SearchValue) ||
+        //                    inv.LabelName.Contains(searchParams.SearchValue))));
 
-            return PagedList<EnggCustomField>.ToPagedList(enggCustomFieldDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //    return PagedList<EnggCustomField>.ToPagedList(enggCustomFieldDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
+        public async Task<IEnumerable<EnggCustomField>> GetAllEnggCustomFields()
+        {
+            var enggCustomFields = FindAll().OrderByDescending(x => x.Id);
+            return enggCustomFields;
         }
 
         public async Task<IEnumerable<EnggCustomField>> GetEnggCustomFieldByBomGroup(string BomgroupName)

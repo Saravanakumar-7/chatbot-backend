@@ -1167,20 +1167,23 @@ namespace Tips.SalesService.Api.Controllers
 
 
 
-                var newcount = await _rfqRepository.GetRfqNumberAutoIncrementCount(date);
-            
-                if (newcount > 0)
-                {
-                    var number = newcount + 1;
-                    string e = String.Format("{0:D4}", number);
-                    createRfq.RfqNumber = days + months + years + "R" + (e);
+                //var newcount = await _rfqRepository.GetRfqNumberAutoIncrementCount(date);
+
+                var latestRfqNo = await _rfqRepository.GetRfqNumberAutoIncrementNumber();
+
+                if (latestRfqNo == null)
+                { 
+                    int num = 1550;
+                    createRfq.RfqNumber = "TISPL-" + (num + 1);
                 }
                 else
-                {
-                    var count = 1;
-                    var e = count.ToString("D4");
-                    createRfq.RfqNumber = days + months + years + "R" + (e);
-                }
+                { 
+                    string result = latestRfqNo.Substring(0, latestRfqNo.IndexOf("-")).Trim();
+                    string spliValue = latestRfqNo.Split('-').Last();
+                    int num = Int32.Parse(spliValue);
+                    createRfq.RfqNumber = "TISPL-" + (num + 1);
+                 }
+
                 await _rfqRepository.CreateRfq(createRfq);
                 var rfqDetails = _mapper.Map<RfqDto>(createRfq);
 
@@ -1202,6 +1205,33 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //get revision number by passing rfqnumber
+        [HttpGet("{RfqNumber}")]
+        public async Task<IActionResult> GetRevNumberByRfqNumberList(string RfqNumber)
+        {
+            ServiceResponse<IEnumerable<RevNumberByRfqNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<RevNumberByRfqNumberListDto>>();
+            try
+            {
+                var revNumberDetailsbyRfqNumber = await _rfqRepository.GetRevNumberByRfqNumberList(RfqNumber);
+                var result = _mapper.Map<IEnumerable<RevNumberByRfqNumberListDto>>(revNumberDetailsbyRfqNumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all RevisionNumberList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside RevNumberByRfqNumberListDto action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //Create RfqLPCosting
         [HttpPost]
         public async Task<IActionResult> CreateRfqLPcosting([FromBody] RfqLPCostingDtoPost rfqLPCostingDtoPost)

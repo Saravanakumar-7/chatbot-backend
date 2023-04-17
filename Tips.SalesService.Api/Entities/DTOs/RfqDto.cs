@@ -89,4 +89,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? CustomerId { get; set; }
     }
+    public class RevNumberByRfqNumberListDto
+    {
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
+    }
 }

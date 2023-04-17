@@ -127,6 +127,16 @@ namespace Tips.Purchase.Api.Repository
                 return query.ToList();
             }
         }
+        public async Task<IEnumerable<PurchaseOrderRevNoListDto>> GetAllRevisionNumberListByPoNumber(string poNumber)
+        {
+            IEnumerable<PurchaseOrderRevNoListDto> revNoListbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders
+            .Where(x => x.PONumber == poNumber).Select(x => new PurchaseOrderRevNoListDto()
+            {
+                RevisionNumber = x.RevisionNumber,
+            }).ToListAsync();
+
+            return revNoListbyPONumber;
+        }
         public async Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrderDate([FromQuery] SearchDatesParams searchDatesParams)
         {
             var purchaseOrderDetails = _tipsPurchaseDbContext.PurchaseOrders

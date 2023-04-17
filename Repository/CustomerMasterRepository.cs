@@ -44,6 +44,7 @@ namespace Repository
         public async Task<IEnumerable<CustomerIdNameListDto>> GetAllActiveCustomerMasterIdNameList()
         {
             IEnumerable<CustomerIdNameListDto> getAllActiveCustomerIdNameList = await TipsMasterDbContext.CustomerMasters
+                                .Where(x=>x.IsActive == true)                
                                 .Select(x => new CustomerIdNameListDto() 
                                 {
                                     Id = x.Id,
@@ -58,18 +59,30 @@ namespace Repository
             return getAllActiveCustomerIdNameList;
         }
 
-        public async Task<PagedList<CustomerMaster>> GetAllActiveCustomerMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
-        {
-            var customermasterDetails = FindAll()
-                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue) ||
-                    inv.CustomerAliasName.Contains(searchParams.SearchValue))))
-                   .Include(t => t.CustomerAddresses)
-             .Include(t => t.CustomerShippingAddresses)
-             .Include(t => t.CustomerContacts)
-              .Include(d => d.CustomerBanking)
-              .Include(d => d.CustomerMasterHeadCountings);
+        //public async Task<PagedList<CustomerMaster>> GetAllActiveCustomerMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //{
+        //    var customermasterDetails = FindAll()
+        //         .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue) ||
+        //            inv.CustomerAliasName.Contains(searchParams.SearchValue))))
+        //           .Include(t => t.CustomerAddresses)
+        //     .Include(t => t.CustomerShippingAddresses)
+        //     .Include(t => t.CustomerContacts)
+        //      .Include(d => d.CustomerBanking)
+        //      .Include(d => d.CustomerMasterHeadCountings);
 
-            return PagedList<CustomerMaster>.ToPagedList(customermasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //    return PagedList<CustomerMaster>.ToPagedList(customermasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
+
+        public async Task<IEnumerable<CustomerMaster>> GetAllActiveCustomerMasters()
+        {
+            var allActiveCompanyMasters = await FindByCondition(x => x.IsActive == true)
+            .Include(t => t.CustomerAddresses)
+            .Include(t => t.CustomerShippingAddresses)
+            .Include(t => t.CustomerContacts)
+            .Include(d => d.CustomerBanking)
+            .Include(d => d.CustomerMasterHeadCountings)
+            .ToListAsync();
+            return allActiveCompanyMasters;
         }
 
         public async Task<CustomerMaster> GetLatestCustomerMasterDetail()

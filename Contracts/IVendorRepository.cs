@@ -11,7 +11,7 @@ namespace Contracts
 {
     public interface IVendorRepository : IRepositoryBase<VendorMaster>
     {
-        Task<PagedList<VendorMaster>> GetAllVendorMasters(PagingParameter pagingParameter);
+        Task<PagedList<VendorMaster>> GetAllVendorMasters(PagingParameter pagingParameter, SearchParames searchParams);
         Task<VendorMaster> GetVendorMasterById(int id);
         Task<IEnumerable<VendorMaster>> GetAllActiveVendorMasters();
         Task<int?> CreateVendorMaster(VendorMaster vendorMaster);

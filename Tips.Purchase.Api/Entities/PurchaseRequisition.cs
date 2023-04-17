@@ -52,10 +52,9 @@ namespace Tips.Purchase.Api.Entities
 
         public bool PrApprovalII { get; set; } = false;
         public string? PrApprovedIIBy { get; set; }
-        public DateTime PrApprovedIIDate { get; set; }
-
-
-
+        public DateTime PrApprovedIIDate { get; set; }         
+        public bool IsDeleted { get; set; } = false;
+        public bool IsModified { get; set; } = false;
         public string? Unit { get; set; }
 
         public string? CreatedBy { get; set; }

@@ -150,6 +150,30 @@ namespace Tips.Purchase.Api.Controllers
 
 
         }
+        [HttpGet("{PONumber}")]
+        public async Task<IActionResult> GetAllRevisionNumberListByPoNumber(string PONumber)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderRevNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderRevNoListDto>>();
+            try
+            {
+                var revNumberDetailsbyPONumber = await _repository.GetAllRevisionNumberListByPoNumber(PONumber);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderRevNoListDto>>(revNumberDetailsbyPONumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all RevisionNumberList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllRevisionNumberListByPoNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetPurchaseOrderByPoNoAndRevNo(string PONumber,int revisionNumber)

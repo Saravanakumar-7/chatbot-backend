@@ -13,7 +13,7 @@ namespace Contracts
     {
         Task<PagedList<CustomerMaster>> GetAllCustomerMasters(PagingParameter pagingParameter, SearchParames searchParams);
         Task<CustomerMaster> GetCustomerMasterById(int id);
-        Task<PagedList<CustomerMaster>> GetAllActiveCustomerMasters(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CustomerMaster>> GetAllActiveCustomerMasters();
         Task<int?> CreateCustomerMaster(CustomerMaster customerMaster);
         Task<string> UpdateCustomerMaster(CustomerMaster customerMaster);
         Task<string> DeleteCustomerMaster(CustomerMaster customerMaster);

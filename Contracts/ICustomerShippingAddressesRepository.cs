@@ -11,9 +11,9 @@ namespace Contracts
     public interface ICustomerShippingAddressesRepository:IRepositoryBase<CustomerShippingAddresses>
     {
 
-        Task<PagedList<CustomerShippingAddresses>> GetAllCustomerShippingAddresses(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CustomerShippingAddresses>> GetAllCustomerShippingAddresses();
         Task<CustomerShippingAddresses> GetCustomerShippingAddressesById(int id);
-        Task<PagedList<CustomerShippingAddresses>> GetAllActiveCustomerShippingAddresses(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CustomerShippingAddresses>> GetAllActiveCustomerShippingAddresses();
         Task<int?> CreateCustomerShippingAddresses(CustomerShippingAddresses customerShippingAddresses);
         Task<string> UpdateCustomerShippingAddresses(CustomerShippingAddresses customerShippingAddresses);
         Task<string> DeleteCustomerShippingAddresses(CustomerShippingAddresses customerShippingAddresses);

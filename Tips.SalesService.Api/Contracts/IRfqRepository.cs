@@ -13,7 +13,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> UpdateRfq(Rfq rfq);
         Task<string> DeleteRfq(Rfq rfq);
         Task<int?> GetRfqNumberAutoIncrementCount(DateTime date);
-
+        Task<string> GetRfqNumberAutoIncrementNumber();
         Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberList();
         Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberListByCustomerId(string CustomerId);
         Task<Rfq> RfqSourcingByRfqNumbers(string id);
@@ -21,7 +21,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<Rfq> RfqEnggByRfqNumbers(string id);
         Task<Rfq> RfqDetailsByRfqNumbers(string rfqNumber);
         Task<Rfq> GetCustomerIdByRfqNumber(string rfqnumber);
-
+        Task<IEnumerable<Rfq>> GetRevNumberByRfqNumberList(string rfqnumber);
         Task<Rfq> RfqLpcostingByRfqNumbers(string id);
         Task<Rfq> RfqLpCostingReleaseByRfqNumbers(string id);
         Task<Rfq> GetRfqDeatailsByRfqNoAndRevNo(string rfqNumber, int revisionNumber);

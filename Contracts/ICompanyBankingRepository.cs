@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface ICompanyBankingRepository
     {
-        Task<PagedList<CompanyBanking>> GetAllCompanyBankings(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CompanyBanking>> GetAllCompanyBankings();
         Task<CompanyBanking> GetCompanyBankingById(int id);
-        Task<PagedList<CompanyBanking>> GetAllActiveCompanyBankings(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CompanyBanking>> GetAllActiveCompanyBankings();
         Task<int?> CreateCompanyBanking(CompanyBanking CompanyBanking);
         Task<string> UpdateCompanyBanking(CompanyBanking CompanyBanking);
         Task<string> DeleteCompanyBanking(CompanyBanking CompanyBanking);

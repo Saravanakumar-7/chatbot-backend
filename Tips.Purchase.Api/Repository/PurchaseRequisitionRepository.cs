@@ -75,6 +75,28 @@ namespace Tips.Purchase.Api.Repository
                 return query.ToList();
             }
         }
+        public async Task<IEnumerable<PurchaseRequistionRevNoListDto>> GetAllRevisionNumberListByPRNumber(string prNumber)
+        {
+            IEnumerable<PurchaseRequistionRevNoListDto> revNoListbyPRNumber = await _tipsPurchaseDbContext.PurchaseRequisitions
+            .Where(x => x.PrNumber == prNumber).Select(x => new PurchaseRequistionRevNoListDto()
+            {
+                RevisionNumber = x.RevisionNumber,
+            }).ToListAsync();
+            return revNoListbyPRNumber;
+        }
+
+        public async Task<PurchaseRequisition> GetPurchaseRequisitionByPRNoAndRevNo(string prNumber, int revisionNumber)
+        {
+            var purchaseRequisitionDetail = await _tipsPurchaseDbContext.PurchaseRequisitions
+            .Where(x => x.PrNumber == prNumber && x.RevisionNumber == revisionNumber && x.IsDeleted == false)
+            .Include(o => o.PrFiles)
+            .Include(t => t.PrItemList)
+            .ThenInclude(x => x.PrAddprojects)
+            .Include(m => m.PrItemList)
+            .ThenInclude(i => i.PrAddDeliverySchedules)
+            .FirstOrDefaultAsync();
+            return purchaseRequisitionDetail;
+        }
 
         public async Task<IEnumerable<PurchaseRequisition>> SearchPurchaseRequisitionDate([FromQuery] SearchDatesParams searchDatesParams)
         {
@@ -89,21 +111,48 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<PurchaseRequisition> ChangePurchaseRequisitionVersion(PurchaseRequisition purchaseRequisition)
         {
-            purchaseRequisition.CreatedBy = "Admin";
-            purchaseRequisition.CreatedOn = DateTime.Now;
-            purchaseRequisition.Unit = "Bangalore";
-            var getOldRevisionNumber = _tipsPurchaseDbContext.PurchaseRequisitions
-                .Where(x => x.PrNumber == purchaseRequisition.PrNumber)
-                .OrderByDescending(x => x.Id)
-                .Select(x => x.RevisionNumber)
-                .FirstOrDefault();
+            //purchaseRequisition.CreatedBy = "Admin";
+            //purchaseRequisition.CreatedOn = DateTime.Now;
+            //purchaseRequisition.Unit = "Bangalore";
+            //var getOldRevisionNumber = _tipsPurchaseDbContext.PurchaseRequisitions
+            //    .Where(x => x.PrNumber == purchaseRequisition.PrNumber)
+            //    .OrderByDescending(x => x.Id)
+            //    .Select(x => x.RevisionNumber)
+            //    .FirstOrDefault();
           
-            var increaseVersionNumber = 1;
-            var convertversionnumber = (increaseVersionNumber);
-            var version = getOldRevisionNumber + convertversionnumber;
-            purchaseRequisition.RevisionNumber = (version);
+            //var increaseVersionNumber = 1;
+            //var convertversionnumber = (increaseVersionNumber);
+            //var version = getOldRevisionNumber + convertversionnumber;
+            //purchaseRequisition.RevisionNumber = (version);
+            //var result = await Create(purchaseRequisition);
+            //return result;
+
+            var getOldPRDetails = _tipsPurchaseDbContext.PurchaseRequisitions
+             .Where(x => x.PrNumber == purchaseRequisition.PrNumber && x.IsModified == false)
+             .FirstOrDefault();
+
+            if (getOldPRDetails != null)
+            {
+                getOldPRDetails.IsModified = true;
+                getOldPRDetails.LastModifiedBy = "Admin";
+                getOldPRDetails.LastModifiedOn = DateTime.Now;
+                Update(getOldPRDetails);
+            }
+            purchaseRequisition.CreatedBy = purchaseRequisition.CreatedBy;
+            purchaseRequisition.CreatedOn = purchaseRequisition.CreatedOn;
+            purchaseRequisition.LastModifiedBy = "Admin";
+            purchaseRequisition.LastModifiedOn = DateTime.Now;
+            var getOldRevisionNumber = _tipsPurchaseDbContext.PurchaseRequisitions
+            .Where(x => x.PrNumber == purchaseRequisition.PrNumber)
+            .OrderByDescending(x => x.Id)
+            .Select(x => x.RevisionNumber)
+            .FirstOrDefault();
+
+            purchaseRequisition.RevisionNumber = (getOldRevisionNumber + 1);
             var result = await Create(purchaseRequisition);
             return result;
+
+
         }
 
         public  async Task<string> DeletePurchaseRequisition(PurchaseRequisition purchaseRequisitions)

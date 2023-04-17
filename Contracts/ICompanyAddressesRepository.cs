@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface ICompanyAddressesRepository
     {
-        Task<PagedList<CompanyAddresses>> GetAllCompanyAddresses(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CompanyAddresses>> GetAllCompanyAddresses();
         Task<CompanyAddresses> GetCompanyAddressesById(int id);
-        Task<PagedList<CompanyAddresses>> GetAllActiveCompanyAddresses(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CompanyAddresses>> GetAllActiveCompanyAddresses();
         Task<int?> CreateCompanyAddresses(CompanyAddresses companyAddresses);
         Task<string> UpdateCompanyAddresses(CompanyAddresses companyAddresses);
         Task<string> DeleteCompanyAddresses(CompanyAddresses companyAddresses);

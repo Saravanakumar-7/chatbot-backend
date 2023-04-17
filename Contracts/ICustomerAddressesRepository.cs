@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface ICustomerAddressesRepository : IRepositoryBase<CustomerAddresses>
     {
-        Task<PagedList<CustomerAddresses>> GetAllCustomerAddresses(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CustomerAddresses>> GetAllCustomerAddresses();
         Task<CustomerAddresses> GetCustomerAddressesById(int id);
-        Task<PagedList<CustomerAddresses>> GetAllActiveCustomerAddresses(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CustomerAddresses>> GetAllActiveCustomerAddresses();
         Task<int?> CreateCustomerAddresses(CustomerAddresses customerAddresses);
         Task<string> UpdateCustomerAddresses(CustomerAddresses customerAddresses);
         Task<string> DeleteCustomerAddresses(CustomerAddresses customerAddresses);

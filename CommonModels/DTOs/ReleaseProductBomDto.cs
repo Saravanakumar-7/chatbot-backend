@@ -50,6 +50,8 @@ namespace Entities.DTOs
     public class ProductionBomRevisionNumber
     {
         public string ItemNumber { get; set; }
+        public List<string> FGItemNumber { get; set; }
+
         public PartType ItemType { get; set; }
         public decimal[] BomVersionNo { get; set; }
 

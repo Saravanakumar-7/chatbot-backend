@@ -14,6 +14,7 @@ using System.Collections.Immutable;
 using Entities.DTOs;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Crypto.Macs;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -205,6 +206,17 @@ namespace Tips.SalesService.Api.Repository
                         .FirstOrDefaultAsync();
             return rfqCsByRfqNumber;
         }
+        public async Task<IEnumerable<Rfq>> GetRevNumberByRfqNumberList(string rfqnumber)
+        {
+            IEnumerable<RevNumberByRfqNumberListDto> revNoListbyRfqNumber = await _tipsSalesServiceDbContext.Rfqs
+            .Where(x => x.RfqNumber == rfqnumber).Select(x => new RevNumberByRfqNumberListDto()
+            {
+                RevisionNumber = x.RevisionNumber,
+            }).ToListAsync();
+
+            return (IEnumerable<Rfq>)revNoListbyRfqNumber;
+        }
+
         public async Task<Rfq> RfqEnggByRfqNumbers(string RfqNumber)
         {
             var rfqEnggByRfqNumber = await _tipsSalesServiceDbContext.Rfqs
@@ -254,7 +266,14 @@ namespace Tips.SalesService.Api.Repository
 
             return getRfqNumberAutoIncrementCount;
         }
+        public async Task<string> GetRfqNumberAutoIncrementNumber()
+        { 
+             var getRfqNumberAutoIncrementNumber = await _tipsSalesServiceDbContext.Rfqs.OrderByDescending(x => x.Id)
+              .Select(x => x.RfqNumber)
+              .FirstOrDefaultAsync();
 
+            return getRfqNumberAutoIncrementNumber;
+        }
         public async Task<string> DeleteRfq(Rfq rfq)
         {
             Delete(rfq);
