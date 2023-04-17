@@ -480,28 +480,18 @@ namespace Repository
         public async Task<IEnumerable<ProductionBomRevisionNumber>> GetAllProductionBomFGListByItemNumber(string itemNumber)
         {
             var releaseProductBomDetails = _tipsMasterDbContext.ProductionBoms
-                 .Where(x => x.ItemNumber == itemNumber)
-                 .GroupBy(bom => bom.ItemNumber)
-                 .Select(group => new
-                 {
-                     ItemNumber = group.Key,
-                     RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
-                 })
-                 .ToList();
-            var itemType = await _tipsMasterDbContext.ItemMasters
-                .Where(x => x.ItemNumber == itemNumber).Select(x => x.ItemType).FirstOrDefaultAsync();
-            //if (itemType == PartType.FG)
-            //{
+                 .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
+                 .Select(x => x.ReleaseVersion).ToArray();
+
+            
                 var releaseProductBomItemNumberList = releaseProductBomDetails
                    .Select(bom => new ProductionBomRevisionNumber
                    {
-                       ItemNumber = bom.ItemNumber,
-                       ItemType = itemType,
-                       BomVersionNo = bom.RevisionNumbers
+                       ItemNumber = itemNumber,
+                       ItemType = PartType.FG,
+                       BomVersionNo = releaseProductBomDetails
                    }).ToList();
                 return releaseProductBomItemNumberList;
-            //}
-            //return null;
            
         }
       
@@ -509,41 +499,31 @@ namespace Repository
         public async Task<IEnumerable<ProductionBomRevisionNumber>> GetAllProductionBomSAListByItemNumber(string itemNumber)
         {
             var releaseProductBomDetails = _tipsMasterDbContext.ProductionBoms
-                 .Where(x => x.ItemNumber == itemNumber)
-                 .GroupBy(bom => bom.ItemNumber)
-                 .Select(group => new
-                 {
-                     ItemNumber = group.Key,
-                     RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
-                 })
-                 .ToList();
-            var itemType = await _tipsMasterDbContext.ItemMasters
-                 .Where(x => x.ItemNumber == itemNumber).Select(x => x.ItemType).FirstOrDefaultAsync();
+                 .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
+                 .Select(x => x.ReleaseVersion).ToArray();
 
             var enggChildItem = _tipsMasterDbContext.EnggChildItems
-                .Where(x => x.ItemNumber == itemNumber && x.PartType == PartType.SA)
+                .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
                 .Select(x => x.EnggBomId).Distinct().ToList();
 
-            var bomDetails = _tipsMasterDbContext.EnggBoms
-                .Where(x => enggChildItem.Contains(x.BOMId) && x.ItemType == PartType.FG)
-                .Select(x=>x.ItemNumber).ToList();
+            List<string> fgItemNumber = new List<string>();
+            if (enggChildItem.Count > 0 && enggChildItem != null)
+            {
+                     fgItemNumber = _tipsMasterDbContext.EnggBoms
+                    .Where(x => enggChildItem.Contains(x.BOMId) && x.ItemType == PartType.FG)
+                    .Select(x => x.ItemNumber).Distinct().ToList();
+            }
 
-            //if (itemType == PartType.SA)
-            //{
-            
                 var releaseProductBomItemNumberList = releaseProductBomDetails
                    .Select(bom => new ProductionBomRevisionNumber
                    {
-                       ItemNumber = bom.ItemNumber,
-                       FGItemNumber = bomDetails,
-                       ItemType = itemType,
-                       BomVersionNo = bom.RevisionNumbers
+                       ItemNumber = itemNumber,
+                       FGItemNumber = fgItemNumber,
+                       ItemType = PartType.SA,
+                       BomVersionNo = releaseProductBomDetails
                    }).ToList();
             
                 return releaseProductBomItemNumberList;
-            //}
-            //return null;
-
         }
 
     }
