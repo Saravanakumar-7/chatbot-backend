@@ -520,25 +520,15 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllBinningItems([FromQuery] PagingParameter pagingParameter,[FromQuery] SearchParams searchParams)
+        public async Task<IActionResult> GetAllBinningItems()
         {
             ServiceResponse<IEnumerable<BinningItemsDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningItemsDto>>();
 
             try
             {
-                var getAllBinningItems = await _binningItemsRepository.GetAllBinningItems(pagingParameter,searchParams);
+                var getAllBinningItems = await _binningItemsRepository.GetAllBinningItems();
 
-                var metadata = new
-                {
-                    getAllBinningItems.TotalCount,
-                    getAllBinningItems.PageSize,
-                    getAllBinningItems.CurrentPage,
-                    getAllBinningItems.HasNext,
-                    getAllBinningItems.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-
+              
                 _logger.LogInfo("Returned all BinningItems details");
                 var result = _mapper.Map<IEnumerable<BinningItemsDto>>(getAllBinningItems);
                 serviceResponse.Data = result;

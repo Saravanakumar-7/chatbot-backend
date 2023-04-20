@@ -349,5 +349,98 @@ namespace Tips.Production.Api.Controllers
             }
 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchMaterialReturnNote([FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<MaterialReturnNoteDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialReturnNoteDto>>();
+            try
+            {
+                var materialReturnNotesDetails = await _materialReturnNoteRepository.SearchMaterialReturnNote(searchParams);
+
+                _logger.LogInfo("Returned all materialReturnNotesDetails");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<MaterialReturnNoteDto, MaterialReturnNote>().ReverseMap()
+                    .ForMember(dest => dest.MaterialReturnNoteItems, opt => opt.MapFrom(src => src.MaterialReturnNoteItems));
+                });
+                var mapper = config.CreateMapper();
+
+                var result = mapper.Map<IEnumerable<MaterialReturnNoteDto>>(materialReturnNotesDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all materialReturnNotesDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetAllMaterialReturnNoteWithItems([FromBody] MaterialReturnNoteSearchDto materialReturnNote)
+        {
+            ServiceResponse<IEnumerable<MaterialReturnNoteDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialReturnNoteDto>>();
+            try
+            {
+                var materialReturnNotesDetails = await _materialReturnNoteRepository.GetAllMaterialReturnNoteWithItems(materialReturnNote);
+                _logger.LogInfo("Returned all materialRequestDetails");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<MaterialReturnNoteDto, MaterialReturnNote>().ReverseMap()
+                    .ForMember(dest => dest.MaterialReturnNoteItems, opt => opt.MapFrom(src => src.MaterialReturnNoteItems));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<MaterialReturnNoteDto>>(materialReturnNotesDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all materialReturnNotesDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchMaterialReturnNoteDate([FromQuery] SearchDateparames searchDateParam)
+        {
+            ServiceResponse<IEnumerable<MaterialReturnNoteDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialReturnNoteDto>>();
+            try
+            {
+                var materialReturnNotesDetails = await _materialReturnNoteRepository.SearchMaterialReturnNoteDate(searchDateParam);
+                var result = _mapper.Map<IEnumerable<MaterialReturnNoteDto>>(materialReturnNotesDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all materialReturnNotesDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 }

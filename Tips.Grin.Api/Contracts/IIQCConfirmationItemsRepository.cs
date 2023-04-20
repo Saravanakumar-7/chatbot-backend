@@ -7,7 +7,7 @@ namespace Tips.Grin.Api.Contracts
 {
     public interface IIQCConfirmationItemsRepository : IRepositoryBase<IQCConfirmationItems>
     {
-        Task<PagedList<IQCConfirmationItems>> GetAllIQCConfirmationItems( PagingParameter pagingParameter,  SearchParams searchParams);
+        Task<IEnumerable<IQCConfirmationItems>> GetAllIQCConfirmationItems();
 
     }
 }

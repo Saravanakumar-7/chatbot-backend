@@ -163,12 +163,10 @@ namespace Tips.Grin.Api.Repository
         //    return PagedList<IQCConfirmationItems>.ToPagedList(getAllIqcItems, pagingParameter.PageNumber, pagingParameter.PageSize);
         //}
 
-        public async Task<PagedList<IQCConfirmationItems>> GetAllIQCConfirmationItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        public async Task<IEnumerable<IQCConfirmationItems>> GetAllIQCConfirmationItems()
         {
-            var getAllIqcItems = FindAll()
-             .Where(iqc => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || iqc.ItemNumber.Contains(searchParams.SearchValue))));
-
-            return PagedList<IQCConfirmationItems>.ToPagedList(getAllIqcItems, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var GetAllIQCConfirmationItems = await _tipsGrinDbContext.IQCConfirmationItems.ToListAsync();
+            return GetAllIQCConfirmationItems;
         }
     }
 }

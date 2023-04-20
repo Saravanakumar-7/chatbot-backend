@@ -2,6 +2,7 @@
 using Entities;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Production.Api.Contracts
 {
@@ -15,6 +16,9 @@ namespace Tips.Production.Api.Contracts
         Task<string> UpdateMaterialRequest(MaterialRequests request);
         Task<string> DeleteMaterialRequest(MaterialRequests request);
         Task<IEnumerable<MaterialRequestIdNoDto>> GetAllOpenMRIdNoList();
+        Task<IEnumerable<MaterialRequests>> GetAllMaterialRequestsWithItems(MaterialRequestSearchDto materialRequestSearch);
+        Task<IEnumerable<MaterialRequests>> SearchMaterialRequests([FromQuery] SearchParamess searchParammes);
+        Task<IEnumerable<MaterialRequests>> SearchMaterialRequestsDate([FromQuery] SearchDateparames searchDatesParams);
         public void SaveAsync();
     }
 }

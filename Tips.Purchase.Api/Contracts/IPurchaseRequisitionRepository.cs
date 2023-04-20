@@ -17,7 +17,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PurchaseRequisition>> SearchPurchaseRequisitionDate([FromQuery] SearchDatesParams searchDatesParams);
 
         Task<IEnumerable<GetPRDownloadUrlDto>> GetDownloadUrlDetail(string prNumber);
-        Task<PagedList<PurchaseRequisition>> GetAllActivePurchaseRequisitions(PagingParameter pagingParameter, SearchParamess searchParamess);
+        Task<IEnumerable<PurchaseRequisition>> GetAllActivePurchaseRequisitions();
         Task<long> CreatePurchaseRequisition(PurchaseRequisition purchaseRequisition);
         Task<PurchaseRequisition> ChangePurchaseRequisitionVersion(PurchaseRequisition purchaseRequisition);
         Task<string> UpdatePurchaseRequisition(PurchaseRequisition purchaseRequisition);

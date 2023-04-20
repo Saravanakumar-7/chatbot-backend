@@ -277,5 +277,64 @@ namespace Tips.SalesService.Api.Controllers
             }
 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchLocationTransferDate([FromQuery] SearchDateParam searchDateParam)
+        {
+            ServiceResponse<IEnumerable<LocationTransferDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferDto>>();
+            try
+            {
+                var locationTransferDetails = await _locationTransferRepository.SearchLocationTransferDate(searchDateParam);
+                var result = _mapper.Map<IEnumerable<LocationTransferDto>>(locationTransferDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all locationTransferDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        //[HttpGet]
+        //public async Task<IActionResult> SearchLocationTransfer([FromQuery] SearchParammes searchParams)
+        //{
+        //    ServiceResponse<IEnumerable<LocationTransferDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferDto>>();
+        //    try
+        //    {
+        //        var locationTransferDetails = await _locationTransferRepository.SearchLocationTransfer(searchParams);
+
+
+
+        //        _logger.LogInfo("Returned all locationTransferDetails");
+        //        var config = new MapperConfiguration(cfg =>
+        //        {
+        //            cfg.AddProfile<MappingProfile>();
+        //            cfg.CreateMap<LocationTransferDto, LocationTransfer>().ReverseMap();
+        //        });
+        //        var mapper = config.CreateMapper();
+        //        var result = mapper.Map<IEnumerable<LocationTransferDto>>(locationTransferDetails);
+        //        serviceResponse.Data = result;
+        //        serviceResponse.Message = "Returned all locationTransferDetails";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal Server Error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
     }
 }

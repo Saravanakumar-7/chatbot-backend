@@ -59,4 +59,14 @@ namespace Tips.Production.Api.Entities.DTOs
         public int Id { get; set; }
         public string? ShopOrderNumber { get; set; }
     }
+    public class MaterialIssueSearchDto
+    {
+        public List<string>? ItemType { get; set; }
+        public List<string>? ShopOrderNumber { get; set; }
+        public List<string>? FGShopOrderNumber { get; set; }
+        public List<string>? SAShopOrderNumber { get; set; }
+        public List<string>? ItemNumber { get; set; }
+        public List<string>? FGItemNumber { get; set; }
+        public List<string>? SAItemNumber { get; set; }
+    }
 }

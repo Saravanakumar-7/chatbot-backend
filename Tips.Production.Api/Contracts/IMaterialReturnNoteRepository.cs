@@ -2,6 +2,7 @@
 using Entities;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Production.Api.Contracts
 {
@@ -15,7 +16,9 @@ namespace Tips.Production.Api.Contracts
         Task<string> DeleteMaterialReturnNote(MaterialReturnNote materialReturnNote);
 
         Task<IEnumerable<MaterialReturnNoteIdNameList>> GetAllMaterialReturnNoteIdNameList();
-
+        Task<IEnumerable<MaterialReturnNote>> GetAllMaterialReturnNoteWithItems(MaterialReturnNoteSearchDto materialReturnNoteSearch);
+        Task<IEnumerable<MaterialReturnNote>> SearchMaterialReturnNote([FromQuery] SearchParamess searchParammes);
+        Task<IEnumerable<MaterialReturnNote>> SearchMaterialReturnNoteDate([FromQuery] SearchDateparames searchDatesParams);
         public void SaveAsync();
     }
 }

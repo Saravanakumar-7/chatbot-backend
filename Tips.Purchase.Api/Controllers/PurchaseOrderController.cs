@@ -11,6 +11,7 @@ using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -466,26 +467,29 @@ namespace Tips.Purchase.Api.Controllers
                 var poDocumentUploadDtoList = new List<DocumentUpload>();
 
 
-                var date = DateTime.Now;
-                purchaseOrderPostDto.QuotationDate = date;
-                var days = Convert.ToString(date.Day.ToString("D2"));
-                var months = Convert.ToString(date.Month.ToString("D2"));
-                var years = Convert.ToString(date.ToString("yy"));
+                //var date = DateTime.Now;
+                //purchaseOrderPostDto.QuotationDate = date;
+                //var days = Convert.ToString(date.Day.ToString("D2"));
+                //var months = Convert.ToString(date.Month.ToString("D2"));
+                //var years = Convert.ToString(date.ToString("yy"));
 
-                var newcount = await _repository.GetPONumberAutoIncrementCount(date);
+                //var newcount = await _repository.GetPONumberAutoIncrementCount(date);
 
-                if (newcount > 0)
-                {
-                    var number = newcount + 1;
-                    string e = String.Format("{0:D4}", number);
-                    purchaseOrderDetails.PONumber = days + months + years + "PO" + (e);
-                }
-                else
-                {
-                    var count = 1;
-                    var e = count.ToString("D4");
-                    purchaseOrderDetails.PONumber = days + months + years + "PO" + (e);
-                }
+                //if (newcount > 0)
+                //{
+                //    var number = newcount + 1;
+                //    string e = String.Format("{0:D4}", number);
+                //    purchaseOrderDetails.PONumber = days + months + years + "PO" + (e);
+                //}
+                //else
+                //{
+                //    var count = 1;
+                //    var e = count.ToString("D4");
+                //    purchaseOrderDetails.PONumber = days + months + years + "PO" + (e);
+                //}
+
+                var poNumber = await _repository.GeneratePONumber();
+                purchaseOrderDetails.PONumber = poNumber;
 
                 //// Po Upload
 
@@ -493,7 +497,7 @@ namespace Tips.Purchase.Api.Controllers
                 foreach (var poUploadDetail in poUploadDetails)
                 {
                     var fileContent = poUploadDetail.FileByte;
-                    var poNumber = purchaseOrderDetails.PONumber;
+                    var poNumbers = purchaseOrderDetails.PONumber;
                     string fileName = poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 

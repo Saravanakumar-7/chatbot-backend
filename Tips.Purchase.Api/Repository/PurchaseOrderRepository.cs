@@ -105,24 +105,29 @@ namespace Tips.Purchase.Api.Repository
         {
             using (var context = _tipsPurchaseDbContext)
             {
-                var query = _tipsPurchaseDbContext.PurchaseOrders.Include("PoItems");
+                var query = _tipsPurchaseDbContext.PurchaseOrders.Include("POItemList");
+                 int searchValueInt;
+                bool isSearchValueInt = int.TryParse(searchParammes.SearchValue, out searchValueInt);
+
                 if (!string.IsNullOrEmpty(searchParammes.SearchValue))
                 {
                     query = query.Where(po => po.PONumber.Contains(searchParammes.SearchValue)
                     || po.VendorName.Contains(searchParammes.SearchValue)
-                    || po.PODate.ToString().Contains(searchParammes.SearchValue)
-                    || po.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
+                    || po.PODate.ToString().Contains(searchParammes.SearchValue) 
+                    //|| po.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
                     || po.ProcurementType.Contains(searchParammes.SearchValue)
-                    || po.VendorId.Contains(searchParammes.SearchValue)
+                    //|| po.VendorId.Contains(searchParammes.SearchValue)
                     || po.QuotationDate.ToString().Contains(searchParammes.SearchValue)
-                    || po.QuotationReferenceNumber.Contains(searchParammes.SearchValue)
+                    //|| po.QuotationReferenceNumber.Contains(searchParammes.SearchValue)
                     || po.ShippingMode.Contains(searchParammes.SearchValue)
                     || po.PaymentTerms.Contains(searchParammes.SearchValue)
                     || po.DeliveryTerms.Contains(searchParammes.SearchValue)
                     || po.POItemList.Any(s => s.ItemNumber.Contains(searchParammes.SearchValue) ||
                     s.Description.Contains(searchParammes.SearchValue)
                     || s.MftrItemNumber.Contains(searchParammes.SearchValue)
-                    || s.PONumber.Contains(searchParammes.SearchValue)));
+                    || s.PONumber.Contains(searchParammes.SearchValue)) ||
+                    (!isSearchValueInt || po.RevisionNumber == searchValueInt)
+                    );
                 }
                 return query.ToList();
             }
@@ -161,22 +166,55 @@ namespace Tips.Purchase.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<PurchaseOrder>> GetAllActivePurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        //public async Task<PagedList<PurchaseOrder>> GetAllActivePurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        //{
+
+
+
+        //    var activePurchaseOrderDetails = FindAll().OrderByDescending(on => on.Id)
+        //       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue)
+        //       || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
+        //       || inv.PODate.Equals(int.Parse(searchParams.SearchValue)))))
+        //                        .Include(o => o.POFiles)
+        //                        .Include(t => t.POItemList)
+        //                        .ThenInclude(x => x.POAddprojects)
+        //                        .Include(m => m.POItemList)
+        //                        .ThenInclude(i => i.POAddDeliverySchedules);
+        //    return PagedList<PurchaseOrder>.ToPagedList(activePurchaseOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
+
+        public async Task<string> GeneratePONumber()
         {
+            using var transaction = await _tipsPurchaseDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+             
+            try
+            {
+                var poNumberEntity = await _tipsPurchaseDbContext.PONumbers.SingleAsync();
+                poNumberEntity.CurrentValue += 1;
+                _tipsPurchaseDbContext.Update(poNumberEntity);
+                await _tipsPurchaseDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"MISLP-{poNumberEntity.CurrentValue:D5}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
 
-
-
+        public async Task<IEnumerable<PurchaseOrder>> GetAllActivePurchaseOrders()
+        {
             var activePurchaseOrderDetails = FindAll().OrderByDescending(on => on.Id)
-               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue)
-               || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
-               || inv.PODate.Equals(int.Parse(searchParams.SearchValue)))))
+                                .Where(x=>x.Status != Status.Closed)
                                 .Include(o => o.POFiles)
                                 .Include(t => t.POItemList)
                                 .ThenInclude(x => x.POAddprojects)
                                 .Include(m => m.POItemList)
                                 .ThenInclude(i => i.POAddDeliverySchedules);
-            return PagedList<PurchaseOrder>.ToPagedList(activePurchaseOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            return activePurchaseOrderDetails;
         }
+
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllActivePurchaseOrderNameList()
         {
             IEnumerable<PurchaseOrderIdNameListDto> activePurchaseOrderNameList = await _tipsPurchaseDbContext.PurchaseOrders

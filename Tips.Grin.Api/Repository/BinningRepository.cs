@@ -142,15 +142,23 @@ namespace Tips.Grin.Api.Repository
 
         }
 
-        public async Task<PagedList<BinningItems>> GetAllBinningItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        //public async Task<PagedList<BinningItems>> GetAllBinningItems()
+        //{
+        //    var getAllBinningItems = FindAll()
+        //       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue)
+        //       )))
+        //      .Include(t => t.BinningLocations);
+
+
+        //    return PagedList<BinningItems>.ToPagedList(getAllBinningItems, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
+
+        public async Task<IEnumerable<BinningItems>> GetAllBinningItems()
         {
-            var getAllBinningItems = FindAll()
-               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue)
-               )))
-              .Include(t => t.BinningLocations);
-
-
-            return PagedList<BinningItems>.ToPagedList(getAllBinningItems, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var binningItemsDetails = FindAll().OrderByDescending(x => x.Id)
+            .Include(v => v.BinningLocations);
+            return binningItemsDetails;
         }
+
     }
 }

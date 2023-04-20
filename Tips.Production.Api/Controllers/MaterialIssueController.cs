@@ -266,6 +266,101 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SearchMaterialIssueDate([FromQuery] SearchDateparames searchDateParam)
+        {
+            ServiceResponse<IEnumerable<MaterialIssueDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueDto>>();
+            try
+            {
+                var materialIssueDetails = await _materialIssueRepository.SearchMaterialIssueDate(searchDateParam);
+                var result = _mapper.Map<IEnumerable<MaterialIssueDto>>(materialIssueDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all materialIssueDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetAllMaterialIssueWithItems([FromBody] MaterialIssueSearchDto materialIssueSearch)
+        {
+            ServiceResponse<IEnumerable<MaterialIssueDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueDto>>();
+            try
+            {
+                var materialIssueDetails = await _materialIssueRepository.GetAllMaterialIssueWithItems(materialIssueSearch);
+
+
+
+                _logger.LogInfo("Returned all materialIssueDetails");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<MaterialIssueDto, MaterialIssue>().ReverseMap()
+                    .ForMember(dest => dest.MaterialIssueItems, opt => opt.MapFrom(src => src.MaterialIssueItems));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<MaterialIssueDto>>(materialIssueDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all MaterialIssueDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchMaterialIssue([FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<MaterialIssueDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueDto>>();
+            try
+            {
+                var materialIssueDetails = await _materialIssueRepository.SearchMaterialIssue(searchParams);
+
+                _logger.LogInfo("Returned all materialIssueDetails");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<MaterialIssueDto, MaterialIssue>().ReverseMap()
+                    .ForMember(dest => dest.MaterialIssueItems, opt => opt.MapFrom(src => src.MaterialIssueItems));
+                });
+                var mapper = config.CreateMapper();
+
+                var result = mapper.Map<IEnumerable<MaterialIssueDto>>(materialIssueDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all MaterialIssueDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         // DELETE api/<MaterialIssueController>/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMaterialIssue(int id)

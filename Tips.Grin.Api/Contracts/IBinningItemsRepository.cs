@@ -7,7 +7,7 @@ namespace Tips.Grin.Api.Contracts
 {
     public interface IBinningItemsRepository : IRepositoryBase<BinningItems>
     {
-        Task<PagedList<BinningItems>> GetAllBinningItems( PagingParameter pagingParameter, SearchParams searchParams);
+        Task<IEnumerable<BinningItems>> GetAllBinningItems();
 
     }
 }

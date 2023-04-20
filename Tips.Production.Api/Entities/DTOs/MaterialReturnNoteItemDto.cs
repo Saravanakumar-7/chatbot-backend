@@ -21,7 +21,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public PartType PartType { get; set; }
         [Precision(13, 3)]
         public decimal? ReturnQty { get; set; }
-
+        public List<MRNWarehouseDetailsPostDto> MRNWarehouseList { get; set; }
     }
 
     public class MaterialReturnNoteItemUpdateDto

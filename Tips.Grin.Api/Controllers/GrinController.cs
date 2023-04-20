@@ -34,7 +34,7 @@ namespace Tips.Grin.Api.Controllers
     
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class GrinController : ControllerBase
     {
         private IGrinRepository _repository;
