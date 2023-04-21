@@ -292,7 +292,7 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> AddReturnedMRNMaterialsToStock(int id, [FromBody] MaterialReturnNoteUpdateDto materialReturnNoteUpdateDto)
+        public async Task<IActionResult> ReturnMaterialReturnNote(int id, [FromBody] MaterialReturnNoteUpdateDto materialReturnNoteUpdateDto)
         {
             ServiceResponse<MaterialReturnNoteUpdateDto> serviceResponse = new ServiceResponse<MaterialReturnNoteUpdateDto>();
 

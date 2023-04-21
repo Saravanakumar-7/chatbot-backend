@@ -7,6 +7,7 @@ using System.Net;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities;
+using Tips.Production.Api.Entities.Enums;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -288,6 +289,97 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> IssueMaterialRequest(int id, [FromBody] MaterialRequestUpdateDto materialRequestUpdateDto)
+        {
+            ServiceResponse<MaterialRequestUpdateDto> serviceResponse = new ServiceResponse<MaterialRequestUpdateDto>();
+
+
+            try
+            {
+                if (materialRequestUpdateDto is null)
+                {
+                    _logger.LogError("MaterialRequest object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Update MaterialRequest object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid MaterialRequest object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update MaterialRequest object sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                var getMaterialRequest = await _materialRequestRepository.GetMaterialRequestById(id);
+                if (getMaterialRequest is null)
+                {
+                    _logger.LogError($"materialReq with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Update materialReq with id: {id}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                var updateMaterialReqquest = _mapper.Map<MaterialRequests>(getMaterialRequest);
+
+                var materialReqItemDto = materialRequestUpdateDto.MaterialRequestItems;
+
+                var materialReqItemList = new List<MaterialRequestItems>();
+
+                for (int i = 0; i < materialReqItemDto.Count; i++)
+                {
+                    MaterialRequestItems materialItemDetail = _mapper.Map<MaterialRequestItems>(materialReqItemDto[i]);
+                    materialItemDetail.MRStockDetail = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
+
+                    materialReqItemList.Add(materialItemDetail);
+
+                }
+
+
+                updateMaterialReqquest.MaterialRequestItems = materialReqItemList;
+                var updateMaterialReq = _mapper.Map(materialRequestUpdateDto, getMaterialRequest);
+                // updateMaterialReq.MaterialRequestItems = materialReqItemList;
+                updateMaterialReqquest.MrStatus = MaterialStatus.close;
+                string result = await _materialRequestRepository.UpdateMaterialRequest(updateMaterialReq);
+                _materialRequestRepository.SaveAsync();
+
+                //update balance qty and Return qty in Inventory table
+
+
+                //JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+                //{
+                //    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                //};
+                //string json = JsonConvert.SerializeObject(updateMaterialReqquest);
+
+
+                //var data = new StringContent(json, Encoding.UTF8, "application/json");
+                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryForMR"), data);
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "materialReq Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateMaterialRequest action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMaterialRequest(int id)

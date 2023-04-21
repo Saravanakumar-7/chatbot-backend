@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Repository
 {
@@ -37,7 +38,7 @@ namespace Tips.Production.Api.Repository
         {
             var materialRequests = FindAll().OrderByDescending(x => x.Id)
               .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.MRNumber.Contains(searchParammes.SearchValue)
-              || inv.ProjectNumber.Contains(searchParammes.SearchValue))))
+              || inv.ProjectNumber.Contains(searchParammes.SearchValue)))&& inv.MrStatus == MaterialStatus.open)
               .Include(t => t.MaterialRequestItems)
               .ThenInclude(v => v.MRStockDetail);
 
