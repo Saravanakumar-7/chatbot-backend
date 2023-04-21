@@ -10,7 +10,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? PartDescription { get; set; }
         public string? MftrPartNumber { get; set; }
         public PartType PartType { get; set; }
-        public decimal ReturnQty { get; set; }
+        public decimal? ReturnQty { get; set; }
         public List<MRNWarehouseDetailsDto> MRNWarehouseList { get; set; }
 
     }
