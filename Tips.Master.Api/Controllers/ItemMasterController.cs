@@ -669,5 +669,43 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetItemMasterDetailsForMNRByItemNo(string ItemNumber)
+        {
+            ServiceResponse<IEnumerable<ItemMasterMtrPartNoDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterMtrPartNoDto>>();
+
+            try
+            {
+                var itemMasterDetails = await _repository.ItemMasterRepository.GetItemMasterByPartNo(ItemNumber);
+                if (itemMasterDetails == null)
+                {
+                    _logger.LogError($"Itemmasters with id: {ItemNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Itemmasters with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Itemmasters with id: {ItemNumber}");
+                    var result = _mapper.Map<List<ItemMasterMtrPartNoDto>>(itemMasterDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned All ItemMasterByItemNumber";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetItemMasterDetailsForMNRByItemNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

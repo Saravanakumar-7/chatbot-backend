@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Entities.Enums;
 
 namespace Tips.Warehouse.Api.Entities
 {

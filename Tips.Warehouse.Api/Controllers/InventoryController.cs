@@ -19,12 +19,16 @@ namespace Tips.Warehouse.Api.Controllers
         private IInventoryRepository _inventoryRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
 
-        public InventoryController(IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
+        public InventoryController(IConfiguration config,HttpClient httpClient,IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
         {
             _inventoryRepository = inventoryRepository;
             _logger = logger;
             _mapper = mapper;
+            _httpClient = httpClient;
+            _config = config;
         }
 
 
@@ -365,6 +369,52 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-    
+
+        //pass data from MRN using _httpclient Production service to Warehouse Service
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateInventoryForMRN([FromBody] InventoryUpdateDtoForMRN inventoryUpdateDtoForMRN)
+        {
+          
+            var projectNumber = inventoryUpdateDtoForMRN.ProjectNumber;
+            var unit = inventoryUpdateDtoForMRN.Unit;
+            foreach (var item in inventoryUpdateDtoForMRN.MaterialReturnNoteItems)
+            {
+                foreach (var warehouse in item.MRNWarehouseList)
+                {
+                    Inventory inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNoProjectNoUnitWarehouseAndLocation(item.PartNumber,projectNumber,unit,warehouse.Warehouse,warehouse.Location);
+                    if (inventoryDetails != null)
+                    {
+                        inventoryDetails.Balance_Quantity += item.ReturnQty;
+                        inventoryDetails.IsStockAvailable = true;
+                        await _inventoryRepository.UpdateInventory(inventoryDetails);
+                    }
+                    else
+                    {
+                        var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
+                                                                                "GetItemMasterDetailsForMNRByItemNo?", "&ItemNumber=",item.PartNumber));
+                        var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                        dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                        dynamic inventoryObject = itemMasterObjectData.data;
+
+                        Inventory inventory = new Inventory();
+                        inventory.PartNumber = item.PartNumber;
+                        inventory.ProjectNumber = projectNumber;
+                        inventory.Unit = unit;
+                        inventory.Warehouse = warehouse.Warehouse;
+                        inventory.Location = warehouse.Location;
+                        inventory.MftrPartNumber = inventoryObject.MftrPartNumber;
+                        inventory.Description = inventoryObject.Description;
+                        inventory.ReferenceIDFrom = inventoryUpdateDtoForMRN.MRNNumber;
+                        inventory.ReferenceID = inventoryUpdateDtoForMRN.MRNNumber;
+                        inventory.PartType = "";
+                        inventory.UOM = inventoryObject.Uom;
+                    }
+                }
+            }
+            _inventoryRepository.SaveAsync();
+            return Ok();
+        }
+
     }
 }

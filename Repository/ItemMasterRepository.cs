@@ -10,6 +10,7 @@ using Entities.Enums;
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 
 namespace Repository
 {
@@ -182,6 +183,33 @@ namespace Repository
             return getItemMasterByItemNo;
         }
 
+        public async Task<List<ItemMasterMtrPartNoDto>> GetItemMasterByPartNo(string partNumber)
+        {
+            var itemMasterDescription = await TipsMasterDbContext.ItemMasters
+                                .Where(x => x.ItemNumber == partNumber)
+                                .Select(m => m.Description).FirstOrDefaultAsync();
+
+            var itemMasterUom = await TipsMasterDbContext.ItemMasters
+                               .Where(x => x.ItemNumber == partNumber)
+                               .Select(m => m.Uom).FirstOrDefaultAsync();
+
+            var itemMasterId = await TipsMasterDbContext.ItemMasters
+                                .Where(x => x.ItemNumber == partNumber)
+                                .Select(m => m.Id).FirstOrDefaultAsync();
+
+            var itemMasterDetails = await TipsMasterDbContext.ItemmasterAlternates
+                                .Where(m => itemMasterId == m.Id && m.IsDefault == true)
+                                .Select(s => new ItemMasterMtrPartNoDto()
+                                {
+                                    ManufacturerPartNo = s.ManufacturerPartNo,
+                                    Description = itemMasterDescription,
+                                    Uom = itemMasterUom
+
+                                }).ToListAsync();
+                                
+            return itemMasterDetails;
+
+        }
     }
 
     public class FileUploadDocumentRepository : RepositoryBase<FileUpload>, IFileUploadRepository

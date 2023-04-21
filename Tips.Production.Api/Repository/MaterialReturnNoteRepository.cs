@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Entities.Enums;
 //using Tips.Warehouse.Api.Entities;
 
 namespace Tips.Production.Api.Repository
@@ -61,7 +62,7 @@ namespace Tips.Production.Api.Repository
         {
             var materialReturnNoteDetails = FindAll().OrderByDescending(x => x.Id)
                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProjectNumber.Contains(searchParams.SearchValue) ||
-                   inv.MRNNumber.Contains(searchParams.SearchValue))));
+                   inv.MRNNumber.Contains(searchParams.SearchValue))) && inv.MrnStatus == MaterialStatus.open);
 
             return PagedList<MaterialReturnNote>.ToPagedList(materialReturnNoteDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }

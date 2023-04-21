@@ -10,6 +10,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? PartDescription { get; set; }
         public string? MftrPartNumber { get; set; }
         public PartType PartType { get; set; }
+        public decimal ReturnQty { get; set; }
         public List<MRNWarehouseDetailsDto> MRNWarehouseList { get; set; }
 
     }
@@ -20,20 +21,21 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? PartDescription { get; set; }
         public PartType PartType { get; set; }
         [Precision(13, 3)]
-        public decimal? ReturnQty { get; set; }
+        public decimal ReturnQty { get; set; }
+        public List<MRNWarehouseDetailsPostDto> MRNWarehouseList { get; set; }
 
     }
 
     public class MaterialReturnNoteItemUpdateDto
     {
-        public int Id { get; set; } 
+        //public int Id { get; set; }
         public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
         public PartType PartType { get; set; }
         [Precision(13, 3)]
-        public decimal? ReturnQty { get; set; }
+        public decimal ReturnQty { get; set; }
         public List<MRNWarehouseDetailsUpdateDto> MRNWarehouseList { get; set; }
 
     }
-
+   
 }

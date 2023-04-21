@@ -1,5 +1,6 @@
 ﻿using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
@@ -11,6 +12,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public PartType ShopOrderType { get; set; }
         public string? ShopOrderNumber { get; set; }
         public string? Unit { get; set; }
+        public MaterialStatus MrnStatus { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

@@ -23,6 +23,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [DefaultValue(0)]
         public ShortStatus StatusOfShort { get; set; }
+        public MaterialStatus MrStatus { get; set; }
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }

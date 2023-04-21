@@ -4,10 +4,11 @@ using Entities;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
-
+using System.Text;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Entities.Enums;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,13 +23,16 @@ namespace Tips.Production.Api.Controllers
         private IMaterialReturnNoteRepository _materialReturnNoteRepository;
         private IMapper _mapper;
         private ILoggerManager _logger;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
 
-
-        public MaterialReturnNoteController(IMaterialReturnNoteRepository materialReturnNoteRepository, IMapper mapper, ILoggerManager logger)
+        public MaterialReturnNoteController(IConfiguration config, HttpClient httpClient, IMaterialReturnNoteRepository materialReturnNoteRepository, IMapper mapper, ILoggerManager logger)
         {
             _materialReturnNoteRepository = materialReturnNoteRepository;
             _mapper = mapper;
             _logger = logger;
+            _httpClient = httpClient;
+            _config = config;
         }
 
 
@@ -270,6 +274,91 @@ namespace Tips.Production.Api.Controllers
                 var updateMaterialReturnNoteItem = _mapper.Map(materialReturnNoteUpdateDto, materialReturnNoteDetailById);
                 string result = await _materialReturnNoteRepository.UpdateMaterialReturnNote(updateMaterialReturnNoteItem);
                 _materialReturnNoteRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "MaterialReturnNote Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateMaterialReturnNote action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> AddReturnedMRNMaterialsToStock(int id, [FromBody] MaterialReturnNoteUpdateDto materialReturnNoteUpdateDto)
+        {
+            ServiceResponse<MaterialReturnNoteUpdateDto> serviceResponse = new ServiceResponse<MaterialReturnNoteUpdateDto>();
+
+            try
+            {
+                if (materialReturnNoteUpdateDto is null)
+                {
+                    _logger.LogError("Update MaterialReturnNote object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Update MaterialReturnNote object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid Update MaterialReturnNote object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Update MaterialReturnNote object sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                var materialReturnNoteDetailById = await _materialReturnNoteRepository.GetMaterialReturnNoteById(id);
+
+                if (materialReturnNoteDetailById is null)
+                {
+                    _logger.LogError($"GetMaterialReturnNote with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Update GetMaterialReturnNote with id hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+
+                var materialReturnNoteDetail = _mapper.Map<MaterialReturnNote>(materialReturnNoteDetailById);
+                var materialReturnNotesItemDto = materialReturnNoteUpdateDto.MaterialReturnNoteItems;
+                var materialReturnNoteItemList = new List<MaterialReturnNoteItem>();
+                if (materialReturnNotesItemDto != null)
+                {
+                    for (int i = 0; i < materialReturnNotesItemDto.Count; i++)
+                    {
+                        MaterialReturnNoteItem materialReturnNoteItem = _mapper.Map<MaterialReturnNoteItem>(materialReturnNotesItemDto[i]);
+                        materialReturnNoteItemList.Add(materialReturnNoteItem);
+
+                    }
+                }
+                materialReturnNoteDetail.MaterialReturnNoteItems = materialReturnNoteItemList;
+                var updateMaterialReturnNoteItem = _mapper.Map(materialReturnNoteUpdateDto, materialReturnNoteDetailById);
+                materialReturnNoteDetail.MrnStatus = MaterialStatus.close;
+                string result = await _materialReturnNoteRepository.UpdateMaterialReturnNote(updateMaterialReturnNoteItem);               
+                _materialReturnNoteRepository.SaveAsync();
+             
+                //update balance qty and Return qty in Inventory table
+
+                
+                //JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+                //{
+                //    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                //};
+                //string json = JsonConvert.SerializeObject(materialReturnNoteDetail);
+
+                
+                //var data = new StringContent(json, Encoding.UTF8, "application/json");
+                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryForMRN"), data);
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "MaterialReturnNote Updated Successfully";
                 serviceResponse.Success = true;

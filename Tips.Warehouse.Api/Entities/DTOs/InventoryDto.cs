@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {
@@ -113,4 +115,34 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public List<string>? InvoiceNumber { get; set; }
         public List<string> CompanyName { get; set; }
     }
+
+    public class InventoryUpdateDtoForMRN
+    {
+        public int? Id { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? MRNNumber { get; set; }
+        public PartType ShopOrderType { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        public string? Unit { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+
+        public List<InventoryUpdateDtoForMRNItem>? MaterialReturnNoteItems { get; set; }
+    }
+    public class InventoryUpdateDtoForMRNItem
+    {
+        public string? PartNumber { get; set; }
+        public string? PartDescription { get; set; }
+        public PartType PartType { get; set; }
+        public decimal ReturnQty { get; set; }
+        public List<InventoryUpdateDtoForMRNWarehouse> MRNWarehouseList { get; set; }
+    }
+    public class InventoryUpdateDtoForMRNWarehouse
+    {
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        [Precision(13, 3)]
+        public decimal ReturnQty { get; set; }
+    }
+   
 }

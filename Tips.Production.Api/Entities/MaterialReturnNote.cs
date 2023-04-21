@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using Entities.Enums;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities
 {
@@ -13,6 +14,7 @@ namespace Tips.Production.Api.Entities
         public PartType ShopOrderType { get; set; }
         public string? ShopOrderNumber { get; set; }
         public string? Unit { get; set; }
+        public MaterialStatus MrnStatus { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

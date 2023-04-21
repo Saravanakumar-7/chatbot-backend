@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {

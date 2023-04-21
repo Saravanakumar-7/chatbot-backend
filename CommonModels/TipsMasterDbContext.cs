@@ -56,7 +56,7 @@ namespace Entities
         public DbSet<CompanyBanking> CompanyBankings { get; set; }
 
         public DbSet<ItemMaster> ItemMasters { get; set; }
-
+        public DbSet<ItemmasterAlternate> ItemmasterAlternates { get; set; }
         public DbSet<ItemMasterRouting> ItemMasterRoutings { get; set; }
 
 

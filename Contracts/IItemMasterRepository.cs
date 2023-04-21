@@ -23,8 +23,8 @@ namespace Contracts
         Task<string> UpdateItemMaster(ItemMaster itemMaster);
         Task<string> DeleteItemMaster(ItemMaster itemMaster);
         Task<IEnumerable<ItemMasterIdNoListDto>> GetAllActiveItemMasterIdNoList();
-        Task<ItemMaster> GetItemMasterByItemNumber(string shopOrderNo); 
-
+        Task<ItemMaster> GetItemMasterByItemNumber(string shopOrderNo);
+        Task<List<ItemMasterMtrPartNoDto>> GetItemMasterByPartNo(string partNumber);
 
     }
 }
