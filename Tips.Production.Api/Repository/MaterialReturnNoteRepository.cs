@@ -86,5 +86,53 @@ namespace Tips.Production.Api.Repository
             string result = $"MaterialReturnNote of Detail {materialReturnNote.Id} is updated successfully!";
             return result;
         }
+        public async Task<IEnumerable<MaterialReturnNote>> GetAllMaterialReturnNoteWithItems(MaterialReturnNoteSearchDto materialReturnNoteSearch)
+        {
+            using (var context = _tipsProductionDbContext)
+            {
+                var query = _tipsProductionDbContext.MaterialReturnNotes.Include("MaterialReturnNoteItems");
+                if (materialReturnNoteSearch != null || (materialReturnNoteSearch.ProjectNumber.Any())
+               && materialReturnNoteSearch.ShopOrderNumber.Any() && materialReturnNoteSearch.FGShopOrderNumber.Any()
+               && materialReturnNoteSearch.SAShopOrderNumber.Any())
+                {
+                    query = query.Where
+                    (po => (materialReturnNoteSearch.ProjectNumber.Any() ? materialReturnNoteSearch.ProjectNumber.Contains(po.ProjectNumber) : true)
+                   && (materialReturnNoteSearch.ShopOrderNumber.Any() ? materialReturnNoteSearch.ShopOrderNumber.Contains(po.ShopOrderNumber) : true));
+                    //&& (materialReturnNoteSearch.FGShopOrderNumber.Any() ? materialReturnNoteSearch.FGShopOrderNumber.Contains(po.FGShopOrderNumber) : true)
+                    //  && (materialReturnNoteSearch.SAShopOrderNumber.Any() ? materialReturnNoteSearch.SAShopOrderNumber.Contains(po.SAShopOrderNumber) : true));
+                }
+                return query.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<MaterialReturnNote>> SearchMaterialReturnNote([FromQuery] SearchParamess searchParammes)
+        {
+            using (var context = _tipsProductionDbContext)
+            {
+                var query = _tipsProductionDbContext.MaterialReturnNotes.Include("MaterialReturnNoteItems");
+                if (!string.IsNullOrEmpty(searchParammes.SearchValue))
+                {
+                    query = query.Where(po => po.ProjectNumber.Contains(searchParammes.SearchValue)
+                    || po.MRNNumber.Contains(searchParammes.SearchValue)
+                    || po.ShopOrderNumber.Contains(searchParammes.SearchValue)
+                    || po.MaterialReturnNoteItems.Any(s => s.PartNumber.Contains(searchParammes.SearchValue) ||
+                    s.PartDescription.Contains(searchParammes.SearchValue)
+                    || s.MftrPartNumber.Contains(searchParammes.SearchValue)));
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<MaterialReturnNote>> SearchMaterialReturnNoteDate([FromQuery] SearchDateparames searchDatesParams)
+        {
+            var materialReturnNoteDetails = _tipsProductionDbContext.MaterialReturnNotes
+            .Where(inv => ((inv.CreatedOn >= searchDatesParams.SearchFromDate &&
+            inv.CreatedOn <= searchDatesParams.SearchToDate
+            )))
+            .Include(itm => itm.MaterialReturnNoteItems)
+            .ToList();
+            return materialReturnNoteDetails;
+        }
+
+
     }
 }

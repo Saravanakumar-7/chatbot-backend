@@ -49,4 +49,11 @@ namespace Tips.Production.Api.Entities.DTOs
         public int? Id { get; set; }
         public string? MRNNumber { get; set; }
     }
+    public class MaterialReturnNoteSearchDto
+    {
+        public List<string>? ProjectNumber { get; set; }
+        public List<string>? FGShopOrderNumber { get; set; }
+        public List<string>? SAShopOrderNumber { get; set; }
+        public List<string>? ShopOrderNumber { get; set; }
+    }
 }

@@ -40,13 +40,13 @@ namespace Tips.Purchase.Api.Repository
         {
             using (var context = _tipsPurchaseDbContext)
             {
-                var query = _tipsPurchaseDbContext.PurchaseRequisitions.Include("PrItems");
+                var query = _tipsPurchaseDbContext.PurchaseRequisitions.Include("PrItemList");
                 if (!string.IsNullOrEmpty(searchParammes.SearchValue))
                 {
                     query = query.Where(po => po.PrNumber.Contains(searchParammes.SearchValue)
                     || po.PrDate.ToString().Contains(searchParammes.SearchValue)
                    //|| po.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
-                                   || po.ProcurementType.Contains(searchParammes.SearchValue)
+                    || po.ProcurementType.Contains(searchParammes.SearchValue)
                     || po.ShippingMode.Contains(searchParammes.SearchValue)
                     || po.PaymentTerms.Contains(searchParammes.SearchValue)
                     || po.DeliveryTerms.Contains(searchParammes.SearchValue)
@@ -162,21 +162,32 @@ namespace Tips.Purchase.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<PurchaseRequisition>> GetAllActivePurchaseRequisitions([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        //public async Task<PagedList<PurchaseRequisition>> GetAllActivePurchaseRequisitions([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        //{
+        //    var activePurchaseRequsitionDetails = FindAll()
+        //       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PrNumber.Contains(searchParams.SearchValue)
+        //       || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
+        //       || inv.PrDate.Equals(int.Parse(searchParams.SearchValue)))))
+        //                        .Include(o => o.PrFiles)
+        //                        .Include(t => t.PrItemList)
+        //                        .ThenInclude(x => x.PrAddprojects)
+        //                        .Include(m => m.PrItemList)
+        //                        .ThenInclude(i => i.PrAddDeliverySchedules);
+        //    return PagedList<PurchaseRequisition>.ToPagedList(activePurchaseRequsitionDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
+        public async Task<IEnumerable<PurchaseRequisition>> GetAllActivePurchaseRequisitions()
         {
             var activePurchaseRequsitionDetails = FindAll()
-               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PrNumber.Contains(searchParams.SearchValue)
-               || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
-               || inv.PrDate.Equals(int.Parse(searchParams.SearchValue)))))
+                                .Where(x=>x.Status != Status.Closed)
                                 .Include(o => o.PrFiles)
                                 .Include(t => t.PrItemList)
                                 .ThenInclude(x => x.PrAddprojects)
                                 .Include(m => m.PrItemList)
                                 .ThenInclude(i => i.PrAddDeliverySchedules);
-            return PagedList<PurchaseRequisition>.ToPagedList(activePurchaseRequsitionDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            return activePurchaseRequsitionDetails;
         }
 
-         public async Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllActivePurchaseRequisitionNameList()
+        public async Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllActivePurchaseRequisitionNameList()
 
         {
             IEnumerable<PurchaseRequisitionIdNameListDto> activePRNamelist = await _tipsPurchaseDbContext.PurchaseRequisitions

@@ -71,13 +71,20 @@ namespace Tips.Grin.Api.Repository
             return result;
         } 
 
-        public async Task<PagedList<Grins>> GetAllActiveGrin([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        //public async Task<PagedList<Grins>> GetAllActiveGrin([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        //{
+        //    var allActiveGrinDetails = FindAll()
+        //        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue) ||
+        //           inv.VendorId.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))))
+        //         .Include(t => t.GrinParts);
+        //    return PagedList<Grins>.ToPagedList(allActiveGrinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
+        public async Task<IEnumerable<Grins>> GetAllActiveGrin()
         {
-            var allActiveGrinDetails = FindAll()
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue) ||
-                   inv.VendorId.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))))
-                 .Include(t => t.GrinParts);
-            return PagedList<Grins>.ToPagedList(allActiveGrinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var allActiveGrin = await FindAll()
+            .Include(t => t.GrinParts)
+            .ToListAsync();
+            return allActiveGrin;
         }
 
         public async Task<IEnumerable<GrinNumberListDto>> GetAllActiveGrinNoList()

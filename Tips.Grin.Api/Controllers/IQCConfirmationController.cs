@@ -566,13 +566,13 @@ namespace Tips.Grin.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllIQCConfirmationItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        public async Task<IActionResult> GetAllIQCConfirmationItems()
         {
             ServiceResponse<IEnumerable<IQCConfirmationItemsDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationItemsDto>>();
 
             try
             {
-                var getAllIQCItemDetails = await _iQCConfirmationItemsRepository.GetAllIQCConfirmationItems(pagingParameter, searchParams);
+                var getAllIQCItemDetails = await _iQCConfirmationItemsRepository.GetAllIQCConfirmationItems();
                 _logger.LogInfo("Returned all IQCConfirmationItems details()s");
                 var result = _mapper.Map<IEnumerable<IQCConfirmationItemsDto>>(getAllIQCItemDetails);
                 serviceResponse.Data = result;

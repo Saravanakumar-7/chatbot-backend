@@ -99,4 +99,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? FromPartNumber { get; set; }
         public string? ToPartNumber { get; set; }
     }
+    public class LocationTransferSearchDto
+    {
+        public List<string>? FromItemNumber { get; set; }
+        public List<string>? ToItemNumber { get; set; }
+        public List<string>? FromUom { get; set; }
+        public List<string>? ToUOM { get; set; }
+        public List<string>? FromLocation { get; set; }
+        public List<string>? ToLocation { get; set; }
+    }
 }

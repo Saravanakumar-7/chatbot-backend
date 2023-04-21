@@ -2,6 +2,7 @@
 using Entities;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Production.Api.Contracts
 {
@@ -15,6 +16,9 @@ namespace Tips.Production.Api.Contracts
         Task<MaterialIssue> GetMaterialIssueByShopOrderNo(string shopOrderNo);
 
         Task<IEnumerable<MaterialIssueIdNameList>> GetAllMaterialIssueIdNameList();
+        Task<IEnumerable<MaterialIssue>> GetAllMaterialIssueWithItems(MaterialIssueSearchDto materialIssueSearch);
+        Task<IEnumerable<MaterialIssue>> SearchMaterialIssue([FromQuery] SearchParamess searchParammes);
+        Task<IEnumerable<MaterialIssue>> SearchMaterialIssueDate([FromQuery] SearchDateparames searchDatesParams);
 
     }
 }

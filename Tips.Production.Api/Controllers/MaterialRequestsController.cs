@@ -401,5 +401,97 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchMaterialRequests([FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<MaterialRequestsDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestsDto>>();
+            try
+            {
+                var MaterialRequestsDetails = await _materialRequestRepository.SearchMaterialRequests(searchParams);
+                _logger.LogInfo("Returned all MaterialRequestsDetails");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<MaterialRequestsDto, MaterialRequests>().ReverseMap()
+                    .ForMember(dest => dest.MaterialRequestItems, opt => opt.MapFrom(src => src.MaterialRequestItems));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<MaterialRequestsDto>>(MaterialRequestsDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all MaterialRequestsDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllMaterialRequestsWithItems([FromBody] MaterialRequestSearchDto materialRequestSearch)
+        {
+            ServiceResponse<IEnumerable<MaterialRequestsDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestsDto>>();
+            try
+            {
+                var materialRequestDetails = await _materialRequestRepository.GetAllMaterialRequestsWithItems(materialRequestSearch);
+
+                _logger.LogInfo("Returned all materialRequestDetails");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<MaterialRequestsDto, MaterialRequests>().ReverseMap()
+                    .ForMember(dest => dest.MaterialRequestItems, opt => opt.MapFrom(src => src.MaterialRequestItems));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<MaterialRequestsDto>>(materialRequestDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all MaterialRequestsDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> SearchMaterialRequestsDate([FromQuery] SearchDateparames searchDateParam)
+        {
+            ServiceResponse<IEnumerable<MaterialRequestsDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestsDto>>();
+            try
+            {
+                var materialRequestDetails = await _materialRequestRepository.SearchMaterialRequestsDate(searchDateParam);
+                var result = _mapper.Map<IEnumerable<MaterialRequestsDto>>(materialRequestDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all materialRequestDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 }

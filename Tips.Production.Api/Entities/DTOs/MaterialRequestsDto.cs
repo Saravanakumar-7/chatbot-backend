@@ -71,6 +71,15 @@ namespace Tips.Production.Api.Entities.DTOs
         [Required(ErrorMessage = "MRNumber is required")]
         public string MRNumber { get; set; }
     }
+    public class MaterialRequestSearchDto
+    {
+        public List<string>? MRNumber { get; set; }
+        public List<string>? ProjectNumber { get; set; }
+        public List<string>? FGShopOrderNumber { get; set; }
+        public List<string>? SAShopOrderNumber { get; set; }
+        public List<string>? ShopOrderNumber { get; set; }
+
+    }
 }
     
 

@@ -189,7 +189,9 @@ namespace Tips.Warehouse.Api.Repository
                                {
                                    Id = x.Id,
                                    
-                                   BTONumber = x.BTONumber
+                                   BTONumber = x.BTONumber,
+
+                                   IssuedTo= x.IssuedTo
 
                                })
                                .OrderByDescending(x => x.Id)

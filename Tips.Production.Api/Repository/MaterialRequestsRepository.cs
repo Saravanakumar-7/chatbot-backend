@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
@@ -91,6 +92,54 @@ namespace Tips.Production.Api.Repository
             Update(request);
             string result = $"MaterialRequest of Detail {request.Id} is updated successfully!";
             return result;
+        } 
+        public async Task<IEnumerable<MaterialRequests>> GetAllMaterialRequestsWithItems(MaterialRequestSearchDto materialRequestSearch)
+        {
+            using (var context = _tipsProductionDbContext)
+            {
+                var query = _tipsProductionDbContext.MaterialRequests.Include("MaterialRequestItems");
+                if (materialRequestSearch != null || (materialRequestSearch.MRNumber.Any())
+                && materialRequestSearch.ShopOrderNumber.Any() && materialRequestSearch.FGShopOrderNumber.Any()
+                && materialRequestSearch.ProjectNumber.Any() && materialRequestSearch.SAShopOrderNumber.Any())
+                {
+                    query = query.Where
+                    (po => (materialRequestSearch.MRNumber.Any() ? materialRequestSearch.MRNumber.Contains(po.MRNumber) : true)
+                    && (materialRequestSearch.ShopOrderNumber.Any() ? materialRequestSearch.ShopOrderNumber.Contains(po.ShopOrderNumber) : true)
+                   // && (materialRequestSearch.FGShopOrderNumber.Any() ? materialRequestSearch.FGShopOrderNumber.Contains(po.FGShopOrderNumber) : true)
+                   //   && (materialRequestSearch.SAShopOrderNumber.Any() ? materialRequestSearch.SAShopOrderNumber.Contains(po.SAShopOrderNumber) : true)
+                   && (materialRequestSearch.ProjectNumber.Any() ? materialRequestSearch.ProjectNumber.Contains(po.ProjectNumber) : true));
+                }
+                return (IEnumerable<MaterialRequests>)query.ToList();
+            }
         }
+        public async Task<IEnumerable<MaterialRequests>> SearchMaterialRequests([FromQuery] SearchParamess searchParammes)
+        {
+            using (var context = _tipsProductionDbContext)
+            {
+                var query = _tipsProductionDbContext.MaterialRequests.Include("MaterialRequestItems");
+                if (!string.IsNullOrEmpty(searchParammes.SearchValue))
+                {
+                    query = query.Where(po => po.MRNumber.Contains(searchParammes.SearchValue)
+                    || po.ProjectNumber.Contains(searchParammes.SearchValue)
+                    || po.FGItemNumber.Contains(searchParammes.SearchValue)
+                    || po.ShopOrderNumber.Contains(searchParammes.SearchValue)
+                    || po.MaterialRequestItems.Any(s => s.PartNumber.Contains(searchParammes.SearchValue) ||
+                    s.PartDescription.Contains(searchParammes.SearchValue)
+                    || s.MftrPartNumber.Contains(searchParammes.SearchValue)));
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<MaterialRequests>> SearchMaterialRequestsDate([FromQuery] SearchDateparames searchDatesParams)
+        {
+            var materialIssueDetails = _tipsProductionDbContext.MaterialRequests
+            .Where(inv => ((inv.CreatedOn >= searchDatesParams.SearchFromDate &&
+            inv.CreatedOn <= searchDatesParams.SearchToDate
+            )))
+            .Include(itm => itm.MaterialRequestItems)
+            .ToList();
+            return materialIssueDetails;
+        }
+
     }
 }

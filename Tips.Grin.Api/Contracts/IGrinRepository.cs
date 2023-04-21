@@ -15,7 +15,7 @@ namespace Tips.Grin.Api.Contracts
     {
         Task<PagedList<Grins>> GetAllGrin(PagingParameter pagingParameter,SearchParams searchParams);
         Task<Grins> GetGrinById(int id);
-        Task<PagedList<Grins>> GetAllActiveGrin( PagingParameter pagingParameter, SearchParams searchParams);
+        Task<IEnumerable<Grins>> GetAllActiveGrin();
         Task<int?> CreateGrin(Grins grins);
         Task<int?> GetGrinNumberAutoIncrementCount(DateTime date);
         Task<Grins> GetGrinByGrinNo(string grinNumber);

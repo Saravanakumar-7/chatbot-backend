@@ -74,5 +74,37 @@ namespace Tips.SalesService.Api.Repository
             string result = $"locationTransfer of Detail {locationTransfer.Id} is updated successfully!";
             return result;
         }
+
+        //public async Task<IEnumerable<LocationTransfer>> SearchLocationTransfer([FromQuery] SearchParammes searchParammes)
+        //{
+        //    using (var context = _tipsSalesServiceDbContext)
+        //    {
+        //        var query = _tipsSalesServiceDbContext.locationTransfers.ToList();
+        //        if (!string.IsNullOrEmpty(searchParammes.SearchValue))
+        //        {
+        //            query = query.Where(po => po.FromPartNumber.Contains(searchParammes.SearchValue)
+        //            || po.ToPartNumber.Contains(searchParammes.SearchValue)
+        //            || po.FromLocation.Contains(searchParammes.SearchValue)
+        //            || po.ToLocation.Contains(searchParammes.SearchValue)
+        //            || po.FromUOM.Contains(searchParammes.SearchValue)
+        //            || po.ToUOM.Contains(searchParammes.SearchValue));
+
+
+
+
+        //        }
+        //        return query.ToList();
+        //    }
+        //}
+
+        public async Task<IEnumerable<LocationTransfer>> SearchLocationTransferDate([FromQuery] SearchDateParam searchDatesParams)
+        {
+            var locationTransferDetails = _tipsSalesServiceDbContext.locationTransfers
+            .Where(inv => ((inv.CreatedOn >= searchDatesParams.SearchFromDate &&
+            inv.CreatedOn <= searchDatesParams.SearchToDate
+            )))
+            .ToList();
+            return locationTransferDetails;
+        }
     }
 }

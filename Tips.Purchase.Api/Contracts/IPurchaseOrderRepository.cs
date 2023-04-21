@@ -17,7 +17,9 @@ namespace Tips.Purchase.Api.Contracts
 
         Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string poNumber);
 
-        Task<PagedList<PurchaseOrder>> GetAllActivePurchaseOrders(PagingParameter pagingParameter, SearchParamess searchParamess);
+        Task<IEnumerable<PurchaseOrder>> GetAllActivePurchaseOrders();
+
+        Task<string> GeneratePONumber();
         Task<long> CreatePurchaseOrder(PurchaseOrder purchaseOrder);
 
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPONumberListByVendorId(string vendorId);
