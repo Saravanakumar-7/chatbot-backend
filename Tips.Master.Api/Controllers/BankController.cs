@@ -31,24 +31,14 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<BankController>
         [HttpGet]
-        public async Task<IActionResult> GetAllBankDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllBankDetails()
         {
             ServiceResponse<IEnumerable<BankDto>> serviceResponse = new ServiceResponse<IEnumerable<BankDto>>();
 
             try
             {
-                var GetallBanks = await _repository.BankRepository.GetAllActiveBank(pagingParameter, searchParams);
+                var GetallBanks = await _repository.BankRepository.GetAllActiveBank();
 
-                var metadata = new
-                {
-                    GetallBanks.TotalCount,
-                    GetallBanks.PageSize,
-                    GetallBanks.CurrentPage,
-                    GetallBanks.HasNext,
-                    GetallBanks.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all Bank");
                 var result = _mapper.Map<IEnumerable<BankDto>>(GetallBanks);
                 serviceResponse.Data = result;
@@ -69,13 +59,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveBankDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveBankDetails()
         {
             ServiceResponse<IEnumerable<BankDto>> serviceResponse = new ServiceResponse<IEnumerable<BankDto>>();
 
             try
             {
-                var allActiveBanks = await _repository.BankRepository.GetAllActiveBank(pagingParameter,searchParams);
+                var allActiveBanks = await _repository.BankRepository.GetAllActiveBank();
                 _logger.LogInfo("Returned all Banks");
                 var result = _mapper.Map<IEnumerable<BankDto>>(allActiveBanks);
                 serviceResponse.Data = result;

@@ -158,7 +158,8 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? GrinNumber { get; set; }
-        
+        public string InvoiceNumber { get; set; }
+
     }
     public class GrinSearchDto
     {

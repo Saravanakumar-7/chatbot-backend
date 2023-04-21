@@ -50,7 +50,8 @@ namespace Repository
                                     Id = x.Id,
                                     CustomerAliasName = x.CustomerAliasName,
                                     CustomerName = x.CustomerName,
-                                    CustomerNumber = x.CustomerNumber
+                                    CustomerNumber = x.CustomerNumber,
+                                    CustomerCategory = x.CustomerCategory
 
                                 })
                                 .OrderByDescending(x => x.Id)

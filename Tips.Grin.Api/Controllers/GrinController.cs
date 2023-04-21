@@ -1132,7 +1132,7 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveGrinNoList()
+        public async Task<IActionResult> GetAllGrinNoList()
         {
             ServiceResponse<IEnumerable<GrinNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinNumberListDto>>();
             try

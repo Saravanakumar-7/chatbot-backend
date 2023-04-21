@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface IBankRepository
     {
-        Task<PagedList<Bank>> GetAllBank(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<Bank>> GetAllBank();
         Task<Bank> GetBankById(int id);
-        Task<PagedList<Bank>> GetAllActiveBank(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<Bank>> GetAllActiveBank();
         Task<int?> CreateBank(Bank bank);
         Task<string> UpdateBank(Bank bank);
         Task<string> DeleteBank(Bank bank);

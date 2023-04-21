@@ -34,21 +34,19 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<Bank>> GetAllActiveBank([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<Bank>> GetAllActiveBank()
         {
-            var getAllAActiveBanks = FindAll()
-            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BankName.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<Bank>.ToPagedList(getAllAActiveBanks, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var getAllAActiveBanks = FindAll().ToList();
+            
+            return getAllAActiveBanks;
         }
 
-        public async Task<PagedList<Bank>> GetAllBank([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<Bank>> GetAllBank()
         {
-            var getAllBanksDetails = FindAll().OrderByDescending(x => x.Id)
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BankName.Contains(searchParams.SearchValue) ||
-                inv.Description.Contains(searchParams.SearchValue))));
+            var getAllBanksDetails = FindAll().OrderByDescending(x => x.Id).ToList();
 
-            return PagedList<Bank>.ToPagedList(getAllBanksDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+            return getAllBanksDetails;
         }
 
 

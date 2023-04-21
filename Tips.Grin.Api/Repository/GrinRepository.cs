@@ -94,7 +94,8 @@ namespace Tips.Grin.Api.Repository
                                 {                                  
 
                                     Id= x.Id,
-                                    GrinNumber=x.GrinNumber
+                                    GrinNumber=x.GrinNumber,
+                                    InvoiceNumber = x.InvoiceNumber
                                 })
                               .ToListAsync();
 
