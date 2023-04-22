@@ -409,7 +409,10 @@ namespace Entities.DTOs
     public class CompanyIdNameListDto
     {
         public int Id { get; set; }
+        public string? CompanyId { get; set; }
         public string? CompanyName { get; set; }
         public string? CompanyAliasName { get; set; }
+        public string? CompanyCategory { get; set; }
+        public string? CompanyType { get; set; }
     }
 }

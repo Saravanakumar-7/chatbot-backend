@@ -268,7 +268,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCompanyIdNameList()
+        public async Task<IActionResult> GetAllCompanyIdNameList()
         {
             ServiceResponse<IEnumerable<CompanyIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<CompanyIdNameListDto>>();
             try

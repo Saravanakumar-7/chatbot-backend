@@ -333,7 +333,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCustomerIdNameList()
+        public async Task<IActionResult> GetAllCustomerIdNameList()
         {
             ServiceResponse<IEnumerable<CustomerIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerIdNameListDto>>();
             try

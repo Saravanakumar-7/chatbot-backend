@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,8 +45,11 @@ namespace Repository
                                 .Select(x => new CompanyIdNameListDto()
                                 {
                                     Id = x.Id,
+                                    CompanyId = x.CompanyId,
                                     CompanyAliasName = x.CompanyAliasName,
-                                    CompanyName = x.CompanyName
+                                    CompanyName = x.CompanyName,
+                                    CompanyCategory = x.CompanyCategory,
+                                    CompanyType = x.CompanyType
                                 })
                               .ToListAsync();
 

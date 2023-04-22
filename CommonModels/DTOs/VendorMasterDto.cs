@@ -419,5 +419,7 @@ namespace Entities.DTOs
         public string? VendorId { get; set; }
         public string? VendorName { get; set; }
         public string? VednorAliasName { get; set; }
+        public string? VendorType { get; set; }
+        public string? VendorCategory { get; set; }
     }
 }

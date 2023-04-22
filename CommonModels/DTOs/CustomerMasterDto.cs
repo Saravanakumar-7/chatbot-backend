@@ -392,6 +392,7 @@ namespace Entities.DTOs
         public string? CustomerAliasName { get; set; }
         public string? CustomerNumber { get; set; }
         public string? CustomerCategory { get; set; }
+        public string? CustomerType { get; set; }
 
     }
 }

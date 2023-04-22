@@ -283,7 +283,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveVendorNameList()
+        public async Task<IActionResult> GetAllVendorNameList()
         {
             ServiceResponse<IEnumerable<VendorIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<VendorIdNameListDto>>();
             try
