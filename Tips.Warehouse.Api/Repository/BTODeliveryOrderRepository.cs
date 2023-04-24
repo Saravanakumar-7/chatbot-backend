@@ -49,9 +49,9 @@ namespace Tips.Warehouse.Api.Repository
         {
             using (var context = _tipsWarehouseDbContext)
             { 
-                var query = _tipsWarehouseDbContext.bTODeliveryOrder.Include("BTODeliveryOrderItems");
-                if (bTODeliveryOrderSearch != null || (bTODeliveryOrderSearch.SalesOrderNumber.Any())
-                 && bTODeliveryOrderSearch.BTONumber.Any() && bTODeliveryOrderSearch.CustomerName.Any() 
+                var query = _tipsWarehouseDbContext.bTODeliveryOrder.Include("bTODeliveryOrderItems");
+                if (bTODeliveryOrderSearch != null || /*(bTODeliveryOrderSearch.SalesOrderNumber.Any())*/
+                /* &&*/ bTODeliveryOrderSearch.BTONumber.Any() && bTODeliveryOrderSearch.CustomerName.Any() 
                  && bTODeliveryOrderSearch.PONumber.Any() && bTODeliveryOrderSearch.IssuedTo.Any())
 
                 {
@@ -71,7 +71,7 @@ namespace Tips.Warehouse.Api.Repository
             .Where(inv => ((inv.CreatedOn >= searchsDateParms.SearchFromDate &&
             inv.CreatedOn <= searchsDateParms.SearchToDate
             )))
-            .Include(itm => itm.BTODeliveryOrderItems)
+            .Include(itm => itm.bTODeliveryOrderItems)
             .ToList();
             return btoDeliveryOrderDetails;
         }
@@ -79,16 +79,16 @@ namespace Tips.Warehouse.Api.Repository
         {
             using (var context = _tipsWarehouseDbContext)
             {
-                var query = _tipsWarehouseDbContext.bTODeliveryOrder.Include("BTODeliveryOrderItems");
+                var query = _tipsWarehouseDbContext.bTODeliveryOrder.Include("bTODeliveryOrderItems");
                 if (!string.IsNullOrEmpty(searchParames.SearchValue))
                 {
-                    //query = query.Where(po => po.SalesOrderNumber.Contains(searchParames.SearchValue)
-                    //|| po.CustomerName.Contains(searchParames.SearchValue)
-                    //|| po.PONumber.Contains(searchParames.SearchValue)
-                    //|| po.IssuedTo.Contains(searchParames.SearchValue)
-                    //|| po.BTODeliveryOrderItems.Any(s => s.FGItemNumber.Contains(searchParames.SearchValue) ||
-                    //s.BTONumber.Contains(searchParames.SearchValue)
-                    //|| s.Description.Contains(searchParames.SearchValue)));
+                    query = query.Where(po => //po.SalesOrderNumber.Contains(searchParames.SearchValue)
+                    /*||*/ po.CustomerName.Contains(searchParames.SearchValue)
+                    || po.PONumber.Contains(searchParames.SearchValue)
+                    || po.IssuedTo.Contains(searchParames.SearchValue)
+                    || po.bTODeliveryOrderItems.Any(s => s.FGItemNumber.Contains(searchParames.SearchValue) ||
+                    s.BTONumber.Contains(searchParames.SearchValue)
+                    || s.Description.Contains(searchParames.SearchValue)));
                 }
                 return query.ToList();
             }
@@ -103,7 +103,7 @@ namespace Tips.Warehouse.Api.Repository
                 || inv.PONumber.Contains(searchParams.SearchValue)
                 || inv.CustomerName.Contains(searchParams.SearchValue)
                 || inv.SalesOrderId.Equals(int.Parse(searchParams.SearchValue)))))
-                .Include(t => t.BTODeliveryOrderItems);
+                .Include(t => t.bTODeliveryOrderItems);
 
             return PagedList<BTODeliveryOrder>.ToPagedList(getAllActiveBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
@@ -116,7 +116,7 @@ namespace Tips.Warehouse.Api.Repository
                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BTONumber.Contains(searchParams.SearchValue) ||
                  inv.PONumber.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
                  || inv.SalesOrderId.Equals(int.Parse(searchParams.SearchValue)))))
-                 .Include(t => t.BTODeliveryOrderItems);
+                 .Include(t => t.bTODeliveryOrderItems);
 
             return PagedList<BTODeliveryOrder>.ToPagedList(getAllBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
@@ -163,7 +163,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<BTODeliveryOrder> GetBTODeliveryOrderById(int id)
         {
             var getBTODeliveryOrderDetailsbyId = await _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.Id == id)
-                                .Include(t => t.BTODeliveryOrderItems)
+                                .Include(t => t.bTODeliveryOrderItems)
                                 //.ThenInclude(s => s.BTOSerialNumbers)
                                 .FirstOrDefaultAsync();
 

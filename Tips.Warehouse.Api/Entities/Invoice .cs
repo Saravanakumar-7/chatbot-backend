@@ -19,6 +19,6 @@ namespace Tips.Warehouse.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<InvoiceChildItem>? InvoiceChildItems { get; set; }
+        public List<InvoiceChildItem>? invoiceChildItems { get; set; }
     }
 }

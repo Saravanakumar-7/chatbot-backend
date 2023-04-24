@@ -1,4 +1,6 @@
-﻿using Entities;
+﻿using System.Linq;
+using Entities;
+using Entities.Enums;
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -62,7 +64,7 @@ namespace Tips.Production.Api.Repository
         {
             var materialIssueDetail = await _tipsProductionDbContext.MaterialIssue
                                     .Where(x => x.Id == id)                           
-                                    .Include(m=> m.MaterialIssueItems)
+                                    .Include(m=> m.materialIssueItems)
                                     .FirstOrDefaultAsync();
 
             return materialIssueDetail;
@@ -72,7 +74,7 @@ namespace Tips.Production.Api.Repository
         {
             var materialIssueDetail = await _tipsProductionDbContext.MaterialIssue
                                     .Where(x => x.ShopOrderNumber == shopOrderNo)
-                                    .Include(m => m.MaterialIssueItems)
+                                    .Include(m => m.materialIssueItems)
                                     .FirstOrDefaultAsync();
 
             return materialIssueDetail;
@@ -91,15 +93,15 @@ namespace Tips.Production.Api.Repository
         {
             using (var context = _tipsProductionDbContext)
             {
-                var query = _tipsProductionDbContext.MaterialIssue.Include("FGShopOrderMaterialIssues").Include("SAShopOrderMaterialIssues");
-                if (materialIssueSearch != null || (materialIssueSearch.ItemType.Any())
-               && materialIssueSearch.ShopOrderNumber.Any() && materialIssueSearch.FGShopOrderNumber.Any()
-               && materialIssueSearch.SAShopOrderNumber.Any() && materialIssueSearch.ItemNumber.Any() && materialIssueSearch.FGItemNumber.Any()
-               && materialIssueSearch.SAItemNumber.Any())
+                var query = _tipsProductionDbContext.MaterialIssue.Include("materialIssueItems")/*.Include("FGShopOrderMaterialIssues").Include("SAShopOrderMaterialIssues")*/;
+                if (materialIssueSearch != null ||/* (materialIssueSearch.ItemType.Any())*/
+               /*&&*/ materialIssueSearch.ShopOrderNumber.Any() /*&& materialIssueSearch.FGShopOrderNumber.Any()*/
+              /* && materialIssueSearch.SAShopOrderNumber.Any()*/ && materialIssueSearch.ItemNumber.Any() /*&&*/ /*materialIssueSearch.FGItemNumber.Any()*/
+              /* && materialIssueSearch.SAItemNumber.Any()*/)
                 {
                     query = query.Where
-                    (po => (materialIssueSearch.ItemType.Any() ? materialIssueSearch.ItemType.Contains(po.ItemType.ToString()) : true)
-                   && (materialIssueSearch.ShopOrderNumber.Any() ? materialIssueSearch.ShopOrderNumber.Contains(po.ShopOrderNumber) : true)
+                    (po => /*(materialIssueSearch.ItemType.Any() ? Enum.GetName(typeof(PartTypes), po.ItemType).Contains(po.ItemType.ToString()) : true)*/
+                   /*&& */(materialIssueSearch.ShopOrderNumber.Any() ? materialIssueSearch.ShopOrderNumber.Contains(po.ShopOrderNumber) : true)
                    //  && (materialIssueSearch.FGShopOrderNumber.Any() ? materialIssueSearch.FGShopOrderNumber.Contains(po.FGShopOrderNumber) : true)
                    //&& (materialIssueSearch.SAShopOrderNumber.Any() ? materialIssueSearch.SAShopOrderNumber.Contains(po.SAShopOrderNumber) : true)
                    && (materialIssueSearch.ItemNumber.Any() ? materialIssueSearch.ItemNumber.Contains(po.ItemNumber) : true));
@@ -113,25 +115,61 @@ namespace Tips.Production.Api.Repository
         {
             using (var context = _tipsProductionDbContext)
             {
-                 var query = _tipsProductionDbContext.MaterialIssue.Include("MaterialIssueItems");
+                 var query = _tipsProductionDbContext.MaterialIssue.Include("materialIssueItems");
                 //var query = _tipsProductionDbContext.MaterialIssue.Include("FGShopOrderMaterialIssues").Include("SAShopOrderMaterialIssues");
                 if (!string.IsNullOrEmpty(searchParammes.SearchValue))
                 {
                     //query = query.Where(po => po.ItemType.ToString().Contains(searchParammes.SearchValue)
                     //|| po.ItemNumber.Contains(searchParammes.SearchValue)
                     //|| po.ShopOrderQty.Equals(int.Parse(searchParammes.SearchValue))
-                    //|| po.MaterialIssueItems.Any(s => s.PartNumber.Contains(searchParammes.SearchValue) ||
+                    //|| po.materialIssueItems.Any(s => s.PartNumber.Contains(searchParammes.SearchValue) ||
                     //s.Description.Contains(searchParammes.SearchValue)
                     //|| s.ProjectNumber.Contains(searchParammes.SearchValue)
                     //|| s.Description.Contains(searchParammes.SearchValue)));
-                    string searchValueString = searchParammes.SearchValue.ToString();
-                    query = query.Where(po => Enum.GetName(typeof(PartTypes), po.ItemType).Contains(searchValueString)
-                                    || po.ItemNumber.Contains(searchValueString)
-                                    || po.ShopOrderQty.Equals(int.Parse(searchValueString))
-                                    || po.MaterialIssueItems.Any(s => s.PartNumber.Contains(searchValueString) ||
-                                    s.Description.Contains(searchValueString)
-                                    || s.ProjectNumber.Contains(searchValueString)
-                                    || s.Description.Contains(searchValueString)));
+
+                    //string searchValueString = Convert.ToString(searchParammes.SearchValue);
+
+                    //// Perform the search
+                    //query = query.Where(po => (
+                    //    (po.ItemType == PartType.SA || po.ItemNumber.Contains(searchValueString)) ||
+                    //    (po.ItemType == PartType.FG || po.ItemNumber.Contains(searchValueString)) ||
+                    //    (po.materialIssueItems.Any(s =>
+                    //        (s.PartNumber.Contains(searchValueString) ||
+                    //         s.Description.Contains(searchValueString) ||
+                    //         s.ProjectNumber.Contains(searchValueString) ||
+                    //         s.Description.Contains(searchValueString)) &&
+                    //        (po.ItemType == PartType.SA || po.ItemType == PartType.FG)
+                    //    )
+                    //)));
+
+                    string searchValueString = Convert.ToString(searchParammes.SearchValue);
+
+                    // Perform the search for the searchValueString in ItemNumber or MaterialIssueItem properties,
+                    // and also check for the string value of each ItemType enum
+
+                    //   query = query.Where(m => m.ItemNumber.Contains(searchParammes.SearchValue) ||
+                    //(m.ItemType == PartType.FG && searchParammes.SearchValue == "FG") ||
+                    //(m.ItemType == PartType.PurchasePart && searchParammes.SearchValue == "PurchasePart") ||
+                    //(m.ItemType == PartType.TG && searchParammes.SearchValue == "TG") ||
+                    //(m.ItemType == PartType.SA && searchParammes.SearchValue == "SA") ||
+                    //(m.ItemType == PartType.FRU && searchParammes.SearchValue == "FRU") ||
+                    //(m.ItemType == PartType.Phantom && searchParammes.SearchValue == "Phantom") ||
+                    //m.materialIssueItems
+                    //    .Any(m0 => m0.PartNumber.Contains(searchParammes.SearchValue) ||
+                    //               m0.Description.Contains(searchParammes.SearchValue) ||
+                    //               m0.ProjectNumber.Contains(searchParammes.SearchValue) ||
+                    //               m0.Description.Contains(searchParammes.SearchValue)))
+                    //       .ToListAsync();
+
+                    //string searchValueString = searchParammes.SearchValue.ToString();
+                    query = query.Where(po => /*Enum.GetName(typeof(PartTypes), po.ItemType).Contains(searchValueString)*/
+                                    // po.ItemType.Contains(searchValueString)
+                                    /*||*/ po.ItemNumber.Contains(searchParammes.SearchValue)
+                                    || po.ShopOrderQty.ToString().Contains(searchParammes.SearchValue)
+                                    || po.materialIssueItems.Any(s => s.PartNumber.Contains(searchParammes.SearchValue) ||
+                                    s.Description.Contains(searchParammes.SearchValue)
+                                    || s.ProjectNumber.Contains(searchParammes.SearchValue)
+                                    || s.Description.Contains(searchParammes.SearchValue)));
 
                 }
                 return query.ToList();
@@ -144,7 +182,7 @@ namespace Tips.Production.Api.Repository
             .Where(inv => ((inv.CreatedOn >= searchDatesParams.SearchFromDate &&
             inv.CreatedOn <= searchDatesParams.SearchToDate
             )))
-            .Include(itm => itm.MaterialIssueItems)
+            .Include(itm => itm.materialIssueItems)
             .ToList();
             return materialIssueDetails;
         }

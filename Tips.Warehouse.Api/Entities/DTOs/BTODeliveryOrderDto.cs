@@ -21,7 +21,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<BTODeliveryOrderItemsDto>? BTODeliveryOrderItemsDto { get; set; }
+        public List<BTODeliveryOrderItemsDto>? bTODeliveryOrderItems { get; set; }
     }
     public class BTODeliveryOrderDtoPost
     {
@@ -77,7 +77,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public List<string> BTONumber { get; set; }
         public List<string> CustomerName { get; set; }
-        public List<string>? SalesOrderNumber { get; set; }
+        //public List<string>? SalesOrderNumber { get; set; }
         public List<string> PONumber { get; set; }
         public List<String>? IssuedTo { get; set; }
     }

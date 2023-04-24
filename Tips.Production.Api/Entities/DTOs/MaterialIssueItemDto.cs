@@ -37,6 +37,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? PartNumber { get; set; }
         [MaxLength(500)]
         public string? Description { get; set; }
+        public string? ProjectNumber { get; set; }
         public PartType PartType { get; set; }
         public string? UOM { get; set; }
         [Precision(13, 3)]

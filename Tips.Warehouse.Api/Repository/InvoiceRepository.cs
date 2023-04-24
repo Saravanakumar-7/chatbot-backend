@@ -45,7 +45,7 @@ namespace Tips.Warehouse.Api.Repository
                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
                 inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
                 || inv.CompanyName.Contains(searchParams.SearchValue))))
-                .Include(k => k.InvoiceChildItems);
+                .Include(k => k.invoiceChildItems);
             return PagedList<Invoice>.ToPagedList(getAllInvoiceList, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
@@ -56,7 +56,7 @@ namespace Tips.Warehouse.Api.Repository
             .Where(inv => ((inv.CreatedOn >= searchsDateParms.SearchFromDate &&
             inv.CreatedOn <= searchsDateParms.SearchToDate
             )))
-            .Include(itm => itm.InvoiceChildItems)
+            .Include(itm => itm.invoiceChildItems)
             .ToList();
             return invoiceDetails;
         }
@@ -71,7 +71,7 @@ namespace Tips.Warehouse.Api.Repository
                     query = query.Where(po => po.InvoiceNumber.Contains(searchParames.SearchValue)
                     || po.CustomerName.Contains(searchParames.SearchValue)
                     || po.CompanyName.Contains(searchParames.SearchValue)
-                    || po.InvoiceChildItems.Any(s => s.FGItemNumber.Contains(searchParames.SearchValue) ||
+                    || po.invoiceChildItems.Any(s => s.FGItemNumber.Contains(searchParames.SearchValue) ||
                     s.DONumber.Contains(searchParames.SearchValue)
                     || s.Description.Contains(searchParames.SearchValue)));
                 }
@@ -98,7 +98,7 @@ namespace Tips.Warehouse.Api.Repository
         {
         var getInvoiceListById = await _tipsWarehouseDbContext.invoices
                         .Where(x => x.Id == id)
-                        .Include(k => k.InvoiceChildItems)
+                        .Include(k => k.invoiceChildItems)
                          .FirstOrDefaultAsync();
         return getInvoiceListById;
         }

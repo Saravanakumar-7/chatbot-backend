@@ -23,6 +23,6 @@ namespace Tips.Production.Api.Entities
         public DateTime? LastModifiedOn { get; set; }
         public IssuedStatus MaterialIssuedStatus { get; set; } = IssuedStatus.Open;
 
-        public List<MaterialIssueItem> MaterialIssueItems { get; set; }
+        public List<MaterialIssueItem> materialIssueItems { get; set; }
     }
 }

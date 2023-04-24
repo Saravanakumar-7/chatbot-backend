@@ -407,7 +407,7 @@ namespace Tips.Production.Api.Controllers
 
 
                         }
-                        materialIssue.MaterialIssueItems = materialIssueItemList;
+                        materialIssue.materialIssueItems = materialIssueItemList;
                         await _materialIssueRepository.CreateMaterialIssue(materialIssue);
                         _materialIssueRepository.SaveAsync();
                     }

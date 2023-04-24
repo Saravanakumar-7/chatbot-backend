@@ -98,7 +98,7 @@ namespace Tips.Warehouse.Api
 
 
 
-            //CreateMap<BTODeliveryOrderItems, inven>().ReverseMap();
+            //CreateMap<bTODeliveryOrderItems, inven>().ReverseMap();
         }
     }
 }

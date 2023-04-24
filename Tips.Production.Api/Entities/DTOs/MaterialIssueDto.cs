@@ -23,7 +23,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
         public IssuedStatus MaterialIssuedStatus { get; set; }
 
-        public List<MaterialIssueItemDto> MaterialIssueItems { get; set; }
+        public List<MaterialIssueItemDto> materialIssueItems { get; set; }
     }
 
     public class MaterialIssuePostDto
@@ -61,12 +61,12 @@ namespace Tips.Production.Api.Entities.DTOs
     }
     public class MaterialIssueSearchDto
     {
-        public List<string>? ItemType { get; set; }
+       // public List<string>? ItemType { get; set; }
         public List<string>? ShopOrderNumber { get; set; }
-        public List<string>? FGShopOrderNumber { get; set; }
-        public List<string>? SAShopOrderNumber { get; set; }
+        //public List<string>? FGShopOrderNumber { get; set; }
+        //public List<string>? SAShopOrderNumber { get; set; }
         public List<string>? ItemNumber { get; set; }
-        public List<string>? FGItemNumber { get; set; }
-        public List<string>? SAItemNumber { get; set; }
+        //public List<string>? FGItemNumber { get; set; }
+        //public List<string>? SAItemNumber { get; set; }
     }
 }

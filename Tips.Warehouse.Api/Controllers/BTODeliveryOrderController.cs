@@ -108,10 +108,10 @@ namespace Tips.Warehouse.Api.Controllers
 
                     List<BTODeliveryOrderItemsDto> bTODeliveryOrderItemsDtoList = new List<BTODeliveryOrderItemsDto>();
 
-                    if (getBTODeliveryOrderDetailById.BTODeliveryOrderItems != null)
+                    if (getBTODeliveryOrderDetailById.bTODeliveryOrderItems != null)
                     {
 
-                        foreach (var deliveryOrderitemDetails in getBTODeliveryOrderDetailById.BTODeliveryOrderItems)
+                        foreach (var deliveryOrderitemDetails in getBTODeliveryOrderDetailById.bTODeliveryOrderItems)
                         {
                             BTODeliveryOrderItemsDto bTODeliveryOrderItemsDtos = _mapper.Map<BTODeliveryOrderItemsDto>(deliveryOrderitemDetails);
                             //bTODeliveryOrderItemsDtos.BTOSerialNumberDto = _mapper.Map<List<BTOSerialNumberDto>>(deliveryOrderitemDetails.BTOSerialNumbers);
@@ -119,7 +119,7 @@ namespace Tips.Warehouse.Api.Controllers
                         }
                     }
 
-                    bTODeliveryOrderDto.BTODeliveryOrderItemsDto = bTODeliveryOrderItemsDtoList;
+                    bTODeliveryOrderDto.bTODeliveryOrderItems = bTODeliveryOrderItemsDtoList;
 
                     serviceResponse.Data = bTODeliveryOrderDto;
                     serviceResponse.Message = "Returned BTODeliveryOrderById Successfully";
@@ -175,8 +175,8 @@ namespace Tips.Warehouse.Api.Controllers
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<BTODeliveryOrderDto, BTODeliveryOrder>().ReverseMap()
-                    .ForMember(dest => dest.BTODeliveryOrderItemsDto, opt => opt.MapFrom(src => src.BTODeliveryOrderItems));
+                    cfg.CreateMap<BTODeliveryOrder, BTODeliveryOrderDto>().ReverseMap()
+                    .ForMember(dest => dest.bTODeliveryOrderItems, opt => opt.MapFrom(src => src.bTODeliveryOrderItems));
                 });
                 var mapper = config.CreateMapper();
                 var result = mapper.Map<IEnumerable<BTODeliveryOrderDto>>(btoDeliveyOrderList);
@@ -209,11 +209,11 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     cfg.AddProfile<MappingProfile>();
                     cfg.CreateMap<BTODeliveryOrderDto, BTODeliveryOrder>().ReverseMap()
-                    .ForMember(dest => dest.BTODeliveryOrderItemsDto, opt => opt.MapFrom(src => src.BTODeliveryOrderItems));
+                    .ForMember(dest => dest.bTODeliveryOrderItems, opt => opt.MapFrom(src => src.bTODeliveryOrderItems));
                 });
 
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<BTODeliveryOrderDto>>(bTODeliveryOrderSearch);
+                var result = mapper.Map<IEnumerable<BTODeliveryOrderDto>>(bTODeliveryOrders);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all bTODeliveryOrders";
                 serviceResponse.Success = true;
@@ -455,7 +455,7 @@ namespace Tips.Warehouse.Api.Controllers
                     }
                 }
 
-                bTODeliveryOrder.BTODeliveryOrderItems = bTODeliveryOrderItemsDtoList;
+                bTODeliveryOrder.bTODeliveryOrderItems = bTODeliveryOrderItemsDtoList;
 
                 await _repository.CreateBTODeliveryOrder(bTODeliveryOrder);
                 _repository.SaveAsync(); 
@@ -465,11 +465,11 @@ namespace Tips.Warehouse.Api.Controllers
 
                 //update balance qty and dispatch qty in salesorder table
                 var btoDeliveryDispatchDetails = _mapper.Map<List<BtoDeliveryOrderDispatchQtyDetailsDto>>(bTODeliveryOrderitemsList);
-                         
+
                 var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchDetails"), data);
-                  
+
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = " BTODeliveryOrder Successfully Created";
@@ -528,7 +528,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var bTODeliveryOrder = _mapper.Map<BTODeliveryOrder>(bTODeliveryOrderbyId);
 
-                var getOldbtoDeliveryOrderItemsDetails = bTODeliveryOrder.BTODeliveryOrderItems;
+                var getOldbtoDeliveryOrderItemsDetails = bTODeliveryOrder.bTODeliveryOrderItems;
 
                 var bTODeliveryOrderitemsDto = bTODeliveryOrderDtoUpdate.BTODeliveryOrderItemsDtoUpdate;
                 var bTODeliveryOrderitemsList = new List<BTODeliveryOrderItems>();
@@ -701,7 +701,7 @@ namespace Tips.Warehouse.Api.Controllers
                     }
                 }
 
-                bTODeliveryOrder.BTODeliveryOrderItems = bTODeliveryOrderitemsList;
+                bTODeliveryOrder.bTODeliveryOrderItems = bTODeliveryOrderitemsList;
                 var updateBTODeliveryOrder = _mapper.Map(bTODeliveryOrderDtoUpdate, bTODeliveryOrder);
 
                 string result = await _repository.UpdateBTODeliveryOrder(updateBTODeliveryOrder);

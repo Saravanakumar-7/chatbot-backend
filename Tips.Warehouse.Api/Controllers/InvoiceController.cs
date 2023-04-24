@@ -117,7 +117,7 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     cfg.AddProfile<MappingProfile>();
                     cfg.CreateMap<InvoiceDto, Invoice>().ReverseMap()
-                    .ForMember(dest => dest.InvoiceChildItems, opt => opt.MapFrom(src => src.InvoiceChildItems));
+                    .ForMember(dest => dest.invoiceChildItems, opt => opt.MapFrom(src => src.invoiceChildItems));
                 });
 
 
@@ -154,7 +154,7 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     cfg.AddProfile<MappingProfile>();
                     cfg.CreateMap<InvoiceDto, Invoice>().ReverseMap()
-                    .ForMember(dest => dest.InvoiceChildItems, opt => opt.MapFrom(src => src.InvoiceChildItems));
+                    .ForMember(dest => dest.invoiceChildItems, opt => opt.MapFrom(src => src.invoiceChildItems));
                 });
                 var mapper = config.CreateMapper();
                 var result = mapper.Map<IEnumerable<InvoiceDto>>(invoiceItems);
@@ -239,9 +239,9 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                //var invoiceChild = _mapper.Map<IEnumerable<InvoiceChildItem>>(invoicePostDto.InvoiceChildItems);
+                //var invoiceChild = _mapper.Map<IEnumerable<InvoiceChildItem>>(invoicePostDto.invoiceChildItems);
                 //var invoice = _mapper.Map<Invoice>(invoicePostDto);
-                //invoice.InvoiceChildItems = invoiceChild.ToList();
+                //invoice.invoiceChildItems = invoiceChild.ToList();
 
                 var invoice = _mapper.Map<Invoice>(invoicePostDto);
                 var invoiceitemsDto = invoicePostDto.InvoiceChildItems;
@@ -278,7 +278,7 @@ namespace Tips.Warehouse.Api.Controllers
                         InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
                         invoiceChildItemsDtoList.Add(invoiceChildItem);
 
-                        //string qty = Convert.ToString(invoiceChildItem.InvoicedQty);
+                        string qty = Convert.ToString(invoiceChildItem.InvoicedQty);
                         var doNumber = invoiceitemsDto[i].DONumber;
                         var getAllInvoicesList = await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderBalanceQty(invoiceChildItem.FGItemNumber, doNumber, invoiceChildItem.InvoicedQty);
                         _bTODeliveryOrderItemsRepository.SaveAsync();
@@ -309,7 +309,7 @@ namespace Tips.Warehouse.Api.Controllers
                     }
                 }
 
-                invoice.InvoiceChildItems = invoiceChildItemsDtoList;
+                invoice.invoiceChildItems = invoiceChildItemsDtoList;
 
                 await _invoiceRepository.CreateInvoice(invoice);
                 _invoiceRepository.SaveAsync();

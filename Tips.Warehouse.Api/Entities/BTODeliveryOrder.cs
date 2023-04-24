@@ -24,7 +24,7 @@ namespace Tips.Warehouse.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<BTODeliveryOrderItems>? BTODeliveryOrderItems { get; set; }
+        public List<BTODeliveryOrderItems>? bTODeliveryOrderItems { get; set; }
 
     }
 }

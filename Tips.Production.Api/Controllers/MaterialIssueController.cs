@@ -100,15 +100,15 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogInfo($"Returned owner with id: {id}");
                     var materialIssueDetails = _mapper.Map<MaterialIssueDto>(materialIssueDetailById);
 
-                    for (int i = 0; i < materialIssueDetails.MaterialIssueItems.Count(); i++)
+                    for (int i = 0; i < materialIssueDetails.materialIssueItems.Count(); i++)
                     {
                         var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                          "GetInventoryDetailsByItemAndProjectNo?", "itemNumber=", materialIssueDetailById.MaterialIssueItems[i].PartNumber, "&projectNumber=", materialIssueDetailById.MaterialIssueItems[i].ProjectNumber));
+                          "GetInventoryDetailsByItemAndProjectNo?", "itemNumber=", materialIssueDetailById.materialIssueItems[i].PartNumber, "&projectNumber=", materialIssueDetailById.materialIssueItems[i].ProjectNumber));
                         var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                         dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                         dynamic inventoryObject = inventoryObjectData.data;
                         var balanceQty = inventoryObject.balance_Quantity;
-                        materialIssueDetails.MaterialIssueItems[i].AvailableQty = balanceQty;
+                        materialIssueDetails.materialIssueItems[i].AvailableQty = balanceQty;
                     }
 
                     serviceResponse.Data = materialIssueDetails;
@@ -244,7 +244,7 @@ namespace Tips.Production.Api.Controllers
                         "UpdateInventory/", inventoryObject.id), data);
                  
                 }
-                updateMaterialIssue.MaterialIssueItems = materialIssueItems;
+                updateMaterialIssue.materialIssueItems = materialIssueItems;
                 string result = await _materialIssueRepository.UpdateMaterialIssue(updateMaterialIssue);
 
                 _logger.LogInfo(result);
@@ -305,7 +305,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     cfg.AddProfile<MappingProfile>();
                     cfg.CreateMap<MaterialIssueDto, MaterialIssue>().ReverseMap()
-                    .ForMember(dest => dest.MaterialIssueItems, opt => opt.MapFrom(src => src.MaterialIssueItems));
+                    .ForMember(dest => dest.materialIssueItems, opt => opt.MapFrom(src => src.materialIssueItems));
                 });
                 var mapper = config.CreateMapper();
                 var result = mapper.Map<IEnumerable<MaterialIssueDto>>(materialIssueDetails);
@@ -339,7 +339,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     cfg.AddProfile<MappingProfile>();
                     cfg.CreateMap<MaterialIssueDto, MaterialIssue>().ReverseMap()
-                    .ForMember(dest => dest.MaterialIssueItems, opt => opt.MapFrom(src => src.MaterialIssueItems));
+                    .ForMember(dest => dest.materialIssueItems, opt => opt.MapFrom(src => src.materialIssueItems));
                 });
                 var mapper = config.CreateMapper();
 

@@ -20,7 +20,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<InvoiceChildItemDto>? InvoiceChildItems { get; set; }
+        public List<InvoiceChildItemDto>? invoiceChildItems { get; set; }
 
     }
 
