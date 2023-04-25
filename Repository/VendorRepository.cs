@@ -99,6 +99,24 @@ namespace Repository
 
             return getAllActiveVendorMasterNameList;
         }
-         
+
+        public async Task<IEnumerable<VendorIdNameListDto>> GetAllVendorMasterNameList()
+        {
+            IEnumerable<VendorIdNameListDto> getAllActiveVendorMasterNameList = await TipsMasterDbContext.VendorMasters
+
+                                .Select(x => new VendorIdNameListDto()
+                                {
+                                    Id = x.Id,
+                                    VednorAliasName = x.VendorAliasName,
+                                    VendorName = x.VendorName,
+                                    VendorId = x.VendorId,
+                                    VendorCategory = x.VendorCategory,
+                                    VendorType = x.VendorType,
+                                })
+                              .ToListAsync();
+
+            return getAllActiveVendorMasterNameList;
+        }
+
     }
 }

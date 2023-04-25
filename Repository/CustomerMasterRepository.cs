@@ -41,10 +41,10 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<CustomerIdNameListDto>> GetAllActiveCustomerMasterIdNameList()
+        public async Task<IEnumerable<CustomerIdNameListDto>> GetAllCustomerMasterIdNameList()
         {
             IEnumerable<CustomerIdNameListDto> getAllActiveCustomerIdNameList = await TipsMasterDbContext.CustomerMasters
-                                .Where(x=>x.IsActive == true)                
+                                              
                                 .Select(x => new CustomerIdNameListDto() 
                                 {
                                     Id = x.Id,
@@ -57,6 +57,24 @@ namespace Repository
                                 })
                                 .OrderByDescending(x => x.Id)
                               .ToListAsync();   
+
+            return getAllActiveCustomerIdNameList;
+        }
+
+        public async Task<IEnumerable<CustomerIdNameListDto>> GetAllActiveCustomerMasterIdNameList()
+        {
+            IEnumerable<CustomerIdNameListDto> getAllActiveCustomerIdNameList = await TipsMasterDbContext.CustomerMasters
+                                .Where(x => x.IsActive == true)
+                                .Select(x => new CustomerIdNameListDto()
+                                {
+                                    Id = x.Id,
+                                    CustomerAliasName = x.CustomerAliasName,
+                                    CustomerName = x.CustomerName,
+                                    CustomerNumber = x.CustomerNumber,
+                                 
+                                })
+                                .OrderByDescending(x => x.Id)
+                              .ToListAsync();
 
             return getAllActiveCustomerIdNameList;
         }

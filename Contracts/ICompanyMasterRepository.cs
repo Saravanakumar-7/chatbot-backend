@@ -18,5 +18,6 @@ namespace Contracts
         Task<string> UpdateCompanyMaster(CompanyMaster companyMaster);
         Task<string> DeleteCompanyMaster(CompanyMaster companyMaster);
         Task<IEnumerable<CompanyIdNameListDto>> GetAllActiveCompanyMasterIdNameList();
+        Task<IEnumerable<CompanyIdNameListDto>> GetAllCompanyMasterIdNameList();
     }
 }

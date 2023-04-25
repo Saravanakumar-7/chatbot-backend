@@ -268,7 +268,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllCompanyIdNameList()
+        public async Task<IActionResult> GetAllActiveCompanyIdNameList()
         {
             ServiceResponse<IEnumerable<CompanyIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<CompanyIdNameListDto>>();
             try
@@ -277,6 +277,31 @@ namespace Tips.Master.Api.Controllers
                 var result = _mapper.Map<IEnumerable<CompanyIdNameListDto>>(getAllActiveCompanymasterIdNameList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned All ActiveCompanyIdNameList Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCompanyIdNameList()
+        {
+            ServiceResponse<IEnumerable<CompanyIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<CompanyIdNameListDto>>();
+            try
+            {
+                var getAllCompanymasterIdNameList = await _repository.CompanyMasterRepository.GetAllCompanyMasterIdNameList();
+                var result = _mapper.Map<IEnumerable<CompanyIdNameListDto>>(getAllCompanymasterIdNameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All CompanyIdNameList Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

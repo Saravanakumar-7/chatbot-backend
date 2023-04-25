@@ -283,7 +283,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllVendorNameList()
+        public async Task<IActionResult> GetAllActiveVendorNameList()
         {
             ServiceResponse<IEnumerable<VendorIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<VendorIdNameListDto>>();
             try
@@ -301,6 +301,31 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetAllActiveVendorNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllVendorNameList()
+        {
+            ServiceResponse<IEnumerable<VendorIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<VendorIdNameListDto>>();
+            try
+            {
+                var getAllVendorNameList = await _repository.VendorRepository.GetAllVendorMasterNameList();
+                var result = _mapper.Map<IEnumerable<VendorIdNameListDto>>(getAllVendorNameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All VendorNameList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllVendorNameList action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");

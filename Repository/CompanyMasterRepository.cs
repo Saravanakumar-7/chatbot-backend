@@ -56,6 +56,24 @@ namespace Repository
             return getAllActiveCompanyMasterIdNameList;
         }
 
+        public async Task<IEnumerable<CompanyIdNameListDto>> GetAllCompanyMasterIdNameList()
+        {
+            IEnumerable<CompanyIdNameListDto> getAllActiveCompanyMasterIdNameList = await TipsMasterDbContext.CompanyMasters
+
+                                .Select(x => new CompanyIdNameListDto()
+                                {
+                                    Id = x.Id,
+                                    CompanyId = x.CompanyId,
+                                    CompanyAliasName = x.CompanyAliasName,
+                                    CompanyName = x.CompanyName,
+                                    CompanyCategory = x.CompanyCategory,
+                                    CompanyType = x.CompanyType
+                                })
+                              .ToListAsync();
+
+            return getAllActiveCompanyMasterIdNameList;
+        }
+
         public async Task<IEnumerable<CompanyMaster>> GetAllActiveCompanyMasters()
         {
             var allActiveCompanyMasters = await FindByCondition(x => x.IsActive == true)
