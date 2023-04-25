@@ -2073,7 +2073,7 @@ namespace Tips.SalesService.Api.Controllers
         }
         // POST: api/<RfqCustomGroupController>
         [HttpPost]
-        public IActionResult CreateRfqCustomGroup([FromBody] List<RfqCustomGroupPostDto> rfqCustomGroupPostDto)
+        public IActionResult CreateRfqCustomGroup([FromBody] RfqCustomGroupPostDto rfqCustomGroupPostDto)
         {
             ServiceResponse<RfqCustomGroupPostDto> serviceResponse = new ServiceResponse<RfqCustomGroupPostDto>();
 
@@ -2340,7 +2340,7 @@ namespace Tips.SalesService.Api.Controllers
 
         // POST: api/<RfqCustomFieldController>
         [HttpPost]
-        public IActionResult CreateRfqCustomField([FromBody] List<RfqCustomFieldDtoPost> rfqCustomFieldDtoPost)
+        public IActionResult CreateRfqCustomField([FromBody] RfqCustomFieldDtoPost rfqCustomFieldDtoPost)
                 {
                     ServiceResponse<RfqCustomFieldDtoPost> serviceResponse = new ServiceResponse<RfqCustomFieldDtoPost>();
 
