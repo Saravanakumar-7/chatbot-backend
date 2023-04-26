@@ -115,13 +115,13 @@ namespace Tips.Purchase.Api.Controllers
                         }
                     }
                     purchaseRequisitionDto.PrFiles = documentUplaodDtoList;
-                    if (purchaseRequisitionDetail.PrItemList != null)
+                    if (purchaseRequisitionDetail.PrItemsDtoList != null)
                     {
-                        foreach (var prItemDetails in purchaseRequisitionDetail.PrItemList)
+                        foreach (var prItemDetails in purchaseRequisitionDetail.PrItemsDtoList)
                         {
                             PrItemsDto prItemDtos = _mapper.Map<PrItemsDto>(prItemDetails);
-                            prItemDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(prItemDetails.PrAddprojects);
-                            prItemDtos.PrAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliveryScheduleDto>>(prItemDetails.PrAddDeliverySchedules);
+                            prItemDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(prItemDetails.prAddprojectsDtoList);
+                            prItemDtos.PrAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliveryScheduleDto>>(prItemDetails.prAddDeliverySchedulesDtoList);
                             prItemDtoList.Add(prItemDtos);
                         }
                     }
@@ -207,7 +207,7 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     cfg.AddProfile<MappingProfile>();
                     cfg.CreateMap<PurchaseRequisitionDto, PurchaseRequisition>().ReverseMap()
-                    .ForMember(dest => dest.PrItemsDtoList, opt => opt.MapFrom(src => src.PrItemList));
+                    .ForMember(dest => dest.PrItemsDtoList, opt => opt.MapFrom(src => src.PrItemsDtoList));
                 });
                 var mapper = config.CreateMapper();
                 var result = mapper.Map<IEnumerable<PurchaseRequisitionDto>>(purchaseRequisitionList);
@@ -242,7 +242,7 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     cfg.AddProfile<MappingProfile>();
                     cfg.CreateMap<PurchaseRequisitionDto, PurchaseRequisition>().ReverseMap()
-                    .ForMember(dest => dest.PrItemsDtoList, opt => opt.MapFrom(src => src.PrItemList));
+                    .ForMember(dest => dest.PrItemsDtoList, opt => opt.MapFrom(src => src.PrItemsDtoList));
                 });
                 var mapper = config.CreateMapper();
 
@@ -288,13 +288,13 @@ namespace Tips.Purchase.Api.Controllers
                     PurchaseRequisitionDto purchaseRequisitionDto = _mapper.Map<PurchaseRequisitionDto>(purchaseRequisitionDetailById);
                     List<PrItemsDto> prItemDtoList = new List<PrItemsDto>();
 
-                    if (purchaseRequisitionDetailById.PrItemList != null)
+                    if (purchaseRequisitionDetailById.PrItemsDtoList != null)
                     {
-                        foreach (var itemDetails in purchaseRequisitionDetailById.PrItemList)
+                        foreach (var itemDetails in purchaseRequisitionDetailById.PrItemsDtoList)
                         {
                             PrItemsDto prItemDtos = _mapper.Map<PrItemsDto>(itemDetails);
-                            prItemDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(itemDetails.PrAddprojects);
-                            prItemDtos.PrAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliveryScheduleDto>>(itemDetails.PrAddDeliverySchedules);
+                            prItemDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(itemDetails.prAddprojectsDtoList);
+                            prItemDtos.PrAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliveryScheduleDto>>(itemDetails.prAddDeliverySchedulesDtoList);
                             prItemDtoList.Add(prItemDtos);
                         }
                     }
@@ -417,12 +417,12 @@ namespace Tips.Purchase.Api.Controllers
                     for (int i = 0; i < prItemDto.Count; i++)
                     {
                         PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
-                        prItemDetails.PrAddprojects = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoPostList);
-                        prItemDetails.PrAddDeliverySchedules = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoPostList);
+                        prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoPostList);
+                        prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoPostList);
                         prItemDtoList.Add(prItemDetails);
                     }
                 }
-                purchaseRequisitionDetails.PrItemList = prItemDtoList;
+                purchaseRequisitionDetails.PrItemsDtoList = prItemDtoList;
 
                 purchaseRequisitionDetails.PrFiles = poDocumentUploadDtoList;
                 await _repository.CreatePurchaseRequisition(purchaseRequisitionDetails);
@@ -482,12 +482,12 @@ namespace Tips.Purchase.Api.Controllers
                     for (int i = 0; i < prItemDto.Count; i++)
                     {
                         PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
-                        prItemDetails.PrAddprojects = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoUpdateList);
-                        prItemDetails.PrAddDeliverySchedules = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoUpdateList);
+                        prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoUpdateList);
+                        prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoUpdateList);
                         prItemDtoList.Add(prItemDetails);
                     }
                 }
-                purchaseRequisitionDetails.PrItemList = prItemDtoList;
+                purchaseRequisitionDetails.PrItemsDtoList = prItemDtoList;
                 await _repository.ChangePurchaseRequisitionVersion(purchaseRequisitionDetails);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -555,13 +555,13 @@ namespace Tips.Purchase.Api.Controllers
         //            for (int i = 0; i < prItemDto.Count; i++)
         //            {
         //                PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
-        //                prItemDetails.PrAddprojects = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoUpdateList);
-        //                prItemDetails.PrAddDeliverySchedules = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoUpdateList);
+        //                prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoUpdateList);
+        //                prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoUpdateList);
         //                prItemList.Add(prItemDetails);
         //            }
         //        }
 
-        //        purchaseRequisitionDetails.PrItemList = prItemList;
+        //        purchaseRequisitionDetails.PrItemsDtoList = prItemList;
         //        var updatePurchaseRequisition = _mapper.Map(purchaseRequisitionUpdateDto, purchaseRequisitionDetails);
         //        string result = await _repository.UpdatePurchaseRequisition(updatePurchaseRequisition);
         //        _logger.LogInfo(result);

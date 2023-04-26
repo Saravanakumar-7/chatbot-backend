@@ -85,17 +85,17 @@ namespace Tips.Purchase.Api.Repository
         {
             using (var context = _tipsPurchaseDbContext)
             {
-                var query = _tipsPurchaseDbContext.PurchaseOrders.Include("POItemList");
+                var query = _tipsPurchaseDbContext.PurchaseOrders.Include("POItems");
                 if (purchaseOrderSearch != null || (purchaseOrderSearch.PONumber.Any())
                && purchaseOrderSearch.ProcurementType.Any() && purchaseOrderSearch.ShippingMode.Any() 
-               && purchaseOrderSearch.VendorName.Any() && purchaseOrderSearch.Status.Any())
+               && purchaseOrderSearch.VendorName.Any() && purchaseOrderSearch.PoStatus.Any())
                {
                     query = query.Where
                     (po => (purchaseOrderSearch.PONumber.Any() ? purchaseOrderSearch.PONumber.Contains(po.PONumber) : true)
                    && (purchaseOrderSearch.ProcurementType.Any() ? purchaseOrderSearch.ProcurementType.Contains(po.ProcurementType) : true)
                    && (purchaseOrderSearch.ShippingMode.Any() ? purchaseOrderSearch.ShippingMode.Contains(po.ShippingMode) : true)
                    && (purchaseOrderSearch.VendorName.Any() ? purchaseOrderSearch.VendorName.Contains(po.VendorName) : true)
-                   && (purchaseOrderSearch.Status.Any() ? purchaseOrderSearch.Status.Contains(po.Status) : true));
+                   && (purchaseOrderSearch.PoStatus.Any() ? purchaseOrderSearch.PoStatus.Contains(po.Status) : true));
                 }
                 return query.ToList();
             }
@@ -105,7 +105,7 @@ namespace Tips.Purchase.Api.Repository
         {
             using (var context = _tipsPurchaseDbContext)
             {
-                var query = _tipsPurchaseDbContext.PurchaseOrders.Include("POItemList");
+                var query = _tipsPurchaseDbContext.PurchaseOrders.Include("POItems");
                  int searchValueInt;
                 bool isSearchValueInt = int.TryParse(searchParammes.SearchValue, out searchValueInt);
 
@@ -122,7 +122,7 @@ namespace Tips.Purchase.Api.Repository
                     || po.ShippingMode.Contains(searchParammes.SearchValue)
                     || po.PaymentTerms.Contains(searchParammes.SearchValue)
                     || po.DeliveryTerms.Contains(searchParammes.SearchValue)
-                    || po.POItemList.Any(s => s.ItemNumber.Contains(searchParammes.SearchValue) ||
+                    || po.POItems.Any(s => s.ItemNumber.Contains(searchParammes.SearchValue) ||
                     s.Description.Contains(searchParammes.SearchValue)
                     || s.MftrItemNumber.Contains(searchParammes.SearchValue)
                     || s.PONumber.Contains(searchParammes.SearchValue)) ||
@@ -148,7 +148,7 @@ namespace Tips.Purchase.Api.Repository
             .Where(inv => ((inv.CreatedOn >= searchDatesParams.SearchFromDate &&
             inv.CreatedOn <= searchDatesParams.SearchToDate
             )))
-            .Include(itm => itm.POItemList)
+            .Include(itm => itm.POItems)
             .ToList();
             return purchaseOrderDetails;        
     }
@@ -176,9 +176,9 @@ namespace Tips.Purchase.Api.Repository
         //       || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
         //       || inv.PODate.Equals(int.Parse(searchParams.SearchValue)))))
         //                        .Include(o => o.POFiles)
-        //                        .Include(t => t.POItemList)
+        //                        .Include(t => t.POItems)
         //                        .ThenInclude(x => x.POAddprojects)
-        //                        .Include(m => m.POItemList)
+        //                        .Include(m => m.POItems)
         //                        .ThenInclude(i => i.POAddDeliverySchedules);
         //    return PagedList<PurchaseOrder>.ToPagedList(activePurchaseOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         //}
@@ -208,9 +208,9 @@ namespace Tips.Purchase.Api.Repository
             var activePurchaseOrderDetails = FindAll().OrderByDescending(on => on.Id)
                                 .Where(x=>x.Status != Status.Closed)
                                 .Include(o => o.POFiles)
-                                .Include(t => t.POItemList)
+                                .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
-                                .Include(m => m.POItemList)
+                                .Include(m => m.POItems)
                                 .ThenInclude(i => i.POAddDeliverySchedules);
             return activePurchaseOrderDetails;
         }
@@ -284,9 +284,9 @@ namespace Tips.Purchase.Api.Repository
                || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
                || inv.PODate.Equals(int.Parse(searchParams.SearchValue)))))
                                 .Include(o => o.POFiles)
-                               .Include(t => t.POItemList)
+                               .Include(t => t.POItems)
                                .ThenInclude(x => x.POAddprojects)
-                               .Include(m => m.POItemList)
+                               .Include(m => m.POItems)
                                .ThenInclude(i => i.POAddDeliverySchedules);
             return PagedList<PurchaseOrder>.ToPagedList(purchaseOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
@@ -296,9 +296,9 @@ namespace Tips.Purchase.Api.Repository
             var purchaseOrderDetailById = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.Id == id)
                                                 .Include(o=>o.POFiles)
                 
-                .Include(t => t.POItemList)
+                .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
-                                .Include(m => m.POItemList)
+                                .Include(m => m.POItems)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
 
                                 .FirstOrDefaultAsync();
@@ -312,9 +312,9 @@ namespace Tips.Purchase.Api.Repository
             var purchaseOrderDetailbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders
                 .Where(x => x.PONumber == poNumber && x.IsDeleted== false && x.IsModified == false)
                 .Include(o => o.POFiles)
-                .Include(t => t.POItemList)
+                .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
-                                .Include(m => m.POItemList)
+                                .Include(m => m.POItems)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
 
                                 .FirstOrDefaultAsync();
@@ -328,9 +328,9 @@ namespace Tips.Purchase.Api.Repository
             var purchaseOrderDetail = await _tipsPurchaseDbContext.PurchaseOrders
                 .Where(x => x.PONumber == poNumber && x.RevisionNumber == revisionNumber && x.IsDeleted == false)
                 .Include(o => o.POFiles)
-                .Include(t => t.POItemList)
+                .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
-                                .Include(m => m.POItemList)
+                                .Include(m => m.POItems)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
 
                                 .FirstOrDefaultAsync();

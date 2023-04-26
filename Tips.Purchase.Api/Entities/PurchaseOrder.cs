@@ -59,7 +59,7 @@ namespace Tips.Purchase.Api.Entities
 
         public List<DocumentUpload>? POFiles { get; set; }
 
-        public List<PoItem>? POItemList { get; set; }
+        public List<PoItem>? POItems { get; set; }
 
     }
 }

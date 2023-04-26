@@ -62,7 +62,7 @@ namespace Tips.Purchase.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<PrItem>? PrItemList { get; set; }     
+        public List<PrItem>? PrItemsDtoList { get; set; }     
 
     }
 }

@@ -120,9 +120,9 @@ namespace Tips.Purchase.Api.Controllers
                         }
                     }
                     purchaseOrderDto.POFiles = documentUplaodDtoList;
-                    if (purchaseOrderDetailbyPONumber.POItemList != null)
+                    if (purchaseOrderDetailbyPONumber.POItems != null)
                     {
-                        foreach (var poItemDetails in purchaseOrderDetailbyPONumber.POItemList)
+                        foreach (var poItemDetails in purchaseOrderDetailbyPONumber.POItems)
                         {
                             PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
@@ -211,9 +211,9 @@ namespace Tips.Purchase.Api.Controllers
                         }
                     }
                     purchaseOrderDto.POFiles = documentUplaodDtoList;
-                    if (purchaseOrderDetail.POItemList != null)
+                    if (purchaseOrderDetail.POItems != null)
                     {
-                        foreach (var poItemDetails in purchaseOrderDetail.POItemList)
+                        foreach (var poItemDetails in purchaseOrderDetail.POItems)
                         {
                             PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
@@ -278,9 +278,9 @@ namespace Tips.Purchase.Api.Controllers
                         }
                     }
                     purchaseOrderDto.POFiles = documentUplaodDtoList;
-                    if (purchaseOrderDetailbyId.POItemList != null)
+                    if (purchaseOrderDetailbyId.POItems != null)
                     {
-                        foreach (var poItemDetails in purchaseOrderDetailbyId.POItemList)
+                        foreach (var poItemDetails in purchaseOrderDetailbyId.POItems)
                         {
                             PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
@@ -546,7 +546,7 @@ namespace Tips.Purchase.Api.Controllers
                     }
                 }
 
-                purchaseOrderDetails.POItemList = poItemDtoList;
+                purchaseOrderDetails.POItems = poItemDtoList;
                 purchaseOrderDetails.POFiles = poDocumentUploadDtoList;
                 await _repository.CreatePurchaseOrder(purchaseOrderDetails);
                 _repository.SaveAsync();
@@ -638,7 +638,7 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     cfg.AddProfile<MappingProfile>();
                     cfg.CreateMap<PurchaseOrderDto, PurchaseOrder>().ReverseMap()
-                    .ForMember(dest => dest.POItems, opt => opt.MapFrom(src => src.POItemList));
+                    .ForMember(dest => dest.POItems, opt => opt.MapFrom(src => src.POItems));
                 });
 
                 var mapper = config.CreateMapper();
@@ -672,7 +672,7 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     cfg.AddProfile<MappingProfile>();
                     cfg.CreateMap<PurchaseOrderDto, PurchaseOrder>().ReverseMap()
-                    .ForMember(dest => dest.POItems, opt => opt.MapFrom(src => src.POItemList));
+                    .ForMember(dest => dest.POItems, opt => opt.MapFrom(src => src.POItems));
                 });
 
                 var mapper = config.CreateMapper();
@@ -939,7 +939,7 @@ namespace Tips.Purchase.Api.Controllers
                     }
                 }
 
-                purchaseOrderDetails.POItemList = poItemDtoList;
+                purchaseOrderDetails.POItems = poItemDtoList;
                 await _repository.ChangePurchaseOrderVersion(purchaseOrderDetails);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1046,7 +1046,7 @@ namespace Tips.Purchase.Api.Controllers
         //            }
         //        }
 
-        //        purchaseOrderDetails.POItemList = poItemList;
+        //        purchaseOrderDetails.POItems = poItemList;
         //        var updatePurchaseOrder = _mapper.Map(purchaseOrderUpdateDto, purchaseOrderDetails);
         //        string result = await _repository.UpdatePurchaseOrder(updatePurchaseOrder);
         //        _logger.LogInfo(result);

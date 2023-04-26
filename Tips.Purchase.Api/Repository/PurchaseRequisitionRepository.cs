@@ -40,7 +40,7 @@ namespace Tips.Purchase.Api.Repository
         {
             using (var context = _tipsPurchaseDbContext)
             {
-                var query = _tipsPurchaseDbContext.PurchaseRequisitions.Include("PrItemList");
+                var query = _tipsPurchaseDbContext.PurchaseRequisitions.Include("PrItemsDtoList");
                 if (!string.IsNullOrEmpty(searchParammes.SearchValue))
                 {
                     query = query.Where(po => po.PrNumber.Contains(searchParammes.SearchValue)
@@ -50,7 +50,7 @@ namespace Tips.Purchase.Api.Repository
                     || po.ShippingMode.Contains(searchParammes.SearchValue)
                     || po.PaymentTerms.Contains(searchParammes.SearchValue)
                     || po.DeliveryTerms.Contains(searchParammes.SearchValue)
-                    || po.PrItemList.Any(s => s.ItemNumber.Contains(searchParammes.SearchValue) ||
+                    || po.PrItemsDtoList.Any(s => s.ItemNumber.Contains(searchParammes.SearchValue) ||
                     s.Description.Contains(searchParammes.SearchValue)
                     || s.MftrItemNumber.Contains(searchParammes.SearchValue)));
                 }
@@ -62,7 +62,7 @@ namespace Tips.Purchase.Api.Repository
         {
             using (var context = _tipsPurchaseDbContext)
             {
-                var query = _tipsPurchaseDbContext.PurchaseRequisitions.Include("PrItemList");
+                var query = _tipsPurchaseDbContext.PurchaseRequisitions.Include("PrItemsDtoList");
                 if (purchaseRequisitionSearch != null || (purchaseRequisitionSearch.PrNumber.Any())
                && purchaseRequisitionSearch.ProcurementType.Any() && purchaseRequisitionSearch.ShippingMode.Any() && purchaseRequisitionSearch.PRStatus.Any())
                 {
@@ -90,10 +90,10 @@ namespace Tips.Purchase.Api.Repository
             var purchaseRequisitionDetail = await _tipsPurchaseDbContext.PurchaseRequisitions
             .Where(x => x.PrNumber == prNumber && x.RevisionNumber == revisionNumber && x.IsDeleted == false)
             .Include(o => o.PrFiles)
-            .Include(t => t.PrItemList)
-            .ThenInclude(x => x.PrAddprojects)
-            .Include(m => m.PrItemList)
-            .ThenInclude(i => i.PrAddDeliverySchedules)
+            .Include(t => t.PrItemsDtoList)
+            .ThenInclude(x => x.prAddprojectsDtoList)
+            .Include(m => m.PrItemsDtoList)
+            .ThenInclude(i => i.prAddDeliverySchedulesDtoList)
             .FirstOrDefaultAsync();
             return purchaseRequisitionDetail;
         }
@@ -104,7 +104,7 @@ namespace Tips.Purchase.Api.Repository
             .Where(inv => ((inv.CreatedOn >= searchDatesParams.SearchFromDate &&
             inv.CreatedOn <= searchDatesParams.SearchToDate
             )))
-            .Include(itm => itm.PrItemList)
+            .Include(itm => itm.PrItemsDtoList)
             .ToList();
             return purchaseRequsisitionDetails;
         }
@@ -169,10 +169,10 @@ namespace Tips.Purchase.Api.Repository
         //       || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
         //       || inv.PrDate.Equals(int.Parse(searchParams.SearchValue)))))
         //                        .Include(o => o.PrFiles)
-        //                        .Include(t => t.PrItemList)
-        //                        .ThenInclude(x => x.PrAddprojects)
-        //                        .Include(m => m.PrItemList)
-        //                        .ThenInclude(i => i.PrAddDeliverySchedules);
+        //                        .Include(t => t.PrItemsDtoList)
+        //                        .ThenInclude(x => x.prAddprojectsDtoList)
+        //                        .Include(m => m.PrItemsDtoList)
+        //                        .ThenInclude(i => i.prAddDeliverySchedulesDtoList);
         //    return PagedList<PurchaseRequisition>.ToPagedList(activePurchaseRequsitionDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         //}
         public async Task<IEnumerable<PurchaseRequisition>> GetAllActivePurchaseRequisitions()
@@ -180,10 +180,10 @@ namespace Tips.Purchase.Api.Repository
             var activePurchaseRequsitionDetails = FindAll()
                                 .Where(x=>x.Status != Status.Closed)
                                 .Include(o => o.PrFiles)
-                                .Include(t => t.PrItemList)
-                                .ThenInclude(x => x.PrAddprojects)
-                                .Include(m => m.PrItemList)
-                                .ThenInclude(i => i.PrAddDeliverySchedules);
+                                .Include(t => t.PrItemsDtoList)
+                                .ThenInclude(x => x.prAddprojectsDtoList)
+                                .Include(m => m.PrItemsDtoList)
+                                .ThenInclude(i => i.prAddDeliverySchedulesDtoList);
             return activePurchaseRequsitionDetails;
         }
 
@@ -235,20 +235,20 @@ namespace Tips.Purchase.Api.Repository
                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PrNumber.Contains(searchParams.SearchValue)
                || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
                || inv.PrDate.Equals(int.Parse(searchParams.SearchValue))))).Include(f => f.PrFiles)
-                                  .Include(t => t.PrItemList)
-                                  .ThenInclude(x => x.PrAddprojects)
-                                  .Include(m => m.PrItemList)
-                                  .ThenInclude(i => i.PrAddDeliverySchedules);
+                                  .Include(t => t.PrItemsDtoList)
+                                  .ThenInclude(x => x.prAddprojectsDtoList)
+                                  .Include(m => m.PrItemsDtoList)
+                                  .ThenInclude(i => i.prAddDeliverySchedulesDtoList);
             return PagedList<PurchaseRequisition>.ToPagedList(purchaseRequistionDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
         public async Task<PurchaseRequisition> GetPurchaseRequisitionById(int id)
         {
             var purchaseRequistionDetailById = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.Id == id)
                                 .Include(o => o.PrFiles)
-                                .Include(t => t.PrItemList)
-                                .ThenInclude(x => x.PrAddprojects)
-                                .Include(m => m.PrItemList)
-                                .ThenInclude(i => i.PrAddDeliverySchedules)
+                                .Include(t => t.PrItemsDtoList)
+                                .ThenInclude(x => x.prAddprojectsDtoList)
+                                .Include(m => m.PrItemsDtoList)
+                                .ThenInclude(i => i.prAddDeliverySchedulesDtoList)
                                 .FirstOrDefaultAsync();
 
             return purchaseRequistionDetailById;
@@ -258,10 +258,10 @@ namespace Tips.Purchase.Api.Repository
         {
             var purchaseRequistionByPRNumber = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PrNumber == prNumber)
                                   .Include(o => o.PrFiles)
-                                  .Include(t => t.PrItemList)
-                                .ThenInclude(x => x.PrAddprojects)
-                                .Include(m => m.PrItemList)
-                                .ThenInclude(i => i.PrAddDeliverySchedules)
+                                  .Include(t => t.PrItemsDtoList)
+                                .ThenInclude(x => x.prAddprojectsDtoList)
+                                .Include(m => m.PrItemsDtoList)
+                                .ThenInclude(i => i.prAddDeliverySchedulesDtoList)
                                 .FirstOrDefaultAsync();
 
             return purchaseRequistionByPRNumber;

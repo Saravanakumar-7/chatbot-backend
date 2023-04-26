@@ -26,7 +26,7 @@ namespace Tips.Purchase.Api.Entities
         public int PurchaseRequistionId { get; set; }
         public PurchaseRequisition? PurchaseRequistion { get; set; }
 
-        public List<PrAddProject>? PrAddprojects { get; set; }
-        public List<PrAddDeliverySchedule>? PrAddDeliverySchedules { get; set; }
+        public List<PrAddProject>? prAddprojectsDtoList { get; set; }
+        public List<PrAddDeliverySchedule>? prAddDeliverySchedulesDtoList { get; set; }
     }
 }
