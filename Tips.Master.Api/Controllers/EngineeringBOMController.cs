@@ -1826,12 +1826,40 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        //[HttpGet("{itemNumber}")]
+        //public async Task<IActionResult> GetAllEnggBomRevisionNumberList(string itemNumber)
+        //{
+        //    ServiceResponse<IEnumerable<ReleaseEnggBomDto>> serviceResponse = new ServiceResponse<IEnumerable<ReleaseEnggBomDto>>();
+        //    try
+        //    {
+        //        var costingBomVersionDetails = await _enggBomRepository.GetAllEnggBomVersionListByItemNumber(itemNumber);
+        //        var result = _mapper.Map<IEnumerable<ReleaseEnggBomDto>>(costingBomVersionDetails);
+        //        serviceResponse.Data = result;
+        //        serviceResponse.Message = "Returned all EnggBomRevisionNumberList";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong inside GetAllEnggBomRevisionNumberList action";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
         [HttpGet("{itemNumber}")]
         public async Task<IActionResult> GetAllEnggBomRevisionNumberList(string itemNumber)
         {
             ServiceResponse<IEnumerable<ReleaseEnggBomDto>> serviceResponse = new ServiceResponse<IEnumerable<ReleaseEnggBomDto>>();
             try
             {
+                // Encode the itemNumber parameter
+                //string encodedItemNumber = System.Web.HttpUtility.UrlEncode(itemNumber);
+
                 var costingBomVersionDetails = await _enggBomRepository.GetAllEnggBomVersionListByItemNumber(itemNumber);
                 var result = _mapper.Map<IEnumerable<ReleaseEnggBomDto>>(costingBomVersionDetails);
                 serviceResponse.Data = result;
