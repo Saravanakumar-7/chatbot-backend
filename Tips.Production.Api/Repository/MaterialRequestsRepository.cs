@@ -40,11 +40,33 @@ namespace Tips.Production.Api.Repository
               .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.MRNumber.Contains(searchParammes.SearchValue)
               || inv.ProjectNumber.Contains(searchParammes.SearchValue)))&& inv.MrStatus == MaterialStatus.open)
               .Include(t => t.MaterialRequestItems)
-              .ThenInclude(v => v.MRStockDetail);
+              .ThenInclude(v => v.MRStockDetails);
 
 
 
             return PagedList<MaterialRequests>.ToPagedList(materialRequests, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        public async Task<IEnumerable<MaterialRequests>> GetAllMRStatusOpen()
+        {
+            var materialRequestDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(x => x.MrStatus == MaterialStatus.open)
+                .Include(s => s.MaterialRequestItems)
+                .ThenInclude(m => m.MRStockDetails)
+                .ToList();
+
+            return materialRequestDetails;
+        }
+
+        public async Task<IEnumerable<MaterialRequests>> GetAllMRStatusClose()
+        {
+            var materialRequestDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(x => x.MrStatus == MaterialStatus.close)
+                .Include(s => s.MaterialRequestItems)
+                .ThenInclude(m => m.MRStockDetails)
+                .ToList();
+
+            return materialRequestDetails;
         }
 
         public async Task<IEnumerable<MaterialRequestIdNoDto>> GetAllOpenMRIdNoList()
@@ -65,7 +87,7 @@ namespace Tips.Production.Api.Repository
             var getMaterialReqbyMRNo = await _tipsProductionDbContext.MaterialRequests
 
             .Include(t => t.MaterialRequestItems)
-            .ThenInclude(v => v.MRStockDetail).Where(x => x.MRNumber == MRnumber)
+            .ThenInclude(v => v.MRStockDetails).Where(x => x.MRNumber == MRnumber)
                     .FirstOrDefaultAsync();
             return getMaterialReqbyMRNo;
         }
@@ -74,7 +96,7 @@ namespace Tips.Production.Api.Repository
         {
             var getMRbyId = await _tipsProductionDbContext.MaterialRequests.Where(x => x.Id == id)
                              .Include(t => t.MaterialRequestItems)
-                             .ThenInclude(v => v.MRStockDetail)
+                             .ThenInclude(v => v.MRStockDetails)
                              .FirstOrDefaultAsync();
             return getMRbyId;
         }

@@ -62,9 +62,31 @@ namespace Tips.Production.Api.Repository
         {
             var materialReturnNoteDetails = FindAll().OrderByDescending(x => x.Id)
                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProjectNumber.Contains(searchParams.SearchValue) ||
-                   inv.MRNNumber.Contains(searchParams.SearchValue))) && inv.MrnStatus == MaterialStatus.open);
+                   inv.MRNNumber.Contains(searchParams.SearchValue))));
 
             return PagedList<MaterialReturnNote>.ToPagedList(materialReturnNoteDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        public async Task<IEnumerable<MaterialReturnNote>> GetAllMRNStatusOpen()
+        {
+            var materialReturnNoteDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(x => x.MrnStatus == MaterialStatus.open)
+                .Include(s => s.MaterialReturnNoteItems)
+                .ThenInclude(m => m.MRNWarehouseList)
+                .ToList();
+
+            return materialReturnNoteDetails;
+        }
+
+        public async Task<IEnumerable<MaterialReturnNote>> GetAllMRNStatusClose()
+        {
+            var materialReturnNoteDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(x => x.MrnStatus == MaterialStatus.close)
+                .Include(s => s.MaterialReturnNoteItems)
+                .ThenInclude(m => m.MRNWarehouseList)
+                .ToList();
+
+            return materialReturnNoteDetails;
         }
 
         public async Task<MaterialReturnNote> GetMaterialReturnNoteById(int id)

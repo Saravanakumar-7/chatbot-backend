@@ -75,6 +75,64 @@ namespace Tips.Production.Api.Controllers
 
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllMRNStatusOpen()
+        {
+            ServiceResponse<IEnumerable<MaterialReturnNoteDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialReturnNoteDto>>();
+
+            try
+            {
+                var materialReturnNoteDetails = await _materialReturnNoteRepository.GetAllMRNStatusOpen();
+             
+                _logger.LogError("Returned all getAllMaterialReturnNoteStatusOpen");
+                var result = _mapper.Map<IEnumerable<MaterialReturnNoteDto>>(materialReturnNoteDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all MaterialReturnNoteStatusOpen Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllMRNStatusClose()
+        {
+            ServiceResponse<IEnumerable<MaterialReturnNoteDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialReturnNoteDto>>();
+
+            try
+            {
+                var materialReturnNoteDetails = await _materialReturnNoteRepository.GetAllMRNStatusClose();
+
+                _logger.LogError("Returned all getAllMaterialReturnNoteStatusClose");
+                var result = _mapper.Map<IEnumerable<MaterialReturnNoteDto>>(materialReturnNoteDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all MaterialReturnNoteStatusClose Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMaterialReturnNoteById(int id)
         {

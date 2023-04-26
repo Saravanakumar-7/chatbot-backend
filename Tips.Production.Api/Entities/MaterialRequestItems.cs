@@ -21,7 +21,7 @@ namespace Tips.Production.Api.Entities
         public int? MaterialRequestId { get; set; }
         public MaterialRequests? MaterialRequest { get; set; }
 
-        public List<MRStockDetails>? MRStockDetail { get; set; }
+        public List<MRStockDetails>? MRStockDetails { get; set; }
 
     }
 }

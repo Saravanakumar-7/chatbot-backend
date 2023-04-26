@@ -8,6 +8,7 @@ using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.Enums;
+using Tips.Production.Api.Repository;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -69,6 +70,65 @@ namespace Tips.Production.Api.Controllers
             }
 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllMRStatusOpen()
+        {
+            ServiceResponse<IEnumerable<MaterialRequestsDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestsDto>>();
+
+            try
+            {
+                var materialRequestDetails = await _materialRequestRepository.GetAllMRStatusOpen();
+
+                _logger.LogError("Returned all getAllMaterialRequestStatusOpen");
+                var result = _mapper.Map<IEnumerable<MaterialRequestsDto>>(materialRequestDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all MaterialRequestStatusOpen Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllMRStatusClose()
+        {
+            ServiceResponse<IEnumerable<MaterialRequestsDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestsDto>>();
+
+            try
+            {
+                var materialRequestDetails = await _materialRequestRepository.GetAllMRStatusClose();
+
+                _logger.LogError("Returned all getAllMaterialRequestStatusClose");
+                var result = _mapper.Map<IEnumerable<MaterialRequestsDto>>(materialRequestDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all MaterialRequestStatusClose Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMaterialRequestById(int id)
         {
@@ -102,7 +162,7 @@ namespace Tips.Production.Api.Controllers
                         foreach (var materialitemDetails in materialRequestDetails.MaterialRequestItems)
                         {
                             MaterialRequestItemsDto materialRequestItemDto = _mapper.Map<MaterialRequestItemsDto>(materialitemDetails);
-                            materialRequestItemDto.MRStockDetails = _mapper.Map<List<MRStockDetailsDto>>(materialitemDetails.MRStockDetail);
+                            materialRequestItemDto.MRStockDetails = _mapper.Map<List<MRStockDetailsDto>>(materialitemDetails.MRStockDetails);
 
                             materialRequestItemDtos.Add(materialRequestItemDto);
                         }
@@ -165,7 +225,7 @@ namespace Tips.Production.Api.Controllers
                     for (int i = 0; i < materialReqDto.Count; i++)
                     {
                         MaterialRequestItems materialItemListDetail = _mapper.Map<MaterialRequestItems>(materialReqDto[i]);
-                        materialItemListDetail.MRStockDetail = _mapper.Map<List<MRStockDetails>>(materialReqDto[i].MRStockDetails);
+                        materialItemListDetail.MRStockDetails = _mapper.Map<List<MRStockDetails>>(materialReqDto[i].MRStockDetails);
                         materialReqItemList.Add(materialItemListDetail);
 
                     }
@@ -261,7 +321,7 @@ namespace Tips.Production.Api.Controllers
                 for (int i = 0; i < materialReqItemDto.Count; i++)
                 {
                     MaterialRequestItems materialItemDetail = _mapper.Map<MaterialRequestItems>(materialReqItemDto[i]);
-                    materialItemDetail.MRStockDetail = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
+                    materialItemDetail.MRStockDetails = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
 
                     materialReqItemList.Add(materialItemDetail);
 
@@ -336,7 +396,7 @@ namespace Tips.Production.Api.Controllers
                 for (int i = 0; i < materialReqItemDto.Count; i++)
                 {
                     MaterialRequestItems materialItemDetail = _mapper.Map<MaterialRequestItems>(materialReqItemDto[i]);
-                    materialItemDetail.MRStockDetail = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
+                    materialItemDetail.MRStockDetails = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
 
                     materialReqItemList.Add(materialItemDetail);
 
@@ -471,7 +531,7 @@ namespace Tips.Production.Api.Controllers
                     foreach (var materialReqbyMRNo in getMRbyMRNo.MaterialRequestItems)
                     {
                         MaterialRequestItemsDto materialRequestItemDto = _mapper.Map<MaterialRequestItemsDto>(materialReqbyMRNo);
-                        materialRequestItemDto.MRStockDetails = _mapper.Map<List<MRStockDetailsDto>>(materialReqbyMRNo.MRStockDetail);
+                        materialRequestItemDto.MRStockDetails = _mapper.Map<List<MRStockDetailsDto>>(materialReqbyMRNo.MRStockDetails);
 
                         materialRequestItemDtos.Add(materialRequestItemDto);
                     }

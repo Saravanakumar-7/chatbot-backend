@@ -14,7 +14,8 @@ namespace Tips.Production.Api.Contracts
         Task<int?> CreateMaterialReturnNote(MaterialReturnNote materialReturnNote);
         Task<string> UpdateMaterialReturnNote(MaterialReturnNote materialReturnNote);
         Task<string> DeleteMaterialReturnNote(MaterialReturnNote materialReturnNote);
-
+        Task<IEnumerable<MaterialReturnNote>> GetAllMRNStatusOpen();
+        Task<IEnumerable<MaterialReturnNote>> GetAllMRNStatusClose();
         Task<IEnumerable<MaterialReturnNoteIdNameList>> GetAllMaterialReturnNoteIdNameList();
         Task<IEnumerable<MaterialReturnNote>> GetAllMaterialReturnNoteWithItems(MaterialReturnNoteSearchDto materialReturnNoteSearch);
         Task<IEnumerable<MaterialReturnNote>> SearchMaterialReturnNote([FromQuery] SearchParamess searchParammes);
