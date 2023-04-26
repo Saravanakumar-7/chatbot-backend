@@ -76,7 +76,7 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllMRNStatusOpen()
+        public async Task<IActionResult> GetAllMRNOpenStatus()
         {
             ServiceResponse<IEnumerable<MaterialReturnNoteDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialReturnNoteDto>>();
 
@@ -105,7 +105,7 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllMRNStatusClose()
+        public async Task<IActionResult> GetAllMRNCloseStatus()
         {
             ServiceResponse<IEnumerable<MaterialReturnNoteDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialReturnNoteDto>>();
 

@@ -72,7 +72,7 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllMRStatusOpen()
+        public async Task<IActionResult> GetAllMROpenStatus()
         {
             ServiceResponse<IEnumerable<MaterialRequestsDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestsDto>>();
 
@@ -101,7 +101,7 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllMRStatusClose()
+        public async Task<IActionResult> GetAllMRCloseStatus()
         {
             ServiceResponse<IEnumerable<MaterialRequestsDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestsDto>>();
 
