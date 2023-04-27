@@ -110,6 +110,97 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SearchLocationTransferDate([FromQuery] SearchDateParam searchDatesParams)
+        {
+            ServiceResponse<IEnumerable<LocationTransferDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferDto>>();
+            try
+            {
+                var locationTransFerDate = await _locationTransferRepository.SearchLocationTransferDate(searchDatesParams);
+                var result = _mapper.Map<IEnumerable<LocationTransferDto>>(locationTransFerDate);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all LocationTransferDate";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchLocationTransfer([FromQuery] SearchParammes searchParammes)
+        {
+            ServiceResponse<IEnumerable<LocationTransferDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferDto>>();
+            try
+            {
+                var locationTransferList = await _locationTransferRepository.SearchLocationTransfer(searchParammes);
+
+                _logger.LogInfo("Returned all LocationTransfer");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<LocationTransferDto, LocationTransfer>().ReverseMap();
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<LocationTransferDto>>(locationTransferList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all LocationTransfers";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllLocationTransferWithItems([FromBody] LocationTransferSearchDto locationTransferSearchDto)
+        {
+            ServiceResponse<IEnumerable<LocationTransferDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferDto>>();
+            try
+            {
+                var locationTransferList = await _locationTransferRepository.GetAllLocationTransferWithItems(locationTransferSearchDto);
+
+                _logger.LogInfo("Returned all LocationTransfer");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<LocationTransferDto, LocationTransfer>().ReverseMap();
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<LocationTransferDto>>(locationTransferList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all LocationTransfersWithItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateLocationTransfer([FromBody] LocationTransferPostDto locationTransferPostDto)
         {
@@ -277,64 +368,5 @@ namespace Tips.SalesService.Api.Controllers
             }
 
         }
-
-        [HttpGet]
-        public async Task<IActionResult> SearchLocationTransferDate([FromQuery] SearchDateParam searchDateParam)
-        {
-            ServiceResponse<IEnumerable<LocationTransferDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferDto>>();
-            try
-            {
-                var locationTransferDetails = await _locationTransferRepository.SearchLocationTransferDate(searchDateParam);
-                var result = _mapper.Map<IEnumerable<LocationTransferDto>>(locationTransferDetails);
-                serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all locationTransferDetails";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
-        //[HttpGet]
-        //public async Task<IActionResult> SearchLocationTransfer([FromQuery] SearchParammes searchParams)
-        //{
-        //    ServiceResponse<IEnumerable<LocationTransferDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferDto>>();
-        //    try
-        //    {
-        //        var locationTransferDetails = await _locationTransferRepository.SearchLocationTransfer(searchParams);
-
-
-
-        //        _logger.LogInfo("Returned all locationTransferDetails");
-        //        var config = new MapperConfiguration(cfg =>
-        //        {
-        //            cfg.AddProfile<MappingProfile>();
-        //            cfg.CreateMap<LocationTransferDto, LocationTransfer>().ReverseMap();
-        //        });
-        //        var mapper = config.CreateMapper();
-        //        var result = mapper.Map<IEnumerable<LocationTransferDto>>(locationTransferDetails);
-        //        serviceResponse.Data = result;
-        //        serviceResponse.Message = "Returned all locationTransferDetails";
-        //        serviceResponse.Success = true;
-        //        serviceResponse.StatusCode = HttpStatusCode.OK;
-        //        return Ok(serviceResponse);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex.Message);
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = "Internal Server Error";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    }
-        //}
     }
 }
