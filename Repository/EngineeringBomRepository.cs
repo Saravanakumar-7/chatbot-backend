@@ -228,10 +228,10 @@ namespace Repository
 
         public async Task<IEnumerable<EngineeringBom>> GetAllEnggBomVersionListByItemNumber(string itemNumber)
         {
-            var decodedItemNumber = System.Web.HttpUtility.UrlDecode(itemNumber);
+            //var decodedItemNumber = System.Web.HttpUtility.UrlDecode(itemNumber);
             //string decodedString = System.Net.WebUtility.UrlDecode(itemNumber);
             var enggBomDetails = await _tipsMasterDbContext.EngineeringBoms
-                .Where(x => x.ItemNumber == decodedItemNumber)
+                .Where(x => x.ItemNumber == itemNumber)
                 .ToListAsync();
 
             return enggBomDetails;
