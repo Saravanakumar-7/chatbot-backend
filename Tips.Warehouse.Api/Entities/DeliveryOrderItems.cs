@@ -24,6 +24,6 @@ namespace Tips.Warehouse.Api.Entities
         public int DeliveryOrderId { get; set; }
         public DeliveryOrder? DeliveryOrder { get; set; }
 
-        public List<DoSerialNumber> DoSerialNumbers { get; set; }
+        public List<DoSerialNumber> doSerialNumberDto { get; set; }
     }
 }

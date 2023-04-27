@@ -4,6 +4,7 @@ using Entities.Enums;
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
@@ -46,36 +47,39 @@ namespace Tips.Production.Api.Repository
         {
             using (var context = _tipsProductionDbContext)
             {
-                var query = _tipsProductionDbContext.oQCs;
-                //if (!string.IsNullOrEmpty(searchParames.SearchValue))
-                //{
-                //    query = query.Where(po => po.ShopOrderNumber.Contains(searchParames.SearchValue)
-                //    || po.PendingQty.Equals(searchParames.SearchValue)
-                //    || po.ShopOrderQty.Equals(decimal.Parse(searchParames.SearchValue)));
-                //}
-                //return query.ToList();
-                return null;
+                var query = _tipsProductionDbContext.oQCs.AsQueryable();
+                if (!string.IsNullOrEmpty(searchParames.SearchValue))
+                {
+                    query = query.Where(po => po.ShopOrderNumber.Contains(searchParames.SearchValue)
+                    || po.PendingQty.Equals(searchParames.SearchValue)
+                    || po.ShopOrderQty.Equals(decimal.Parse(searchParames.SearchValue)));
+                }
+                return query.ToList();
+                //return null;
             }
         }
-        //public async Task<IEnumerable<OQC>> GetAllOQCWithItems(OQCSearchDto oQCSearch)
-        //{
-        //    using (var context = _tipsProductionDbContext)
-        //    {
-        //        var query = _tipsProductionDbContext.oQCs;
-        //        if (oQCSearch != null || (oQCSearch.FGItemNumber.Any())
-        //       && oQCSearch.ShopOrderNumber.Any() && oQCSearch.SAItemNumber.Any() 
-        //       && oQCSearch.PendingQty.Any() && oQCSearch.ShopOrderQty.Any())
-        //        {
-        //            query = query.Where
-        //           (po => (oQCSearch.ShopOrderNumber.Any() ? oQCSearch.ShopOrderNumber.Contains(po.ShopOrderNumber) : true)
-        //           && (oQCSearch.SAItemNumber.Any() ? oQCSearch.SAItemNumber.Contains(po.ItemNumber) : true)
-        //           && (oQCSearch.FGItemNumber.Any() ? oQCSearch.FGItemNumber.Contains(po.ItemNumber) : true)
-        //           && (oQCSearch.PendingQty.Any() ? oQCSearch.PendingQty.Contains(po.PendingQty) : true)
-        //           && (oQCSearch.ShopOrderQty.Any() ? oQCSearch.ShopOrderQty.Contains(po.ShopOrderQty) : true)) ;
-        //        }
-        //        return query.ToList();
-        //    }
-        //}
+       
+        public async Task<IEnumerable<OQC>> GetAllOQCWithItems(OQCSearchDto oQCSearch)
+        {
+            using (var context = _tipsProductionDbContext)
+            {
+                var query = _tipsProductionDbContext.oQCs.AsQueryable();
+                if (oQCSearch != null || /*(oQCSearch.FGItemNumber.Any())*/
+               /*&&*/ oQCSearch.ShopOrderNumber.Any()/* && oQCSearch.SAItemNumber.Any()*/
+               && oQCSearch.PendingQty.Any() && oQCSearch.ShopOrderQty.Any())
+                {
+                    query = query.Where
+                   (po => (oQCSearch.ShopOrderNumber.Any() ? oQCSearch.ShopOrderNumber.Contains(po.ShopOrderNumber) : true)
+                   //&& (oQCSearch.SAItemNumber.Any() ? oQCSearch.SAItemNumber.Contains(po.ItemNumber) : true)
+                   //&& (oQCSearch.FGItemNumber.Any() ? oQCSearch.FGItemNumber.Contains(po.ItemNumber) : true)
+                   && (oQCSearch.PendingQty.Any() ? oQCSearch.PendingQty.Contains(po.PendingQty) : true)
+                   && (oQCSearch.ShopOrderQty.Any() ? oQCSearch.ShopOrderQty.Contains(po.ShopOrderQty) : true));
+                }
+                return await query.ToListAsync();
+
+            }
+        }
+
         public Task<IEnumerable<OQC>> SearchOQCDate([FromQuery] SearchDateparames searchsDateParms)
         {
             var oQcDetails = _tipsProductionDbContext.oQCs

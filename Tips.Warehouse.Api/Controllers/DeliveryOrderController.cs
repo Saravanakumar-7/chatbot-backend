@@ -105,7 +105,7 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     cfg.AddProfile<MappingProfile>();
                     cfg.CreateMap<DeliveryOrderDto, DeliveryOrder>().ReverseMap()
-                    .ForMember(dest => dest.DeliveryOrderItemsDto, opt => opt.MapFrom(src => src.DeliveryOrderItems));
+                    .ForMember(dest => dest.DeliveryOrderItemsDto, opt => opt.MapFrom(src => src.DeliveryOrderItemsDto));
                 });
                 var mapper = config.CreateMapper();
                 var result = mapper.Map<IEnumerable<DeliveryOrderDto>>(deliveryOrders);
@@ -139,7 +139,7 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     cfg.AddProfile<MappingProfile>();
                     cfg.CreateMap<DeliveryOrderDto, DeliveryOrder>().ReverseMap()
-                    .ForMember(dest => dest.DeliveryOrderItemsDto, opt => opt.MapFrom(src => src.DeliveryOrderItems));
+                    .ForMember(dest => dest.DeliveryOrderItemsDto, opt => opt.MapFrom(src => src.DeliveryOrderItemsDto));
                 });
                 var mapper = config.CreateMapper();
 
@@ -186,13 +186,13 @@ namespace Tips.Warehouse.Api.Controllers
 
                     List<DeliveryOrderItemsDto> deliveryOrderItemsDtoList = new List<DeliveryOrderItemsDto>();
 
-                    if (getDeliveryOrderDetailById.DeliveryOrderItems != null)
+                    if (getDeliveryOrderDetailById.DeliveryOrderItemsDto != null)
                     {
 
-                        foreach (var itemDetails in getDeliveryOrderDetailById.DeliveryOrderItems)
+                        foreach (var itemDetails in getDeliveryOrderDetailById.DeliveryOrderItemsDto)
                         {
                             DeliveryOrderItemsDto deliveryOrderItemsDtos = _mapper.Map<DeliveryOrderItemsDto>(itemDetails);
-                            deliveryOrderItemsDtos.DoSerialNumberDto = _mapper.Map<List<DoSerialNumberDto>>(itemDetails.DoSerialNumbers);
+                            deliveryOrderItemsDtos.DoSerialNumberDto = _mapper.Map<List<DoSerialNumberDto>>(itemDetails.doSerialNumberDto);
                             deliveryOrderItemsDtoList.Add(deliveryOrderItemsDtos);
                         }
                     }
@@ -264,12 +264,12 @@ namespace Tips.Warehouse.Api.Controllers
                             deliveryOrderitemsDto[i].SerialNo = csv;
                         }
                         DeliveryOrderItems deliveryOrderItems = _mapper.Map<DeliveryOrderItems>(deliveryOrderitemsDto[i]);
-                        deliveryOrderItems.DoSerialNumbers = _mapper.Map<List<DoSerialNumber>>(deliveryOrderitemsDto[i].DoSerialNumberDtoPost);
+                        deliveryOrderItems.doSerialNumberDto = _mapper.Map<List<DoSerialNumber>>(deliveryOrderitemsDto[i].DoSerialNumberDtoPost);
                         deliveryOrderItemsDtoList.Add(deliveryOrderItems);
                     }
                 }
 
-                deliveryOrder.DeliveryOrderItems = deliveryOrderItemsDtoList;
+                deliveryOrder.DeliveryOrderItemsDto = deliveryOrderItemsDtoList;
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
                 var months = Convert.ToString(date.Month.ToString("D2"));
@@ -363,7 +363,7 @@ namespace Tips.Warehouse.Api.Controllers
                     }
                 }
 
-                deliveryOrder.DeliveryOrderItems = deliveryOrderitemsList;
+                deliveryOrder.DeliveryOrderItemsDto = deliveryOrderitemsList;
 
                 var updateDeliveryOrder = _mapper.Map(deliveryOrderDtoUpdate, deliveryOrder);
 

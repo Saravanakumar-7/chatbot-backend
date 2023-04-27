@@ -126,7 +126,8 @@ namespace Tips.Warehouse.Api.Repository
                                 {
                                     Id = x.Id,
 
-                                    InvoiceNumber = x.InvoiceNumber
+                                    InvoiceNumber = x.InvoiceNumber,
+                                    CustomerName = x.CustomerName
 
                                 })
                                 .OrderByDescending(x => x.Id)

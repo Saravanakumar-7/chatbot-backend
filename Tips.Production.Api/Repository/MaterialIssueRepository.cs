@@ -166,6 +166,7 @@ namespace Tips.Production.Api.Repository
                                     // po.ItemType.Contains(searchValueString)
                                     /*||*/ po.ItemNumber.Contains(searchParammes.SearchValue)
                                     || po.ShopOrderQty.ToString().Contains(searchParammes.SearchValue)
+                                    || po.ShopOrderNumber.Contains(searchParammes.SearchValue)
                                     || po.materialIssueItems.Any(s => s.PartNumber.Contains(searchParammes.SearchValue) ||
                                     s.Description.Contains(searchParammes.SearchValue)
                                     || s.ProjectNumber.Contains(searchParammes.SearchValue)

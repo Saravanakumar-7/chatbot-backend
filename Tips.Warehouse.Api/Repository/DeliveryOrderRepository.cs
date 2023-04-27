@@ -49,8 +49,8 @@ namespace Tips.Warehouse.Api.Repository
                 || inv.ProjectNumber.Contains(searchParams.SearchValue)
                 || inv.DeliveryOrderNumber.Contains(searchParams.SearchValue)
                 || inv.CustomerName.Contains(searchParams.SearchValue))))
-                .Include(t => t.DeliveryOrderItems)
-                .ThenInclude(y => y.DoSerialNumbers);
+                .Include(t => t.DeliveryOrderItemsDto)
+                .ThenInclude(y => y.doSerialNumberDto);
 
             return PagedList<DeliveryOrder>.ToPagedList(allActiveDeliveryOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
@@ -62,16 +62,16 @@ namespace Tips.Warehouse.Api.Repository
             var allDeliveryOrderDetails = FindAll().OrderByDescending(x => x.Id)
                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DeliveryOrderNumber.Contains(searchParams.SearchValue) ||
                 inv.ProjectNumber.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue))))
-                .Include(t => t.DeliveryOrderItems)
-                .ThenInclude(y => y.DoSerialNumbers);
+                .Include(t => t.DeliveryOrderItemsDto)
+                .ThenInclude(y => y.doSerialNumberDto);
 
             return PagedList<DeliveryOrder>.ToPagedList(allDeliveryOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
         public async Task<DeliveryOrder> GetDeliveryOrderById(int id)
         {
             var deliveryOrderDetailsbyId = await _tipsWarehouseDbContext.DeliveryOrder.Where(x => x.Id == id)
-                              .Include(t => t.DeliveryOrderItems)
-                              .ThenInclude(y => y.DoSerialNumbers)
+                              .Include(t => t.DeliveryOrderItemsDto)
+                              .ThenInclude(y => y.doSerialNumberDto)
                               .FirstOrDefaultAsync();
 
 
@@ -81,7 +81,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             using (var context = _tipsWarehouseDbContext)
             {
-                var query = _tipsWarehouseDbContext.DeliveryOrder.Include("DeliveryOrderItems");
+                var query = _tipsWarehouseDbContext.DeliveryOrder.Include("DeliveryOrderItemsDto");
                 if (DeliveryOrderSearch != null || (DeliveryOrderSearch.ProjectNumber.Any())
                 && DeliveryOrderSearch.DeliveryOrderNumber.Any() && DeliveryOrderSearch.CustomerId.Any() 
                 && DeliveryOrderSearch.CustomerName.Any() && DeliveryOrderSearch.PONumber.Any())
@@ -102,7 +102,7 @@ namespace Tips.Warehouse.Api.Repository
             .Where(inv => ((inv.CreatedOn >= searchsDateParms.SearchFromDate &&
             inv.CreatedOn <= searchsDateParms.SearchToDate
             )))
-            .Include(itm => itm.DeliveryOrderItems)
+            .Include(itm => itm.DeliveryOrderItemsDto)
             .ToList();
             return DeliveryOrderDetails;
         }
@@ -110,13 +110,13 @@ namespace Tips.Warehouse.Api.Repository
         {
             using (var context = _tipsWarehouseDbContext)
             {
-                var query = _tipsWarehouseDbContext.DeliveryOrder.Include("DeliveryOrderItems");
+                var query = _tipsWarehouseDbContext.DeliveryOrder.Include("DeliveryOrderItemsDto");
                 if (!string.IsNullOrEmpty(searchParames.SearchValue))
                 {
                     query = query.Where(po => po.CustomerName.Contains(searchParames.SearchValue)
                     || po.PONumber.Contains(searchParames.SearchValue)
                     || po.ProjectNumber.Contains(searchParames.SearchValue)
-                    || po.DeliveryOrderItems.Any(s => s.FGItemNumber.Contains(searchParames.SearchValue)
+                    || po.DeliveryOrderItemsDto.Any(s => s.FGItemNumber.Contains(searchParames.SearchValue)
                     || s.ItemDescription.Contains(searchParames.SearchValue)));
                 }
                 return query.ToList();

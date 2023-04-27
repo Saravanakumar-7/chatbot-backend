@@ -164,6 +164,39 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> GetAllOQCWithItems([FromBody] OQCSearchDto oQCSearchDto)
+        {
+            ServiceResponse<IEnumerable<OQCDto>> serviceResponse = new ServiceResponse<IEnumerable<OQCDto>>();
+            try
+            {
+                var oqcList = await _oQCRepository.GetAllOQCWithItems(oQCSearchDto);
+
+                _logger.LogInfo("Returned all OQC");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<OQCDto, OQC>().ReverseMap();
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<OQCDto>>(oqcList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all OQC";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> CreateOQC([FromBody] OQCPostDto oQCPostDto)
         {
             ServiceResponse<OQCDto> serviceResponse = new ServiceResponse<OQCDto>();
@@ -191,9 +224,9 @@ namespace Tips.Production.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var oQCCreate = _mapper.Map<OQC>(oQCPostDto);
-                var shopOrderNumber = oQCCreate.ShopOrderNumber;
-                var shopOrderDetails = await _shopOrderRepo.GetShopOrderDetailsByShopOrderNo(shopOrderNumber);
-                shopOrderDetails.OqcQty = shopOrderDetails.OqcQty + oQCCreate.AcceptedQty;
+                //var shopOrderNumber = oQCCreate.ShopOrderNumber;
+                //var shopOrderDetails = await _shopOrderRepo.GetShopOrderDetailsByShopOrderNo(shopOrderNumber);
+               //shopOrderDetails.OqcQty = shopOrderDetails.OqcQty + oQCCreate.AcceptedQty;
                 _shopOrderRepo.SaveAsync();
                 await _oQCRepository.CreateOQC(oQCCreate);
                 _oQCRepository.SaveAsync();

@@ -87,8 +87,8 @@ namespace Tips.Production.Api.Entities.DTOs
     }
     public class OQCSearchDto
     {
-        public List<string>? FGItemNumber { get; set; }
-        public List<string>? SAItemNumber { get; set; }
+        //public List<string>? FGItemNumber { get; set; }
+        //public List<string>? SAItemNumber { get; set; }
         public List<string>? ShopOrderNumber { get; set; }
         public List<decimal> ShopOrderQty { get; set; }
         public List<decimal> PendingQty { get; set; }
