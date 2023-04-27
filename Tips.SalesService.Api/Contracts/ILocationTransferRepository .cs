@@ -14,8 +14,9 @@ namespace Tips.SalesService.Api.Contracts
         Task<PagedList<LocationTransfer>> GetAllLocationTransfer(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<LocationTransfer> GetLocationTransferById(int id);
 
-        //Task<IEnumerable<LocationTransfer>> SearchLocationTransfer([FromQuery] SearchParammes searchParammes);
+        Task<IEnumerable<LocationTransfer>> SearchLocationTransfer([FromQuery] SearchParammes searchParammes);
         Task<IEnumerable<LocationTransfer>> SearchLocationTransferDate([FromQuery] SearchDateParam searchDatesParams);
+        Task<IEnumerable<LocationTransfer>> GetAllLocationTransferWithItems(LocationTransferSearchDto locationTransferSearchDto);
         Task<IEnumerable<LocationTransferIdNameList>> GetAllLocationTransferIdNameList();
 
     }

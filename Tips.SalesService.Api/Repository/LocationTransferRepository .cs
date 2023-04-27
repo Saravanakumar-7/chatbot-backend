@@ -75,27 +75,24 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-        //public async Task<IEnumerable<LocationTransfer>> SearchLocationTransfer([FromQuery] SearchParammes searchParammes)
-        //{
-        //    using (var context = _tipsSalesServiceDbContext)
-        //    {
-        //        var query = _tipsSalesServiceDbContext.locationTransfers.ToList();
-        //        if (!string.IsNullOrEmpty(searchParammes.SearchValue))
-        //        {
-        //            query = query.Where(po => po.FromPartNumber.Contains(searchParammes.SearchValue)
-        //            || po.ToPartNumber.Contains(searchParammes.SearchValue)
-        //            || po.FromLocation.Contains(searchParammes.SearchValue)
-        //            || po.ToLocation.Contains(searchParammes.SearchValue)
-        //            || po.FromUOM.Contains(searchParammes.SearchValue)
-        //            || po.ToUOM.Contains(searchParammes.SearchValue));
+        public async Task<IEnumerable<LocationTransfer>> SearchLocationTransfer([FromQuery] SearchParammes searchParammes)
+        {
+            using (var context = _tipsSalesServiceDbContext)
+            {
+                var query = _tipsSalesServiceDbContext.locationTransfers.AsQueryable();
+                if (!string.IsNullOrEmpty(searchParammes.SearchValue))
+                {
+                    query = query.Where(po => po.FromPartNumber.Contains(searchParammes.SearchValue)
+                    || po.ToPartNumber.Contains(searchParammes.SearchValue)
+                    || po.FromLocation.Contains(searchParammes.SearchValue)
+                    || po.ToLocation.Contains(searchParammes.SearchValue)
+                    || po.FromUOM.Contains(searchParammes.SearchValue)
+                    || po.ToUOM.Contains(searchParammes.SearchValue));
 
-
-
-
-        //        }
-        //        return query.ToList();
-        //    }
-        //}
+                }
+                return query.ToList();
+            }
+        }
 
         public async Task<IEnumerable<LocationTransfer>> SearchLocationTransferDate([FromQuery] SearchDateParam searchDatesParams)
         {
@@ -105,6 +102,28 @@ namespace Tips.SalesService.Api.Repository
             )))
             .ToList();
             return locationTransferDetails;
+        }
+
+        public async Task<IEnumerable<LocationTransfer>> GetAllLocationTransferWithItems(LocationTransferSearchDto locationTransferSearchDto)
+        {
+            using (var context = _tipsSalesServiceDbContext)
+            {
+                var query = _tipsSalesServiceDbContext.locationTransfers.AsQueryable();
+                if (locationTransferSearchDto != null || (locationTransferSearchDto.FromPartNumber.Any())
+               && locationTransferSearchDto.ToPartNumber.Any() && locationTransferSearchDto.FromUOM.Any()
+               && locationTransferSearchDto.ToUOM.Any() && locationTransferSearchDto.FromLocation.Any()
+               && locationTransferSearchDto.ToLocation.Any())
+                {
+                    query = query.Where
+                    (po => (locationTransferSearchDto.FromPartNumber.Any() ? locationTransferSearchDto.FromPartNumber.Contains(po.FromPartNumber) : true)
+                   && (locationTransferSearchDto.ToPartNumber.Any() ? locationTransferSearchDto.ToPartNumber.Contains(po.ToPartNumber) : true)
+                   && (locationTransferSearchDto.FromUOM.Any() ? locationTransferSearchDto.FromUOM.Contains(po.FromUOM) : true)
+                    && (locationTransferSearchDto.ToUOM.Any() ? locationTransferSearchDto.ToUOM.Contains(po.ToUOM) : true)
+                     && (locationTransferSearchDto.FromLocation.Any() ? locationTransferSearchDto.FromLocation.Contains(po.FromLocation) : true)
+                      && (locationTransferSearchDto.ToLocation.Any() ? locationTransferSearchDto.ToLocation.Contains(po.ToLocation) : true));
+                }
+                return await query.ToListAsync();
+            }
         }
     }
 }
