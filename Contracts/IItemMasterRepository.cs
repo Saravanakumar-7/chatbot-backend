@@ -25,6 +25,9 @@ namespace Contracts
         Task<IEnumerable<ItemMasterIdNoListDto>> GetAllActiveItemMasterIdNoList();
         Task<ItemMaster> GetItemMasterByItemNumber(string shopOrderNo);
         Task<List<ItemMasterMtrPartNoDto>> GetItemMasterByPartNo(string partNumber);
+        Task<IEnumerable<ItemMaster>> SearchItemMasterDate(SearchDateParamess searchDateParam);
+        Task<IEnumerable<ItemMaster>> GetAllItemMasterWithItems(ItemMasterSearchDto itemMasterSearch);
+        Task<IEnumerable<ItemMaster>> SearchItemMaster(SearchParames searchParames);
 
     }
 }

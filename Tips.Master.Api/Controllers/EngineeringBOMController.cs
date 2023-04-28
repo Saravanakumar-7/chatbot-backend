@@ -1851,7 +1851,7 @@ namespace Tips.Master.Api.Controllers
         //    }
         //}
 
-        [HttpGet("{itemNumber}")]
+        [HttpGet]
         public async Task<IActionResult> GetAllEnggBomRevisionNumberList(string itemNumber)
         {
             ServiceResponse<IEnumerable<ReleaseEnggBomDto>> serviceResponse = new ServiceResponse<IEnumerable<ReleaseEnggBomDto>>();
@@ -1879,7 +1879,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        [HttpGet("{itemNumber}")]
+        [HttpGet]
         public async Task<IActionResult> GetAllCostingBomRevisionNumberList(string itemNumber)
         {
             ServiceResponse<IEnumerable<CostingBomDto>> serviceResponse = new ServiceResponse<IEnumerable<CostingBomDto>>();
@@ -1904,7 +1904,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        [HttpGet("{itemNumber}")]
+        [HttpGet]
         public async Task<IActionResult> GetAllProductionBomRevisionNumberList(string itemNumber)
         {
             ServiceResponse<IEnumerable<ReleaseProductBomDto>> serviceResponse = new ServiceResponse<IEnumerable<ReleaseProductBomDto>>();

@@ -65,6 +65,64 @@ namespace Repository
             return PagedList<ItemMaster>.ToPagedList(itemmasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
+        public async Task<IEnumerable<ItemMaster>> SearchItemMasterDate([FromQuery] SearchDateParamess searchDateParam)
+        {
+            var itemMasterDetails = TipsMasterDbContext.ItemMasters
+                             .Where(inv => ((inv.CreatedOn >= searchDateParam.SearchFromDate &&
+                                inv.CreatedOn <= searchDateParam.SearchToDate
+                                )))
+                             .Include(t => t.ItemmasterAlternate)
+                             .Include(t => t.ItemMasterApprovedVendor)
+                             .Include(t => t.ItemMasterFileUpload)
+                             .Include(d => d.ItemMasterRouting)
+                             .Include(d => d.ItemMasterWarehouse)
+                             .ToList();
+            return itemMasterDetails;
+        }
+
+        public async Task<IEnumerable<ItemMaster>> GetAllItemMasterWithItems(ItemMasterSearchDto itemMasterSearch)
+        {
+            using (var context = TipsMasterDbContext)
+            {
+                var query = TipsMasterDbContext.ItemMasters.Include("ItemmasterAlternate")
+                    .Include("ItemMasterApprovedVendor").Include("ItemMasterFileUpload").Include("ItemMasterRouting")
+                    .Include("ItemMasterWarehouse");
+                if (itemMasterSearch != null || (itemMasterSearch.ItemNumber.Any())
+                    && itemMasterSearch.Commodity.Any() && itemMasterSearch.MaterialGroup.Any() && itemMasterSearch.PurchaseGroup.Any()
+                    && itemMasterSearch.Department.Any())
+
+                {
+                    query = query.Where
+                        (item => (itemMasterSearch.ItemNumber.Any() ? itemMasterSearch.ItemNumber.Contains(item.ItemNumber) : true)
+                        && (itemMasterSearch.Commodity.Any() ? itemMasterSearch.Commodity.Contains(item.Commodity) : true)
+                        && (itemMasterSearch.MaterialGroup.Any() ? itemMasterSearch.MaterialGroup.Contains(item.MaterialGroup) : true)
+                        && (itemMasterSearch.PurchaseGroup.Any() ? itemMasterSearch.PurchaseGroup.Contains(item.PurchaseGroup) : true)
+                        && (itemMasterSearch.Department.Any() ? itemMasterSearch.Department.Contains(item.Department) : true));
+                }
+                return query.ToList();
+            }
+
+        }
+
+        public async Task<IEnumerable<ItemMaster>> SearchItemMaster([FromQuery] SearchParames searchParames)
+        {
+            using (var context = TipsMasterDbContext)
+            {
+                var query = TipsMasterDbContext.ItemMasters.Include("ItemmasterAlternate")
+                    .Include("ItemMasterApprovedVendor").Include("ItemMasterFileUpload").Include("ItemMasterRouting")
+                    .Include("ItemMasterWarehouse");
+                if (!string.IsNullOrEmpty(searchParames.SearchValue))
+                {
+                    query = query.Where(itm => itm.ItemNumber.Contains(searchParames.SearchValue)
+                || itm.Description.Contains(searchParames.SearchValue) ||
+                itm.MaterialGroup.Contains(searchParames.SearchValue) ||
+                itm.Commodity.Contains(searchParames.SearchValue));
+                }
+                return query.ToList();
+            }
+
+        }
+
         public async Task<IEnumerable<ItemMaster>> GetAllFGItems()
         {
             var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id)

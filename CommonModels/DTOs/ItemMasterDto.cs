@@ -337,5 +337,13 @@ namespace Entities.DTOs
         public string? Description { get; set; }
         public string? Uom { get; set; }
     }
+    public class ItemMasterSearchDto
+    {
+        public List<string>? ItemNumber { get; set; }
+        public List<string>? Commodity { get; set; }
+        public List<string>? MaterialGroup { get; set; }
+        public List<string>? PurchaseGroup { get; set; }
+        public List<string>? Department { get; set; }
+    }
 
 }
