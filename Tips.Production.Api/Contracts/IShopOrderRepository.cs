@@ -25,6 +25,7 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<ListOfShopOrderDto>> GetAllFGShopOrderNoList();
         Task<IEnumerable<ListOfShopOrderDto>> GetAllSAShopOrderNoList();
         Task<IEnumerable<ListOfShopOrderDto>> GetAllActiveShopOrderNoList();
+        Task<IEnumerable<ListOfShopOrderDto>> GetAllShopOrderIdNameList();
         Task<IEnumerable<ShopOrder>> GetAllShopOrderWithItems(ShopOrderSearchDto shopOrderSearch);
         Task<IEnumerable<ShopOrder>> SearchShopOrder([FromQuery] SearchParamess searchParammes);
         Task<IEnumerable<ShopOrder>> SearchShopOrderDate([FromQuery] SearchDateparames searchDatesParams);

@@ -781,6 +781,32 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllShopOrderIdNameList()
+        {
+            ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
+            try
+            {
+                var listOfShopOrderNo = await _shopOrderRepository.GetAllShopOrderIdNameList();
+
+                var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(listOfShopOrderNo);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All ShopOrderIdNameList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllShopOrderIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> ShortCloseShopOrder(int id)
         {

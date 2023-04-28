@@ -92,6 +92,7 @@ namespace Tips.Production.Api.Entities.DTOs
     {
        public int Id { get; set; }
        public string? ShopOrderNumber { get; set; }
+       public decimal TotalSOReleaseQty { get; set; }
     }
     public class ShopOrderSearchDto
     {

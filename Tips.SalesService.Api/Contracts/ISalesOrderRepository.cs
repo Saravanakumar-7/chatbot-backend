@@ -22,7 +22,7 @@ namespace Tips.SalesService.Api.Contracts
 
         Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParam);
 
-        
+        Task<IEnumerable<SalesOrderIdNameListDto>> GetAllSalesOrderIdNameList();
 
         //Task<string> UpdateSOBasedOnCreatingDO();
 

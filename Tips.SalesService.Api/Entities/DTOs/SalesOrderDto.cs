@@ -124,6 +124,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? SalesOrderNumber { get; set; }
+        public string? PONumber { get; set; }
     }
 
     public class SalesOrderSearchDto

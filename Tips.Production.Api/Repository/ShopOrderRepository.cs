@@ -137,6 +137,21 @@ namespace Tips.Production.Api.Repository
 
         }
 
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetAllShopOrderIdNameList()
+        {
+            IEnumerable<ListOfShopOrderDto> shopOrderNoList = await _tipsProductionDbContext.ShopOrders
+                           .Select(x => new ListOfShopOrderDto()
+                           {
+                               Id = x.Id,
+                               ShopOrderNumber = x.ShopOrderNumber,
+                               TotalSOReleaseQty = x.TotalSOReleaseQty
+                           }).ToListAsync();
+
+
+            return shopOrderNoList;
+
+        }
+
         public async Task<IEnumerable<ListOfShopOrderDto>> GetAllActiveShopOrderNoListByProjectNo(string projectNo, PartType partType)
         {
             var shopOrderItemListByProjectNo = await _tipsProductionDbContext.ShopOrderItems
