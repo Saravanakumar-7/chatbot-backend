@@ -1165,23 +1165,21 @@ namespace Tips.SalesService.Api.Controllers
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
 
-
-
                 //var newcount = await _rfqRepository.GetRfqNumberAutoIncrementCount(date);
 
                 var latestRfqNo = await _rfqRepository.GetRfqNumberAutoIncrementNumber();
 
                 if (latestRfqNo == null)
                 { 
-                    int num = 1550;
-                    createRfq.RfqNumber = "TISPL-" + (num + 1);
+                    int num = 0;
+                    createRfq.RfqNumber = "RFQ-" + (num + 1);
                 }
                 else
                 { 
                     string result = latestRfqNo.Substring(0, latestRfqNo.IndexOf("-")).Trim();
                     string spliValue = latestRfqNo.Split('-').Last();
                     int num = Int32.Parse(spliValue);
-                    createRfq.RfqNumber = "TISPL-" + (num + 1);
+                    createRfq.RfqNumber = "RFQ-" + (num + 1);
                  }
 
                 await _rfqRepository.CreateRfq(createRfq);
@@ -1197,7 +1195,7 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateRfq action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateRfq action: {ex.Message} {ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
