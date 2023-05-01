@@ -175,27 +175,29 @@ namespace Tips.SalesService.Api.Controllers
                 //createSalesOrder.SalesOrdersItems = salesOrderItemsList;
 
 
-                var date = DateTime.Now;
-                var days = Convert.ToString(date.Day.ToString("D2"));
-                var months = Convert.ToString(date.Month.ToString("D2"));
-                var years = Convert.ToString(date.ToString("yy"));
+                //var date = DateTime.Now;
+                //var days = Convert.ToString(date.Day.ToString("D2"));
+                //var months = Convert.ToString(date.Month.ToString("D2"));
+                //var years = Convert.ToString(date.ToString("yy"));
 
 
 
-                var newcount = await _repository.GetSONumberAutoIncrementCount(date);
+                //var newcount = await _repository.GetSONumberAutoIncrementCount(date);
 
-                if (newcount > 0)
-                {
-                    var number = newcount + 1;
-                    string e = String.Format("{0:D4}", number);
-                    createSalesOrder.SalesOrderNumber = days + months + years + "SO" + (e);
-                }
-                else
-                {
-                    var count = 1;
-                    var e = count.ToString("D4");
-                    createSalesOrder.SalesOrderNumber = days + months + years + "SO" + (e);
-                }
+                //if (newcount > 0)
+                //{
+                //    var number = newcount + 1;
+                //    string e = String.Format("{0:D4}", number);
+                //    createSalesOrder.SalesOrderNumber = days + months + years + "SO" + (e);
+                //}
+                //else
+                //{
+                //    var count = 1;
+                //    var e = count.ToString("D4");
+                //    createSalesOrder.SalesOrderNumber = days + months + years + "SO" + (e);
+                //}
+                var soNumber = await _repository.GenerateSONumber();
+                createSalesOrder.SalesOrderNumber = soNumber;
 
                 if (salesOrderItemsDto != null)
                 {
@@ -852,7 +854,10 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<ItemDetailsForShopOrderDto> serviceResponse = new ServiceResponse<ItemDetailsForShopOrderDto>();
             try
             {
+                _logger.LogError(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomFGListByItemNumber?", "ItemNumber=", itemNumber)); 
                 var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomFGListByItemNumber?", "ItemNumber=", itemNumber));
+                //_logger.LogError(_httpClient.BaseAddress.ToString());
+                //_logger.LogError(_httpClient.ToString());
                 var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
                 dynamic bomDetailsStringData = JsonConvert.DeserializeObject(bomDetailsString);
                 dynamic bomData = bomDetailsStringData.data;
@@ -872,7 +877,6 @@ namespace Tips.SalesService.Api.Controllers
                     project.SalesOrderQtyDetails = await _repository.GetSalesOrderQtyDetailsByItemNo(itemNumber,project.ProjectNumber);
                 }
                 itemDetailsDto.ProjectSODetails = projectSODetails;
-
 
                 serviceResponse.Data = itemDetailsDto;
                 serviceResponse.Message = "Returned all SalesOrderFGDetails";

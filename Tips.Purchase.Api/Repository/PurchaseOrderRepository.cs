@@ -194,7 +194,7 @@ namespace Tips.Purchase.Api.Repository
                 _tipsPurchaseDbContext.Update(poNumberEntity);
                 await _tipsPurchaseDbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-                return $"MISLP-{poNumberEntity.CurrentValue:D5}";
+                return $"PO-{poNumberEntity.CurrentValue:D5}";
             }
             catch (Exception ex)
             {
