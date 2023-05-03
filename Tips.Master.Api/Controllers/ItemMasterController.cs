@@ -242,6 +242,32 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
              }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllFgTgItemMasterItemNoList()
+        {
+            ServiceResponse<IEnumerable<ItemMasterIdNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterIdNoListDto>>();
+            try
+            {
+                var fgTgItemMasterList = await _repository.ItemMasterRepository.GetAllFgTgItemMasterItemNoList();
+
+                var result = _mapper.Map<IEnumerable<ItemMasterIdNoListDto>>(fgTgItemMasterList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all FG and TG ItemMasterItemNoList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllFgTgItemMasterItemNoList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAllSAPurchasePartItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)

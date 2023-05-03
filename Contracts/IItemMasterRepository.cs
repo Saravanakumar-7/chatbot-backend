@@ -29,5 +29,7 @@ namespace Contracts
         Task<IEnumerable<ItemMaster>> GetAllItemMasterWithItems(ItemMasterSearchDto itemMasterSearch);
         Task<IEnumerable<ItemMaster>> SearchItemMaster(SearchParames searchParames);
 
+        Task<IEnumerable<ItemMasterIdNoListDto>> GetAllFgTgItemMasterItemNoList();
+
     }
 }

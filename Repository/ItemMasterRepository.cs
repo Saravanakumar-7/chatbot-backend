@@ -103,6 +103,21 @@ namespace Repository
             }
 
         }
+        public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllFgTgItemMasterItemNoList()
+        {
+            IEnumerable<ItemMasterIdNoListDto> getAllActiveItemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters
+                                .Where(c => c.ItemType == PartType.FG || c.ItemType == PartType.TG)
+                                .Select(c => new ItemMasterIdNoListDto()
+                                {
+                                    id = c.Id,
+                                    ItemNumber = c.ItemNumber,
+                                    Description = c.Description,
+
+                                })
+                              .ToListAsync();
+
+            return getAllActiveItemMasterIdNoListDto;
+        }
 
         public async Task<IEnumerable<ItemMaster>> SearchItemMaster([FromQuery] SearchParames searchParames)
         {
