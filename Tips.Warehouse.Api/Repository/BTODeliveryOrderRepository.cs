@@ -50,14 +50,14 @@ namespace Tips.Warehouse.Api.Repository
             using (var context = _tipsWarehouseDbContext)
             { 
                 var query = _tipsWarehouseDbContext.bTODeliveryOrder.Include("bTODeliveryOrderItems");
-                if (bTODeliveryOrderSearch != null || /*(bTODeliveryOrderSearch.SalesOrderNumber.Any())*/
-                /* &&*/ bTODeliveryOrderSearch.BTONumber.Any() && bTODeliveryOrderSearch.CustomerName.Any() 
+                if (bTODeliveryOrderSearch != null || (bTODeliveryOrderSearch.SalesOrderNumber.Any())
+                 && bTODeliveryOrderSearch.BTONumber.Any() && bTODeliveryOrderSearch.CustomerName.Any() 
                  && bTODeliveryOrderSearch.PONumber.Any() && bTODeliveryOrderSearch.IssuedTo.Any())
 
                 {
                     query = query.Where
                     (po => (bTODeliveryOrderSearch.CustomerName.Any() ? bTODeliveryOrderSearch.CustomerName.Contains(po.CustomerName) : true)
-                   //&& (bTODeliveryOrderSearch.SalesOrderNumber.Any() ? bTODeliveryOrderSearch.SalesOrderNumber.Contains(po.SalesOrderNumber) : true)
+                   && (bTODeliveryOrderSearch.SalesOrderNumber.Any() ? bTODeliveryOrderSearch.SalesOrderNumber.Contains(po.SalesOrderNumber) : true)
                    && (bTODeliveryOrderSearch.PONumber.Any() ? bTODeliveryOrderSearch.PONumber.Contains(po.PONumber) : true)
                    && (bTODeliveryOrderSearch.BTONumber.Any() ? bTODeliveryOrderSearch.BTONumber.Contains(po.BTONumber) : true)
                    && (bTODeliveryOrderSearch.IssuedTo.Any() ? bTODeliveryOrderSearch.IssuedTo.Contains(po.IssuedTo) : true));
@@ -82,8 +82,8 @@ namespace Tips.Warehouse.Api.Repository
                 var query = _tipsWarehouseDbContext.bTODeliveryOrder.Include("bTODeliveryOrderItems");
                 if (!string.IsNullOrEmpty(searchParames.SearchValue))
                 {
-                    query = query.Where(po => //po.SalesOrderNumber.Contains(searchParames.SearchValue)
-                    /*||*/ po.CustomerName.Contains(searchParames.SearchValue)
+                    query = query.Where(po => po.SalesOrderNumber.Contains(searchParames.SearchValue)
+                    || po.CustomerName.Contains(searchParames.SearchValue)
                     || po.PONumber.Contains(searchParames.SearchValue)
                     || po.IssuedTo.Contains(searchParames.SearchValue)
                     || po.bTODeliveryOrderItems.Any(s => s.FGItemNumber.Contains(searchParames.SearchValue) ||

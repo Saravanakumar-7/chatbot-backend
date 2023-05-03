@@ -19,6 +19,6 @@ namespace Tips.Grin.Api.Entities
         public int BinningId { get; set; }
         public Binning? Binning { get; set; }
 
-        public List<BinningLocation>? BinningLocations { get; set; }
+        public List<BinningLocation>? binningLocations { get; set; }
     }
 }

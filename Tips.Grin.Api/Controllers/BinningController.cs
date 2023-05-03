@@ -124,10 +124,71 @@ namespace Tips.Grin.Api.Controllers
             ServiceResponse<IEnumerable<BinningDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningDto>>();
             try
             {
-                var searchDateParamList = await _binningRepository.SearchBinningDate(searchDateParam);
+                var binningList = await _binningRepository.SearchBinningDate(searchDateParam);
 
-                var result = _mapper.Map<IEnumerable<BinningDto>>(searchDateParamList);
-                serviceResponse.Data = result;
+                // Get all the unique GrinPartIds from the iQCList
+                var grinPartIds = binningList
+                    .SelectMany(iqc => iqc.BinningItems.Select(item => item.GrinPartId))
+                    .Distinct()
+                    .ToList();
+
+                // Fetch all the required GrinPart details in a single query and store them in a dictionary
+                var grinPartDetails = await _grinPartsRepository.GetGrinPartsDetailsByGrinPartIds(grinPartIds);
+                var grinPartDetailsLookup = grinPartDetails.ToDictionary(gp => gp.Id, gp => gp);
+
+                // Use the grinPartDetailsLookup for quick lookups while mapping the data to DTO objects
+                var binningListDto = binningList.Select(bin => new BinningDto
+                {
+                    // Map Binning properties here (assuming properties with the same name exist in the DTO)
+                    Id = bin.Id,
+                    GrinNumber = bin.GrinNumber,
+                    Unit = bin.Unit,
+                    CreatedBy = bin.CreatedBy,
+                    CreatedOn = bin.CreatedOn,
+                    LastModifiedBy = bin.LastModifiedBy,
+                    LastModifiedOn = bin.LastModifiedOn,
+                    // ...
+
+                    BinningItems = bin.BinningItems.Select(item => new BinningItemsDto
+                    {
+                        //Map BinningItem properties here (assuming properties with the same name exist in the DTO)
+                        Id = item.Id,
+                        ItemNumber = item.ItemNumber,
+
+
+                        ReceivedQty = grinPartDetailsLookup[item.GrinPartId].Qty,
+                        MftrItemNumber = grinPartDetailsLookup[item.GrinPartId].MftrItemNumber,
+                        PONumber = grinPartDetailsLookup[item.GrinPartId].PONumber,
+                        POBalancedQty = grinPartDetailsLookup[item.GrinPartId].POBalancedQty,
+                        POOrderedQty = grinPartDetailsLookup[item.GrinPartId].POOrderQty,
+                        POUnitPrice = grinPartDetailsLookup[item.GrinPartId].POUnitPrice,
+                        Description = grinPartDetailsLookup[item.GrinPartId].ItemDescription,
+                        UnitPrice = grinPartDetailsLookup[item.GrinPartId].UnitPrice,
+                        ManufactureBatchNumber = grinPartDetailsLookup[item.GrinPartId].ManufactureBatchNumber,
+                        UOM = grinPartDetailsLookup[item.GrinPartId].UOM,
+                        ExpiryDate = grinPartDetailsLookup[item.GrinPartId].ExpiryDate,
+                        ManufactureDate = grinPartDetailsLookup[item.GrinPartId].ManufactureDate,
+                        AcceptedQty = grinPartDetailsLookup[item.GrinPartId].AcceptedQty,
+                        RejectedQty = grinPartDetailsLookup[item.GrinPartId].RejectedQty,
+
+                        binningLocations = item.binningLocations.Select(loc => new BinningLocationDto
+                        {
+                            Warehouse = loc.Warehouse,
+                            Location = loc.Location,
+                            Qty = loc.Qty,
+                            CreatedBy = loc.CreatedBy,
+                            CreatedOn = loc.CreatedOn,
+                            LastModifiedBy = loc.LastModifiedBy,
+                            LastModifiedOn = loc.LastModifiedOn,
+
+            
+                        }).ToList(),
+
+                    }).ToList(),
+                }).ToList();
+
+
+                serviceResponse.Data = binningListDto;
                 serviceResponse.Message = "Returned all BinningDates";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -152,17 +213,68 @@ namespace Tips.Grin.Api.Controllers
             {
                 var binningList = await _binningRepository.SearchBinning(searchParams);
 
-                _logger.LogInfo("Returned all Binnings");
-                var config = new MapperConfiguration(cfg =>
-                {
-                    cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<BinningDto, Binning>().ReverseMap()
-                    .ForMember(dest => dest.BinningItems, opt => opt.MapFrom(src => src.BinningItems));
-                });
-                var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<BinningDto>>(binningList);
+                // Get all the unique GrinPartIds from the iQCList
+                var grinPartIds = binningList
+                    .SelectMany(iqc => iqc.BinningItems.Select(item => item.GrinPartId))
+                    .Distinct()
+                    .ToList();
 
-                serviceResponse.Data = result;
+                // Fetch all the required GrinPart details in a single query and store them in a dictionary
+                var grinPartDetails = await _grinPartsRepository.GetGrinPartsDetailsByGrinPartIds(grinPartIds);
+                var grinPartDetailsLookup = grinPartDetails.ToDictionary(gp => gp.Id, gp => gp);
+
+                // Use the grinPartDetailsLookup for quick lookups while mapping the data to DTO objects
+                var binningListDto = binningList.Select(bin => new BinningDto
+                {
+                    // Map Binning properties here (assuming properties with the same name exist in the DTO)
+                    Id = bin.Id,
+                    GrinNumber = bin.GrinNumber,
+                    Unit = bin.Unit,
+                    CreatedBy = bin.CreatedBy,
+                    CreatedOn = bin.CreatedOn,
+                    LastModifiedBy = bin.LastModifiedBy,
+                    LastModifiedOn = bin.LastModifiedOn,
+                    // ...
+
+                    BinningItems = bin.BinningItems.Select(item => new BinningItemsDto
+                    {
+                        //Map BinningItem properties here (assuming properties with the same name exist in the DTO)
+                        Id = item.Id,
+                        ItemNumber = item.ItemNumber,
+
+
+                        ReceivedQty = grinPartDetailsLookup[item.GrinPartId].Qty,
+                        MftrItemNumber = grinPartDetailsLookup[item.GrinPartId].MftrItemNumber,
+                        PONumber = grinPartDetailsLookup[item.GrinPartId].PONumber,
+                        POBalancedQty = grinPartDetailsLookup[item.GrinPartId].POBalancedQty,
+                        POOrderedQty = grinPartDetailsLookup[item.GrinPartId].POOrderQty,
+                        POUnitPrice = grinPartDetailsLookup[item.GrinPartId].POUnitPrice,
+                        Description = grinPartDetailsLookup[item.GrinPartId].ItemDescription,
+                        UnitPrice = grinPartDetailsLookup[item.GrinPartId].UnitPrice,
+                        ManufactureBatchNumber = grinPartDetailsLookup[item.GrinPartId].ManufactureBatchNumber,
+                        UOM = grinPartDetailsLookup[item.GrinPartId].UOM,
+                        ExpiryDate = grinPartDetailsLookup[item.GrinPartId].ExpiryDate,
+                        ManufactureDate = grinPartDetailsLookup[item.GrinPartId].ManufactureDate,
+                        AcceptedQty = grinPartDetailsLookup[item.GrinPartId].AcceptedQty,
+                        RejectedQty = grinPartDetailsLookup[item.GrinPartId].RejectedQty,
+
+                        binningLocations = item.binningLocations.Select(loc => new BinningLocationDto
+                        {
+                            Warehouse = loc.Warehouse,
+                            Location = loc.Location,
+                            Qty = loc.Qty,
+                            CreatedBy = loc.CreatedBy,
+                            CreatedOn = loc.CreatedOn,
+                            LastModifiedBy = loc.LastModifiedBy,
+                            LastModifiedOn = loc.LastModifiedOn,
+
+                            
+                            
+                        }).ToList(),
+                    }).ToList(),
+                }).ToList();
+
+                serviceResponse.Data = binningListDto;
                 serviceResponse.Message = "Returned all Binnings";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -184,19 +296,71 @@ namespace Tips.Grin.Api.Controllers
             ServiceResponse<IEnumerable<BinningDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningDto>>();
             try
             {
-                var binningSearchs = await _binningRepository.GetAllBinningWithItems(binningSearchDto);
-                _logger.LogInfo("Returned all BInnings");
-                var config = new MapperConfiguration(cfg =>
-                {
-                    cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<BinningDto, Binning>().ReverseMap()
-                    .ForMember(dest => dest.BinningItems, opt => opt.MapFrom(src => src.BinningItems));
-                });
-                var mapper = config.CreateMapper();
+                var binningList = await _binningRepository.GetAllBinningWithItems(binningSearchDto);
 
-                var result = mapper.Map<IEnumerable<BinningDto>>(binningSearchs);
-                serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all BInnings";
+                // Get all the unique GrinPartIds from the iQCList
+                var grinPartIds = binningList
+                    .SelectMany(iqc => iqc.BinningItems.Select(item => item.GrinPartId))
+                    .Distinct()
+                    .ToList();
+
+                // Fetch all the required GrinPart details in a single query and store them in a dictionary
+                var grinPartDetails = await _grinPartsRepository.GetGrinPartsDetailsByGrinPartIds(grinPartIds);
+                var grinPartDetailsLookup = grinPartDetails.ToDictionary(gp => gp.Id, gp => gp);
+
+                // Use the grinPartDetailsLookup for quick lookups while mapping the data to DTO objects
+                var binningListDto = binningList.Select(bin => new BinningDto
+                {
+                    // Map Binning properties here (assuming properties with the same name exist in the DTO)
+                    Id = bin.Id,
+                    GrinNumber = bin.GrinNumber,
+                    Unit = bin.Unit,
+                    CreatedBy = bin.CreatedBy,
+                    CreatedOn = bin.CreatedOn,
+                    LastModifiedBy = bin.LastModifiedBy,
+                    LastModifiedOn = bin.LastModifiedOn,
+                    // ...
+
+                    BinningItems = bin.BinningItems.Select(item => new BinningItemsDto
+                    {
+                        //Map BinningItem properties here (assuming properties with the same name exist in the DTO)
+                        Id = item.Id,
+                        ItemNumber = item.ItemNumber,
+                       
+                        ReceivedQty = grinPartDetailsLookup[item.GrinPartId].Qty,
+                        MftrItemNumber = grinPartDetailsLookup[item.GrinPartId].MftrItemNumber,
+                        PONumber = grinPartDetailsLookup[item.GrinPartId].PONumber,
+                        POBalancedQty = grinPartDetailsLookup[item.GrinPartId].POBalancedQty,
+                        POOrderedQty = grinPartDetailsLookup[item.GrinPartId].POOrderQty,
+                        POUnitPrice = grinPartDetailsLookup[item.GrinPartId].POUnitPrice,
+                        Description = grinPartDetailsLookup[item.GrinPartId].ItemDescription,
+                        UnitPrice = grinPartDetailsLookup[item.GrinPartId].UnitPrice,
+                        ManufactureBatchNumber = grinPartDetailsLookup[item.GrinPartId].ManufactureBatchNumber,
+                        UOM = grinPartDetailsLookup[item.GrinPartId].UOM,
+                        ExpiryDate = grinPartDetailsLookup[item.GrinPartId].ExpiryDate,
+                        ManufactureDate = grinPartDetailsLookup[item.GrinPartId].ManufactureDate,
+                        AcceptedQty = grinPartDetailsLookup[item.GrinPartId].AcceptedQty,
+                        RejectedQty = grinPartDetailsLookup[item.GrinPartId].RejectedQty,
+
+                        binningLocations = item.binningLocations.Select(loc => new BinningLocationDto
+                        {
+                            Warehouse = loc.Warehouse,
+                            Location = loc.Location,
+                            Qty = loc.Qty,
+                            CreatedBy = loc.CreatedBy,
+                            CreatedOn = loc.CreatedOn,
+                            LastModifiedBy = loc.LastModifiedBy,
+                            LastModifiedOn = loc.LastModifiedOn,
+
+                           
+
+                        }).ToList(),
+
+                    }).ToList(),
+                }).ToList();
+
+                serviceResponse.Data = binningListDto;
+                serviceResponse.Message = "Returned all BinningWithItems";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -263,7 +427,7 @@ namespace Tips.Grin.Api.Controllers
                     for (int i = 0; i < binningItemdto.Count; i++)
                     {
                         BinningItems binningItems = _mapper.Map<BinningItems>(binningItemdto[i]);
-                        binningItems.BinningLocations = _mapper.Map<List<BinningLocation>>(binningItemdto[i].BinningLocations);
+                        binningItems.binningLocations = _mapper.Map<List<BinningLocation>>(binningItemdto[i].binningLocations);
                         binningItemList.Add(binningItems);
 
                     }
@@ -331,7 +495,7 @@ namespace Tips.Grin.Api.Controllers
                     {
 
                         BinningItems binningItems = _mapper.Map<BinningItems>(binningsItemsDto[i]);
-                        binningItems.BinningLocations = _mapper.Map<List<BinningLocation>>(binningsItemsDto[i].BinningLocations);
+                        binningItems.binningLocations = _mapper.Map<List<BinningLocation>>(binningsItemsDto[i].BinningLocations);
                         binningItemList.Add(binningItems);
 
 
@@ -351,11 +515,11 @@ namespace Tips.Grin.Api.Controllers
                 //{
                 //    for (int i = 0; i < binningsItemsDto.Count; i++)
                 //    {
-                //        var binningLocations = binningsItemsDto[i].BinningLocations;
+                //        var binningLocations = binningsItemsDto[i].binningLocations;
 
                 //        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
                 //            "GetInventoryDetailsByGrinNo?", "GrinNo=", binningDetail.GrinNumber, "&ItemNumber=",
-                //            binningsItemsDto[i].ItemNumber, "&ProjectNumber=", binningLocations[i].ProjectNumber));
+                //            binningsItemsDto[i].ItemNumber, "&ProjectNumbers=", binningLocations[i].ProjectNumbers));
                 //        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                 //        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                 //        dynamic inventoryObject = inventoryObjectData.data;
@@ -366,7 +530,7 @@ namespace Tips.Grin.Api.Controllers
                 //            {
                 //                inventoryObject.Balance_Quantity = location.Qty;
                 //                inventoryObject.Warehouse = location.Warehouse;
-                //                inventoryObject.ProjectNumber = location.ProjectNumber;
+                //                inventoryObject.ProjectNumbers = location.ProjectNumbers;
                 //                inventoryObject.Location = location.Location;
                 //                inventoryObject.IsStockAvailable = true;
                 //                var json = JsonConvert.SerializeObject(inventoryObject);
@@ -382,7 +546,7 @@ namespace Tips.Grin.Api.Controllers
                 //                inventoryObjectNew.PartNumber = binningsItemsDto[i].ItemNumber;
                 //                inventoryObjectNew.MftrPartNumber = grinDetails.MftrItemNumber;
                 //                inventoryObjectNew.Description = grinDetails.ItemDescription;
-                //                inventoryObjectNew.ProjectNumber = location.ProjectNumber;
+                //                inventoryObjectNew.ProjectNumbers = location.ProjectNumbers;
                 //                inventoryObjectNew.Balance_Quantity = location.Qty;
                 //                inventoryObjectNew.UOM = grinDetails.UOM;
                 //                inventoryObjectNew.IsStockAvailable = true;
@@ -454,8 +618,8 @@ namespace Tips.Grin.Api.Controllers
                         {
                             BinningItemsDto binningItemDtos = _mapper.Map<BinningItemsDto>(grinDetails);
 
-                            var binningDetails = _mapper.Map<List<BinningLocationDto>>(binningItemDtos.BinningLocations);
-                            binningItemDtos.BinningLocations = binningDetails;
+                            var binningDetails = _mapper.Map<List<BinningLocationDto>>(binningItemDtos.binningLocations);
+                            binningItemDtos.binningLocations = binningDetails;
                             binningItemDtos.ReceivedQty = grinDetails.Qty;
                             binningItemDtos.AcceptedQty = grinDetails.AcceptedQty;
                             binningItemDtos.RejectedQty = grinDetails.RejectedQty;

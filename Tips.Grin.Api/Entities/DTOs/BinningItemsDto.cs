@@ -16,6 +16,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? Description { get; set; }
         public string? MftrItemNumber { get; set; }
         public string? ProjectNumber { get; set; }
+        public string? PONumber { get; set; }
         public string? ManufactureBatchNumber { get; set; }
 
         [Precision(18, 3)]
@@ -42,14 +43,8 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? RejectedQty { get; set; }
-
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-
-      
-        public List<BinningLocationDto>? BinningLocations { get; set; }
+        
+        public List<BinningLocationDto>? binningLocations { get; set; }
     }
 
 
@@ -60,7 +55,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public int GrinPartId { get; set; }
         //public string? Description { get; set; }
         //public string? MftrItemNumber { get; set; }
-        //public string? ProjectNumber { get; set; }
+        //public string? ProjectNumbers { get; set; }
         //public string? ManufactureBatchNumber { get; set; }
 
         //[Precision(18, 3)]

@@ -29,7 +29,9 @@ namespace Tips.Grin.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public IQCConfirmationController(IGrinRepository grinRepository,IIQCConfirmationRepository iQCConfirmationRepository, IIQCConfirmationItemsRepository iQCConfirmationItemsRepository, IGrinPartsRepository grinPartsRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        public IQCConfirmationController(IGrinRepository grinRepository,IIQCConfirmationRepository iQCConfirmationRepository, 
+            IIQCConfirmationItemsRepository iQCConfirmationItemsRepository, IGrinPartsRepository grinPartsRepository, 
+            ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _logger = logger;
             _iQCConfirmationRepository = iQCConfirmationRepository;
@@ -84,10 +86,56 @@ namespace Tips.Grin.Api.Controllers
             ServiceResponse<IEnumerable<IQCConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationDto>>();
             try
             {
-                var searchDateParamIQC = await _iQCConfirmationRepository.SearchIQCConfirmationDate(searchDateParam);
+                //var searchDateParamIQC = await _iQCConfirmationRepository.SearchIQCConfirmationDate(searchDateParam);
 
-                var result = _mapper.Map<IEnumerable<IQCConfirmationDto>>(searchDateParamIQC);
-                serviceResponse.Data = result;
+                //var result = _mapper.Map<IEnumerable<IQCConfirmationDto>>(searchDateParamIQC);
+
+                var iQCList = await _iQCConfirmationRepository.SearchIQCConfirmationDate(searchDateParam);
+
+                // Get all the unique GrinPartIds from the iQCList
+                var grinPartIds = iQCList
+                    .SelectMany(iqc => iqc.IQCConfirmationItems.Select(item => item.GrinPartId))
+                    .Distinct()
+                    .ToList();
+
+                // Fetch all the required GrinPart details in a single query and store them in a dictionary
+                var grinPartDetails = await _grinPartsRepository.GetGrinPartsDetailsByGrinPartIds(grinPartIds);
+                var grinPartDetailsLookup = grinPartDetails.ToDictionary(gp => gp.Id, gp => gp);
+
+                // Use the grinPartDetailsLookup for quick lookups while mapping the data to DTO objects
+                var iqcListDto = iQCList.Select(iqc => new IQCConfirmationDto
+                {
+                    // Map IQCConfirmation properties here (assuming properties with the same name exist in the DTO)
+                    Id = iqc.Id,
+                    GrinId = iqc.GrinId,
+                    GrinNumber = iqc.GrinNumber,
+                    Unit = iqc.Unit,
+                    CreatedBy = iqc.CreatedBy,
+                    CreatedOn = iqc.CreatedOn,
+                    LastModifiedBy = iqc.LastModifiedBy,
+                    LastModifiedOn = iqc.LastModifiedOn,
+                    // ...
+
+                    IQCConfirmationItems = iqc.IQCConfirmationItems.Select(item => new IQCConfirmationItemsDto
+                    {
+                        // Map IQCConfirmationItem properties here (assuming properties with the same name exist in the DTO)
+                        Id = item.Id,
+                        GrinPartId = item.GrinPartId,
+                        ItemNumber = item.ItemNumber,
+                        ReceivedQty = item.ReceivedQty,
+
+                        MftrItemNumber = grinPartDetailsLookup[item.GrinPartId].MftrItemNumber,
+                        PONumber = grinPartDetailsLookup[item.GrinPartId].PONumber,
+                        ItemDescription = grinPartDetailsLookup[item.GrinPartId].ItemDescription,
+                        ManufactureBatchNumber = grinPartDetailsLookup[item.GrinPartId].ManufactureBatchNumber,
+                        UOM = grinPartDetailsLookup[item.GrinPartId].UOM,
+                        ExpireDate = grinPartDetailsLookup[item.GrinPartId].ExpiryDate,
+                        ManufactureDate = grinPartDetailsLookup[item.GrinPartId].ManufactureDate,
+
+                    }).ToList(),
+                }).ToList();
+
+                serviceResponse.Data = iqcListDto;
                 serviceResponse.Message = "Returned all IQCConfirmations";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -111,16 +159,53 @@ namespace Tips.Grin.Api.Controllers
             try
             {
                 var iQCList = await _iQCConfirmationRepository.SearchIQCConfirmation(searchParams);
-                _logger.LogInfo("Returned all IQCConfirmation");
-                var config = new MapperConfiguration(cfg =>
+
+                // Get all the unique GrinPartIds from the iQCList
+                var grinPartIds = iQCList
+                    .SelectMany(iqc => iqc.IQCConfirmationItems.Select(item => item.GrinPartId))
+                    .Distinct()
+                    .ToList();
+
+                // Fetch all the required GrinPart details in a single query and store them in a dictionary
+                var grinPartDetails = await _grinPartsRepository.GetGrinPartsDetailsByGrinPartIds(grinPartIds);
+                var grinPartDetailsLookup = grinPartDetails.ToDictionary(gp => gp.Id, gp => gp);
+   
+                // Use the grinPartDetailsLookup for quick lookups while mapping the data to DTO objects
+                var iqcListDto = iQCList.Select(iqc => new IQCConfirmationDto
                 {
-                    cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<IQCConfirmationDto, IQCConfirmation>().ReverseMap()
-                    .ForMember(dest => dest.IQCConfirmationItems, opt => opt.MapFrom(src => src.IQCConfirmationItems));
-                });
-                var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<IQCConfirmationDto>>(iQCList);
-                serviceResponse.Data = result;
+                    // Map IQCConfirmation properties here (assuming properties with the same name exist in the DTO)
+                    Id = iqc.Id,
+                    GrinId = iqc.GrinId,
+                    GrinNumber = iqc.GrinNumber,
+                    Unit = iqc.Unit,
+                    CreatedBy = iqc.CreatedBy,
+                    CreatedOn = iqc.CreatedOn,
+                    LastModifiedBy = iqc.LastModifiedBy,
+                    LastModifiedOn = iqc.LastModifiedOn,
+                    // ...
+
+                    IQCConfirmationItems = iqc.IQCConfirmationItems.Select(item => new IQCConfirmationItemsDto
+                    {
+                        // Map IQCConfirmationItem properties here (assuming properties with the same name exist in the DTO)
+                        Id = item.Id,
+                        GrinPartId= item.GrinPartId,
+                        ItemNumber = item.ItemNumber,
+                        ReceivedQty = item.ReceivedQty,
+                    
+                        MftrItemNumber = grinPartDetailsLookup[item.GrinPartId].MftrItemNumber,
+                        PONumber = grinPartDetailsLookup[item.GrinPartId].PONumber,
+                        ItemDescription = grinPartDetailsLookup[item.GrinPartId].ItemDescription,
+                        ManufactureBatchNumber = grinPartDetailsLookup[item.GrinPartId].ManufactureBatchNumber,
+                        UOM = grinPartDetailsLookup[item.GrinPartId].UOM,
+                        ExpireDate = grinPartDetailsLookup[item.GrinPartId].ExpiryDate,
+                        ManufactureDate = grinPartDetailsLookup[item.GrinPartId].ManufactureDate,
+
+                    }).ToList(),
+                }).ToList();
+
+                _logger.LogInfo("Returned all IQCConfirmation");
+                       
+                serviceResponse.Data = iqcListDto;
                 serviceResponse.Message = "Returned all IQCConfirmation";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -141,19 +226,53 @@ namespace Tips.Grin.Api.Controllers
         {
             ServiceResponse<IEnumerable<IQCConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationDto>>();
             try
-            {
-                var IQCConfirmationList = await _iQCConfirmationRepository.GetAllIQCConfirmationWithItems(iQCConfirmationSearch);
+            { 
+                var iQCList = await _iQCConfirmationRepository.GetAllIQCConfirmationWithItems(iQCConfirmationSearch);
 
-                _logger.LogInfo("Returned all IQCConfirmation");
-                var config = new MapperConfiguration(cfg =>
+                // Get all the unique GrinPartIds from the iQCList
+                var grinPartIds = iQCList
+                    .SelectMany(iqc => iqc.IQCConfirmationItems.Select(item => item.GrinPartId))
+                    .Distinct()
+                    .ToList();
+
+                // Fetch all the required GrinPart details in a single query and store them in a dictionary
+                var grinPartDetails = await _grinPartsRepository.GetGrinPartsDetailsByGrinPartIds(grinPartIds);
+                var grinPartDetailsLookup = grinPartDetails.ToDictionary(gp => gp.Id, gp => gp);
+
+                // Use the grinPartDetailsLookup for quick lookups while mapping the data to DTO objects
+                var iqcListDto = iQCList.Select(iqc => new IQCConfirmationDto
                 {
-                    cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<IQCConfirmationDto, IQCConfirmation>().ReverseMap()
-                    .ForMember(dest => dest.IQCConfirmationItems, opt => opt.MapFrom(src => src.IQCConfirmationItems));
-                });
-                var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<IQCConfirmationDto>>(IQCConfirmationList);
-                serviceResponse.Data = result;
+                    // Map IQCConfirmation properties here (assuming properties with the same name exist in the DTO)
+                    Id = iqc.Id,
+                    GrinId = iqc.GrinId,
+                    GrinNumber = iqc.GrinNumber,
+                    Unit = iqc.Unit,
+                    CreatedBy = iqc.CreatedBy,
+                    CreatedOn = iqc.CreatedOn,
+                    LastModifiedBy = iqc.LastModifiedBy,
+                    LastModifiedOn = iqc.LastModifiedOn,
+                    // ...
+
+                    IQCConfirmationItems = iqc.IQCConfirmationItems.Select(item => new IQCConfirmationItemsDto
+                    {
+                        // Map IQCConfirmationItem properties here (assuming properties with the same name exist in the DTO)
+                        Id = item.Id,
+                        GrinPartId = item.GrinPartId,
+                        ItemNumber = item.ItemNumber,
+                        ReceivedQty = item.ReceivedQty,
+
+                        MftrItemNumber = grinPartDetailsLookup[item.GrinPartId].MftrItemNumber,
+                        PONumber = grinPartDetailsLookup[item.GrinPartId].PONumber,
+                        ItemDescription = grinPartDetailsLookup[item.GrinPartId].ItemDescription,
+                        ManufactureBatchNumber = grinPartDetailsLookup[item.GrinPartId].ManufactureBatchNumber,
+                        UOM = grinPartDetailsLookup[item.GrinPartId].UOM,
+                        ExpireDate = grinPartDetailsLookup[item.GrinPartId].ExpiryDate,
+                        ManufactureDate = grinPartDetailsLookup[item.GrinPartId].ManufactureDate,
+
+                    }).ToList(),
+                }).ToList();
+
+                serviceResponse.Data = iqcListDto;
                 serviceResponse.Message = "Returned all IQCConfirmation";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -358,7 +477,7 @@ namespace Tips.Grin.Api.Controllers
                 _iQCConfirmationRepository.SaveAsync();
 
                 // Inventory Update Code
-                //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByGrinNo?", "GrinNo=", iQCCreate.GrinNumber, "&ItemNumber=", iQCCreate.ItemNumber, "&ProjectNumber=", iQCCreate.ProjectNumber));
+                //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByGrinNo?", "GrinNo=", iQCCreate.GrinNumber, "&ItemNumber=", iQCCreate.ItemNumber, "&ProjectNumbers=", iQCCreate.ProjectNumbers));
                 //var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                 //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                 //dynamic inventoryObject = inventoryObjectData.data;

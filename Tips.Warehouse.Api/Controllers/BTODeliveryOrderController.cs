@@ -458,9 +458,9 @@ namespace Tips.Warehouse.Api.Controllers
                 bTODeliveryOrder.bTODeliveryOrderItems = bTODeliveryOrderItemsDtoList;
 
                 await _repository.CreateBTODeliveryOrder(bTODeliveryOrder);
-                _repository.SaveAsync(); 
+                _repository.SaveAsync();
 
-  
+
 
 
                 //update balance qty and dispatch qty in salesorder table

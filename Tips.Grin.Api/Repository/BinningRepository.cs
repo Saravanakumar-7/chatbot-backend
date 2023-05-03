@@ -31,9 +31,8 @@ namespace Tips.Grin.Api.Repository
         {
 
             var getAllBinningDetails = FindAll()
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue))))
-                 .Include(t => t.BinningItems)
-                 .ThenInclude(t => t.BinningLocations);
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue))));
+                 
                 return PagedList<Binning>.ToPagedList(getAllBinningDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
@@ -46,36 +45,39 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<IEnumerable<Binning>> GetAllBinningWithItems(BinningSearchDto binningSearchDto)
         {
-            using (var context = _tipsGrinDbContext)
-            {
+            
                 var query = _tipsGrinDbContext.Binnings.Include("BinningItems");
                 if (binningSearchDto != null || (binningSearchDto.InvoiceNumber.Any())
                && binningSearchDto.GrinNumber.Any() && binningSearchDto.VendorName.Any() && binningSearchDto.VendorId.Any())
                 {
                     query = query.Where
-                    (po => (binningSearchDto.GrinNumber.Any() ? binningSearchDto.GrinNumber.Contains(po.GrinNumber) : true));
+                    (po => (binningSearchDto.GrinNumber.Any() ? binningSearchDto.GrinNumber.Contains(po.GrinNumber) : true))
                    //&& (binningSearchDto.InvoiceNumber.Any() ? binningSearchDto.InvoiceNumber.Contains(po.InvoiceNumber) : true)
                    //&& (binningSearchDto.VendorName.Any() ? binningSearchDto.VendorName.Contains(po.VendorName) : true)
                    //&& (binningSearchDto.VendorId.Any() ? binningSearchDto.VendorId.Contains(po.VendorId) : true));
-                }
-                return query.ToList();
+                    .Include(p => p.BinningItems)
+                    .ThenInclude(l => l.binningLocations);
             }
+                return query.ToList();
+            
         }
         public async Task<IEnumerable<Binning>> SearchBinning([FromQuery] SearchParames searchParames)
         {
-            using (var context = _tipsGrinDbContext)
-            {
+            
                 var query = _tipsGrinDbContext.Binnings.Include("BinningItems");
-                if (!string.IsNullOrEmpty(searchParames.SearchValue))
+                if (!string.IsNullOrEmpty(Convert.ToString(searchParames.SearchValue)))
                 {
-                    query = query.Where(po => po.GrinNumber.Contains(searchParames.SearchValue)
-                    //|| po.VendorName.Contains(searchParames.SearchValue)
-                    //|| po.InvoiceNumber.Contains(searchParames.SearchValue)
-                    //|| po.VendorId.Contains(searchParames.SearchValue)
-                    || po.BinningItems.Any(s => s.ItemNumber.Contains(searchParames.SearchValue)));
+                query = query.Where(po => po.GrinNumber.Contains(searchParames.SearchValue)
+                //|| po.VendorName.Contains(searchParames.SearchValue)
+                //|| po.InvoiceNumber.Contains(searchParames.SearchValue)
+                //|| po.VendorId.Contains(searchParames.SearchValue)
+                || po.BinningItems.Any(s => s.ItemNumber.Contains(searchParames.SearchValue)))
+                    .Include(p=>p.BinningItems)
+                    .ThenInclude(l=>l.binningLocations);
+                
                 }
                 return query.ToList();
-            }
+            
         }
         public async Task<IEnumerable<Binning>> SearchBinningDate([FromQuery] SearchDateParames searchParames)
         {
@@ -84,6 +86,7 @@ namespace Tips.Grin.Api.Repository
             inv.CreatedOn <= searchParames.SearchToDate
             )))
             .Include(itm => itm.BinningItems)
+            .ThenInclude(loc => loc.binningLocations)
             .ToList();
             return binningDetails;
         }
@@ -101,7 +104,7 @@ namespace Tips.Grin.Api.Repository
         {
             var binningDetailsById = await _tipsGrinDbContext.Binnings.Where(x => x.Id == id)
                               .Include(t => t.BinningItems)
-                              .ThenInclude(x => x.BinningLocations)
+                              .ThenInclude(x => x.binningLocations)
                            .FirstOrDefaultAsync();
 
             return binningDetailsById;
@@ -147,7 +150,7 @@ namespace Tips.Grin.Api.Repository
         //    var getAllBinningItems = FindAll()
         //       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue)
         //       )))
-        //      .Include(t => t.BinningLocations);
+        //      .Include(t => t.binningLocations);
 
 
         //    return PagedList<BinningItems>.ToPagedList(getAllBinningItems, pagingParameter.PageNumber, pagingParameter.PageSize);
@@ -156,9 +159,29 @@ namespace Tips.Grin.Api.Repository
         public async Task<IEnumerable<BinningItems>> GetAllBinningItems()
         {
             var binningItemsDetails = FindAll().OrderByDescending(x => x.Id)
-            .Include(v => v.BinningLocations);
+            .Include(v => v.binningLocations);
             return binningItemsDetails;
         }
 
+    }
+
+    public class BinningLocations : RepositoryBase<BinningLocation>, IBinningLocations
+    {
+        private TipsGrinDbContext _tipsGrinDbContext;
+
+        public BinningLocations(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
+        {
+            _tipsGrinDbContext = tipsGrinDbContext;
+
+        }
+
+        public async Task<string> UpdateBinning(BinningLocation binningLocation)
+        {
+            binningLocation.LastModifiedBy = "Admin";
+            binningLocation.LastModifiedOn = DateTime.Now;
+            Update(binningLocation);
+            string result = $"binningLocation details of {binningLocation.Id} is updated successfully!";
+            return result;
+        }
     }
 }

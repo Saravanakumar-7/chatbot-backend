@@ -404,7 +404,7 @@ namespace Tips.Grin.Api.Controllers
                 //        inventoryObject.PartNumber = parts.ItemNumber;
                 //        inventoryObject.MftrPartNumber = parts.MftrItemNumber;
                 //        inventoryObject.Description = parts.ItemDescription;
-                //        inventoryObject.ProjectNumber = project.ProjectNumber;
+                //        inventoryObject.ProjectNumbers = project.ProjectNumbers;
                 //        inventoryObject.Balance_Quantity = project.ProjectQty;
                 //        inventoryObject.UOM = parts.UOM;
                 //        inventoryObject.IsStockAvailable = true;

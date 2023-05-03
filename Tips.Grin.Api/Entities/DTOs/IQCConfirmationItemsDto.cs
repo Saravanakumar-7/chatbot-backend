@@ -11,7 +11,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public string ItemDescription { get; set; }
         public string MftrItemNumber { get; set; }
-        public List<ProjectNumbers>? ProjectNumber { get; set; }
+        public List<ProjectNumbers>? ProjectNumbers { get; set; }
         public string ManufactureBatchNumber { get; set; }
 
         [Precision(18, 3)]

@@ -97,8 +97,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Required(ErrorMessage = "MftrItemNumber is required")]
         public string MftrItemNumber { get; set; }
 
-        //[Required(ErrorMessage = "ProjectNumber is required")]
-        //public string? ProjectNumber { get; set; }
+        //[Required(ErrorMessage = "ProjectNumbers is required")]
+        //public string? ProjectNumbers { get; set; }
 
         [Required(ErrorMessage = "ManufactureBatchNumber is required")]
         public string ManufactureBatchNumber { get; set; }
@@ -161,8 +161,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Required(ErrorMessage = "MftrItemNumber is required")]
         public string MftrItemNumber { get; set; }
 
-        //[Required(ErrorMessage = "ProjectNumber is required")]
-        //public string? ProjectNumber { get; set; }
+        //[Required(ErrorMessage = "ProjectNumbers is required")]
+        //public string? ProjectNumbers { get; set; }
 
         [Required(ErrorMessage = "ManufactureBatchNumber is required")]
         public string ManufactureBatchNumber { get; set; }
