@@ -31,6 +31,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? PriceListName { get; set; }
         public DateTime? ValidThrough { get; set; }
         public bool? IsDiscountApplicable { get; set; }
+        public bool IsActive { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -69,6 +70,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? PriceListName { get; set; }
         public DateTime? ValidThrough { get; set; }
         public bool? IsDiscountApplicable { get; set; }
+        public bool IsActive { get; set; } = true;
     }
     public class ItemPriceListUpdateDto
     {
@@ -100,6 +102,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? PriceListName { get; set; }
         public DateTime? ValidThrough { get; set; }
         public bool? IsDiscountApplicable { get; set; }
+        public bool IsActive { get; set; } = true;
 
 
     }

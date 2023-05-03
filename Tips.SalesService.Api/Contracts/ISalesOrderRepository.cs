@@ -30,6 +30,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<List<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber);
         Task<List<SalesOrderQtyDto>> GetSalesOrderQtyDetailsByItemNo(string itemNumber,string projectNo);
         Task<IEnumerable<SalesOrderIdNameListDto>> GetAllActiveSalesOrderNameList();
+        Task<string> GenerateSONumber();
         Task<IEnumerable<SalesOrder>> GetAllSalesOrderWithItems(SalesOrderSearchDto salesOrderSearch);
     }
 }
