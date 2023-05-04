@@ -76,14 +76,25 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllMRNOpenStatus()
+        public async Task<IActionResult> GetAllMRNOpenStatus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<MaterialReturnNoteDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialReturnNoteDto>>();
 
             try
             {
-                var materialReturnNoteDetails = await _materialReturnNoteRepository.GetAllMRNStatusOpen();
-             
+                var materialReturnNoteDetails = await _materialReturnNoteRepository.GetAllMRNStatusOpen(pagingParameter, searchParamess);
+
+                var metadata = new
+                {
+                    materialReturnNoteDetails.TotalCount,
+                    materialReturnNoteDetails.PageSize,
+                    materialReturnNoteDetails.CurrentPage,
+                    materialReturnNoteDetails.HasNext,
+                    materialReturnNoteDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
                 _logger.LogError("Returned all getAllMaterialReturnNoteStatusOpen");
                 var result = _mapper.Map<IEnumerable<MaterialReturnNoteDto>>(materialReturnNoteDetails);
                 serviceResponse.Data = result;

@@ -106,11 +106,11 @@ namespace Tips.Master.Api.Controllers
                 if (basisOfApproval == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"BasisOfApproval with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"BasisOfApproval with id hasn't been found";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"BasisOfApproval with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    return Ok(serviceResponse);
                 }
                 else
                 {
@@ -120,7 +120,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Message = "Returned BasisOfApproval with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
@@ -130,7 +130,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
+                return StatusCode(500,serviceResponse);
             }
         }
 

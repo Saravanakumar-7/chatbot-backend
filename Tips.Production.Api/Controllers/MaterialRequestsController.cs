@@ -39,20 +39,20 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var getAllMaterialRequest = await _materialRequestRepository.GetAllMaterialRequest(pagingParameter, searchParammes);
+                var materialRequestDetails = await _materialRequestRepository.GetAllMaterialRequest(pagingParameter, searchParammes);
                 var metadata = new
                 {
-                    getAllMaterialRequest.TotalCount,
-                    getAllMaterialRequest.PageSize,
-                    getAllMaterialRequest.CurrentPage,
-                    getAllMaterialRequest.HasNext,
-                    getAllMaterialRequest.HasPreviuos
+                    materialRequestDetails.TotalCount,
+                    materialRequestDetails.PageSize,
+                    materialRequestDetails.CurrentPage,
+                    materialRequestDetails.HasNext,
+                    materialRequestDetails.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogError("Returned all listOfmaterials");
-                var result = _mapper.Map<IEnumerable<MaterialRequestsDto>>(getAllMaterialRequest);
+                var result = _mapper.Map<IEnumerable<MaterialRequestsDto>>(materialRequestDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all MaterialRequest Successfully";
                 serviceResponse.Success = true;
@@ -72,13 +72,24 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllMROpenStatus()
+        public async Task<IActionResult> GetAllMROpenStatus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParammes)
         {
             ServiceResponse<IEnumerable<MaterialRequestsDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestsDto>>();
 
             try
             {
-                var materialRequestDetails = await _materialRequestRepository.GetAllMRStatusOpen();
+                var materialRequestDetails = await _materialRequestRepository.GetAllMRStatusOpen(pagingParameter, searchParammes);
+
+                var metadata = new
+                {
+                    materialRequestDetails.TotalCount,
+                    materialRequestDetails.PageSize,
+                    materialRequestDetails.CurrentPage,
+                    materialRequestDetails.HasNext,
+                    materialRequestDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogError("Returned all getAllMaterialRequestStatusOpen");
                 var result = _mapper.Map<IEnumerable<MaterialRequestsDto>>(materialRequestDetails);

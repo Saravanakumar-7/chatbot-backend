@@ -38,24 +38,22 @@ namespace Tips.Production.Api.Repository
         {
             var materialRequests = FindAll().OrderByDescending(x => x.Id)
               .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.MRNumber.Contains(searchParammes.SearchValue)
-              || inv.ProjectNumber.Contains(searchParammes.SearchValue)))&& inv.MrStatus == MaterialStatus.open)
-              .Include(t => t.MaterialRequestItems)
-              .ThenInclude(v => v.MRStockDetails);
-
+              || inv.ProjectNumber.Contains(searchParammes.SearchValue))));
 
 
             return PagedList<MaterialRequests>.ToPagedList(materialRequests, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<MaterialRequests>> GetAllMRStatusOpen()
+        public async Task<PagedList<MaterialRequests>> GetAllMRStatusOpen(PagingParameter pagingParameter, SearchParamess searchParammes)
         {
             var materialRequestDetails = FindAll().OrderByDescending(x => x.Id)
-                .Where(x => x.MrStatus == MaterialStatus.open)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.MRNumber.Contains(searchParammes.SearchValue)
+              || inv.ProjectNumber.Contains(searchParammes.SearchValue))) && inv.MrStatus == MaterialStatus.open)
                 .Include(s => s.MaterialRequestItems)
-                .ThenInclude(m => m.MRStockDetails)
-                .ToList();
+                .ThenInclude(m => m.MRStockDetails);
 
-            return materialRequestDetails;
+
+            return PagedList<MaterialRequests>.ToPagedList(materialRequestDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<IEnumerable<MaterialRequests>> GetAllMRStatusClose()

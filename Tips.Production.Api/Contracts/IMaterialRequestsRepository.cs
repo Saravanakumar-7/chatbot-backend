@@ -9,7 +9,7 @@ namespace Tips.Production.Api.Contracts
     public interface IMaterialRequestsRepository : IRepositoryBase<MaterialRequests>
     {
         Task<PagedList<MaterialRequests>> GetAllMaterialRequest(PagingParameter pagingParameter, SearchParamess searchParammes);
-        Task<IEnumerable<MaterialRequests>> GetAllMRStatusOpen();
+        Task<PagedList<MaterialRequests>> GetAllMRStatusOpen(PagingParameter pagingParameter, SearchParamess searchParammes);
         Task<IEnumerable<MaterialRequests>> GetAllMRStatusClose();
         Task<MaterialRequests> GetMaterialRequestById(int id);
         Task<MaterialRequests> GetMaterialReqByMRNumber(string MRnumber);
