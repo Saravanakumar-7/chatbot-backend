@@ -245,7 +245,7 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside CreateItemPriceList action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateItemPriceList action: {ex.Message}{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
