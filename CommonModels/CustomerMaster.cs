@@ -117,7 +117,7 @@ namespace Entities
         public string? ApprovalBy { get; set; }
 
         public string? Upload { get; set; }
-
+        public string? ShippingMode { get; set; }
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }

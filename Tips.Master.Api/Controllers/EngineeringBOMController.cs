@@ -1220,13 +1220,23 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<EnggBomGroupController>
         [HttpGet]
-        public async Task<IActionResult> GetAllEnggBomGroup()
+        public async Task<IActionResult> GetAllEnggBomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<EnggBomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomGroupDto>>();
             try
             {
-                var listOfEnggBomGroup = await _repository.EnggBomGroupRepository.GetAllEnggBomGroup();
-                
+                var listOfEnggBomGroup = await _repository.EnggBomGroupRepository.GetAllEnggBomGroup(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    listOfEnggBomGroup.TotalCount,
+                    listOfEnggBomGroup.PageSize,
+                    listOfEnggBomGroup.CurrentPage,
+                    listOfEnggBomGroup.HasNext,
+                    listOfEnggBomGroup.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all EnggBomGroup");
                 var enggbomGroupEntity = _mapper.Map<IEnumerable<EnggBomGroupDto>>(listOfEnggBomGroup);
@@ -1856,9 +1866,7 @@ namespace Tips.Master.Api.Controllers
         {
             ServiceResponse<IEnumerable<ReleaseEnggBomDto>> serviceResponse = new ServiceResponse<IEnumerable<ReleaseEnggBomDto>>();
             try
-            {
-                // Encode the itemNumber parameter
-                //string encodedItemNumber = System.Web.HttpUtility.UrlEncode(itemNumber);
+            { 
 
                 var costingBomVersionDetails = await _enggBomRepository.GetAllEnggBomVersionListByItemNumber(itemNumber);
                 var result = _mapper.Map<IEnumerable<ReleaseEnggBomDto>>(costingBomVersionDetails);

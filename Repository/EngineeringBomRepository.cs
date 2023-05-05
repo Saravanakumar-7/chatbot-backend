@@ -227,9 +227,7 @@ namespace Repository
         //}
 
         public async Task<IEnumerable<EngineeringBom>> GetAllEnggBomVersionListByItemNumber(string itemNumber)
-        {
-            //var decodedItemNumber = System.Web.HttpUtility.UrlDecode(itemNumber);
-            //string decodedString = System.Net.WebUtility.UrlDecode(itemNumber);
+        { 
             var enggBomDetails = await _tipsMasterDbContext.EngineeringBoms
                 .Where(x => x.ItemNumber == itemNumber)
                 .ToListAsync();
@@ -595,19 +593,19 @@ namespace Repository
                 return getAllBomGroupList;
             }
 
-        //public async Task<PagedList<EnggBomGroup>> GetAllEnggBomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
-        //{
-        //    var enggBomGroupDetails = FindAll().OrderByDescending(x => x.Id)
-        //                             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BomGroupName.Contains(searchParams.SearchValue) ||
-        //                                inv.Remarks.Contains(searchParams.SearchValue))));
-
-        //    return PagedList<EnggBomGroup>.ToPagedList(enggBomGroupDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-        //}
-        public async Task<IEnumerable<EnggBomGroup>> GetAllEnggBomGroup()
+        public async Task<PagedList<EnggBomGroup>> GetAllEnggBomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-            var enggBomGroupDetails = FindAll().OrderByDescending(x => x.Id);
-            return enggBomGroupDetails;
+            var enggBomGroupDetails = FindAll().OrderByDescending(x => x.Id)
+                                     .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BomGroupName.Contains(searchParams.SearchValue) ||
+                                        inv.Remarks.Contains(searchParams.SearchValue))));
+
+            return PagedList<EnggBomGroup>.ToPagedList(enggBomGroupDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        //public async Task<IEnumerable<EnggBomGroup>> GetAllEnggBomGroup()
+        //{
+        //    var enggBomGroupDetails = FindAll().OrderByDescending(x => x.Id);
+        //    return enggBomGroupDetails;
+        //}
         public async Task<EnggBomGroup> GetEnggBomGroupById(int id)
             {
                 var EnggbomGroupDetailsbyId = await _tipsMasterDbContext.BomGroups.Where(x => x.Id == id).FirstOrDefaultAsync();
