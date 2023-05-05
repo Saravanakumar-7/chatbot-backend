@@ -11,7 +11,7 @@ namespace Contracts
 {
     public interface IEnggBomGroupRepository : IRepositoryBase<EnggBomGroup>
     {
-        Task<IEnumerable<EnggBomGroup>> GetAllEnggBomGroup();
+        Task<PagedList<EnggBomGroup>> GetAllEnggBomGroup(PagingParameter pagingParameter, SearchParames searchParams);
         Task<EnggBomGroup> GetEnggBomGroupById(int id);
         Task<IEnumerable<EnggBomGroup>> GetAllActiveEnggBomGroup();
         Task<int?> CreateEnggBomGroup(EnggBomGroup enggbomGroup);
