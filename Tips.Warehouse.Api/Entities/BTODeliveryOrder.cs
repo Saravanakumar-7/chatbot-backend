@@ -11,6 +11,9 @@ namespace Tips.Warehouse.Api.Entities
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }              
         public string SalesOrderNumber { get; set; }
+
+        [Precision(13, 1)]
+        public int? SalesOrderRevisionNumber { get; set; }
         public string? CustomerId { get; set; }
         public string? BTONumber { get; set; }        
         public int? SalesOrderId { get; set; }

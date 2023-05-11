@@ -12,6 +12,8 @@ namespace Entities.DTOs
         public int Id { get; set; }
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
+        public string? ItemDescription { get; set; }
+
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; }
         public string? CreatedBy { get; set; }
@@ -24,6 +26,8 @@ namespace Entities.DTOs
     {
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
+        public string? ItemDescription { get; set; }
+
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; }
 
@@ -33,6 +37,8 @@ namespace Entities.DTOs
         public int Id { get; set; }
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
+        public string? ItemDescription { get; set; }
+
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; } 
     }
@@ -40,6 +46,9 @@ namespace Entities.DTOs
     {
         public string ItemNumber { set; get; }
         public decimal[] ReleaseVersion { get; set; }
+        public string? ItemDescription { get; set; }
+
+
 
     }
     public class CostingBomRevisionNumberList

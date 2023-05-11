@@ -12,6 +12,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public string? QuoteNumber { get; set; }
+
+        [Precision(13, 1)]
+        public int? QuoteRevisionNumber { get; set; }
         public DateTime? OrderDate { get; set; }
         public string? OrderType { get; set; }
         public string? CustomerName { get; set; }
@@ -59,6 +62,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public string? ProjectNumber { get; set; }
         public string? QuoteNumber { get; set; }
+
+        [Precision(13, 1)]
+        public int? QuoteRevisionNumber { get; set; }
         public DateTime? OrderDate { get; set; }
         public string? OrderType { get; set; }
         public string? CustomerName { get; set; }
@@ -86,6 +92,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string? ProjectNumber { get; set; }
         public string? QuoteNumber { get; set; }
+
+        [Precision(13, 1)]
+        public int? QuoteRevisionNumber { get; set; }
         public DateTime? OrderDate { get; set; }
         public string? OrderType { get; set; }
         public string? CustomerName { get; set; }

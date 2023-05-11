@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -12,7 +13,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string ItemNumber { get; set; }
-        public string ItemType { get; set; }
+        public PartTypes ItemType { get; set; }
 
         [Required]
         public string ItemDescription { get; set; }
@@ -21,9 +22,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal UnitPrice { get; set; }
         public string UOC { get; set; }
         public string UOM { get; set; }
-        public int StockAvailable { get; set; }
+        public decimal StockAvailable { get; set; }
         public string Location { get; set; }
-        public string LocationStock { get; set; }
+        public decimal LocationStock { get; set; }
 
         [Precision(13, 3)]
         public decimal DispatchQty { get; set; }
@@ -43,7 +44,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ItemNumber { get; set; }
 
         [Required(ErrorMessage = "ItemType is required")]
-        public string ItemType { get; set; }
+        public PartTypes ItemType { get; set; }
 
         [Required]
         public string ItemDescription { get; set; }
@@ -59,13 +60,13 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string UOM { get; set; }
 
         [Required(ErrorMessage = "StockAvailable is required")]
-        public int StockAvailable { get; set; }
+        public decimal StockAvailable { get; set; }
 
         [Required(ErrorMessage = "Location is required")]
         public string Location { get; set; }
 
         [Required(ErrorMessage = "LocationStock is required")]
-        public string LocationStock { get; set; }
+        public decimal LocationStock { get; set; }
 
         [Required(ErrorMessage = "DispatchQty is required")]
         [Precision(13, 3)]
@@ -88,7 +89,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ItemNumber { get; set; }
 
         [Required(ErrorMessage = "ItemType is required")]
-        public string ItemType { get; set; }
+        public PartTypes ItemType { get; set; }
 
         [Required]
         public string ItemDescription { get; set; }
@@ -104,13 +105,13 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string UOM { get; set; }
 
         [Required(ErrorMessage = "StockAvailable is required")]
-        public int StockAvailable { get; set; }
+        public decimal StockAvailable { get; set; }
 
         [Required(ErrorMessage = "Location is required")]
         public string Location { get; set; }
 
         [Required(ErrorMessage = "LocationStock is required")]
-        public string LocationStock { get; set; }
+        public decimal LocationStock { get; set; }
 
         [Required(ErrorMessage = "DispatchQty is required")]
         [Precision(13, 3)]
