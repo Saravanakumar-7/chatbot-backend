@@ -13,5 +13,6 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> CreateCollectionTracker(CollectionTracker collectionTracker);
         Task<string> UpdateCollectionTracker(CollectionTracker collectionTracker);
         Task<string> DeleteCollectionTracker(CollectionTracker collectionTracker);
+        Task<List<OpenSalesOrderDetailsDto>> GetOpenSODetailsByCustomerId(string customerId);
     }
 }

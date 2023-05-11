@@ -92,14 +92,15 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
         public async Task<IActionResult> GetCollectionTrackerByCustomerId(string customerId)
         {
-            ServiceResponse<CollectionTrackerDto> serviceResponse = new ServiceResponse<CollectionTrackerDto>();
+            ServiceResponse<CollectionTrackerDetailsDto> serviceResponse = new ServiceResponse<CollectionTrackerDetailsDto>();
             try
             {
                 var collectionTrackerById = await _repository.GetSOCollectionTrackerByCustomerId(customerId);
-
+                var openSalesOrderDetails = await _repository.GetOpenSODetailsByCustomerId(customerId);
+                collectionTrackerById.OpenSalesOrderDetails = openSalesOrderDetails;
                 if (collectionTrackerById == null)
                 {
                     serviceResponse.Data = null;
@@ -112,7 +113,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned CollectionTracker with id: {customerId}");
-                    var result = _mapper.Map<CollectionTrackerDto>(collectionTrackerById);
+                    var result = _mapper.Map<CollectionTrackerDetailsDto>(collectionTrackerById);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned CollectionTrackerById Successfully";
                     serviceResponse.Success = true;
@@ -156,11 +157,10 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogError("Invalid CollectionTracker object sent from client.");
                     return BadRequest("Invalid model object");
                 }
-
-
+                 
                 var collectionTrackerItems = _mapper.Map<IEnumerable<SOBreakDown>>(collectionTrackerPostDto.SOBreakDown);
-               
-                var collectionTracker = _mapper.Map<CollectionTracker>(collectionTrackerPostDto);
+                 
+                 var collectionTracker = _mapper.Map<CollectionTracker>(collectionTrackerPostDto);
 
                 collectionTracker.SOBreakDown = collectionTrackerItems.ToList();
                

@@ -56,8 +56,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
        public int SalesOrderId { get; set; }
         public string SalesOrderNo { get; set; }
-        public decimal TotalValue { get; set; }
-        public decimal PendingValue { get; set; }
+        public decimal? TotalValue { get; set; }
+        public decimal? PendingValue { get; set; }
         public decimal AmountRecieved { get; set; }
     }
 
