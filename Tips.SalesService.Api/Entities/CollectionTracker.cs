@@ -3,6 +3,7 @@
     public class CollectionTracker
     {
         public int Id { get; set; }
+        public string CustomerId { get; set; }
         public string CustomerName { get; set; }
         public decimal TotalSumOfSOAmount { get; set; }
         public decimal AmountRecieved { get; set; }

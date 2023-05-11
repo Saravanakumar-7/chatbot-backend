@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
+using Tips.SalesService.Api.Entities.Dto;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -41,6 +43,26 @@ namespace Tips.SalesService.Api.Repository
                 .Include(c=>c.SOBreakDown)
                 .FirstOrDefaultAsync();
             return collectionTrackerDetailsById;
+        }
+
+        public async Task<CollectionTrackerDetailsDto> GetSOCollectionTrackerByCustomerId(string customerId)
+        {
+            var salesOrderTotalValue = _tipsSalesServiceDbContext.SalesOrders.Where(x => x.CustomerId == customerId).Sum(s => s.Total);
+
+            var collectionDetails = _tipsSalesServiceDbContext.CollectionTrackers.Where(x => x.CustomerId == customerId).Select(x=>x.AlreadyRecieved);
+
+                var alreadyRecieved = Convert.ToInt32(salesOrderTotalValue) - Convert.ToInt32(collectionDetails);
+
+                var collectiveTrackerDetails = await _tipsSalesServiceDbContext.CollectionTrackers
+                                .Select(s => new CollectionTrackerDetailsDto()
+                                {
+                                    TotalSumOfSOAmount = salesOrderTotalValue,
+                                    AlreadyRecieved = Convert.ToDecimal(alreadyRecieved)
+
+                                }).Distinct().FirstOrDefaultAsync();
+            
+            return collectiveTrackerDetails;
+
         }
 
         public async Task<string> UpdateCollectionTracker(CollectionTracker collectionTracker)
