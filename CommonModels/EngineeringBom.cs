@@ -14,7 +14,9 @@ namespace Entities
         public int Id { get; set; }
        public string ReleaseFor { get; set; }
        public string ItemNumber { get; set; }
-       public decimal ReleaseVersion { get; set; }
+        public string? ItemDescription { get; set; }
+
+        public decimal ReleaseVersion { get; set; }
        public string ReleaseNote { get; set; }
         [DefaultValue(false)]
         public bool IsReleaseCompleted { get; set; }

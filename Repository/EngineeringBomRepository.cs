@@ -193,6 +193,7 @@ namespace Repository
             .Select(group => new
             {
                 ItemNumber = group.Key,
+                ItemDescription = group.Select(bom => bom.ItemDescription).FirstOrDefault(),
                 RevisionNumbers = group.Select(bom => bom.RevisionNumber).ToArray()
             })
             .ToList();
@@ -201,8 +202,9 @@ namespace Repository
            .Select(bom => new EnggBomItemRevisionList
             {
                 ItemNumber = bom.ItemNumber,
-                RevisionNumber = bom.RevisionNumbers
-            }).ToList();
+                RevisionNumber = bom.RevisionNumbers,
+               ItemDescription = bom.ItemDescription
+           }).ToList();
 
             return enggBomItemNumberList;
         }
@@ -352,6 +354,7 @@ namespace Repository
             .Select(group => new
             {
                 ItemNumber = group.Key,
+                ItemDescription = group.Select(bom=>bom.ItemDescription).FirstOrDefault(),
                 RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
             })
             .ToList();
@@ -360,6 +363,7 @@ namespace Repository
            .Select(bom => new CostingBomItemRevisionList
            {
                ItemNumber = bom.ItemNumber,
+               ItemDescription = bom.ItemDescription,
                ReleaseVersion = bom.RevisionNumbers
            }).ToList();
 
@@ -427,6 +431,7 @@ namespace Repository
                 .Select(group => new
                 {
                     ItemNumber = group.Key,
+                    ItemDescription = group.Select(bom => bom.ItemDescription).FirstOrDefault(),
                     RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
                 })
                 .ToList();
@@ -435,6 +440,7 @@ namespace Repository
                .Select(bom => new GetAllReleaseProductBomItemNumberVersionList
                {
                    ItemNumber = bom.ItemNumber,
+                   ItemDescription = bom.ItemDescription,
                    ReleaseVersion = bom.RevisionNumbers
                }).ToList();
 

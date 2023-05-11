@@ -12,6 +12,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? BTONumber { get; set; }       
         public int? SalesOrderId { get; set; }
         public string SalesOrderNumber { get; set; }
+
+        [Precision(13, 1)]
+        public int? SalesOrderRevisionNumber { get; set; }
         public string? PONumber { get; set; }
         public string? IssuedTo { get; set; }
         public DateTime? DODate { get; set; }
@@ -32,6 +35,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? CustomerId { get; set; }
         public int? SalesOrderId { get; set; }
         public string SalesOrderNumber { get; set; }
+
+        [Precision(13, 1)]
+        public int? SalesOrderRevisionNumber { get; set; }
         public string? PONumber { get; set; }
         public string? IssuedTo { get; set; }
         public DateTime? DODate { get; set; }
@@ -43,6 +49,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public int Id { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
+
+        [Precision(13, 1)]
+        public int? SalesOrderRevisionNumber { get; set; }
         public string? BTONumber { get; set; }
         public string? CustomerId { get; set; }
         public string? PONumber { get; set; }

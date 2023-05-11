@@ -106,6 +106,7 @@ namespace Entities.DTOs
     {
         public string ItemNumber { set; get; }
         public decimal[] RevisionNumber { get; set; }
+        public string? ItemDescription { set; get; }
 
     }
     public class EnggBomRevisionNumberList

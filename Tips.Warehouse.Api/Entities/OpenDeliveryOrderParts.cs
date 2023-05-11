@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Entities;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Warehouse.Api.Entities
@@ -8,14 +9,15 @@ namespace Tips.Warehouse.Api.Entities
         [Key]
         public int Id { get; set; }
         public string ItemNumber { get; set; }
+        public string ODONumber { get; set; }
         public string ItemDescription { get; set; }
-        public string ItemType { get; set; }
-        public Decimal UnitPrice { get; set; }
+        public PartTypes ItemType { get; set; }
+        public decimal UnitPrice { get; set; }
         public string UOC { get; set; }
         public string UOM { get; set; }
-        public int StockAvailable { get; set; }
+        public decimal StockAvailable { get; set; }
         public string Location { get; set; }
-        public string LocationStock { get; set; }
+        public decimal LocationStock { get; set; }
         public decimal DispatchQty { get; set; }
         public string Remarks { get; set; }
         public string? SerialNo { get; set; }

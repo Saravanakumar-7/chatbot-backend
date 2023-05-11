@@ -45,6 +45,8 @@ namespace Entities.DTOs
     {
         public string ItemNumber { set; get; }
         public decimal[] ReleaseVersion { get; set; }
+        public string? ItemDescription { get; set; }
+
 
     }
     public class ProductionBomRevisionNumber

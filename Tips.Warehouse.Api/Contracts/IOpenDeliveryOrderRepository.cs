@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
@@ -19,6 +20,11 @@ namespace Tips.Warehouse.Api.Contracts
         Task<string> DeleteOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder);
 
         Task<IEnumerable<OpenDeliveryOrderIdNameList>> GetAllOpenDeliveryOrderIdNameList();
+
+        Task<IEnumerable<OpenDeliveryOrder>> GetAllOpenDeliveryOrderWithItems(OpenDeliveryOrderSearchDto OpenDeliveryOrderSearch);
+        Task<IEnumerable<OpenDeliveryOrder>> SearchOpenDeliveryOrder([FromQuery] SearchParames searchParames);
+        Task<IEnumerable<OpenDeliveryOrder>> SearchOpenDeliveryOrderDate([FromQuery] SearchsDateParms searchsDateParms);
+
 
     }
 

@@ -44,7 +44,59 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
+        public async Task<IEnumerable<OpenDeliveryOrder>> SearchOpenDeliveryOrderDate([FromQuery] SearchsDateParms searchsDateParms)
+        {
+            var openDeliveryOrderDetails = _tipsWarehouseDbContext.OpenDeliveryOrders
+            .Where(inv => ((inv.CreatedOn >= searchsDateParms.SearchFromDate &&
+            inv.CreatedOn <= searchsDateParms.SearchToDate
+            )))
+            .Include(itm => itm.OpenDeliveryOrderParts)
+            .ToList();
+            return openDeliveryOrderDetails;
+        }
+        public async Task<IEnumerable<OpenDeliveryOrder>> GetAllOpenDeliveryOrderWithItems(OpenDeliveryOrderSearchDto openDeliveryOrderSearch)
+        {
+            using (var context = _tipsWarehouseDbContext)
+            {
+                var query = _tipsWarehouseDbContext.OpenDeliveryOrders.Include("OpenDeliveryOrderParts");
+                if (openDeliveryOrderSearch != null || (openDeliveryOrderSearch.DOType.Any())
+                 && openDeliveryOrderSearch.ODONumber.Any() && openDeliveryOrderSearch.CustomerName.Any()
+                 && openDeliveryOrderSearch.Description.Any() && openDeliveryOrderSearch.IssuedTo.Any())
 
+                {
+                    query = query.Where
+                    (po => (openDeliveryOrderSearch.CustomerName.Any() ? openDeliveryOrderSearch.CustomerName.Contains(po.CustomerName) : true)
+                   && (openDeliveryOrderSearch.Description.Any() ? openDeliveryOrderSearch.Description.Contains(po.Description) : true)
+                   && (openDeliveryOrderSearch.ODONumber.Any() ? openDeliveryOrderSearch.ODONumber.Contains(po.OpenDONumber) : true)
+                   && (openDeliveryOrderSearch.DOType.Any() ? openDeliveryOrderSearch.DOType.Contains(po.DOType) : true)
+                   && (openDeliveryOrderSearch.IssuedTo.Any() ? openDeliveryOrderSearch.IssuedTo.Contains(po.IssuedTo) : true));
+                }
+                return query.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<OpenDeliveryOrder>> SearchOpenDeliveryOrder([FromQuery] SearchParames searchParames)
+        {
+            using (var context = _tipsWarehouseDbContext)
+            {
+                var query = _tipsWarehouseDbContext.OpenDeliveryOrders.Include("OpenDeliveryOrderParts");
+                if (!string.IsNullOrEmpty(searchParames.SearchValue))
+                {
+                    query = query.Where(po => po.OpenDONumber.Contains(searchParames.SearchValue)
+                    || po.CustomerName.Contains(searchParames.SearchValue)
+                    || po.CustomerAliasName.Contains(searchParames.SearchValue)
+                    || po.CustomerId.Contains(searchParames.SearchValue)
+                    || po.DOType.Contains(searchParames.SearchValue)
+                    || po.IssuedTo.Contains(searchParames.SearchValue)
+                    || po.OpenDeliveryOrderParts.Any(s => s.ItemNumber.Contains(searchParames.SearchValue) ||
+                    s.ItemDescription.Contains(searchParames.SearchValue)
+                    || s.ItemType.ToString().Contains(searchParames.SearchValue)
+                    || s.Location.Contains(searchParames.SearchValue)
+                    ));
+                }
+                return query.ToList();
+            }
+        }
         public async Task<PagedList<OpenDeliveryOrder>> GetAllOpenDeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
 
