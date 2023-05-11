@@ -31,6 +31,26 @@ namespace Tips.SalesService.Api.Repository
             return result.Id;
         }
 
+        public async Task<string> GenerateQuoteNumber()
+        {
+            using var transaction = await _tipsSalesServiceDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var quoteNumberEntity = await _tipsSalesServiceDbContext.QuoteNumbers.SingleAsync();
+                quoteNumberEntity.CurrentValue += 1;
+                _tipsSalesServiceDbContext.Update(quoteNumberEntity);
+                await _tipsSalesServiceDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"Q-{quoteNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
         public async Task<int?> GetQuoteNumberAutoIncrementCount(DateTime date)
         {
             var getQuoteNumberAutoIncrementCount = _tipsSalesServiceDbContext.Quotes.Where(x => x.CreatedOn == date.Date).Count();

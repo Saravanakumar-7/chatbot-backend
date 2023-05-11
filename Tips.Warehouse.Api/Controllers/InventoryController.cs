@@ -164,11 +164,11 @@ namespace Tips.Warehouse.Api.Controllers
                 if (InventoryDetails == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Inventory with itemNumber: {itemNumber}, is invalid";
+                    serviceResponse.Message = $"Inventory with this itemNumber hasn't been found";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"Inventory with itemNumber: {itemNumber}, is invalid");
-                    return NotFound(serviceResponse);
+                    return Ok(serviceResponse);
                 }
                 else
                 {

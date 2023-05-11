@@ -17,6 +17,7 @@ namespace Tips.Grin.Api.Contracts
         Task<Grins> GetGrinById(int id);
         Task<IEnumerable<Grins>> GetAllActiveGrin();
         Task<int?> CreateGrin(Grins grins);
+        Task<string> GenerateGrinNumber();
         Task<int?> GetGrinNumberAutoIncrementCount(DateTime date);
         Task<Grins> GetGrinByGrinNo(string grinNumber);
         Task<string> UpdateGrin(Grins grins);

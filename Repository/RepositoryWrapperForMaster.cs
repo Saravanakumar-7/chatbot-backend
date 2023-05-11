@@ -110,11 +110,24 @@ namespace Repository
         private IRegistrationFormRepository? _registrationFormRepo;
         private IUserAccessRepository? _userAccessRepository;
         private IFormsAccessRepository? _formsAccessRepository;
-
+        private IOrderTypeRepository? _orderTypeRepository;
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
         }
+
+        public IOrderTypeRepository OrderTypeRepository
+        {
+            get
+            {
+                if (_orderTypeRepository == null)
+                {
+                    _orderTypeRepository = new OrderTypeRepository(_tipsMasterDbContext);
+                }
+                return _orderTypeRepository;
+            }
+        }
+
         public IEnggBomRepository EnggBomRepository
         {
             get

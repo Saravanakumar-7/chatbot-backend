@@ -36,6 +36,28 @@ namespace Tips.Purchase.Api.Repository
 
             return getPRNumberAutoIncrementCount;
         }
+
+        public async Task<string> GeneratePRNumber()
+        {
+            using var transaction = await _tipsPurchaseDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var prNumberEntity = await _tipsPurchaseDbContext.PRNumbers.SingleAsync();
+                prNumberEntity.CurrentValue += 1;
+                _tipsPurchaseDbContext.Update(prNumberEntity);
+                await _tipsPurchaseDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"PR-{prNumberEntity.CurrentValue:D5}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
+
         public async Task<IEnumerable<PurchaseRequisition>> SearchPurchaseRequisition([FromQuery] SearchParamess searchParammes)
         {
             using (var context = _tipsPurchaseDbContext)

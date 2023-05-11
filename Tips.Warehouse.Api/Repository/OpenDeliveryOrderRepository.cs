@@ -37,6 +37,26 @@ namespace Tips.Warehouse.Api.Repository
             return getOpenDeliveryOrderDetailsByIds;
         }
 
+        public async Task<string> GenerateODONumber()
+        {
+            using var transaction = await _tipsWarehouseDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var odoNumberEntity = await _tipsWarehouseDbContext.ODONumbers.SingleAsync();
+                odoNumberEntity.CurrentValue += 1;
+                _tipsWarehouseDbContext.Update(odoNumberEntity);
+                await _tipsWarehouseDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"ODO-{odoNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
         public async Task<string> DeleteOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder)
         {
             Delete(openDeliveryOrder);

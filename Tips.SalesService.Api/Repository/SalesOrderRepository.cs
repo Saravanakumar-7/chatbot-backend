@@ -157,7 +157,7 @@ namespace Tips.SalesService.Api.Repository
                 _tipsSalesServiceDbContext.Update(poNumberEntity);
                 await _tipsSalesServiceDbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-                return $"SO-{poNumberEntity.CurrentValue:D5}";
+                return $"SO-{poNumberEntity.CurrentValue:D6}";
             }
             catch (Exception ex)
             {

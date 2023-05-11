@@ -23,13 +23,13 @@ namespace Tips.Production.Api.Entities
         public DbSet<MaterialReturnNote> MaterialReturnNotes { get; set; }
 
         public DbSet<MRNWarehouseDetails> MRNWarehouses { get; set; }
-
+        public DbSet<MRNNumber> MRNNumbers { get; set; }
         public DbSet<MaterialReturnNoteItem> MaterialReturnNoteItems { get; set; }
         public DbSet<MaterialIssue> MaterialIssue { get; set; }
 
         public DbSet<MaterialIssueItem> MaterialIssueItems { get; set; }
         public DbSet<OQC> oQCs { get; set; }
-
+        public DbSet<MRNumber> MRNumbers { get; set; }
         public DbSet<MaterialRequests> MaterialRequests { get; set; }
         public DbSet<MRStockDetails> MRStockDetails { get; set; }
         public DbSet<MaterialRequestItems> MaterialRequestItems { get; set; }

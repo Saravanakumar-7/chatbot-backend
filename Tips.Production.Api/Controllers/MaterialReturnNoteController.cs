@@ -239,20 +239,24 @@ namespace Tips.Production.Api.Controllers
 
 
 
-                var newcount = await _materialReturnNoteRepository.GetMRNumberAutoIncrementCount(date);
+                //var newcount = await _materialReturnNoteRepository.GetMRNumberAutoIncrementCount(date);
 
-                if (newcount > 0)
-                {
-                    var number = newcount + 1;
-                    string e = String.Format("{0:D4}", number);
-                    materialReturnNote.MRNNumber = days + months + years + "MRN" + (e);
-                }
-                else
-                {
-                    var count = 1;
-                    var e = count.ToString("D4");
-                    materialReturnNote.MRNNumber = days + months + years + "MRN" + (e);
-                }
+                //if (newcount > 0)
+                //{
+                //    var number = newcount + 1;
+                //    string e = String.Format("{0:D4}", number);
+                //    materialReturnNote.MRNNumber = days + months + years + "MRN" + (e);
+                //}
+                //else
+                //{
+                //    var count = 1;
+                //    var e = count.ToString("D4");
+                //    materialReturnNote.MRNNumber = days + months + years + "MRN" + (e);
+                //}
+
+                var dateFormat = days + months + years;
+                var mrnNumber = await _materialReturnNoteRepository.GenerateMRNNumber();
+                materialReturnNote.MRNNumber = dateFormat + mrnNumber;
 
                 if (materialReturnNoteItemDto != null)
                 {

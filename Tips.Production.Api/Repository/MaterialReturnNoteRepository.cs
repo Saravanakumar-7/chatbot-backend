@@ -35,6 +35,26 @@ namespace Tips.Production.Api.Repository
             return mRNumberAutoIncrementCount;
         }
 
+        public async Task<string> GenerateMRNNumber()
+        {
+            using var transaction = await _tipsProductionDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var mrnNumberEntity = await _tipsProductionDbContext.MRNNumbers.SingleAsync();
+                mrnNumberEntity.CurrentValue += 1;
+                _tipsProductionDbContext.Update(mrnNumberEntity);
+                await _tipsProductionDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"MRN-{mrnNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
         public async Task<string> DeleteMaterialReturnNote(MaterialReturnNote materialReturnNote)
         {
             Delete(materialReturnNote);

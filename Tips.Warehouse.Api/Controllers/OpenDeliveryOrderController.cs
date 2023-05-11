@@ -7,6 +7,7 @@ using Tips.Warehouse.Api.Entities.DTOs;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Contracts;
 using Newtonsoft.Json;
+using Tips.Warehouse.Api.Repository;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -147,18 +148,22 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var newcount = await _repository.GetODONumberAutoIncrementCount(date);
 
-                if (newcount > 0)
-                {
-                    var number = newcount + 1;
-                    string e = String.Format("{0:D4}", number);
-                    openDeliveryorder.OpenDONumber = days + months + years + "ODO" + (e);
-                }
-                else
-                {
-                    var count = 1;
-                    var e = count.ToString("D4");
-                    openDeliveryorder.OpenDONumber = days + months + years + "ODO" + (e);
-                }
+                //if (newcount > 0)
+                //{
+                //    var number = newcount + 1;
+                //    string e = String.Format("{0:D4}", number);
+                //    openDeliveryorder.OpenDONumber = days + months + years + "ODO" + (e);
+                //}
+                //else
+                //{
+                //    var count = 1;
+                //    var e = count.ToString("D4");
+                //    openDeliveryorder.OpenDONumber = days + months + years + "ODO" + (e);
+                //}
+
+                var dateFormat = days + months + years;
+                var odoNumber = await _repository.GenerateODONumber();
+                openDeliveryorder.OpenDONumber = dateFormat + odoNumber;
 
                 await _repository.CreateOpenDeliveryOrder(openDeliveryorder);
 

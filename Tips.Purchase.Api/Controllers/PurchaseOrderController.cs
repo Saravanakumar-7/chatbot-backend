@@ -467,11 +467,11 @@ namespace Tips.Purchase.Api.Controllers
                 var poDocumentUploadDtoList = new List<DocumentUpload>();
 
 
-                //var date = DateTime.Now;
-                //purchaseOrderPostDto.QuotationDate = date;
-                //var days = Convert.ToString(date.Day.ToString("D2"));
-                //var months = Convert.ToString(date.Month.ToString("D2"));
-                //var years = Convert.ToString(date.ToString("yy"));
+                var date = DateTime.Now;
+                purchaseOrderPostDto.QuotationDate = date;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
 
                 //var newcount = await _repository.GetPONumberAutoIncrementCount(date);
 
@@ -488,8 +488,9 @@ namespace Tips.Purchase.Api.Controllers
                 //    purchaseOrderDetails.PONumber = days + months + years + "PO" + (e);
                 //}
 
+                var dateFormat = days + months + years;
                 var poNumber = await _repository.GeneratePONumber();
-                purchaseOrderDetails.PONumber = poNumber;
+                purchaseOrderDetails.PONumber = dateFormat + poNumber;
 
                 //// Po Upload
 

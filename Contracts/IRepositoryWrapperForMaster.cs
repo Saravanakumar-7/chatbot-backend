@@ -133,7 +133,7 @@ namespace Contracts
         IRegistrationFormRepository RegistrationFormRepository { get; }
         IUserAccessRepository UserAccessRepository { get; }
         IFormsAccessRepository FormsAccessRepository { get; }
-
+        IOrderTypeRepository OrderTypeRepository { get; }
     void SaveAsync();
     }
 }

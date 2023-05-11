@@ -26,6 +26,27 @@ namespace Tips.SalesService.Api.Repository
             var result = await Create(request);
             return result.Id;
         }
+
+        public async Task<string> GenerateMRNumber()
+        {
+            using var transaction = await _tipsSalesServiceDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var mrNumberEntity = await _tipsSalesServiceDbContext.MRNumbers.SingleAsync();
+                mrNumberEntity.CurrentValue += 1;
+                _tipsSalesServiceDbContext.Update(mrNumberEntity);
+                await _tipsSalesServiceDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"MR-{mrNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
         public async Task<int?> GetMRNumberAutoIncrementCount(DateTime date)
         {
             var getMRNumberAutoIncrementCount = _tipsSalesServiceDbContext.MaterialRequests.Where(x => x.CreatedOn == date.Date).Count();

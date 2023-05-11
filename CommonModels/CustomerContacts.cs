@@ -34,7 +34,7 @@ namespace Entities
 
         public string? AlternameMobileNumber { get; set; }
         public string? AlternateMobileCountryCode { get; set; }
-        public string? Skypeld { get; set; }
+        public string? SkypeId { get; set; }
         public bool IsActive { get; set; } = true;
 
 

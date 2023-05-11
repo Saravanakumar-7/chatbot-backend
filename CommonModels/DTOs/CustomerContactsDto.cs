@@ -43,7 +43,7 @@ namespace Entities.DTOs
         public string? Extension { get; set; }
 
         public string? Language { get; set; }
-        public string? Skypeld { get; set; }
+        public string? SkypeId { get; set; }
         
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -83,7 +83,7 @@ namespace Entities.DTOs
         public string? Email { get; set; }
 
         public string? Extension { get; set; }
-        public string? Skypeld { get; set; }
+        public string? SkypeId { get; set; }
         public string? Language { get; set; }
        
 
@@ -123,7 +123,7 @@ namespace Entities.DTOs
         public string? Email { get; set; }
 
         public string? Extension { get; set; }
-        public string? Skypeld { get; set; }
+        public string? SkypeId { get; set; }
         public string? Language { get; set; }
         
 

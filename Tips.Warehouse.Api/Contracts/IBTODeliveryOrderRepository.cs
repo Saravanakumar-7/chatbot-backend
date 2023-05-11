@@ -11,7 +11,7 @@ namespace Tips.Warehouse.Api.Contracts
     {
         Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrders(PagingParameter pagingParameter, SearchParams searchParams);
         Task<BTODeliveryOrder> GetBTODeliveryOrderById(int id);
-
+        Task<string> GenerateBTONumber();
         Task<IEnumerable<ListOfBtoNumberDetails>> GetBtoNumberListByCustomerId(string customerLeadId);
         Task<BTODeliveryOrder> GetBtoDetailsByBtoNo(string BTONumber);
 

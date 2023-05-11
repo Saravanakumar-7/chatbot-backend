@@ -175,10 +175,10 @@ namespace Tips.SalesService.Api.Controllers
                 //createSalesOrder.SalesOrdersItems = salesOrderItemsList;
 
 
-                //var date = DateTime.Now;
-                //var days = Convert.ToString(date.Day.ToString("D2"));
-                //var months = Convert.ToString(date.Month.ToString("D2"));
-                //var years = Convert.ToString(date.ToString("yy"));
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
 
 
 
@@ -196,8 +196,10 @@ namespace Tips.SalesService.Api.Controllers
                 //    var e = count.ToString("D4");
                 //    createSalesOrder.SalesOrderNumber = days + months + years + "SO" + (e);
                 //}
+
+                var dateFormat = days + months + years;
                 var soNumber = await _repository.GenerateSONumber();
-                createSalesOrder.SalesOrderNumber = soNumber;
+                createSalesOrder.SalesOrderNumber = dateFormat + soNumber;
 
                 if (salesOrderItemsDto != null)
                 {

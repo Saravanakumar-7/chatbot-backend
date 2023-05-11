@@ -33,6 +33,27 @@ namespace Tips.Warehouse.Api.Repository
 
             return getBTODeliveryOrderDetailsByIds;
         }
+
+        public async Task<string> GenerateDONumber()
+        {
+            using var transaction = await _tipsWarehouseDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var doNumberEntity = await _tipsWarehouseDbContext.DONumbers.SingleAsync();
+                doNumberEntity.CurrentValue += 1;
+                _tipsWarehouseDbContext.Update(doNumberEntity);
+                await _tipsWarehouseDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"DO-{doNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
         public async Task<string> DeleteDeliveryOrder(DeliveryOrder deliveryOrder)
         {
             Delete(deliveryOrder);

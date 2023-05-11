@@ -238,28 +238,32 @@ namespace Tips.SalesService.Api.Controllers
                     var quoteSpecialTermslist = _mapper.Map<IEnumerable<QuoteSpecialTerms>>(quotePostDto.QuoteSpecialTermsPostDtos);
                     var quote = _mapper.Map<Quote>(quotePostDto);
 
-                    var date = DateTime.Now;
-                    var days = Convert.ToString(date.Day.ToString("D2"));
-                    var months = Convert.ToString(date.Month.ToString("D2"));
-                    var years = Convert.ToString(date.ToString("yy"));
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
 
 
-                    var newcount = await _repository.GetQuoteNumberAutoIncrementCount(date);
+                //var newcount = await _repository.GetQuoteNumberAutoIncrementCount(date);
 
-                    if (newcount > 0)
-                    {
-                        var number = newcount + 1;
-                        string e = String.Format("{0:D4}", number);
-                        quote.QuoteNumber = days + months + years + "QT" + (e);
-                    }
-                    else
-                    {
-                        var count = 1;
-                        var e = count.ToString("D4");
-                        quote.QuoteNumber = days + months + years + "QT" + (e);
-                    }
+                //if (newcount > 0)
+                //{
+                //    var number = newcount + 1;
+                //    string e = String.Format("{0:D4}", number);
+                //    quote.QuoteNumber = days + months + years + "QT" + (e);
+                //}
+                //else
+                //{
+                //    var count = 1;
+                //    var e = count.ToString("D4");
+                //    quote.QuoteNumber = days + months + years + "QT" + (e);
+                //}
 
-                    quote.QuoteGenerals = quoteGeneralList.ToList();
+                var dateFormat = days + months + years;
+                var quoteNumber = await _repository.GenerateQuoteNumber();
+                quote.QuoteNumber = dateFormat + quoteNumber;
+
+                quote.QuoteGenerals = quoteGeneralList.ToList();
                     quote.QuoteAdditionalCharges = quoteAdditionalChargesList.ToList();
                     quote.QuoteOtherTerms = quoteOtherTermsList.ToList();
                     quote.QuoteRFQNotes = quoteRFQNotesList.ToList();

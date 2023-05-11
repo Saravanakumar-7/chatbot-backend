@@ -16,7 +16,7 @@ namespace Entities
         public DbSet<LeadTime> LeadTimes { get; set; }
         public DbSet<MaterialType>? MaterialTypes { get; set; }
         public DbSet<ProcurementType>? ProcurementTypes { get; set; }
-
+        public DbSet<OrderType>? OrderTypes { get; set; }
         public DbSet<ShipmentInstructions> ShipmentInstructions { get; set; }
         public DbSet<Warehouse> Warehouse { get; set; }
         public DbSet<Category> Category { get; set; }

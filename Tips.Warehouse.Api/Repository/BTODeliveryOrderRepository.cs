@@ -39,6 +39,27 @@ namespace Tips.Warehouse.Api.Repository
 
             return getBTONumberAutoIncrementCount;
         }
+
+        public async Task<string> GenerateBTONumber()
+        {
+            using var transaction = await _tipsWarehouseDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var btoNumberEntity = await _tipsWarehouseDbContext.BTONumbers.SingleAsync();
+                btoNumberEntity.CurrentValue += 1;
+                _tipsWarehouseDbContext.Update(btoNumberEntity);
+                await _tipsWarehouseDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"BTO-{btoNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
         public async Task<string> DeleteBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder)
         {
             Delete(bTODeliveryOrder);

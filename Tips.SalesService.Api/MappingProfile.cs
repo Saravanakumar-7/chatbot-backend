@@ -278,8 +278,15 @@ namespace Tips.SalesService.Api
             CreateMap<SalesOrderItems, SalesOrderDispatchQtyDto>().ReverseMap();
   
             CreateMap<ItemDetailsForShopOrderDto, ProductionBomRevisionNumber>().ReverseMap();
-            
 
+
+            CreateMap<CollectionTracker, CollectionTrackerDto>().ReverseMap();
+            CreateMap<CollectionTracker, CollectionTrackerPostDto>().ReverseMap();
+            CreateMap<CollectionTracker, CollectionTrackerUpdateDto>().ReverseMap();
+
+            CreateMap<SOBreakDown, SOBreakDownDto>().ReverseMap();
+            CreateMap<SOBreakDown, SOBreakDownPostDto>().ReverseMap();
+            CreateMap<SOBreakDown, SOBreakDownUpdateDto>().ReverseMap();
         }
     }
 }

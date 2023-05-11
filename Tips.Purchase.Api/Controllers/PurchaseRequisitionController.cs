@@ -354,20 +354,24 @@ namespace Tips.Purchase.Api.Controllers
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
 
-                var newcount = await _repository.GetPRNumberAutoIncrementCount(date);
+                //var newcount = await _repository.GetPRNumberAutoIncrementCount(date);
 
-                if (newcount > 0)
-                {
-                    var number = newcount + 1;
-                    string e = String.Format("{0:D4}", number);
-                    purchaseRequisitionDetails.PrNumber = days + months + years + "PR" + (e);
-                }
-                else
-                {
-                    var count = 1;
-                    var e = count.ToString("D4");
-                    purchaseRequisitionDetails.PrNumber = days + months + years + "PR" + (e);
-                }
+                //if (newcount > 0)
+                //{
+                //    var number = newcount + 1;
+                //    string e = String.Format("{0:D4}", number);
+                //    purchaseRequisitionDetails.PrNumber = days + months + years + "PR" + (e);
+                //}
+                //else
+                //{
+                //    var count = 1;
+                //    var e = count.ToString("D4");
+                //    purchaseRequisitionDetails.PrNumber = days + months + years + "PR" + (e);
+                //}
+
+                var dateFormat = days + months + years;
+                var prNumber = await _repository.GeneratePRNumber();
+                purchaseRequisitionDetails.PrNumber = dateFormat + prNumber;
 
 
                 //// Pr Upload
@@ -376,7 +380,7 @@ namespace Tips.Purchase.Api.Controllers
                 foreach (var prUploadDetail in prUploadDetails)
                 {
                     var fileContent = prUploadDetail.FileByte;
-                    var prNumber = purchaseRequisitionDetails.PrNumber;
+                    var prNumbers = purchaseRequisitionDetails.PrNumber;
                     string fileName = prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
@@ -394,7 +398,7 @@ namespace Tips.Purchase.Api.Controllers
                             FileName = fileName,
                             FileExtension = FileExt,
                             FilePath = filePath,
-                            ParentNumber = prNumber,
+                            ParentNumber = prNumbers,
                             DocumentFrom = "PRDocument",
                         };
 

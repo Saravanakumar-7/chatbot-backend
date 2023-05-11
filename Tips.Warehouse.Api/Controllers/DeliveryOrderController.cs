@@ -277,20 +277,25 @@ namespace Tips.Warehouse.Api.Controllers
 
 
 
-                var newcount = await _repository.GetDONumberAutoIncrementCount(date);
+                //var newcount = await _repository.GetDONumberAutoIncrementCount(date);
 
-                if (newcount > 0)
-                {
-                    var number = newcount + 1;
-                    string e = String.Format("{0:D4}", number);
-                    deliveryOrder.DeliveryOrderNumber = days + months + years + "DO" + (e);
-                }
-                else
-                {
-                    var count = 1;
-                    var e = count.ToString("D4");
-                    deliveryOrder.DeliveryOrderNumber = days + months + years + "DO" + (e);
-                }
+                //if (newcount > 0)
+                //{
+                //    var number = newcount + 1;
+                //    string e = String.Format("{0:D4}", number);
+                //    deliveryOrder.DeliveryOrderNumber = days + months + years + "DO" + (e);
+                //}
+                //else
+                //{
+                //    var count = 1;
+                //    var e = count.ToString("D4");
+                //    deliveryOrder.DeliveryOrderNumber = days + months + years + "DO" + (e);
+                //}
+
+                var dateFormat = days + months + years;
+                var doNumber = await _repository.GenerateDONumber();
+                deliveryOrder.DeliveryOrderNumber = dateFormat + doNumber;
+
                 await _repository.CreateDeliveryOrder(deliveryOrder);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;

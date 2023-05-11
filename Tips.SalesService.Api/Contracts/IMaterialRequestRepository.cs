@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<PagedList<MaterialRequest>> GetAllMaterialRequest(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<MaterialRequest> GetMaterialRequestById(int id);
         Task<MaterialRequest> GetMaterialReqByMRNumber(string MRnumber);
+        Task<string> GenerateMRNumber();
         Task<int?> GetMRNumberAutoIncrementCount(DateTime date);
         Task<int?> CreateMaterialRequest(MaterialRequest request);
         Task<string> UpdateMaterialRequest(MaterialRequest request);

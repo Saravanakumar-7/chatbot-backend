@@ -38,6 +38,27 @@ namespace Tips.Warehouse.Api.Repository
 
             return getInvoiceNumberAutoIncrementCount;
         }
+
+        public async Task<string> GenerateInvoiceNumber()
+        {
+            using var transaction = await _tipsWarehouseDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var invoiceNumberEntity = await _tipsWarehouseDbContext.InvoiceNumbers.SingleAsync();
+                invoiceNumberEntity.CurrentValue += 1;
+                _tipsWarehouseDbContext.Update(invoiceNumberEntity);
+                await _tipsWarehouseDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"IN-{invoiceNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
         public async Task<PagedList<Invoice>> GetAllInvoices([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
 

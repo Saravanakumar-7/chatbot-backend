@@ -440,6 +440,10 @@ namespace Tips.Master.Api
 
             CreateMap<FormsAccess, RoleAccessDto>().ReverseMap();
             CreateMap<FormsAccess, UserAccessDto>().ReverseMap();
+
+            CreateMap<OrderType, OrderTypeDto>().ReverseMap();
+            CreateMap<OrderType, OrderTypePostDto>().ReverseMap();
+            CreateMap<OrderType, OrderTypeUpdateDto>().ReverseMap();
         }
     }
 }

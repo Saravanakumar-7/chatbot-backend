@@ -106,6 +106,26 @@ namespace Tips.Production.Api.Repository
             return getMRNumberAutoIncrementCount;
         }
 
+        public async Task<string> GenerateMRNumber()
+        {
+            using var transaction = await _tipsProductionDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var mrNumberEntity = await _tipsProductionDbContext.MRNumbers.SingleAsync();
+                mrNumberEntity.CurrentValue += 1;
+                _tipsProductionDbContext.Update(mrNumberEntity);
+                await _tipsProductionDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"MR-{mrNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
         public async Task<string> UpdateMaterialRequest(MaterialRequests request)
         {
             request.LastModifiedBy = "Admin";

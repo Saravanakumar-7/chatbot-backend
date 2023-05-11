@@ -282,20 +282,24 @@ namespace Tips.Grin.Api.Controllers
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
 
-                var newcount = await _repository.GetGrinNumberAutoIncrementCount(date);
+                //var newcount = await _repository.GetGrinNumberAutoIncrementCount(date);
 
-                if (newcount > 0)
-                {
-                    var number = newcount + 1;
-                    string e = String.Format("{0:D4}", number);
-                    grins.GrinNumber = days + months + years + "G" + (e);
-                }
-                else
-                {
-                    var count = 1;
-                    var e = count.ToString("D4");
-                    grins.GrinNumber = days + months + years + "G" + (e);
-                }
+                //if (newcount > 0)
+                //{
+                //    var number = newcount + 1;
+                //    string e = String.Format("{0:D4}", number);
+                //    grins.GrinNumber = days + months + years + "G" + (e);
+                //}
+                //else
+                //{
+                //    var count = 1;
+                //    var e = count.ToString("D4");
+                //    grins.GrinNumber = days + months + years + "G" + (e);
+                //}
+
+                var dateFormat = days + months + years;
+                var grinNumber = await _repository.GenerateGrinNumber();
+                grins.GrinNumber = dateFormat + grinNumber;
 
                 var grinPartsDto = grinPostDto.GrinParts;
 

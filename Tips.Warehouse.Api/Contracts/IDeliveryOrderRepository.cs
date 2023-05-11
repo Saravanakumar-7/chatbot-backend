@@ -11,6 +11,7 @@ namespace Tips.Warehouse.Api.Contracts
     {
         Task<PagedList<DeliveryOrder>> GetAllDeliveryOrders(PagingParameter pagingParameter, SearchParams searchParams);
         Task<DeliveryOrder> GetDeliveryOrderById(int id);
+        Task<string> GenerateDONumber();
         Task<int?> GetDONumberAutoIncrementCount(DateTime date);
         Task<PagedList<DeliveryOrder>> GetAllActiveDeliveryOrders(PagingParameter pagingParameter, SearchParams searchParams);
         Task<long> CreateDeliveryOrder(DeliveryOrder deliveryOrder);

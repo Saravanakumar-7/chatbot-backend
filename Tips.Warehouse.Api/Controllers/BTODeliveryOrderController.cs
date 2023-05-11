@@ -309,21 +309,24 @@ namespace Tips.Warehouse.Api.Controllers
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
 
-                var newcount = await _repository.GetBTONumberAutoIncrementCount(date);
+                //var newcount = await _repository.GetBTONumberAutoIncrementCount(date);
 
-                if (newcount > 0)
-                {
-                    var number = newcount + 1;
-                    string e = String.Format("{0:D4}", number);
-                    bTODeliveryOrder.BTONumber = days + months + years + "BTO" + (e);
-                }
-                else
-                {
-                    var count = 1;
-                    var e = count.ToString("D4");
-                    bTODeliveryOrder.BTONumber = days + months + years + "BTO" + (e);
-                }
+                //if (newcount > 0)
+                //{
+                //    var number = newcount + 1;
+                //    string e = String.Format("{0:D4}", number);
+                //    bTODeliveryOrder.BTONumber = days + months + years + "BTO" + (e);
+                //}
+                //else
+                //{
+                //    var count = 1;
+                //    var e = count.ToString("D4");
+                //    bTODeliveryOrder.BTONumber = days + months + years + "BTO" + (e);
+                //}
 
+                var dateFormat = days + months + years;
+                var btoNumber = await _repository.GenerateBTONumber();
+                bTODeliveryOrder.BTONumber = dateFormat + btoNumber;
 
                 if (bTODeliveryOrderitemsList != null)
                 {

@@ -404,11 +404,11 @@ namespace Tips.SalesService.Api.Controllers
                 if (getRfqCSByRfqNO == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"RfqCustomerSupportByRfqNumber with id: {RfqNumber}, hasn't been found in db.";
+                    serviceResponse.Message = $"RfqCustomerSupport with this RfqNumber hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"RfqCustomerSupportByRfqNumber with id: {RfqNumber}, hasn't been found in db.");
-                    return NotFound(serviceResponse);
+                    return Ok(serviceResponse);
                 }
                 else
                 {
@@ -663,11 +663,11 @@ namespace Tips.SalesService.Api.Controllers
                 if (getRfqEnggByRfqNo == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"GetRfqEnggByRfqNumber with id: {RfqNumber}, hasn't been found in db.";
+                    serviceResponse.Message = $"GetRfqEngg with this RfqNumber hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"GetRfqEnggByRfqNumber with id: {RfqNumber}, hasn't been found in db.");
-                    return NotFound(serviceResponse);
+                    return Ok(serviceResponse);
                 }
                 else
                 {
@@ -685,7 +685,7 @@ namespace Tips.SalesService.Api.Controllers
                     rfqEnggDto.RfqEnggItems = rfqEnggItemsDtos;
 
                     serviceResponse.Data = rfqEnggDto;
-                    serviceResponse.Message = $"Returned RfqEnggByRfqNumber with id: {RfqNumber}";
+                    serviceResponse.Message = $"Returned RfqEnggByRfqNumber with RfqNumber: {RfqNumber}";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -1165,22 +1165,26 @@ namespace Tips.SalesService.Api.Controllers
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
 
-                //var newcount = await _rfqRepository.GetRfqNumberAutoIncrementCount(date);
+                ////var newcount = await _rfqRepository.GetRfqNumberAutoIncrementCount(date);
 
-                var latestRfqNo = await _rfqRepository.GetRfqNumberAutoIncrementNumber();
+                //var latestRfqNo = await _rfqRepository.GetRfqNumberAutoIncrementNumber();
 
-                if (latestRfqNo == null)
-                { 
-                    int num = 0;
-                    createRfq.RfqNumber = "RFQ-" + (num + 1);
-                }
-                else
-                { 
-                    string result = latestRfqNo.Substring(0, latestRfqNo.IndexOf("-")).Trim();
-                    string spliValue = latestRfqNo.Split('-').Last();
-                    int num = Int32.Parse(spliValue);
-                    createRfq.RfqNumber = "RFQ-" + (num + 1);
-                 }
+                //if (latestRfqNo == null)
+                //{ 
+                //    int num = 0;
+                //    createRfq.RfqNumber = "RFQ-" + (num + 1);
+                //}
+                //else
+                //{ 
+                //    string result = latestRfqNo.Substring(0, latestRfqNo.IndexOf("-")).Trim();
+                //    string spliValue = latestRfqNo.Split('-').Last();
+                //    int num = Int32.Parse(spliValue);
+                //    createRfq.RfqNumber = "RFQ-" + (num + 1);
+                // }
+
+                var dateFormat = days + months + years;
+                var rfqNumber = await _rfqRepository.GenerateRFQNumber();
+                createRfq.RfqNumber = dateFormat + rfqNumber;
 
                 await _rfqRepository.CreateRfq(createRfq);
                 var rfqDetails = _mapper.Map<RfqDto>(createRfq);

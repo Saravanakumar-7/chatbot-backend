@@ -12,14 +12,16 @@ namespace Tips.Warehouse.Api.Entities
         
         public DbSet<OpenDeliveryOrder> OpenDeliveryOrders { get; set; }
         public DbSet<OpenDeliveryOrderParts> OpenDeliveryOrderParts { get; set; }
+        public DbSet<ODONumber> ODONumbers { get; set; }
         public DbSet<Invoice> invoices { get; set; }
         public DbSet<InvoiceChildItem> invoiceChildItems { get; set; }
         public DbSet<BTODeliveryOrder> bTODeliveryOrder { get; set; }
         public DbSet<BTODeliveryOrderItems> bTODeliveryOrderItems { get; set; }
-
+        public DbSet<BTONumber> BTONumbers { get; set; }
         public DbSet<DeliveryOrder> DeliveryOrder { get; set; }
+        public DbSet<DONumber> DONumbers { get; set; }
         public DbSet<Inventory> Inventory { get; set; }
-
+        public DbSet<InvoiceNumber> InvoiceNumbers { get; set; }
         public DbSet<InventoryTranction> InventoryTranctions { get; set; }
         public DbSet<ReturnBtoDeliveryOrder> ReturnBtoDeliveryOrders { get; set; }
         public DbSet<ReturnBtoDeliveryOrderItems> ReturnBtoDeliveryOrderItems { get; set; }

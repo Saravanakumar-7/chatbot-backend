@@ -35,13 +35,13 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<RfqEnggItem> RfqEnggItems { get; set; }
 
         public DbSet<RfqEnggRiskIdentification> RfqEnggRiskIdentifications { get; set; }
-
+        public DbSet<RFQNo> RFQNos { get; set; }
         public DbSet<RfqLPCosting> RfqLPCostings { get; set; }
 
         public DbSet<SalesOrder> SalesOrders { get; set; }
         public DbSet<SalesOrderItems> SalesOrdersItems { get; set; }
 
-
+        public DbSet<QuoteNumber> QuoteNumbers { get; set; }
         public DbSet<Quote> Quotes { get; set; }
         public DbSet<QuoteGeneral> QuoteGenerals { get; set; }
         public DbSet<QuoteAdditionalCharges> QuoteAdditionalCharges { get; set; }
@@ -77,7 +77,7 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<RfqCustomField> RfqCustomFields { get; set; }
         public DbSet<ForeCastCustomGroup> ForeCastCustomGroups { get; set; }
         public DbSet<ForeCastCustomField> ForeCastCustomFields { get; set; }
-
+        public DbSet<MRNumber> MRNumbers { get; set; }
         public DbSet<MaterialRequest> MaterialRequests { get; set; }
         public DbSet<MaterialRequestItem> MaterialRequestItems { get; set; }
         public DbSet<MaterialTransactionNote> MaterialTransactionNotes { get; set; }
@@ -91,7 +91,8 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<SalesOrderHistory> salesOrderHistories { get; set; }
         public DbSet<SONumber> SONumbers { get; set; }
 
-
+        public DbSet<CollectionTracker> CollectionTrackers { get; set; }
+        public DbSet<SOBreakDown> SOBreakDowns { get; set; }
 
     }
 }

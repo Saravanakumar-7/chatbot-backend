@@ -18,7 +18,7 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PrItem> PrItems { get; set; }
         public DbSet<PrAddProject> PrAddProjects { get; set; }
         public DbSet<PONumber> PONumbers { get; set; }
-        
+        public DbSet<PRNumber> PRNumbers { get; set; }
         public DbSet<PrAddDeliverySchedule> PrAddDeliverySchedules { get; set; }
 
         public DbSet<DocumentUpload> DocumentUploads { get; set; }

@@ -13,6 +13,7 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<MaterialRequests>> GetAllMRStatusClose();
         Task<MaterialRequests> GetMaterialRequestById(int id);
         Task<MaterialRequests> GetMaterialReqByMRNumber(string MRnumber);
+        Task<string> GenerateMRNumber();
         Task<int?> GetMRNumberAutoIncrementCount(DateTime date);
         Task<int?> CreateMaterialRequest(MaterialRequests request);
         Task<string> UpdateMaterialRequest(MaterialRequests request);

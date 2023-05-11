@@ -9,8 +9,8 @@ namespace Tips.SalesService.Api.Contracts
     {
         Task<PagedList<Quote>> GetAllQuote(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<Quote> GetQuoteById(int id);
+        Task<string> GenerateQuoteNumber();
 
- 
         Task<IEnumerable<CsItemDetailsForQuoteDto>> GetCsItemDetailsForQuote(string rfqNumber);
         Task<IEnumerable<rfqEnggItemDetailsForQuoteDto>> GetAllRfqEnggDetailsByRfqNo(string rfqNumber);
 
