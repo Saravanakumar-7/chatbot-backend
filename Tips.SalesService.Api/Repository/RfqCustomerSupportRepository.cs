@@ -287,10 +287,10 @@ namespace Tips.SalesService.Api.Repository
             return getRfqNumberAutoIncrementCount;
         }
         public async Task<string> GetRfqNumberAutoIncrementNumber()
-        { 
-             var getRfqNumberAutoIncrementNumber = await _tipsSalesServiceDbContext.Rfqs.OrderByDescending(x => x.Id)
-              .Select(x => x.RfqNumber)
-              .FirstOrDefaultAsync();
+        {
+            var getRfqNumberAutoIncrementNumber = await _tipsSalesServiceDbContext.Rfqs.OrderByDescending(x => x.Id)
+             .Select(x => x.RfqNumber)
+             .FirstOrDefaultAsync();
 
             return getRfqNumberAutoIncrementNumber;
         }
@@ -314,7 +314,7 @@ namespace Tips.SalesService.Api.Repository
 
             return getAllActiveRfqNumberList;
         }
-        
+
         public async Task<Rfq> GetRfqDeatailsByRfqNoAndRevNo(string rfqNumber, int revisionNumber)
         {
             var rfqDetail = await _tipsSalesServiceDbContext.Rfqs
@@ -354,38 +354,56 @@ namespace Tips.SalesService.Api.Repository
                           .FirstOrDefaultAsync();
 
             return getRfqById;
-        }      
+        }
 
         public async Task<string> UpdateRfq(Rfq rfq)
         {
             rfq.LastModifiedBy = "Admin";
             rfq.LastModifiedOn = DateTime.Now;
-            
+
             Update(rfq);
             string result = $"RFQ of Detail {rfq.Id} is updated successfully!";
             return result;
         }
 
-        public async Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberListByCustomerId(string CustomerId)
-        {           
+        //public async Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberListByCustomerId(string CustomerId)
+        //{           
 
-            IEnumerable<RfqNumberListDto> getAllActiveRfqNumberList = await _tipsSalesServiceDbContext.Rfqs
-                                .Select(x => new RfqNumberListDto()
-                                {
-                                    Id = x.Id,
-                                    RfqNumber = x.RfqNumber,
-                                    CustomerName = x.CustomerName,
-                                    CustomerId = x.CustomerId
+        //IEnumerable<RfqNumberListDto> getAllActiveRfqNumberList = await _tipsSalesServiceDbContext.Rfqs
+        //                    .Where(b => b.CustomerId == CustomerId)
+        //                    .OrderByDescending(r => r.Id)
+        //                    .Select(x => new RfqNumberListDto()
+        //                    {
+        //                        Id = x.Id,
+        //                        RfqNumber = x.RfqNumber,
+        //                        CustomerName = x.CustomerName,
+        //                        CustomerId = x.CustomerId
 
-                                })
-                               .Where(b => b.CustomerId == CustomerId)                                
-                              .ToListAsync();
+        //                    })     
+        //                  .Distinct().ToListAsync();
+
+        //return getAllActiveRfqNumberList;
+        //}
+        public async Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberListByCustomerId(string customerId)
+        {
+            var latestRfqs = await _tipsSalesServiceDbContext.Rfqs
+                .Where(r => r.CustomerId == customerId)
+                .ToListAsync();
+
+            var getAllActiveRfqNumberList = latestRfqs
+                .GroupBy(r => r.RfqNumber)
+                .SelectMany(group => group.Where(r => r.RevisionNumber == group.Max(g => g.RevisionNumber)))
+                .Select(x => new RfqNumberListDto
+                {
+                    Id = x.Id,
+                    RfqNumber = x.RfqNumber,
+                    CustomerName = x.CustomerName,
+                    CustomerId = x.CustomerId
+                });
 
             return getAllActiveRfqNumberList;
-
-
-           
         }
+
 
         public async Task<Rfq> GetCustomerIdByRfqNumber(string rfqnumber)
         {

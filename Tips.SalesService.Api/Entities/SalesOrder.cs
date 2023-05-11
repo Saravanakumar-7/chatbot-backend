@@ -25,8 +25,9 @@ namespace Tips.SalesService.Api.Entities
         public SalesOrderStatus SalesOrderStatus { get; set; }
 
         public OrderStatus SOStatus { get; set; } = 0;
-
-
+        public string? ProductType { get; set; }
+        public string? TypeOfSolution { get; set; }
+       
         //PO Details
         public string? PONumber { get; set; }
         public DateTime? PODate { get; set; }

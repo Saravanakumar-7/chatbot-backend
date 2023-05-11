@@ -19,6 +19,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? OrderType { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerId { get; set; }
+        public string? ProductType { get; set; }
+        public string? TypeOfSolution { get; set; }
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
@@ -69,6 +71,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? OrderType { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerId { get; set; }
+        public string? ProductType { get; set; }
+        public string? TypeOfSolution { get; set; }
 
         //PO Details
         public string? PONumber { get; set; }
@@ -99,6 +103,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? OrderType { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerId { get; set; }
+        public string? ProductType { get; set; }
+        public string? TypeOfSolution { get; set; }
 
         //PO Details
         public string? PONumber { get; set; }
