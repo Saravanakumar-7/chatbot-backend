@@ -333,7 +333,7 @@ namespace Tips.Warehouse.Api.Controllers
                             inventory.Balance_Quantity = openDeliveryOrderItemsDtoList[i].DispatchQty;
                             inventory.UOM = openDeliveryOrderItemsDtoList[i].UOM;
                             inventory.IsStockAvailable = true;
-                            inventory.Warehouse = "";
+                            inventory.Warehouse = openDeliveryOrderItemsDtoList[i].Warehouse;
                             inventory.Location = openDeliveryOrderItemsDtoList[i].Location;
                             inventory.GrinNo = openDeliveryorder.OpenDONumber;
                             inventory.GrinPartId = 0;
@@ -396,6 +396,7 @@ namespace Tips.Warehouse.Api.Controllers
                         openDeliveryOrderHistory.UnitPrice = openDeliveryOrderItemsDtoList[i].UnitPrice;
                         openDeliveryOrderHistory.UOC = openDeliveryOrderItemsDtoList[i].UOC;
                         openDeliveryOrderHistory.UOM = openDeliveryOrderItemsDtoList[i].UOM;
+                        openDeliveryOrderHistory.Warehouse = openDeliveryOrderItemsDtoList[i].Warehouse;
                         openDeliveryOrderHistory.StockAvailable = openDeliveryOrderItemsDtoList[i].StockAvailable;
                         openDeliveryOrderHistory.Location = openDeliveryOrderItemsDtoList[i].Location;
                         openDeliveryOrderHistory.LocationStock = openDeliveryOrderItemsDtoList[i].LocationStock; 

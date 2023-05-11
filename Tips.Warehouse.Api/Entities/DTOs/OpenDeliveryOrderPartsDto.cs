@@ -17,6 +17,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Required]
         public string ItemDescription { get; set; }
+        public string Warehouse { get; set; }
 
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
@@ -61,6 +62,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Required(ErrorMessage = "StockAvailable is required")]
         public decimal StockAvailable { get; set; }
+        public string Warehouse { get; set; }
 
         [Required(ErrorMessage = "Location is required")]
         public string Location { get; set; }
@@ -97,6 +99,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         [Required(ErrorMessage = "UnitPrice is required")]
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
+        public string Warehouse { get; set; }
 
         [Required(ErrorMessage = "UOC is required")]
         public string UOC { get; set; }
