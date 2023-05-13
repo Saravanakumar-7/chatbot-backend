@@ -15,6 +15,54 @@ namespace Tips.Warehouse.Api.Repository
         {
         }
 
+
+        public async Task<IEnumerable<Inventory>> GetAllInventoryWithItems(InventorySearchDto inventorySearch)
+        {
+            using (var context = _tipsWarehouseDbContext)
+            {
+                var query = _tipsWarehouseDbContext.Inventory.AsQueryable();
+                if (inventorySearch != null || (inventorySearch.PartNumber.Any())
+                 && inventorySearch.ProjectNumber.Any() && inventorySearch.Warehouse.Any()
+                 && inventorySearch.Location.Any() && inventorySearch.GrinNo.Any())
+
+                {
+                    query = query.Where
+                    (inv => (inventorySearch.PartNumber.Any() ? inventorySearch.PartNumber.Contains(inv.PartNumber) : true)
+                   && (inventorySearch.ProjectNumber.Any() ? inventorySearch.ProjectNumber.Contains(inv.ProjectNumber) : true)
+                   && (inventorySearch.Warehouse.Any() ? inventorySearch.Warehouse.Contains(inv.Warehouse) : true)
+                   && (inventorySearch.Location.Any() ? inventorySearch.Location.Contains(inv.Location) : true)
+                   && (inventorySearch.GrinNo.Any() ? inventorySearch.GrinNo.Contains(inv.GrinNo) : true));
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<Inventory>> SearchInventoryDate([FromQuery] SearchsDateParms searchsDateParms)
+        {
+            var inventoryDetails = _tipsWarehouseDbContext.Inventory
+            .Where(inv => ((inv.CreatedOn >= searchsDateParms.SearchFromDate &&
+            inv.CreatedOn <= searchsDateParms.SearchToDate
+            )))
+            .ToList();
+            return inventoryDetails;
+        }
+        public async Task<IEnumerable<Inventory>> SearchInventory([FromQuery] SearchParames searchParames)
+        {
+            using (var context = _tipsWarehouseDbContext)
+            {
+                var query = _tipsWarehouseDbContext.Inventory.AsQueryable();
+                if (!string.IsNullOrEmpty(searchParames.SearchValue))
+                {
+                    query = query.Where(inv => inv.PartNumber.Contains(searchParames.SearchValue)
+                    || inv.ProjectNumber.Contains(searchParames.SearchValue)
+                    || inv.Warehouse.Contains(searchParames.SearchValue)
+                    || inv.Location.Contains(searchParames.SearchValue)
+                    || inv.GrinNo.Contains(searchParames.SearchValue));
+                }
+                return query.ToList();
+            }
+        }
+
+
         public async Task<int?> CreateInventory(Inventory inventory)
         {
             inventory.CreatedBy = "Admin";

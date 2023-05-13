@@ -134,6 +134,49 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetOpenDeliveryOrderDetailsByItemNo(string itemNumber)
+        {
+            ServiceResponse<ODODetailsDto> serviceResponse = new ServiceResponse<ODODetailsDto>();
+            try
+            {
+                var oDODetailsById = await _repository.GetODODetailsByItemNo(itemNumber);
+                var warehouseODODetails = await _repository.GetWarehouseODOByItemNo(itemNumber);
+                var LocationODODetails = await _repository.GetLocationODOByItemNo(itemNumber);
+               // oDODetailsById
+                if (oDODetailsById == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OpenDeliveryOrder with itemNo hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OpenDeliveryOrder with id: {itemNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned OpenDeliveryOrder with id: {itemNumber}");
+                    var result = _mapper.Map<ODODetailsDto>(oDODetailsById);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned OpenDeliveryOrderByItemNo Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetOpenDeliveryOrderById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetOpenDeliveryOrderById action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         //date search opendelivery order api
 
         [HttpGet]

@@ -143,7 +143,7 @@ namespace Entities
         public DbSet<LeadWebsite> LeadWebsites { get; set; } 
  public DbSet<Unit> Units { get; set; }
 
-
+        public DbSet<IssuingStock> IssuingStocks { get; set; }
 
 
 

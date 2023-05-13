@@ -20,7 +20,10 @@ namespace Tips.Warehouse.Api.Entities
         public string? PONumber { get; set; }
         public string? IssuedTo { get; set; }
         public DateTime? DODate { get; set; }
-
+        public string? ProductType { get; set; }
+        public string? TypeOfSolution { get; set; }
+        [Precision(13, 3)]
+        public decimal? TotalValue { get; set; }
         public string? Unit { get; set; }
 
         public string? CreatedBy { get; set; }

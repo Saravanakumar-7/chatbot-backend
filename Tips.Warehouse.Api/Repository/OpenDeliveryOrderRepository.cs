@@ -140,6 +140,48 @@ namespace Tips.Warehouse.Api.Repository
             return getOpenDeliveryOrderDetailsById;
         }
 
+
+        public async Task<List<ODODetailsDto>> GetODODetailsByItemNo(string itemNumber)
+        {
+            var projectNumbers = await _tipsWarehouseDbContext.Inventory
+                                .Where(x => x.PartNumber == itemNumber)
+                                .Select(s => new ODODetailsDto()
+                                {
+                                    ItemNumber = s.ProjectNumber,
+                                    ItemType = s.PartType,
+                                    UOM = s.UOM,
+                                }).Distinct().ToListAsync();
+
+            return projectNumbers;
+        }
+
+        public async Task<List<WarehouseDetailsDto>> GetWarehouseODOByItemNo(string itemNumber)
+        {
+            var projectNumbers = await _tipsWarehouseDbContext.Inventory
+                                .Where(x => x.PartNumber == itemNumber)
+                                .Select(s => new WarehouseDetailsDto()
+                                {
+                                    WarehouseName = s.Warehouse,
+                                    
+                                }).Distinct().ToListAsync();
+
+            return projectNumbers;
+        }
+
+        public async Task<List<LocationDetailsDto>> GetLocationODOByItemNo(string itemNumber)
+        {
+            var projectNumbers = await _tipsWarehouseDbContext.Inventory
+                                .Where(x => x.PartNumber == itemNumber)
+                                .Select(s => new LocationDetailsDto()
+                                {
+                                    LocationName = s.Location,
+                                    LocationStock = s.Balance_Quantity,
+
+                                }).Distinct().ToListAsync();
+
+            return projectNumbers;
+        }
+
         public async Task<string> UpdateOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder)
         {
             openDeliveryOrder.LastModifiedBy = "Admin";

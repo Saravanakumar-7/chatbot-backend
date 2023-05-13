@@ -13,6 +13,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string ItemNumber { get; set; }
+        public string ODONumber { get; set; }
         public PartTypes ItemType { get; set; }
 
         [Required]

@@ -111,9 +111,11 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     }
     public class InventorySearchDto
     {
-        public List<string> CustomerName { get; set; }
-        public List<string>? InvoiceNumber { get; set; }
-        public List<string> CompanyName { get; set; }
+        public List<string> PartNumber { get; set; }
+        public List<string> ProjectNumber { get; set; }
+        public List<string> Warehouse { get; set; }
+        public List<string>? Location { get; set; }
+        public List<string>? GrinNo { get; set; }
     }
 
     public class InventoryUpdateDtoForMRN
@@ -144,5 +146,5 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal ReturnQty { get; set; }
     }
-   
+
 }

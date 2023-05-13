@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.ComponentModel.DataAnnotations;
+using Entities.Enums;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {
@@ -8,7 +9,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
 
         public int Id { get; set; }
-        public DateTime? OpenDODate { get; set; } 
+        public DateTime? OpenDODate { get; set; }
+        public string OpenDONumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerId { get; set; }
@@ -78,4 +80,24 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public List<string> Description { get; set; }
         public List<String>? IssuedTo { get; set; }
     }
+    public class ODODetailsDto
+    {
+        public string ItemNumber { get; set; }
+        public string? ItemType { get; set; }
+        public string? UOM { get; set; }
+
+        public List<WarehouseDetailsDto>? WarehouseDetails { get; set; }
+    }
+    public class WarehouseDetailsDto
+    {
+        public string WarehouseName { get; set; }
+        public List<LocationDetailsDto>? LocationDetails { get; set; }
+    }
+    public class LocationDetailsDto
+    {
+        public string? LocationName { get; set; }
+        public decimal LocationStock { get; set; }
+
+    }
+
 }

@@ -111,9 +111,22 @@ namespace Repository
         private IUserAccessRepository? _userAccessRepository;
         private IFormsAccessRepository? _formsAccessRepository;
         private IOrderTypeRepository? _orderTypeRepository;
+        private IIssuingStockRepository? issuingStockRepository;
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
+        }
+
+        public IIssuingStockRepository IssuingStockRepository
+        {
+            get
+            {
+                if (issuingStockRepository == null)
+                {
+                    issuingStockRepository = new IssuingStockRepository(_tipsMasterDbContext);
+                }
+                return issuingStockRepository;
+            }
         }
 
         public IOrderTypeRepository OrderTypeRepository

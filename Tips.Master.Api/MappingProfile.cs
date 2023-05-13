@@ -444,6 +444,10 @@ namespace Tips.Master.Api
             CreateMap<OrderType, OrderTypeDto>().ReverseMap();
             CreateMap<OrderType, OrderTypePostDto>().ReverseMap();
             CreateMap<OrderType, OrderTypeUpdateDto>().ReverseMap();
+
+            CreateMap<IssuingStock, IssuingStockDto>().ReverseMap();
+            CreateMap<IssuingStock, IssuingStockPostDto>().ReverseMap();
+            CreateMap<IssuingStock, IssuingStockUpdateDto>().ReverseMap();
         }
     }
 }

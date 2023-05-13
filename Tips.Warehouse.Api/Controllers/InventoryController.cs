@@ -164,7 +164,7 @@ namespace Tips.Warehouse.Api.Controllers
                 if (InventoryDetails == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Inventory with this itemNumber hasn't been found";
+                    serviceResponse.Message = $"Inventory Details hasn't been found";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"Inventory with itemNumber: {itemNumber}, is invalid");
@@ -175,7 +175,7 @@ namespace Tips.Warehouse.Api.Controllers
                     _logger.LogInfo($"Returned Inventory with Itemnumber: {itemNumber}");
                     var result = _mapper.Map<InventoryDto>(InventoryDetails);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned Inventory with id Successfully";
+                    serviceResponse.Message = "Returned InventoryDetails with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -185,7 +185,7 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Invalid inventory{ex.Message},{ex.InnerException}";
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -226,6 +226,97 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError($"Something went wrong inside GetInventoryById action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchInventoryDate([FromQuery] SearchsDateParms searchDateParam)
+        {
+            ServiceResponse<IEnumerable<InventoryDto>> serviceResponse = new ServiceResponse<IEnumerable<InventoryDto>>();
+            try
+            {
+                var inventoryDetails = await _inventoryRepository.SearchInventoryDate(searchDateParam);
+                var result = _mapper.Map<IEnumerable<InventoryDto>>(inventoryDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all InventoryDetails By Date";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchInventory([FromQuery] SearchParames searchParames)
+        {
+            ServiceResponse<IEnumerable<InventoryDto>> serviceResponse = new ServiceResponse<IEnumerable<InventoryDto>>();
+            try
+            {
+                var inventoryDetails = await _inventoryRepository.SearchInventory(searchParames);
+
+                _logger.LogInfo("Returned all Inventory");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<Inventory, InventoryDto>().ReverseMap();
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<InventoryDto>>(inventoryDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all InventoryDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllInventoryWithItems([FromBody] InventorySearchDto inventorySearch)
+        {
+            ServiceResponse<IEnumerable<InventoryDto>> serviceResponse = new ServiceResponse<IEnumerable<InventoryDto>>();
+            try
+            {
+                var inventoryDetails = await _inventoryRepository.GetAllInventoryWithItems(inventorySearch);
+
+                _logger.LogInfo("Returned all Inventory");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<Inventory, InventoryDto>().ReverseMap();
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<InventoryDto>>(inventoryDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all InventoryDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
