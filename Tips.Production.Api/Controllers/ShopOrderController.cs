@@ -370,9 +370,9 @@ namespace Tips.Production.Api.Controllers
             {
                 for (int i = 0; i < shopOrder.ShopOrderItems.Count();i++)
                 {
-                    var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
-                    "GetProductionBomByItemAndBomVersionNo?",
-                "itemNumber=", shopOrder.ShopOrderItems[i].FGItemNumber, "&bomVersionNo=", shopOrder.BomRevisionNo));
+                    var fgNumber = shopOrder.ShopOrderItems[i].FGItemNumber;
+                    decimal bomversion = shopOrder.BomRevisionNo;
+                    var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],"GetProductionBomByItemAndBomVersionNo?","ItemNumber=", fgNumber, "&bomVersionNo=", bomversion));
                     var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
                     dynamic bomDetailsData = JsonConvert.DeserializeObject(bomDetailsString);
                     dynamic bomData = bomDetailsData.data;
@@ -382,6 +382,7 @@ namespace Tips.Production.Api.Controllers
                         MaterialIssue materialIssue = new MaterialIssue();
                         materialIssue.ShopOrderNumber = shopOrder.ShopOrderNumber;
                         materialIssue.ShopOrderDate = shopOrder.CreatedOn;
+                        materialIssue.ProjectType = ProjectType.RFQ;
                         materialIssue.ItemType = shopOrder.ItemType;
                         materialIssue.ShopOrderQty = shopOrder.TotalSOReleaseQty;
                         materialIssue.ItemNumber = shopOrder.ItemNumber;
