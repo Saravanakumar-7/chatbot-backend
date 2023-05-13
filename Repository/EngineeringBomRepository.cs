@@ -147,7 +147,7 @@ namespace Repository
                 .Select(c => new EnggBomFGItemNumber()
                                { 
                                    ItemNumber = c.ItemNumber,
-                                    ItemDescription = c.ItemDescription
+                                    Description = c.ItemDescription
                                 }) 
                              .ToListAsync();
 
