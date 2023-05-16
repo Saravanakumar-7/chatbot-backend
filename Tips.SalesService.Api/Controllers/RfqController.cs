@@ -268,6 +268,33 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllRfqNumberList()
+        {
+            ServiceResponse<IEnumerable<RfqNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqNumberListDto>>();
+            try
+            {
+                var rfqNumberList = await _rfqRepository.GetAllRfqNumberList();
+
+                var result = _mapper.Map<IEnumerable<RfqNumberListDto>>(rfqNumberList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned RfqNumberList Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllRfqNumberList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //Get all RfqLPCosting
 
         [HttpGet]

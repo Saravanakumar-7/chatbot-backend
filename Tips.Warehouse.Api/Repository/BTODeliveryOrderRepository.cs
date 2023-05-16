@@ -166,6 +166,7 @@ namespace Tips.Warehouse.Api.Repository
                                     CustomerLeadID = x.CustomerId,
                                     BTONumber = x.BTONumber,
                                     BtoDeliveryOrderId = x.Id,
+                                    OrderType = x.OrderType,
 
                                 })
                                 .Where(x => x.CustomerLeadID == customerLeadId)
