@@ -189,8 +189,7 @@ namespace Tips.Warehouse.Api.Repository
             Update(openDeliveryOrder);
             string result = $"openDeliveryOrder of Detail {openDeliveryOrder.Id} is updated successfully!";
             return result;
-        }
-
+        } 
         public async Task<IEnumerable<OpenDeliveryOrderIdNameList>> GetAllOpenDeliveryOrderIdNameList()
         {
             IEnumerable<OpenDeliveryOrderIdNameList> btoIddNameList = await _tipsWarehouseDbContext.OpenDeliveryOrders

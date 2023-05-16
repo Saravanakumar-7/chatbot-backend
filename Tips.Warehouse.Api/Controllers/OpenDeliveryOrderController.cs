@@ -459,6 +459,8 @@ namespace Tips.Warehouse.Api.Controllers
 
                     }
                 }
+                openDeliveryorder.OpenDeliveryOrderParts = openDeliveryOrderItemsDtoList;
+
                 await _repository.CreateOpenDeliveryOrder(openDeliveryorder);
 
                 _repository.SaveAsync();
@@ -516,24 +518,52 @@ namespace Tips.Warehouse.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
+                var openDeliveryOrder = _mapper.Map<OpenDeliveryOrder>(getOpenDeliveryOrderbyId);
 
+                var getOldODODeliveryOrderItemsDetails = openDeliveryOrder.OpenDeliveryOrderParts;
 
-                var openDelivaryOrderparts = _mapper.Map<IEnumerable<OpenDeliveryOrderParts>>(openDeliveryOrderDtoUpdate.OpenDeliveryOrderParts);
+                var openDeliveryOrderitemsDto = openDeliveryOrderDtoUpdate.OpenDeliveryOrderParts;
+                var openDeliveryOrderitemsList = new List<OpenDeliveryOrderParts>();
+                if (openDeliveryOrderitemsDto != null)
+                {
+                    for (int j = 0; j < getOldODODeliveryOrderItemsDetails.Count; j++)
+                    {
+                        for (int i = 0; i < openDeliveryOrderitemsDto.Count; i++)
+                        {
+                            OpenDeliveryOrderParts openDeliveryOrderItems = _mapper.Map<OpenDeliveryOrderParts>(openDeliveryOrderitemsDto[i]);
+                            openDeliveryOrderitemsList.Add(openDeliveryOrderItems);
+                        }
+                    }
+                }
 
+                openDeliveryOrder.OpenDeliveryOrderParts = openDeliveryOrderitemsList;
+                var updateODODeliveryOrder = _mapper.Map(openDeliveryOrderDtoUpdate, openDeliveryOrder);
 
-                var updateOpenDelivaryOrder = _mapper.Map(openDeliveryOrderDtoUpdate, getOpenDeliveryOrderbyId);
-
-
-                updateOpenDelivaryOrder.OpenDeliveryOrderParts = openDelivaryOrderparts.ToList();
-
-                string result = await _repository.UpdateOpenDeliveryOrder(updateOpenDelivaryOrder);
+                string result = await _repository.UpdateOpenDeliveryOrder(updateODODeliveryOrder);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "OpenDelivaryOrder Updated Successfully";
+                serviceResponse.Message = " BTODeliveryOrder Successfully Updated";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
+
+                //var openDelivaryOrderparts = _mapper.Map<IEnumerable<OpenDeliveryOrderParts>>(openDeliveryOrderDtoUpdate.OpenDeliveryOrderParts);
+
+
+                //var updateOpenDelivaryOrder = _mapper.Map(openDeliveryOrderDtoUpdate, getOpenDeliveryOrderbyId);
+
+
+                //updateOpenDelivaryOrder.OpenDeliveryOrderParts = openDelivaryOrderparts.ToList();
+
+                //string result = await _repository.UpdateOpenDeliveryOrder(updateOpenDelivaryOrder);
+                //_logger.LogInfo(result);
+                //_repository.SaveAsync();
+                //serviceResponse.Data = null;
+                //serviceResponse.Message = "OpenDelivaryOrder Updated Successfully";
+                //serviceResponse.Success = true;
+                //serviceResponse.StatusCode = HttpStatusCode.OK;
+                //return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
