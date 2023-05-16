@@ -27,6 +27,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<string> UpdatePurchaseOrder(PurchaseOrder purchaseOrder);
         Task<string> DeletePurchaseOrder(PurchaseOrder purchaseOrder);
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllActivePurchaseOrderNameList();
+        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPurchaseOrderNameList();
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalINameList();
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIINameList();
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPONumberListByVendorName(string vendorName);

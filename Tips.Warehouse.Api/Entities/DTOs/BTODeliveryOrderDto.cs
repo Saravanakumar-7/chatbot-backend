@@ -21,6 +21,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
         public decimal? TotalValue { get; set; }
+        public string? OrderType { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -45,6 +46,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
         public decimal? TotalValue { get; set; }
+        public string? OrderType { get; set; }
         public List<BTODeliveryOrderItemsDtoPost>? BTODeliveryOrderItemsDtoPost { get; set; }
     }
     public class BTODeliveryOrderDtoUpdate
@@ -63,6 +65,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
         public decimal? TotalValue { get; set; }
+        public string? OrderType { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -81,7 +84,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public string? CustomerLeadID { get; set; }
         public string? BTONumber { get; set; }
-        public int? BtoDeliveryOrderId { get ; set; }    
+        public int? BtoDeliveryOrderId { get ; set; }
+        public string? OrderType { get; set; }
     }
     public class BtoIDNameList
     {

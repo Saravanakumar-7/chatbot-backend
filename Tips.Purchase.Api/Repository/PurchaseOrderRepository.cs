@@ -227,6 +227,19 @@ namespace Tips.Purchase.Api.Repository
 
             return activePurchaseOrderNameList;
         }
+
+        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPurchaseOrderNameList()
+        {
+            IEnumerable<PurchaseOrderIdNameListDto> purchaseOrderNameList = await _tipsPurchaseDbContext.PurchaseOrders
+                                .Select(x => new PurchaseOrderIdNameListDto()
+                                {
+                                    Id = x.Id,
+                                    PONumber = x.PONumber,
+                                })
+                              .ToListAsync();
+
+            return purchaseOrderNameList;
+        }
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalINameList()
         {
             //IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders

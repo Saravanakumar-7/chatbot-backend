@@ -339,6 +339,7 @@ namespace Entities.DTOs
     }
     public class ItemMasterSearchDto
     {
+        public List<PartType> ItemType { get; set; }
         public List<string>? ItemNumber { get; set; }
         public List<string>? Commodity { get; set; }
         public List<string>? MaterialGroup { get; set; }

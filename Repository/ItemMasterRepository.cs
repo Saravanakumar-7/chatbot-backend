@@ -88,12 +88,14 @@ namespace Repository
                     .Include("ItemMasterApprovedVendor").Include("ItemMasterFileUpload").Include("ItemMasterRouting")
                     .Include("ItemMasterWarehouse");
                 if (itemMasterSearch != null || (itemMasterSearch.ItemNumber.Any())
-                    && itemMasterSearch.Commodity.Any() && itemMasterSearch.MaterialGroup.Any() && itemMasterSearch.PurchaseGroup.Any()
+                    && itemMasterSearch.ItemType.Any() && itemMasterSearch.Commodity.Any() && itemMasterSearch.MaterialGroup.Any() 
+                    && itemMasterSearch.PurchaseGroup.Any()
                     && itemMasterSearch.Department.Any())
 
                 {
                     query = query.Where
-                        (item => (itemMasterSearch.ItemNumber.Any() ? itemMasterSearch.ItemNumber.Contains(item.ItemNumber) : true)
+                        (item => (itemMasterSearch.ItemType.Any() ? itemMasterSearch.ItemType.Contains(item.ItemType) : true)
+                        &&(itemMasterSearch.ItemNumber.Any() ? itemMasterSearch.ItemNumber.Contains(item.ItemNumber) : true)
                         && (itemMasterSearch.Commodity.Any() ? itemMasterSearch.Commodity.Contains(item.Commodity) : true)
                         && (itemMasterSearch.MaterialGroup.Any() ? itemMasterSearch.MaterialGroup.Contains(item.MaterialGroup) : true)
                         && (itemMasterSearch.PurchaseGroup.Any() ? itemMasterSearch.PurchaseGroup.Contains(item.PurchaseGroup) : true)

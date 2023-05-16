@@ -23,6 +23,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<string> UpdatePurchaseRequisition(PurchaseRequisition purchaseRequisition);
         Task<string> DeletePurchaseRequisition(PurchaseRequisition purchaseRequisition);
         Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllActivePurchaseRequisitionNameList();
+        Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPurchaseRequisitionNameList();
         Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalINameList();
         Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIINameList();
         Task<int?> GetPRNumberAutoIncrementCount(DateTime date);

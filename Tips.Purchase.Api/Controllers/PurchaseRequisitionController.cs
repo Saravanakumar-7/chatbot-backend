@@ -648,6 +648,32 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPurchaseRequisitionNameList()
+        {
+            ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>>();
+            try
+            {
+                var prNumberList = await _repository.GetAllPurchaseRequisitionNameList();
+                var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(prNumberList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PurchaseRequisitionNameList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllPurchaseRequisitionNameList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAllPendingPurchaseRequisitionApprovalINameList()
         {

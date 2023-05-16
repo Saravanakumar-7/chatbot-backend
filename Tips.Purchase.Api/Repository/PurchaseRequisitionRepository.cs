@@ -223,6 +223,20 @@ namespace Tips.Purchase.Api.Repository
             return activePRNamelist;
         }
 
+        public async Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPurchaseRequisitionNameList()
+
+        {
+            IEnumerable<PurchaseRequisitionIdNameListDto> prNumberList = await _tipsPurchaseDbContext.PurchaseRequisitions
+                                .Select(x => new PurchaseRequisitionIdNameListDto()
+                                {
+                                    Id = x.Id,
+                                    PrNumber = x.PrNumber,
+                                })
+                              .ToListAsync();
+
+            return prNumberList;
+        }
+
         public async Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalINameList()
         {
             IEnumerable<PurchaseRequisitionIdNameListDto> pendingPRApprovalINameList = await _tipsPurchaseDbContext.PurchaseRequisitions

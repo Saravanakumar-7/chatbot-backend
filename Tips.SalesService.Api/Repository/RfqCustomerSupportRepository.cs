@@ -315,6 +315,20 @@ namespace Tips.SalesService.Api.Repository
             return getAllActiveRfqNumberList;
         }
 
+        public async Task<IEnumerable<RfqNumberListDto>> GetAllRfqNumberList()
+        {
+            IEnumerable<RfqNumberListDto> rfqNumberList = await _tipsSalesServiceDbContext.Rfqs
+                                .Select(x => new RfqNumberListDto()
+                                {
+                                    Id = x.Id,
+                                    RfqNumber = x.RfqNumber,
+                                    CustomerName = x.CustomerName
+                                })
+                              .OrderByDescending(x => x.Id).ToListAsync();
+
+            return rfqNumberList;
+        }
+
         public async Task<Rfq> GetRfqDeatailsByRfqNoAndRevNo(string rfqNumber, int revisionNumber)
         {
             var rfqDetail = await _tipsSalesServiceDbContext.Rfqs
