@@ -25,6 +25,26 @@ namespace Tips.Warehouse.Api.Repository
             var result = await Create(openDeliveryOrderHistory);
             return result.Id;
         }
-    }
 
+        public async Task<PagedList<OpenDeliveryOrderHistory>> GetAllOpenDeliveryOrderHistoryDetails(PagingParameter pagingParameter)
+        {
+            var openDeliveryOrderHistoryDetails = FindAll().OrderByDescending(x => x.Id);
+
+            return PagedList<OpenDeliveryOrderHistory>.ToPagedList(openDeliveryOrderHistoryDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        public Task<IEnumerable<OpenDeliveryOrderHistory>> GetOpenDeliveryOrderHistoryDetailsByBtoNo(string btoNumber, string uniqueId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<OpenDeliveryOrderHistory> GetOpenDeliveryOrderHistoryDetailsById(int id)
+        {
+            var openDeliveryOrderHistoryById = await _tipsWarehouseDbContext.OpenDeliveryOrderHistories.Where(x => x.Id == id)
+                                 .FirstOrDefaultAsync();
+
+
+            return openDeliveryOrderHistoryById;
+        }
+    }
 }

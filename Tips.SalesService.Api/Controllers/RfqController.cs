@@ -814,6 +814,89 @@ namespace Tips.SalesService.Api.Controllers
             }
 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRfqEnggByRfqNoAndRevNo(string rfqNumber, decimal revisionNumber)
+        {
+            ServiceResponse<RfqEnggDto> serviceResponse = new ServiceResponse<RfqEnggDto>();
+
+            try
+            {
+                var rfqEnggByRfqNoAndRevNo = await _rfqenggRepository.GetRfqEnggByRfqNoAndRevNo(rfqNumber, revisionNumber);
+
+                if (rfqEnggByRfqNoAndRevNo == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqEngg hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqEngg hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned RfqEngg with");
+                    var result = _mapper.Map<RfqEnggDto>(rfqEnggByRfqNoAndRevNo);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = $"Returned RfqEngg";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetRfqEnggByRfqNoandRevNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRfqEnggLatestRevNoByRfqNumber(string rfqNumber)
+        {
+            ServiceResponse<RfqEnggDto> serviceResponse = new ServiceResponse<RfqEnggDto>();
+
+            try
+            {
+                var rfqEnggLatestRevNoByRfqNo = await _rfqenggRepository.GetRfqEnggLatestRevNoByRfqnumber(rfqNumber);
+
+                if (rfqEnggLatestRevNoByRfqNo == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqEnggLatestRevNo with rfqNumber: {rfqNumber}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqEnggLatestRevNo with RfqNumber: {rfqNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned RfqEnggLatestRevNo with rfqNumber: {rfqNumber}");
+                    var result = _mapper.Map<RfqEnggDto>(rfqEnggLatestRevNoByRfqNo);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = $"Returned RfqEnggLatestRevNo with RfqNumber: {rfqNumber}";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetRfqEnggLatestRevNoByRfqnumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
         //Get RfqLPCostingById
         [HttpGet("{id}")]
         public async Task<IActionResult> GetRfqLPCostingById(int id)
@@ -916,6 +999,101 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetRfqCustomerSupportById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRfqCsbyRfqNumberandRevNo(string rfqNumber, decimal revisionNumber)
+        {
+            ServiceResponse<RfqCustomerSupportDto> serviceResponse = new ServiceResponse<RfqCustomerSupportDto>();
+
+            try
+            {
+                var rfqCsByRfqNoAndRevNo = await _repository.GetRfqCsByRfqNoAndRevNo(rfqNumber, revisionNumber);
+
+                if (rfqCsByRfqNoAndRevNo == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqCustomerSupport hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqCustomerSupport with id,hasn't been found in db.");
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned RfqCustomerSupport with id");
+
+                    RfqCustomerSupportDto rfCSqDto = _mapper.Map<RfqCustomerSupportDto>(rfqCsByRfqNoAndRevNo);
+
+                    List<RfqCustomerSupportItemDto> rfqItemsDtos = new List<RfqCustomerSupportItemDto>();
+                    foreach (var rfqCSItemDetail in rfqCsByRfqNoAndRevNo.RfqCustomerSupportItems)
+                    {
+                        RfqCustomerSupportItemDto rfqCSItemDto = _mapper.Map<RfqCustomerSupportItemDto>(rfqCSItemDetail);
+                        rfqCSItemDto.RfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliveryScheduleDto>>(rfqCSItemDetail.RfqCSDeliverySchedule);
+                        rfqItemsDtos.Add(rfqCSItemDto);
+                    }
+                    rfCSqDto.RfqCustomerSupportItems = rfqItemsDtos;
+
+                    serviceResponse.Data = rfCSqDto;
+                    serviceResponse.Message = $"Returned RfqCustomerSupport";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetRfqCsbyRfqNumberandRevNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRfqCsLatestRevNoByRfqnumber(string rfqNumber)
+        {
+            ServiceResponse<RfqCustomerSupportDto> serviceResponse = new ServiceResponse<RfqCustomerSupportDto>();
+
+            try
+            {
+                var rfqCsLatestRevNoByRfqNo = await _repository.GetRfqCsLatestRevNoByRfqnumber(rfqNumber);
+
+                if (rfqCsLatestRevNoByRfqNo == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqCustomerSupport hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqCustomerSupport with id,hasn't been found in db.");
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned RfqCustomerSupport with id");
+
+                    RfqCustomerSupportDto rfCSqDto = _mapper.Map<RfqCustomerSupportDto>(rfqCsLatestRevNoByRfqNo);
+
+                    serviceResponse.Data = rfCSqDto;
+                    serviceResponse.Message = $"Returned RfqCustomerSupportLatestRevNo";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetRfqCsLatestRevNoByRfqnumber action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
@@ -1435,8 +1613,8 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         // Update rfqengg
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRfqEngg(int id, [FromBody] RfqEnggDtoUpdate rfqEnggDtoUpdate)
+        [HttpPut]
+        public async Task<IActionResult> UpdateRfqEngg([FromBody] RfqEnggDtoUpdate rfqEnggDtoUpdate)
         {
             ServiceResponse<RfqEnggDto> serviceResponse = new ServiceResponse<RfqEnggDto>();
 
@@ -1460,24 +1638,14 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var getRfqEnggById = await _rfqenggRepository.GetRfqEnggById(id);
-                if (getRfqEnggById is null)
-                {
-                    _logger.LogError($"RfqEngg with id: {id}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update Rfqengg with id: {id}, hasn't been found in db.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
-                }
-
-                var updateRfqEngg = _mapper.Map(rfqEnggDtoUpdate, getRfqEnggById);
-
-                string result = await _rfqenggRepository.UpdateRfqEngg(updateRfqEngg);
-                _logger.LogInfo(result);
+                
+                var updateRfqEngg = _mapper.Map<RfqEngg>(rfqEnggDtoUpdate);
+                await _rfqenggRepository.UpdateRfqEnggRevNo(updateRfqEngg);
+                //string result = await _rfqenggRepository.UpdateRfqEngg(updateRfqEngg);
+                //_logger.LogInfo(result);
                 _rfqenggRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = "Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -1568,8 +1736,8 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRfqCustomerSupport(int id, [FromBody] RfqCustomerSupportUpdateDto rfqCustomerSupportUpdateDto)
+        [HttpPut]
+        public async Task<IActionResult> UpdateRfqCustomerSupport([FromBody] RfqCustomerSupportUpdateDto rfqCustomerSupportUpdateDto)
         {
             ServiceResponse<RfqCustomerSupportDto> serviceResponse = new ServiceResponse<RfqCustomerSupportDto>();
 
@@ -1593,18 +1761,8 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var GetRfqCSById = await _repository.GetRfqCustomerSupportById(id);
-                if (GetRfqCSById is null)
-                {
-                    _logger.LogError($"RfqCustomerSupport with id: {id}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update RfqCustomerSupport with id: {id}, hasn't been found in db.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
-                }
-
-                var updateRfqCS = _mapper.Map<RfqCustomerSupport>(GetRfqCSById);
+              
+                var updateRfqCS = _mapper.Map<RfqCustomerSupport>(rfqCustomerSupportUpdateDto);
 
                 //tets
 
@@ -1635,13 +1793,13 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 updateRfqCS.RfqCustomerSupportItems = rfqCsItemList;
                 var data = _mapper.Map(rfqCustomerSupportUpdateDto, updateRfqCS);
-                 
-                string result = await _repository.UpdateRfqCustomerSupport(data);
-                _logger.LogInfo(result);
+                await _repository.UpdateRfqcsRevNo(data);
+                //string result = await _repository.UpdateRfqCustomerSupport(data);
+                //_logger.LogInfo(result);
                 _rfqRepository.Update(rfqDetailsByRfqNumber);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = "Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

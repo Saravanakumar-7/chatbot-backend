@@ -54,7 +54,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqEnggDtoUpdate
     {
-        public int Id { get; set; }
+       
 
         public string? CustomerName { get; set; }
 
@@ -62,14 +62,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
 
 
-        [Precision(13, 1)]
-        public decimal? RevisionNumber { get; set; }
         public string? RfqNumber { get; set; }
 
         [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceivedate { get; set; }
-        public DateTime? QuoteExpectdate { get; set; }      
+        public DateTime? QuoteExpectdate { get; set; }
+        public string Unit { get; set; }
         public List<RfqEnggItemDtoUpdate>? RfqEnggItems { get; set; }
         public List<RfqEnggRiskIdentificationDtoUpdate>? RfqEnggRiskIdentifications { get; set; }
 

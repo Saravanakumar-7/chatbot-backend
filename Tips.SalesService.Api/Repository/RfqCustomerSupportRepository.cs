@@ -80,6 +80,47 @@ namespace Tips.SalesService.Api.Repository
 
             return getRfqCSById;
         }
+        public async Task<RfqCustomerSupport> GetRfqCsByRfqNoAndRevNo(string rfqNumber, decimal revisionNumber)
+        {
+            var rfqCsByRfqNoAndRevNo = await _tipsSalesServiceDbContext.RfqCustomerSupports.Where(x => x.RfqNumber == rfqNumber
+                               && x.RevisionNumber == revisionNumber)
+                .Include(x=>x.RfqCustomerSupportItems)
+                .ThenInclude(x => x.RfqCSDeliverySchedule)
+                .Include(x => x.RfqCustomerSupportNotes)
+                           .FirstOrDefaultAsync();
+
+            return rfqCsByRfqNoAndRevNo;
+        }
+
+        public async Task<RfqCustomerSupport> GetRfqCsLatestRevNoByRfqnumber(string rfqNumber)
+        {
+            var rfqCsLatestRevNoByRfqNo = await _tipsSalesServiceDbContext.RfqCustomerSupports.Where(x => x.RfqNumber == rfqNumber)
+                            .OrderByDescending(x => x.Id)
+                            .Include(x=>x.RfqCustomerSupportItems)
+                            .ThenInclude(x=>x.RfqCSDeliverySchedule)
+                            .Include(x=>x.RfqCustomerSupportNotes)
+                           .FirstOrDefaultAsync();
+
+            return rfqCsLatestRevNoByRfqNo;
+        }
+        public async Task<RfqCustomerSupport> UpdateRfqcsRevNo(RfqCustomerSupport rfqCustomerSupport)
+        {
+
+            rfqCustomerSupport.CreatedBy = rfqCustomerSupport.CreatedBy;
+            rfqCustomerSupport.CreatedOn = rfqCustomerSupport.CreatedOn;
+            rfqCustomerSupport.LastModifiedBy = "Admin";
+            rfqCustomerSupport.LastModifiedOn = DateTime.Now;
+            var getOldRevisionNumber = _tipsSalesServiceDbContext.RfqCustomerSupports
+                .Where(x => x.RfqNumber == rfqCustomerSupport.RfqNumber)
+                .OrderByDescending(x => x.Id)
+                .Select(x => x.RevisionNumber)
+                .FirstOrDefault();
+
+            rfqCustomerSupport.RevisionNumber = (getOldRevisionNumber + 1);
+            var result = await Create(rfqCustomerSupport);
+            return result;
+
+        }
 
         public async Task<RfqCustomerSupport> GetRfqCustomerSupportByRfqNumber(string RfqNumber)
         {
@@ -513,12 +554,54 @@ namespace Tips.SalesService.Api.Repository
         public async Task<RfqEngg> GetRfqEnggById(int id)
         {
             var getRfqEnggById = await _tipsSalesServiceDbContext.RfqEnggs.Where(x => x.Id == id)
-                              .Include(t => t.RfqEnggItems)                              
+                              .Include(t => t.RfqEnggItems)
                            .Include(m => m.RfqEnggRiskIdentifications)
                            .FirstOrDefaultAsync();
 
             return getRfqEnggById;
-        }       
+        }
+
+        public async Task<RfqEngg> GetRfqEnggByRfqNoAndRevNo(string rfqNumber, decimal revisionNumber)
+        {
+            var rfqEnggByRfqNoAndRevNo = await _tipsSalesServiceDbContext.RfqEnggs.Where(x => x.RFQNumber == rfqNumber
+                               && x.RevisionNumber == revisionNumber)
+                              .Include(t => t.RfqEnggItems)
+                           .Include(m => m.RfqEnggRiskIdentifications)
+                           .FirstOrDefaultAsync();
+
+            return rfqEnggByRfqNoAndRevNo;
+        }
+
+        public async Task<RfqEngg> GetRfqEnggLatestRevNoByRfqnumber(string rfqNumber)
+        {
+            var rfqEnggLatestRevNoByRfqNo =await _tipsSalesServiceDbContext.RfqEnggs.Where(x => x.RFQNumber == rfqNumber)
+                            .OrderByDescending(x => x.Id)
+                              .Include(t => t.RfqEnggItems)
+                           .Include(m => m.RfqEnggRiskIdentifications)
+                           .FirstOrDefaultAsync();
+
+            return rfqEnggLatestRevNoByRfqNo;
+        }
+
+        public async Task<RfqEngg> UpdateRfqEnggRevNo(RfqEngg rfqEngg)
+        {
+
+            rfqEngg.CreatedBy = rfqEngg.CreatedBy;
+            rfqEngg.CreatedOn = rfqEngg.CreatedOn;
+            rfqEngg.LastModifiedBy = "Admin";
+            rfqEngg.LastModifiedOn = DateTime.Now;
+            var getOldRevisionNumber = _tipsSalesServiceDbContext.RfqEnggs
+                .Where(x => x.RFQNumber == rfqEngg.RFQNumber)
+                .OrderByDescending(x => x.Id)
+                .Select(x => x.RevisionNumber)
+                .FirstOrDefault();
+
+            rfqEngg.RevisionNumber = (getOldRevisionNumber + 1);
+            var result = await Create(rfqEngg);
+            return result;
+
+        }
+
         public async Task<RfqEngg> GetRfqEnggByRfqNumber(string RfqNumber)
         {
             var getRfqEnggByRfqNumber = await _tipsSalesServiceDbContext.RfqEnggs
