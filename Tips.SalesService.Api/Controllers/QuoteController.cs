@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http;
 using AutoMapper;
 using Contracts;
 using Entities;
@@ -11,6 +12,7 @@ using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
 using Tips.SalesService.Api.Repository;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -23,11 +25,15 @@ namespace Tips.SalesService.Api.Controllers
         private IRfqRepository _rfqRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        public QuoteController(IQuoteRepository repository, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
+        public QuoteController(IQuoteRepository repository, HttpClient httpClient, IConfiguration config, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _httpClient = httpClient;
+            _config = config;
             _rfqRepository = rfqRepository;
             _rfqCustomerSupportItemRepository = rfqCustomerSupportItemRepository;
         }
@@ -94,7 +100,33 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogInfo($"Returned Quote with id: {id}");
 
+                    List<QuoteGeneralDto> quoteGeneralDtos = new List<QuoteGeneralDto>();
+                    
+
                     var quoteGeneralList = _mapper.Map<IEnumerable<QuoteGeneralDto>>(quoteDetails.QuoteGenerals);
+
+                    //foreach (var quoteItems in quoteGeneralList)
+                    //{ 
+                    //    var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?", "ItemNumber=", quoteItems.ItemNumber));
+                    //    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                    //    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                    //    dynamic inventoryObject = inventoryObjectData;
+                    //    quoteItems.AvailableStock = inventoryObject.ToDecimal();
+                    //}
+
+                    foreach (var quoteItems in quoteGeneralList)
+                    {
+                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?", "ItemNumber=", quoteItems.ItemNumber));
+                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        dynamic inventoryObject = inventoryObjectData;
+
+                        // Convert double to decimal
+                        decimal availableStock = Convert.ToDecimal(inventoryObject);
+
+                        quoteItems.AvailableStock = availableStock;
+                    }
+
                     var quoteAdditionalChargesList = _mapper.Map<IEnumerable<QuoteAdditionalChargesDto>>(quoteDetails.QuoteAdditionalCharges);
                     var quoteOtherTermsList = _mapper.Map<IEnumerable<QuoteOtherTermsDto>>(quoteDetails.QuoteOtherTerms);
                     var quoteRFQNotesList = _mapper.Map<IEnumerable<QuoteRFQNotesDto>>(quoteDetails.QuoteRFQNotes);

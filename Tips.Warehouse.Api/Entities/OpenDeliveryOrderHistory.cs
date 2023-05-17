@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -20,7 +21,7 @@ namespace Tips.Warehouse.Api.Entities
         public DateTime? ODODate { get; set; }
         public string? ItemNumber { get; set; } 
         public string? ItemDescription { get; set; }
-        public PartTypes ItemType { get; set; } 
+        public PartType ItemType { get; set; } 
         public decimal? UnitPrice { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
