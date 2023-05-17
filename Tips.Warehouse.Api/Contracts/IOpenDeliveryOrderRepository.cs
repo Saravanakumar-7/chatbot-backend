@@ -16,9 +16,9 @@ namespace Tips.Warehouse.Api.Contracts
         Task<int?> CreateOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder);
         Task<string> UpdateOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder);
         Task<int?> GetODONumberAutoIncrementCount(DateTime date);
-        Task<List<ODODetailsDto>> GetODODetailsByItemNo(string itemNumber);
+        Task<ODODetailsDto> GetODODetailsByItemNo(string itemNumber);
         Task<List<WarehouseDetailsDto>> GetWarehouseODOByItemNo(string itemNumber);
-        Task<List<LocationDetailsDto>> GetLocationODOByItemNo(string itemNumber);
+        Task<List<LocationDetailsDto>> GetLocationODOByItemNo(string itemNumber, string warehouse);
         Task<string> DeleteOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder);
 
         Task<IEnumerable<OpenDeliveryOrderIdNameList>> GetAllOpenDeliveryOrderIdNameList();

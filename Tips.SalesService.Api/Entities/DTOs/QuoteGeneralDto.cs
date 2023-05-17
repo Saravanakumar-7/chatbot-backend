@@ -14,6 +14,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
+        public decimal? AvailableStock { get; set; }
         public string? DiscountType { get; set; }
 
         [Precision(18, 3)]

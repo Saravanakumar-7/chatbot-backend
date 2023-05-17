@@ -141,7 +141,7 @@ namespace Tips.Warehouse.Api.Repository
         }
 
 
-        public async Task<List<ODODetailsDto>> GetODODetailsByItemNo(string itemNumber)
+        public async Task<ODODetailsDto> GetODODetailsByItemNo(string itemNumber)
         {
             var projectNumbers = await _tipsWarehouseDbContext.Inventory
                                 .Where(x => x.PartNumber == itemNumber)
@@ -150,7 +150,7 @@ namespace Tips.Warehouse.Api.Repository
                                     ItemNumber = s.ProjectNumber,
                                     ItemType = s.PartType,
                                     UOM = s.UOM,
-                                }).Distinct().ToListAsync();
+                                }).Distinct().FirstOrDefaultAsync();
 
             return projectNumbers;
         }
@@ -168,10 +168,10 @@ namespace Tips.Warehouse.Api.Repository
             return projectNumbers;
         }
 
-        public async Task<List<LocationDetailsDto>> GetLocationODOByItemNo(string itemNumber)
+        public async Task<List<LocationDetailsDto>> GetLocationODOByItemNo(string itemNumber, string warehouse)
         {
             var projectNumbers = await _tipsWarehouseDbContext.Inventory
-                                .Where(x => x.PartNumber == itemNumber)
+                                .Where(x => x.PartNumber == itemNumber && x.Warehouse == warehouse)
                                 .Select(s => new LocationDetailsDto()
                                 {
                                     LocationName = s.Location,

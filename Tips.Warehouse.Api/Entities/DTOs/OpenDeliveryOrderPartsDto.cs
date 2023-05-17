@@ -1,4 +1,4 @@
-﻿using Entities;
+﻿using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public int Id { get; set; }
         public string ItemNumber { get; set; }
         public string ODONumber { get; set; }
-        public PartTypes ItemType { get; set; }
+        public PartType ItemType { get; set; }
 
         [Required]
         public string ItemDescription { get; set; }
@@ -46,7 +46,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ItemNumber { get; set; }
 
         [Required(ErrorMessage = "ItemType is required")]
-        public PartTypes ItemType { get; set; }
+        public PartType ItemType { get; set; }
 
         [Required]
         public string ItemDescription { get; set; }
@@ -92,7 +92,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ItemNumber { get; set; }
 
         [Required(ErrorMessage = "ItemType is required")]
-        public PartTypes ItemType { get; set; }
+        public PartType ItemType { get; set; }
 
         [Required]
         public string ItemDescription { get; set; }

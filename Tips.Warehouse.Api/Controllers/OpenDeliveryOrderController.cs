@@ -136,15 +136,13 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetOpenDeliveryOrderDetailsByItemNo(string itemNumber)
+        public async Task<IActionResult> GetStockDetailsByItemNo(string itemNumber)
         {
             ServiceResponse<ODODetailsDto> serviceResponse = new ServiceResponse<ODODetailsDto>();
             try
             {
-                var oDODetailsById = await _repository.GetODODetailsByItemNo(itemNumber);
-                var warehouseODODetails = await _repository.GetWarehouseODOByItemNo(itemNumber);
-                var LocationODODetails = await _repository.GetLocationODOByItemNo(itemNumber);
-               // oDODetailsById
+                var oDODetailsById = await _repository.GetODODetailsByItemNo(itemNumber); 
+
                 if (oDODetailsById == null)
                 {
                     serviceResponse.Data = null;
@@ -156,10 +154,24 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 else
                 {
+
+                    ODODetailsDto OdoDetailsDto = new ODODetailsDto();
+                    OdoDetailsDto.ItemNumber = oDODetailsById.ItemNumber;
+                    OdoDetailsDto.ItemType = oDODetailsById.ItemType;
+                    OdoDetailsDto.UOM = oDODetailsById.UOM;
+
+                    var warehouseODODetails = await _repository.GetWarehouseODOByItemNo(itemNumber);
+
+                    foreach (var warehouse in warehouseODODetails)
+                    {
+                        warehouse.LocationDetails = await _repository.GetLocationODOByItemNo(itemNumber, warehouse.WarehouseName);
+                    }
+                    OdoDetailsDto.WarehouseDetails = warehouseODODetails;
+                    
                     _logger.LogInfo($"Returned OpenDeliveryOrder with id: {itemNumber}");
-                    var result = _mapper.Map<ODODetailsDto>(oDODetailsById);
+                    var result = _mapper.Map<ODODetailsDto>(OdoDetailsDto); 
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned OpenDeliveryOrderByItemNo Successfully";
+                    serviceResponse.Message = "Returned Stock Details Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);

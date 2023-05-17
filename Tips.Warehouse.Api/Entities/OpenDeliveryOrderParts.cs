@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,7 +12,7 @@ namespace Tips.Warehouse.Api.Entities
         public string ItemNumber { get; set; }
         public string ODONumber { get; set; }
         public string ItemDescription { get; set; }
-        public PartTypes ItemType { get; set; }
+        public PartType ItemType { get; set; }
         public decimal UnitPrice { get; set; }
         public string UOC { get; set; }
         public string UOM { get; set; }

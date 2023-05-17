@@ -153,6 +153,44 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetStockDetailsForAllLocationWarehouseByItemNo(string itemNumber)
+        {
+            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+            try
+            {
+                decimal InventoryDetails = await _inventoryRepository.GetStockDetailsForAllLocationWarehouseByItemNo(itemNumber);
+                if (InventoryDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory Details hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with itemNumber: {itemNumber}, is invalid");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with Itemnumber: {itemNumber}");
+                    ////var result = InventoryDetails;
+                    //serviceResponse.Data = InventoryDetails;
+                    //serviceResponse.Message = "Returned InventoryDetails with id Successfully";
+                    //serviceResponse.Success = true;
+                    //serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(InventoryDetails);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> GetInventoryDetailsByItemNo(string itemNumber)
