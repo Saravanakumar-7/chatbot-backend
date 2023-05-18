@@ -23,7 +23,7 @@ namespace Tips.Warehouse.Api.Entities
         public decimal? OrderBalanceQty { get; set; }
          
         public decimal? FGStock { get; set; }
-        public decimal? Discount { get; set; }
+        public string? Discount { get; set; }
         public decimal? NetValue { get; set; }
         public decimal? DispatchQty { get; set; }
         public decimal InvoicedQty { get; set; }       

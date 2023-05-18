@@ -15,6 +15,7 @@ using Entities.DTOs;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Crypto.Macs;
+using Tips.SalesService.Api.Entities.Dto;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -349,7 +350,8 @@ namespace Tips.SalesService.Api.Repository
                                 {
                                     Id = x.Id,
                                     RfqNumber = x.RfqNumber,
-                                    CustomerName = x.CustomerName
+                                    CustomerName = x.CustomerName,
+                                    RevisionNumber = x.RevisionNumber
                                 })
                               .OrderByDescending(x => x.Id).ToListAsync();
 
@@ -442,7 +444,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberListByCustomerId(string customerId)
         {
             var latestRfqs = await _tipsSalesServiceDbContext.Rfqs
-                .Where(r => r.CustomerId == customerId)
+                .Where(r => r.CustomerId == customerId && r.IsModified == false)
                 .ToListAsync();
 
             var getAllActiveRfqNumberList = latestRfqs
@@ -453,7 +455,8 @@ namespace Tips.SalesService.Api.Repository
                     Id = x.Id,
                     RfqNumber = x.RfqNumber,
                     CustomerName = x.CustomerName,
-                    CustomerId = x.CustomerId
+                    CustomerId = x.CustomerId,
+                    RevisionNumber = x.RevisionNumber
                 });
 
             return getAllActiveRfqNumberList;

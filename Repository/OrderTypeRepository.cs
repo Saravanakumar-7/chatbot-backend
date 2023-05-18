@@ -44,6 +44,20 @@ namespace Repository
             var orderTypeDetails = await FindAll().ToListAsync();
             return orderTypeDetails;
         }
+        public async Task<OrderType> GetDefaultOrderType(int id)
+        {
+
+            var orderTypeDetailsById = await TipsMasterDbContext.OrderTypes
+                .Where(x => x.Id == id).FirstOrDefaultAsync();
+            orderTypeDetailsById.IsDefault = true;
+            Update(orderTypeDetailsById);
+             return orderTypeDetailsById;
+        }
+        public async Task<IEnumerable<OrderType>> GetDefaultOrderTypeValue(int id)
+        {
+            var updateOrderTypeValue = await TipsMasterDbContext.OrderTypes.Where(x => x.Id != id).ToListAsync();
+            return updateOrderTypeValue;
+        }
 
         public async Task<OrderType> GetOrderTypeById(int id)
         {
@@ -55,6 +69,7 @@ namespace Repository
         {
             orderType.LastModifiedBy = "Admin";
             orderType.LastModifiedOn = DateTime.Now;
+            orderType.IsDefault = false;
             Update(orderType);
             string result = $"OrderType details of {orderType.Id} is updated successfully!";
             return result;
