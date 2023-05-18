@@ -79,6 +79,53 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpPut]
+        public async Task<IActionResult> UpdateOrderTypeDefaultValue(int id)
+        {
+            ServiceResponse<IEnumerable<OrderTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<OrderTypeDto>>();
+
+            try
+            {
+                var changeOrderType = await _repository.OrderTypeRepository.GetDefaultOrderType(id);
+                if (changeOrderType != null)
+                {
+                    var orderTypeDetails = await _repository.OrderTypeRepository.GetDefaultOrderTypeValue(id);
+                    _logger.LogInfo("Returned all OrderType");
+                    foreach (var orderType in orderTypeDetails)
+                    {
+                        await _repository.OrderTypeRepository.UpdateOrderType(orderType);
+                        _repository.SaveAsync();
+
+                    }
+                     
+                    //      var updates = await _repository.OrderTypeRepository.Update(result);
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update Default Value in OrderType Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OrderType with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OrderType with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrderTypeById(int id)
         {
@@ -144,6 +191,7 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var orderTypeDetails = _mapper.Map<OrderType>(orderTypePostDto);
+                orderTypeDetails.IsDefault = false;
                 _repository.OrderTypeRepository.CreateOrderType(orderTypeDetails);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;

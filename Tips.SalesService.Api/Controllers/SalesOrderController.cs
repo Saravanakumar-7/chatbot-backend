@@ -112,6 +112,15 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
                         salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
+                        var SalesItemNo = salesOrderItemsDtos.ItemNumber;
+                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?", "ItemNumber=", SalesItemNo));
+                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        dynamic inventoryObject = inventoryObjectData;
+                          // Convert double to decimal
+                        decimal availableStock = Convert.ToDecimal(inventoryObject);
+                        salesOrderItemsDtos.AvailableStock = availableStock;
+
                         salesOrderItemsDtoList.Add(salesOrderItemsDtos);
                     }
 

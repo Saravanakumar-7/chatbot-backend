@@ -129,34 +129,90 @@ namespace Tips.SalesService.Api.Repository
                .Where(x => x.RfqNumber == rfqNumber)
                .FirstOrDefaultAsync();
 
+            var rfqCsId = _tipsSalesServiceDbContext.RfqCustomerSupports
+                .OrderByDescending(x => x.Id)
+                .Where(x => x.RfqNumber == rfqNumber)
+                .Select(x=>x.Id)
+                .FirstOrDefault();
 
-            var leftOuterJoin = from e in _tipsSalesServiceDbContext.RfqCustomerSupportItems
-                                where e.RfqNumber == rfqNumber && e.ReleaseStatus == true
-                                join d in _tipsSalesServiceDbContext.ItemPriceLists on e.ItemNumber equals d.ItemNumber into dept
-                                from ItemPriceList in dept.DefaultIfEmpty()
-                                select new CsItemDetailsForQuoteDto
-                                {
-                                    RFQNumber = e.RfqNumber,
-                                    CustomerName = rfqDetail.CustomerName,
-                                    CustomerAliasName = rfqDetail.CustomerAliasName,
-                                    RoomName=e.RoomName,
-                                    CustomerId = rfqDetail.CustomerId,
-                                    ItemNumber = e.ItemNumber,
-                                    Description = e.Description,
-                                    CustomFields = e.CustomFields,
-                                    PriceListName = ItemPriceList.PriceListName,
-                                    Qty = e.Qty,
-                                    UnitPrice = ItemPriceList.LeastCost,
-                                    LeastCostPlus = ItemPriceList.LeastCostPlus,
-                                    LeastCostminus =ItemPriceList.LeastCostminus,
-                                    DiscountMinus = ItemPriceList.DiscountMinus,
-                                    DiscountPlus = ItemPriceList.DiscountPlus,
-                                    Markup = ItemPriceList.Markup,
-                                    CreatedOn = ItemPriceList.CreatedOn,
-                                    IsDiscountApplicable = ItemPriceList.IsDiscountApplicable
-                                };
+            var rfqItems = _tipsSalesServiceDbContext.RfqCustomerSupportItems
+      .Where(e => e.RfqNumber == rfqNumber && e.ReleaseStatus == true && e.RfqCustomerSupportId == rfqCsId)
+      .ToList();
 
-            var postdata = leftOuterJoin.ToList(); 
+            var itemNumbers = rfqItems.Select(e => e.ItemNumber).Distinct().ToList();
+
+            var postdata = new List<CsItemDetailsForQuoteDto>();
+
+            foreach (var itemNumber in itemNumbers)
+            {
+                var items = rfqItems.Where(e => e.ItemNumber == itemNumber).ToList();
+
+                foreach (var rfqItem in items)
+                {
+                    var itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
+                        .Where(d => d.ItemNumber == rfqItem.ItemNumber)
+                        .OrderByDescending(d => d.CreatedOn)
+                        .FirstOrDefault();
+
+                    if (itemPriceList != null)
+                    {
+                        var itemDetails = new CsItemDetailsForQuoteDto
+                        {
+                            RFQNumber = rfqItem.RfqNumber,
+                            CustomerName = rfqDetail.CustomerName,
+                            CustomerAliasName = rfqDetail.CustomerAliasName,
+                            RoomName = rfqItem.RoomName,
+                            CustomerId = rfqDetail.CustomerId,
+                            ItemNumber = rfqItem.ItemNumber,
+                            Description = rfqItem.Description,
+                            CustomFields = rfqItem.CustomFields,
+                            PriceListName = itemPriceList.PriceListName,
+                            Qty = rfqItem.Qty,
+                            UnitPrice = itemPriceList.LeastCost,
+                            LeastCostPlus = itemPriceList.LeastCostPlus,
+                            LeastCostminus = itemPriceList.LeastCostminus,
+                            DiscountMinus = itemPriceList.DiscountMinus,
+                            DiscountPlus = itemPriceList.DiscountPlus,
+                            Markup = itemPriceList.Markup,
+                            CreatedOn = itemPriceList.CreatedOn,
+                            IsDiscountApplicable = itemPriceList.IsDiscountApplicable
+                        };
+
+                        postdata.Add(itemDetails);
+                    }
+                }
+            }
+
+
+
+            //var leftOuterJoin = from e in _tipsSalesServiceDbContext.RfqCustomerSupportItems
+            //                    where e.RfqNumber == rfqNumber && e.ReleaseStatus == true
+            //                    join d in _tipsSalesServiceDbContext.ItemPriceLists on e.ItemNumber equals d.ItemNumber into dept
+            //                    from ItemPriceList in dept.DefaultIfEmpty()
+            //                    select new CsItemDetailsForQuoteDto
+            //                    {
+            //                        RFQNumber = e.RfqNumber,
+            //                        CustomerName = rfqDetail.CustomerName,
+            //                        CustomerAliasName = rfqDetail.CustomerAliasName,
+            //                        RoomName = e.RoomName,
+            //                        CustomerId = rfqDetail.CustomerId,
+            //                        ItemNumber = e.ItemNumber,
+            //                        Description = e.Description,
+            //                        CustomFields = e.CustomFields,
+            //                        PriceListName = ItemPriceList.PriceListName,
+            //                        Qty = e.Qty,
+            //                        UnitPrice = ItemPriceList.LeastCost,
+            //                        LeastCostPlus = ItemPriceList.LeastCostPlus,
+            //                        LeastCostminus = ItemPriceList.LeastCostminus,
+            //                        DiscountMinus = ItemPriceList.DiscountMinus,
+            //                        DiscountPlus = ItemPriceList.DiscountPlus,
+            //                        Markup = ItemPriceList.Markup,
+            //                        CreatedOn = ItemPriceList.CreatedOn,
+            //                        IsDiscountApplicable = ItemPriceList.IsDiscountApplicable
+            //                    };
+
+            //var postdata = leftOuterJoin.ToList();
+
 
             return postdata;
         }

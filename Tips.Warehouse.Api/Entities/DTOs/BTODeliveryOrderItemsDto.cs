@@ -14,7 +14,7 @@
         public decimal? FGOrderQty { get; set; }
         public decimal? OrderBalanceQty { get; set; }
         public decimal? FGStock { get; set; }
-        public decimal? Discount { get; set; }
+        public string? Discount { get; set; }
         public decimal? NetValue { get; set; }
         public decimal DispatchQty { get; set; }
         public string? SerialNo { get; set; }
@@ -36,7 +36,7 @@
         public decimal? FGOrderQty { get; set; }
         public decimal? OrderBalanceQty { get; set; }
         public decimal? FGStock { get; set; }
-        public decimal? Discount { get; set; }
+        public string? Discount { get; set; }
         public decimal? NetValue { get; set; }
         public decimal DispatchQty { get; set; }
         public string? SerialNo { get; set; }
@@ -56,7 +56,7 @@
         public decimal? FGOrderQty { get; set; }
         public decimal? OrderBalanceQty { get; set; }
         public decimal? FGStock { get; set; }
-        public decimal? Discount { get; set; }
+        public string? Discount { get; set; }
         public decimal? NetValue { get; set; }
         public decimal DispatchQty { get; set; }
         public string? SerialNo { get; set; }

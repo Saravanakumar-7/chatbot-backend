@@ -135,7 +135,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("itemNumber")]
         public async Task<IActionResult> GetStockDetailsByItemNo(string itemNumber)
         {
             ServiceResponse<ODODetailsDto> serviceResponse = new ServiceResponse<ODODetailsDto>();

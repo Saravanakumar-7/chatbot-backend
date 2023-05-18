@@ -14,6 +14,8 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
         public string? SalesOrderNumber { get; set; }
+        public decimal? AvailableStock { get; set; }
+
         public string? ProjectNumber { get; set; }
         public OrderStatus StatusEnum { get; set; }
 

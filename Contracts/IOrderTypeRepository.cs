@@ -15,6 +15,7 @@ namespace Contracts
         Task<int?> CreateOrderType(OrderType orderType);
         Task<string> UpdateOrderType(OrderType orderType);
         Task<string> DeleteOrderType(OrderType orderType);
-
+        Task<OrderType> GetDefaultOrderType(int id);
+        Task<IEnumerable<OrderType>> GetDefaultOrderTypeValue(int id); 
     }
 }
