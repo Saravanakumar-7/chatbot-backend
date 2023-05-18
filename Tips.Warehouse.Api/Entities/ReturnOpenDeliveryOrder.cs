@@ -6,6 +6,7 @@ namespace Tips.Warehouse.Api.Entities
     {
         [Key]
         public int Id { get; set; }
+        public string? ODONumber { get; set; }
         public DateTime? ODODate { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }

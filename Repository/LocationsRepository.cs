@@ -37,22 +37,21 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<Locations>> GetAllActiveLocations([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<Locations>> GetAllActiveLocations()
         {
-            var LocationsDetails = FindAll()
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Warehouse.Contains(searchParams.SearchValue) ||
-            inv.LocationName.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<Locations>.ToPagedList(LocationsDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var LocationsDetails =await FindAll().Where(x=>x.ActiveStatus == true).ToListAsync();
+
+
+            return LocationsDetails;
         }
 
-        public async Task<PagedList<Locations>> GetAllLocations([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<Locations>> GetAllLocations()
         {
 
-            var LocationsDetails = FindAll().OrderByDescending(x => x.Id)
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Warehouse.Contains(searchParams.SearchValue) ||
-                   inv.LocationName.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            var LocationsDetails = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
+               
 
-            return PagedList<Locations>.ToPagedList(LocationsDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            return LocationsDetails;
         }
         public async Task<Locations> GetLocationsById(int id)
         {

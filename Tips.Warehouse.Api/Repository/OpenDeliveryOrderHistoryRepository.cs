@@ -28,21 +28,30 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<PagedList<OpenDeliveryOrderHistory>> GetAllOpenDeliveryOrderHistoryDetails(PagingParameter pagingParameter)
         {
-            var openDeliveryOrderHistoryDetails = FindAll().OrderByDescending(x => x.Id);
+            var odo = await _tipsWarehouseDbContext.ReturnOpenDeliveryOrders
+              .FirstOrDefaultAsync();
 
-            return PagedList<OpenDeliveryOrderHistory>.ToPagedList(openDeliveryOrderHistoryDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var getAllOpenDetails = PagedList<OpenDeliveryOrderHistory>.ToPagedList(FindAll()
+                    .Where(x => x.UniqeId != null)
+                    .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+
+
+
+            return getAllOpenDetails;
         }
 
-        public Task<IEnumerable<OpenDeliveryOrderHistory>> GetOpenDeliveryOrderHistoryDetailsByBtoNo(string btoNumber, string uniqueId)
+        public async Task<IEnumerable<OpenDeliveryOrderHistory>> GetOpenDeliveryOrderHistoryDetailsByBtoNo(string odoNumber, string uniqueId)
         {
-            throw new NotImplementedException();
+            var openHistoryDetails = await _tipsWarehouseDbContext.OpenDeliveryOrderHistories
+              .Where(x => x.ODONumber == odoNumber && x.UniqeId == uniqueId)
+                        .ToListAsync();
+            return openHistoryDetails;
         }
 
         public async Task<OpenDeliveryOrderHistory> GetOpenDeliveryOrderHistoryDetailsById(int id)
         {
             var openDeliveryOrderHistoryById = await _tipsWarehouseDbContext.OpenDeliveryOrderHistories.Where(x => x.Id == id)
                                  .FirstOrDefaultAsync();
-
 
             return openDeliveryOrderHistoryById;
         }

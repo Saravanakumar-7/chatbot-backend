@@ -40,9 +40,11 @@ namespace Tips.Warehouse.Api.Repository
             return PagedList<ReturnOpenDeliveryOrder>.ToPagedList(returODODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public Task<int?> GetReturnOpenDeliveryOrderByBtoNo(string BTONumber)
+        public async Task<int?> GetReturnOpenDeliveryOrderByODONo(string odoNumber)
         {
-            throw new NotImplementedException();
+            var getReturnBtoDeliveryOrderByBtoNo = _tipsWarehouseDbContext.ReturnOpenDeliveryOrders
+                     .Where(x => x.ODONumber == odoNumber).Count();
+            return getReturnBtoDeliveryOrderByBtoNo;
         }
 
         public async Task<ReturnOpenDeliveryOrder> GetReturnOpenDeliveryOrderById(int id)

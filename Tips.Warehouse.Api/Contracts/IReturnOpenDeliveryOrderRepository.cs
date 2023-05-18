@@ -11,7 +11,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<int?> CreateReturnOpenDeliveryOrder(ReturnOpenDeliveryOrder returnOpenDeliveryOrder);
         Task<string> UpdateReturnOpenDeliveryOrder(ReturnOpenDeliveryOrder returnOpenDeliveryOrder);
         Task<string> DeleteReturnOpenDeliveryOrder(ReturnOpenDeliveryOrder returnOpenDeliveryOrder);
-        Task<int?> GetReturnOpenDeliveryOrderByBtoNo(string BTONumber);
+        Task<int?> GetReturnOpenDeliveryOrderByODONo(string odoNumber);
 
     }
 }

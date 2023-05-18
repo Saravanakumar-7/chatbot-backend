@@ -761,6 +761,34 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllItemMasterIdNoList()
+        {
+            ServiceResponse<IEnumerable<ItemMasterIdNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterIdNoListDto>>();
+            try
+            {
+                var itemMasterDetails = await _repository.ItemMasterRepository.GetAllItemMasterIdNoList();
+                //_logger.LogInfo("Returned all CustomerMaster");
+                var result = _mapper.Map<IEnumerable<ItemMasterIdNoListDto>>(itemMasterDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all  ItemMasterIdNoList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllItemMasterIdNoList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet("ItemNumber")]
         public async Task<IActionResult> GetItemMasterByItemNumber(string ItemNumber)
         {

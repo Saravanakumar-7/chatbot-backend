@@ -19,7 +19,8 @@ namespace Tips.Warehouse.Api.Controllers
         private IReturnOpenDeliveryOrderRepository _repository;
         private IInventoryRepository _inventoryRepository;
         private IOpenDeliveryOrderHistoryRepository _openDeliveryOrderHistoryRepository;
-        private IReturnOpenDeliveryOrderPartsRepository _openDeliveryOrderPartsRepository;
+        private IOpenDeliveryOrderPartsRepository _openDeliveryOrderPartsRepository;
+        private IReturnOpenDeliveryOrderPartsRepository _returnOpenDeliveryOrderPartsRepository;
         private IInventoryTranctionRepository _inventoryTranctionRepository;
 
         private ILoggerManager _logger;
@@ -29,7 +30,8 @@ namespace Tips.Warehouse.Api.Controllers
 
         public ReturnOpenDeliveryOrderController(IReturnOpenDeliveryOrderRepository repository, 
             IInventoryTranctionRepository inventoryTranctionRepository, IOpenDeliveryOrderHistoryRepository openDeliveryOrderHistoryRepository,
-            IReturnOpenDeliveryOrderPartsRepository openDeliveryOrderPartsRepository, IInventoryRepository inventoryRepository, HttpClient httpClient, 
+            IOpenDeliveryOrderPartsRepository openDeliveryOrderPartsRepository,IReturnOpenDeliveryOrderPartsRepository returnOpenDeliveryOrderPartsRepository
+            , IInventoryRepository inventoryRepository, HttpClient httpClient, 
             IConfiguration config, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
@@ -41,7 +43,7 @@ namespace Tips.Warehouse.Api.Controllers
             _openDeliveryOrderPartsRepository = openDeliveryOrderPartsRepository;
             _openDeliveryOrderHistoryRepository = openDeliveryOrderHistoryRepository;
             _inventoryTranctionRepository = inventoryTranctionRepository;
-
+            _returnOpenDeliveryOrderPartsRepository = returnOpenDeliveryOrderPartsRepository;
         }
 
         [HttpGet]
@@ -213,50 +215,188 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
 
-        //[HttpPost]
-        //public async Task<IActionResult> CreateReturnOpenDeliveryOrder([FromBody] ReturnOpenDeliveryOrderPostDto returnOpenDeliveryOrderPostDto)
-        //{
-        //    ServiceResponse<ReturnOpenDeliveryOrderPostDto> serviceResponse = new ServiceResponse<ReturnOpenDeliveryOrderPostDto>();
-        //    try
-        //    {
-        //        if (returnOpenDeliveryOrderPostDto is null)
-        //        {
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = "ReturnOpenDeliveryOrder object sent from client is null.";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-        //            _logger.LogError("ReturnOpenDeliveryOrder object sent from client is null.");
-        //            return BadRequest(serviceResponse);
-        //        }
-        //        if (!ModelState.IsValid)
-        //        {
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = "Invalid ReturnOpenDeliveryOrder object sent from client.";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-        //            _logger.LogError("Invalid ReturnOpenDeliveryOrder object sent from client.");
-        //            return BadRequest(serviceResponse);
-        //        }
+        [HttpPost]
+        public async Task<IActionResult> CreateReturnOpenDeliveryOrder([FromBody] ReturnOpenDeliveryOrderPostDto returnOpenDeliveryOrderPostDto)
+        {
+            ServiceResponse<ReturnOpenDeliveryOrderPostDto> serviceResponse = new ServiceResponse<ReturnOpenDeliveryOrderPostDto>();
+            try
+            {
+                if (returnOpenDeliveryOrderPostDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ReturnOpenDeliveryOrder object sent from client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("ReturnOpenDeliveryOrder object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid ReturnOpenDeliveryOrder object sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid ReturnOpenDeliveryOrder object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
 
 
-        //        var returnOpenDeliveryOrder = _mapper.Map<ReturnOpenDeliveryOrder>(returnOpenDeliveryOrderPostDto);
+                var returnOpenDeliveryOrder = _mapper.Map<ReturnOpenDeliveryOrder>(returnOpenDeliveryOrderPostDto);
 
-        //        var returnOpenDeliveryOrderitemsDto = returnOpenDeliveryOrderPostDto.ReturnOpenDeliveryOrderPartsPostDtos;
+                var returnOpenDeliveryOrderPartsDto = returnOpenDeliveryOrderPostDto.ReturnOpenDeliveryOrderPartsPostDtos;
 
-        //        var returnOpenDeliveryOrderPartsDtoList = new List<ReturnOpenDeliveryOrderParts>();
+                var returnOpenDeliveryOrderPartsDtoList = new List<ReturnOpenDeliveryOrderParts>();
 
-        //        if (returnOpenDeliveryOrderitemsDto != null)
-        //        {
-        //            Guid guid = Guid.NewGuid();
+                if (returnOpenDeliveryOrderPartsDto != null)
+                {
+                    Guid guid = Guid.NewGuid();
 
-        //            for (int i = 0; i < returnOpenDeliveryOrderitemsDto.Count; i++)
-        //            {
+                    for (int i = 0; i < returnOpenDeliveryOrderPartsDto.Count; i++)
+                    {
 
-        //                ReturnOpenDeliveryOrderParts returnOpenDeliveryOrderParts = _mapper.Map<ReturnOpenDeliveryOrderParts>(returnOpenDeliveryOrderitemsDto[i]);
-        //                returnOpenDeliveryOrderParts.ReturnQty = returnOpenDeliveryOrderParts.AlreadyReturnQty + returnOpenDeliveryOrderParts.ReturnQty;
-        //                returnOpenDeliveryOrderParts.AlreadyReturnQty = returnOpenDeliveryOrderParts.AlreadyReturnQty + returnOpenDeliveryOrderParts.ReturnQty;
-        //                returnOpenDeliveryOrderParts.DispatchQty = returnOpenDeliveryOrderParts.DispatchQty - returnOpenDeliveryOrderParts.ReturnQty;
-        //                returnOpenDeliveryOrderPartsDtoList.Add(returnOpenDeliveryOrderParts);
+                        ReturnOpenDeliveryOrderParts returnOpenDeliveryOrderParts = _mapper.Map<ReturnOpenDeliveryOrderParts>(returnOpenDeliveryOrderPartsDto[i]);
+                        returnOpenDeliveryOrderParts.ReturnQty = returnOpenDeliveryOrderParts.AlreadyReturnQty + returnOpenDeliveryOrderParts.ReturnQty;
+                        returnOpenDeliveryOrderParts.AlreadyReturnQty = returnOpenDeliveryOrderParts.AlreadyReturnQty + returnOpenDeliveryOrderParts.ReturnQty;
+                        returnOpenDeliveryOrderParts.DispatchQty = returnOpenDeliveryOrderParts.DispatchQty - returnOpenDeliveryOrderParts.ReturnQty;
+                        returnOpenDeliveryOrderPartsDtoList.Add(returnOpenDeliveryOrderParts);
+
+                        //Update Inventory balanced Quantity
+
+                        var itemNumber = returnOpenDeliveryOrderPartsDto[i].ItemNumber;
+                        var btoNumber = returnOpenDeliveryOrderPartsDto[i].ODONumber;
+                        var getInventoryFGDetailsByItemnumber = await _inventoryRepository.GetInventoryFGDetailsByItemNumber(itemNumber);
+                        decimal ReturnQty = Convert.ToDecimal(returnOpenDeliveryOrderPartsDto[i].ReturnQty);
+
+
+                        if (getInventoryFGDetailsByItemnumber != null)
+                        {
+                            getInventoryFGDetailsByItemnumber.Balance_Quantity = getInventoryFGDetailsByItemnumber.Balance_Quantity + ReturnQty;
+
+                            _inventoryRepository.Update(getInventoryFGDetailsByItemnumber);
+                            _inventoryRepository.SaveAsync();
+                        }
+                        else
+                        {
+                            Inventory inventory = new Inventory();
+                            inventory.PartNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
+                            inventory.MftrPartNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
+                            inventory.Description = returnOpenDeliveryOrderPartsDtoList[i].Description;
+                            inventory.ProjectNumber = "";
+                            inventory.Balance_Quantity = ReturnQty;
+                            inventory.UOM = returnOpenDeliveryOrderPartsDtoList[i].UOM;
+                            inventory.IsStockAvailable = true;
+                            inventory.Warehouse = "FG";
+                            inventory.Location = "FG";
+                            inventory.GrinNo = returnOpenDeliveryOrderParts.ODONumber;
+                            inventory.GrinPartId = 0;
+                            inventory.PartType = "";
+                            inventory.GrinMaterialType = "";
+                            inventory.ReferenceID = returnOpenDeliveryOrderParts.ODONumber;
+                            inventory.ReferenceIDFrom = "From BTO Delivery Order";
+                            inventory.shopOrderNo = "";
+
+                            await _inventoryRepository.CreateInventory(inventory);
+                            _inventoryRepository.SaveAsync();
+                        }
+
+                        InventoryTranction inventoryTranction = new InventoryTranction();
+                        inventoryTranction.PartNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
+                        inventoryTranction.MftrPartNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
+                        inventoryTranction.Description = returnOpenDeliveryOrderPartsDtoList[i].Description;
+                        inventoryTranction.Issued_Quantity = ReturnQty;
+                        inventoryTranction.UOM = returnOpenDeliveryOrderPartsDtoList[i].UOM;
+                        inventoryTranction.Issued_DateTime = DateTime.Now;
+                        inventoryTranction.ReferenceID = returnOpenDeliveryOrderParts.ODONumber;
+                        inventoryTranction.ReferenceIDFrom = "Return ODO Delivery Order";
+                        inventoryTranction.Issued_By = "Admin";
+                        inventoryTranction.From_Location = "BTO";
+                        inventoryTranction.TO_Location = "FG";
+                        inventoryTranction.Remarks = "Return BTO";
+
+
+                        var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+
+                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                        _inventoryTranctionRepository.SaveAsync();
+
+                        //update Dispatch Qty in Open Delivery Order Table
+                        int getODOPartsId = returnOpenDeliveryOrderPartsDtoList[i].ReturnOpenDeliveryOrderId;
+                        var getOpenDeliveryOrderPartsDetails = await _openDeliveryOrderPartsRepository.GetOpenDelieveryOrderPartDetails(getODOPartsId);
+                        //getBtoDeliveryOrderDetails.BalanceDoQty -= ReturnQty;
+                        //getBtoDeliveryOrderDetails.OrderBalanceQty += ReturnQty;
+                        getOpenDeliveryOrderPartsDetails.DispatchQty -= ReturnQty;
+
+
+                        String[] strs1 = getOpenDeliveryOrderPartsDetails.SerialNo.Split(",");
+                        String[] strs2 = returnOpenDeliveryOrderPartsDtoList[i].SerialNo.Split(",");
+                        var res = strs1.Except(strs2).Union(strs2.Except(strs1));
+                        String resultd = String.Join(",", res);
+                        getOpenDeliveryOrderPartsDetails.SerialNo = resultd;
+
+                        // Add return details in to btodeliveryorderhistory table
+
+                        var returnSerialNumber = returnOpenDeliveryOrderPartsDtoList[i].SerialNo;
+
+                        OpenDeliveryOrderHistory openDeliveryOrderHistory = new OpenDeliveryOrderHistory();
+                        openDeliveryOrderHistory.ODONumber = returnOpenDeliveryOrderParts.ODONumber;
+                        openDeliveryOrderHistory.CustomerName = returnOpenDeliveryOrder.CustomerName;
+                        openDeliveryOrderHistory.CustomerAliasName = returnOpenDeliveryOrder.CustomerAliasName;
+                        openDeliveryOrderHistory.CustomerId = returnOpenDeliveryOrder.CustomerId;
+                        openDeliveryOrderHistory.Description = returnOpenDeliveryOrder.Description;
+                        openDeliveryOrderHistory.ResponsiblePerson = returnOpenDeliveryOrder.ResponsiblePerson;
+                        openDeliveryOrderHistory.ReasonForIssuingStock = returnOpenDeliveryOrder.ReasonforIssuingStock;        
+                        openDeliveryOrderHistory.IssuedTo = returnOpenDeliveryOrder.IssuedTo;
+                        openDeliveryOrderHistory.ODOType = returnOpenDeliveryOrder.ODOType;
+                        openDeliveryOrderHistory.ODODate = Convert.ToDateTime(returnOpenDeliveryOrder.ODODate);
+                        openDeliveryOrderHistory.Unit = "Bangalore";
+
+                        openDeliveryOrderHistory.ItemNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
+                        openDeliveryOrderHistory.ItemDescription = returnOpenDeliveryOrderPartsDtoList[i].Description;                        
+                        openDeliveryOrderHistory.ItemType = returnOpenDeliveryOrderPartsDtoList[i].ItemType;
+                        openDeliveryOrderHistory.UnitPrice = Convert.ToDecimal(returnOpenDeliveryOrderPartsDtoList[i].UnitPrice);
+                        openDeliveryOrderHistory.UOC = returnOpenDeliveryOrderPartsDtoList[i].UOC;
+                        openDeliveryOrderHistory.UOM = returnOpenDeliveryOrderPartsDtoList[i].UOM;
+                        openDeliveryOrderHistory.StockAvailable = Convert.ToDecimal(returnOpenDeliveryOrderPartsDtoList[i].StockAvailable);
+                        openDeliveryOrderHistory.Warehouse = returnOpenDeliveryOrderPartsDtoList[i].Warehouse;
+                        openDeliveryOrderHistory.Location = returnOpenDeliveryOrderPartsDtoList[i].Location;
+                        openDeliveryOrderHistory.LocationStock = Convert.ToDecimal(returnOpenDeliveryOrderPartsDtoList[i].LocationStock);
+                        openDeliveryOrderHistory.Remark = returnOpenDeliveryOrderPartsDtoList[i].Remarks;
+                        openDeliveryOrderHistory.SerialNo = returnSerialNumber;
+                        openDeliveryOrderHistory.DispatchQty = ReturnQty;
+                        openDeliveryOrderHistory.UniqeId = guid.ToString();
+                        openDeliveryOrderHistory.CreatedOn = Convert.ToDateTime(returnOpenDeliveryOrder.CreatedOn);
+                        openDeliveryOrderHistory.CreatedBy = "Admin";
+
+                        var openDeliveryOrderHistoryDetails = _mapper.Map<OpenDeliveryOrderHistory>(openDeliveryOrderHistory);
+
+                        await _openDeliveryOrderHistoryRepository.CreateOpenDeliveryOrderHistory(openDeliveryOrderHistoryDetails);
+                        _openDeliveryOrderHistoryRepository.SaveAsync();
+
+
+                        _openDeliveryOrderPartsRepository.Update(getOpenDeliveryOrderPartsDetails);
+                        _openDeliveryOrderPartsRepository.SaveAsync();
+
+                    }
+                }
+                returnOpenDeliveryOrder.ReturnOpenDeliveryOrderParts = returnOpenDeliveryOrderPartsDtoList;
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = " ReturnODODeliveryOrder created Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateReturnOpenDeliveryOrder action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateReturnOpenDeliveryOrder(int id, [FromBody] ReturnOpenDeliveryOrderUpdateDto returnOpenDeliveryOrderUpdateDto)

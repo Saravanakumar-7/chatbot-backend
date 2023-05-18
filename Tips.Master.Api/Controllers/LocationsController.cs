@@ -26,24 +26,14 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<LocationsController>
         [HttpGet]
-        public async Task<IActionResult> GetAllLocations([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllLocations()
         {
             ServiceResponse<IEnumerable<LocationsDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationsDto>>();
 
             try
             {
-                var LocationsList = await _repository.LocationsRepository.GetAllLocations(pagingParameter, searchParams);
-
-                var metadata = new
-                {
-                    LocationsList.TotalCount,
-                    LocationsList.PageSize,
-                    LocationsList.CurrentPage,
-                    LocationsList.HasNext,
-                    LocationsList.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                var LocationsList = await _repository.LocationsRepository.GetAllLocations();
+           
                 _logger.LogInfo("Returned all Locations");
                 var result = _mapper.Map<IEnumerable<LocationsDto>>(LocationsList);
                 serviceResponse.Data = result;
@@ -63,13 +53,13 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveLocations([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveLocations()
         {
             ServiceResponse<IEnumerable<LocationsDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationsDto>>();
 
             try
             {
-                var locations = await _repository.LocationsRepository.GetAllActiveLocations(pagingParameter, searchParams);
+                var locations = await _repository.LocationsRepository.GetAllActiveLocations();
                 _logger.LogInfo("Returned all departments");
                 var result = _mapper.Map<IEnumerable<LocationsDto>>(locations);
                 serviceResponse.Data = result;

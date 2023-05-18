@@ -8,12 +8,16 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         [Key]
         public int Id { get; set; }
         public string ItemNumber { get; set; }
+        public string? ODONumber { get; set; }
         public string Description { get; set; }
         public PartTypes ItemType { get; set; }
         public decimal UnitPrice { get; set; }
+        public decimal ReturnQty { get; set; }
+        public decimal AlreadyReturnQty { get; set; }
         public string UOC { get; set; }
         public string UOM { get; set; }
         public decimal StockAvailable { get; set; }
+        public string Warehouse { get; set; }
         public string Location { get; set; }
         public decimal LocationStock { get; set; }
         public decimal DispatchQty { get; set; }
@@ -23,12 +27,16 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class ReturnOpenDeliveryOrderPartsPostDto
     {
         public string ItemNumber { get; set; }
+        public string? ODONumber { get; set; }
         public string Description { get; set; }
         public PartTypes ItemType { get; set; }
         public decimal UnitPrice { get; set; }
+        public decimal ReturnQty { get; set; }
+        public decimal AlreadyReturnQty { get; set; }
         public string UOC { get; set; }
         public string UOM { get; set; }
         public decimal StockAvailable { get; set; }
+        public string Warehouse { get; set; }
         public string Location { get; set; }
         public decimal LocationStock { get; set; }
         public decimal DispatchQty { get; set; }
@@ -40,12 +48,16 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         [Key]
         public int Id { get; set; }
         public string ItemNumber { get; set; }
+        public string? ODONumber { get; set; }
         public string Description { get; set; }
         public PartTypes ItemType { get; set; }
         public decimal UnitPrice { get; set; }
+        public decimal ReturnQty { get; set; }
+        public decimal AlreadyReturnQty { get; set; }
         public string UOC { get; set; }
         public string UOM { get; set; }
         public decimal StockAvailable { get; set; }
+        public string Warehouse { get; set; }
         public string Location { get; set; }
         public decimal LocationStock { get; set; }
         public decimal DispatchQty { get; set; }

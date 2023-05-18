@@ -232,6 +232,7 @@ namespace Repository
         public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllActiveItemMasterIdNoList()
         {
             IEnumerable<ItemMasterIdNoListDto> getAllActiveItemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters
+                                .Where(x=>x.IsActive == true)
                                 .Select(c => new ItemMasterIdNoListDto()
                                 {
                                     id = c.Id,
@@ -243,6 +244,22 @@ namespace Repository
 
             return getAllActiveItemMasterIdNoListDto;
         }
+
+        public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllItemMasterIdNoList()
+        {
+            IEnumerable<ItemMasterIdNoListDto> itemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters
+                                .Select(c => new ItemMasterIdNoListDto()
+                                {
+                                    id = c.Id,
+                                    ItemNumber = c.ItemNumber,
+                                    Description = c.Description,
+
+                                })
+                              .ToListAsync();
+
+            return itemMasterIdNoListDto;
+        }
+
         public async Task<ItemMaster> GetItemMasterByItemNumber(string ItemNumber)
         {
             var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == ItemNumber)
