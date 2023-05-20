@@ -25,7 +25,7 @@ namespace Tips.Warehouse.Api.Controllers
         private IOpenDeliveryOrderHistoryRepository _openDeliveryOrderHistoryRepository;
 
 
-        public OpenDeliveryOrderController(IOpenDeliveryOrderHistoryRepository openDeliveryOrderHistoryRepository, IInventoryTranctionRepository inventoryTranctionRepository,IOpenDeliveryOrderRepository repository, IInventoryRepository inventoryRepository,ILoggerManager logger, IMapper mapper)
+        public OpenDeliveryOrderController(IOpenDeliveryOrderHistoryRepository openDeliveryOrderHistoryRepository, IInventoryTranctionRepository inventoryTranctionRepository, IOpenDeliveryOrderRepository repository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
@@ -141,7 +141,7 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<ODODetailsDto> serviceResponse = new ServiceResponse<ODODetailsDto>();
             try
             {
-                var oDODetailsById = await _repository.GetODODetailsByItemNo(itemNumber); 
+                var oDODetailsById = await _repository.GetODODetailsByItemNo(itemNumber);
 
                 if (oDODetailsById == null)
                 {
@@ -159,6 +159,7 @@ namespace Tips.Warehouse.Api.Controllers
                     OdoDetailsDto.ItemNumber = oDODetailsById.ItemNumber;
                     OdoDetailsDto.ItemType = oDODetailsById.ItemType;
                     OdoDetailsDto.UOM = oDODetailsById.UOM;
+                    OdoDetailsDto.StockAvailable = oDODetailsById.StockAvailable;
 
                     var warehouseODODetails = await _repository.GetWarehouseODOByItemNo(itemNumber);
 
@@ -167,9 +168,9 @@ namespace Tips.Warehouse.Api.Controllers
                         warehouse.LocationDetails = await _repository.GetLocationODOByItemNo(itemNumber, warehouse.WarehouseName);
                     }
                     OdoDetailsDto.WarehouseDetails = warehouseODODetails;
-                    
+
                     _logger.LogInfo($"Returned OpenDeliveryOrder with id: {itemNumber}");
-                    var result = _mapper.Map<ODODetailsDto>(OdoDetailsDto); 
+                    var result = _mapper.Map<ODODetailsDto>(OdoDetailsDto);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned Stock Details Successfully";
                     serviceResponse.Success = true;
@@ -312,7 +313,7 @@ namespace Tips.Warehouse.Api.Controllers
                 }
 
                 var openDeliveryOrderparts = _mapper.Map<IEnumerable<OpenDeliveryOrderParts>>(openDeliveryOrderDtoPost.OpenDeliveryOrderParts);
-                
+
                 var openDeliveryOrderitemsList = openDeliveryOrderDtoPost.OpenDeliveryOrderParts;
 
                 var openDeliveryorder = _mapper.Map<OpenDeliveryOrder>(openDeliveryOrderDtoPost);
@@ -454,11 +455,11 @@ namespace Tips.Warehouse.Api.Controllers
                         openDeliveryOrderHistory.Warehouse = openDeliveryOrderItemsDtoList[i].Warehouse;
                         openDeliveryOrderHistory.StockAvailable = openDeliveryOrderItemsDtoList[i].StockAvailable;
                         openDeliveryOrderHistory.Location = openDeliveryOrderItemsDtoList[i].Location;
-                        openDeliveryOrderHistory.LocationStock = openDeliveryOrderItemsDtoList[i].LocationStock; 
-                        openDeliveryOrderHistory.DispatchQty = openDeliveryOrderItemsDtoList[i].DispatchQty; 
+                        openDeliveryOrderHistory.LocationStock = openDeliveryOrderItemsDtoList[i].LocationStock;
+                        openDeliveryOrderHistory.DispatchQty = openDeliveryOrderItemsDtoList[i].DispatchQty;
                         openDeliveryOrderHistory.SerialNo = openDeliveryOrderItemsDtoList[i].SerialNo;
                         openDeliveryOrderHistory.Unit = openDeliveryOrderItemsDtoList[i].SerialNo;
-                        openDeliveryOrderHistory.UniqeId = openDeliveryOrderItemsDtoList[i].SerialNo;                        
+                        openDeliveryOrderHistory.UniqeId = openDeliveryOrderItemsDtoList[i].SerialNo;
                         openDeliveryOrderHistory.CreatedBy = openDeliveryOrderItemsDtoList[i].CreatedBy;
                         openDeliveryOrderHistory.LastModifiedOn = openDeliveryOrderItemsDtoList[i].LastModifiedOn;
                         openDeliveryOrderHistory.Remark = "From Create ODO";

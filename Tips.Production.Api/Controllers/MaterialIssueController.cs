@@ -102,8 +102,10 @@ namespace Tips.Production.Api.Controllers
 
                     for (int i = 0; i < materialIssueDetails.materialIssueItems.Count(); i++)
                     {
+                        var partnumber= materialIssueDetailById.materialIssueItems[i].PartNumber;
+                        var projectnumber = materialIssueDetailById.materialIssueItems[i].ProjectNumber;
                         var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                          "GetInventoryDetailsByItemAndProjectNo?", "itemNumber=", materialIssueDetailById.materialIssueItems[i].PartNumber, "&projectNumber=", materialIssueDetailById.materialIssueItems[i].ProjectNumber));
+                          "GetInventoryDetailsByItemAndProjectNo?", "itemNumber=", partnumber, "&projectNumber=", projectnumber));
                         var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                         dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                         dynamic inventoryObject = inventoryObjectData.data;
@@ -227,9 +229,9 @@ namespace Tips.Production.Api.Controllers
                     materialIssueItem.IssuedQty += item.NewIssueQty;
                     materialIssueItems.Add(materialIssueItem);
                     //update inventory 
-
+                    var partnumber = materialIssueItem.PartNumber;
                     var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                     "GetInventoryDetailsByItemNo?", "&ItemNumber=", materialIssueItem.PartNumber));
+                     "GetInventoryDetailsByItemNo?", "&itemNumber=", partnumber));
                     var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                     dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                     dynamic inventoryObject = inventoryObjectData.data;

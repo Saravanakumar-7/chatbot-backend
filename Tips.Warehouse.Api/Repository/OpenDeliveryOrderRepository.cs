@@ -22,13 +22,13 @@ namespace Tips.Warehouse.Api.Repository
         {
             var date = DateTime.Now;
             openDeliveryOrder.CreatedBy = "Admin";
-            openDeliveryOrder.CreatedOn = date.Date;          
-          
+            openDeliveryOrder.CreatedOn = date.Date;
+
             openDeliveryOrder.Unit = "Bangalore";
             var result = await Create(openDeliveryOrder);
-           
+
             return result.Id;
-        }        
+        }
 
         public async Task<int?> GetODONumberAutoIncrementCount(DateTime date)
         {
@@ -143,14 +143,19 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<ODODetailsDto> GetODODetailsByItemNo(string itemNumber)
         {
+            decimal Stock = _tipsWarehouseDbContext.Inventory
+                .Where(x => x.PartNumber == itemNumber)
+                .Sum(x => x.Balance_Quantity);
+
             var projectNumbers = await _tipsWarehouseDbContext.Inventory
-                                .Where(x => x.PartNumber == itemNumber)
-                                .Select(s => new ODODetailsDto()
-                                {
-                                    ItemNumber = s.ProjectNumber,
-                                    ItemType = s.PartType,
-                                    UOM = s.UOM,
-                                }).Distinct().FirstOrDefaultAsync();
+                            .Where(x => x.PartNumber == itemNumber)
+                            .Select(s => new ODODetailsDto()
+                            {
+                                ItemNumber = s.ProjectNumber,
+                                ItemType = s.PartType,
+                                UOM = s.UOM,
+                                StockAvailable = Stock,
+                            }).Distinct().FirstOrDefaultAsync();
 
             return projectNumbers;
         }
@@ -162,7 +167,7 @@ namespace Tips.Warehouse.Api.Repository
                                 .Select(s => new WarehouseDetailsDto()
                                 {
                                     WarehouseName = s.Warehouse,
-                                    
+
                                 }).Distinct().ToListAsync();
 
             return projectNumbers;
@@ -189,7 +194,7 @@ namespace Tips.Warehouse.Api.Repository
             Update(openDeliveryOrder);
             string result = $"openDeliveryOrder of Detail {openDeliveryOrder.Id} is updated successfully!";
             return result;
-        } 
+        }
         public async Task<IEnumerable<OpenDeliveryOrderIdNameList>> GetAllOpenDeliveryOrderIdNameList()
         {
             IEnumerable<OpenDeliveryOrderIdNameList> btoIddNameList = await _tipsWarehouseDbContext.OpenDeliveryOrders

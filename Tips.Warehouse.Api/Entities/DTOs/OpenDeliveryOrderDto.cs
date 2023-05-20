@@ -29,7 +29,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class OpenDeliveryOrderDtoPost
     {
 
-        public DateTime? OpenDODate { get; set; } 
+        public DateTime? OpenDODate { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerId { get; set; }
@@ -39,14 +39,14 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? IssuedTo { get; set; }
         public string? ReasonforIssuingStock { get; set; }
 
-     
+
         public List<OpenDeliveryOrderPartsDtoPost>? OpenDeliveryOrderParts { get; set; }
 
     }
     public class OpenDeliveryOrderDtoUpdate
     {
         public int Id { get; set; }
-        public DateTime? OpenDODate { get; set; }         
+        public DateTime? OpenDODate { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerId { get; set; }
@@ -85,6 +85,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ItemNumber { get; set; }
         public string? ItemType { get; set; }
         public string? UOM { get; set; }
+        public decimal? StockAvailable { get; set; }
+
 
         public List<WarehouseDetailsDto>? WarehouseDetails { get; set; }
     }
