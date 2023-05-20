@@ -49,19 +49,34 @@ namespace Tips.SalesService.Api.Entities
 
         [DefaultValue(false)]
         public bool IsShortClosed { get; set; }
-
+                                                                                           
         public string? ShortClosedBy { get; set; }
 
         public DateTime? ShortClosedOn { get; set; }
         public string? ReasonForModification { get; set; }
+        [Precision(13, 3)]
+        public decimal? InstallationCharges { get; set; }
 
+        [Precision(13, 3)]
+        public decimal? TotalAmountWithInstallationCharges { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAdditionalCharges { get; set; }
+        public string? SpecialDiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SpecialDiscountAmount { get; set; }
+        [Precision(18, 3)]
+        public decimal? TotalAmount { get; set; }
+        [Precision(18, 3)]
+        public decimal TotalFinalAmount { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
         public List<SalesOrderItems>? SalesOrdersItems { get; set; }
-
+        public List<SalesAdditionalCharges>? SalesAdditionalCharges { get; set; }
 
     }
 }

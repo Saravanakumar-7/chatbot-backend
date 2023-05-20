@@ -40,7 +40,7 @@ namespace Tips.SalesService.Api.Entities
 
         public DbSet<SalesOrder> SalesOrders { get; set; }
         public DbSet<SalesOrderItems> SalesOrdersItems { get; set; }
-
+        public DbSet<SalesAdditionalCharges> SalesAdditionalCharges { get; set; }
         public DbSet<QuoteNumber> QuoteNumbers { get; set; }
         public DbSet<Quote> Quotes { get; set; }
         public DbSet<QuoteGeneral> QuoteGenerals { get; set; }

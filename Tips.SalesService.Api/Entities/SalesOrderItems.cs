@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace Tips.SalesService.Api.Entities
@@ -8,7 +9,7 @@ namespace Tips.SalesService.Api.Entities
         [Key]
         public int Id { get; set; } 
         public string? ItemNumber { get; set; }
-
+       
         public string? Description { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
@@ -21,8 +22,10 @@ namespace Tips.SalesService.Api.Entities
 
         [Precision(18, 3)]
         public decimal? BasicAmount { get; set; }
-
-        public string? Discount { get; set; }
+        [Precision(13, 3)]
+        public decimal? Discount { get; set; }
+        public string? RoomName { get; set; }
+        public string? DiscountType { get; set; }
 
         [Precision(18, 3)]
         public decimal UnitPrice { get; set; }

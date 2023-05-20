@@ -182,8 +182,10 @@ namespace Tips.SalesService.Api.Repository
         public async Task<SalesOrder> GetSalesOrderById(int id)
         {
             var getSalesOrderbyId = await _tipsSalesServiceDbContext.SalesOrders.Where(x => x.Id == id)
-                                  .Include(t => t.SalesOrdersItems)
+                .Include(o => o.SalesAdditionalCharges)
+                                  .Include(t => t.SalesOrdersItems)                            
                                   .ThenInclude(p => p.ScheduleDates)
+                                  
                                  .FirstOrDefaultAsync();
 
             return getSalesOrderbyId;

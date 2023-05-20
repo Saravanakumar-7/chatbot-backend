@@ -112,14 +112,14 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
                         salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
-                        var SalesItemNo = salesOrderItemsDtos.ItemNumber;
-                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?", "ItemNumber=", SalesItemNo));
-                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        dynamic inventoryObject = inventoryObjectData;
-                          // Convert double to decimal
-                        decimal availableStock = Convert.ToDecimal(inventoryObject);
-                        salesOrderItemsDtos.AvailableStock = availableStock;
+                        //var SalesItemNo = salesOrderItemsDtos.ItemNumber;
+                        //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?", "ItemNumber=", SalesItemNo));
+                        //var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                        //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        //dynamic inventoryObject = inventoryObjectData;
+                        //  // Convert double to decimal
+                        //decimal availableStock = Convert.ToDecimal(inventoryObject);
+                        //salesOrderItemsDtos.AvailableStock = availableStock;
 
                         salesOrderItemsDtoList.Add(salesOrderItemsDtos);
                     }
@@ -172,7 +172,7 @@ namespace Tips.SalesService.Api.Controllers
                 var createSalesOrder = _mapper.Map<SalesOrder>(salesOrderDtoPost);
                 var salesOrderItemsDto = salesOrderDtoPost.SalesOrderItemsPostDtos;
                 var salesOrderItemsList = new List<SalesOrderItems>();
-
+                var SalesAdditionalChargesList = _mapper.Map<IEnumerable<SalesAdditionalCharges>>(salesOrderDtoPost.SalesAdditionalChargesPostDtos);
                 //if (salesOrderItemsDto != null)
                 //{
                 //    for (int i = 0; i < salesOrderItemsDto.Count; i++)
@@ -220,7 +220,8 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderItemsList.Add(salesOrderItems);
                     }
                 }
-                createSalesOrder.SalesOrdersItems = salesOrderItemsList; 
+                createSalesOrder.SalesOrdersItems = salesOrderItemsList;
+                createSalesOrder.SalesAdditionalCharges = SalesAdditionalChargesList.ToList();
                 await _repository.CreateSalesOrder(createSalesOrder);
                 _repository.SaveAsync();
 

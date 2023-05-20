@@ -1,4 +1,6 @@
 ﻿using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
@@ -31,10 +33,13 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<CollectionTracker>> GetAllCollectionTrackers()
+        public async Task<PagedList<CollectionTracker>> GetAllCollectionTrackers(PagingParameter pagingParameter, SearchParammes searchParammes)
         {
-            var collectionTrackerDetails = await FindAll().ToListAsync();
-            return collectionTrackerDetails;
+            var collectionTrackerDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(col => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || col.CustomerName.Contains(searchParammes.SearchValue) ||
+                 col.CustomerId.Contains(searchParammes.SearchValue))));
+
+            return PagedList<CollectionTracker>.ToPagedList(collectionTrackerDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<CollectionTracker> GetCollectionTrackerById(int id)

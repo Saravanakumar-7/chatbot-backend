@@ -51,7 +51,10 @@ namespace Tips.SalesService.Api.Entities.Dto
         [Precision(18, 3)]
         public decimal? BasicAmount { get; set; }
 
-         public string? Discount { get; set; }
+        [Precision(13, 3)]
+        public decimal? Discount { get; set; }
+        public string? RoomName { get; set; }
+        public string? DiscountType { get; set; }
         //public int SalesOrderId { get; set; }
 
         public DateTime RequestedDate { get; set; }
@@ -98,7 +101,10 @@ namespace Tips.SalesService.Api.Entities.Dto
         [Precision(18, 3)]
         public decimal? BasicAmount { get; set; }
 
-         public string? Discount { get; set; }
+        [Precision(13, 3)]
+        public decimal? Discount { get; set; }
+        public string? RoomName { get; set; }
+        public string? DiscountType { get; set; }
         public DateTime RequestedDate { get; set; }
         public string? Remarks { get; set; } 
         public List<ScheduleDatePostDto>? ScheduleDates { get; set; }
@@ -120,8 +126,11 @@ namespace Tips.SalesService.Api.Entities.Dto
 
         [Precision(18, 3)]
         public decimal? BasicAmount { get; set; }
-         
-        public string? Discount { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? Discount { get; set; }
+        public string? RoomName { get; set; }
+        public string? DiscountType { get; set; }
 
         [Precision(13, 3)]
         public decimal ShopOrderQty { get; set; }

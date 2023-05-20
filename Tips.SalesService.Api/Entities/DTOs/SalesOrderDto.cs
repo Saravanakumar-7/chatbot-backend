@@ -51,13 +51,29 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? Total { get; set; }
         public string? ReasonForModification { get; set; }
 
+        [Precision(13, 3)]
+        public decimal? InstallationCharges { get; set; }
 
+        [Precision(13, 3)]
+        public decimal? TotalAmountWithInstallationCharges { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAdditionalCharges { get; set; }
+        public string? SpecialDiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SpecialDiscountAmount { get; set; }
+        [Precision(18, 3)]
+        public decimal? TotalAmount { get; set; }
+        [Precision(18, 3)]
+        public decimal TotalFinalAmount { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
         public List<SalesOrderItemsDto>? SalesOrdersItems { get; set; }
+        public List<SalesAdditionalChargesDto>? SalesAdditionalCharges { get; set; }
     }
 
     public class SalesOrderPostDto
@@ -87,8 +103,24 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? PaymentTerms { get; set; }        
         public decimal? Total { get; set; }
         public SalesOrderStatus SalesOrderStatus { get; set; }
+        [Precision(13, 3)]
+        public decimal? InstallationCharges { get; set; }
 
+        [Precision(13, 3)]
+        public decimal? TotalAmountWithInstallationCharges { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAdditionalCharges { get; set; }
+        public string? SpecialDiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SpecialDiscountAmount { get; set; }
+        [Precision(18, 3)]
+        public decimal? TotalAmount { get; set; }
+        [Precision(18, 3)]
+        public decimal TotalFinalAmount { get; set; }
         public List<SalesOrderItemsPostDto>? SalesOrderItemsPostDtos { get; set; }
+        public List<SalesAdditionalChargesPostDto>? SalesAdditionalChargesPostDtos { get; set; }
     }
 
     public class SalesOrderUpdateDto
@@ -120,12 +152,28 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? Remarks { get; set; }
         public decimal? Total { get; set; }
         public string? ReasonForModification { get; set; }
+        [Precision(13, 3)]
+        public decimal? InstallationCharges { get; set; }
 
+        [Precision(13, 3)]
+        public decimal? TotalAmountWithInstallationCharges { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAdditionalCharges { get; set; }
+        public string? SpecialDiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SpecialDiscountAmount { get; set; }
+        [Precision(18, 3)]
+        public decimal? TotalAmount { get; set; }
+        [Precision(18, 3)]
+        public decimal TotalFinalAmount { get; set; }
 
         [Required]
         public string Unit { get; set; }
 
         public List<SalesOrderItemsUpdateDto>? SalesOrderItemsUpdateDtos { get; set; }
+        public List<SalesAdditionalChargesUpdateDto>? SalesAdditionalChargesUpdateDtos { get; set; }
     }
    
     public class ListofSalesOrderDetails

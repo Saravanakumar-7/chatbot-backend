@@ -68,7 +68,7 @@ namespace Tips.SalesService.Api.Entities
         public decimal? BasicAmount { get; set; }
 
         [Precision(18, 3)]
-        public string? Discount { get; set; }
+        public decimal? Discount { get; set; }
 
         [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }

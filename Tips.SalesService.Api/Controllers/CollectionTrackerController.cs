@@ -5,6 +5,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.DTOs;
@@ -27,13 +28,25 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllCollectionTracker()
+        public async Task<IActionResult> GetAllCollectionTracker([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<CollectionTrackerDto>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerDto>>();
 
             try
             {
-                var collectionTrackerDetails = await _repository.GetAllCollectionTrackers();
+                var collectionTrackerDetails = await _repository.GetAllCollectionTrackers(pagingParameter, searchParammes);
+
+                var metadata = new
+                {
+                    collectionTrackerDetails.TotalCount,
+                    collectionTrackerDetails.PageSize,
+                    collectionTrackerDetails.CurrentPage,
+                    collectionTrackerDetails.HasNext,
+                    collectionTrackerDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
                 _logger.LogInfo("Returned all CollectionTracker");
                 var result = _mapper.Map<IEnumerable<CollectionTrackerDto>>(collectionTrackerDetails);
                 serviceResponse.Data = result;
