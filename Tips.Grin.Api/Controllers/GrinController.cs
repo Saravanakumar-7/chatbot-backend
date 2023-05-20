@@ -408,7 +408,7 @@ namespace Tips.Grin.Api.Controllers
                 //        inventoryObject.PartNumber = parts.ItemNumber;
                 //        inventoryObject.MftrPartNumber = parts.MftrItemNumber;
                 //        inventoryObject.Description = parts.ItemDescription;
-                //        inventoryObject.ProjectNumbers = project.ProjectNumbers;
+                //        inventoryObject.ProjectNumbers = project.ProjectNumber;
                 //        inventoryObject.Balance_Quantity = project.ProjectQty;
                 //        inventoryObject.UOM = parts.UOM;
                 //        inventoryObject.IsStockAvailable = true;
@@ -422,14 +422,15 @@ namespace Tips.Grin.Api.Controllers
 
                 //        var json = JsonConvert.SerializeObject(inventoryObject);
                 //        var data = new StringContent(json, Encoding.UTF8, "application/json");
-                //        var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"] ,"CreateInventory"), data);
+                     
+                //        var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
                 //    }
 
                 //}
 
                 ////update balance qty  in Purchase order table for grin concept
 
-                //var grinPartsDetail = _mapper.Map<List<GrinUpdateQtyDetailsDto>>(grinPartsDetails);
+                //var grinPartsDetail = _mapper.Map<List<GrinUpdateQtyDetailsDto>>(grins.GrinParts);
 
                 //var jsons = JsonConvert.SerializeObject(grinPartsDetail);
                 //var datas = new StringContent(jsons, Encoding.UTF8, "application/json");

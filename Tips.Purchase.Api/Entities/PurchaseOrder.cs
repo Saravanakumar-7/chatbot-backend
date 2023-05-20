@@ -11,14 +11,14 @@ namespace Tips.Purchase.Api.Entities
         public DateTime PODate { get; set; }
         public int? RevisionNumber { get; set; }
         public string? ProcurementType { get; set; }
-        public string? Currency { get; set; } 
+        public string? Currency { get; set; }
         public string? CompanyAliasName { get; set; }
 
         //VendorDetails
         public string? VendorName { get; set; }
         public string? VendorId { get; set; }
         public string? QuotationReferenceNumber { get; set; }
-        public DateTime QuotationDate { get; set; }
+        public DateTime? QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
 
         //Billing&ShippingDetails
@@ -37,7 +37,7 @@ namespace Tips.Purchase.Api.Entities
         public bool POApprovalI { get; set; } = false;
         public string? POApprovedIBy { get; set; }
         public DateTime POApprovedIDate { get; set; }
-        public bool POApprovalII { get; set; }=false;
+        public bool POApprovalII { get; set; } = false;
         public string? POApprovedIIBy { get; set; }
         public DateTime POApprovedIIDate { get; set; }
         public bool IsDeleted { get; set; } = false;

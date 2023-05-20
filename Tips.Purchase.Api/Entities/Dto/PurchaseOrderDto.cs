@@ -17,7 +17,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? VendorName { get; set; }
         public string? VendorId { get; set; }
         public string? QuotationReferenceNumber { get; set; }
-        public DateTime QuotationDate { get; set; }
+        public DateTime? QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
 
         //Billing&ShippingDetails
@@ -48,7 +48,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
         public List<PoItemsDto>? POItems { get; set; }
-        
+
     }
 
     public class PurchaseOrderPostDto
@@ -65,8 +65,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? VendorName { get; set; }
         public string? VendorId { get; set; }
         public string? QuotationReferenceNumber { get; set; }
-        public DateTime QuotationDate { get; set; }
-        public string? VendorAddress { get; set; } 
+        public DateTime? QuotationDate { get; set; }
+        public string? VendorAddress { get; set; }
 
         //Billing&ShippingDetails
         public string? DeliveryTerms { get; set; }
@@ -82,11 +82,11 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
 
         public List<PoItemsPostDto>? POItems { get; set; }
-       
+
     }
     public class PurchaseOrderUpdateDto
     {
-        
+
         public string? PONumber { get; set; }
         public DateTime PODate { get; set; }
         public string? ProcurementType { get; set; }
@@ -97,7 +97,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? VendorName { get; set; }
         public string? VendorId { get; set; }
         public string? QuotationReferenceNumber { get; set; }
-        public DateTime QuotationDate { get; set; }
+        public DateTime? QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
         public string? CompanyAliasName { get; set; }
 
@@ -118,7 +118,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
         public List<PoItemsUpdateDto>? POItems { get; set; }
-       
+
     }
     public class PurchaseOrderIdNameListDto
     {

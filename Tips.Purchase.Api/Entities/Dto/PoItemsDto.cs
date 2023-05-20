@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities;
+using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using Tips.Purchase.Api.Entities.DTOs;
 
 namespace Tips.Purchase.Api.Entities.Dto
@@ -17,7 +19,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         [Precision(13, 3)]
         public decimal Qty { get; set; }
         public decimal BalanceQty { get; set; }
-        public string? PartType { get; set; }
+        public PartType? PartType { get; set; }
         public string? SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
         [Precision(13, 3)]
@@ -33,7 +35,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal? SubTotal { get; set; }
         [Precision(13, 3)]
         public decimal TotalWithTax { get; set; }
-   
+
         public List<PoAddProjectDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleDto>? POAddDeliverySchedules { get; set; }
 
@@ -49,7 +51,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal UnitPrice { get; set; }
         [Precision(13, 3)]
         public decimal Qty { get; set; }
-        public string? PartType { get; set; }
+        public PartType? PartType { get; set; }
 
         public string? SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
@@ -77,7 +79,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? MftrItemNumber { get; set; }
         public string? Description { get; set; }
         public string? UOM { get; set; }
-        public string? PartType { get; set; }
+        public PartType? PartType { get; set; }
 
         [Precision(18, 3)]
         public decimal UnitPrice { get; set; }
