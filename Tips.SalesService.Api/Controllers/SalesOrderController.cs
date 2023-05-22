@@ -72,16 +72,17 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogInfo($"Returned owner with id: {ex.Message}{ex.InnerException}");
+                 
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Message = ($"Returned owner with id: {ex.Message}{ex.InnerException}");
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
 
-        
+
 
         // GET api/<PurchaseOrderController>/5
         [HttpGet("{id}")]
@@ -112,14 +113,14 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
                         salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
-                        //var SalesItemNo = salesOrderItemsDtos.ItemNumber;
-                        //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?", "ItemNumber=", SalesItemNo));
-                        //var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                        //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        //dynamic inventoryObject = inventoryObjectData;
-                        //  // Convert double to decimal
-                        //decimal availableStock = Convert.ToDecimal(inventoryObject);
-                        //salesOrderItemsDtos.AvailableStock = availableStock;
+                        var SalesItemNo = salesOrderItemsDtos.ItemNumber;
+                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?", "ItemNumber=", SalesItemNo));
+                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        dynamic inventoryObject = inventoryObjectData;
+                        // Convert double to decimal
+                        decimal availableStock = Convert.ToDecimal(inventoryObject);
+                        salesOrderItemsDtos.AvailableStock = availableStock;
 
                         salesOrderItemsDtoList.Add(salesOrderItemsDtos);
                     }
@@ -142,7 +143,7 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-       
+
 
         // POST api/<PurchaseOrderController>
         [HttpPost]
@@ -323,7 +324,7 @@ namespace Tips.SalesService.Api.Controllers
         {
             ServiceResponse<IEnumerable<SalesOrderItemsDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderItemsDto>>();
             try
-            {                
+            {
                 var salesOrderList = await _salesOrderItemsRepository.SearchSalesOrderItem(searchParams);
                 if (salesOrderList is null)
                 {
@@ -360,7 +361,7 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-//sales order with items filter concept
+        //sales order with items filter concept
         [HttpPost]
         public async Task<IActionResult> GetAllSalesOrderWithItems([FromBody] SalesOrderSearchDto salesOrderSearch)
         {
@@ -680,6 +681,47 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+        //[HttpGet]
+        //public async Task<IActionResult> GetSalesOrderTotalBySalesOrderId(int salesOrderId)
+        //{
+        //    ServiceResponse<IEnumerable<SalesOrder>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrder>>();
+
+        //    try
+        //    {
+        //        var salesOrderTotalBySalesOrderId = await _repository.GetSalesOrderTotalBySalesOrderId(salesOrderId);
+        //        if (salesOrderTotalBySalesOrderId == null)
+        //        {
+        //            _logger.LogError($"SalesOrderDetail with salesOrderId: {salesOrderId}, hasn't been found in db.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"SalesOrderDetail with salesOrderId: {salesOrderId}, hasn't been found.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            return NotFound(serviceResponse);
+        //        }
+        //        else
+        //        {
+        //            _logger.LogInfo($"Returned SalesOrderDetail with salesOrderId: {salesOrderId}");
+        //            var result = _mapper.Map<IEnumerable<SalesOrder>>(salesOrderTotalBySalesOrderId);
+        //            serviceResponse.Data = result;
+        //            serviceResponse.Message = "Success";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(serviceResponse);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside GetSalesOrderDetailsBySalesOrderId action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Inter server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
         //getprojectnumberbyitemnumber
 
         //getsalesorderDetailByprojectNoanditemNo --
@@ -741,7 +783,7 @@ namespace Tips.SalesService.Api.Controllers
                 orderItem.BalanceQty -= item.DispatchQty;
                 orderItem.DispatchQty += item.DispatchQty;
                 _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
-            }          
+            }
 
             _salesOrderItemsRepository.SaveAsync();
             return Ok();
@@ -817,14 +859,14 @@ namespace Tips.SalesService.Api.Controllers
         //Update Balancre Qty and DispatchQty Using ReturnInvoice 
         [HttpPost]
         public async Task<IActionResult> ReturnInvoiceUpdateDispatchDetails([FromBody] List<ReturnDOSalesOrderDispatchQtyDto> salesOrderDispatchQtyDto)
-        { 
+        {
             foreach (var item in salesOrderDispatchQtyDto)
             {
                 IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
                 var orderItem = salesOrderItems.FirstOrDefault();
                 orderItem.BalanceQty += item.ReturnQty;
                 orderItem.DispatchQty -= item.ReturnQty;
-                if(orderItem.BalanceQty == orderItem.OrderQty)
+                if (orderItem.BalanceQty == orderItem.OrderQty)
                 {
                     orderItem.StatusEnum = OrderStatus.Open;
                 }
@@ -866,7 +908,7 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<ItemDetailsForShopOrderDto> serviceResponse = new ServiceResponse<ItemDetailsForShopOrderDto>();
             try
             {
-                _logger.LogError(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomFGListByItemNumber?", "ItemNumber=", itemNumber)); 
+                _logger.LogError(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomFGListByItemNumber?", "ItemNumber=", itemNumber));
                 var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomFGListByItemNumber?", "ItemNumber=", itemNumber));
                 //_logger.LogError(_httpClient.BaseAddress.ToString());
                 //_logger.LogError(_httpClient.ToString());
@@ -882,11 +924,11 @@ namespace Tips.SalesService.Api.Controllers
                 itemDetailsDto.ItemNumber = bomData[0].itemNumber;
                 itemDetailsDto.ItemType = bomData[0].itemType;
                 itemDetailsDto.BomVersionNo = bomVersionNo;
-                
+
                 var projectSODetails = await _repository.GetProjectDetailsByItemNo(itemNumber);
                 foreach (var project in projectSODetails)
                 {
-                    project.SalesOrderQtyDetails = await _repository.GetSalesOrderQtyDetailsByItemNo(itemNumber,project.ProjectNumber);
+                    project.SalesOrderQtyDetails = await _repository.GetSalesOrderQtyDetailsByItemNo(itemNumber, project.ProjectNumber);
                 }
                 itemDetailsDto.ProjectSODetails = projectSODetails;
 
@@ -965,8 +1007,8 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<SalesOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderIdNameListDto>>();
             try
             {
-                var listOfActiveSalesOrderName= await _repository.GetAllActiveSalesOrderNameList();
-           
+                var listOfActiveSalesOrderName = await _repository.GetAllActiveSalesOrderNameList();
+
                 var result = _mapper.Map<IEnumerable<SalesOrderIdNameListDto>>(listOfActiveSalesOrderName);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned All ActiveSalesOrderIdNameList";
@@ -1015,4 +1057,8 @@ namespace Tips.SalesService.Api.Controllers
 
 
 }
+
+
+
+
 

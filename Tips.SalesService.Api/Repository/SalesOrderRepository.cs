@@ -87,19 +87,23 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<SalesOrder>> GetAllSalesOrder([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
+            int searchValueInt;
+            bool isSearchValueInt = int.TryParse(searchParammes.SearchValue, out searchValueInt);
+
             var salesOrderDetails = FindAll().OrderByDescending(x => x.Id)
                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue)
                      || inv.SalesOrderNumber.Contains(searchParammes.SearchValue)
                      || inv.ProjectNumber.Contains(searchParammes.SearchValue)
                      || inv.OrderType.Contains(searchParammes.SearchValue)
                      || inv.CustomerName.Contains(searchParammes.SearchValue)
-                     || inv.OrderDate.Equals(int.Parse(searchParammes.SearchValue))
-                     || inv.ReceivedDate.Equals(int.Parse(searchParammes.SearchValue))
-                     || inv.PODate.Equals(int.Parse(searchParammes.SearchValue))
-                     || inv.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
-                     || inv.CustomerId.Equals(int.Parse(searchParammes.SearchValue)))))
+                     || inv.OrderDate.ToString().Contains(searchParammes.SearchValue)
+                     || inv.ReceivedDate.ToString().Contains(searchParammes.SearchValue)
+                     || inv.PODate.ToString().Contains(searchParammes.SearchValue)
+                     || (!isSearchValueInt || inv.RevisionNumber == searchValueInt)
+                     || inv.CustomerId.Contains(searchParammes.SearchValue))))
                    .Include(t => t.SalesOrdersItems)
-                   .ThenInclude(p => p.ScheduleDates);
+                   .ThenInclude(p => p.ScheduleDates)
+                   .Include(p => p.SalesAdditionalCharges);
 
 
             return PagedList<SalesOrder>.ToPagedList(salesOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
@@ -109,14 +113,14 @@ namespace Tips.SalesService.Api.Repository
         {
             var salesOrderDetails = _tipsSalesServiceDbContext.SalesOrders
                              .Where(inv => ((inv.CreatedOn >= searchDateParam.SearchFromDate &&
-                                inv.CreatedOn<= searchDateParam.SearchToDate
+                                inv.CreatedOn <= searchDateParam.SearchToDate
                                 )))
                              .Include(itm => itm.SalesOrdersItems)
                              .ToList();
             return salesOrderDetails;
         }
-        
-            public async Task<IEnumerable<SalesOrder>> SearchSalesOrder([FromQuery] SearchParammes searchParams)
+
+        public async Task<IEnumerable<SalesOrder>> SearchSalesOrder([FromQuery] SearchParammes searchParams)
         {
             using (var context = _tipsSalesServiceDbContext)
             {
@@ -132,7 +136,7 @@ namespace Tips.SalesService.Api.Repository
                 return query.ToList();
             }
 
-        } 
+        }
 
         public async Task<IEnumerable<SalesOrderIdNameListDto>> GetAllActiveSalesOrderNameList()
         {
@@ -183,9 +187,9 @@ namespace Tips.SalesService.Api.Repository
         {
             var getSalesOrderbyId = await _tipsSalesServiceDbContext.SalesOrders.Where(x => x.Id == id)
                 .Include(o => o.SalesAdditionalCharges)
-                                  .Include(t => t.SalesOrdersItems)                            
+                                  .Include(t => t.SalesOrdersItems)
                                   .ThenInclude(p => p.ScheduleDates)
-                                  
+
                                  .FirstOrDefaultAsync();
 
             return getSalesOrderbyId;
@@ -206,6 +210,18 @@ namespace Tips.SalesService.Api.Repository
 
             return getSalesorderList;
         }
+
+        public async Task<object> GetSalesOrderTotalBySalesOrderId(int salesOrderId)
+        {
+
+            var salesOrderTotal = await _tipsSalesServiceDbContext.SalesOrders
+                                .Where(b => b.Id == salesOrderId)
+                                .Select(x => x.Total)
+                              .FirstOrDefaultAsync();
+
+            return salesOrderTotal;
+        }
+
         public async Task<string> UpdateSalesOrder(SalesOrder salesOrder)
         {
             salesOrder.LastModifiedBy = "Admin";
@@ -232,18 +248,18 @@ namespace Tips.SalesService.Api.Repository
 
 
             var projectSODetails = await _tipsSalesServiceDbContext.SalesOrders
-                                .Where(m => projectNumbers.Contains(m.ProjectNumber) 
-                                && m.SOStatus != OrderStatus.Closed && m.IsShortClosed == false)                                
+                                .Where(m => projectNumbers.Contains(m.ProjectNumber)
+                                && m.SOStatus != OrderStatus.Closed && m.IsShortClosed == false)
                                 .Select(s => new ProjectSODetailDto()
                                 {
                                     ProjectNumber = s.ProjectNumber,
                                     CustomerName = s.CustomerName,
                                     CustomerId = s.CustomerId
                                 }).Distinct().ToListAsync();
-            return projectSODetails;    
+            return projectSODetails;
         }
 
-        public async Task<List<SalesOrderQtyDto>> GetSalesOrderQtyDetailsByItemNo(string itemNumber,string projectNo)
+        public async Task<List<SalesOrderQtyDto>> GetSalesOrderQtyDetailsByItemNo(string itemNumber, string projectNo)
         {
             var salesOrderQtyDetails = await _tipsSalesServiceDbContext.SalesOrdersItems
                                .Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo)
@@ -276,7 +292,7 @@ namespace Tips.SalesService.Api.Repository
                                .Select(x => x.SalesOrderNumber).Distinct().ToListAsync();
 
             IEnumerable<ListOfProjectNoDto> salesOrderDetails = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                              .Where(m => salesOrderNo.Contains(m.SalesOrderNumber)&& m.ItemNumber == itemNo)
+                              .Where(m => salesOrderNo.Contains(m.SalesOrderNumber) && m.ItemNumber == itemNo)
                                .Select(x => new ListOfProjectNoDto()
                                {
                                    Id = x.Id,
@@ -287,12 +303,12 @@ namespace Tips.SalesService.Api.Repository
 
             return salesOrderDetails;
 
-                               //IEnumerable<ListOfProjectNoDto> getProjectNumberList = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                               //                     .Where(b => b.ItemNumber == itemNo && status.Contains(b.StatusEnum))
-                               //                     .Select(x => new ListOfProjectNoDto()
-                               //                     {
-                               //                         Id = x.Id,
-                               //                         ProjectNumber = x.ProjectNumber
+            //IEnumerable<ListOfProjectNoDto> getProjectNumberList = await _tipsSalesServiceDbContexts.SalesOrdersItems
+            //                     .Where(b => b.ItemNumber == itemNo && status.Contains(b.StatusEnum))
+            //                     .Select(x => new ListOfProjectNoDto()
+            //                     {
+            //                         Id = x.Id,
+            //                         ProjectNumber = x.ProjectNumber
 
             //                     })
             //                   .ToListAsync();
@@ -302,7 +318,7 @@ namespace Tips.SalesService.Api.Repository
         }
         //serach by item level
         public async Task<IEnumerable<SalesOrderItems>> SearchSalesOrderItem([FromQuery] SearchParammes searchParams)
-        { 
+        {
             var getSalesOrderItemDetails = await _tipsSalesServiceDbContexts.SalesOrdersItems
               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
                      || inv.ItemNumber.Contains(searchParams.SearchValue)
@@ -330,9 +346,9 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<GetSalesOrderDetailsDto>> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo)
         {
-             var join = from e in _tipsSalesServiceDbContexts.SalesOrdersItems
+            var join = from e in _tipsSalesServiceDbContexts.SalesOrdersItems
                        where e.ItemNumber == ItemNo && e.ProjectNumber == ProjectNo
-                        join d in _tipsSalesServiceDbContexts.SalesOrders on e.SalesOrderNumber equals d.SalesOrderNumber
+                       join d in _tipsSalesServiceDbContexts.SalesOrders on e.SalesOrderNumber equals d.SalesOrderNumber
                        where d.SalesOrderStatus == SalesOrderStatus.BuildToPrint
                        select new GetSalesOrderDetailsDto()
                        {
