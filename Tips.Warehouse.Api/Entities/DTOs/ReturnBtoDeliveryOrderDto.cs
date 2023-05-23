@@ -6,6 +6,7 @@
         public int Id { get; set; }
         public string? BTONumber { get; set; }        
         public string? CustomerName { get; set; }
+        public string? ReturnBy { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerId { get; set; }
         public string? PONumber { get; set; }
@@ -30,6 +31,7 @@
 
         public string? BTONumber { get; set; }
         public string? CustomerAliasName { get; set; }
+        public string? ReturnBy { get; set; }
         public string? CustomerId { get; set; }
         public string? PONumber { get; set; }
         public string? IssuedTo { get; set; }
@@ -44,6 +46,7 @@
         public string? ReturnBTONumber { get; set; }
         public DateTime? ReturnBTODate { get; set; }
         public string? CustomerName { get; set; }
+        public string? ReturnBy { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerId { get; set; }
         public string? PONumber { get; set; }

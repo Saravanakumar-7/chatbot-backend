@@ -682,45 +682,44 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetSalesOrderTotalBySalesOrderId(int salesOrderId)
+        {
+            ServiceResponse<IEnumerable<SalesOrder>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrder>>();
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetSalesOrderTotalBySalesOrderId(int salesOrderId)
-        //{
-        //    ServiceResponse<IEnumerable<SalesOrder>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrder>>();
-
-        //    try
-        //    {
-        //        var salesOrderTotalBySalesOrderId = await _repository.GetSalesOrderTotalBySalesOrderId(salesOrderId);
-        //        if (salesOrderTotalBySalesOrderId == null)
-        //        {
-        //            _logger.LogError($"SalesOrderDetail with salesOrderId: {salesOrderId}, hasn't been found in db.");
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = $"SalesOrderDetail with salesOrderId: {salesOrderId}, hasn't been found.";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
-        //            return NotFound(serviceResponse);
-        //        }
-        //        else
-        //        {
-        //            _logger.LogInfo($"Returned SalesOrderDetail with salesOrderId: {salesOrderId}");
-        //            var result = _mapper.Map<IEnumerable<SalesOrder>>(salesOrderTotalBySalesOrderId);
-        //            serviceResponse.Data = result;
-        //            serviceResponse.Message = "Success";
-        //            serviceResponse.Success = true;
-        //            serviceResponse.StatusCode = HttpStatusCode.OK;
-        //            return Ok(serviceResponse);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Something went wrong inside GetSalesOrderDetailsBySalesOrderId action: {ex.Message}");
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = "Inter server error";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    }
-        //}
+            try
+            {
+                var salesOrderTotalBySalesOrderId = await _repository.GetSalesOrderTotalBySalesOrderId(salesOrderId);
+                if (salesOrderTotalBySalesOrderId == null)
+                {
+                    _logger.LogError($"SalesOrderDetail with salesOrderId: {salesOrderId}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderDetail with salesOrderId: {salesOrderId}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned SalesOrderDetail with salesOrderId: {salesOrderId}");
+                    //var result = _mapper.Map<IEnumerable<SalesOrder>>(salesOrderTotalBySalesOrderId);
+                    //serviceResponse.Data = result;
+                    //serviceResponse.Message = "Success";
+                    //serviceResponse.Success = true;
+                    //serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(salesOrderTotalBySalesOrderId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetSalesOrderDetailsBySalesOrderId action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         //getprojectnumberbyitemnumber
 

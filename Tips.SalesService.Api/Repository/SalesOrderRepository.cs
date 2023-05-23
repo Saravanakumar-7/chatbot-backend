@@ -181,8 +181,7 @@ namespace Tips.SalesService.Api.Repository
                               .ToListAsync();
 
             return activeSalesOrderNameList;
-        }
-
+        } 
         public async Task<SalesOrder> GetSalesOrderById(int id)
         {
             var getSalesOrderbyId = await _tipsSalesServiceDbContext.SalesOrders.Where(x => x.Id == id)

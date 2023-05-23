@@ -118,6 +118,13 @@ namespace Tips.Warehouse.Api.Controllers
                             bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDtos);
                         }
                     }
+                    var salesOrderObjectResult = await _httpClient.GetAsync(string.Concat(_config["SalesOrderAPI"],
+                                             "GetSalesOrderTotalBySalesOrderId?", "&SalesOrderId=", bTODeliveryOrderDto.SalesOrderId));
+                    var salesOrderObjectString = await salesOrderObjectResult.Content.ReadAsStringAsync();
+                    dynamic salesOrderObjectData = JsonConvert.DeserializeObject(salesOrderObjectString);
+                    dynamic salesOrderObject = salesOrderObjectData;
+                    decimal salesOrderTotal = Convert.ToDecimal(salesOrderObject);
+                    bTODeliveryOrderDto.SOTotal = salesOrderTotal;
 
                     bTODeliveryOrderDto.bTODeliveryOrderItems = bTODeliveryOrderItemsDtoList;
 
@@ -492,7 +499,48 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        
+        [HttpGet]
+        public async Task<IActionResult> GetBTONumberListBySalesOrderId(int salesOrderId)
+        {
+            ServiceResponse<IEnumerable<ListOfBtoNumberDetails>> serviceResponse = new ServiceResponse<IEnumerable<ListOfBtoNumberDetails>>();
+            try
+            {
+                var btoNumberList = await _repository.GetBtoNumberListBySalesOrderId(salesOrderId);
+
+                if (btoNumberList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"BTODeliveryOrderNumberList not found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"BTODeliveryOrderNumbersList with salesOrderId: {salesOrderId},not found.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {salesOrderId}");
+
+                    var bTODeliveryNumberList = _mapper.Map<IEnumerable<ListOfBtoNumberDetails>>(btoNumberList);
+
+
+                    serviceResponse.Data = bTODeliveryNumberList;
+                    serviceResponse.Message = "Returned BTODeliveryNumberList Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetBtoNumberListBySalesOrderId action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBTODeliveryOrder(int id, [FromBody] BTODeliveryOrderDtoUpdate bTODeliveryOrderDtoUpdate)
         {

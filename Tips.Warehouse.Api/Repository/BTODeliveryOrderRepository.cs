@@ -59,7 +59,25 @@ namespace Tips.Warehouse.Api.Repository
                 throw ex;
             }
         }
+        public async Task<IEnumerable<ListOfBtoNumberDetails>> GetBtoNumberListBySalesOrderId(int salesOrderId)
+        {
 
+            IEnumerable<ListOfBtoNumberDetails> btoNumberList = await _tipsWarehouseDbContext.bTODeliveryOrder
+                                 .Where(x => x.SalesOrderId == salesOrderId)
+                                .Select(x => new ListOfBtoNumberDetails()
+                                {
+                                    CustomerLeadID = x.CustomerId,
+                                    BTONumber = x.BTONumber,
+                                    BtoDeliveryOrderId = x.Id,
+                                    OrderType = x.OrderType,
+                                    TotalValue = x.TotalValue
+
+                                })
+
+                              .ToListAsync();
+
+            return btoNumberList;
+        }
         public async Task<string> DeleteBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder)
         {
             Delete(bTODeliveryOrder);
@@ -167,6 +185,7 @@ namespace Tips.Warehouse.Api.Repository
                                     BTONumber = x.BTONumber,
                                     BtoDeliveryOrderId = x.Id,
                                     OrderType = x.OrderType,
+                                    TotalValue = x.TotalValue
 
                                 })
                                 .Where(x => x.CustomerLeadID == customerLeadId)

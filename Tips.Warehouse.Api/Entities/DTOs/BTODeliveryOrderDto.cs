@@ -8,6 +8,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public int Id { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SOTotal { get; set; }
+        public string? Remarks { get; set; }
         public string? CustomerId { get; set; }
         public string? BTONumber { get; set; }       
         public int? SalesOrderId { get; set; }
@@ -35,6 +39,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerId { get; set; }
+        public string? Remarks { get; set; }
         public int? SalesOrderId { get; set; }
         public string SalesOrderNumber { get; set; }
 
@@ -57,6 +62,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 1)]
         public int? SalesOrderRevisionNumber { get; set; }
+        public string? Remarks { get; set; }
         public string? BTONumber { get; set; }
         public string? CustomerId { get; set; }
         public string? PONumber { get; set; }
@@ -86,6 +92,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? BTONumber { get; set; }
         public int? BtoDeliveryOrderId { get ; set; }
         public string? OrderType { get; set; }
+        public decimal? TotalValue { get; set; }
     }
     public class BtoIDNameList
     {

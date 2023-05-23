@@ -17,6 +17,7 @@ namespace Tips.Warehouse.Api.Contracts
 
         Task<PagedList<BTODeliveryOrder>> GetAllActiveBTODeliveryOrders(PagingParameter pagingParameter, SearchParams searchParams);
         Task<long> CreateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder);
+        Task<IEnumerable<ListOfBtoNumberDetails>> GetBtoNumberListBySalesOrderId(int salesOrderId);
         Task<int?> GetBTONumberAutoIncrementCount(DateTime date);
         Task<IEnumerable<ListofBtoDeliveryOrderDetails>> GetBtoDeliveryOrderNumberList();
         Task<string> UpdateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder);

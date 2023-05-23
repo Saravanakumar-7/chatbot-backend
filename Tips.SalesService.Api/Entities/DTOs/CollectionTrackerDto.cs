@@ -7,6 +7,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string CustomerId { get; set; }
         public string CustomerName { get; set; }
+        public string? Remarks { get; set; }
         public decimal TotalSumOfSOAmount { get; set; }
         public decimal AmountRecieved { get; set; }
         public decimal AlreadyRecieved { get; set; }
@@ -24,6 +25,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string CustomerId { get; set; }
         public string CustomerName { get; set; }
         public decimal TotalSumOfSOAmount { get; set; }
+        public string? Remarks { get; set; }
         public decimal AmountRecieved { get; set; }
         public decimal AlreadyRecieved { get; set; }
         public string PaymentMode { get; set; }
@@ -36,6 +38,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string CustomerId { get; set; }
         public string CustomerName { get; set; }
+        public string? Remarks { get; set; }
         public decimal TotalSumOfSOAmount { get; set; }
         public decimal AmountRecieved { get; set; }
         public decimal AlreadyRecieved { get; set; }

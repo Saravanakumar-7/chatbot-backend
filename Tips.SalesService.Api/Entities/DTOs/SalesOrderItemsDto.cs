@@ -14,6 +14,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
         public string? SalesOrderNumber { get; set; }
+        public string? PriceList { get; set; }
         public decimal? AvailableStock { get; set; }
 
         public string? ProjectNumber { get; set; }
@@ -77,6 +78,7 @@ namespace Tips.SalesService.Api.Entities.Dto
 
         [Precision(13, 3)]
         public decimal ShopOrderQty { get; set; }
+        public string? PriceList { get; set; }
         public string? UOM { get; set; }
         public string? Currency { get; set; }
 
@@ -136,6 +138,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal ShopOrderQty { get; set; }
         public string? UOM { get; set; }
         public string? Currency { get; set; }
+        public string? PriceList { get; set; }
 
         [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
