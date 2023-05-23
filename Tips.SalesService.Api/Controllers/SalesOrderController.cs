@@ -770,23 +770,85 @@ namespace Tips.SalesService.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateDispatchDetails([FromBody] List<SalesOrderDispatchQtyDto> salesOrderDispatchQtyDto)
         {
-            //dynamic dispatchDetials
-            //we have to write code for same itemnumber in multiple rows
-            // Deserialise and store it in dynamic varibale
-            //lopp thori=ug the dynamic variable an pass hte item number and so id to salesorderitemdetials, get 
-            //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
-            foreach (var item in salesOrderDispatchQtyDto)
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
             {
-                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
-                var orderItem = salesOrderItems.FirstOrDefault();
-                orderItem.BalanceQty -= item.DispatchQty;
-                orderItem.DispatchQty += item.DispatchQty;
-                _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
-            }
+                if (salesOrderDispatchQtyDto == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "SalesOrder object sent from the client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("SalesOrder object sent from the client is null.");
+                    return BadRequest(serviceResponse);
+                }
 
-            _salesOrderItemsRepository.SaveAsync();
-            return Ok();
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid SalesOrder object sent from the client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid SalesOrder object sent from the client.");
+                    return BadRequest(serviceResponse);
+                }
+
+                foreach (var item in salesOrderDispatchQtyDto)
+                {
+                    IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
+                    var dispatchedQty = item.DispatchQty;
+
+                    foreach (var salesOrderItem in salesOrderItems)
+                    {
+                        var balanceQty = salesOrderItem.BalanceQty;
+
+                        if (salesOrderItem.BalanceQty >= dispatchedQty)
+                        {
+                            salesOrderItem.BalanceQty -= dispatchedQty;
+                            salesOrderItem.DispatchQty += dispatchedQty;
+                            dispatchedQty = 0;
+                        }
+                        else
+                        {
+                            salesOrderItem.BalanceQty = 0;
+                            salesOrderItem.DispatchQty += balanceQty;
+                            dispatchedQty -= balanceQty;
+                        }
+
+                        if (salesOrderItem.BalanceQty <= 0)
+                        {
+                            salesOrderItem.BalanceQty = 0;
+                            salesOrderItem.StatusEnum = OrderStatus.Closed;
+                        }
+
+                        await _salesOrderItemsRepository.UpdateSalesOrderItem(salesOrderItem);
+
+                        if (dispatchedQty == 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                _salesOrderItemsRepository.SaveAsync();
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "SalesOrder Successfully Updated";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateDispatchDetails action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
         }
+
 
         //below method old dispatch qty greater then new dispatch qty in bto edit part
 

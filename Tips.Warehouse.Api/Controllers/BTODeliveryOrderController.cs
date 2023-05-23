@@ -337,11 +337,11 @@ namespace Tips.Warehouse.Api.Controllers
 
                 if (bTODeliveryOrderitemsList != null)
                 {
-                   
+
                     for (int i = 0; i < bTODeliveryOrderitemsList.Count; i++)
-                    { 
+                    {
                         BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsList[i]);
-                         bTODeliveryOrderItemsDetails.OrderBalanceQty = bTODeliveryOrderItemsDetails.FGOrderQty - bTODeliveryOrderItemsDetails.DispatchQty;
+                        bTODeliveryOrderItemsDetails.OrderBalanceQty = bTODeliveryOrderItemsDetails.FGOrderQty - bTODeliveryOrderItemsDetails.DispatchQty;
                         bTODeliveryOrderItemsDetails.BalanceDoQty = bTODeliveryOrderItemsDetails.DispatchQty;
                         bTODeliveryOrderItemsDetails.BTONumber = bTODeliveryOrder.BTONumber;
                         bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDetails);
@@ -349,53 +349,63 @@ namespace Tips.Warehouse.Api.Controllers
                         //Update Inventory balanced Quantity 
 
                         var PartNumber = bTODeliveryOrderItemsDtoList[i].FGItemNumber;
-                        var getInventoryFGDetailsByItemnumber = await _inventoryRepository.GetInventoryFGDetailsByItemNumber(PartNumber);
-                        decimal Quantity = Convert.ToDecimal(bTODeliveryOrderitemsList[i].DispatchQty);
+                        var getInventoryFGDetailsByItemnumber = await _inventoryRepository.GetInventoryByItemNumber(PartNumber);
+                        decimal dispatchQuantity = Convert.ToDecimal(bTODeliveryOrderitemsList[i].DispatchQty);
                         if (getInventoryFGDetailsByItemnumber != null)
                         {
-                            if (Quantity != 0 && getInventoryFGDetailsByItemnumber.Balance_Quantity >= Quantity)
+                            foreach (var inventory in getInventoryFGDetailsByItemnumber)
                             {
-                                getInventoryFGDetailsByItemnumber.Balance_Quantity = getInventoryFGDetailsByItemnumber.Balance_Quantity - Quantity;
-                                Quantity = 0;
-                                if (getInventoryFGDetailsByItemnumber.Balance_Quantity == 0)
+                                var stockAvailable = inventory.Balance_Quantity;
+                                if (dispatchQuantity != 0 && stockAvailable >= dispatchQuantity)
                                 {
-                                    getInventoryFGDetailsByItemnumber.IsStockAvailable = false;
+                                    inventory.Balance_Quantity = stockAvailable - dispatchQuantity;
+                                    stockAvailable -= dispatchQuantity;
+                                    dispatchQuantity = 0;
+
+                                    if (stockAvailable == 0)
+                                    {
+                                        inventory.IsStockAvailable = false;
+                                    }
+                                }
+                                else if (dispatchQuantity != 0 && stockAvailable < dispatchQuantity)
+                                {
+                                    dispatchQuantity -= stockAvailable;
+                                    inventory.Balance_Quantity = 0;
+                                    inventory.IsStockAvailable = false;
+                                }
+
+                                _inventoryRepository.Update(inventory);
+                                if (dispatchQuantity == 0)
+                                {
+                                    break;
                                 }
                             }
-                            if (Quantity != 0 && getInventoryFGDetailsByItemnumber.Balance_Quantity < Quantity)
-                            {
-                                Quantity = Quantity - getInventoryFGDetailsByItemnumber.Balance_Quantity;
-                                getInventoryFGDetailsByItemnumber.Balance_Quantity = 0;
-                                getInventoryFGDetailsByItemnumber.IsStockAvailable = false;
-                            }
-
-                            _inventoryRepository.Update(getInventoryFGDetailsByItemnumber);
                             _inventoryRepository.SaveAsync();
                         }
-                        else
-                        {
-                            Inventory inventory = new Inventory();
-                            inventory.PartNumber = bTODeliveryOrderItemsDtoList[i].FGItemNumber;
-                            inventory.MftrPartNumber = bTODeliveryOrderItemsDtoList[i].FGItemNumber;
-                            inventory.Description = bTODeliveryOrderItemsDtoList[i].Description;
-                            inventory.ProjectNumber = "";
-                            inventory.Balance_Quantity = bTODeliveryOrderitemsList[i].DispatchQty;
-                            inventory.UOM = bTODeliveryOrderItemsDtoList[i].UOM;
-                            inventory.IsStockAvailable = true;
-                            inventory.Warehouse = "FG";
-                            inventory.Location = "FG";
-                            inventory.GrinNo = bTODeliveryOrder.BTONumber;
-                            inventory.GrinPartId = 0;
-                            inventory.PartType = "";
-                            inventory.GrinMaterialType = "";
-                            inventory.ReferenceID = bTODeliveryOrder.BTONumber;
-                            inventory.ReferenceIDFrom = "Create BTO Delivery Order";
-                            inventory.shopOrderNo = "";
+                        //else
+                        //{
+                        //    Inventory inventory = new Inventory();
+                        //    inventory.PartNumber = bTODeliveryOrderItemsDtoList[i].FGItemNumber;
+                        //    inventory.MftrPartNumber = bTODeliveryOrderItemsDtoList[i].FGItemNumber;
+                        //    inventory.Description = bTODeliveryOrderItemsDtoList[i].Description;
+                        //    inventory.ProjectNumber = "";
+                        //    inventory.Balance_Quantity = bTODeliveryOrderitemsList[i].DispatchQty;
+                        //    inventory.UOM = bTODeliveryOrderItemsDtoList[i].UOM;
+                        //    inventory.IsStockAvailable = true;
+                        //    inventory.Warehouse = "FG";
+                        //    inventory.Location = "FG";
+                        //    inventory.GrinNo = bTODeliveryOrder.BTONumber;
+                        //    inventory.GrinPartId = 0;
+                        //    inventory.PartType = "";
+                        //    inventory.GrinMaterialType = "";
+                        //    inventory.ReferenceID = bTODeliveryOrder.BTONumber;
+                        //    inventory.ReferenceIDFrom = "Create BTO Delivery Order";
+                        //    inventory.shopOrderNo = "";
 
-                            await _inventoryRepository.CreateInventory(inventory);
-                            _inventoryRepository.SaveAsync();
-                        }
-                        
+                        //    await _inventoryRepository.CreateInventory(inventory);
+                        //    _inventoryRepository.SaveAsync();
+                        //}
+
 
                         //Add BTO Detail Into Inventory transaction Table
 
@@ -409,12 +419,6 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTranction.ReferenceID = bTODeliveryOrder.BTONumber;
                         inventoryTranction.ReferenceIDFrom = "BTO Delivery Order";
                         inventoryTranction.Issued_By = "Admin";
-                        inventoryTranction.CreatedOn = DateTime.Now;
-                        inventoryTranction.Unit = "Bangalore"; 
-                        inventoryTranction.CreatedBy = "Admin";
-                        inventoryTranction.LastModifiedBy = "Admin";
-                        inventoryTranction.LastModifiedOn = DateTime.Now; 
-                        inventoryTranction.ModifiedStatus = false;
                         inventoryTranction.From_Location = "FG";
                         inventoryTranction.TO_Location = "BTO";
                         inventoryTranction.Remarks = "Create BTO";
@@ -457,7 +461,7 @@ namespace Tips.Warehouse.Api.Controllers
 
 
                         var bTODeliveryOrderHistoryDetails = _mapper.Map<BTODeliveryOrderHistory>(bTODeliveryOrderHistory);
-                         
+
 
                         await _bTODeliveryOrderHistoryRepository.CreateBTODeliveryOrderHistory(bTODeliveryOrderHistoryDetails);
                         _bTODeliveryOrderHistoryRepository.SaveAsync();
@@ -480,7 +484,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchDetails"), data);
 
-
+                _logger.LogError($"Something went wrong inside CreateBTODelivaryOrder action: {response}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = " BTODeliveryOrder Successfully Created";
                 serviceResponse.Success = true;

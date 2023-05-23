@@ -37,6 +37,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<Inventory>> GetAllInventoryWithItems(InventorySearchDto inventorySearch);
         Task<IEnumerable<Inventory>> SearchInventory([FromQuery] SearchParames searchParames);
         Task<IEnumerable<Inventory>> SearchInventoryDate([FromQuery] SearchsDateParms searchsDateParms);
+        Task<IEnumerable<Inventory>> GetInventoryByItemNumber(string ItemNumber);
 
     }
 }
