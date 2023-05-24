@@ -50,8 +50,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class SalesAdditionalChargesUpdateDto
     {
-        [Key]
-        public int Id { get; set; }
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
 
