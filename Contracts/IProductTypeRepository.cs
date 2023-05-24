@@ -14,5 +14,6 @@ namespace Contracts
         Task<int?> CreateProductType(ProductType productType);
         Task<string> UpdateProductType(ProductType productType);
         Task<string> DeleteProductType(ProductType productType);
+        Task<IEnumerable<ProductType>> GetListOfTypeSolutionByProductType(string typeSolution);
     }
 }

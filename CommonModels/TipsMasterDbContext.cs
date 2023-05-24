@@ -144,7 +144,7 @@ namespace Entities
  public DbSet<Unit> Units { get; set; }
 
         public DbSet<IssuingStock> IssuingStocks { get; set; }
-
+        public DbSet<AdditionalCharges> AdditionalCharges { get; set; }
 
 
     }

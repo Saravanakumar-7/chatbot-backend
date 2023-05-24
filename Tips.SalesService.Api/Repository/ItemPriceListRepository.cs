@@ -86,6 +86,16 @@ namespace Tips.SalesService.Api.Repository
             return getItemPriceListById;
         }
 
+        public async Task<PagedList<ItemPriceList>> GetItemPriceListByPriceListName(string priceListName, [FromQuery] PagingParameter pagingParameter, SearchParammes searchParammes)
+        {
+            var itemPriceList = FindByCondition(x => x.PriceListName == priceListName).OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.PriceListName.Contains(searchParammes.SearchValue)
+              || inv.ItemNumber.Contains(searchParammes.SearchValue) || inv.Description.Contains(searchParammes.SearchValue)
+              || inv.UOC.Contains(searchParammes.SearchValue))));
+
+            return PagedList<ItemPriceList>.ToPagedList(itemPriceList, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
         public async Task<IEnumerable<ItemPriceList>> GetItemPriceListByItemNo(string itemNo)
         {
             var getItemPriceListByItemNo = await FindByCondition(x => x.ItemNumber == itemNo).ToListAsync();

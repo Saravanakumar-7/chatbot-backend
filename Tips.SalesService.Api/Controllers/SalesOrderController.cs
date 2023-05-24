@@ -438,7 +438,17 @@ namespace Tips.SalesService.Api.Controllers
 
                 var salesOrderDetails = _mapper.Map<SalesOrder>(salesOrderDtoUpdate);
                 var salesOrderItemsDto = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos;
+                var salesAdditionalChargesDto = salesOrderDtoUpdate.SalesAdditionalChargesUpdateDtos;
                 var salesOrderItemsList = new List<SalesOrderItems>();
+                var salesAdditionalChargesList = new List<SalesAdditionalCharges>();
+                if(salesAdditionalChargesDto != null)
+                {
+                    for(int i = 0; i < salesAdditionalChargesDto.Count; i++)
+                    {
+                        SalesAdditionalCharges additionalChargesDetails = _mapper.Map<SalesAdditionalCharges>(salesAdditionalChargesDto[i]);
+                        salesAdditionalChargesList.Add(additionalChargesDetails);
+                    }
+                }
                 if (salesOrderItemsDto != null)
                 {
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
@@ -504,7 +514,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetail);
                 updateData.SalesOrdersItems = salesOrderItemsList;
-
+                updateData.SalesAdditionalCharges = salesAdditionalChargesList;
                 string result = await _repository.UpdateSalesOrder(updateData);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();

@@ -110,6 +110,59 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetItemPriceListByPriceListName(string priceListName, [FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
+        {
+            ServiceResponse<IEnumerable<ItemPriceListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemPriceListDto>>();
+
+            try
+            {
+                var itemPriceListDetails = await _repository.GetItemPriceListByPriceListName(priceListName, pagingParameter, searchParammes);
+
+                var metadata = new
+                {
+                    itemPriceListDetails.TotalCount,
+                    itemPriceListDetails.PageSize,
+                    itemPriceListDetails.CurrentPage,
+                    itemPriceListDetails.HasNext,
+                    itemPriceListDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all ItemPriceList");
+                if (itemPriceListDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ItemPriceList with priceListName hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"ItemPriceList with priceListName: {priceListName}, hasn't been found.");
+                    return BadRequest(serviceResponse);
+                }
+                else
+                {
+
+                    _logger.LogInfo($"Returned ItemPriceList with id: {priceListName}");
+                    var result = _mapper.Map<IEnumerable<ItemPriceListDto>>(itemPriceListDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned ItemPriceList with priceListName successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetItemPriceListByPriceListName action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetItemPriceListByItemNo(string itemNo)
         {
             ServiceResponse<IEnumerable<ItemPriceListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemPriceListDto>>();

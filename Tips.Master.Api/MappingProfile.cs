@@ -448,6 +448,10 @@ namespace Tips.Master.Api
             CreateMap<IssuingStock, IssuingStockDto>().ReverseMap();
             CreateMap<IssuingStock, IssuingStockPostDto>().ReverseMap();
             CreateMap<IssuingStock, IssuingStockUpdateDto>().ReverseMap();
+
+            CreateMap<AdditionalCharges, AdditionalChargesDto>().ReverseMap();
+            CreateMap<AdditionalCharges, AdditionalChargesPostDto>().ReverseMap();
+            CreateMap<AdditionalCharges, AdditionalChargesUpdateDto>().ReverseMap();
         }
     }
 }

@@ -31,7 +31,13 @@ namespace Repository
             string result = $"productType details of {productType.Id} is deleted successfully!";
             return result;
         }
+        public async Task<IEnumerable<ProductType>> GetListOfTypeSolutionByProductType(string typeSolution)
+        {
+            IEnumerable<ProductType> typeSolutionByProductType = await TipsMasterDbContext.ProductTypes
+             .Where(x => x.TypeSolution == typeSolution).ToListAsync();
 
+            return typeSolutionByProductType;
+        }
         public async Task<IEnumerable<ProductType>> GetAllProductType()
         {
             var getAllproductType = await FindAll().OrderByDescending(x => x.Id).ToListAsync();

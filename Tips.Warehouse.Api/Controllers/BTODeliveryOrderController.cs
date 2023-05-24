@@ -450,7 +450,7 @@ namespace Tips.Warehouse.Api.Controllers
                         bTODeliveryOrderHistory.FGOrderQty = bTODeliveryOrderItemsDtoList[i].FGOrderQty;
                         bTODeliveryOrderHistory.OrderBalanceQty = bTODeliveryOrderItemsDtoList[i].OrderBalanceQty;
                         bTODeliveryOrderHistory.FGStock = bTODeliveryOrderItemsDtoList[i].FGStock;
-                        bTODeliveryOrderHistory.Discount = bTODeliveryOrderItemsDtoList[i].Discount;
+                        bTODeliveryOrderHistory.Discount = Convert.ToDecimal(bTODeliveryOrderItemsDtoList[i].Discount);
                         bTODeliveryOrderHistory.NetValue = bTODeliveryOrderItemsDtoList[i].NetValue;
                         bTODeliveryOrderHistory.DispatchQty = bTODeliveryOrderItemsDtoList[i].DispatchQty;
                         bTODeliveryOrderHistory.InvoicedQty = bTODeliveryOrderItemsDtoList[i].InvoicedQty;
