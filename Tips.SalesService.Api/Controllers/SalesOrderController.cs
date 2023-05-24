@@ -447,7 +447,7 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty - salesOrderItemsDetail.DispatchQty;
                         salesOrderItemsList.Add(salesOrderItemsDetail);
 
-                        SalesOrderHistory salesOrderHistory = new SalesOrderHistory();
+                       /* SalesOrderHistory salesOrderHistory = new SalesOrderHistory();
                         salesOrderHistory.SalesOrderNumber = salesOrderDetail.SalesOrderNumber;
                         salesOrderHistory.ProjectNumber = salesOrderDetail.ProjectNumber;
                         salesOrderHistory.QuoteNumber = salesOrderDetail.QuoteNumber;
@@ -474,38 +474,37 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderHistory.CreatedOn = salesOrderDetail.CreatedOn;
                         salesOrderHistory.LastModifiedBy = salesOrderDetail.LastModifiedBy;
                         salesOrderHistory.LastModifiedOn = salesOrderDetail.LastModifiedOn;
-                        salesOrderHistory.ItemNumber = salesOrderDetail.SalesOrdersItems[i].ItemNumber;
-                        salesOrderHistory.Description = salesOrderDetail.SalesOrdersItems[i].Description;
-                        salesOrderHistory.BalanceQty = salesOrderDetail.SalesOrdersItems[i].BalanceQty;
-                        salesOrderHistory.DispatchQty = salesOrderDetail.SalesOrdersItems[i].DispatchQty;
-                        salesOrderHistory.ShopOrderQty = salesOrderDetail.SalesOrdersItems[i].ShopOrderQty;
-                        salesOrderHistory.UOM = salesOrderDetail.SalesOrdersItems[i].UOM;
-                        salesOrderHistory.Currency = salesOrderDetail.SalesOrdersItems[i].Currency;
-                        salesOrderHistory.TotalAmount = salesOrderDetail.SalesOrdersItems[i].TotalAmount;
-                        salesOrderHistory.BasicAmount = salesOrderDetail.SalesOrdersItems[i].BasicAmount;
-                        salesOrderHistory.Discount = salesOrderDetail.SalesOrdersItems[i].Discount;
-                        salesOrderHistory.UnitPrice = salesOrderDetail.SalesOrdersItems[i].UnitPrice;
-                        salesOrderHistory.OrderQty = salesOrderDetail.SalesOrdersItems[i].OrderQty;
-                        salesOrderHistory.SGST = salesOrderDetail.SalesOrdersItems[i].SGST;
-                        salesOrderHistory.UTGST = salesOrderDetail.SalesOrdersItems[i].UTGST;
-                        salesOrderHistory.CGST = salesOrderDetail.SalesOrdersItems[i].CGST;
-                        salesOrderHistory.IGST = salesOrderDetail.SalesOrdersItems[i].IGST;
-                        salesOrderHistory.ReceivedDate = salesOrderDetail.SalesOrdersItems[i].RequestedDate;
-                        salesOrderHistory.Remarks = salesOrderDetail.SalesOrdersItems[i].Remarks;
-
-
+                        salesOrderHistory.ItemNumber = salesOrderItemsDetail.ItemNumber;
+                        salesOrderHistory.Description = salesOrderItemsDetail.Description;
+                        salesOrderHistory.BalanceQty = salesOrderItemsDetail.BalanceQty;
+                        salesOrderHistory.DispatchQty = salesOrderItemsDetail.DispatchQty;
+                        salesOrderHistory.ShopOrderQty = salesOrderItemsDetail.ShopOrderQty;
+                        salesOrderHistory.UOM = salesOrderItemsDetail.UOM;
+                        salesOrderHistory.Currency = salesOrderItemsDetail.Currency;
+                        salesOrderHistory.TotalAmount = salesOrderItemsDetail.TotalAmount;
+                        salesOrderHistory.BasicAmount = salesOrderItemsDetail.BasicAmount;
+                        salesOrderHistory.Discount = salesOrderItemsDetail.Discount;
+                        salesOrderHistory.UnitPrice = salesOrderItemsDetail.UnitPrice;
+                        salesOrderHistory.OrderQty = salesOrderItemsDetail.OrderQty;
+                        salesOrderHistory.SGST = salesOrderItemsDetail.SGST;
+                        salesOrderHistory.UTGST = salesOrderItemsDetail.UTGST;
+                        salesOrderHistory.CGST = salesOrderItemsDetail.CGST;
+                        salesOrderHistory.IGST = salesOrderItemsDetail.IGST;
+                        salesOrderHistory.ReceivedDate = salesOrderItemsDetail.RequestedDate;
+                        salesOrderHistory.Remarks = salesOrderItemsDetail.Remarks;
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
 
 
                         await _salesOrderHistory.CreateSalesOrderHistory(salesOrderHistories);
-                        _salesOrderHistory.SaveAsync();
+                        _salesOrderHistory.SaveAsync();*/
                     }
                 }
 
-                var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetail);
-                updateData.SalesOrdersItems = salesOrderItemsList;
+                //var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetail);
+                //updateData.SalesOrdersItems = salesOrderItemsList;
+                salesOrderDetails.SalesOrdersItems = salesOrderItemsList;
 
-                string result = await _repository.UpdateSalesOrder(updateData);
+                string result = await _repository.UpdateSalesOrder(salesOrderDetails);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
