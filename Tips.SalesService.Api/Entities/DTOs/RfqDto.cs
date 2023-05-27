@@ -96,4 +96,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
     }
+    public class LatestRfqNumberListDto
+    {
+        public decimal? RevisionNumber { get; set; }
+
+        public string RfqNumber { get; set; }
+
+    }
 }

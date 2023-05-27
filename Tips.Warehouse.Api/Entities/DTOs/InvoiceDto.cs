@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {
@@ -21,6 +22,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
         public List<InvoiceChildItemDto>? invoiceChildItems { get; set; }
+        public List<InvoiceAdditionalChargesDto>? InvoiceAdditionalCharges { get; set; }
 
     }
 
@@ -36,7 +38,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
          public string? Remarks { get; set; }
         public string? SerialNumber { get; set; }
 
+
         public List<InvoiceChildItemPostDto>? InvoiceChildItems { get; set; }
+        public List<InvoiceAdditionalChargesPostDto>? InvoiceAdditionalCharges { get; set; }
+
     }
 
     public class InvoiceUpdateDto
@@ -55,7 +60,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<InvoiceChildItemUpdateDto>? InvoiceChildItems { get; set; }
+        public List<InvoiceAdditionalCharges>? InvoiceAdditionalCharges { get; set; }
+
+        public List<InvoiceAdditionalChargesUpdateDto>? InvoiceChildItems { get; set; }
     }
 
     public class InvoiceIdNameList

@@ -341,7 +341,7 @@ namespace Tips.SalesService.Api.Repository
                           .ToListAsync();
 
             return getSalesOrderDetailsBySOandItemNo;
-        }
+        } 
 
         public async Task<IEnumerable<GetSalesOrderDetailsDto>> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo)
         {

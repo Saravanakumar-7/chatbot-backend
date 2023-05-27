@@ -1,6 +1,7 @@
 using AutoMapper;
 using System;
 using System.Net;
+using Tips.SalesService.Api.Entities.DTOs;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
 
@@ -91,12 +92,9 @@ namespace Tips.Warehouse.Api
 
             CreateMap<BTODeliveryOrderHistory, ReturnBtoDeliveryOrderDto>().ReverseMap();
 
-           
-        
-
-
-
-
+            CreateMap<InvoiceAdditionalCharges, InvoiceAdditionalChargesDto>().ReverseMap();
+            CreateMap<InvoiceAdditionalCharges, InvoiceAdditionalChargesPostDto>().ReverseMap();
+            CreateMap<InvoiceAdditionalCharges, InvoiceAdditionalChargesUpdateDto>().ReverseMap();
 
             //CreateMap<bTODeliveryOrderItems, inven>().ReverseMap();
         }

@@ -513,6 +513,23 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
+
+        public async Task<IEnumerable<LatestRfqNumberListDto>> GetAllActiveLatestRfqNumbers()
+        {
+
+            var getAllActiveRfqNumberList = _tipsSalesServiceDbContext.Rfqs
+                 .GroupBy(r => r.RfqNumber)
+             .AsEnumerable() // Switch to client-side evaluation
+             .SelectMany(group => group
+             .Where(r => r.RfqNumber == group.Max(g => g.RfqNumber)))
+              .Select(x => new LatestRfqNumberListDto
+              {
+                  RfqNumber = x.RfqNumber,
+                  RevisionNumber = x.RevisionNumber
+              });
+            return getAllActiveRfqNumberList;
+
+        }
     }
     public class RfqEnggRepository : RepositoryBase<RfqEngg>, IRfqEnggRepository
     {

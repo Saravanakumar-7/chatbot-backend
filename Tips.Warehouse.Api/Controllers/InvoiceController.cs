@@ -247,6 +247,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var invoiceitemsDto = invoicePostDto.InvoiceChildItems;
 
                 var invoiceChildItemsDtoList = new List<InvoiceChildItem>();
+                var InvoiceAdditionalChargesList = _mapper.Map<IEnumerable<InvoiceAdditionalCharges>>(invoicePostDto.InvoiceAdditionalCharges);
 
 
                 var date = DateTime.Now;
@@ -314,6 +315,7 @@ namespace Tips.Warehouse.Api.Controllers
                 }
 
                 invoice.invoiceChildItems = invoiceChildItemsDtoList;
+                invoice.InvoiceAdditionalCharges = InvoiceAdditionalChargesList.ToList();
 
                 await _invoiceRepository.CreateInvoice(invoice);
                 _invoiceRepository.SaveAsync();

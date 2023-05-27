@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Tips.SalesService.Api.Entities.DTOs
 {
-    public class SalesAdditionalChargesDto
+    public class InvoiceAdditionalChargesDto
     {
         [Key]
         public int Id { get; set; }
+        public int? SalesOrderId { get; set; }
+        public String? DONumber { get; set; }
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
 
@@ -33,8 +35,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
     }
 
-    public class SalesAdditionalChargesPostDto
+    public class InvoiceAdditionalChargesPostDto
     {
+        public int? SalesOrderId { get; set; }
+        public String? DONumber { get; set; }
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
 
@@ -60,8 +64,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? SGST { get; set; }
 
     }
-    public class SalesAdditionalChargesUpdateDto
+    public class InvoiceAdditionalChargesUpdateDto
     {
+        public int? SalesOrderId { get; set; }
+        public String? DONumber { get; set; }
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
 

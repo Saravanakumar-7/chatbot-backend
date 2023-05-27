@@ -9,6 +9,7 @@ namespace Tips.SalesService.Api.Entities.Enum
     public enum SalesOrderStatus
     {
         RetailSalesOrder,
-        BuildToPrint
+        BuildToPrint,
+        Forecast
     }
 }  
