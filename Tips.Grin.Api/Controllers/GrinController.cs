@@ -398,43 +398,41 @@ namespace Tips.Grin.Api.Controllers
                 await _repository.CreateGrin(grins);
                 _repository.SaveAsync();
 
+                foreach (var parts in grinPartsList)
+                {
+                    foreach (var project in parts.ProjectNumbers)
+                    {
+                        dynamic inventoryObject = new ExpandoObject();
+                        inventoryObject.PartNumber = parts.ItemNumber;
+                        inventoryObject.MftrPartNumber = parts.MftrItemNumber;
+                        inventoryObject.Description = parts.ItemDescription;
+                        inventoryObject.ProjectNumbers = project.ProjectNumber;
+                        inventoryObject.Balance_Quantity = project.ProjectQty;
+                        inventoryObject.UOM = parts.UOM;
+                        inventoryObject.IsStockAvailable = true;
+                        inventoryObject.Warehouse = "GRIN";
+                        inventoryObject.Location = "GRIN";
+                        inventoryObject.GrinNo = parts.Grins.GrinNumber;
+                        inventoryObject.GrinPartId = parts.Id;
+                        inventoryObject.PartType = "PurchasePart";
+                        inventoryObject.ReferenceID = Convert.ToString(parts.Id);
+                        inventoryObject.ReferenceIDFrom = "GRIN";
 
+                        var json = JsonConvert.SerializeObject(inventoryObject);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-                //foreach (var parts in grinPartsList)
-                //{
-                //    foreach (var project in parts.ProjectNumbers)
-                //    {
-                //        dynamic inventoryObject = new ExpandoObject();
-                //        inventoryObject.PartNumber = parts.ItemNumber;
-                //        inventoryObject.MftrPartNumber = parts.MftrItemNumber;
-                //        inventoryObject.Description = parts.ItemDescription;
-                //        inventoryObject.ProjectNumbers = project.ProjectNumber;
-                //        inventoryObject.Balance_Quantity = project.ProjectQty;
-                //        inventoryObject.UOM = parts.UOM;
-                //        inventoryObject.IsStockAvailable = true;
-                //        inventoryObject.Warehouse = "GRIN";
-                //        inventoryObject.Location = "GRIN";
-                //        inventoryObject.GrinNo = parts.Grins.GrinNumber;
-                //        inventoryObject.GrinPartId = parts.Id;
-                //        inventoryObject.PartType = "PurchasePart";
-                //        inventoryObject.ReferenceID = Convert.ToString(parts.Id);
-                //        inventoryObject.ReferenceIDFrom = "GRIN";
+                        var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+                    }
 
-                //        var json = JsonConvert.SerializeObject(inventoryObject);
-                //        var data = new StringContent(json, Encoding.UTF8, "application/json");
-                     
-                //        var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
-                //    }
+                }
 
-                //}
+                //update balance qty  in Purchase order table for grin concept
 
-                ////update balance qty  in Purchase order table for grin concept
+                var grinPartsDetail = _mapper.Map<List<GrinUpdateQtyDetailsDto>>(grins.GrinParts);
 
-                //var grinPartsDetail = _mapper.Map<List<GrinUpdateQtyDetailsDto>>(grins.GrinParts);
-
-                //var jsons = JsonConvert.SerializeObject(grinPartsDetail);
-                //var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                //var responses = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdateBalanceQtyDetails"), datas);
+                var jsons = JsonConvert.SerializeObject(grinPartsDetail);
+                var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                var responses = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdateBalanceQtyDetails"), datas);
 
 
                 serviceResponse.Data = null;

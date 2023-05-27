@@ -59,7 +59,9 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<GrinParts> GetGrinPartsDetailsbyGrinPartId(int GrinPartId)
         {
-            var grinPartsDetails = await _tipsGrinDbContext.GrinParts.Where(x => x.Id == GrinPartId).FirstOrDefaultAsync();
+            var grinPartsDetails = await _tipsGrinDbContext.GrinParts.Where(x => x.Id == GrinPartId)
+                .Include(x=>x.ProjectNumbers)
+                .FirstOrDefaultAsync();
             return grinPartsDetails;
         }
 

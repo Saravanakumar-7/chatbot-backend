@@ -101,6 +101,16 @@ namespace Tips.Warehouse.Api.Repository
 
             return getInventoryDetailsById;
         }
+        //passing grinid
+
+        public async Task<Inventory> GetInventoryDetailsByGrinNoandGrinId(string GrinNo,int GrinPartsId, string ItemNumber, string ProjectNumber)
+        {
+            var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventory.Where(x => x.GrinNo == GrinNo && x.GrinPartId == GrinPartsId && x.PartNumber == ItemNumber && x.ProjectNumber == ProjectNumber && x.Location=="Grin")
+
+                          .FirstOrDefaultAsync();
+
+            return getInventoryDetailsById;
+        }
 
         public async Task<Inventory> GetInventoryDetailsByItemNo(string ItemNumber)
         {
@@ -125,6 +135,7 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryDetailsByProjectNo;
         }
+        
 
         public async Task<Inventory> GetInventoryDetailsByItemNoProjectNoUnitWarehouseAndLocation(string itemNumber, string projectNumber,string unit,string warehouse,string location)
         {

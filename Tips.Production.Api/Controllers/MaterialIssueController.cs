@@ -25,7 +25,7 @@ namespace Tips.Production.Api.Controllers
         private ILoggerManager _logger;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        private IMapper _mapper;
+        private IMapper _mapper; 
 
         public MaterialIssueController(IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
@@ -73,6 +73,37 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
+        //private string GetServerKey()
+        //{
+        //    var serverName = Dns.GetHostName();
+
+        //    if (serverName == "Server1")
+        //    {
+        //        return "keus";
+        //    }
+        //    else if (serverName == "Server2")
+        //    {
+        //        return "avision";
+        //    }
+        //    else
+        //    {
+        //        return "trasccon";
+        //    }
+        //}
 
 
         // GET api/<MaterialIssueController>/5
@@ -83,6 +114,8 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();// Set the server key here dynamically based on your logic
+                
                 var materialIssueDetailById = await _materialIssueRepository.GetMaterialIssueById(id);
 
 
@@ -100,17 +133,36 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogInfo($"Returned owner with id: {id}");
                     var materialIssueDetails = _mapper.Map<MaterialIssueDto>(materialIssueDetailById);
 
-                    for (int i = 0; i < materialIssueDetails.materialIssueItems.Count(); i++)
+                    if (serverKey == "keus")
+                    { 
+                            for (int i = 0; i < materialIssueDetails.materialIssueItems.Count(); i++)
+                            {
+                                var partnumber = materialIssueDetailById.materialIssueItems[i].PartNumber;
+                                var projectnumber = materialIssueDetailById.materialIssueItems[i].ProjectNumber;
+                                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                                  "GetInventoryDetailsByItemNo?", "itemNumber=", partnumber));
+                                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                                dynamic inventoryObject = inventoryObjectData.data;
+                                var balanceQty = inventoryObject.balance_Quantity;
+                                materialIssueDetails.materialIssueItems[i].AvailableQty = balanceQty;
+                            }                        
+
+                    }
+                    else
                     {
-                        var partnumber= materialIssueDetailById.materialIssueItems[i].PartNumber;
-                        var projectnumber = materialIssueDetailById.materialIssueItems[i].ProjectNumber;
-                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                          "GetInventoryDetailsByItemAndProjectNo?", "itemNumber=", partnumber, "&projectNumber=", projectnumber));
-                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        dynamic inventoryObject = inventoryObjectData.data;
-                        var balanceQty = inventoryObject.balance_Quantity;
-                        materialIssueDetails.materialIssueItems[i].AvailableQty = balanceQty;
+                        for (int i = 0; i < materialIssueDetails.materialIssueItems.Count(); i++)
+                        {
+                            var partnumber = materialIssueDetailById.materialIssueItems[i].PartNumber;
+                            var projectnumber = materialIssueDetailById.materialIssueItems[i].ProjectNumber;
+                            var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                              "GetInventoryDetailsByItemAndProjectNo?", "itemNumber=", partnumber, "&projectNumber=", projectnumber));
+                            var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                            dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                            dynamic inventoryObject = inventoryObjectData.data;
+                            var balanceQty = inventoryObject.balance_Quantity;
+                            materialIssueDetails.materialIssueItems[i].AvailableQty = balanceQty;
+                        }
                     }
 
                     serviceResponse.Data = materialIssueDetails;
