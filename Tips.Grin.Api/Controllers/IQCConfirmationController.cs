@@ -470,27 +470,34 @@ namespace Tips.Grin.Api.Controllers
                         return BadRequest(serviceResponse);
                     }
                     iQCItemList.Add(iQCConfirmationItems);
+
+                    //Inventory Update Code
+                    foreach ( var projectNo in grinPartsDetails.ProjectNumbers)
+                    {
+                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], 
+                            "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", iQCCreate.GrinNumber, "&GrinPartId=", 
+                            grinPartId, "&ItemNumber=", iQCDto[i].ItemNumber, "&ProjectNumbers=", projectNo.ProjectNumber));
+                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        dynamic inventoryObject = inventoryObjectData.data;
+                        inventoryObject.Balance_Quantity = iQCDto[i].AcceptedQty;
+                        inventoryObject.Warehouse = "IQC";
+                        inventoryObject.Location = "IQC";
+                        inventoryObject.ReferenceIDFrom = "GRIN";
+
+                        var json = JsonConvert.SerializeObject(inventoryObject);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"], 
+                            "UpdateInventory/", inventoryObject.id), data);
+                    }
                 }
                 iQCCreate.IQCConfirmationItems = iQCItemList;
                 await _iQCConfirmationRepository.CreateIqc(iQCCreate);
 
                 _iQCConfirmationRepository.SaveAsync();
 
-                // Inventory Update Code
-                //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByGrinNo?", "GrinNo=", iQCCreate.GrinNumber, "&ItemNumber=", iQCCreate.ItemNumber, "&ProjectNumbers=", iQCCreate.ProjectNumbers));
-                //var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                //dynamic inventoryObject = inventoryObjectData.data;
-                //inventoryObject.Balance_Quantity = iQCCreate.AcceptedQty;
-                //inventoryObject.Warehouse = "IQC";
-                //inventoryObject.Location = "IQC";
-                //inventoryObject.ReferenceIDFrom = "GRIN";
-
-                //var json = JsonConvert.SerializeObject(inventoryObject);
-                //var data = new StringContent(json, Encoding.UTF8, "application/json");
-                //var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"], "UpdateInventory/", inventoryObject.id), data);
-
-                //update accepted qty and rejected qty in grin model 
+                
+                ////update accepted qty and rejected qty in grin model
 
                 //var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iQCCreate.GrinPartId, iQCCreate.AcceptedQty.ToString(), iQCCreate.RejectedQty.ToString());
 

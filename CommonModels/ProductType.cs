@@ -13,9 +13,8 @@ namespace Entities
         public string ProductTypeName { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
-        public string? TypeSolutionId { get; set; }
-
-        [Required]
+        public int? TypeSolutionId { get; set; }
+         
         public string? TypeSolution { get; set; }
         public bool? IsActive { get; set; }
 

@@ -969,27 +969,35 @@ namespace Tips.Purchase.Api.Controllers
             foreach (var item in purchaseOrderUpdateQtyDetails)
             {
                 IEnumerable<PoItem> poItems = await _poItemsRepository.GetPODetailsByPONumberandItemNo(item.ItemNumber, item.PONumber);
-                var PoorderItem = poItems.FirstOrDefault();
-                if (PoorderItem.BalanceQty >= item.Qty)
-                {
-                    if (PoorderItem.BalanceQty == item.Qty)
+                //var PoorderItem = poItems.FirstOrDefault();
+                var dispatchedQty = item.Qty;
+
+                foreach (var poItem in poItems)
+                { 
+
+                    if (poItem.BalanceQty >= dispatchedQty)
                     {
-                        PoorderItem.PoPartsStatus = true;
+                        if (poItem.BalanceQty == dispatchedQty)
+                        {
+                            poItem.PoPartsStatus = true;
+                        }
+                        poItem.BalanceQty -= dispatchedQty;
+                        dispatchedQty = 0;
+                        break;
                     }
-                    PoorderItem.BalanceQty -= item.Qty;
-                    item.Qty = 0;
-                    break;
+                    else
+                    {
+                        dispatchedQty -= poItem.BalanceQty;
+                        poItem.BalanceQty = 0;
+                    }
+                    
+                    _poItemsRepository.UpdatePOOrderItem(poItem);
+                    
+                    if (dispatchedQty <= 0)
+                    {
+                        break;
+                    }
                 }
-                else
-                {
-                    item.Qty -= PoorderItem.BalanceQty;
-                    PoorderItem.BalanceQty = 0;
-                }
-                if (item.Qty <= 0)
-                {
-                    break;
-                }
-                _poItemsRepository.UpdatePOOrderItem(PoorderItem);
             }
             //
 

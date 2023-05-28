@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,11 +12,18 @@ namespace Entities
         public int? Id { get; set; }
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
-        public int? AddtionalChargesValueAmount { get; set; }
-        public int? IGST { get; set; }
-        public int? CGST { get; set; }
-        public int? UTGST { get; set; }
-        public int? SGST { get; set; }
+        [Precision(13,3)]
+        public decimal? AddtionalChargesValueAmount { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? IGST { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? CGST { get; set; }
+        [Precision(13, 3)]
+        public decimal? UTGST { get; set; }
+        [Precision(13, 3)]
+        public decimal? SGST { get; set; }
         public bool ActiveStatus { get; set; } = true;
 
         public string Unit { get; set; }
