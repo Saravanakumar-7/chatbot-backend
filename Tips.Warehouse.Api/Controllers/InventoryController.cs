@@ -407,7 +407,7 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpPut("{id}")]
+        [HttpPut]
         public async Task<IActionResult> UpdateInventory(int id, [FromBody] InventoryDtoUpdate inventoryDtoUpdate)
         {
             ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();

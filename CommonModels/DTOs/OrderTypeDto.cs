@@ -16,6 +16,8 @@ namespace Entities.DTOs
         public string Description { get; set; }
         public string Remarks { get; set; }
         public bool ActiveStatus { get; set; } = true;
+        public bool IsDefault { get; set; }
+
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
