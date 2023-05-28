@@ -1,6 +1,7 @@
 ﻿using Entities.Helper;
 using Entities;
 using Tips.SalesService.Api.Entities;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Contracts
 {
@@ -11,5 +12,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> CreateForeCastCustomGroup(ForeCastCustomGroup foreCastCustomGroup);
         Task<string> UpdateForeCastCustomGroup(ForeCastCustomGroup foreCastCustomGroup);
         Task<string> DeleteForeCastCustomGroup(ForeCastCustomGroup foreCastCustomGroup);
+
+        Task<IEnumerable<ListOfForecastCustomGroupDto>> GetAllForecastCustomGroupList();
     }
 }

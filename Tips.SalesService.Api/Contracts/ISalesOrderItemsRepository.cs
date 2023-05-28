@@ -16,6 +16,6 @@ namespace Tips.SalesService.Api.Contracts
          
         Task<string> UpdateSalesOrderItem(SalesOrderItems salesOrderItems);
 
-        Task<IEnumerable<ListOfProjectNoDto>> GetprojectNoByItemNo(string itemNo); 
+        Task<IEnumerable<ListOfProjectNoDto>> GetprojectNoByItemNo(string itemNo);
     }
 }

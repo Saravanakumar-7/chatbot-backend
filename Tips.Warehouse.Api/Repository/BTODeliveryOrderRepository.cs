@@ -11,6 +11,7 @@ using System;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Entities.DTOs;
+using Entities.Enums;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -248,18 +249,37 @@ namespace Tips.Warehouse.Api.Repository
         {
             _tipsWarehouseDbContexts = repositoryContext;
         }
-        public async Task<BTODeliveryOrderItems> UpdateBtoDelieveryOrderBalanceQty(string itemNumber, string BtoDeliveryNumber, decimal Qty)
+
+        public async Task<List<BTODeliveryOrderItems>> GetOpenDoItemDetailsByItemNoAndDoNo(string itemNumber, string BtoDeliveryNumber)
         {
             var btoDeliveryOrderDetails = await _tipsWarehouseDbContexts.bTODeliveryOrderItems
-                    .Where(x => x.FGItemNumber == itemNumber && x.BTONumber == BtoDeliveryNumber)
-                          .FirstOrDefaultAsync();
-            //var Quantity = Convert.ToDecimal(Qty);
-            btoDeliveryOrderDetails.InvoicedQty = btoDeliveryOrderDetails.InvoicedQty + Qty;
-            btoDeliveryOrderDetails.BalanceDoQty = btoDeliveryOrderDetails.DispatchQty - btoDeliveryOrderDetails.InvoicedQty;
+                    .Where(x => x.FGItemNumber == itemNumber && x.BTONumber == BtoDeliveryNumber && x.DoStatus != Status.Closed)
+                          .ToListAsync();
             
-            Update(btoDeliveryOrderDetails);
             return btoDeliveryOrderDetails;
         }
+
+        public async Task UpdateBtoDelieveryOrderItem(BTODeliveryOrderItems btoDeliveryOrderItem)
+        {
+            btoDeliveryOrderItem.LastModifiedBy = "Admin";
+            btoDeliveryOrderItem.LastModifiedOn = DateTime.Now;
+            Update(btoDeliveryOrderItem);
+        }
+
+        //public async Task<List<BTODeliveryOrderItems>> UpdateBtoDelieveryOrderBalanceQty(string itemNumber, string BtoDeliveryNumber, decimal Qty)
+        //{
+        //    var btoDeliveryOrderDetails = await _tipsWarehouseDbContexts.bTODeliveryOrderItems
+        //            .Where(x => x.FGItemNumber == itemNumber && x.BTONumber == BtoDeliveryNumber && x.DoStatus != Status.Closed)
+        //                  .ToListAsync();
+        //    //var Quantity = Convert.ToDecimal(Qty);
+        //    btoDeliveryOrderDetails.InvoicedQty = btoDeliveryOrderDetails.InvoicedQty + Qty;
+        //    btoDeliveryOrderDetails.BalanceDoQty = btoDeliveryOrderDetails.DispatchQty - btoDeliveryOrderDetails.InvoicedQty;
+            
+        //    Update(btoDeliveryOrderDetails);
+        //    return btoDeliveryOrderDetails;
+        //}
+       
+        
         public async Task<BTODeliveryOrderItems> GetBtoDelieveryOrderItemDetails(int btoDeliveryOrderPartsId)
         {
             var getBTODeliveryOrderItemDetails = await _tipsWarehouseDbContexts.bTODeliveryOrderItems

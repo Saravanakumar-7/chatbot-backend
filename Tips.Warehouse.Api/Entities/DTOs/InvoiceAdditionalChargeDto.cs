@@ -32,6 +32,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? SGST { get; set; }
+        public int SalesAdditionalChargeId { get; set; }
 
     }
 
@@ -62,6 +63,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? SGST { get; set; }
+        public int SalesAdditionalChargeId { get; set; }
 
     }
     public class InvoiceAdditionalChargesUpdateDto
@@ -91,6 +93,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? SGST { get; set; }
+        public int SalesAdditionalChargeId { get; set; }
 
     }
 }

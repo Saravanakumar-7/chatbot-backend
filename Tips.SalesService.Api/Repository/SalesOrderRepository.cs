@@ -103,7 +103,7 @@ namespace Tips.SalesService.Api.Repository
                      || inv.CustomerId.Contains(searchParammes.SearchValue))))
                    .Include(t => t.SalesOrdersItems)
                    .ThenInclude(p => p.ScheduleDates)
-                   .Include(p => p.SalesAdditionalCharges);
+                   .Include(p => p.SalesOrderAdditionalCharges);
 
 
             return PagedList<SalesOrder>.ToPagedList(salesOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
@@ -185,7 +185,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<SalesOrder> GetSalesOrderById(int id)
         {
             var getSalesOrderbyId = await _tipsSalesServiceDbContext.SalesOrders.Where(x => x.Id == id)
-                .Include(o => o.SalesAdditionalCharges)
+                .Include(o => o.SalesOrderAdditionalCharges)
                                   .Include(t => t.SalesOrdersItems)
                                   .ThenInclude(p => p.ScheduleDates)
 
@@ -341,7 +341,7 @@ namespace Tips.SalesService.Api.Repository
                           .ToListAsync();
 
             return getSalesOrderDetailsBySOandItemNo;
-        } 
+        }
 
         public async Task<IEnumerable<GetSalesOrderDetailsDto>> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo)
         {

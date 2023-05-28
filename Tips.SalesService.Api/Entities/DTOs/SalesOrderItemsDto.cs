@@ -207,12 +207,11 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal ReturnQty { get; set; }
 
     }
-    public class InvoiceSalesOrderUpdateDispatchQtyDto
+    public class SoAdditionalChargeUpdateDto
     {
-        public string FGItemNumber { get; set; }
         public int SalesOrderId { get; set; }
-        public decimal Qty { get; set; }
-
+        public decimal InvoicedValue { get; set; }
+        public int SalesAdditionalChargeId { get; set; }
     }
     public class SARevisionNumber
     {

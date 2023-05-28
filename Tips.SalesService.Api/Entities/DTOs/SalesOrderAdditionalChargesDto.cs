@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Tips.SalesService.Api.Entities.DTOs
 {
-    public class SalesAdditionalChargesDto
+    public class SalesOrderAdditionalChargesDto
     {
         [Key]
         public int Id { get; set; }
@@ -33,7 +33,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
     }
 
-    public class SalesAdditionalChargesPostDto
+    public class SalesOrderAdditionalChargesPostDto
     {
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
@@ -60,7 +60,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? SGST { get; set; }
 
     }
-    public class SalesAdditionalChargesUpdateDto
+    public class SalesOrderAdditionalChargesUpdateDto
     {
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }

@@ -11,6 +11,13 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> CreateForeCastCustomerSupport(ForeCastCustomerSupport foreCastCustomerSupport);
         Task<string> UpdateForeCastCustomerSupport(ForeCastCustomerSupport foreCastCustomerSupport);
         Task<string> DeleteForeCastCustomerSupport(ForeCastCustomerSupport foreCastCustomerSupport);
-        Task<ForeCastCustomerSupport> ForeCastCustomerSupportByForeCastNumber(string ForeCastNumber);
+        Task<ForeCastCustomerSupport> GetForeCastCustomerSupportByForeCastNumber(string ForeCastNumber);
+
+        // here added new apis
+
+        Task<ForeCastCustomerSupport> UpdateForecastcsRevNo(ForeCastCustomerSupport foreCastCustomerSupport);
+        Task<ForeCastCustomerSupport> GetForecastCsByForecastNoAndRevNo(string forecast, decimal revisionNumber);
+        Task<ForeCastCustomerSupport> GetForecastCsLatestRevNoByForecastnumber(string forecast);
+
     }
 }

@@ -11,5 +11,8 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> CreateForeCastCustomField(ForeCastCustomField foreCastCustomField);
         Task<string> UpdateForeCastCustomField(ForeCastCustomField foreCastCustomField);
         Task<string> DeleteForeCastCustomField(ForeCastCustomField foreCastCustomField);
+
+        Task<IEnumerable<ForeCastCustomField>> GetForecastCustomFieldByCustomGroup(string CustomGroup);
+
     }
 }

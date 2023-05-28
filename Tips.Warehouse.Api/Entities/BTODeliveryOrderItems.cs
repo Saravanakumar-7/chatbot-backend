@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
@@ -34,7 +35,9 @@ namespace Tips.Warehouse.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public int BTODeliveryOrderId { get; set; }
+        public Status DoStatus { get; set; } = Status.Open;
         public BTODeliveryOrder? BTODeliveryOrder { get; set; }
-       // public List<BTOSerialNumber> BTOSerialNumbers { get; set; }   
+        
+        // public List<BTOSerialNumber> BTOSerialNumbers { get; set; }   
     }
 }

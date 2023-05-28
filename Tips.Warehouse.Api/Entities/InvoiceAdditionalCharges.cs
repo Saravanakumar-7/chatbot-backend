@@ -33,7 +33,7 @@ namespace Tips.Warehouse.Api.Entities
 
         [Precision(13, 3)]
         public decimal? InvoicedValue { get; set; }
-
+        public int SalesAdditionalChargeId { get; set; }
         public int InvoiceId { get; set; }
         public Invoice? Invoice { get; set; }
     }

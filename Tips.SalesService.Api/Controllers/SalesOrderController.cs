@@ -25,12 +25,13 @@ namespace Tips.SalesService.Api.Controllers
     {
         private ISalesOrderRepository _repository;
         private ISalesOrderItemsRepository _salesOrderItemsRepository;
+        private ISalesAdditionalChargesRepository _salesAdditionalChargesRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private ISalesOrderHistoryRepository _salesOrderHistory;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        public SalesOrderController(IConfiguration config, HttpClient httpClient,
+        public SalesOrderController(IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
             ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository,
             ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
@@ -39,6 +40,7 @@ namespace Tips.SalesService.Api.Controllers
             _mapper = mapper;
             _salesOrderItemsRepository = salesOrderItemsRepository;
             _salesOrderHistory = salesOrderHistoryRepository;
+            _salesAdditionalChargesRepository = salesAdditionalChargesRepository;
             _httpClient = httpClient;
             _config = config;
         }
@@ -173,7 +175,7 @@ namespace Tips.SalesService.Api.Controllers
                 var createSalesOrder = _mapper.Map<SalesOrder>(salesOrderDtoPost);
                 var salesOrderItemsDto = salesOrderDtoPost.SalesOrderItemsPostDtos;
                 var salesOrderItemsList = new List<SalesOrderItems>();
-                var SalesAdditionalChargesList = _mapper.Map<IEnumerable<SalesAdditionalCharges>>(salesOrderDtoPost.SalesAdditionalChargesPostDtos);
+                var SalesAdditionalChargesList = _mapper.Map<IEnumerable<SalesOrderAdditionalCharges>>(salesOrderDtoPost.SalesAdditionalChargesPostDtos);
                 //if (salesOrderItemsDto != null)
                 //{
                 //    for (int i = 0; i < salesOrderItemsDto.Count; i++)
@@ -222,7 +224,7 @@ namespace Tips.SalesService.Api.Controllers
                     }
                 }
                 createSalesOrder.SalesOrdersItems = salesOrderItemsList;
-                createSalesOrder.SalesAdditionalCharges = SalesAdditionalChargesList.ToList();
+                createSalesOrder.SalesOrderAdditionalCharges = SalesAdditionalChargesList.ToList();
                 await _repository.CreateSalesOrder(createSalesOrder);
                 _repository.SaveAsync();
 
@@ -440,12 +442,12 @@ namespace Tips.SalesService.Api.Controllers
                 var salesOrderItemsDto = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos;
                 var salesAdditionalChargesDto = salesOrderDtoUpdate.SalesAdditionalChargesUpdateDtos;
                 var salesOrderItemsList = new List<SalesOrderItems>();
-                var salesAdditionalChargesList = new List<SalesAdditionalCharges>();
+                var salesAdditionalChargesList = new List<SalesOrderAdditionalCharges>();
                 if(salesAdditionalChargesDto != null)
                 {
                     for(int i = 0; i < salesAdditionalChargesDto.Count; i++)
                     {
-                        SalesAdditionalCharges additionalChargesDetails = _mapper.Map<SalesAdditionalCharges>(salesAdditionalChargesDto[i]);
+                        SalesOrderAdditionalCharges additionalChargesDetails = _mapper.Map<SalesOrderAdditionalCharges>(salesAdditionalChargesDto[i]);
                         salesAdditionalChargesList.Add(additionalChargesDetails);
                     }
                 }
@@ -514,7 +516,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetail);
                 updateData.SalesOrdersItems = salesOrderItemsList;
-                updateData.SalesAdditionalCharges = salesAdditionalChargesList;
+                updateData.SalesOrderAdditionalCharges = salesAdditionalChargesList;
                 string result = await _repository.UpdateSalesOrder(updateData);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
@@ -948,26 +950,55 @@ namespace Tips.SalesService.Api.Controllers
             return Ok();
         }
 
-        //Update Balancre Qty and DispatchQty Using Invoice 
+        //Update Invoiced Value and DispatchQty Using Invoice 
         [HttpPost]
-        public async Task<IActionResult> InvoiceUpdateDispatchDetails([FromBody] List<InvoiceSalesOrderUpdateDispatchQtyDto> salesOrderDispatchQtyDto)
+        public async Task<IActionResult> AdditionalChargeUpdateFromInvoice([FromBody] List<SoAdditionalChargeUpdateDto> soAdditionalChargeUpdateDto)
         {
-            //dynamic dispatchDetials
-            //we have to write code for same itemnumber in multiple rows
-            // Deserialise and store it in dynamic varibale
-            //lopp thori=ug the dynamic variable an pass hte item number and so id to salesorderitemdetials, get 
-            //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
-            foreach (var item in salesOrderDispatchQtyDto)
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
             {
-                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
-                var orderItem = salesOrderItems.FirstOrDefault();
-                //orderItem.BalanceQty = orderItem.BalanceQty + item.ReturnQty;
-                orderItem.DispatchQty += item.Qty;
-                _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
-            }
+                if (soAdditionalChargeUpdateDto == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "SalesOrder object sent from the client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("SalesOrder object sent from the client is null.");
+                    return BadRequest(serviceResponse);
+                }
 
-            _salesOrderItemsRepository.SaveAsync();
-            return Ok();
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid SalesOrder object sent from the client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid SalesOrder object sent from the client.");
+                    return BadRequest(serviceResponse);
+                }
+                foreach (var item in soAdditionalChargeUpdateDto)
+                {
+                  var salesAdditionalCharges = await _salesAdditionalChargesRepository.GetSalesAdditionalChargesById(item.SalesOrderId,item.SalesAdditionalChargeId);
+
+                    salesAdditionalCharges.InvoicedValue += item.InvoicedValue;
+                    await _salesAdditionalChargesRepository.UpdateSalesAdditionalCharges(salesAdditionalCharges);
+                    _salesAdditionalChargesRepository.SaveAsync();
+                }
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "SalesOrder Successfully Updated";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside InvoiceUpdateDispatchDetails action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
         }
 
 

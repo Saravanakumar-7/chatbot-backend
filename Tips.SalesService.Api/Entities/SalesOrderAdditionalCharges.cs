@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Tips.SalesService.Api.Entities
 {
-    public class SalesAdditionalCharges
+    public class SalesOrderAdditionalCharges
     {
         [Key]
         public int Id { get; set; }
