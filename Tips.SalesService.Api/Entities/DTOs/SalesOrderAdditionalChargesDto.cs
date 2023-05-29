@@ -17,7 +17,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? TotalValue { get; set; }
 
         [Precision(13, 3)]
-        public decimal? InvoicedValue { get; set; }
+        public decimal InvoicedValue { get; set; }
 
         [Precision(18, 3)]
         public decimal? IGST { get; set; }
@@ -45,7 +45,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? TotalValue { get; set; }
 
         [Precision(13, 3)]
-        public decimal? InvoicedValue { get; set; }
+        public decimal InvoicedValue { get; set; }
 
         [Precision(18, 3)]
         public decimal? IGST { get; set; }
@@ -72,7 +72,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? TotalValue { get; set; }
 
         [Precision(13, 3)]
-        public decimal? InvoicedValue { get; set; }
+        public decimal InvoicedValue { get; set; }
 
         [Precision(18, 3)]
         public decimal? IGST { get; set; }

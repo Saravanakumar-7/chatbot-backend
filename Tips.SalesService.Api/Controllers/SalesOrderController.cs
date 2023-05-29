@@ -110,6 +110,17 @@ namespace Tips.SalesService.Api.Controllers
                     SalesOrderDto salesOrderDto = _mapper.Map<SalesOrderDto>(salesOrderById);
 
                     List<SalesOrderItemsDto> salesOrderItemsDtoList = new List<SalesOrderItemsDto>();
+                    var salesAdditionalChargesDto = salesOrderDto.SalesOrderAdditionalCharges;
+
+                    var salesAdditionalChargesList = new List<SalesOrderAdditionalCharges>();
+                    if (salesAdditionalChargesDto != null)
+                    {
+                        for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
+                        {
+                            SalesOrderAdditionalCharges additionalChargesDetails = _mapper.Map<SalesOrderAdditionalCharges>(salesAdditionalChargesDto[i]);
+                            salesAdditionalChargesList.Add(additionalChargesDetails);
+                        }
+                    }
 
                     foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
                     {
@@ -123,7 +134,7 @@ namespace Tips.SalesService.Api.Controllers
                         // Convert double to decimal
                         decimal availableStock = Convert.ToDecimal(inventoryObject);
                         salesOrderItemsDtos.AvailableStock = availableStock;
-
+ 
                         salesOrderItemsDtoList.Add(salesOrderItemsDtos);
                     }
 
@@ -175,7 +186,7 @@ namespace Tips.SalesService.Api.Controllers
                 var createSalesOrder = _mapper.Map<SalesOrder>(salesOrderDtoPost);
                 var salesOrderItemsDto = salesOrderDtoPost.SalesOrderItemsPostDtos;
                 var salesOrderItemsList = new List<SalesOrderItems>();
-                var SalesAdditionalChargesList = _mapper.Map<IEnumerable<SalesOrderAdditionalCharges>>(salesOrderDtoPost.SalesAdditionalChargesPostDtos);
+                var SalesAdditionalChargesList = _mapper.Map<IEnumerable<SalesOrderAdditionalCharges>>(salesOrderDtoPost.SalesOrderAdditionalChargesPostDtos);
                 //if (salesOrderItemsDto != null)
                 //{
                 //    for (int i = 0; i < salesOrderItemsDto.Count; i++)
@@ -440,7 +451,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 var salesOrderDetails = _mapper.Map<SalesOrder>(salesOrderDtoUpdate);
                 var salesOrderItemsDto = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos;
-                var salesAdditionalChargesDto = salesOrderDtoUpdate.SalesAdditionalChargesUpdateDtos;
+                var salesAdditionalChargesDto = salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos;
                 var salesOrderItemsList = new List<SalesOrderItems>();
                 var salesAdditionalChargesList = new List<SalesOrderAdditionalCharges>();
                 if(salesAdditionalChargesDto != null)
@@ -486,24 +497,24 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderHistory.CreatedOn = salesOrderDetail.CreatedOn;
                         salesOrderHistory.LastModifiedBy = salesOrderDetail.LastModifiedBy;
                         salesOrderHistory.LastModifiedOn = salesOrderDetail.LastModifiedOn;
-                        salesOrderHistory.ItemNumber = salesOrderDetail.SalesOrdersItems[i].ItemNumber;
-                        salesOrderHistory.Description = salesOrderDetail.SalesOrdersItems[i].Description;
-                        salesOrderHistory.BalanceQty = salesOrderDetail.SalesOrdersItems[i].BalanceQty;
-                        salesOrderHistory.DispatchQty = salesOrderDetail.SalesOrdersItems[i].DispatchQty;
-                        salesOrderHistory.ShopOrderQty = salesOrderDetail.SalesOrdersItems[i].ShopOrderQty;
-                        salesOrderHistory.UOM = salesOrderDetail.SalesOrdersItems[i].UOM;
-                        salesOrderHistory.Currency = salesOrderDetail.SalesOrdersItems[i].Currency;
-                        salesOrderHistory.TotalAmount = salesOrderDetail.SalesOrdersItems[i].TotalAmount;
-                        salesOrderHistory.BasicAmount = salesOrderDetail.SalesOrdersItems[i].BasicAmount;
-                        salesOrderHistory.Discount = salesOrderDetail.SalesOrdersItems[i].Discount;
-                        salesOrderHistory.UnitPrice = salesOrderDetail.SalesOrdersItems[i].UnitPrice;
-                        salesOrderHistory.OrderQty = salesOrderDetail.SalesOrdersItems[i].OrderQty;
-                        salesOrderHistory.SGST = salesOrderDetail.SalesOrdersItems[i].SGST;
-                        salesOrderHistory.UTGST = salesOrderDetail.SalesOrdersItems[i].UTGST;
-                        salesOrderHistory.CGST = salesOrderDetail.SalesOrdersItems[i].CGST;
-                        salesOrderHistory.IGST = salesOrderDetail.SalesOrdersItems[i].IGST;
-                        salesOrderHistory.ReceivedDate = salesOrderDetail.SalesOrdersItems[i].RequestedDate;
-                        salesOrderHistory.Remarks = salesOrderDetail.SalesOrdersItems[i].Remarks;
+                        salesOrderHistory.ItemNumber = salesOrderItemsDto[i].ItemNumber;
+                        salesOrderHistory.Description = salesOrderItemsDto[i].Description;
+                        salesOrderHistory.BalanceQty = salesOrderItemsDto[i].BalanceQty;
+                        salesOrderHistory.DispatchQty = salesOrderItemsDto[i].DispatchQty;
+                        salesOrderHistory.ShopOrderQty = salesOrderItemsDto[i].ShopOrderQty;
+                        salesOrderHistory.UOM = salesOrderItemsDto[i].UOM;
+                        salesOrderHistory.Currency = salesOrderItemsDto[i].Currency;
+                        salesOrderHistory.TotalAmount = salesOrderItemsDto[i].TotalAmount;
+                        salesOrderHistory.BasicAmount = salesOrderItemsDto[i].BasicAmount;
+                        salesOrderHistory.Discount = salesOrderItemsDto[i].Discount;
+                        salesOrderHistory.UnitPrice = salesOrderItemsDto[i].UnitPrice;
+                        salesOrderHistory.OrderQty = salesOrderItemsDto[i].OrderQty;
+                        salesOrderHistory.SGST = salesOrderItemsDto[i].SGST;
+                        salesOrderHistory.UTGST = salesOrderItemsDto[i].UTGST;
+                        salesOrderHistory.CGST = salesOrderItemsDto[i].CGST;
+                        salesOrderHistory.IGST = salesOrderItemsDto[i].IGST;
+                        salesOrderHistory.ReceivedDate = salesOrderItemsDto[i].RequestedDate;
+                        salesOrderHistory.Remarks = salesOrderItemsDto[i].Remarks;
 
 
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);

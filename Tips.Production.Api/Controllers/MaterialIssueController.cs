@@ -297,8 +297,8 @@ namespace Tips.Production.Api.Controllers
                     var json = JsonConvert.SerializeObject(inventoryObject);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
                     var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
-                        "UpdateInventory/", inventoryObject.id), data);
-                     
+                        "UpdateInventory/", inventoryObject.id), data); 
+
                 }
                 updateMaterialIssue.materialIssueItems = materialIssueItems;
                 string result = await _materialIssueRepository.UpdateMaterialIssue(updateMaterialIssue);

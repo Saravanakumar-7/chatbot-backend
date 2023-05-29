@@ -22,7 +22,7 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public InventoryController(IConfiguration config,HttpClient httpClient,IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
+        public InventoryController(IConfiguration config, HttpClient httpClient, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
         {
             _inventoryRepository = inventoryRepository;
             _logger = logger;
@@ -34,12 +34,12 @@ namespace Tips.Warehouse.Api.Controllers
 
         // GET: api/<InventoryController>
         [HttpGet]
-        public async Task<IActionResult> GetAllInventory([FromQuery] PagingParameter pagingParameter, [FromQuery]  SearchParams searchParams)
+        public async Task<IActionResult> GetAllInventory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             ServiceResponse<IEnumerable<InventoryDto>> serviceResponse = new ServiceResponse<IEnumerable<InventoryDto>>();
             try
             {
-                var getAllInventory = await _inventoryRepository.GetAllInventory(pagingParameter,searchParams);
+                var getAllInventory = await _inventoryRepository.GetAllInventory(pagingParameter, searchParams);
                 var metadata = new
                 {
                     getAllInventory.TotalCount,
@@ -70,11 +70,11 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
         //passing project 
-         
+
 
         [HttpGet]
         public async Task<IActionResult> GetInventoryDetailsByGrinNo(string GrinNo, string ItemNumber, string ProjectNumber)
-             
+
         {
             ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
 
@@ -121,7 +121,7 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
             try
             {
-                var InventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemAndProjectNo(itemNumber,projectNumber);
+                var InventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemAndProjectNo(itemNumber, projectNumber);
                 if (InventoryDetails == null)
                 {
                     serviceResponse.Data = null;
@@ -407,7 +407,7 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateInventory(int id, [FromBody] InventoryDtoUpdate inventoryDtoUpdate)
         {
             ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
