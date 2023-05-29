@@ -289,7 +289,7 @@ namespace Tips.Production.Api.Controllers
                     dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                     dynamic inventoryObject = inventoryObjectData.data;
                     inventoryObject.Balance_Quantity -= item.NewIssueQty; 
-                    if(inventoryObject.Balance_Quantity == item.NewIssueQty)
+                    if(inventoryObject.Balance_Quantity == 0)
                     {
                         inventoryObject.IsStockAvailable = false;
                     }
@@ -297,8 +297,8 @@ namespace Tips.Production.Api.Controllers
                     var json = JsonConvert.SerializeObject(inventoryObject);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
                     var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
-                        "UpdateInventory/", inventoryObject.id), data); 
-
+                        "UpdateInventory/",Convert.ToInt32(inventoryObject.id)), data);
+                     
                 }
                 updateMaterialIssue.materialIssueItems = materialIssueItems;
                 string result = await _materialIssueRepository.UpdateMaterialIssue(updateMaterialIssue);
