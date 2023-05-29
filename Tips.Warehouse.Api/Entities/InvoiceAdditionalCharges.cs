@@ -1,12 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
-namespace Tips.SalesService.Api.Entities
+namespace Tips.Warehouse.Api.Entities
 {
-    public class SalesAdditionalCharges
+    public class InvoiceAdditionalCharges
     {
         [Key]
         public int Id { get; set; }
+        public int? SalesOrderId { get; set; }
+        public String? DONumber { get; set; }
+
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
 
@@ -24,7 +27,14 @@ namespace Tips.SalesService.Api.Entities
 
         [Precision(18, 3)]
         public decimal? SGST { get; set; }
-        public int SalesOrderId { get; set; }
-        public SalesOrder? SalesOrder { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? TotalValue { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? InvoicedValue { get; set; }
+        public int SalesAdditionalChargeId { get; set; }
+        public int InvoiceId { get; set; }
+        public Invoice? Invoice { get; set; }
     }
 }

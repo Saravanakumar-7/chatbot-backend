@@ -112,9 +112,9 @@ namespace Tips.SalesService.Api
             CreateMap<SalesOrderItems, SalesOrderItemsUpdateDto>().ReverseMap();
             //CreateMap<List<SalesOrderItems>, List<SalesOrderItemsDto>>().ReverseMap();
 
-            CreateMap<SalesAdditionalCharges, SalesAdditionalChargesDto>().ReverseMap();
-            CreateMap<SalesAdditionalCharges, SalesAdditionalChargesPostDto>().ReverseMap();
-            CreateMap<SalesAdditionalCharges, SalesAdditionalChargesUpdateDto>().ReverseMap();
+            CreateMap<SalesOrderAdditionalCharges, SalesOrderAdditionalChargesDto>().ReverseMap();
+            CreateMap<SalesOrderAdditionalCharges, SalesOrderAdditionalChargesPostDto>().ReverseMap();
+            CreateMap<SalesOrderAdditionalCharges, SalesOrderAdditionalChargesUpdateDto>().ReverseMap();
 
             CreateMap<Quote, QuoteDto>().ReverseMap();
             CreateMap<Quote, QuotePostDto>().ReverseMap();
@@ -291,6 +291,8 @@ namespace Tips.SalesService.Api
             CreateMap<SOBreakDown, SOBreakDownDto>().ReverseMap();
             CreateMap<SOBreakDown, SOBreakDownPostDto>().ReverseMap();
             CreateMap<SOBreakDown, SOBreakDownUpdateDto>().ReverseMap();
+
+            CreateMap<Rfq, LatestRfqNumberListDto>().ReverseMap();
         }
     }
 }

@@ -76,7 +76,7 @@ namespace Tips.SalesService.Api.Entities
         public DateTime? LastModifiedOn { get; set; }
 
         public List<SalesOrderItems>? SalesOrdersItems { get; set; }
-        public List<SalesAdditionalCharges>? SalesAdditionalCharges { get; set; }
+        public List<SalesOrderAdditionalCharges>? SalesOrderAdditionalCharges { get; set; }
 
     }
 }

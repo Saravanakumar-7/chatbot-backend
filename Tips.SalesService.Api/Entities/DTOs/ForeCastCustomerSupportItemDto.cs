@@ -43,7 +43,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class ForeCastCustomerSupportItemUpdateDto
     {
-        public int Id { get; set; }
+        public string ForecastNumber { get; set; }
+
         public string? ItemNumber { get; set; }
         public int? Quantity { get; set; }
 

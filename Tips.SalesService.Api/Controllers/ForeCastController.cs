@@ -13,6 +13,8 @@ using Newtonsoft.Json;
 using Microsoft.Build.Framework;
 using NuGet.Protocol.Core.Types;
 using static Tips.SalesService.Api.Repository.RfqEnggItemRepository;
+using Org.BouncyCastle.Ocsp;
+using Tips.SalesService.Api.Entities.Enum;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Tips.SalesService.Api.Controllers
@@ -24,7 +26,7 @@ namespace Tips.SalesService.Api.Controllers
         private IForecastSourcingRepository _sourcingrepository;
         private IForeCastCustomerSupportRepository _repository;
         private IForeCastCustomerSupportItemRepository _itemRepository;
-        private IForeCastRepository  _Forecastrepository;
+        private IForeCastRepository _Forecastrepository;
         private IForeCastReleaseLpRepository _releaseLpRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
@@ -33,9 +35,9 @@ namespace Tips.SalesService.Api.Controllers
         private IForecastLpCostingRepository _lpcostingRepository;
         private IForeCastCustomGroupRepository _forecastcustomgroupRepository;
         private IForeCastCustomFieldRepository _forecastcustomfieldRepository;
-        public ForeCastController(IForeCastCustomFieldRepository foreCastCustomFieldRepository, IForeCastEnggItemsRepository foreCastEnggItemsRepository, IForeCastReleaseLpRepository foreCastReleaseLpRepository, IForeCastCustomGroupRepository foreCastCustomGroupRepository, IForeCastRepository foreCastRepository, IForecastSourcingRepository forecastSourcingRepository, IForecastLpCostingRepository forecastLpCostingRepository, IForeCastEnggRepository foreCastEnggRepository, IForeCastCustomerSupportRepository foreCastCustomerSupportRepository,IForeCastCustomerSupportItemRepository foreCastCustomerSupportItemRepository ,ILoggerManager logger, IMapper mapper)
+        public ForeCastController(IForeCastCustomFieldRepository foreCastCustomFieldRepository, IForeCastEnggItemsRepository foreCastEnggItemsRepository, IForeCastReleaseLpRepository foreCastReleaseLpRepository, IForeCastCustomGroupRepository foreCastCustomGroupRepository, IForeCastRepository foreCastRepository, IForecastSourcingRepository forecastSourcingRepository, IForecastLpCostingRepository forecastLpCostingRepository, IForeCastEnggRepository foreCastEnggRepository, IForeCastCustomerSupportRepository foreCastCustomerSupportRepository, IForeCastCustomerSupportItemRepository foreCastCustomerSupportItemRepository, ILoggerManager logger, IMapper mapper)
         {
-           _Forecastrepository= foreCastRepository;
+            _Forecastrepository = foreCastRepository;
             _releaseLpRepository = foreCastReleaseLpRepository;
             _logger = logger;
             _mapper = mapper;
@@ -56,26 +58,63 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var getAllForeCast = await _Forecastrepository.GetAllForeCast(pagingParameter, searchParammes);
-                var metadata = new
+                 var getAllForeCast = await _Forecastrepository.GetAllForeCast(pagingParameter, searchParammes);
+                for (int i = 0; i < getAllForeCast.Count; i++)
                 {
-                    getAllForeCast.TotalCount,
-                    getAllForeCast.PageSize,
-                    getAllForeCast.CurrentPage,
-                    getAllForeCast.HasNext,
-                    getAllForeCast.HasPreviuos
-                };
+                    var forecastNo = getAllForeCast[i].ForeCastNumber;
+                    var rfqCsCount = await _itemRepository.GetForecastCustomerSupportItemByForecastNumber(forecastNo);
+                    if (getAllForeCast[i].isSourcingAvailable == true)
+                    {
 
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                        var forecastCsCount = await _itemRepository.GetForecastCustomerSupportItemByForecastNumber(forecastNo);
 
-                _logger.LogInfo("Returned all ForeCast");
-                var result = _mapper.Map<IEnumerable<ForeCastDto>>(getAllForeCast);
-                serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all forecasts Successfully";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
+                        var forecastCsRelesed = await _itemRepository.GetForecastCustomerSupportRelesedDetailsByForecastNumber(forecastNo);
+
+                        var forecastCsUnRelesedCount = forecastCsCount.Count() - forecastCsRelesed.Count();
+                        if (forecastCsRelesed.Count() == 0)
+                        {
+                            getAllForeCast[i].IsCsRelease = CsRelease.NotYetReleased;
+                        }
+                        if (forecastCsUnRelesedCount == 0 && forecastCsCount.Count() != 0)
+                        {
+                            getAllForeCast[i].IsCsRelease = CsRelease.FullyRelease;
+                        }
+                        if (forecastCsUnRelesedCount != 0 && forecastCsRelesed.Count() != 0)
+                        {
+                            getAllForeCast[i].IsCsRelease = CsRelease.PartiallyRelease;
+                        }
+                        if (forecastCsCount.Count() != 0)
+                        {
+                            getAllForeCast[i].CsComplete = CsStatus.CsCompleted;
+                        }
+                        else
+                        {
+                            getAllForeCast[i].CsComplete = CsStatus.CsNotYetCompleted;
+                        }
+                    }
+                }
+
+
+                        var metadata = new
+                        {
+                            getAllForeCast.TotalCount,
+                            getAllForeCast.PageSize,
+                            getAllForeCast.CurrentPage,
+                            getAllForeCast.HasNext,
+                            getAllForeCast.HasPreviuos
+                        };
+
+                        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                        _logger.LogInfo("Returned all ForeCast");
+                        var result = _mapper.Map<IEnumerable<ForeCastDto>>(getAllForeCast);
+                        serviceResponse.Data = result;
+                        serviceResponse.Message = "Returned all forecasts Successfully";
+                        serviceResponse.Success = true;
+                        serviceResponse.StatusCode = HttpStatusCode.OK;
+                        return Ok(serviceResponse);
+                    }
+                
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
@@ -345,16 +384,16 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-    
 
-    [HttpGet("{ForeCastNumber}")]
+
+        [HttpGet("{ForeCastNumber}")]
         public async Task<IActionResult> ForeCastCustomerSupportByForeCastNumber(string ForeCastNumber)
         {
             ServiceResponse<ForeCastCustomerSupportDto> serviceResponse = new ServiceResponse<ForeCastCustomerSupportDto>();
 
             try
             {
-                var foreCastCSByForeCastNumber = await _repository.ForeCastCustomerSupportByForeCastNumber(ForeCastNumber);
+                var foreCastCSByForeCastNumber = await _repository.GetForeCastCustomerSupportByForeCastNumber(ForeCastNumber);
 
                 if (foreCastCSByForeCastNumber == null)
                 {
@@ -624,7 +663,6 @@ namespace Tips.SalesService.Api.Controllers
                     }
                     forecastDto.ForeCastCustomerSupportItems = forecastItemsDtos;
 
-                    //var result = _mapper.Map<RfqCustomerSupportDto>(rfq);
                     serviceResponse.Data = forecastDto;
                     serviceResponse.Message = $"Returned ForecastCustomerSupport with id: {id}";
                     serviceResponse.Success = true;
@@ -904,10 +942,25 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var createForecast = _mapper.Map<ForeCast>(foreCastPostDto);
+                createForecast.RevisionNumber = 1;
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
+
+                var dateFormat = days + months + years;
+                var rfqNumber = await _Forecastrepository.GenerateForecastNumber();
+                createForecast.ForeCastNumber = dateFormat + rfqNumber;
 
                 await _Forecastrepository.CreateForeCast(createForecast);
+                var forecastDetails = _mapper.Map<ForeCastDto>(createForecast);
+
+                await _Forecastrepository.CreateForeCast(createForecast);
+
+
+
                 _Forecastrepository.SaveAsync();
-                serviceResponse.Data = null;
+                serviceResponse.Data = forecastDetails;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -950,7 +1003,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var createForecast =  _mapper.Map<ForeCastEngg>(foreCastEnggPost);
+                var createForecast = _mapper.Map<ForeCastEngg>(foreCastEnggPost);
                 _forecastenggRepository.CreateForeCastEngg(createForecast);
                 _forecastenggRepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -975,6 +1028,7 @@ namespace Tips.SalesService.Api.Controllers
         {
             ServiceResponse<ForeCastCustomerSupportDto> serviceResponse = new ServiceResponse<ForeCastCustomerSupportDto>();
 
+
             try
             {
                 if (foreCastCustomerSupportPostDto is null)
@@ -994,33 +1048,44 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
-                }               
-
-                var forecastCustomerSupportList = _mapper.Map<ForeCastCustomerSupport>(foreCastCustomerSupportPostDto);
+                }
 
 
-                var forecastCustomerSupportItemDto = foreCastCustomerSupportPostDto.ForeCastCustomerSupportItems;
+                var createForecastCS = _mapper.Map<ForeCastCustomerSupport>(foreCastCustomerSupportPostDto);
 
-                var forecastCustomerSupportLists = new List<ForeCastCustomerSupportItem>();
-                for (int i = 0; i < forecastCustomerSupportItemDto.Count; i++)
+                var forecastCsData = createForecastCS.ForecastNumber;
+
+                var forecastIsCsCompleteUpdate = await _Forecastrepository.ForeCastCustomerSupportByForeCastNumber(forecastCsData);
+
+
+                var forecastCSItemDto = foreCastCustomerSupportPostDto.ForeCastCustomerSupportItems;
+
+                var foreCustomerSupportLists = new List<ForeCastCustomerSupportItem>();
+                for (int i = 0; i < forecastCSItemDto.Count; i++)
                 {
-                    ForeCastCustomerSupportItem forecastCSItems = _mapper.Map<ForeCastCustomerSupportItem>(forecastCustomerSupportItemDto[i]);
-                    forecastCSItems.ForeCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliverySchedule>>(forecastCustomerSupportItemDto[i].ForeCastCSDeliverySchedule);
-                    forecastCustomerSupportLists.Add(forecastCSItems);
+                    ForeCastCustomerSupportItem FCcustomerSupportItem = _mapper.Map<ForeCastCustomerSupportItem>(forecastCSItemDto[i]);
+                    FCcustomerSupportItem.ForeCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliverySchedule>>(forecastCSItemDto[i].ForeCastCSDeliverySchedule);
+                    foreCustomerSupportLists.Add(FCcustomerSupportItem);
 
                 }
-                forecastCustomerSupportList.ForeCastCustomerSupportItems = forecastCustomerSupportLists;
+                createForecastCS.ForeCastCustomerSupportItems = foreCustomerSupportLists;
 
-               await _repository.CreateForeCastCustomerSupport(forecastCustomerSupportList);
-
+                _repository.CreateForeCastCustomerSupport(createForecastCS);
+                _Forecastrepository.Update(forecastIsCsCompleteUpdate);
                 _repository.SaveAsync();
+                var forecastNumber = createForecastCS.ForecastNumber;
+                var getIsSourcingAvailable = await _Forecastrepository.ForecastDetailsByForecastNumbers(forecastNumber);
+
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetForeCastCustomerSupportById", serviceResponse);
-
+                return Created("GetRfqCustomerSupportById", serviceResponse);
             }
+
+           
+
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside CreateForeCastCustomerSupport action: {ex.Message}");
@@ -1030,6 +1095,8 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+
+
         }
 
         [HttpPost]
@@ -1131,7 +1198,8 @@ namespace Tips.SalesService.Api.Controllers
 
                 var forecastlpcostingitemList = new List<ForecastLpCostingItem>();
 
-                if (flpcostingitemDto != null) {
+                if (flpcostingitemDto != null)
+                {
                     for (int i = 0; i < flpcostingitemDto.Count; i++)
                     {
                         ForecastLpCostingItem flpcostingItemDetail = _mapper.Map<ForecastLpCostingItem>(flpcostingitemDto[i]);
@@ -1165,8 +1233,8 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
         // PUT api/<ForeCastController>/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateForeCast(int id, [FromBody] ForeCastUpdateDto foreCastUpdateDto)
+        [HttpPut]
+        public async Task<IActionResult> UpdateForeCast( [FromBody] ForeCastUpdateDto foreCastUpdateDto)
         {
             ServiceResponse<ForeCastDto> serviceResponse = new ServiceResponse<ForeCastDto>();
 
@@ -1190,28 +1258,17 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var getForeCastById = await _Forecastrepository.GetForeCastById(id);
-                if (getForeCastById is null)
-                {
-                    _logger.LogError($"Forecast with id: {id}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update Forecast with id: {id}, hasn't been found in db.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
-                }
-
-                var updateforeCast = _mapper.Map(foreCastUpdateDto, getForeCastById);
-
-                string result = await _Forecastrepository.UpdateForeCast(updateforeCast);
-                _logger.LogInfo(result);
-                _Forecastrepository.SaveAsync();
+                var updateForecast = _mapper.Map<ForeCast>(foreCastUpdateDto);
+                await _Forecastrepository.UpdateForecastRevNo(updateForecast);
+                
+                _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = "Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
+
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside UpdateForecast action: {ex.Message}");
@@ -1360,8 +1417,8 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateForeCastCustomerSupport(int id, [FromBody] ForeCastCustomerSupportUpdateDto foreCastCustomerSupportUpdateDto)
+        [HttpPut]
+        public async Task<IActionResult> UpdateForeCastCustomerSupport( [FromBody] ForeCastCustomerSupportUpdateDto foreCastCustomerSupportUpdateDto)
         {
             ServiceResponse<ForeCastCustomerSupportDto> serviceResponse = new ServiceResponse<ForeCastCustomerSupportDto>();
 
@@ -1371,7 +1428,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogError("ForeCastCustomerSupport object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Update ForeCsatCustomerSupport object is null";
+                    serviceResponse.Message = "Update ForeCastCustomerSupport object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -1380,51 +1437,56 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogError("Invalid ForeCastCustomerSupport object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Update ForecastCustomerSupport object sent from client.";
+                    serviceResponse.Message = "Invalid Update ForeCastCustomerSupport object sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var GetForeCastCSById = await _repository.GetForeCastCustomerSupportById(id);
-                if (GetForeCastCSById is null)
-                {
-                    _logger.LogError($"ForeCastCustomerSupport with id: {id}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update ForeCastCustomerSupport with id: {id}, hasn't been found in db.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
-                }
-               
-                var updateForeCastCS = _mapper.Map<ForeCastCustomerSupport>(GetForeCastCSById);
 
-                var forecastItemDto = foreCastCustomerSupportUpdateDto.ForeCastCustomerSupportItems;
+                var updateForecastCS = _mapper.Map<ForeCastCustomerSupport>(foreCastCustomerSupportUpdateDto);
+
+                //tets
+
+
+                var forecastNumber = updateForecastCS.ForecastNumber;
+
+                var forecastDetailsByForecastNumber = await _Forecastrepository.ForeCastCustomerSupportByForeCastNumber(forecastNumber);
+
+                var version = 1;
+
+                forecastDetailsByForecastNumber.RevisionNumber = forecastDetailsByForecastNumber.RevisionNumber + version;
+
+                //test
+
+
+                var forecastCSItemDto = foreCastCustomerSupportUpdateDto.ForeCastCustomerSupportItems;
 
                 var forecastCsItemList = new List<ForeCastCustomerSupportItem>();
-
-                if (forecastItemDto != null)
+                if (forecastCSItemDto != null)
                 {
-                    for (int i = 0; i < forecastItemDto.Count; i++)
+                    for (int i = 0; i < forecastCSItemDto.Count; i++)
                     {
-                        ForeCastCustomerSupportItem forecastItemDetail = _mapper.Map<ForeCastCustomerSupportItem>(forecastItemDto[i]);
-                        forecastItemDetail.ForeCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliverySchedule>>(forecastItemDto[i].ForeCastCSDeliverySchedule);
+                        ForeCastCustomerSupportItem forecastItemDetail = _mapper.Map<ForeCastCustomerSupportItem>(forecastCSItemDto[i]);
+                        forecastItemDetail.ForeCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliverySchedule>>(forecastCSItemDto[i].ForeCastCSDeliverySchedule);
                         forecastCsItemList.Add(forecastItemDetail);
 
                     }
                 }
-                updateForeCastCS.ForeCastCustomerSupportItems = forecastCsItemList;
+                updateForecastCS.ForeCastCustomerSupportItems = forecastCsItemList;
+                var data = _mapper.Map(foreCastCustomerSupportUpdateDto, updateForecastCS);
+                await _repository.UpdateForecastcsRevNo(data);
 
-                var data = _mapper.Map(foreCastCustomerSupportUpdateDto, updateForeCastCS);
-
-                string result = await _repository.UpdateForeCastCustomerSupport(data);
-                _logger.LogInfo(result);
+                _Forecastrepository.Update(forecastDetailsByForecastNumber);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = "Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
+
             }
+
+
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside UpdateForeCastCustomerSupport action: {ex.Message}");
@@ -1491,7 +1553,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _Forecastrepository.DeleteForeCast(getForeCastById );
+                string result = await _Forecastrepository.DeleteForeCast(getForeCastById);
                 _logger.LogInfo(result);
                 _Forecastrepository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1983,7 +2045,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Invalid Update ForeCastCustomField object sent from client";
-                       serviceResponse.Success = false;
+                    serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid Update ForeCastCustomField object sent from client.");
                     return BadRequest(serviceResponse);
@@ -2056,5 +2118,334 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllForecastNumberList()
+        {
+            ServiceResponse<IEnumerable<ForeCastNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<ForeCastNumberListDto>>();
+            try
+            {
+                var forecastNumberList = await _Forecastrepository.GetAllForecastNumberList();
+
+                var result = _mapper.Map<IEnumerable<ForeCastNumberListDto>>(forecastNumberList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned forecastNumberList Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllForecastNumberList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpGet("{CustomerId}")]
+        
+        public async Task<IActionResult> GetAllActiveForecastNumberListByCustomerId(string CustomerId)
+        {
+            ServiceResponse<IEnumerable<ForeCastNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<ForeCastNumberListDto>>();
+            try
+            {
+                var getAllActiveForecastNumberListByCustomerId = await _Forecastrepository.GetAllActiveForecastNumberListByCustomerId(CustomerId);
+                var result = _mapper.Map<IEnumerable<ForeCastNumberListDto>>(getAllActiveForecastNumberListByCustomerId);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all getAllActiveForecastNumberListByCustomerId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveForecastNumberListByCustomerId action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveForeCastNumberList()
+        {
+            ServiceResponse<IEnumerable<ForeCastNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<ForeCastNumberListDto>>();
+            try
+            {
+                var getAllActiveForecastNos = await _Forecastrepository.GetAllActiveForeCastNumberList();
+
+                var result = _mapper.Map<IEnumerable<ForeCastNumberListDto>>(getAllActiveForecastNos);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveForeCastNumberList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet("{forecast}")]
+
+        public async Task<IActionResult> GetRevNumberByForecastNumberList(string forecast)
+        {
+            ServiceResponse<IEnumerable<RevNumberByForecastNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<RevNumberByForecastNumberListDto>>();
+            try
+            {
+                var revNumberDetailsbyForecastNumber = await _Forecastrepository.GetRevNumberByForecastNumberList(forecast);
+                var result = _mapper.Map<IEnumerable<RevNumberByForecastNumberListDto>>(revNumberDetailsbyForecastNumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all RevisionNumberList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside RevNumberByForecastNumberListDto action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetForecastDeatailsByForecastNoAndRevNo(string forecast, int revisionNumber)
+        {
+            ServiceResponse<ForeCastDto> serviceResponse = new ServiceResponse<ForeCastDto>();
+            try
+            {
+                var forecastDetail = await _Forecastrepository.GetForecastDeatailsByForecastNoAndRevNo(forecast, revisionNumber);
+
+                if (forecastDetail == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Forecast  hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Forecast with id: {forecast}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Forecast with id: {forecast}");
+                    ForeCastDto foreCastDto = _mapper.Map<ForeCastDto>(forecastDetail);
+                    serviceResponse.Data = foreCastDto;
+                    serviceResponse.Message = "Returned ForecastDeatailsByForecastNoAndRevNo Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetForecastDeatailsByForecastNoAndRevNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetForecastCsByForecastNoAndRevNo(string forecast, decimal revisionNumber)
+        {
+            ServiceResponse<ForeCastCustomerSupportDto> serviceResponse = new ServiceResponse<ForeCastCustomerSupportDto>();
+
+            try
+            {
+                var forecastCsByRfqNoAndRevNo = await _repository.GetForecastCsByForecastNoAndRevNo(forecast, revisionNumber);
+
+                if (forecastCsByRfqNoAndRevNo == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ForeCastCustomerSupport hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ForeCastCustomerSupport with id,hasn't been found in db.");
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned ForeCastCustomerSupport with id");
+
+                    ForeCastCustomerSupportDto foreCastCustomerSupport = _mapper.Map<ForeCastCustomerSupportDto>(forecastCsByRfqNoAndRevNo);
+
+                    List<ForeCastCustomerSupportItemDto> foreCastCustomerSupportItems = new List<ForeCastCustomerSupportItemDto>();
+                    foreach (var forecastCSItemDetail in forecastCsByRfqNoAndRevNo.ForeCastCustomerSupportItems)
+                    {
+                        ForeCastCustomerSupportItemDto castCustomerSupportItemDto = _mapper.Map<ForeCastCustomerSupportItemDto>(forecastCSItemDetail);
+                        castCustomerSupportItemDto.ForeCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliveryScheduleDto>>(forecastCSItemDetail.ForeCastCSDeliverySchedule);
+                        foreCastCustomerSupportItems.Add(castCustomerSupportItemDto);
+                    }
+                    foreCastCustomerSupport.ForeCastCustomerSupportItems = foreCastCustomerSupportItems;
+
+                    serviceResponse.Data = foreCastCustomerSupport;
+                    serviceResponse.Message = $"Returned ForecastCustomerSupport";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetForecastCsByForecastNoAndRevNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetForecastCsLatestRevNoByForecastnumber(string forecastnumber)
+        {
+            ServiceResponse<ForeCastCustomerSupportDto> serviceResponse = new ServiceResponse<ForeCastCustomerSupportDto>();
+
+            try
+            {
+                var forecastCsLatestRevNoByRfqNo = await _repository.GetForecastCsLatestRevNoByForecastnumber(forecastnumber);
+
+                if (forecastCsLatestRevNoByRfqNo == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ForeCastCustomerSupport hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ForeCastCustomerSupport with id,hasn't been found in db.");
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned ForeCastCustomerSupport with id");
+
+                    ForeCastCustomerSupportDto foreCastCustomerSupport = _mapper.Map<ForeCastCustomerSupportDto>(forecastCsLatestRevNoByRfqNo);
+
+                    serviceResponse.Data = foreCastCustomerSupport;
+                    serviceResponse.Message = $"Returned ForeCastCustomerSupportForecastNo";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetForecastCsLatestRevNoByForecastnumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllForecastCustomGroupList()
+        {
+            ServiceResponse<IEnumerable<ListOfForecastCustomGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfForecastCustomGroupDto>>();
+            try
+            {
+                var ForecastCustomGroupLists = await _forecastcustomgroupRepository.GetAllForecastCustomGroupList();
+                var result = _mapper.Map<IEnumerable<ListOfForecastCustomGroupDto>>(ForecastCustomGroupLists);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ForecastCustomGroupLists";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllForecastCustomGroupList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet("{CustomGroup}")]
+        public async Task<IActionResult> GetForecastCustomFieldByCustomGroup(string CustomGroup)
+        {
+            ServiceResponse<IEnumerable<RfqCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqCustomFieldDto>>();
+
+            try
+            {
+                var getCustomFieldList = await _forecastcustomfieldRepository.GetForecastCustomFieldByCustomGroup(CustomGroup);
+                if (getCustomFieldList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CustomFieldList with id: {CustomGroup}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"CustomFieldList with id: {CustomGroup}, hasn't been found.");
+                    return BadRequest(serviceResponse);
+                }
+                else
+                {
+
+                    _logger.LogInfo($"Returned CustomFieldList with id: {CustomGroup}");
+                    var result = _mapper.Map<IEnumerable<RfqCustomFieldDto>>(getCustomFieldList);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned CustomFieldList with id successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetRfqCustomFieldByCustomGroup action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveLatestForeCastNumbers()
+        {
+            ServiceResponse<IEnumerable<LatestForecastNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<LatestForecastNumberListDto>>();
+            try
+            {
+                var latestForecastNumberList = await _Forecastrepository.GetAllActiveLatestForeCastNumbers();
+                var result = _mapper.Map<IEnumerable<LatestForecastNumberListDto>>(latestForecastNumberList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ActiveRfqNumberListByCustomerId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveLatestRfqNumbers action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }
+

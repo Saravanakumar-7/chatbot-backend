@@ -2,6 +2,7 @@
 using Entities;
 using Tips.SalesService.Api.Entities.DTOs;
 using Tips.SalesService.Api.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.SalesService.Api.Contracts
 {
@@ -26,5 +27,6 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> UpdateItemPriceList(ItemPriceList itemPriceList);
 
         Task<string> DeleteItemPriceList(ItemPriceList itemPriceList);
+        Task<PagedList<ItemPriceList>> GetItemPriceListByPriceListName(string priceListName, [FromQuery] PagingParameter pagingParameter, SearchParammes searchParammes);
     }
 }

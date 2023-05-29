@@ -31,4 +31,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string Remarks { get; set; }
         public string Unit { get; set; }
     }
+
+    public class ListOfForecastCustomGroupDto
+    {
+        public int Id { get; set; }
+        public string? CustomGroupName { get; set; }
+    }
+
 }

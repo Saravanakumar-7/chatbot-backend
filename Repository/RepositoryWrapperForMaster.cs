@@ -112,9 +112,22 @@ namespace Repository
         private IFormsAccessRepository? _formsAccessRepository;
         private IOrderTypeRepository? _orderTypeRepository;
         private IIssuingStockRepository? issuingStockRepository;
+        private IAdditionalChargesRepository? _additionalChargesRepository;
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
+        }
+
+        public IAdditionalChargesRepository AdditionalChargesRepository
+        {
+            get
+            {
+                if (_additionalChargesRepository == null)
+                {
+                    _additionalChargesRepository = new AdditionalChargesRepository(_tipsMasterDbContext);
+                }
+                return _additionalChargesRepository;
+            }
         }
 
         public IIssuingStockRepository IssuingStockRepository

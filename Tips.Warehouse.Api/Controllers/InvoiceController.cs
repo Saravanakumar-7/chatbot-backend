@@ -5,9 +5,11 @@ using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
+using Entities.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Tips.SalesService.Api.Entities.DTOs;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
@@ -246,7 +248,8 @@ namespace Tips.Warehouse.Api.Controllers
                 var invoice = _mapper.Map<Invoice>(invoicePostDto);
                 var invoiceitemsDto = invoicePostDto.InvoiceChildItems;
 
-                var invoiceChildItemsDtoList = new List<InvoiceChildItem>();
+                var invoiceChildItemsEntityList = new List<InvoiceChildItem>();
+                var InvoiceAdditionalChargesList = _mapper.Map<IEnumerable<InvoiceAdditionalCharges>>(invoicePostDto.InvoiceAdditionalCharges);
 
 
                 var date = DateTime.Now;
@@ -280,51 +283,29 @@ namespace Tips.Warehouse.Api.Controllers
                     for (int i = 0; i < invoiceitemsDto.Count; i++)
                     {
                         InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
-                        invoiceChildItemsDtoList.Add(invoiceChildItem);
+                        invoiceChildItemsEntityList.Add(invoiceChildItem);
 
-                        string qty = Convert.ToString(invoiceChildItem.InvoicedQty);
+                        var invoiceQty = invoiceChildItem.InvoicedQty;
                         var doNumber = invoiceitemsDto[i].DONumber;
-                        var getAllInvoicesList = await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderBalanceQty(invoiceChildItem.FGItemNumber, doNumber, invoiceChildItem.InvoicedQty);
-                        _bTODeliveryOrderItemsRepository.SaveAsync();
+                    
+                        //DO Balance qty update method
+                        invoiceQty = await DoItemBalanceQtyUpdateBasedOnInvoiceQty(invoiceChildItem, invoiceQty, doNumber);
 
                         //Add inventory Transaction Table
-
-                        InventoryTranction inventoryTranction = new InventoryTranction();
-                        inventoryTranction.PartNumber = invoiceChildItemsDtoList[i].FGItemNumber;
-                        inventoryTranction.MftrPartNumber = invoiceChildItemsDtoList[i].FGItemNumber;
-                        inventoryTranction.Description = "";
-                        inventoryTranction.Issued_Quantity = invoiceChildItem.InvoicedQty;
-                        inventoryTranction.UOM = invoiceChildItemsDtoList[i].UOM;
-                        inventoryTranction.Issued_DateTime = DateTime.Now;
-                        inventoryTranction.ReferenceID = invoice.InvoiceNumber;
-                        inventoryTranction.ReferenceIDFrom = "Invoice Delivery Order";
-                        inventoryTranction.Issued_By = "Admin";
-                        inventoryTranction.CreatedOn = DateTime.Now; 
-                        inventoryTranction.From_Location = "BTO";
-                        inventoryTranction.TO_Location = "Invoice";
-                        inventoryTranction.Remarks = "Create - Invoice";
-
-                        var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
-
-
-                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
-                        _inventoryTranctionRepository.SaveAsync();
+                        await InventoryTransactionSaveOnInvoiceCreate(invoice, invoiceChildItemsEntityList, i, invoiceChildItem);
 
                     }
                 }
 
-                invoice.invoiceChildItems = invoiceChildItemsDtoList;
+                invoice.invoiceChildItems = invoiceChildItemsEntityList;
+                invoice.InvoiceAdditionalCharges = InvoiceAdditionalChargesList.ToList();
 
                 await _invoiceRepository.CreateInvoice(invoice);
                 _invoiceRepository.SaveAsync();
 
-                //update balance qty and dispatch qty in salesorder table
-                var btoDeliveryDispatchDetails = _mapper.Map<List<BtoDeliveryOrderInvoiceQtyDetailsDto>>(invoiceitemsDto);
-
-                var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
-                var data = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "InvoiceUpdateDispatchDetails"), data);
-
+                
+                //Sales order additional charge update method
+                await SoAdditonalChargeUpdateOnInvoiceCreate(InvoiceAdditionalChargesList);
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Invoice Successfully Created";
@@ -341,6 +322,94 @@ namespace Tips.Warehouse.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+        }
+
+        private async Task SoAdditonalChargeUpdateOnInvoiceCreate(IEnumerable<InvoiceAdditionalCharges> InvoiceAdditionalChargesList)
+        {
+            List<SalesOrderAdditionalChargesUpdate> salesOrderAdditionalChargesUpdates = new List<SalesOrderAdditionalChargesUpdate>();
+
+            foreach (var additionalChargeItem in InvoiceAdditionalChargesList)
+            {
+                SalesOrderAdditionalChargesUpdate additionalCharges = new SalesOrderAdditionalChargesUpdate
+                {
+                    SalesOrderId = Convert.ToInt32(additionalChargeItem.SalesOrderId),
+                    InvoicedValue = Convert.ToDecimal(additionalChargeItem.InvoicedValue),
+                    SalesAdditionalChargeId = additionalChargeItem.SalesAdditionalChargeId
+                };
+                salesOrderAdditionalChargesUpdates.Add(additionalCharges);
+            }
+
+
+
+
+            var soAdditionalChargeJson = JsonConvert.SerializeObject(salesOrderAdditionalChargesUpdates);
+            var data = new StringContent(soAdditionalChargeJson, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "AdditionalChargeUpdateFromInvoice"), data);
+        }
+
+        private async Task InventoryTransactionSaveOnInvoiceCreate(Invoice invoice, List<InvoiceChildItem> invoiceChildItemsEntityList, int i, InvoiceChildItem invoiceChildItem)
+        {
+            InventoryTranction inventoryTranction = new InventoryTranction();
+            inventoryTranction.PartNumber = invoiceChildItemsEntityList[i].FGItemNumber;
+            inventoryTranction.MftrPartNumber = invoiceChildItemsEntityList[i].FGItemNumber;
+            inventoryTranction.Description = "";
+            inventoryTranction.Issued_Quantity = invoiceChildItem.InvoicedQty;
+            inventoryTranction.UOM = invoiceChildItemsEntityList[i].UOM;
+            inventoryTranction.Issued_DateTime = DateTime.Now;
+            inventoryTranction.ReferenceID = invoice.InvoiceNumber;
+            inventoryTranction.ReferenceIDFrom = "Invoice Delivery Order";
+            inventoryTranction.Issued_By = "Admin";
+            inventoryTranction.CreatedOn = DateTime.Now;
+            inventoryTranction.From_Location = "BTO";
+            inventoryTranction.TO_Location = "Invoice";
+            inventoryTranction.Remarks = "Create - Invoice";
+
+            var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+
+
+            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+            _inventoryTranctionRepository.SaveAsync();
+        }
+
+        private async Task<decimal> DoItemBalanceQtyUpdateBasedOnInvoiceQty(InvoiceChildItem invoiceChildItem, decimal invoiceQty, string? doNumber)
+        {
+            var btoItemDetails = await _bTODeliveryOrderItemsRepository.GetOpenDoItemDetailsByItemNoAndDoNo(invoiceChildItem.FGItemNumber, doNumber);
+
+            if (btoItemDetails != null)
+            {
+                foreach (var doItem in btoItemDetails)
+                {
+                    decimal doBalanceQty = Convert.ToDecimal(doItem.BalanceDoQty);
+
+                    if (doBalanceQty >= invoiceQty)
+                    {
+                        doItem.BalanceDoQty -= invoiceQty;
+                        invoiceQty = 0;
+                    }
+                    else
+                    {
+                        doItem.BalanceDoQty = 0;
+                        invoiceQty -= doBalanceQty;
+                    }
+
+                    if (doItem.BalanceDoQty <= 0)
+                    {
+                        doItem.BalanceDoQty = 0;
+                        doItem.DoStatus = Status.Closed;
+                    }
+
+                    await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderItem(doItem);
+
+                    if (invoiceQty == 0)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            //var getAllInvoicesList = await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderBalanceQty(invoiceChildItem.FGItemNumber, doNumber, invoiceChildItem.InvoicedQty);
+            _bTODeliveryOrderItemsRepository.SaveAsync();
+            return invoiceQty;
         }
 
         [HttpPut("{id}")]

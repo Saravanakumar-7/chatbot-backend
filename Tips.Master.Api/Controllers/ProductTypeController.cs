@@ -92,6 +92,45 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet("{typeSolution}")]
+        public async Task<IActionResult> GetListofTypeSolutionByProductType(string typeSolution)
+        {
+            ServiceResponse<IEnumerable<GetListofTypeSolutionByProductTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<GetListofTypeSolutionByProductTypeDto>>();
+
+            try
+            {
+                var typeSolutionDetails = await _repository.ProductTypeRepository.GetListOfTypeSolutionByProductType(typeSolution);
+                if (typeSolutionDetails == null)
+                {
+                    _logger.LogError($"typeSolution with id: {typeSolution}, hasn't been found.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"typeSolution with id: {typeSolution}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned typeSolution with id: {typeSolution}");
+                    var result = _mapper.Map<IEnumerable<GetListofTypeSolutionByProductTypeDto>>(typeSolutionDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetListofTypeSolutionByProductType action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpPost]
         public IActionResult CreateProductType([FromBody] ProductTypePostDto productTypePostDto)

@@ -8,7 +8,10 @@ namespace Tips.Warehouse.Api.Contracts
     {
         //Task<PagedList<bTODeliveryOrderItems>> GetAllBTODeliveryOrderItems(PagingParameter pagingParameter);
         //Task<bTODeliveryOrderItems> GetBTODeliveryOrderItemById(int id);
-        Task<BTODeliveryOrderItems> UpdateBtoDelieveryOrderBalanceQty(string itemNumber, string BtoDeliveryNumber, decimal Qty);
+        //Task<BTODeliveryOrderItems> UpdateBtoDelieveryOrderBalanceQty(string itemNumber, string BtoDeliveryNumber, decimal Qty);
+
+        Task UpdateBtoDelieveryOrderItem(BTODeliveryOrderItems btoDeliveryOrderItem);
+        public Task<List<BTODeliveryOrderItems>> GetOpenDoItemDetailsByItemNoAndDoNo(string itemNumber, string BtoDeliveryNumber);
 
         Task<BTODeliveryOrderItems> GetBtoDelieveryOrderItemDetails(int btoDeliveryOrderPartsId);
 

@@ -9,6 +9,7 @@ namespace Tips.SalesService.Api.Contracts
     {
         Task<PagedList<Rfq>> GetAllRfq(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<Rfq> GetRfqById(int id);
+        Task<IEnumerable<LatestRfqNumberListDto>> GetAllActiveLatestRfqNumbers();
         Task<int?> CreateRfq(Rfq rfq);
         Task<string> UpdateRfq(Rfq rfq);
         Task<string> DeleteRfq(Rfq rfq);

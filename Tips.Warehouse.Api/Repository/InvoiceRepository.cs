@@ -66,7 +66,9 @@ namespace Tips.Warehouse.Api.Repository
                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
                 inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
                 || inv.CompanyName.Contains(searchParams.SearchValue))))
-                .Include(k => k.invoiceChildItems);
+                .Include(k => k.invoiceChildItems)
+                .Include(p => p.InvoiceAdditionalCharges);
+
             return PagedList<Invoice>.ToPagedList(getAllInvoiceList, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
@@ -119,8 +121,9 @@ namespace Tips.Warehouse.Api.Repository
         {
         var getInvoiceListById = await _tipsWarehouseDbContext.invoices
                         .Where(x => x.Id == id)
+                        .Include(o => o.InvoiceAdditionalCharges)
                         .Include(k => k.invoiceChildItems)
-                         .FirstOrDefaultAsync();
+                        .FirstOrDefaultAsync();
         return getInvoiceListById;
         }
 

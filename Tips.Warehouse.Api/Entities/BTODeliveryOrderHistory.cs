@@ -24,6 +24,7 @@ namespace Tips.Warehouse.Api.Entities
         public decimal? FGOrderQty { get; set; }
         public decimal? OrderBalanceQty { get; set; }
         public decimal? FGStock { get; set; }
+        [Precision(18,2)]
         public decimal? Discount { get; set; }
         public decimal? NetValue { get; set; }
         public decimal? DispatchQty { get; set; }

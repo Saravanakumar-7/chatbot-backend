@@ -33,6 +33,8 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<DeliveryOrderTransaction> DeliveryOrderTransactions { get; set; }
         public DbSet<BTODeliveryOrderHistory> BTODeliveryOrderHistories { get; set; }
 
+        public DbSet<InvoiceAdditionalCharges> InvoiceAdditionalCharges { get; set; }
+
 
     }
 }

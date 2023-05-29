@@ -135,6 +135,7 @@ namespace Contracts
         IFormsAccessRepository FormsAccessRepository { get; }
         IOrderTypeRepository OrderTypeRepository { get; }
         IIssuingStockRepository IssuingStockRepository { get; }
-    void SaveAsync();
+        IAdditionalChargesRepository AdditionalChargesRepository { get; }
+        void SaveAsync();
     }
 }

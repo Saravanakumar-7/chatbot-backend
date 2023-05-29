@@ -40,7 +40,7 @@ namespace Tips.SalesService.Api.Entities
 
         public DbSet<SalesOrder> SalesOrders { get; set; }
         public DbSet<SalesOrderItems> SalesOrdersItems { get; set; }
-        public DbSet<SalesAdditionalCharges> SalesAdditionalCharges { get; set; }
+        public DbSet<SalesOrderAdditionalCharges> SalesOrderAdditionalCharges { get; set; }
         public DbSet<QuoteNumber> QuoteNumbers { get; set; }
         public DbSet<Quote> Quotes { get; set; }
         public DbSet<QuoteGeneral> QuoteGenerals { get; set; }
@@ -60,7 +60,7 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<ForecastSourcing> ForecastSourcings { get; set; }
         public DbSet<ForecastSourcingItems> ForecastSourcingItems { get; set; }
         public DbSet<ForecastSourcingVendor> ForecastSourcingVendors { get; set; }
-
+        public DbSet<ForecastNo> ForecastNos { get; set; }
         public DbSet<RfqLPCostingItem> RfqLPCostingItems { get; set; }
 
         public DbSet<RfqLPCostingProcess> RfqLPCostingProcesses { get; set; }

@@ -1335,7 +1335,30 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         //rfq create function
-
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveLatestRfqNumbers()
+        {
+            ServiceResponse<IEnumerable<LatestRfqNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<LatestRfqNumberListDto>>();
+            try
+            {
+                var latestRfqNumberList = await _rfqRepository.GetAllActiveLatestRfqNumbers();
+                var result = _mapper.Map<IEnumerable<LatestRfqNumberListDto>>(latestRfqNumberList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ActiveRfqNumberListByCustomerId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveLatestRfqNumbers action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreateRfq([FromBody] RfqPostDto rfqPostDto)

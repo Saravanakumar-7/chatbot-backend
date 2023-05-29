@@ -15,12 +15,18 @@ namespace Tips.SalesService.Api.Entities
         [Key]
         public int Id { get; set; }
         public string? CustomerName { get; set; }
-        public string? RevisionNumber { get; set; }
-        public string? ForecastNumber { get; set; }
-        public string? CustomerForecastReference { get; set; }
+        public string? CustomerAliasName { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
+        public string ForecastNumber { get; set; }
+        public string? CustomerForecastNumber { get; set; }
+
         public DateTime? RequestReceivedDate { get; set; }
         public DateTime? QuoteExpectedDate { get; set; }
 
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

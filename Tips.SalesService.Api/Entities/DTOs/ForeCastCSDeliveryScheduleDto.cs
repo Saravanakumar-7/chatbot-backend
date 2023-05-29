@@ -29,7 +29,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class ForeCastCSDeliveryScheduleUpdateDto
     {
-        public int Id { get; set; }
+       // public int Id { get; set; }
         public DateTime Date { get; set; }
 
         [Precision(13, 3)]
