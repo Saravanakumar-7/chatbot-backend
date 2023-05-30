@@ -212,7 +212,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class GrinUpdateQtyDetailsDto
     {
         public string? ItemNumber { get; set; }
-        public decimal Qty { get; set; }
+        public decimal? Qty { get; set; }
         public string? PONumber { get; set; }
     }
 }

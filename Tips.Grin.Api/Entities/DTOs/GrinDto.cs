@@ -168,4 +168,31 @@ namespace Tips.Grin.Api.Entities.DTOs
         public List<string>? VendorId { get; set; }
         public List<string>? InvoiceNumber { get; set; }
     }
-}
+
+    public class GrinInventoryDto
+    { 
+        public string PartNumber { get; set; }
+         
+        public string MftrPartNumber { get; set; }
+
+        
+        public string Description { get; set; }
+
+      
+        public string ProjectNumber { get; set; }
+         public decimal Balance_Quantity { get; set; }
+         public string? UOM { get; set; }
+
+         public string? Warehouse { get; set; }
+         public string? Location { get; set; }
+        public string? GrinNo { get; set; }
+        public int? GrinPartId { get; set; }
+        public string? PartType { get; set; }
+        public string? GrinMaterialType { get; set; }
+         public string? ReferenceID { get; set; }
+        public string? ReferenceIDFrom { get; set; }
+        public string? ShopOrderNo { get; set; }
+
+    }
+
+    }

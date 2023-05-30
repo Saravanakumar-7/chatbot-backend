@@ -970,7 +970,7 @@ namespace Tips.Purchase.Api.Controllers
             {
                 IEnumerable<PoItem> poItems = await _poItemsRepository.GetPODetailsByPONumberandItemNo(item.ItemNumber, item.PONumber);
                 //var PoorderItem = poItems.FirstOrDefault();
-                var dispatchedQty = item.Qty;
+                decimal dispatchedQty = item.Qty;
 
                 foreach (var poItem in poItems)
                 { 

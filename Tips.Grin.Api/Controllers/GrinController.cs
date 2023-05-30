@@ -407,33 +407,35 @@ namespace Tips.Grin.Api.Controllers
                     {
                         foreach (var project in parts.ProjectNumbers)
                         {
-                            dynamic inventoryObject = new ExpandoObject();
-                            inventoryObject.PartNumber = parts.ItemNumber;
-                            inventoryObject.MftrPartNumber = parts.MftrItemNumber;
-                            inventoryObject.Description = parts.ItemDescription;
-                            inventoryObject.ProjectNumbers = project.ProjectNumber;
-                            inventoryObject.Balance_Quantity = project.ProjectQty;
-                            inventoryObject.UOM = parts.UOM;
-                            inventoryObject.IsStockAvailable = true;
-                            inventoryObject.Warehouse = "GRIN";
-                            inventoryObject.Location = "GRIN";
-                            inventoryObject.GrinNo = grinNo;
-                            inventoryObject.GrinPartId = parts.Id;
-                            inventoryObject.PartType = "PurchasePart";  //We need to check this
-                            inventoryObject.ReferenceID = Convert.ToString(parts.Id);
-                            inventoryObject.ReferenceIDFrom = "GRIN";
+                            GrinInventoryDto grinInventoryDto = new GrinInventoryDto();
+                            grinInventoryDto.PartNumber = parts.ItemNumber;
+                            grinInventoryDto.MftrPartNumber = parts.MftrItemNumber;
+                            grinInventoryDto.Description = parts.ItemDescription;
+                            grinInventoryDto.ProjectNumber = project.ProjectNumber;
+                            grinInventoryDto.Balance_Quantity = Convert.ToDecimal(project.ProjectQty);
+                            grinInventoryDto.UOM = parts.UOM; 
+                            grinInventoryDto.Warehouse = "GRIN";
+                            grinInventoryDto.Location = "GRIN";
+                            grinInventoryDto.GrinNo = grinNo;
+                            grinInventoryDto.GrinPartId = parts.Id;
+                            grinInventoryDto.PartType = "PurchasePart";  //We need to check this
+                            grinInventoryDto.ReferenceID = Convert.ToString(parts.Id);
+                            grinInventoryDto.ReferenceIDFrom = "GRIN";
+                            grinInventoryDto.GrinMaterialType = null;
+                            grinInventoryDto.ShopOrderNo = null;
 
-                            var json = JsonConvert.SerializeObject(inventoryObject);
+                            var json = JsonConvert.SerializeObject(grinInventoryDto);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data); 
+
                         }
                     }
                 }
 
                 ////update balance qty  in Purchase order table for grin concept
 
-                var grinPartsDetail = _mapper.Map<List<GrinUpdateQtyDetailsDto>>(grins.GrinParts);
+                var grinPartsDetail = _mapper.Map<List<GrinUpdateQtyDetailsDto>>(grinPartsDto);
 
                 var jsons = JsonConvert.SerializeObject(grinPartsDetail);
                 var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
