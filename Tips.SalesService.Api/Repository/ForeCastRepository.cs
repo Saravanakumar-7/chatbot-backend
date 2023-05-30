@@ -398,6 +398,13 @@ namespace Tips.SalesService.Api.Repository
             string result = $"CostCenter details of {foreCastCustomerSupportItem.Id} is updated successfully!";
             return result;
         }
+        public async Task<IEnumerable<ForeCastCustomerSupportItem>> GetAllActiveForecastCsItemsByForecastNo(string forecastNo)
+        {
+            IEnumerable<ForeCastCustomerSupportItem> foreCastCSItems = await _tipsSalesServiceDbContext.foreCastCustomerSupportItems
+             .Where(x => x.ForecastNumber == forecastNo && x.ReleaseStatus == true).OrderByDescending(x => x.Id).ToListAsync();
+
+            return foreCastCSItems;
+        }
 
         public Task<int?> CreateForeCastCustomerSupportItem(ForeCastCustomerSupportItem foreCastCustomerSupportItem)
         {

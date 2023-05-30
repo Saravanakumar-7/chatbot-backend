@@ -9,7 +9,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
-        public decimal? Qty { get; set; }
+        public decimal Qty { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -24,7 +24,7 @@ namespace Tips.Grin.Api.Entities.DTOs
  
         public string? Location { get; set; }
 
-        public int? Qty { get; set; }
+        public decimal Qty { get; set; }
         
     }
 
@@ -36,7 +36,7 @@ namespace Tips.Grin.Api.Entities.DTOs
  
         public string? Location { get; set; }
 
-        public int? Qty { get; set; }
+        public decimal Qty { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

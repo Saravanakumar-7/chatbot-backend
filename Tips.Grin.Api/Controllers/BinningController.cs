@@ -518,8 +518,9 @@ namespace Tips.Grin.Api.Controllers
                         var binningLocations = binningsItemsDto[i].BinningLocations;
 
                         var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                            "GetInventoryDetailsByGrinNo?", "GrinNo=", binningDetail.GrinNumber, "&ItemNumber=",
-                            binningsItemsDto[i].ItemNumber, "&ProjectNumbers=", binningLocations[i].ProjectNumber));
+                              "GetInventoryDetailsByGrinNo?", "GrinNo=", binningDetail.GrinNumber, "&ItemNumber=",
+                               binningsItemsDto[i].ItemNumber, "&ProjectNumber=", binningLocations[i].ProjectNumber));
+
                         var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                         dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                         dynamic inventoryObject = inventoryObjectData.data;

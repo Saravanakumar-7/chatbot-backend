@@ -12,7 +12,7 @@ namespace Tips.Grin.Api.Entities
         public string? Location { get; set; }
 
         [Precision(13,3)]
-        public decimal? Qty { get; set; }
+        public decimal Qty { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

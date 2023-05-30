@@ -279,6 +279,32 @@ namespace Tips.SalesService.Api.Controllers
             }
 
         }
+
+        [HttpGet("{forecastNo}")]
+        public async Task<IActionResult> GetAllActiveForecastCsItemsByForecastNo(string forecastNo)
+        {
+            ServiceResponse<IEnumerable<ForeCastCustomerSupportItemDto>> serviceResponse = new ServiceResponse<IEnumerable<ForeCastCustomerSupportItemDto>>();
+            try
+            {
+                var foreCastCSItems = await _itemRepository.GetAllActiveForecastCsItemsByForecastNo(forecastNo);
+                var result = _mapper.Map<IEnumerable<ForeCastCustomerSupportItemDto>>(foreCastCSItems);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ActiveForeCastCSItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveForecastCsItemsByForecastNo action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //get ForecastEngg by ForeCastnumber
         [HttpGet("{ForeCastNumber}")]
         public async Task<IActionResult> GetForeCastEnggByForeCastNumber(string ForeCastNumber)
