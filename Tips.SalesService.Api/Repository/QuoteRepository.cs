@@ -250,9 +250,18 @@ namespace Tips.SalesService.Api.Repository
             //                    };
 
             //var releaseLpList = releaseLpDetails.Distinct().ToList();
+
+            var rfqEnggId = await _tipsSalesServiceDbContext.RfqEnggs
+              .Where(x => x.RFQNumber == rfqNumber)
+                .OrderByDescending(x => x.RevisionNumber)
+                 .Select(x => x.Id)
+           .FirstOrDefaultAsync();
+
+
             var releaseLpDetails = _tipsSalesServiceDbContext.RfqEnggItems
+                .Where(x=>x.RfqEnggId == rfqEnggId)
         .GroupJoin(
-            _tipsSalesServiceDbContext.RfqEnggs.Where(e => e.RFQNumber == rfqNumber),
+            _tipsSalesServiceDbContext.RfqEnggs.Where(e => e.RFQNumber == rfqNumber && e.Id == rfqEnggId),
             e => e.RfqEnggId,
             eng => eng.Id,
             (e, engGroup) => new { RfqEnggItem = e, RfqEnggs = engGroup })

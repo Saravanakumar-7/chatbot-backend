@@ -17,6 +17,7 @@ using System.Text;
 using Newtonsoft.Json.Linq;
 using System.Dynamic;
 using Tips.SalesService.Api.Entities.Enum;
+using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -71,28 +72,34 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var getAllRfq = await _rfqRepository.GetAllRfq(pagingParameter, searchParammes);
+
                 for(int i = 0; i < getAllRfq.Count; i++)
                 {
                     var rfq = getAllRfq[i].RfqNumber;
-                    var rfqCsCount = await _itemRepository.GetRfqCustomerSupportItemByRfqNumber(rfq);
+                    var revNO = getAllRfq[i].RevisionNumber;
+
+                    var rfqCsCount = await _itemRepository.GetRfqCustomerSupportItemByRfqNumber(rfq,revNO);
                     if (getAllRfq[i].isSourcingAvailable == true)
                     {
 
-                        var rfqEnggCount = await _rfqenggItemRepository.GetRfqEnggCountByRfqNumber(rfq);
-                        var rfqEnggRelese = await _rfqenggItemRepository.GetRfqEnggRelesedDetailsByRfqNumber(rfq);
-                        var rfqEnggUnRelesedCount = rfqEnggCount.Count() - rfqEnggRelese.Count();
-                        if (rfqEnggRelese.Count() == 0)
-                        {
-                            getAllRfq[i].IsEnggRelease = CsRelease.NotYetReleased;
-                        }
-                        if (rfqEnggUnRelesedCount == 0)
+                        var isFullyReleased = await _itemRepository.IsFullyReleasedRfqEngg(rfq, revNO);
+                        var isNotYetReleased = await _itemRepository.IsNotYetReleasedRfqEngg(rfq, revNO);
+                       
+
+                        if (isFullyReleased)
                         {
                             getAllRfq[i].IsEnggRelease = CsRelease.FullyRelease;
                         }
-                        if (rfqEnggUnRelesedCount != 0 && rfqEnggRelese.Count() != 0)
+                        else if (isNotYetReleased)
+                        {
+                            getAllRfq[i].IsEnggRelease = CsRelease.NotYetReleased;
+                        }
+                        else
                         {
                             getAllRfq[i].IsEnggRelease = CsRelease.PartiallyRelease;
                         }
+                        var rfqEnggCount = await _rfqenggItemRepository.GetRfqEnggCountByRfqNumber(rfq, revNO);
+
                         if (rfqEnggCount.Count() != 0)
                         {
                             getAllRfq[i].EnggComplete = EnggStatus.EnggCompleted;
@@ -101,25 +108,69 @@ namespace Tips.SalesService.Api.Controllers
                         {
                             getAllRfq[i].EnggComplete = EnggStatus.EnggNotYetCompleted;
                         }
+
+                        // Use the 'status' variable as needed
+
+
+                        //var rfqEnggRelese = await _rfqenggItemRepository.GetRfqEnggRelesedDetailsByRfqNumber(rfq);
+                        //var rfqEnggUnRelesedCount = rfqEnggCount.Count() - rfqEnggRelese.Count();
+                        //if (rfqEnggRelese.Count() == 0)
+                        //{
+                        //    getAllRfq[i].IsEnggRelease = CsRelease.NotYetReleased;
+                        //}
+                        //if (rfqEnggUnRelesedCount == 0)
+                        //{
+                        //    getAllRfq[i].IsEnggRelease = CsRelease.FullyRelease;
+                        //}
+                        //if (rfqEnggUnRelesedCount != 0 && rfqEnggRelese.Count() != 0)
+                        //{
+                        //    getAllRfq[i].IsEnggRelease = CsRelease.PartiallyRelease;
+                        //}
+                        //if (rfqEnggCount.Count() != 0)
+                        //{
+                        //    getAllRfq[i].EnggComplete = EnggStatus.EnggCompleted;
+                        //}
+                        //else
+                        //{
+                        //    getAllRfq[i].EnggComplete = EnggStatus.EnggNotYetCompleted;
+                        //}
                     }
-                   
-                    var rfqCsRelesed = await _itemRepository.GetRfqCustomerSupportRelesedDetailsByRfqNumber(rfq);
-            
-                    var rfqCsUnRelesedCount = rfqCsCount.Count() - rfqCsRelesed.Count();
-                    if(rfqCsRelesed.Count() == 0 )
-                    {
-                        getAllRfq[i].IsCsRelease = CsRelease.NotYetReleased;
-                    }
-                    if(rfqCsUnRelesedCount == 0 && rfqCsCount.Count() != 0)
-                    //if (rfqCsUnRelesedCount == 0)
+
+                    var isFullyReleasedCs = await _itemRepository.IsFullyReleasedRfqCs(rfq, revNO);
+                    var isNotYetReleasedCs = await _itemRepository.IsNotYetReleasedRfqCs(rfq, revNO);
+               
+
+                    if (isFullyReleasedCs)
                     {
                         getAllRfq[i].IsCsRelease = CsRelease.FullyRelease;
                     }
-                    if(rfqCsUnRelesedCount != 0 && rfqCsRelesed.Count() != 0)
-                    //if (rfqCsUnRelesedCount != 0)
+                    else if (isNotYetReleasedCs)
+                    {
+                        getAllRfq[i].IsCsRelease = CsRelease.NotYetReleased;
+                    }
+                    else
                     {
                         getAllRfq[i].IsCsRelease = CsRelease.PartiallyRelease;
                     }
+
+
+                    //var rfqCsRelesed = await _itemRepository.GetRfqCustomerSupportRelesedDetailsByRfqNumber(rfq);
+
+                    //var rfqCsUnRelesedCount = rfqCsCount.Count() - rfqCsRelesed.Count();
+                    //if(rfqCsRelesed.Count() == 0 )
+                    //{
+                    //    getAllRfq[i].IsCsRelease = CsRelease.NotYetReleased;
+                    //}
+                    //if(rfqCsUnRelesedCount == 0 && rfqCsCount.Count() != 0)
+                    ////if (rfqCsUnRelesedCount == 0)
+                    //{
+                    //    getAllRfq[i].IsCsRelease = CsRelease.FullyRelease;
+                    //}
+                    //if(rfqCsUnRelesedCount != 0 && rfqCsRelesed.Count() != 0)
+                    ////if (rfqCsUnRelesedCount != 0)
+                    //{
+                    //    getAllRfq[i].IsCsRelease = CsRelease.PartiallyRelease;
+                    //}
                     if (rfqCsCount.Count() != 0)
                     {
                         getAllRfq[i].CsComplete = CsStatus.CsCompleted;
@@ -555,7 +606,7 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {   
-                var rfqEnggDetails = await _rfqenggRepository.GetRfqEnggByRfqNumber(rfqNumber);
+                var rfqEnggDetails = await _rfqenggRepository.GetRfqEnggByRfqNumberRevNo(rfqNumber);
 
                 List<string?>? itemDetails = rfqEnggDetails?.RfqEnggItems?.Select(x => x.ItemNumber).ToList();
                 
@@ -827,12 +878,13 @@ namespace Tips.SalesService.Api.Controllers
                 if (rfqEnggByRfqNoAndRevNo == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"RfqEngg hasn't been found in db.";
+                    serviceResponse.Message = $"RfqEngg not found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"RfqEngg hasn't been found in db.");
-                    return NotFound(serviceResponse);
+                    return Ok(serviceResponse);
                 }
+            
                 else
                 {
                     _logger.LogInfo($"Returned RfqEngg with");
@@ -1020,11 +1072,11 @@ namespace Tips.SalesService.Api.Controllers
                 if (rfqCsByRfqNoAndRevNo == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"RfqCustomerSupport hasn't been found in db.";
+                    serviceResponse.Message = $"RfqCustomerSupport Not Created.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"RfqCustomerSupport with id,hasn't been found in db.");
-                    return NotFound();
+                    _logger.LogError($"RfqCustomerSupport Not Created..");
+                    return Ok(serviceResponse);
                 }
                 else
                 {
@@ -1267,7 +1319,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
                 var createRfqCS = _mapper.Map<RfqCustomerSupport>(rfqCustomerSupportDto);
-
+                 
                 var rfqCsData = createRfqCS.RfqNumber;
 
                 var rfqIsCsCompleteUpdate = await _rfqRepository.RfqCsByRfqNumbers(rfqCsData);
@@ -1785,12 +1837,34 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
               
-                var updateRfqCS = _mapper.Map<RfqCustomerSupport>(rfqCustomerSupportUpdateDto);
 
-                //tets
+                var updateRfqCS = _mapper.Map<RfqCustomerSupport>(rfqCustomerSupportUpdateDto);
 
 
                 var rfqNumber = updateRfqCS.RfqNumber;
+
+                var csReleasedItems = await _itemRepository.RfqCsReleasedItemList(rfqNumber);
+                var updatedItems = new List<RfqCustomerSupportItemUpdateDto>();
+
+                foreach (var itemList in rfqCustomerSupportUpdateDto.RfqCustomerSupportItems)
+                {
+                    var releaseItem = csReleasedItems.FirstOrDefault(item => item.ItemNumber == itemList.ItemNumber);
+
+                    if (releaseItem != null)
+                    {
+                        itemList.ReleaseStatus = true;
+                    }
+                    else
+                    {
+                        itemList.ReleaseStatus = false;
+                    }
+
+                    updatedItems.Add(itemList);
+                }
+
+                rfqCustomerSupportUpdateDto.RfqCustomerSupportItems = updatedItems;
+
+
 
                 var rfqDetailsByRfqNumber = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
 

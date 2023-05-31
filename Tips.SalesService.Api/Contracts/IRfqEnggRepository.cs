@@ -22,6 +22,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<RfqEngg> UpdateRfqEnggRevNo(RfqEngg rfqEngg);
         Task<RfqEngg> GetRfqEnggLatestRevNoByRfqnumber(string rfqNumber);
         Task<RfqEngg> GetRfqEnggByRfqNoAndRevNo(string rfqNumber, decimal revisionNumber);
+        Task<RfqEngg> GetRfqEnggByRfqNumberRevNo(string RfqNumber);
     }
 }
 

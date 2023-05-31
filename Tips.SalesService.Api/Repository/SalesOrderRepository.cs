@@ -104,10 +104,9 @@ namespace Tips.SalesService.Api.Repository
                    .Include(t => t.SalesOrdersItems)
                    .ThenInclude(p => p.ScheduleDates)
                    .Include(p => p.SalesOrderAdditionalCharges);
-
-
+             
             return PagedList<SalesOrder>.ToPagedList(salesOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-
+             
         }
         public async Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParam)
         {

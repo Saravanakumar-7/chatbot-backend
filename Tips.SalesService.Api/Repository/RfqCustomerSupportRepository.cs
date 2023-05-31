@@ -32,8 +32,8 @@ namespace Tips.SalesService.Api.Repository
             rfqCustomerSupport.CreatedBy = "Admin";
             rfqCustomerSupport.CreatedOn = DateTime.Now;
             rfqCustomerSupport.Unit = "Bangalore";
-           
-            var result = await Create(rfqCustomerSupport);
+            rfqCustomerSupport.RevisionNumber = 1;
+             var result = await Create(rfqCustomerSupport);
             return result.Id;
         } 
 
@@ -144,8 +144,9 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-     
-        
+        //add
+
+
     }
 
     public class RfqCustomerSupportItemsRepository : RepositoryBase<RfqCustomerSupportItems>, IRfqCustomerSupportItemRepository
@@ -172,6 +173,20 @@ namespace Tips.SalesService.Api.Repository
             throw new NotImplementedException();
         }
 
+        public async Task<IEnumerable<RfqCustomerSupportItems>> RfqCsReleasedItemList(string rfqNumber)
+        {
+            var latestrfqCsId = await _tipsSalesServiceDbContext.RfqCustomerSupports
+            .Where(x => x.RfqNumber == rfqNumber)
+            .OrderByDescending(x => x.RevisionNumber)
+            .Select(x => x.Id)
+            .FirstOrDefaultAsync();
+
+            var releaseItemList = await _tipsSalesServiceDbContext.RfqCustomerSupportItems
+              .Where(x => x.RfqNumber == rfqNumber && x.ReleaseStatus == true && x.RfqCustomerSupportId == latestrfqCsId)              
+              .ToListAsync();
+
+            return releaseItemList;
+        }
         public async Task<string> DeactivateRfqCustomerSupportItemById(RfqCustomerSupportItems rfqCustomerSupportItems)
         {
             rfqCustomerSupportItems.LastModifiedBy = "Admin";
@@ -188,11 +203,21 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<RfqCustomerSupportItems>> GetAllActiveRfqCustomerSupportItemsByRfqNumber(string rfqNumber)
         {
-            IEnumerable<RfqCustomerSupportItems> getAllActiveRfqCSItemsByRfqNumber = await _tipsSalesServiceDbContext.RfqCustomerSupportItems
-             .Where(x => x.RfqNumber == rfqNumber && x.ReleaseStatus == true).OrderByDescending(x => x.Id).ToListAsync();
 
-            return getAllActiveRfqCSItemsByRfqNumber;
+            var rfqCsId = await _tipsSalesServiceDbContext.RfqCustomerSupports
+     .Where(x => x.RfqNumber == rfqNumber)
+     .OrderByDescending(x => x.RevisionNumber)
+     .Select(x => x.Id)
+     .FirstOrDefaultAsync();
+
+            IEnumerable<RfqCustomerSupportItems> rfqCsItems = await _tipsSalesServiceDbContext.RfqCustomerSupportItems
+             .Where(x => x.RfqNumber == rfqNumber && x.ReleaseStatus == true && 
+             x.RfqCustomerSupportId == rfqCsId).ToListAsync();
+
+            return rfqCsItems;
         }
+        //add
+          
 
         public Task<IEnumerable<RfqCustomerSupportItems>> GetAllRfqCustomerSupportItem()
         {
@@ -210,6 +235,69 @@ namespace Tips.SalesService.Api.Repository
             var getRfqCSItemRfqnumber = await _tipsSalesServiceDbContext.RfqCustomerSupportItems.Where(x => x.RfqNumber == rfqNumber).ToListAsync();
             return getRfqCSItemRfqnumber;
         }
+        public async Task<IEnumerable<RfqCustomerSupportItems>> GetRfqCustomerSupportItemByRfqNumber(string rfqNumber,decimal revNumber)
+        {
+            var csId = await _tipsSalesServiceDbContext.RfqCustomerSupports
+                .Where(x => x.RfqNumber == rfqNumber && x.RevisionNumber == revNumber)
+                .Select(x => x.Id).FirstOrDefaultAsync();
+
+
+            var getRfqCSItemRfqnumber = await _tipsSalesServiceDbContext.RfqCustomerSupportItems
+                .Where(x => x.RfqNumber == rfqNumber && x.RfqCustomerSupportId == csId).ToListAsync();
+            return getRfqCSItemRfqnumber;
+        }
+
+        public async Task<bool> IsFullyReleasedRfqEngg(string rfqNumber, decimal revNumber)
+        {
+
+            var enggId = await _tipsSalesServiceDbContext.RfqEnggs
+              .Where(s => s.RFQNumber == rfqNumber && s.RevisionNumber == revNumber)
+              .Select(x => x.Id).FirstOrDefaultAsync();
+
+            var isFullyReleased = await _tipsSalesServiceDbContext.RfqEnggItems
+                .Where(x =>x.RfqEnggId == enggId)
+                .AllAsync(x => x.ReleaseStatus == true); 
+
+            return isFullyReleased;
+        }
+        public async Task<bool> IsNotYetReleasedRfqEngg(string rfqNumber, decimal revNumber)
+        {
+
+            var enggId = await _tipsSalesServiceDbContext.RfqEnggs
+               .Where(s => s.RFQNumber == rfqNumber && s.RevisionNumber == revNumber).Select(x => x.Id).FirstOrDefaultAsync();
+
+            var isNotYetReleased = await _tipsSalesServiceDbContext.RfqEnggItems
+                .Where(x => x.RfqEnggId == enggId)
+                .AllAsync(x => x.ReleaseStatus == false);
+
+            return isNotYetReleased;
+        }
+
+        public async Task<bool> IsFullyReleasedRfqCs(string rfqNumber, decimal revNumber)
+        {
+
+            var CsId = await _tipsSalesServiceDbContext.RfqCustomerSupports
+             .Where(s => s.RfqNumber == rfqNumber && s.RevisionNumber== revNumber).Select(x => x.Id).FirstOrDefaultAsync();
+
+            var isFullyReleased = await _tipsSalesServiceDbContext.RfqCustomerSupportItems
+                .Where(x => x.RfqCustomerSupportId == CsId)
+                .AllAsync(x => x.ReleaseStatus == true);
+
+            return isFullyReleased;
+        }
+        public async Task<bool> IsNotYetReleasedRfqCs(string rfqNumber, decimal revNumber)
+        {
+
+            var CsId = await _tipsSalesServiceDbContext.RfqCustomerSupports
+             .Where(s => s.RfqNumber == rfqNumber && s.RevisionNumber == revNumber).Select(x => x.Id).FirstOrDefaultAsync();
+
+            var isNotYetReleased = await _tipsSalesServiceDbContext.RfqCustomerSupportItems
+                .Where(x => x.RfqCustomerSupportId == CsId)
+                .AllAsync(x => x.ReleaseStatus == false);
+
+            return isNotYetReleased;
+        }
+
 
         public async Task<IEnumerable<RfqCustomerSupportItems>> GetRfqCustomerSupportRelesedDetailsByRfqNumber(string rfqNumber)
         {
@@ -295,6 +383,8 @@ namespace Tips.SalesService.Api.Repository
                         .FirstOrDefaultAsync();
             return rfqDetailsByRfqNumber;
         }
+      
+
         public async Task<Rfq> RfqLpCostingReleaseByRfqNumbers(string RfqNumber)
         {
             var lpcostingByRfqNumber = await _tipsSalesServiceDbContext.Rfqs
@@ -625,13 +715,27 @@ namespace Tips.SalesService.Api.Repository
         public async Task<RfqEngg> GetRfqEnggByRfqNumber(string RfqNumber)
         {
             var getRfqEnggByRfqNumber = await _tipsSalesServiceDbContext.RfqEnggs
+                .Where(x => x.RFQNumber == RfqNumber)
                 .Include(t => t.RfqEnggItems)                
-                .Include(m => m.RfqEnggRiskIdentifications)
-              .Where(x => x.RFQNumber == RfqNumber)
+                .Include(m => m.RfqEnggRiskIdentifications)              
                         .FirstOrDefaultAsync();
             return getRfqEnggByRfqNumber;
         }
+        public async Task<RfqEngg> GetRfqEnggByRfqNumberRevNo(string RfqNumber)
+        {
+            var revNo = await _tipsSalesServiceDbContext.RfqEnggs
+    .Where(x => x.RFQNumber == RfqNumber)
+    .OrderByDescending(x => x.RevisionNumber)
+    .Select(x => x.RevisionNumber)
+    .FirstOrDefaultAsync();
 
+
+            var getRfqEnggByRfqNumber = await _tipsSalesServiceDbContext.RfqEnggs
+                .Where(x => x.RFQNumber == RfqNumber && x.RevisionNumber == revNo)
+                .Include(t => t.RfqEnggItems)
+                .FirstOrDefaultAsync();
+            return getRfqEnggByRfqNumber;
+        }
         public Task<IEnumerable<RfqEnggItem>> GetRfqEnggItemsByRfqNumber(string rfqNumber)
         {
             throw new NotImplementedException();
@@ -656,9 +760,7 @@ namespace Tips.SalesService.Api.Repository
         }
 
         public async Task<string> ActivateRfqEnggItemById(RfqEnggItem rfqEnggItem)
-        {
-            // rfqEnggItem.LastModifiedBy = "Admin";
-            //rfqEnggItem.LastModifiedOn = DateTime.Now;
+        { 
             Update(rfqEnggItem);
             string result = $"CostCenter details of {rfqEnggItem.Id} is updated successfully!";
             return result;
@@ -710,6 +812,15 @@ namespace Tips.SalesService.Api.Repository
         {
             List<int> poId = await _tipsSalesServiceDbContext.RfqEnggs
               .Where(s => s.RFQNumber == rfqNumber).Select(x => x.Id).Distinct().ToListAsync();
+
+            var rfqEnggCount = await _tipsSalesServiceDbContext.RfqEnggItems.Where(x => poId.Contains(x.RfqEnggId)
+            ).ToListAsync();
+            return rfqEnggCount;
+        }
+        public async Task<IEnumerable<RfqEnggItem>> GetRfqEnggCountByRfqNumber(string rfqNumber, decimal revNo)
+        {
+            List<int> poId = await _tipsSalesServiceDbContext.RfqEnggs
+              .Where(s => s.RFQNumber == rfqNumber && s.RevisionNumber == revNo).Select(x => x.Id).Distinct().ToListAsync();
 
             var rfqEnggCount = await _tipsSalesServiceDbContext.RfqEnggItems.Where(x => poId.Contains(x.RfqEnggId)
             ).ToListAsync();
