@@ -1713,8 +1713,37 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                
+
+                var rfqEnggItems = _mapper.Map<IEnumerable<RfqEnggItem>>(rfqEnggDtoUpdate.RfqEnggItems);
+                var rfqEnggRiskIdentificationItems = _mapper.Map<IEnumerable<RfqEnggRiskIdentification>>(rfqEnggDtoUpdate.RfqEnggRiskIdentifications);
+
                 var updateRfqEngg = _mapper.Map<RfqEngg>(rfqEnggDtoUpdate);
+
+                updateRfqEngg.RfqEnggItems = rfqEnggItems.ToList();
+                updateRfqEngg.RfqEnggRiskIdentifications = rfqEnggRiskIdentificationItems.ToList();
+
+                var rfqNumber = updateRfqEngg.RFQNumber;
+                var enggReleasedItems = await _rfqenggItemRepository.RfqEnggReleasedItemList(rfqNumber);
+                var updatedItems = new List<RfqEnggItemDtoUpdate>();
+
+                foreach (var itemList in rfqEnggDtoUpdate.RfqEnggItems)
+                {
+                    var releaseItem = enggReleasedItems.FirstOrDefault(item => item.ItemNumber == itemList.ItemNumber);
+
+                    if (releaseItem != null)
+                    {
+                        itemList.ReleaseStatus = true;
+                    }
+                    else
+                    {
+                        itemList.ReleaseStatus = false;
+                    }
+
+                    updatedItems.Add(itemList);
+                }
+
+
+               
                 await _rfqenggRepository.UpdateRfqEnggRevNo(updateRfqEngg);
                 //string result = await _rfqenggRepository.UpdateRfqEngg(updateRfqEngg);
                 //_logger.LogInfo(result);

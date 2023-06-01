@@ -366,12 +366,29 @@ namespace Tips.Warehouse.Api.Controllers
                         getBtoDeliveryOrderDetails.BalanceDoQty -= ReturnQty;
                         getBtoDeliveryOrderDetails.OrderBalanceQty += ReturnQty;
                         getBtoDeliveryOrderDetails.DispatchQty -= ReturnQty;
-                        
 
-                        String[] strs1 = getBtoDeliveryOrderDetails.SerialNo.Split(",");
-                        String[] strs2 = returnBtoDeliveryOrderitemsDto[i].SerialNo.Split(",");
-                        var res = strs1.Except(strs2).Union(strs2.Except(strs1));
-                        String resultd = String.Join(",", res);
+                        string[] strs1 = getBtoDeliveryOrderDetails.SerialNo.Split(",");
+                        string[] strs2 = returnBtoDeliveryOrderitemsDto[i].SerialNo.Split(",");
+
+                        List<string> result = new List<string>();
+
+                        foreach (string elem in strs1)
+                        {
+                            if (strs2.Contains(elem))
+                            {
+                                strs2 = strs2.Where(e => e != elem).ToArray();
+                            }
+                            else
+                            {
+                                result.Add(elem);
+                            }
+                        }
+
+                        string resultd = string.Join(",", result);
+                        //String[] strs1 = getBtoDeliveryOrderDetails.SerialNo.Split(",");
+                        //String[] strs2 = returnBtoDeliveryOrderitemsDto[i].SerialNo.Split(",");
+                        //var res = strs1.Except(strs2).Union(strs2.Except(strs1));
+                        //String resultd = String.Join(",", res);
                         getBtoDeliveryOrderDetails.SerialNo = resultd;
 
                         // Add return details in to btodeliveryorderhistory table

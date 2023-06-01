@@ -100,39 +100,82 @@ namespace Tips.SalesService.Api.Repository
 
             public async Task<CollectionTrackerDetailsDto> GetSOCollectionTrackerByCustomerId(string customerId)
         {
-            var salesOrderTotalValue = _tipsSalesServiceDbContext.SalesOrders.Where(x => x.CustomerId == customerId).Sum(s => s.Total);
+            var salesOrderTotalValue = _tipsSalesServiceDbContext.SalesOrders
+                    .Where(x => x.CustomerId == customerId)
+                        .Sum(s => s.Total);
 
-            var collectionDetails = _tipsSalesServiceDbContext.CollectionTrackers.Where(x => x.CustomerId == customerId).Select(x=>x.AlreadyRecieved).Count();
+            var collectionDetails = _tipsSalesServiceDbContext.CollectionTrackers
+                .Where(x => x.CustomerId == customerId)
+                .Select(x => x.AlreadyRecieved)
+                .Count();
+
             if (collectionDetails != 0)
             {
-                var amountRecieved = _tipsSalesServiceDbContext.CollectionTrackers.Where(x => x.CustomerId == customerId).Sum(x=>x.AmountRecieved);
-                var alreadyRecieved = _tipsSalesServiceDbContext.CollectionTrackers.Where(x => x.CustomerId == customerId).Sum(x => x.AlreadyRecieved);
+                var amountRecieved = _tipsSalesServiceDbContext.CollectionTrackers
+                    .Where(x => x.CustomerId == customerId)
+                    .Sum(x => x.AmountRecieved);
 
-                var alreadyRecievedData = Convert.ToInt32(alreadyRecieved) + Convert.ToInt32(amountRecieved);
+                //var alreadyRecieved = _tipsSalesServiceDbContext.CollectionTrackers
+                //    .Where(x => x.CustomerId == customerId)
+                //    .Sum(x => x.AlreadyRecieved);
 
-                var collectiveTrackerDetails = await _tipsSalesServiceDbContext.SalesOrders
-                                .Select(s => new CollectionTrackerDetailsDto()
-                                {
-                                    TotalSumOfSOAmount = salesOrderTotalValue,
-                                    AlreadyRecieved = Convert.ToDecimal(alreadyRecievedData)
+                //var alreadyRecievedData = Convert.ToInt32(alreadyRecieved) + Convert.ToInt32(amountRecieved);
 
-                                }).Distinct().FirstOrDefaultAsync();
+                var collectiveTrackerDetails = new CollectionTrackerDetailsDto()
+                {
+                    TotalSumOfSOAmount = salesOrderTotalValue,
+                    AlreadyRecieved = Convert.ToDecimal(amountRecieved)
+                };
 
                 return collectiveTrackerDetails;
             }
             else
             {
                 var alreadyRecieved = 0;
-                var collectiveTrackerDetails = await _tipsSalesServiceDbContext.SalesOrders
-                               .Select(s => new CollectionTrackerDetailsDto()
-                               {
-                                   TotalSumOfSOAmount = salesOrderTotalValue,
-                                   AlreadyRecieved = alreadyRecieved
 
-                               }).Distinct().FirstOrDefaultAsync();
+                var collectiveTrackerDetails = new CollectionTrackerDetailsDto()
+                {
+                    TotalSumOfSOAmount = salesOrderTotalValue,
+                    AlreadyRecieved = alreadyRecieved
+                };
 
                 return collectiveTrackerDetails;
             }
+
+
+            //var salesOrderTotalValue = _tipsSalesServiceDbContext.SalesOrders.Where(x => x.CustomerId == customerId).Sum(s => s.Total);
+
+            //var collectionDetails = _tipsSalesServiceDbContext.CollectionTrackers.Where(x => x.CustomerId == customerId).Select(x=>x.AlreadyRecieved).Count();
+            //if (collectionDetails != 0)
+            //{
+            //    var amountRecieved = _tipsSalesServiceDbContext.CollectionTrackers.Where(x => x.CustomerId == customerId).Sum(x=>x.AmountRecieved);
+            //    var alreadyRecieved = _tipsSalesServiceDbContext.CollectionTrackers.Where(x => x.CustomerId == customerId).Sum(x => x.AlreadyRecieved);
+
+            //    var alreadyRecievedData = Convert.ToInt32(alreadyRecieved) + Convert.ToInt32(amountRecieved);
+
+            //    var collectiveTrackerDetails = await _tipsSalesServiceDbContext.SalesOrders
+            //                    .Select(s => new CollectionTrackerDetailsDto()
+            //                    {
+            //                        TotalSumOfSOAmount = salesOrderTotalValue,
+            //                        AlreadyRecieved = Convert.ToDecimal(alreadyRecievedData)
+
+            //                    }).Distinct().FirstOrDefaultAsync();
+
+            //    return collectiveTrackerDetails;
+            //}
+            //else
+            //{
+            //    var alreadyRecieved = 0;
+            //    var collectiveTrackerDetails = await _tipsSalesServiceDbContext.SalesOrders
+            //                   .Select(s => new CollectionTrackerDetailsDto()
+            //                   {
+            //                       TotalSumOfSOAmount = salesOrderTotalValue,
+            //                       AlreadyRecieved = alreadyRecieved
+
+            //                   }).Distinct().FirstOrDefaultAsync();
+
+            //    return collectiveTrackerDetails;
+            //}
 
         }
 

@@ -784,7 +784,20 @@ namespace Tips.SalesService.Api.Repository
         {
             throw new NotImplementedException();
         }
+        public async Task<IEnumerable<RfqEnggItem>> RfqEnggReleasedItemList(string rfqNumber)
+        {
+            var latestrfqEnggId = await _tipsSalesServiceDbContext.RfqEnggs
+            .Where(x => x.RFQNumber == rfqNumber)
+            .OrderByDescending(x => x.RevisionNumber)
+            .Select(x => x.Id)
+            .FirstOrDefaultAsync();
 
+            var releaseItemList = await _tipsSalesServiceDbContext.RfqEnggItems
+              .Where(x => x.ReleaseStatus == true && x.RfqEnggId == latestrfqEnggId)
+              .ToListAsync();
+
+            return releaseItemList;
+        }
 
         public async Task<IEnumerable<RfqEnggItem>> GetAllActiveRfqEnggItemByRfqNumber(string rfqNumber)
         {

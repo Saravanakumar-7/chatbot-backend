@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string Description { get; set; }
-        
+
         [Precision(13,3)]
         public decimal Qty { get; set; }
 
@@ -49,6 +50,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Required]
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string Description { get; set; }
+
+        [NotMapped]
+        public bool ReleaseStatus { get; set; }
 
         [Precision(13, 3)]
         public decimal Qty { get; set; }

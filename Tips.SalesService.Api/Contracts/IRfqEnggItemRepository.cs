@@ -23,5 +23,6 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<RfqEnggItem>> GetRfqEnggRelesedDetailsByRfqNumber(string rfqNumber);
         Task<IEnumerable<RfqEnggItem>> GetRfqEnggCountByRfqNumber(string rfqNumber);
         Task<IEnumerable<RfqEnggItem>> GetRfqEnggCountByRfqNumber(string rfqNumber, decimal revNo);
+        Task<IEnumerable<RfqEnggItem>> RfqEnggReleasedItemList(string rfqNumber);
     }
 }
