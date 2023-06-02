@@ -39,6 +39,7 @@ namespace Entities.DTOs
         public string? TypeOfCompany { get; set; }
         public string? ExportUnitType { get; set; }
         public bool GeneralMSME { get; set; } = true;
+        public string? CompanyApprove { get; set; }
 
         //Related Company
 
@@ -173,6 +174,7 @@ namespace Entities.DTOs
         public string? TypeOfCompany { get; set; }
         public string? ExportUnitType { get; set; }
         public bool GeneralMSME { get; set; } = true;
+        public string? CompanyApprove { get; set; }
 
         //Related Company
 
@@ -301,6 +303,7 @@ namespace Entities.DTOs
         public string? TypeOfCompany { get; set; }
         public string? ExportUnitType { get; set; }
         public bool GeneralMSME { get; set; } = true;
+        public string? CompanyApprove { get; set; }
 
         //Related Company
 

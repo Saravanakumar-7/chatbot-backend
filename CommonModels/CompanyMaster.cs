@@ -38,8 +38,8 @@ namespace Entities
         public string? Currency { get; set; }
         public string? GooglePinLocation { get; set; }
         public string? TypeOfCompany { get; set; }
-        public string? ExportUnitType { get; set; }       
-       
+        public string? ExportUnitType { get; set; }
+        public string? CompanyApprove { get; set; }
         public bool GeneralMSME { get; set; } = true;
 
         //Related Company

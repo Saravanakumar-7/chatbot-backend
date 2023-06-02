@@ -43,6 +43,7 @@ namespace Entities.DTOs
         public string? Region { get; set; }
         public string? ShippingMode { get; set; }
 
+
         //RelatedLink
 
         public string? RelatedCustomerName { get; set; }
@@ -165,6 +166,7 @@ namespace Entities.DTOs
         public string? Region { get; set; }
         public string? ShippingMode { get; set; }
 
+
         //RelatedLink
 
         public string? RelatedCustomerName { get; set; }
@@ -284,6 +286,7 @@ namespace Entities.DTOs
         public string? SalesManagerCode { get; set; }
         public string? Region { get; set; }
         public string? ShippingMode { get; set; }
+
 
         //RelatedLink
 

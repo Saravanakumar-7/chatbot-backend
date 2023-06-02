@@ -39,7 +39,7 @@ namespace Entities
         public string? SalesManager { get; set; }
         public string? SalesManagerCode { get; set; }
         public string? Region { get; set; }
-       
+        public string? CustomerApprove { get; set; }
 
         //RelatedLink
 

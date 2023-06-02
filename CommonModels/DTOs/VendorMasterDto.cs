@@ -43,6 +43,7 @@ namespace Entities.DTOs
         public string? ExportUnitType { get; set; }
 
         public bool GeneralMSME { get; set; } = true;
+        public string? VendorApprove { get; set; }
 
         //Related Vendor
 
@@ -182,6 +183,7 @@ namespace Entities.DTOs
         public string? ExportUnitType { get; set; }
 
         public bool GeneralMSME { get; set; } = true;
+        public string? VendorApprove { get; set; }
 
         //Related Vendor
 
@@ -317,6 +319,7 @@ namespace Entities.DTOs
         public string? ExportUnitType { get; set; }
 
         public bool GeneralMSME { get; set; } = true;
+        public string? VendorApprove { get; set; }
 
         //Related Vendor
 
