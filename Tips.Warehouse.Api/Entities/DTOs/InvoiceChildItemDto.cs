@@ -44,7 +44,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal TotalValueWithTax { get; set; }
-
+        public decimal Discount { get; set; }
+        public string? DiscountType { get; set; }
         public int BtoDeliveryOrderPartsId { get; set; }
 
 
@@ -91,7 +92,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal TotalValueWithTax { get; set; }
-
+        public decimal Discount { get; set; }
+        public string? DiscountType { get; set; }
 
     }
     public class InvoiceChildItemUpdateDto
@@ -132,7 +134,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal TotalValueWithTax { get; set; }
-
+        public decimal Discount { get; set; }
+        public string? DiscountType { get; set; }
 
     }    
 }

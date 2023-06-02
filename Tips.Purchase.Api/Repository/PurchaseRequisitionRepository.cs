@@ -239,26 +239,42 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalINameList()
         {
+            //IEnumerable<PurchaseRequisitionIdNameListDto> pendingPRApprovalINameList = await _tipsPurchaseDbContext.PurchaseRequisitions
+            //                .Where(x => x.PrApprovalI == false).Select(x => new PurchaseRequisitionIdNameListDto()
+            //                {
+            //                    Id = x.Id,
+            //                    PrNumber = x.PrNumber,
+            //                }).ToListAsync();
             IEnumerable<PurchaseRequisitionIdNameListDto> pendingPRApprovalINameList = await _tipsPurchaseDbContext.PurchaseRequisitions
-                            .Where(x => x.PrApprovalI == false).Select(x => new PurchaseRequisitionIdNameListDto()
-                            {
-                                Id = x.Id,
-                                PrNumber = x.PrNumber,
-                            }).ToListAsync();
-
+           .Where(x => x.PrApprovalI == false && x.IsModified == false)
+           .GroupBy(x => x.PrNumber)
+           .Select(pr => new PurchaseRequisitionIdNameListDto()
+           {
+               Id = pr.OrderByDescending(x => x.RevisionNumber).FirstOrDefault().Id,
+               PrNumber = pr.Key
+           })
+           .ToListAsync();
 
             return pendingPRApprovalINameList;
         }
 
         public async Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIINameList()
         {
+            //IEnumerable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIINameList = await _tipsPurchaseDbContext.PurchaseRequisitions
+            //                .Where(x => x.PrApprovalII == false).Select(x => new PurchaseRequisitionIdNameListDto()
+            //                {
+            //                    Id = x.Id,
+            //                    PrNumber = x.PrNumber,
+            //                }).ToListAsync();
             IEnumerable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIINameList = await _tipsPurchaseDbContext.PurchaseRequisitions
-                            .Where(x => x.PrApprovalII == false).Select(x => new PurchaseRequisitionIdNameListDto()
-                            {
-                                Id = x.Id,
-                                PrNumber = x.PrNumber,
-                            }).ToListAsync();
-
+            .Where(x => x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false)
+            .GroupBy(x => x.PrNumber)
+            .Select(pr => new PurchaseRequisitionIdNameListDto()
+            {
+                Id = pr.OrderByDescending(x => x.RevisionNumber).FirstOrDefault().Id,
+                PrNumber = pr.Key
+            })
+            .ToListAsync();
 
             return pendingPRApprovalIINameList;
         }

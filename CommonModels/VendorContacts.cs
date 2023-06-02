@@ -34,7 +34,7 @@ namespace Entities
 
         public string? Department { get; set; }
 
-        public string? AlternameMobileNumber { get; set; }
+        public string? AlternateMobileNumber { get; set; }
 
         public string? AlternateMobileCountryCode { get; set; }
 

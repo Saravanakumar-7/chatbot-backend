@@ -19,7 +19,8 @@ namespace Entities.DTOs
         public int? SGST { get; set; }
 
         public bool ActiveStatus { get; set; } = true;
-
+        public string? Description { get; set; }
+        public string? Remarks { get; set; }
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
@@ -35,7 +36,8 @@ namespace Entities.DTOs
         public int? AddtionalChargesValueAmount { get; set; }
 
         public bool ActiveStatus { get; set; } = true;
-
+        public string? Description { get; set; }
+        public string? Remarks { get; set; }
         public int? IGST { get; set; }
         public int? CGST { get; set; }
         public int? UTGST { get; set; }
@@ -55,7 +57,8 @@ namespace Entities.DTOs
 
         public int? UTGST { get; set; }
         public int? SGST { get; set; }
-
+        public string? Description { get; set; }
+        public string? Remarks { get; set; }
         public string Unit { get; set; }
     }
 

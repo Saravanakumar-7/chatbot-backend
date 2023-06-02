@@ -14,6 +14,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class RfqDto
     {
         public int Id { get; set; }
+        public string? LeadId { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
 
@@ -52,6 +53,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqPostDto
     {
+        public string? LeadId { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         //[Required]
@@ -65,7 +67,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
     }
     public class RfqUpdateDto
-    { 
+    {
+        public string? LeadId { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         //[Required]

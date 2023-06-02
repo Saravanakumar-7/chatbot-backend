@@ -15,6 +15,7 @@ namespace Tips.SalesService.Api.Entities
     {
         [Key]
         public int Id { get; set; }
+        public string? LeadId { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public int RevisionNumber { get; set; }

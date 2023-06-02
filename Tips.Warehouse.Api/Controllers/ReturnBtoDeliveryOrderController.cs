@@ -396,7 +396,22 @@ namespace Tips.Warehouse.Api.Controllers
                         var returnSerialNumber = returnBtoDeliveryOrderitemsDto[i].SerialNo;
 
                         BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
-                        bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                        // Implement the logic to check if BTO exists in history
+                        int btoNoCount =await _bTODeliveryOrderHistoryRepository.GetBTONumberCount(returnBtoDeliveryOrderItems.BTONumber); 
+
+                        if (btoNoCount > 0)
+                        {
+
+                            string suffix = "-R" + (btoNoCount + 1);
+                            returnBtoDeliveryOrderItems.BTONumber += suffix;
+                            bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                        }
+                        else
+                        {
+                            returnBtoDeliveryOrderItems.BTONumber += "-R";
+                            bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                        }
+
                         bTODeliveryOrderHistory.CustomerName = returnBtoDeliveryOrder.CustomerName;
                         bTODeliveryOrderHistory.CustomerAliasName = returnBtoDeliveryOrder.CustomerAliasName;
                         bTODeliveryOrderHistory.CustomerId = returnBtoDeliveryOrder.CustomerId;

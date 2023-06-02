@@ -43,8 +43,10 @@ namespace Tips.Warehouse.Api.Entities
         public decimal UTGST { get; set; }
 
         [Precision(13, 3)]
-        public decimal TotalValueWithTax { get; set; }       
-
+        public decimal TotalValueWithTax { get; set; }
+        [Precision(13, 3)]
+        public decimal Discount { get; set; }
+        public string? DiscountType { get; set; }
 
         public int InvoiceId { get; set; }
         public Invoice? Invoice { get; set; }

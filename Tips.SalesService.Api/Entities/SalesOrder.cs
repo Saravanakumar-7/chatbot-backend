@@ -9,6 +9,7 @@ namespace Tips.SalesService.Api.Entities
     {
         [Key]
         public int Id { get; set; }
+        public string? LeadId { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public string? QuoteNumber { get; set; }

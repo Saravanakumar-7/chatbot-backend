@@ -33,7 +33,7 @@ namespace Entities.DTOs
 
         public string? Department { get; set; }
 
-        public string? AlternameMobileNumber { get; set; }
+        public string? AlternateMobileNumber { get; set; }
         public string? AlternateMobileCountryCode { get; set; }
 
         public bool IsActive { get; set; } = true;
@@ -75,7 +75,7 @@ namespace Entities.DTOs
 
         public string? Department { get; set; }
 
-        public string? AlternameMobileNumber { get; set; }
+        public string? AlternateMobileNumber { get; set; }
         public string? AlternateMobileCountryCode { get; set; }
 
         public bool IsActive { get; set; } = true;
@@ -115,7 +115,7 @@ namespace Entities.DTOs
 
         public string? Department { get; set; }
 
-        public string? AlternameMobileNumber { get; set; }
+        public string? AlternateMobileNumber { get; set; }
         public string? AlternateMobileCountryCode { get; set; }
 
         public bool IsActive { get; set; } = true;

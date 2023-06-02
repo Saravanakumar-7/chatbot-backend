@@ -32,7 +32,7 @@ namespace Entities
         public string? Designation { get; set; }
         public string? Department { get; set; }
 
-        public string? AlternameMobileNumber { get; set; }
+        public string? AlternateMobileNumber { get; set; }
         public string? AlternateMobileCountryCode { get; set; }
         public string? SkypeId { get; set; }
         public bool IsActive { get; set; } = true;

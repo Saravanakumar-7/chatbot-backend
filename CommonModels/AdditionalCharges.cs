@@ -25,7 +25,8 @@ namespace Entities
         [Precision(13, 3)]
         public decimal? SGST { get; set; }
         public bool ActiveStatus { get; set; } = true;
-
+        public string? Description { get; set; }
+        public string? Remarks { get; set; }
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }

@@ -337,6 +337,13 @@ namespace Tips.Warehouse.Api.Repository
                         .ToListAsync();
             return BtoHistoryDetails;
         }
+        public async Task<int> GetBTONumberCount(string btoNumber)
+        {
+            int count = await _tipsWarehouseDbContext.BTODeliveryOrderHistories
+                .CountAsync(x => x.BTONumber.StartsWith(btoNumber));
+
+            return count;
+        }
     }
 }
 

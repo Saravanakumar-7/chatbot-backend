@@ -455,7 +455,7 @@ namespace Tips.Purchase.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdatePurchaseRequisition([FromBody] PurchaseRequisitionUpdateDto purchaseRequistionPostDto)
         {
-            ServiceResponse<PurchaseRequisitionPostDto> serviceResponse = new ServiceResponse<PurchaseRequisitionPostDto>();
+            ServiceResponse<PurchaseRequisitionUpdateDto> serviceResponse = new ServiceResponse<PurchaseRequisitionUpdateDto>();
             try
             {
                 if (purchaseRequistionPostDto is null)
@@ -959,7 +959,7 @@ namespace Tips.Purchase.Api.Controllers
                     serviceResponse.Message = $"DownloadDetail with id: {prNumber}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
+                    return Ok(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
