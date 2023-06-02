@@ -292,7 +292,7 @@ namespace Tips.Warehouse.Api.Controllers
                 if (returnBtoDeliveryOrderitemsDto != null)
                 {
                     Guid guid = Guid.NewGuid();
-
+                    int btoNoCount = await _bTODeliveryOrderHistoryRepository.GetBTONumberCount(returnBtoDeliveryOrder.BTONumber);
                     for (int i = 0; i < returnBtoDeliveryOrderitemsDto.Count; i++)
                     {
 
@@ -396,9 +396,9 @@ namespace Tips.Warehouse.Api.Controllers
                         var returnSerialNumber = returnBtoDeliveryOrderitemsDto[i].SerialNo;
 
                         BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
-                        // Implement the logic to check if BTO exists in history
-                        int btoNoCount =await _bTODeliveryOrderHistoryRepository.GetBTONumberCount(returnBtoDeliveryOrderItems.BTONumber); 
 
+                        // Implement the logic to Add suffix -R for BTO exists in history
+                        
                         if (btoNoCount > 0)
                         {
 
