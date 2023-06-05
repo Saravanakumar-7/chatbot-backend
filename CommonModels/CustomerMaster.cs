@@ -39,7 +39,7 @@ namespace Entities
         public string? SalesManager { get; set; }
         public string? SalesManagerCode { get; set; }
         public string? Region { get; set; }
-       
+        public string? CustomerApprove { get; set; }
 
         //RelatedLink
 
@@ -121,7 +121,6 @@ namespace Entities
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-        public string? CustomerApprove { get; set; }
         public bool IsActive { get; set; } = true;
         public string? Unit { get; set; }
 

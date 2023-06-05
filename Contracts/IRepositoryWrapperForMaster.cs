@@ -136,6 +136,8 @@ namespace Contracts
         IOrderTypeRepository OrderTypeRepository { get; }
         IIssuingStockRepository IssuingStockRepository { get; }
         IAdditionalChargesRepository AdditionalChargesRepository { get; }
+        ICompanyCategoryRepository CompanyCategoryRepository { get; }
+        ICustomerCategoryRepository CustomerCategoryRepository { get; }
         void SaveAsync();
     }
 }

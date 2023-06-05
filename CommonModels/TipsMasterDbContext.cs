@@ -145,6 +145,8 @@ namespace Entities
 
         public DbSet<IssuingStock> IssuingStocks { get; set; }
         public DbSet<AdditionalCharges> AdditionalCharges { get; set; }
+        public DbSet<CustomerCategory> CustomerCategories { get; set; }
+        public DbSet<CompanyCategory> CompanyCategories { get; set; }
 
 
     }

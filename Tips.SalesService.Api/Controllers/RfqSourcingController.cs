@@ -85,9 +85,9 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"rfqsourcing with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
                     _logger.LogError($"rfqsourcing with id: {id}, hasn't been found.");
-                    return NotFound(serviceResponse);
+                    return Ok(serviceResponse);
                 }
                 else
                 {
@@ -98,18 +98,18 @@ namespace Tips.SalesService.Api.Controllers
                     RfqSourcingDto rfqSourceDto = _mapper.Map<RfqSourcingDto>(rfqSourcings);
                    
                     
-                    List<RfqSourcingItemsDto> rfqSourseItemDtos = new List<RfqSourcingItemsDto>();            
+                    List<RfqSourcingItemsDto> rfqSourceItemDtos = new List<RfqSourcingItemsDto>();            
 
 
                         foreach (var rfqSourceItemDetails in rfqSourcings.RfqSourcingItems)
                         {
                             RfqSourcingItemsDto rfqSourceItemDto = _mapper.Map<RfqSourcingItemsDto>(rfqSourceItemDetails);
                             rfqSourceItemDto.RfqSourcingVendorDtos = _mapper.Map<List<RfqSourcingVendorDto>>(rfqSourceItemDetails.RfqSourcingVendors);
-                            rfqSourseItemDtos.Add(rfqSourceItemDto);
+                            rfqSourceItemDtos.Add(rfqSourceItemDto);
                         }
                     
 
-                    rfqSourceDto.RfqSourcingItemsDtos = rfqSourseItemDtos;
+                    rfqSourceDto.RfqSourcingItemsDtos = rfqSourceItemDtos;
                     serviceResponse.Data = rfqSourceDto;
                     serviceResponse.Message = $"Returned rfqsourcing with id: {id}";
                     serviceResponse.Success = true;
@@ -120,6 +120,64 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetrfqsourcingById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpGet("{rfqNo}")]
+        public async Task<IActionResult> GetRf0qSourcingDetailsByRfqNo(string rfqNo)
+        {
+            ServiceResponse<RfqSourcingDto> serviceResponse = new ServiceResponse<RfqSourcingDto>();
+
+            try
+            {
+                var rfqSourcingByRfqNo = await _repository.GetRfqSourcingDetailsByRfqNo(rfqNo);
+
+                if (rfqSourcingByRfqNo == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"rfqsourcing with rfqNo: {rfqNo}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"rfqsourcing with rfqNo: {rfqNo}, hasn't been found.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned rfqsourcing with rfqNo: {rfqNo}");
+
+
+
+                    RfqSourcingDto rfqSourceDto = _mapper.Map<RfqSourcingDto>(rfqSourcingByRfqNo);
+
+
+                    List<RfqSourcingItemsDto> rfqSourceItemDtos = new List<RfqSourcingItemsDto>();
+
+
+                    foreach (var rfqSourceItemDetails in rfqSourcingByRfqNo.RfqSourcingItems)
+                    {
+                        RfqSourcingItemsDto rfqSourceItemDto = _mapper.Map<RfqSourcingItemsDto>(rfqSourceItemDetails);
+                        rfqSourceItemDto.RfqSourcingVendorDtos = _mapper.Map<List<RfqSourcingVendorDto>>(rfqSourceItemDetails.RfqSourcingVendors);
+                        rfqSourceItemDtos.Add(rfqSourceItemDto);
+                    }
+
+
+                    rfqSourceDto.RfqSourcingItemsDtos = rfqSourceItemDtos;
+                    serviceResponse.Data = rfqSourceDto;
+                    serviceResponse.Message = $"Returned RfqsourcingDetails with rfqNo: {rfqNo}";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetrfqsourcingDetailsByRfqNo action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
