@@ -66,6 +66,16 @@ namespace Tips.SalesService.Api.Repository
             return rfqSourcingById;
         }
 
+        public async Task<RfqSourcing> GetRfqSourcingDetailsByRfqNo(string rfqNo)
+        {
+            var rfqSourcingByRfqNo = await _tipsSalesServiceDbContext.RfqSourcings.Where(x => x.RFQNumber == rfqNo)
+                              .Include(t => t.RfqSourcingItems)
+                              .ThenInclude(x => x.RfqSourcingVendors)
+                           .FirstOrDefaultAsync();
+
+            return rfqSourcingByRfqNo;
+        }
+
         public async Task<string> UpdateRfqSourcing(RfqSourcing rfqSourcing)
         {
             rfqSourcing.LastModifiedBy = "Admin";

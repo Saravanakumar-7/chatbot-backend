@@ -452,6 +452,14 @@ namespace Tips.Master.Api
             CreateMap<AdditionalCharges, AdditionalChargesDto>().ReverseMap();
             CreateMap<AdditionalCharges, AdditionalChargesPostDto>().ReverseMap();
             CreateMap<AdditionalCharges, AdditionalChargesUpdateDto>().ReverseMap();
+
+            CreateMap<CustomerCategory, CustomerCategoryDto>().ReverseMap();
+            CreateMap<CustomerCategory, CustomerCategoryPostDto>().ReverseMap();
+            CreateMap<CustomerCategory, CustomerCategoryPostDto>().ReverseMap();
+
+            CreateMap<CompanyCategory, CompanyCategoryDto>().ReverseMap();
+            CreateMap<CompanyCategory, CompanyCategoryPostDto>().ReverseMap();
+            CreateMap<CompanyCategory, CompanyCategoryPostDto>().ReverseMap();
         }
     }
 }

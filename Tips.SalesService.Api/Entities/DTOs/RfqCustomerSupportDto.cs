@@ -11,7 +11,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 {
     public class RfqCustomerSupportDto
     {   
-        public int Id { get; set; }    
+        public int Id { get; set; }
+        public string? LeadId { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerId { get; set; }
@@ -37,7 +38,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
     }
     public class RfqCustomerSupportPostDto
-    { 
+    {
+        public string? LeadId { get; set; }
+
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
         public string? CustomerName { get; set; }        
 
@@ -62,7 +65,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqCustomerSupportUpdateDto
     {
-     
+
+        public string? LeadId { get; set; }
 
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
         public string? CustomerName { get; set; }

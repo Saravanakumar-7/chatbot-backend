@@ -35,23 +35,18 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<ExportUnitType>> GetAllActiveExportUnitTypes([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<ExportUnitType>> GetAllActiveExportUnitTypes()
         {
 
-            var exportUnitDetails = FindAll()
-                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ExportUnitTypeName.Contains(searchParams.SearchValue) ||
-                       inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<ExportUnitType>.ToPagedList(exportUnitDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var exportUnitDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return exportUnitDetails;
         }
 
-        public async Task<PagedList<ExportUnitType>> GetAllExportUnitTypes([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<ExportUnitType>> GetAllExportUnitTypes()
         {
 
-            var exportUnitDetails = FindAll().OrderByDescending(x => x.Id)
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ExportUnitTypeName.Contains(searchParams.SearchValue) ||
-                inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<ExportUnitType>.ToPagedList(exportUnitDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var exportUnitDetails = await FindAll().ToListAsync();
+            return exportUnitDetails;
         }
 
         public async Task<ExportUnitType> GetExportUnitTypeById(int id)

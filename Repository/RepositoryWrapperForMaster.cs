@@ -113,9 +113,33 @@ namespace Repository
         private IOrderTypeRepository? _orderTypeRepository;
         private IIssuingStockRepository? issuingStockRepository;
         private IAdditionalChargesRepository? _additionalChargesRepository;
+        private ICompanyCategoryRepository? _companyCategoryRepository;
+        private ICustomerCategoryRepository? _customerCategoryRepository;
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
+        }
+        public ICompanyCategoryRepository CompanyCategoryRepository
+        {
+            get
+            {
+                if (_companyCategoryRepository == null)
+                {
+                    _companyCategoryRepository = new CompanyCategoryRepository(_tipsMasterDbContext);
+                }
+                return _companyCategoryRepository;
+            }
+        }
+        public ICustomerCategoryRepository CustomerCategoryRepository
+        {
+            get
+            {
+                if (_customerCategoryRepository == null)
+                {
+                    _customerCategoryRepository = new CustomerCategoryRepository(_tipsMasterDbContext);
+                }
+                return _customerCategoryRepository;
+            }
         }
 
         public IAdditionalChargesRepository AdditionalChargesRepository

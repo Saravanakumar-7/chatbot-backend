@@ -150,6 +150,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class CsItemDetailsForQuoteDto
     {
+        public string? LeadId { get; set; } 
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }

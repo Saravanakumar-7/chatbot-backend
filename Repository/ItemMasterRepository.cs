@@ -25,9 +25,11 @@ namespace Repository
         {
             itemMaster.CreatedBy = "Admin";
             itemMaster.CreatedOn = DateTime.Now;
+            itemMaster.LastModifiedBy = "Admin";
+            itemMaster.LastModifiedOn = DateTime.Now;
             itemMaster.Unit = "Bangalore";
             var result = await Create(itemMaster);
-
+            
             return result.Id;
         }
 

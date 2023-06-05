@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using Contracts;
-using Entities;
 using Entities.DTOs;
+using Entities;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using NuGet.Protocol;
 using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -13,31 +11,33 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class ExportUnitTypeController : ControllerBase
+    public class CustomerCategoryController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        public ExportUnitTypeController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+
+
+        public CustomerCategoryController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+
         }
- 
+      
         [HttpGet]
-        public async Task<IActionResult> GetAllExportUnitTypes()
+        public async Task<IActionResult> GetAllCustomerCategory()
         {
-            ServiceResponse<IEnumerable<ExportUnitTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<ExportUnitTypeDto>>();
+            ServiceResponse<IEnumerable<CustomerCategory>> serviceResponse = new ServiceResponse<IEnumerable<CustomerCategory>>();
+
             try
             {
-
-                var ExportUnitTypeList = await _repository.ExportUnitTypeRepository.GetAllExportUnitTypes();
-
-                _logger.LogInfo("Returned all ExportUnitTypeList");
-                var result = _mapper.Map<IEnumerable<ExportUnitTypeDto>>(ExportUnitTypeList);
+                var customerCategories = await _repository.CustomerCategoryRepository.GetAllCustomerCategory();
+                _logger.LogInfo("Returned all customerCategories");
+                var result = _mapper.Map<IEnumerable<CustomerCategory>>(customerCategories);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all ExportUnitTypes Successfully";
+                serviceResponse.Message = "Returned all customerCategories Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -54,17 +54,17 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveExportUnitTypes()
+        public async Task<IActionResult> GetAllActiveCustomerCategory()
         {
-            ServiceResponse<IEnumerable<ExportUnitTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<ExportUnitTypeDto>>();
+            ServiceResponse<IEnumerable<CustomerCategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerCategoryDto>>();
 
             try
             {
-                var ExportUnitTypes = await _repository.ExportUnitTypeRepository.GetAllActiveExportUnitTypes();
-                _logger.LogInfo("Returned all ExportUnitTypes");
-                var result = _mapper.Map<IEnumerable<ExportUnitTypeDto>>(ExportUnitTypes);
+                var customerCategories = await _repository.CustomerCategoryRepository.GetAllActiveCustomerCategory();
+                _logger.LogInfo("Returned all companyCategories");
+                var result = _mapper.Map<IEnumerable<CustomerCategoryDto>>(customerCategories);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all ExportUnitTypes Successfully";
+                serviceResponse.Message = "Returned all Active customerCategories Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -81,31 +81,30 @@ namespace Tips.Master.Api.Controllers
 
             }
         }
-
+      
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetExportUnitTypeById(int id)
+        public async Task<IActionResult> GetCustomerCategoryById(int id)
         {
-            ServiceResponse<ExportUnitTypeDto> serviceResponse = new ServiceResponse<ExportUnitTypeDto>();
+            ServiceResponse<CustomerCategoryDto> serviceResponse = new ServiceResponse<CustomerCategoryDto>();
 
             try
             {
-                var ExportUnitTypes = await _repository.ExportUnitTypeRepository.GetExportUnitTypeById(id);
-                if (ExportUnitTypes == null)
+                var customerCategoryDetailById = await _repository.CustomerCategoryRepository.GetCustomerCategoryById(id);
+                if (customerCategoryDetailById == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ExportUnitTypes with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"CustomerCategory with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"ExportUnitTypes with id: {id}, hasn't been found in db.");
-                    return NotFound(serviceResponse);
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"CustomerCategory with id: {id}, hasn't been found in db.");
+                    return Ok(serviceResponse);
                 }
                 else
                 {
-
-                    _logger.LogInfo($"Returned ExportUnitTypes with id: {id}");
-                    var result = _mapper.Map<ExportUnitTypeDto>(ExportUnitTypes);
+                    _logger.LogInfo($"Returned CustomerCategory with id: {id}");
+                    var result = _mapper.Map<CustomerCategoryDto>(customerCategoryDetailById);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned ExportUnitTypes with id Successfully";
+                    serviceResponse.Message = "Returned CustomerCategory with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -113,102 +112,99 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetExportUnitTypeById action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetCustomerCategoryById action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
 
- 
+
         [HttpPost]
-        public IActionResult CreateExportUnitType([FromBody] ExportUnitTypeDtoPost exportUnitTypeDtoPost)
+        public IActionResult CreateCustomerCategory([FromBody] CustomerCategoryPostDto customerCategoryPost)
         {
-            ServiceResponse<ExportUnitTypeDto> serviceResponse = new ServiceResponse<ExportUnitTypeDto>();
+            ServiceResponse<CustomerCategoryPostDto> serviceResponse = new ServiceResponse<CustomerCategoryPostDto>();
 
             try
             {
-                if (exportUnitTypeDtoPost is null)
+                if (customerCategoryPost is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ExportUnitType object sent from client is null";
+                    serviceResponse.Message = "CustomerCategory object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("ExportUnitType object sent from client is null.");
-                    //return BadRequest("PurchaseGroup object is null");
+                    _logger.LogError("CustomerCategory object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid ExportUnitType object sent from client";
+                    serviceResponse.Message = "Invalid CustomerCategory object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid ExportUnitType object sent from client.");
-                    //return BadRequest("Invalid model object");
+                    _logger.LogError("Invalid CustomerCategory object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var ExportUnitType = _mapper.Map<ExportUnitType>(exportUnitTypeDtoPost);
-                _repository.ExportUnitTypeRepository.CreateExportUnitType(ExportUnitType);
+
+
+                var companyCategory = _mapper.Map<CustomerCategory>(customerCategoryPost);
+                _repository.CustomerCategoryRepository.CreateCustomerCategory(companyCategory);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetExportUnitTypeById", serviceResponse);
+                return Created("GetCustomerCategoryById", serviceResponse);
             }
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside CreateCustomerCategory action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
- 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateExportUnitType(int id, [FromBody] ExportUnitTypeDtoUpdate exportUnitTypeDtoUpdate)
+        public async Task<IActionResult> UpdateCustomerCategory(int id, [FromBody] CustomerCategoryUpdateDto customerCategoryUpdate)
         {
-            ServiceResponse<ExportUnitTypeDto> serviceResponse = new ServiceResponse<ExportUnitTypeDto>();
+            ServiceResponse<CustomerCategoryUpdateDto> serviceResponse = new ServiceResponse<CustomerCategoryUpdateDto>();
 
             try
             {
-                if (exportUnitTypeDtoUpdate is null)
+                if (customerCategoryUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Update ExportUnitType object sent from client is null";
+                    serviceResponse.Message = "update CustomerCategory object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Update ExportUnitType object sent from client is null.");
+                    _logger.LogError("Update CustomerCategory object sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid ExportUnitType object sent from client";
+                    serviceResponse.Message = "Invalid Update CustomerCategory object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid Update ExportUnitType object sent from client.");
+                    _logger.LogError("Update Invalid CustomerCategory object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var ExportUnitType = await _repository.ExportUnitTypeRepository.GetExportUnitTypeById(id);
-                if (ExportUnitType is null)
+                var customerCategoryById = await _repository.CustomerCategoryRepository.GetCustomerCategoryById(id);
+                if (customerCategoryById is null)
                 {
-                    _logger.LogError($"Update ExportUnitType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Update CustomerCategory with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = " Update ExportUnitType with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = " Update CustomerCategory with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
-                _mapper.Map(exportUnitTypeDtoUpdate, ExportUnitType);
-                string result = await _repository.ExportUnitTypeRepository.UpdateExportUnitType(ExportUnitType);
+                _mapper.Map(customerCategoryUpdate, customerCategoryById);
+                string result = await _repository.CustomerCategoryRepository.UpdateCustomerCategory(customerCategoryById);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -223,31 +219,30 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside UpdateExportUnitType action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside UpdateCustomerCategory action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
-
- 
+        // DELETE api/<VendorCategoryController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteExportUnitType(int id)
+        public async Task<IActionResult> DeleteCustomerCategory(int id)
         {
-            ServiceResponse<ExportUnitTypeDto> serviceResponse = new ServiceResponse<ExportUnitTypeDto>();
+            ServiceResponse<CustomerCategory> serviceResponse = new ServiceResponse<CustomerCategory>();
 
             try
             {
-                var ExportUnitType = await _repository.ExportUnitTypeRepository.GetExportUnitTypeById(id);
-                if (ExportUnitType == null)
+                var customerCategory = await _repository.CustomerCategoryRepository.GetCustomerCategoryById(id);
+                if (customerCategory == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Delete ExportUnitType object sent from client is null";
+                    serviceResponse.Message = "Delete CustomerCategory object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"Delete ExportUnitType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Delete CustomerCategory with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                string result = await _repository.ExportUnitTypeRepository.DeleteExportUnitType(ExportUnitType);
+                string result = await _repository.CustomerCategoryRepository.DeleteCustomerCategory(customerCategory);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deleted Successfully";
@@ -260,31 +255,31 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside DeleteCustomerCategory action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> ActivateExportUnitType(int id)
+        public async Task<IActionResult> ActivateCustomerCategory(int id)
         {
-            ServiceResponse<ExportUnitTypeDto> serviceResponse = new ServiceResponse<ExportUnitTypeDto>();
+            ServiceResponse<CustomerCategory> serviceResponse = new ServiceResponse<CustomerCategory>();
 
             try
             {
-                var ExportUnitType = await _repository.ExportUnitTypeRepository.GetExportUnitTypeById(id);
-                if (ExportUnitType is null)
+                var customerCategory = await _repository.CustomerCategoryRepository.GetCustomerCategoryById(id);
+                if (customerCategory is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ExportUnitType object sent from client is null";
+                    serviceResponse.Message = "customerCategory object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"ExportUnitType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"customerCategory with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                ExportUnitType.IsActive = true;
-                string result = await _repository.ExportUnitTypeRepository.UpdateExportUnitType(ExportUnitType);
+                customerCategory.IsActive = true;
+                string result = await _repository.CustomerCategoryRepository.UpdateCustomerCategory(customerCategory);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -297,34 +292,34 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside ActivateExportUnitType action: {ex.Message}");
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside ActivateCustomerCategory action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> DeActivateExportUnitType(int id)
+        public async Task<IActionResult> DeactivateCustomerCategory(int id)
         {
-            ServiceResponse<ExportUnitTypeDto> serviceResponse = new ServiceResponse<ExportUnitTypeDto>();
+            ServiceResponse<CustomerCategory> serviceResponse = new ServiceResponse<CustomerCategory>();
 
             try
             {
-                var ExportUnitType = await _repository.ExportUnitTypeRepository.GetExportUnitTypeById(id);
-                if (ExportUnitType is null)
+                var customerCategory = await _repository.CustomerCategoryRepository.GetCustomerCategoryById(id);
+                if (customerCategory is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ExportUnitType object sent from client is null";
+                    serviceResponse.Message = "customerCategory object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"ExportUnitType with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"customerCategory with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                ExportUnitType.IsActive = false;
-                string result = await _repository.ExportUnitTypeRepository.UpdateExportUnitType(ExportUnitType);
+                customerCategory.IsActive = false;
+                string result = await _repository.CustomerCategoryRepository.UpdateCustomerCategory(customerCategory);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                serviceResponse.Message = "Deactivated Successfully";
+                serviceResponse.Message = "Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -334,11 +329,11 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeactivateExportUnitType action: {ex.Message}");
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside DeactivateCustomerCategory action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
-
         }
     }
 }
+       

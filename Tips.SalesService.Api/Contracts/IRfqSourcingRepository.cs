@@ -14,6 +14,7 @@ namespace Tips.SalesService.Api.Contracts
     {
         Task<PagedList<RfqSourcing>> GetAllRfqSourcing(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<RfqSourcing> GetRfqSourcingById(int id);
+        Task<RfqSourcing> GetRfqSourcingDetailsByRfqNo(string rfqNo);
         Task<int?> CreateRfqSourcing(RfqSourcing rfqSourcing);
         Task<string> UpdateRfqSourcing(RfqSourcing rfqSourcing);
         Task<string> DeleteRfqSourcing(RfqSourcing rfqSourcing);
