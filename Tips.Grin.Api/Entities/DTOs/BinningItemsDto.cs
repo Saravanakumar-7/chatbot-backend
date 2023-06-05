@@ -52,7 +52,8 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
 
         public string? ItemNumber { get; set; }
-        public int GrinPartId { get; set; }
+        public int GrinPartId { get; set; } 
+
         //public string? Description { get; set; }
         //public string? MftrItemNumber { get; set; }
         //public string? ProjectNumbers { get; set; }

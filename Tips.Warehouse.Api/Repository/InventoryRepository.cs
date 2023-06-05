@@ -105,7 +105,7 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<Inventory> GetInventoryDetailsByGrinNoandGrinId(string GrinNo,int GrinPartsId, string ItemNumber, string ProjectNumber)
         {
-            var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventory.Where(x => x.GrinNo == GrinNo && x.GrinPartId == GrinPartsId && x.PartNumber == ItemNumber && x.ProjectNumber == ProjectNumber && x.Location=="Grin")
+            var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventory.Where(x => x.GrinNo == GrinNo && x.GrinPartId == GrinPartsId && x.PartNumber == ItemNumber && x.ProjectNumber == ProjectNumber)
 
                           .FirstOrDefaultAsync();
 

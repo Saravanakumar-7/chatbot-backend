@@ -516,24 +516,25 @@ namespace Tips.Grin.Api.Controllers
                     for (int i = 0; i < binningsItemsDto.Count; i++)
                     {
                         var binningLocations = binningsItemsDto[i].BinningLocations;
-
-                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                              "GetInventoryDetailsByGrinNo?", "GrinNo=", binningDetail.GrinNumber, "&ItemNumber=",
-                               binningsItemsDto[i].ItemNumber, "&ProjectNumber=", binningLocations[i].ProjectNumber));
-
-                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        dynamic inventoryObject = inventoryObjectData.data;
+                        
                         int j = 0;
                         foreach (var location in binningLocations)
                         {
                             if (j == 0)
                             {
-                                inventoryObject.Balance_Quantity = location.Qty;
-                                inventoryObject.Warehouse = location.Warehouse;
-                                inventoryObject.ProjectNumbers = location.ProjectNumber;
-                                inventoryObject.Location = location.Location;
-                                inventoryObject.IsStockAvailable = true;
+                                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                              "GetInventoryDetailsByGrinNo?", "GrinNo=", binningDetail.GrinNumber, "&ItemNumber=",
+                               binningsItemsDto[i].ItemNumber, "&ProjectNumber=", location.ProjectNumber));
+
+                                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                                dynamic inventoryObject = inventoryObjectData.data;
+
+                                inventoryObject.balance_Quantity = location.Qty;
+                                inventoryObject.warehouse = location.Warehouse;
+                                inventoryObject.projectNumbers = location.ProjectNumber;
+                                inventoryObject.location = location.Location;
+                                inventoryObject.isStockAvailable = true;
                                 var json = JsonConvert.SerializeObject(inventoryObject);
                                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                                 var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
