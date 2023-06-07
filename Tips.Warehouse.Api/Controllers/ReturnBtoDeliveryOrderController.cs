@@ -292,7 +292,7 @@ namespace Tips.Warehouse.Api.Controllers
                 if (returnBtoDeliveryOrderitemsDto != null)
                 {
                     Guid guid = Guid.NewGuid();
-                    int btoNoCount = await _bTODeliveryOrderHistoryRepository.GetBTONumberCount(returnBtoDeliveryOrder.BTONumber);
+                    var btohistoryNo = await _bTODeliveryOrderHistoryRepository.GetBTONumberCount(returnBtoDeliveryOrder.BTONumber);
                     for (int i = 0; i < returnBtoDeliveryOrderitemsDto.Count; i++)
                     {
 
@@ -398,17 +398,30 @@ namespace Tips.Warehouse.Api.Controllers
                         BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
 
                         // Implement the logic to Add suffix -R for BTO exists in history
-                        
-                        if (btoNoCount > 0)
-                        {
 
-                            string suffix = "-R" + (btoNoCount + 1);
+                        //if (btohistoryNo != null)
+                        //{
+
+                        //    string suffix = "-R1" + (btohistoryNo + 1);
+                        //    returnBtoDeliveryOrderItems.BTONumber += suffix;
+                        //    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                        //}
+                        //else
+                        //{
+
+                        //    returnBtoDeliveryOrderItems.BTONumber += "-R";
+                        //    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                        //}
+                        if (btohistoryNo != null)
+                        {
+                            int suffixNumber = int.Parse(btohistoryNo.Substring(btohistoryNo.LastIndexOf("-R") + 2)) + 1;
+                            string suffix = "-R" + suffixNumber;
                             returnBtoDeliveryOrderItems.BTONumber += suffix;
                             bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
                         }
                         else
                         {
-                            returnBtoDeliveryOrderItems.BTONumber += "-R";
+                            returnBtoDeliveryOrderItems.BTONumber += "-R1";
                             bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
                         }
 
