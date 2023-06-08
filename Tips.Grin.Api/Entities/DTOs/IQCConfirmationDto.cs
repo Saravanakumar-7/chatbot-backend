@@ -15,7 +15,32 @@ namespace Tips.Grin.Api.Entities.DTOs
         public int Id { get; set; }
 
         public string? GrinNumber { get; set; }
+        [Required]
+        public string VendorName { get; set; }
 
+        [Required]
+        public string VendorId { get; set; }
+
+        [Required]
+        public string InvoiceNumber { get; set; }
+
+        public decimal? InvoiceValue { get; set; }
+
+        public DateTime? InvoiceDate { get; set; }
+
+        public string? AWBNumber1 { get; set; }
+
+        public DateTime? AWBDate1 { get; set; }
+
+        public string? AWBNumber2 { get; set; }
+
+        public DateTime? AWBDate2 { get; set; }
+
+        public string? BENumber { get; set; }
+
+        public DateTime? BEDate { get; set; }
+
+        public decimal? TotalInvoiceValue { get; set; }
         public int GrinId { get; set; }
 
         public string Unit { get; set; }

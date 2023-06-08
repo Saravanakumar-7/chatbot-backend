@@ -158,7 +158,7 @@ namespace Tips.SalesService.Api.Repository
                     {
                         var itemDetails = new CsItemDetailsForQuoteDto
                         {
-                            LeadId = rfqCDetail.LeadId,
+                            LeadId = rfqDetail.LeadId,
                             RFQNumber = rfqItem.RfqNumber,
                             CustomerName = rfqDetail.CustomerName,
                             CustomerAliasName = rfqDetail.CustomerAliasName,

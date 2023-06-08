@@ -254,6 +254,11 @@ namespace Tips.SalesService.Api.Repository
               .Where(s => s.RFQNumber == rfqNumber && s.RevisionNumber == revNumber)
               .Select(x => x.Id).FirstOrDefaultAsync();
 
+            if (enggId == 0)
+            {
+                return false;
+            }
+
             var isFullyReleased = await _tipsSalesServiceDbContext.RfqEnggItems
                 .Where(x =>x.RfqEnggId == enggId)
                 .AllAsync(x => x.ReleaseStatus == true); 
@@ -278,7 +283,10 @@ namespace Tips.SalesService.Api.Repository
 
             var CsId = await _tipsSalesServiceDbContext.RfqCustomerSupports
              .Where(s => s.RfqNumber == rfqNumber && s.RevisionNumber== revNumber).Select(x => x.Id).FirstOrDefaultAsync();
-
+            if (CsId == 0)
+            {
+                return false;
+            }
             var isFullyReleased = await _tipsSalesServiceDbContext.RfqCustomerSupportItems
                 .Where(x => x.RfqCustomerSupportId == CsId)
                 .AllAsync(x => x.ReleaseStatus == true);

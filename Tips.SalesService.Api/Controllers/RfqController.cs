@@ -135,7 +135,7 @@ namespace Tips.SalesService.Api.Controllers
                         //    getAllRfq[i].EnggComplete = EnggStatus.EnggNotYetCompleted;
                         //}
                     }
-
+                    
                     var isFullyReleasedCs = await _itemRepository.IsFullyReleasedRfqCs(rfq, revNO);
                     var isNotYetReleasedCs = await _itemRepository.IsNotYetReleasedRfqCs(rfq, revNO);
                
