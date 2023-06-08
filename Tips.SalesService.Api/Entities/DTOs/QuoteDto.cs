@@ -190,11 +190,14 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class rfqEnggItemDetailsForQuoteDto
     {
-        public int? Id { get; set; }
+        //public int? Id { get; set; }
+        public string? LeadId { get; set; }
+
         public string? RfqNumber { get; set; }
         public string? CustomerName { get; set; }
         public decimal? Rev { get; set; }
-        public DateTime? DateOnLpCreation { get; set; }
+
+        //public DateTime? DateOnLpCreation { get; set; }
         public string? CustomerItemNumber { get; set; }
         public string? ItemNumber { get; set; }
         public string? CustomFields { get; set; }
@@ -224,7 +227,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? Markup { get; set; }
-        public string? PriceList { get; set; }
+        public string? PriceListName { get; set; }
         public DateTime? ValidThrough { get; set; }
         public bool? IsDiscountApplicable { get; set; }
     }

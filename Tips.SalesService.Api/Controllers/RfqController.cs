@@ -73,7 +73,7 @@ namespace Tips.SalesService.Api.Controllers
             {
                 var getAllRfq = await _rfqRepository.GetAllRfq(pagingParameter, searchParammes);
 
-                for(int i = 0; i < getAllRfq.Count; i++)
+                for(int i = 0; i < getAllRfq.Count(); i++)
                 {
                     var rfq = getAllRfq[i].RfqNumber;
                     var revNO = getAllRfq[i].RevisionNumber;
