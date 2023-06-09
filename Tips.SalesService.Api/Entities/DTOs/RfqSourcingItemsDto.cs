@@ -36,7 +36,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? Count { get; set; }
 
-        public List<RfqSourcingVendorPostDto>? RfqSourcingVendorPostDtos { get; set; }
+        public List<RfqSourcingVendorPostDto>? RfqSourcingVendorDtos { get; set; }
 
     }
     public class RfqSourcingItemsUpdateDto
@@ -53,7 +53,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? Count { get; set; }
-        public List<RfqSourcingVendorUpdateDto>? RfqSourcingVendorUpdateDtos { get; set; }
+        public List<RfqSourcingVendorUpdateDto>? RfqSourcingVendorDtos { get; set; }
 
     }
 }

@@ -232,7 +232,7 @@ namespace Tips.SalesService.Api.Controllers
                         for (int i = 0; i < rfqSourceDto.Count; i++)
                         {
                             RfqSourcingItems rfqSourcingItems = _mapper.Map<RfqSourcingItems>(rfqSourceDto[i]);
-                            rfqSourcingItems.RfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(rfqSourceDto[i].RfqSourcingVendorPostDtos);
+                            rfqSourcingItems.RfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(rfqSourceDto[i].RfqSourcingVendorDtos);
                             sourceItemList.Add(rfqSourcingItems);
                         }
                     }
@@ -307,7 +307,7 @@ namespace Tips.SalesService.Api.Controllers
                     for (int i = 0; i < sourceItemtemDto.Count; i++)
                     {
                         RfqSourcingItems sourceItemDetail = _mapper.Map<RfqSourcingItems>(sourceItemtemDto[i]);
-                        sourceItemDetail.RfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(sourceItemtemDto[i].RfqSourcingVendorUpdateDtos);
+                        sourceItemDetail.RfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(sourceItemtemDto[i].RfqSourcingVendorDtos);
 
                         rfqSourceItemList.Add(sourceItemDetail);
 
