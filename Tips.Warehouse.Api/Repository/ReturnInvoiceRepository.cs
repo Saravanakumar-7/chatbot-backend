@@ -40,10 +40,15 @@ namespace Tips.Warehouse.Api.Repository
             return PagedList<ReturnInvoice>.ToPagedList(getAllReturnInvoiceList, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<int?> GetReturnInvoiceByInvoiceNo(string InvoiceNumber)
+        public async Task<string> GetReturnInvoiceByInvoiceNo(string InvoiceNumber)
         {
-            var getReturnInvoiceDetails = _tipsWarehouseDbContext.ReturnInvoices
-                    .Where(x => x.InvoiceNumber == InvoiceNumber).Count();
+            //var getReturnInvoiceDetails = _tipsWarehouseDbContext.ReturnInvoices
+            //        .Where(x => x.InvoiceNumber == InvoiceNumber).Count();
+
+            var getReturnInvoiceDetails = await _tipsWarehouseDbContext.ReturnInvoices
+                .Where(x => x.InvoiceNumber.StartsWith(InvoiceNumber)).OrderByDescending(x => x.Id)
+                .Select(x => x.InvoiceNumber).FirstOrDefaultAsync();
+
             return getReturnInvoiceDetails;
         }
 

@@ -306,9 +306,10 @@ namespace Tips.Purchase.Api.Repository
             return purchaseRequistionDetailById;
         }
 
-        public async Task<PurchaseRequisition> GetPurchaseRequisitionByPRNumber(string prNumber)
+        public async Task<PurchaseRequisition> GetPurchaseRequisitionByPRNumber(string prNumber, int RevNo)
         {
-            var purchaseRequistionByPRNumber = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PrNumber == prNumber)
+            var purchaseRequistionByPRNumber = await _tipsPurchaseDbContext.PurchaseRequisitions.
+                Where(x => x.PrNumber == prNumber && x.RevisionNumber == RevNo)
                                   .Include(o => o.PrFiles)
                                   .Include(t => t.PrItemsDtoList)
                                 .ThenInclude(x => x.prAddprojectsDtoList)

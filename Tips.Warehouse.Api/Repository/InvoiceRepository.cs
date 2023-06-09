@@ -171,7 +171,7 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<InvoiceChildItem> GetInvoiceChildItemDetails(int invoiceChildId)
         {
-            var getInvoiceChildItemDetails = await _tipsWarehouseDbContexts.invoiceChildItems
+            var getInvoiceChildItemDetails = await _tipsWarehouseDbContext.invoiceChildItems
                     .Where(x => x.Id == invoiceChildId)
                           .FirstOrDefaultAsync();
             return getInvoiceChildItemDetails;

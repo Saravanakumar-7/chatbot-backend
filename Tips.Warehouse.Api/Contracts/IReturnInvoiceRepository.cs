@@ -12,7 +12,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<string> UpdateReturnInvoice(ReturnInvoice returnInvoice);
         Task<string> DeleteReturnInvoice(ReturnInvoice returnInvoice);
 
-        Task<int?> GetReturnInvoiceByInvoiceNo(string InvoiceNumber);
+        Task<string> GetReturnInvoiceByInvoiceNo(string InvoiceNumber);
 
 
         Task<ReturnInvoice> GetReturnInvoiceById(int id);
