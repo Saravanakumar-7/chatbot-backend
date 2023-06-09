@@ -221,92 +221,122 @@ namespace Tips.SalesService.Api.Repository
         public async Task<IEnumerable<rfqEnggItemDetailsForQuoteDto>> GetAllRfqEnggDetailsByRfqNo(string rfqNumber)
         {
 
-            //var releaseLpDetails = from e in _tipsSalesServiceDbContext.RfqEnggItems
-            //                       where e.RfqEngg.RFQNumber == rfqNumber
-            //                       join d in _tipsSalesServiceDbContext.ReleaseLps on e.ItemNumber equals d.ItemNo
-            //                       where d.RfqNumber == rfqNumber    
-            //                       select new rfqEnggItemDetailsForQuoteDto
-            //                    {
-            //                        RfqNumber = d.RfqNumber,
-            //                        CustomerName = d.CustomerName,
-            //                        Rev = e.RfqEngg.RevisionNumber,
-            //                        CustomFields = e.CustomFields,
-            //                        DateOnLpCreation = d.DateOnLpCreation,
-            //                        CustomerItemNumber = e.CustomerItemNumber,
-            //                        ItemNumber = e.ItemNumber, 
-            //                        Description = e.Description,
-            //                        CostingBomVersionNo = e.CostingBomVersionNo,
-            //                        ReleaseStatus = e.ReleaseStatus,
-            //                        Qty = e.Qty,
-            //                        UOC = d.UOC,
-            //                        LeastCost = d.LeastCost,
-            //                        LeastCostPlus = d.LeastCostPlus,
-            //                        LeastCostminus = d.LeastCostminus,
-            //                        DiscountPlus = d.DiscountPlus,
-            //                        DiscountMinus = d.DiscountMinus,
-            //                        Markup = d.Markup,
-            //                        PriceList = d.PriceList,
-            //                        ValidThrough = d.ValidThrough,
-            //                        IsDiscountApplicable = d.IsDiscountApplicable
-            //                    };
-
-            //var releaseLpList = releaseLpDetails.Distinct().ToList();
-
-            var rfqEnggId = await _tipsSalesServiceDbContext.RfqEnggs
-              .Where(x => x.RFQNumber == rfqNumber)
-                .OrderByDescending(x => x.RevisionNumber)
-                 .Select(x => x.Id)
-           .FirstOrDefaultAsync();
+            //    var rfqEnggId = await _tipsSalesServiceDbContext.RfqEnggs
+            //      .Where(x => x.RFQNumber == rfqNumber)
+            //        .OrderByDescending(x => x.RevisionNumber)
+            //         .Select(x => x.Id)
+            //   .FirstOrDefaultAsync();
 
 
-            var releaseLpDetails = _tipsSalesServiceDbContext.RfqEnggItems
-                .Where(x=>x.RfqEnggId == rfqEnggId)
-        .GroupJoin(
-            _tipsSalesServiceDbContext.RfqEnggs.Where(e => e.RFQNumber == rfqNumber && e.Id == rfqEnggId),
-            e => e.RfqEnggId,
-            eng => eng.Id,
-            (e, engGroup) => new { RfqEnggItem = e, RfqEnggs = engGroup })
-        .SelectMany(
-            x => x.RfqEnggs.DefaultIfEmpty(),
-            (x, eng) => new { x.RfqEnggItem, RfqEngg = eng })
-        .GroupJoin(
-            _tipsSalesServiceDbContext.ReleaseLps.Where(r => r.RfqNumber == rfqNumber),
-            x => new { x.RfqEnggItem.ItemNumber, RfqNumber = x.RfqEngg.RFQNumber },
-            rel => new { ItemNumber = rel.ItemNo, rel.RfqNumber },
-            (x, relGroup) => new { x.RfqEnggItem, x.RfqEngg, ReleaseLps = relGroup })
-        .SelectMany(
-            x => x.ReleaseLps.DefaultIfEmpty(),
-            (x, rel) => new rfqEnggItemDetailsForQuoteDto
+            //    var releaseLpDetails = _tipsSalesServiceDbContext.RfqEnggItems
+            //        .Where(x=>x.RfqEnggId == rfqEnggId)
+            //.GroupJoin(
+            //    _tipsSalesServiceDbContext.RfqEnggs.Where(e => e.RFQNumber == rfqNumber && e.Id == rfqEnggId),
+            //    e => e.RfqEnggId,
+            //    eng => eng.Id,
+            //    (e, engGroup) => new { RfqEnggItem = e, RfqEnggs = engGroup })
+            //.SelectMany(
+            //    x => x.RfqEnggs.DefaultIfEmpty(),
+            //    (x, eng) => new { x.RfqEnggItem, RfqEngg = eng })
+            //.GroupJoin(
+            //    _tipsSalesServiceDbContext.ReleaseLps.Where(r => r.RfqNumber == rfqNumber),
+            //    x => new { x.RfqEnggItem.ItemNumber, RfqNumber = x.RfqEngg.RFQNumber },
+            //    rel => new { ItemNumber = rel.ItemNo, rel.RfqNumber },
+            //    (x, relGroup) => new { x.RfqEnggItem, x.RfqEngg, ReleaseLps = relGroup })
+            //.SelectMany(
+            //    x => x.ReleaseLps.DefaultIfEmpty(),
+            //    (x, rel) => new rfqEnggItemDetailsForQuoteDto
+            //    {
+            //        RfqNumber = x.RfqEngg.RFQNumber,
+            //        CustomerName = x.RfqEngg.CustomerName,
+            //        Rev = x.RfqEnggItem.RfqEngg.RevisionNumber,
+            //        CustomFields = x.RfqEnggItem.CustomFields,
+            //        DateOnLpCreation = rel.DateOnLpCreation,
+            //        CustomerItemNumber = x.RfqEnggItem.CustomerItemNumber,
+            //        ItemNumber = x.RfqEnggItem.ItemNumber,
+            //        Description = x.RfqEnggItem.Description,
+            //        CostingBomVersionNo = x.RfqEnggItem.CostingBomVersionNo,
+            //        ReleaseStatus = x.RfqEnggItem.ReleaseStatus,
+            //        Qty = x.RfqEnggItem.Qty,
+            //        UOC = rel.UOC,
+            //        LeastCost = rel.LeastCost,
+            //        LeastCostPlus = rel.LeastCostPlus,
+            //        LeastCostminus = rel.LeastCostminus,
+            //        DiscountPlus = rel.DiscountPlus,
+            //        DiscountMinus = rel.DiscountMinus,
+            //        Markup = rel.Markup,
+            //        PriceList = rel.PriceList,
+            //        ValidThrough = rel.ValidThrough,
+            //        IsDiscountApplicable = rel.IsDiscountApplicable
+            //    })
+            //.Distinct()
+            //.ToList();
+
+            var rfqDetail = await _tipsSalesServiceDbContext.Rfqs
+                 .Where(x => x.RfqNumber == rfqNumber)
+                 .FirstOrDefaultAsync();
+
+            var rfqEnggDetail = await _tipsSalesServiceDbContext.RfqEnggs
+               .Where(x => x.RFQNumber == rfqNumber)
+               .FirstOrDefaultAsync();
+
+            var rfqEnggId = _tipsSalesServiceDbContext.RfqEnggs
+                .OrderByDescending(x => x.Id)
+                .Where(x => x.RFQNumber == rfqNumber)
+                .Select(x => x.Id)
+                .FirstOrDefault();
+
+            var rfqEnggItems = _tipsSalesServiceDbContext.RfqEnggItems
+      .Where(e => e.ReleaseStatus == true && e.RfqEnggId == rfqEnggId)
+      .ToList();
+
+            var itemNumbers = rfqEnggItems.Select(e => e.ItemNumber).Distinct().ToList();
+
+            var postdata = new List<rfqEnggItemDetailsForQuoteDto>();
+
+            foreach (var itemNumber in itemNumbers)
             {
-                RfqNumber = x.RfqEngg.RFQNumber,
-                CustomerName = x.RfqEngg.CustomerName,
-                Rev = x.RfqEnggItem.RfqEngg.RevisionNumber,
-                CustomFields = x.RfqEnggItem.CustomFields,
-                DateOnLpCreation = rel.DateOnLpCreation,
-                CustomerItemNumber = x.RfqEnggItem.CustomerItemNumber,
-                ItemNumber = x.RfqEnggItem.ItemNumber,
-                Description = x.RfqEnggItem.Description,
-                CostingBomVersionNo = x.RfqEnggItem.CostingBomVersionNo,
-                ReleaseStatus = x.RfqEnggItem.ReleaseStatus,
-                Qty = x.RfqEnggItem.Qty,
-                UOC = rel.UOC,
-                LeastCost = rel.LeastCost,
-                LeastCostPlus = rel.LeastCostPlus,
-                LeastCostminus = rel.LeastCostminus,
-                DiscountPlus = rel.DiscountPlus,
-                DiscountMinus = rel.DiscountMinus,
-                Markup = rel.Markup,
-                PriceList = rel.PriceList,
-                ValidThrough = rel.ValidThrough,
-                IsDiscountApplicable = rel.IsDiscountApplicable
-            })
-        .Distinct()
-        .ToList();
+                var items = rfqEnggItems.Where(e => e.ItemNumber == itemNumber).ToList();
 
+                foreach (var rfqItem in items)
+                {
+                    var itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
+                        .Where(d => d.ItemNumber == rfqItem.ItemNumber)
+                        .OrderByDescending(d => d.CreatedOn)
+                        .FirstOrDefault();
 
+                    if (itemPriceList != null)
+                    {
+                        var itemDetails = new rfqEnggItemDetailsForQuoteDto
+                        {
+                            RfqNumber = rfqDetail.RfqNumber,
+                            LeadId = rfqDetail.LeadId,
+                            CustomerName = rfqDetail.CustomerName,
+                            Rev = rfqDetail.RevisionNumber,
+                            CustomFields = rfqItem.CustomFields,
+                            CustomerItemNumber = rfqItem.CustomerItemNumber,
+                            ItemNumber = rfqItem.ItemNumber,
+                            Description = rfqItem.Description,
+                            CostingBomVersionNo = rfqItem.CostingBomVersionNo,
+                            ReleaseStatus = rfqItem.ReleaseStatus,
+                            Qty = rfqItem.Qty,
+                            UOC = itemPriceList.UOC,
+                            LeastCost = itemPriceList.LeastCost,
+                            LeastCostPlus = itemPriceList.LeastCostPlus,
+                            LeastCostminus = itemPriceList.LeastCostminus,
+                            DiscountPlus = itemPriceList.DiscountPlus,
+                            DiscountMinus = itemPriceList.DiscountMinus,
+                            Markup = itemPriceList.Markup,
+                            PriceListName = itemPriceList.PriceListName,
+                            ValidThrough = itemPriceList.ValidThrough,
+                            IsDiscountApplicable = itemPriceList.IsDiscountApplicable
+                        };
 
-
-            return releaseLpDetails;
+                        postdata.Add(itemDetails);
+                    }
+                }
+            }
+            return postdata;
         }
 
         public async Task<PagedList<Quote>> GetAllQuote([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
