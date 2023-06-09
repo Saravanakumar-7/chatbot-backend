@@ -54,6 +54,7 @@ namespace Tips.Master.Api.Controllers
                 LoginResponseDto loginResponseDto = new LoginResponseDto();
                 loginResponseDto.UserName = loginDto.UserName;
                 loginResponseDto.Token = TokenDetails.Result;
+                loginResponseDto.Unit = loginDto.Unit;
                 serviceResponse.Data = loginResponseDto;
                 serviceResponse.Message = "Token Successfully Created";
                 serviceResponse.Success = true;

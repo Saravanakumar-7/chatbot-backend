@@ -725,13 +725,13 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPut("{PRNumber}")]
-        public async Task<IActionResult> ActivatePurchaseRequisitionApprovalI(string PRNumber)
+        public async Task<IActionResult> ActivatePurchaseRequisitionApprovalI(string PRNumber,int RevNo)
         {
             ServiceResponse<PurchaseRequisitionDto> serviceResponse = new ServiceResponse<PurchaseRequisitionDto>();
 
             try
             {
-                var purchaseRequisitionDetailByPRNumber = await _repository.GetPurchaseRequisitionByPRNumber(PRNumber);
+                var purchaseRequisitionDetailByPRNumber = await _repository.GetPurchaseRequisitionByPRNumber(PRNumber, RevNo);
                 if (purchaseRequisitionDetailByPRNumber is null)
                 {
                     serviceResponse.Data = null;
@@ -764,13 +764,13 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPut("{PRNumber}")]
-        public async Task<IActionResult> ActivatePurchaseRequisitionApprovalII(string PRNumber)
+        public async Task<IActionResult> ActivatePurchaseRequisitionApprovalII(string PRNumber, int RevNo)
         {
             ServiceResponse<PurchaseRequisitionDto> serviceResponse = new ServiceResponse<PurchaseRequisitionDto>();
 
             try
             {
-                var purchaseRequisitionDetailByPRNumber = await _repository.GetPurchaseRequisitionByPRNumber(PRNumber);
+                var purchaseRequisitionDetailByPRNumber = await _repository.GetPurchaseRequisitionByPRNumber(PRNumber, RevNo);
                 if (purchaseRequisitionDetailByPRNumber is null)
                 {
                     serviceResponse.Data = null;

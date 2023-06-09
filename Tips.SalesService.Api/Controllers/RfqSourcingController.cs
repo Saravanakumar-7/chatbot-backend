@@ -130,7 +130,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet("{rfqNo}")]
-        public async Task<IActionResult> GetRf0qSourcingDetailsByRfqNo(string rfqNo)
+        public async Task<IActionResult> GetRfqSourcingDetailsByRfqNo(string rfqNo)
         {
             ServiceResponse<RfqSourcingDto> serviceResponse = new ServiceResponse<RfqSourcingDto>();
 

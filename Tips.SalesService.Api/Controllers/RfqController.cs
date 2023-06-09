@@ -1741,10 +1741,15 @@ namespace Tips.SalesService.Api.Controllers
 
                     updatedItems.Add(itemList);
                 }
+                var rfqDetailsByRfqNumber = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
+
+                var version = 1;
+
+                rfqDetailsByRfqNumber.RevisionNumber = rfqDetailsByRfqNumber.RevisionNumber + version;
 
 
-               
                 await _rfqenggRepository.UpdateRfqEnggRevNo(updateRfqEngg);
+                _rfqRepository.Update(rfqDetailsByRfqNumber);
                 //string result = await _rfqenggRepository.UpdateRfqEngg(updateRfqEngg);
                 //_logger.LogInfo(result);
                 _rfqenggRepository.SaveAsync();

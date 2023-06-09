@@ -160,20 +160,31 @@ namespace Tips.Warehouse.Api.Controllers
                 var returnInvoiceDetails = _mapper.Map<ReturnInvoice>(ReturnInvoiceDtoPost);
                 var returnInvoiceItemDto = ReturnInvoiceDtoPost.ReturnInvoiceItems;
                 var returnInvoiceItemsList = new List<ReturnInvoiceItem>();
-
                 var invoiceNumber = returnInvoiceDetails.InvoiceNumber;
                 var returnInvoiceNumberCount = await _returnInvoiceRepository.GetReturnInvoiceByInvoiceNo(invoiceNumber);
-
-                if (returnInvoiceNumberCount != 0)
+                if (returnInvoiceNumberCount != null)
                 {
-                    int returnInvoicecount = Convert.ToInt16(returnInvoiceNumberCount + 1);
-                    returnInvoiceDetails.InvoiceNumber = invoiceNumber + "-" + "R" + "-" + returnInvoicecount;
+                    int suffixNumber = int.Parse(returnInvoiceNumberCount.Substring(returnInvoiceNumberCount.LastIndexOf("-R") + 2)) + 1;
+                    string suffix = "-R" + suffixNumber;
+                    returnInvoiceDetails.InvoiceNumber += suffix;
+
                 }
                 else
                 {
-                    int returnInvoicecount = 1;
-                    returnInvoiceDetails.InvoiceNumber = invoiceNumber + "-" + "R" + "-" + returnInvoicecount;
+                    returnInvoiceDetails.InvoiceNumber += "-R1";
+
                 }
+
+                //if (returnInvoiceNumberCount != 0)
+                //{
+                //    int returnInvoicecount = Convert.ToInt16(returnInvoiceNumberCount + 1);
+                //    returnInvoiceDetails.InvoiceNumber = invoiceNumber + "-" + "R" + "-" + returnInvoicecount;
+                //}
+                //else
+                //{
+                //    int returnInvoicecount = 1;
+                //    returnInvoiceDetails.InvoiceNumber = invoiceNumber + "-" + "R" + "-" + returnInvoicecount;
+                //}
 
 
                 if (returnInvoiceItemDto != null)
@@ -183,6 +194,7 @@ namespace Tips.Warehouse.Api.Controllers
                         ReturnInvoiceItem returnInvoiceItems = _mapper.Map<ReturnInvoiceItem>(returnInvoiceItemDto[i]);
                         returnInvoiceItemsList.Add(returnInvoiceItems);
 
+                        
                         //Update Inventory balanced Quantity 
 
                         var PartNumber = returnInvoiceItemDto[i].FGPartNumber;
@@ -248,6 +260,14 @@ namespace Tips.Warehouse.Api.Controllers
                         //btoDeliveryOrderItemDetails.DispatchQty -= ReturnQty;
                         btoDeliveryOrderItemDetails.InvoicedQty -= ReturnQty;
 
+                        //update Dispatch Qty in InvoiceChildItem Table
+                        int getInvoiceChildItemId = returnInvoiceItemDto[i].InvoicePartsId;
+
+                        var invoiceChildItemDetails = await _invoiceChildRepository.GetInvoiceChildItemDetails(getInvoiceChildItemId);
+                        invoiceChildItemDetails.InvoicedQty -= ReturnQty;
+
+                        _invoiceChildRepository.Update(invoiceChildItemDetails);
+                        _invoiceChildRepository.SaveAsync();
 
                         //passing BtoNumber GetBtoDetails
                         var btoDeliveryorderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(DONumber);
