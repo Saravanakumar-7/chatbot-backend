@@ -33,7 +33,7 @@ namespace Accounts
         {
             
                 var userDetail = await _tipsMasterDbContext.RegistrationForms
-                                .Where(m => m.UserName == userName && m.Password == password)
+                                .Where(m => m.EmailId == userName && m.Password == password)
                                 .FirstOrDefaultAsync();          
               
                     if (userDetail != null)
@@ -53,8 +53,9 @@ namespace Accounts
                             Expires = DateTime.UtcNow.AddHours(1),
                             SigningCredentials = new SigningCredentials(
                                 new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256Signature)
-                        };
+                        }; 
                         var token = tokenHandler.CreateToken(tokenDescriptor);
+                
                         return tokenHandler.WriteToken(token); 
                     }
                     else

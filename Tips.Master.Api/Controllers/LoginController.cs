@@ -53,6 +53,7 @@ namespace Tips.Master.Api.Controllers
                 var TokenDetails = _jwtAuth.GetToken(loginDto.UserName, loginDto.Password);
                 LoginResponseDto loginResponseDto = new LoginResponseDto();
                 loginResponseDto.UserName = loginDto.UserName;
+                loginResponseDto.UnitName = loginDto.UnitName;
                 loginResponseDto.Token = TokenDetails.Result;
                 serviceResponse.Data = loginResponseDto;
                 serviceResponse.Message = "Token Successfully Created";

@@ -17,7 +17,9 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public decimal? OpenSalesOrderQty { get; set; }
         
-        public decimal? ReleaseQty { get; set; } 
+        public decimal? ReleaseQty { get; set; }
+        public decimal? RequiredQty { get; set; }
+
     }
     public class ShopOrderItemPostDto
     {

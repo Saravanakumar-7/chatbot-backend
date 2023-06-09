@@ -181,7 +181,7 @@ namespace Tips.Warehouse.Api.Controllers
                     for (int i = 0; i < returnInvoiceItemDto.Count; i++)
                     {
                         ReturnInvoiceItem returnInvoiceItems = _mapper.Map<ReturnInvoiceItem>(returnInvoiceItemDto[i]);
-                        returnInvoiceItems.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
+                        //returnInvoiceItems.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
                         returnInvoiceItemsList.Add(returnInvoiceItems);
 
                         //Update Inventory balanced Quantity 
