@@ -69,6 +69,34 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetItemNoByInventoryStock()
+        {
+            ServiceResponse<IEnumerable<InventoryItemNoStock>> serviceResponse = new ServiceResponse<IEnumerable<InventoryItemNoStock>>();
+            try
+            {
+                var itemNoInventoryStock = await _inventoryRepository.GetItemNoByInventoryStock();
+               
+                _logger.LogInfo("Returned all Inventory");
+                var result = _mapper.Map<IEnumerable<InventoryItemNoStock>>(itemNoInventoryStock);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned ItemNoByInventoryStock";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //passing project 
 
         [HttpGet]

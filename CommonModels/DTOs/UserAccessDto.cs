@@ -31,10 +31,16 @@ namespace Entities.DTOs
         public bool Download { get; set; }
 
         [DefaultValue(false)]
+        public bool Upload { get; set; }
+
+        [DefaultValue(false)]
         public bool ApprovalI { get; set; }
 
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
+
+        [DefaultValue(false)]
+        public bool Print { get; set; }
         public int UserId { get; set; }
         public string? UserName { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -59,12 +65,16 @@ namespace Entities.DTOs
 
         [DefaultValue(false)]
         public bool Download { get; set; }
+        [DefaultValue(false)]
+        public bool Upload { get; set; }
 
         [DefaultValue(false)]
         public bool ApprovalI { get; set; }
 
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
+        [DefaultValue(false)]
+        public bool Print { get; set; }
         public int UserId { get; set; }
         public string? UserName { get; set; }
 
@@ -90,12 +100,16 @@ namespace Entities.DTOs
 
         [DefaultValue(false)]
         public bool Download { get; set; }
+        [DefaultValue(false)]
+        public bool Upload { get; set; }
 
         [DefaultValue(false)]
         public bool ApprovalI { get; set; }
 
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
+        [DefaultValue(false)]
+        public bool Print { get; set; }
         public int UserId { get; set; }
         public string? UserName { get; set; }
         public string? LastModifiedBy { get; set; }

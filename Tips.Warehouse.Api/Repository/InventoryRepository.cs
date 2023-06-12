@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.DTOs;
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -61,8 +62,19 @@ namespace Tips.Warehouse.Api.Repository
                 return query.ToList();
             }
         }
+        public async Task<List<InventoryItemNoStock>> GetItemNoByInventoryStock()
+        {
+            List<InventoryItemNoStock> inventoryItemNoStock = _tipsWarehouseDbContext.Inventory
+                       .GroupBy(l => new { l.PartNumber})
+                       .Select(group => new InventoryItemNoStock
+                       {
+                           PartNumber = group.Key.PartNumber,
+                           Balance_Quantity = group.Sum(c => c.Balance_Quantity),
 
+                       }).ToList();
 
+            return inventoryItemNoStock;
+        }
         public async Task<int?> CreateInventory(Inventory inventory)
         {
             inventory.CreatedBy = "Admin";
