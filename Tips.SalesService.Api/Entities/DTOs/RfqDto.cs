@@ -32,6 +32,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public CsRelease IsEnggRelease { get; set; }
         public bool? IsSourcing { get; set; }
         public bool? IsLpCosting { get; set; }
+        public bool? IsLpRelease { get; set; } 
 
         [DefaultValue(0)]
         public CsRelease ReleaseStatus { get; set; }

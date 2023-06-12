@@ -29,12 +29,16 @@ namespace Entities.DTOs
 
         [DefaultValue(false)]
         public bool Download { get; set; }
+        [DefaultValue(false)]
+        public bool Upload { get; set; }
 
         [DefaultValue(false)]
         public bool ApprovalI { get; set; }
 
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
+        [DefaultValue(false)]
+        public bool Print { get; set; }
         public int RoleId { get; set; }
         public string RoleName { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -60,12 +64,16 @@ namespace Entities.DTOs
 
         [DefaultValue(false)]
         public bool Download { get; set; }
+        [DefaultValue(false)]
+        public bool Upload { get; set; }
 
         [DefaultValue(false)]
         public bool ApprovalI { get; set; }
 
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
+        [DefaultValue(false)]
+        public bool Print { get; set; }
         public int RoleId { get; set; }
 
         public string? LastModifiedBy { get; set; }
@@ -93,12 +101,16 @@ namespace Entities.DTOs
 
         [DefaultValue(false)]
         public bool Download { get; set; }
+        [DefaultValue(false)]
+        public bool Upload { get; set; }
 
         [DefaultValue(false)]
         public bool ApprovalI { get; set; }
 
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
+        [DefaultValue(false)]
+        public bool Print { get; set; }
         public int RoleId { get; set; }
 
         public string? LastModifiedBy { get; set; }

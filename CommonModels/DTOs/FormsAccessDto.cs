@@ -27,6 +27,8 @@ namespace Entities.DTOs
 
         [DefaultValue(false)]
         public bool Download { get; set; }
+        [DefaultValue(false)]
+        public bool Upload { get; set; }
 
         [DefaultValue(false)]
         public bool ApprovalI { get; set; }

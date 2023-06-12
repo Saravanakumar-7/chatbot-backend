@@ -48,7 +48,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal Balance_Quantity { get; set; }
         [Required]
         public string? UOM { get; set; }
-        
+
         [Required]
         public string? Warehouse { get; set; }
         [Required]
@@ -62,7 +62,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         [Required]
         public string? ReferenceIDFrom { get; set; }
         public string? ShopOrderNo { get; set; }
-      
+
     }
     public class InventoryDtoUpdate
     {
@@ -78,7 +78,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         [Required]
         public string ProjectNumber { get; set; }
         public decimal Balance_Quantity { get; set; }
-        public string? UOM { get; set; }       
+        public string? UOM { get; set; }
         public string Warehouse { get; set; }
         public string? Location { get; set; }
         public string? GrinNo { get; set; }
@@ -146,5 +146,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal ReturnQty { get; set; }
     }
+    public class InventoryItemNoStock
+    {
+        public string PartNumber { get; set; }
+        public decimal Balance_Quantity { get; set; }
 
+    }
 }

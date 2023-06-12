@@ -1440,6 +1440,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 var createRfq = _mapper.Map<Rfq>(rfqPostDto);
                 createRfq.RevisionNumber = 1;
+                createRfq.IsLpRelease = true;
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
                 var months = Convert.ToString(date.Month.ToString("D2"));
