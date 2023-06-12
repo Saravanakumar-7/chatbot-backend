@@ -20,6 +20,7 @@ namespace Entities.DTOs
         public string UserName { get; set; }
         public string Token { get; set; }
         public string UnitName { get; set; }
+        public int UserId { get; set; }
 
     }
 }
