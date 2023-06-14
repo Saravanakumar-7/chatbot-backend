@@ -13,7 +13,9 @@ namespace Accounts
 {
     public interface IJwtAuth 
     {
-        Task<string> GetToken(string userName, string password);
-        
+        //Task<string> GetToken(string userName, string password);
+        Task<(string token, int userId)> GetToken(string userName, string password);
+
+
     }
 }

@@ -27,9 +27,11 @@ namespace Accounts
         {
             _tipsMasterDbContext = tipsMasterDbContext; 
             _configuration = configuration;
-        } 
+        }
 
-        public async Task<string> GetToken(string userName, string password)
+        public async Task<(string token, int userId)> GetToken(string userName, string password)
+
+        //public async Task<string> GetToken(string userName, string password)
         {
             
                 var userDetail = await _tipsMasterDbContext.RegistrationForms
@@ -49,6 +51,7 @@ namespace Accounts
                         new Claim(ClaimTypes.Name, userDetail.UserName),
                         new Claim(ClaimTypes.Email, userDetail.EmailId),
                         new Claim("UnitName", userDetail.Unit),
+                        new Claim("UserId", userDetail.Id.ToString()),// Add UserId claim
                                  }),
                             Expires = DateTime.UtcNow.AddHours(1),
                             SigningCredentials = new SigningCredentials(
@@ -56,11 +59,12 @@ namespace Accounts
                         }; 
                         var token = tokenHandler.CreateToken(tokenDescriptor);
                 
-                        return tokenHandler.WriteToken(token); 
-                    }
+                       // return tokenHandler.WriteToken(token);
+                return (tokenHandler.WriteToken(token), userDetail.Id);
+            }
                     else
                     {
-                        return "";
+                    return (null, 0);
                          
                     }  
             

@@ -5,6 +5,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NuGet.Common;
 using NuGet.Protocol;
 using System.Net;
 
@@ -27,7 +28,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult GenerateUserToken([FromBody] LoginDto loginDto)
+        public async Task<IActionResult> GenerateUserToken([FromBody] LoginDto loginDto)
         {
             ServiceResponse<LoginResponseDto> serviceResponse = new ServiceResponse<LoginResponseDto>();
             try
@@ -50,12 +51,15 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid User Data sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
-                var TokenDetails = _jwtAuth.GetToken(loginDto.UserName, loginDto.Password);
+                var (token, userId) = await _jwtAuth.GetToken(loginDto.UserName, loginDto.Password);
+                 
                 LoginResponseDto loginResponseDto = new LoginResponseDto();
                 loginResponseDto.UserName = loginDto.UserName;
                 loginResponseDto.UnitName = loginDto.UnitName;
-                loginResponseDto.Token = TokenDetails.Result;
-                loginResponseDto.Unit = loginDto.Unit;
+                //loginResponseDto.Token = TokenDetails.Result;
+                loginResponseDto.UnitName = loginDto.UnitName;
+                loginResponseDto.Token = token;
+                loginResponseDto.UserId = userId; 
                 serviceResponse.Data = loginResponseDto;
                 serviceResponse.Message = "Token Successfully Created";
                 serviceResponse.Success = true;
