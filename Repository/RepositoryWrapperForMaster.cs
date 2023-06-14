@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace Repository
         private IImageUploadRepository _imageUploadRepository;
         private ICustomerTypeRepository _customerTypeRepo;
         private IUnitRepository _unitRepository;
+        private IHttpContextAccessor _httpContextAccessor;
+
 
         private IMaterialTypeRepository _materialTypeRepo;
         private IProcurementTypeRepository _procurementTypeRepo;
@@ -115,9 +118,10 @@ namespace Repository
         private IAdditionalChargesRepository? _additionalChargesRepository;
         private ICompanyCategoryRepository? _companyCategoryRepository;
         private ICustomerCategoryRepository? _customerCategoryRepository;
-        public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext)
+        public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
+            _httpContextAccessor = httpContextAccessor;
         }
         public ICompanyCategoryRepository CompanyCategoryRepository
         {
@@ -592,7 +596,7 @@ namespace Repository
             {
                 if (_uOMRepo == null)
                 {
-                    _uOMRepo = new UOMRepository(_tipsMasterDbContext);
+                    _uOMRepo = new UOMRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _uOMRepo;
             }
