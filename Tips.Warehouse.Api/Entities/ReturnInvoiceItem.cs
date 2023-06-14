@@ -37,7 +37,7 @@ namespace Tips.Warehouse.Api.Entities
         public decimal CGST { get; set; }
 
         [Precision(13, 3)]
-        public decimal GST { get; set; }
+        public decimal UTGST { get; set; }
 
         [Precision(13, 3)]
         public decimal TotalValueWithTax { get; set; }

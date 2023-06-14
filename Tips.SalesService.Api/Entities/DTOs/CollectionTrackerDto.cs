@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal TotalSumOfSOAmount { get; set; }
         public decimal AmountRecieved { get; set; }
         public decimal AlreadyRecieved { get; set; }
+        public decimal AlreadyRecievedWithPercentage { get; set; }
         public string PaymentMode { get; set; }
         public string PaymentRefNo { get; set; }
         public string Unit { get; set; }
@@ -28,6 +29,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? Remarks { get; set; }
         public decimal AmountRecieved { get; set; }
         public decimal AlreadyRecieved { get; set; }
+        public decimal AlreadyRecievedWithPercentage { get; set; }
         public string PaymentMode { get; set; }
         public string PaymentRefNo { get; set; }
         public List<SOBreakDownPostDto>? SOBreakDown { get; set; }
@@ -42,6 +44,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal TotalSumOfSOAmount { get; set; }
         public decimal AmountRecieved { get; set; }
         public decimal AlreadyRecieved { get; set; }
+        public decimal AlreadyRecievedWithPercentage { get; set; }
         public string PaymentMode { get; set; }
         public string PaymentRefNo { get; set; }
         public string Unit { get; set; }
