@@ -5,6 +5,7 @@ using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -16,11 +17,14 @@ namespace Tips.Master.Api.Controllers
         private ILoggerManager _logger;
         private IMapper _mapper;
 
-        public UOMController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        private readonly IUOMRepository _uOMRepository;
+
+        public UOMController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper,IUOMRepository uOMRepository)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _uOMRepository = uOMRepository;
         }
 
         // GET: api/<UOMController>
@@ -144,7 +148,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid UOM object sent from client.");
                     return BadRequest(serviceResponse);
-                }
+                } 
                 var UOMEntity = _mapper.Map<UOM>(UomDtoPost);
                 _repository.UOMRepository.CreateUOM(UOMEntity);
                 _repository.SaveAsync();

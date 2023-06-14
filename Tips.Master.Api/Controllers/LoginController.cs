@@ -54,7 +54,7 @@ namespace Tips.Master.Api.Controllers
                 var (token, userId) = await _jwtAuth.GetToken(loginDto.UserName, loginDto.Password);
                  
                 LoginResponseDto loginResponseDto = new LoginResponseDto();
-                loginResponseDto.UserName = loginDto.UserName;
+                loginResponseDto.Name = loginDto.UserName;
                 loginResponseDto.UnitName = loginDto.UnitName;
                 //loginResponseDto.Token = TokenDetails.Result;
                 loginResponseDto.UnitName = loginDto.UnitName;
