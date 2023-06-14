@@ -152,4 +152,11 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal Balance_Quantity { get; set; }
 
     }
+    public class InventoryBalQty
+    {
+        public List<string> PartNumber { get; set; }
+        public List<string> Warehouse { get; set; }
+        public List<string> Location { get; set; }
+       
+    }
 }
