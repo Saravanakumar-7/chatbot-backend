@@ -157,6 +157,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public List<string> PartNumber { get; set; }
         public List<string> Warehouse { get; set; }
         public List<string> Location { get; set; }
-       
+
+    }
+    public class InventoryItemNo
+    {
+        public string PartNumber { get; set; }
     }
 }

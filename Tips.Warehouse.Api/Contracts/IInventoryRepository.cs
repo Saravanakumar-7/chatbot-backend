@@ -26,7 +26,7 @@ namespace Tips.Warehouse.Api.Contracts
 
         Task<IEnumerable<ListOfLocationTransferDto>> GetInventoryDetailsForLocationTransfer(string ItemNumber);
         Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfStock(InventoryBalQty inventoryBalQty);
-
+        Task<IEnumerable<Inventory>> SearchInventoryDetailsWithSumOfStock(InventoryItemNo InventoryItemNo);
 
         Task<Inventory> GetInventoryDetailsByItemAndProjectNo(string itemNumber, string projectNumber);
 

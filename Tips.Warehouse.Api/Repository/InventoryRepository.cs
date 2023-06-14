@@ -16,6 +16,54 @@ namespace Tips.Warehouse.Api.Repository
         public InventoryRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
         {
         }
+        public async Task<IEnumerable<Inventory>> SearchInventoryDetailsWithSumOfStock(InventoryItemNo InventoryItemNo)
+        {
+            using (var context = _tipsWarehouseDbContext)
+            {
+                var query = _tipsWarehouseDbContext.Inventory.AsQueryable();
+
+                // Check if inventoryBalQty object is not null
+                if (InventoryItemNo != null)
+                {
+                    // Apply filtering based on the inventoryBalQty properties if they are not null
+                    if (InventoryItemNo.PartNumber != null && InventoryItemNo.PartNumber.Any())
+                    {
+                        query = query.Where(inv => InventoryItemNo.PartNumber.Contains(inv.PartNumber));
+                    }
+                }
+
+                // Retrieve the filtered inventory items
+                var inventoryItems = await query.ToListAsync();
+
+                // Group the inventory items by PartNumber using a for loop
+                var groupedItems = new Dictionary<string, List<Inventory>>();
+                foreach (var item in inventoryItems)
+                {
+                    var key = item.PartNumber;
+                    if (!groupedItems.ContainsKey(key))
+                    {
+                        groupedItems[key] = new List<Inventory> { item };
+                    }
+                    else
+                    {
+                        groupedItems[key].Add(item);
+                    }
+                }
+
+
+                // Calculate the sum of Balance_Quantity for each group and update the first item in the group
+                foreach (var group in groupedItems)
+                {
+                    var sum = group.Value.Sum(inv => inv.Balance_Quantity);
+                    var firstItem = group.Value.First();
+                    firstItem.Balance_Quantity = sum;
+                   
+                }
+
+                // Return the updated first items from each group
+                return groupedItems.Values.Select(group => group.First());
+            }
+        }
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfStock(InventoryBalQty inventoryBalQty)
         {
             using (var context = _tipsWarehouseDbContext)
@@ -66,6 +114,7 @@ namespace Tips.Warehouse.Api.Repository
                     var sum = group.Value.Sum(inv => inv.Balance_Quantity);
                     var firstItem = group.Value.First();
                     firstItem.Balance_Quantity = sum;
+                  
                 }
 
                 // Return the updated first items from each group
