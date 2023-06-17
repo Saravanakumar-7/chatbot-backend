@@ -189,7 +189,6 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        // GET api/<ItemMasterController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetItemMasterById(int id)
         {
@@ -209,29 +208,34 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
-                    List<FileUpload> fileUplaodDtoList = new List<FileUpload>();
-                    FileUpload ImageUplaodDtoList = new FileUpload();
 
-                    if (getItemMaster.FileUpload.Count() != 0)
+                    _logger.LogInfo($"Returned owner with id: {id}");
+
+                    ItemMasterDto itemMasterDto = _mapper.Map<ItemMasterDto>(getItemMaster);
+                    List<ItemmasterAlternateDto> itemmasterAlternateDtos = new List<ItemmasterAlternateDto>();
+
+                    List<FileUploadDto> fileUploads = new List<FileUploadDto>();
+
+                    if (itemMasterDto.FileUpload.Count() != 0)
                     {
-                        foreach (var fileUploadDetails in getItemMaster.FileUpload)
+                        foreach (var fileUploadDetails in itemMasterDto.FileUpload)
                         {
-                            FileUpload fileUpload = _mapper.Map<FileUpload>(fileUploadDetails);
-                            fileUplaodDtoList.Add(fileUpload);
+                            FileUploadDto fileUploadDto = _mapper.Map<FileUploadDto>(fileUploadDetails);
+                            fileUploads.Add(fileUploadDto);
                         }
                     }
-                    getItemMaster.FileUpload = fileUplaodDtoList;
-                     
-
-                    _logger.LogInfo($"Returned ItemMaster with id: {id}");
-                    var result = _mapper.Map<ItemMasterDto>(getItemMaster);
-                    serviceResponse.Data = result;
+                    itemMasterDto.FileUpload = fileUploads;
+                    serviceResponse.Data = itemMasterDto;
                     serviceResponse.Message = "Returned ItemMasterById Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
+
+
                 }
             }
+
+
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetItemMasterById action: {ex.Message}");
@@ -240,8 +244,62 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
-             }
+            }
         }
+
+        //// GET api/<ItemMasterController>/5
+        //[HttpGet("{id}")]
+        //public async Task<IActionResult> GetItemMasterById(int id)
+        //{
+        //    ServiceResponse<ItemMasterDto> serviceResponse = new ServiceResponse<ItemMasterDto>();
+
+        //    try
+        //    {
+        //        var getItemMaster = await _repository.ItemMasterRepository.GetItemMasterById(id);
+        //        if (getItemMaster == null)
+        //        {
+        //            _logger.LogError($"ItemMaster with id: {id}, hasn't been found in db.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"ItemMaster with id hasn't been found in db.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            return NotFound(serviceResponse);
+        //        }
+        //        else
+        //        {
+        //            List<FileUpload> fileUplaodDtoList = new List<FileUpload>();
+        //            FileUpload ImageUplaodDtoList = new FileUpload();
+
+        //            if (getItemMaster.FileUpload.Count() != 0)
+        //            {
+        //                foreach (var fileUploadDetails in getItemMaster.FileUpload)
+        //                {
+        //                    FileUpload fileUpload = _mapper.Map<FileUpload>(fileUploadDetails);
+        //                    fileUplaodDtoList.Add(fileUpload);
+        //                }
+        //            }
+        //            getItemMaster.FileUpload = fileUplaodDtoList;
+                     
+
+        //            _logger.LogInfo($"Returned ItemMaster with id: {id}");
+        //            var result = _mapper.Map<ItemMasterDto>(getItemMaster);
+        //            serviceResponse.Data = result;
+        //            serviceResponse.Message = "Returned ItemMasterById Successfully";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(serviceResponse);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside GetItemMasterById action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //     }
+        //}
         [HttpGet]
         public async Task<IActionResult> GetAllFgTgItemMasterItemNoList()
         {
@@ -340,7 +398,7 @@ namespace Tips.Master.Api.Controllers
                          .ForMember(dest => dest.ItemmasterAlternate, opt => opt.MapFrom(src => src.ItemmasterAlternate))
                          .ForMember(dest => dest.ItemMasterApprovedVendor, opt => opt.MapFrom(src => src.ItemMasterApprovedVendor))
                           .ForMember(dest => dest.ItemMasterWarehouse, opt => opt.MapFrom(src => src.ItemMasterWarehouse))
-                           .ForMember(dest => dest.ItemMasterFileUpload, opt => opt.MapFrom(src => src.ItemMasterFileUpload))
+                           //.ForMember(dest => dest.ItemMasterFileUpload, opt => opt.MapFrom(src => src.ItemMasterFileUpload))
                            .ForMember(dest => dest.ItemMasterRouting, opt => opt.MapFrom(src => src.ItemMasterRouting));
                 });
 
@@ -379,7 +437,7 @@ namespace Tips.Master.Api.Controllers
                         .ForMember(dest => dest.ItemmasterAlternate, opt => opt.MapFrom(src => src.ItemmasterAlternate))
                          .ForMember(dest => dest.ItemMasterApprovedVendor, opt => opt.MapFrom(src => src.ItemMasterApprovedVendor))
                           .ForMember(dest => dest.ItemMasterWarehouse, opt => opt.MapFrom(src => src.ItemMasterWarehouse))
-                           .ForMember(dest => dest.ItemMasterFileUpload, opt => opt.MapFrom(src => src.ItemMasterFileUpload))
+                           //.ForMember(dest => dest.ItemMasterFileUpload, opt => opt.MapFrom(src => src.ItemMasterFileUpload))
                            .ForMember(dest => dest.ItemMasterRouting, opt => opt.MapFrom(src => src.ItemMasterRouting));
                 });
 
@@ -432,7 +490,7 @@ namespace Tips.Master.Api.Controllers
                 var itemMasterEntity = _mapper.Map<ItemMaster>(itemMasterDtoPost);
                 var itemMasterAlternate = _mapper.Map<IEnumerable<ItemmasterAlternate>>(itemMasterDtoPost.ItemmasterAlternate);
                 var itemMasterApprovedVendor = _mapper.Map<IEnumerable<ItemMasterApprovedVendor>>(itemMasterDtoPost.ItemMasterApprovedVendor);
-                var itemMasterFileUpload = _mapper.Map<IEnumerable<ItemMasterFileUpload>>(itemMasterDtoPost.ItemMasterFileUpload);
+                //var itemMasterFileUpload = _mapper.Map<IEnumerable<ItemMasterFileUpload>>(itemMasterDtoPost.ItemMasterFileUpload);
                 var itemMasterRouting=_mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoPost.ItemMasterRouting);
                 var itemMasterWarehouse = _mapper.Map<IEnumerable<ItemMasterWarehouse>>(itemMasterDtoPost.ItemMasterWarehouse);
 
@@ -442,99 +500,99 @@ namespace Tips.Master.Api.Controllers
                 var imageUploadDtoList = new List<ImageUpload>();
 
 
-                //var ImageUploadDetails = itemMasterDtoPost.ImageUpload;
-                
-                //foreach (var ImageUploadDetail in ImageUploadDetails)
-                //{
-                //    var imageContent = ImageUploadDetail.FileByte;
-                //    var itemNumbers = itemMasterDtoPost.ItemNumber;
-                //    string imageName = ImageUploadDetail.FileName + "." + ImageUploadDetail.FileExtension;
-                //    string imageExt = Path.GetExtension(imageName).ToUpper();
-                //    if (imageExt == ".PNG" || imageExt == ".JPG" || imageExt == ".JPEG" || imageExt == ".GIF")
-                //    {
-                //        //Guid guid = Guid.NewGuid();
-                //        string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", /*guid.ToString() + "_" +*/ imageName);
-                //        using (MemoryStream ms = new MemoryStream(imageContent))
-                //        {
-                //            ms.Position = 0;
-                //            using (var fileStream = new FileStream(imagePath, FileMode.Create, FileAccess.Write))
-                //            {
-                //                ms.WriteTo(fileStream);
-                //            }
-                //            var uploadedFiles = new ImageUpload
-                //            {
-                //                FileName = imageName,
-                //                FileExtension = imageExt,
-                //                FilePath = imagePath,
-                //                ParentId = itemNumbers,
-                //                DocumentFrom = "ItemMaster Image Document"
-                //            };
-                //            _repository.ImageUploadRepository.ImageUploadDocument(uploadedFiles);
-                //            _repository.SaveAsync();
-                //            if (uploadedFiles != null)
-                //            {
-                //                ImageUpload itemmasterImageDetails = _mapper.Map<ImageUpload>(uploadedFiles);
-                //                imageUploadDtoList.Add(itemmasterImageDetails);
-                //            }
+                var ImageUploadDetails = itemMasterDtoPost.ImageUpload;
 
-                //        }
-                //    }
-                //    else
-                //    {
-                //        _logger.LogError("Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....");
-                //        serviceResponse.Data = null;
-                //        serviceResponse.Message = "Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....";
-                //        serviceResponse.Success = false;
-                //        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                //        return BadRequest(serviceResponse);
-                //    }
+                foreach (var ImageUploadDetail in ImageUploadDetails)
+                {
+                    var imageContent = ImageUploadDetail.FileByte;
+                    var itemNumbers = itemMasterDtoPost.ItemNumber;
+                    string imageName = ImageUploadDetail.FileName + "." + ImageUploadDetail.FileExtension;
+                    string imageExt = Path.GetExtension(imageName).ToUpper();
+                    if (imageExt == ".PNG" || imageExt == ".JPG" || imageExt == ".JPEG" || imageExt == ".GIF")
+                    {
+                        //Guid guid = Guid.NewGuid();
+                        string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", /*guid.ToString() + "_" +*/ imageName);
+                        using (MemoryStream ms = new MemoryStream(imageContent))
+                        {
+                            ms.Position = 0;
+                            using (var fileStream = new FileStream(imagePath, FileMode.Create, FileAccess.Write))
+                            {
+                                ms.WriteTo(fileStream);
+                            }
+                            var uploadedFiles = new ImageUpload
+                            {
+                                FileName = imageName,
+                                FileExtension = imageExt,
+                                FilePath = imagePath,
+                                ParentId = itemNumbers,
+                                DocumentFrom = "ItemMaster Image Document"
+                            };
+                            _repository.ImageUploadRepository.ImageUploadDocument(uploadedFiles);
+                            _repository.SaveAsync();
+                            if (uploadedFiles != null)
+                            {
+                                ImageUpload itemmasterImageDetails = _mapper.Map<ImageUpload>(uploadedFiles);
+                                imageUploadDtoList.Add(itemmasterImageDetails);
+                            }
 
-                //}
-                //var fileUploadDtoList = new List<FileUpload>();          
+                        }
+                    }
+                    else
+                    {
+                        _logger.LogError("Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                        return BadRequest(serviceResponse);
+                    }
+
+                }
+                var fileUploadDtoList = new List<FileUpload>();
 
                 ////multiple file upload
 
 
-                //var FileUploadDetails = itemMasterDtoPost.FileUpload;
-                //foreach (var FileUploadDetail in FileUploadDetails)
-                //{
-                //    var fileContent = FileUploadDetail.FileByte;
-                //    var itemNumber = itemMasterDtoPost.ItemNumber;
-                //    string fileName = FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
-                //    string FileExt = Path.GetExtension(fileName).ToUpper();
+                var FileUploadDetails = itemMasterDtoPost.FileUpload;
+                foreach (var FileUploadDetail in FileUploadDetails)
+                {
+                    var fileContent = FileUploadDetail.FileByte;
+                    var itemNumber = itemMasterDtoPost.ItemNumber;
+                    string fileName = FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                //    //Guid guids = Guid.NewGuid();
-                //    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload",/*guids.ToString() + "_" +*/ fileName);
-                //    using (MemoryStream ms = new MemoryStream(fileContent))
-                //    {
-                //        ms.Position = 0;
-                //        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                //        {
-                //            ms.WriteTo(fileStream);
-                //        }
-                //        var uploadedFile = new FileUpload
-                //        {
-                //            FileName = fileName,
-                //            FileExtension = FileExt,
-                //            FilePath = filePath,
-                //            ParentId = itemNumber,
-                //            DocumentFrom = "ItemMaster File Document",
-                //        }; 
-                //        _repository.FileUploadRepository.CreateFileUploadDocument(uploadedFile);
-                //        _repository.SaveAsync();
-                //        if (uploadedFile != null)
-                //        {
-                //            FileUpload itemmasterFileDetails = _mapper.Map<FileUpload>(uploadedFile);
-                //            fileUploadDtoList.Add(itemmasterFileDetails);
-                //        }
+                    //Guid guids = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload",/*guids.ToString() + "_" +*/ fileName);
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                        var uploadedFile = new FileUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            ParentId = itemNumber,
+                            DocumentFrom = "ItemMaster File Document",
+                        };
+                        _repository.FileUploadRepository.CreateFileUploadDocument(uploadedFile);
+                        _repository.SaveAsync();
+                        if (uploadedFile != null)
+                        {
+                            FileUpload itemmasterFileDetails = _mapper.Map<FileUpload>(uploadedFile);
+                            fileUploadDtoList.Add(itemmasterFileDetails);
+                        }
 
-                //    }
+                    }
 
-                //}
+                }
 
-                //itemMasterEntity.FileUpload = fileUploadDtoList;
-                //itemMasterEntity.ImageUpload = imageUploadDtoList;
-                 _repository.ItemMasterRepository.CreateItemMaster(itemMasterEntity);
+                itemMasterEntity.FileUpload = fileUploadDtoList;
+                itemMasterEntity.ImageUpload = imageUploadDtoList;
+                _repository.ItemMasterRepository.CreateItemMaster(itemMasterEntity);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ItemMaster Successfully Created";
@@ -591,14 +649,14 @@ namespace Tips.Master.Api.Controllers
                  }
                  var itemMasterAlternate = _mapper.Map<IEnumerable<ItemmasterAlternate>>(itemMasterDtoUpdate.ItemmasterAlternate);
                 var itemMasterApprovedVendor = _mapper.Map<IEnumerable<ItemMasterApprovedVendor>>(itemMasterDtoUpdate.ItemMasterApprovedVendor);
-                var itemMasterFileUpload = _mapper.Map<IEnumerable<ItemMasterFileUpload>>(itemMasterDtoUpdate.ItemMasterFileUpload);
+                //var itemMasterFileUpload = _mapper.Map<IEnumerable<ItemMasterFileUpload>>(itemMasterDtoUpdate.ItemMasterFileUpload);
                 var itemMasterRouting = _mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoUpdate.ItemMasterRouting);
                 var itemMasterWarehouse = _mapper.Map<IEnumerable<ItemMasterWarehouse>>(itemMasterDtoUpdate.ItemMasterWarehouse);
                 var itemMaster = _mapper.Map(itemMasterDtoUpdate, updateItemMasterEntity);
 
                 itemMaster.ItemmasterAlternate = itemMasterAlternate.ToList();
                 itemMaster.ItemMasterApprovedVendor = itemMasterApprovedVendor.ToList();
-                itemMaster.ItemMasterFileUpload=itemMasterFileUpload.ToList();
+                //itemMaster.ItemMasterFileUpload=itemMasterFileUpload.ToList();
                 itemMaster.ItemMasterRouting = itemMasterRouting.ToList();
                 itemMaster.ItemMasterWarehouse = itemMasterWarehouse.ToList();
 

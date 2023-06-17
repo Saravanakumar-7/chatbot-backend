@@ -17,6 +17,7 @@ namespace Tips.SalesService.Api.Entities
         public int Id { get; set; }
         public string? CustomerName { get; set; }
 
+        public string?  CustomerForeCastRefrence { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerForecastNumber { get; set; }
         public int RevisionNumber { get; set; }

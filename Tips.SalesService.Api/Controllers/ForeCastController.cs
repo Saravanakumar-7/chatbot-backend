@@ -981,10 +981,6 @@ namespace Tips.SalesService.Api.Controllers
                 await _Forecastrepository.CreateForeCast(createForecast);
                 var forecastDetails = _mapper.Map<ForeCastDto>(createForecast);
 
-                await _Forecastrepository.CreateForeCast(createForecast);
-
-
-
                 _Forecastrepository.SaveAsync();
                 serviceResponse.Data = forecastDetails;
                 serviceResponse.Message = "Successfully Created";

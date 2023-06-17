@@ -45,7 +45,7 @@ namespace Repository
             var allActiveCompanyMasters = await FindByCondition(x => x.IsActive == true)
             .Include(t => t.ItemmasterAlternate)
             .Include(t => t.ItemMasterApprovedVendor)
-            .Include(t => t.ItemMasterFileUpload)
+            //.Include(t => t.ItemMasterFileUpload)
             .Include(d => d.ItemMasterRouting)
             .Include(d => d.ItemMasterWarehouse)
             .ToListAsync();
@@ -60,7 +60,7 @@ namespace Repository
              || inv.Commodity.Contains(searchParams.SearchValue) || inv.MaterialGroup.Contains(searchParams.SearchValue))))
                           .Include(t => t.ItemmasterAlternate)
                          .Include(t => t.ItemMasterApprovedVendor)
-                         .Include(t => t.ItemMasterFileUpload)
+                         //.Include(t => t.ItemMasterFileUpload)
                           .Include(d => d.ItemMasterRouting)
                           .Include(d => d.ItemMasterWarehouse);
 
@@ -75,7 +75,7 @@ namespace Repository
                                 )))
                              .Include(t => t.ItemmasterAlternate)
                              .Include(t => t.ItemMasterApprovedVendor)
-                             .Include(t => t.ItemMasterFileUpload)
+                             //.Include(t => t.ItemMasterFileUpload)
                              .Include(d => d.ItemMasterRouting)
                              .Include(d => d.ItemMasterWarehouse)
                              .ToList();
@@ -148,7 +148,7 @@ namespace Repository
                 .Where(inv => inv.ItemType == PartType.FG)
             .Include(t => t.ItemmasterAlternate)
             .Include(t => t.ItemMasterApprovedVendor)
-            .Include(t => t.ItemMasterFileUpload)
+            //.Include(t => t.ItemMasterFileUpload)
             .Include(d => d.ItemMasterRouting)
             .Include(d => d.ItemMasterWarehouse);
             return itemmasterFgDetails;
@@ -159,7 +159,7 @@ namespace Repository
             var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id).Where(inv => inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart)
             .Include(t => t.ItemmasterAlternate)
             .Include(t => t.ItemMasterApprovedVendor)
-            .Include(t => t.ItemMasterFileUpload)
+            //.Include(t => t.ItemMasterFileUpload)
             .Include(d => d.ItemMasterRouting)
             .Include(d => d.ItemMasterWarehouse);
             return itemmasterFgDetails;
@@ -171,7 +171,7 @@ namespace Repository
             var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id).Where(inv => inv.ItemType == PartType.SA)
             .Include(t => t.ItemmasterAlternate)
             .Include(t => t.ItemMasterApprovedVendor)
-            .Include(t => t.ItemMasterFileUpload)
+            //.Include(t => t.ItemMasterFileUpload)
             .Include(d => d.ItemMasterRouting)
             .Include(d => d.ItemMasterWarehouse);
             return itemmasterSADetails;
@@ -183,7 +183,7 @@ namespace Repository
             .Include(x => x.ImageUpload)
             .Include(t => t.ItemmasterAlternate)
             .Include(t => t.ItemMasterApprovedVendor)
-            .Include(t => t.ItemMasterFileUpload)
+            //.Include(t => t.ItemMasterFileUpload)
             .Include(d => d.ItemMasterRouting)
             .Include(d => d.ItemMasterWarehouse);
             return itemmasterSADetails;
@@ -198,7 +198,7 @@ namespace Repository
                             .Include(x => x.ImageUpload)
                             .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
-                                .Include(m => m.ItemMasterFileUpload)
+                                //.Include(m => m.ItemMasterFileUpload)
                                 .Include(s => s.ItemMasterRouting)
                                 .Include(f => f.ItemMasterWarehouse).ToList();
             return itemmasterFgSaFRUDetails;
@@ -214,7 +214,7 @@ namespace Repository
                             .Include(b=>b.ImageUpload)
                             .Include(t => t.ItemmasterAlternate)
                             .Include(x => x.ItemMasterApprovedVendor)
-                            .Include(m => m.ItemMasterFileUpload)
+                            //.Include(m => m.ItemMasterFileUpload)
                             .Include(s => s.ItemMasterRouting)
                             .Include(p => p.ItemMasterWarehouse)
                             .FirstOrDefaultAsync();
@@ -269,7 +269,7 @@ namespace Repository
                 .Include(x => x.ImageUpload)
                  .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
-                                .Include(m => m.ItemMasterFileUpload)
+                                //.Include(m => m.ItemMasterFileUpload)
                                 .Include(s => s.ItemMasterRouting)
                                 .Include(p => p.ItemMasterWarehouse)
 

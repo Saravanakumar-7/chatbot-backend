@@ -118,7 +118,8 @@ namespace Entities
         public List<ItemmasterAlternate>? ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouse>? ItemMasterWarehouse { get; set; }
         public List<ItemMasterApprovedVendor>? ItemMasterApprovedVendor { get; set; }
-        public List<ItemMasterFileUpload>? ItemMasterFileUpload { get; set; }
+        
+        //public List<ItemMasterFileUpload>? ItemMasterFileUpload { get; set; }
         public List<ItemMasterRouting>? ItemMasterRouting { get; set; }
     }
 
