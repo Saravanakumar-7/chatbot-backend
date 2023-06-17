@@ -15,6 +15,7 @@ namespace Tips.SalesService.Api.Entities
 
         public string ForecastNumber { get; set; }
         public string? ItemNumber { get; set; }
+        public string? CustomFields { get; set; }
 
         [Precision(13,3)]
         public decimal? Qty { get; set; }

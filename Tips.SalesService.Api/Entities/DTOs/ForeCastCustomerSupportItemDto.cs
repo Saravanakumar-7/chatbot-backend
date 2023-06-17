@@ -14,7 +14,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string ForecastNumber { get; set; }
-
+        public string? CustomFields { get; set; }
 
         [Precision(13,3)]
         public decimal? Qty { get; set; }
@@ -28,7 +28,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         [Required]
         public string ForecastNumber { get; set; }
-
+        public string? CustomFields { get; set; }
         public string? ItemNumber { get; set; }
 
         [Precision(13,3)]
@@ -44,7 +44,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class ForeCastCustomerSupportItemUpdateDto
     {
         public string ForecastNumber { get; set; }
-
+        public string? CustomFields { get; set; }
         public string? ItemNumber { get; set; }
         public int? Quantity { get; set; }
 

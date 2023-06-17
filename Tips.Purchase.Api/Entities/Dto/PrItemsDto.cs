@@ -8,6 +8,7 @@ namespace Tips.Purchase.Api.Entities.Dto
     {
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
+        public string? PrNumber { get; set; }
         public string? MftrItemNumber { get; set; }
         public string? Description { get; set; }
         public string? UOM { get; set; }
@@ -24,6 +25,7 @@ namespace Tips.Purchase.Api.Entities.Dto
     public class PrItemsPostDto
     {
         public string? ItemNumber { get; set; }
+        public string? PrNumber { get; set; }
         public string? MftrItemNumber { get; set; }
         public string? Description { get; set; }
         public string? UOM { get; set; }
@@ -40,6 +42,7 @@ namespace Tips.Purchase.Api.Entities.Dto
     public class PrItemsUpdateDto
     {
         public string? ItemNumber { get; set; }
+        public string? PrNumber { get; set; }
         public string? MftrItemNumber { get; set; }
         public string? Description { get; set; }
         public string? UOM { get; set; }

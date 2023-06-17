@@ -13,6 +13,8 @@ namespace Tips.Purchase.Api.Entities
     {
         [Key]
         public int Id { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? PrNumber { get; set; }
         public DateTime PrDeliveryDate { get; set; }
 
         [Precision(13, 3)]

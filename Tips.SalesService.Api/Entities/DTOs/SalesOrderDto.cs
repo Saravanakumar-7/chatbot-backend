@@ -68,6 +68,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? TotalAmount { get; set; }
         [Precision(18, 3)]
         public decimal TotalFinalAmount { get; set; }
+        [DefaultValue(false)]
+        public bool ConfirmStatus { get; set; }
+        [DefaultValue(false)]
+        public bool ApproveStatus { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

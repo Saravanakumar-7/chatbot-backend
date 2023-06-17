@@ -7,6 +7,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         [Key]
         public int Id { get; set; }
+        public string? SalesOrderNumber { get; set; }
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
 
@@ -35,6 +36,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
     public class SalesOrderAdditionalChargesPostDto
     {
+        public string? SalesOrderNumber { get; set; }
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
 
@@ -62,6 +64,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class SalesOrderAdditionalChargesUpdateDto
     {
+        public string? SalesOrderNumber { get; set; }
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
 

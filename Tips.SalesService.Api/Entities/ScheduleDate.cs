@@ -12,6 +12,8 @@ namespace Tips.SalesService.Api.Entities
     public class ScheduleDate
     {
         public int? Id { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? SalesOrderNumber { get; set; }
         public DateTime? Date { get; set; }
 
         [Precision(13, 3)]

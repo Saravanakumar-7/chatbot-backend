@@ -9,6 +9,7 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? PartNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
         [MaxLength(500)]
         public string? Description { get; set; }
         public string? ProjectNumber { get; set; }
@@ -35,6 +36,7 @@ namespace Tips.Production.Api.Entities.DTOs
     public class MaterialIssueItemPostDto
     {
         public string? PartNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
         [MaxLength(500)]
         public string? Description { get; set; }
         public string? ProjectNumber { get; set; }
@@ -49,6 +51,7 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? PartNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
         [MaxLength(500)]
         public string? Description { get; set; }
         public PartType PartType { get; set; }

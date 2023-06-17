@@ -5,6 +5,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
     public class PoAddDeliveryScheduleDto
     {
         public int Id { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? PONumber { get; set; }
         public DateTime PODeliveryDate { get; set; }
 
         [Precision(13, 3)]
@@ -13,6 +15,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
     }
     public class PoAddDeliverySchedulePostDto
     {
+        public string? ItemNumber { get; set; }
+        public string? PONumber { get; set; }
         public DateTime PODeliveryDate { get; set; }
 
         [Precision(13, 3)]
@@ -20,7 +24,9 @@ namespace Tips.Purchase.Api.Entities.DTOs
         
     }
     public class PoAddDeliveryScheduleUpdateDto
-    {     
+    {
+        public string? ItemNumber { get; set; }
+        public string? PONumber { get; set; }
         public DateTime PODeliveryDate { get; set; }
 
         [Precision(13, 3)]

@@ -622,13 +622,14 @@ namespace Tips.SalesService.Api.Controllers
                     itemsRoutingDetailsDynamic = data.ToObject<List<ItemMasterRoutingListDto>>();
                 }
 
-
+                var rfqLpCostingDetails = await _rfqlpcostingRepository.GetRfqLPCostingByRfqNumber(rfqNumber);
+                var rfqLpCostingitemDetails = rfqLpCostingDetails.RfqLPCostingItems;
                 List<RfqLPCostingItem> rfqLPCostingItems = new List<RfqLPCostingItem>();
-
+                
                 foreach (var item in rfqEnggDetails.RfqEnggItems)
                 {
                     var itemProcessList = itemsRoutingDetailsDynamic.Where(i => i.ItemNumber == item.ItemNumber).ToList();
-                    List<RfqLPCostingProcess> processStepsList = _mapper.Map<List<RfqLPCostingProcess>>(itemProcessList);
+                    List<RfqLPCostingProcess> processStepsList = _mapper.Map<List<RfqLPCostingProcess>>(itemProcessList);                  
                     RfqLPCostingItem rfqLPCostingItem = new RfqLPCostingItem
                     {
                         ItemNumber = item.ItemNumber,
@@ -638,8 +639,8 @@ namespace Tips.SalesService.Api.Controllers
                         MaterialCost =0,
                         MarkUpForMaterial =0,
                         RfqLPCostingProcesses = processStepsList,
-                        RfqLPCostingNREConsumables =null,
-                        RfqLPCostingOtherCharges =null
+                        RfqLPCostingNREConsumables = rfqLpCostingitemDetails[0].RfqLPCostingNREConsumables,
+                        RfqLPCostingOtherCharges = rfqLpCostingitemDetails[0].RfqLPCostingOtherCharges
                     };
                     rfqLPCostingItems.Add(rfqLPCostingItem);
                 }

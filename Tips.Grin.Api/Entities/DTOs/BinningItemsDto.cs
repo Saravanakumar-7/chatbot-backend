@@ -13,6 +13,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
+        public string? GrinNumber { get; set; }
         public string? Description { get; set; }
         public string? MftrItemNumber { get; set; }
         public string? ProjectNumber { get; set; }
@@ -92,6 +93,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
        
         public string? ItemNumber { get; set; }
+        public string? GrinNumber { get; set; }
         public string? Description { get; set; }
         public string? MftrItemNumber { get; set; }
         public string? ProjectNumber { get; set; }

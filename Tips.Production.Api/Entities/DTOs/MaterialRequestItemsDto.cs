@@ -7,6 +7,7 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? PartNumber { get; set; }
+        public string MRNumber { get; set; }
         public string? PartDescription { get; set; }
         //public string? MftrPartNumber { get; set; }
         public PartType PartType { get; set; }
@@ -27,6 +28,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
+        public string MRNumber { get; set; }
         //public string? MftrPartNumber { get; set; }
         public PartType PartType { get; set; }
         public string? Stock { get; set; }
@@ -43,6 +45,7 @@ namespace Tips.Production.Api.Entities.DTOs
     {
 
         public string? PartNumber { get; set; }
+        public string MRNumber { get; set; }
         public string? PartDescription { get; set; }
         //public string? MftrPartNumber { get; set; }
         public PartType PartType { get; set; }

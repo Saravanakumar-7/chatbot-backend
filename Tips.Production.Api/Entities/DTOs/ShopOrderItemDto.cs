@@ -8,6 +8,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public int Id { get; set; }
 
         public string? FGItemNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
 
         public string? Description { get; set; }
 
@@ -25,6 +26,7 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         [Required]
         public string? FGItemNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
         [Required]
         public string? Description { get; set; }
         [Required]
@@ -44,6 +46,7 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         [Required]
         public string? FGItemNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
         [Required]
         public string? Description { get; set; }
         [Required]
