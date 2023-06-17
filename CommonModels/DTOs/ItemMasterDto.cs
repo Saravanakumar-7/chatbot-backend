@@ -115,7 +115,7 @@ namespace Entities.DTOs
         public List<ItemmasterAlternateDto>? ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouseDto>? ItemMasterWarehouse { get; set; }
         public List<ItemMasterApprovedVendorDto>? ItemMasterApprovedVendor { get; set; }
-        public List<ItemMasterFileUploadDto>? ItemMasterFileUpload { get; set; }
+        //public List<ItemMasterFileUploadDto>? ItemMasterFileUpload { get; set; }
         public List<ItemMasterRoutingDto>? ItemMasterRouting { get; set; }
     }
 
@@ -215,7 +215,7 @@ namespace Entities.DTOs
         public List<ItemmasterAlternateDtoPost>? ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouseDtoPost>? ItemMasterWarehouse { get; set; }
         public List<ItemMasterApprovedVendorDtoPost>? ItemMasterApprovedVendor { get; set; }
-        public List<ItemMasterFileUploadDtoPost>? ItemMasterFileUpload { get; set; }
+        //public List<ItemMasterFileUploadDtoPost>? ItemMasterFileUpload { get; set; }
         public List<ItemMasterRoutingDtoPost>? ItemMasterRouting { get; set; }
     }
 
@@ -320,7 +320,7 @@ namespace Entities.DTOs
         public List<ItemmasterAlternateDtoUpdate>? ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouseDtoUpdate>? ItemMasterWarehouse { get; set; }
         public List<ItemMasterApprovedVendorDtoUpdate>? ItemMasterApprovedVendor { get; set; }
-        public List<ItemMasterFileUploadDtoUpdate>? ItemMasterFileUpload { get; set; }
+        //public List<ItemMasterFileUploadDtoUpdate>? ItemMasterFileUpload { get; set; }
         public List<ItemMasterRoutingDtoUpdate>? ItemMasterRouting { get; set; }
 
     }
