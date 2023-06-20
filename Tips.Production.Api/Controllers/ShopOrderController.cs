@@ -368,15 +368,19 @@ namespace Tips.Production.Api.Controllers
             ServiceResponse<MaterialIssueDto> serviceResponse = new ServiceResponse<MaterialIssueDto>();
             try
             {
-                for (int i = 0; i < shopOrder.ShopOrderItems.Count();i++)
+                dynamic bomData = null;
+                for (int i = 0; i < shopOrder.ShopOrderItems.Count(); i++)
                 {
-                    var fgNumber = shopOrder.ShopOrderItems[i].FGItemNumber;
-                    decimal bomversion = shopOrder.BomRevisionNo;
-                    var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],"GetProductionBomByItemAndBomVersionNo?","ItemNumber=", fgNumber, "&bomVersionNo=", bomversion));
-                    var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
-                    dynamic bomDetailsData = JsonConvert.DeserializeObject(bomDetailsString);
-                    dynamic bomData = bomDetailsData.data;
-                     
+                    if (i == 0)
+                    {
+                        var fgNumber = shopOrder.ItemNumber;
+                        decimal bomversion = shopOrder.BomRevisionNo;
+                        var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetProductionBomByItemAndBomVersionNo?", "ItemNumber=", fgNumber, "&bomVersionNo=", bomversion));
+                        var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
+                        dynamic bomDetailsData = JsonConvert.DeserializeObject(bomDetailsString);
+                        bomData = bomDetailsData.data;
+                    }
+
                     if (bomData != null)
                     {
                         MaterialIssue materialIssue = new MaterialIssue();

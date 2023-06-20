@@ -847,7 +847,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        [HttpGet("ItemNumber")]
+        [HttpGet]
         public async Task<IActionResult> GetItemMasterByItemNumber(string ItemNumber)
         {
             ServiceResponse<ItemMasterDto> serviceResponse = new ServiceResponse<ItemMasterDto>();
@@ -866,10 +866,11 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
+                    _logger.LogInfo("ItemmasterControlle" + Convert.ToString(getItemMasterByItemNumber));
                     _logger.LogInfo($"Returned Itemmasters with id: {ItemNumber}");
                     var result = _mapper.Map<ItemMasterDto>(getItemMasterByItemNumber);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned All ItemMasterByItemNumber";
+                    serviceResponse.Message = "Returned All ItemMasterByItemNumber:";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);
@@ -879,7 +880,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside GetItemMasterByItemNumber action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Internal server error: {ex.Message}{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
