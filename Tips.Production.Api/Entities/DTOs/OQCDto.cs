@@ -1,5 +1,6 @@
 ﻿using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
@@ -92,5 +93,38 @@ namespace Tips.Production.Api.Entities.DTOs
         public List<string>? ShopOrderNumber { get; set; }
         public List<decimal> ShopOrderQty { get; set; }
         public List<decimal> PendingQty { get; set; }
+    }
+    public class InventoryPostDto
+    {
+        [Required]
+        public string PartNumber { get; set; }
+
+        [Required]
+        public string MftrPartNumber { get; set; }
+
+        [Required]
+        public string Description { get; set; }
+
+        [Required]
+        public string ProjectNumber { get; set; }
+        [Required]
+        public decimal Balance_Quantity { get; set; }
+        [Required]
+        public string? UOM { get; set; }
+
+        [Required]
+        public string? Warehouse { get; set; }
+        [Required]
+        public string? Location { get; set; }
+        public string? GrinNo { get; set; }
+        public int? GrinPartId { get; set; }
+        public string? PartType { get; set; }
+        public string? GrinMaterialType { get; set; }
+        [Required]
+        public string? ReferenceID { get; set; }
+        [Required]
+        public string? ReferenceIDFrom { get; set; }
+        public string? ShopOrderNo { get; set; }
+
     }
 }

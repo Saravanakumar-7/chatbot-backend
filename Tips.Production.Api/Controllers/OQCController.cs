@@ -1,15 +1,22 @@
-﻿using System.Net;
+﻿using System.Dynamic;
+using System.Net;
+using System.Net.Http;
+using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Repository;
+using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.Production.Api.Controllers
 {
@@ -18,15 +25,20 @@ namespace Tips.Production.Api.Controllers
     public class OQCController : ControllerBase
     {
         private IOQCRepository _oQCRepository;
+        private IItemMasterRepository _itemMasterRepository;
         private ILoggerManager _logger;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
         private IMapper _mapper;
         private IShopOrderRepository _shopOrderRepo;
 
-        public OQCController(IOQCRepository oQCRepository, IShopOrderRepository shopOrderRepository, ILoggerManager logger, IMapper mapper)
+        public OQCController(IOQCRepository oQCRepository, IShopOrderRepository shopOrderRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _oQCRepository = oQCRepository;
             _logger = logger;
             _mapper = mapper;
+            _httpClient = httpClient;
+            _config = config;
             _shopOrderRepo = shopOrderRepository;
         }
       
@@ -226,10 +238,101 @@ namespace Tips.Production.Api.Controllers
                 var oQCCreate = _mapper.Map<OQC>(oQCPostDto);
                 //var shopOrderNumber = oQCCreate.ShopOrderNumber;
                 //var shopOrderDetails = await _shopOrderRepo.GetShopOrderDetailsByShopOrderNo(shopOrderNumber);
-               //shopOrderDetails.OqcQty = shopOrderDetails.OqcQty + oQCCreate.AcceptedQty;
-                _shopOrderRepo.SaveAsync();
+                //shopOrderDetails.OqcQty = shopOrderDetails.OqcQty + oQCCreate.AcceptedQty;
+                //_shopOrderRepo.SaveAsync();  
+
                 await _oQCRepository.CreateOQC(oQCCreate);
                 _oQCRepository.SaveAsync();
+
+                if (oQCCreate.ItemType == PartType.SA) //sa
+                {
+                    var ItemNumber = oQCCreate.ItemNumber;
+                    var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
+                            "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
+                    _logger.LogInfo("getitemmasterdata"+ Convert.ToString(inventoryObjectResult));
+                    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                    InventoryPostDto inventory = new InventoryPostDto();
+
+                    inventory.PartNumber = inventoryObjectData.itemNumber;
+                    inventory.MftrPartNumber = inventoryObjectData.itemNumber;
+                    inventory.Description = inventoryObjectData.description;
+                    inventory.ProjectNumber = "project";
+                    inventory.Balance_Quantity = oQCCreate.AcceptedQty;
+                    inventory.UOM = inventoryObjectData.uom;
+                    inventory.Warehouse = "SA";
+                    inventory.Location = "SA";
+                    inventory.GrinNo = "";
+                    inventory.GrinMaterialType = "";
+                    inventory.GrinPartId = 0;
+                    inventory.PartType = inventoryObjectData.itemType; // we have to take parttype from grinparts model;
+                    inventory.ReferenceID = oQCCreate.Id.ToString();
+                    inventory.ReferenceIDFrom = "Final OQC";
+                    inventory.ShopOrderNo = oQCCreate.ShopOrderNumber;
+
+                    //if (inventoryObject.Balance_Quantity > 0)
+                    //{
+                    //    inventoryObject.IsStockAvailable = true;
+                    //}
+                    //else
+                    //{
+                    //    inventoryObject.IsStockAvailable = false;
+                    //}
+                    _logger.LogInfo("getitemmasterdata" + Convert.ToString(inventory));
+                    var json = JsonConvert.SerializeObject(inventory);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+
+                    //var json = JsonConvert.SerializeObject(inventory);
+                    //var data = new StringContent(json, Encoding.UTF8, "application/json");                     
+                    //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+
+                }
+                else
+                {
+                    var ItemNumber = oQCCreate.ItemNumber;
+                    var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
+                            "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
+
+                    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                    InventoryPostDto inventory = new InventoryPostDto();
+
+                    inventory.PartNumber = inventoryObjectData.itemNumber;
+                    inventory.MftrPartNumber = inventoryObjectData.itemNumber;
+                    inventory.Description = inventoryObjectData.description;
+                    inventory.ProjectNumber = "project";
+                    inventory.Balance_Quantity = oQCCreate.AcceptedQty;
+                    inventory.UOM = inventoryObjectData.uom;
+                    inventory.Warehouse = "FG";
+                    inventory.Location = "FG";
+                    inventory.GrinNo = "";
+                    inventory.GrinMaterialType = "";
+                    inventory.GrinPartId = 0;
+                    inventory.PartType = inventoryObjectData.itemType; // we have to take parttype from grinparts model;
+                    inventory.ReferenceID = oQCCreate.Id.ToString();
+                    inventory.ReferenceIDFrom = "Final OQC";
+                    inventory.ShopOrderNo = oQCCreate.ShopOrderNumber;
+
+                    //if (inventoryObject.Balance_Quantity > 0)
+                    //{
+                    //    inventoryObject.IsStockAvailable = true;
+                    //}
+                    //else
+                    //{
+                    //    inventoryObject.IsStockAvailable = false;
+                    //}
+                    var json = JsonConvert.SerializeObject(inventory);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+
+                    //var json = JsonConvert.SerializeObject(inventory);
+                    //var data = new StringContent(json, Encoding.UTF8, "application/json");                     
+                    //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+                }
+                _logger.LogInfo("aftergettingdata");
+
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "OQC Created Successfully";
                 serviceResponse.Success = true;
@@ -242,7 +345,7 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside CreateOQC action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateOQC action: {ex.Message} {ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
