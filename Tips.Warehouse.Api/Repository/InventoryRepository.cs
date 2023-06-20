@@ -16,26 +16,29 @@ namespace Tips.Warehouse.Api.Repository
         public InventoryRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
         {
         }
-        public async Task<IEnumerable<Inventory>> SearchInventoryDetailsWithSumOfStock(InventoryItemNo InventoryItemNo)
+        public async Task<IEnumerable<Inventory>> SearchInventoryDetailsWithSumOfStock(InventoryItemNo inventoryItemNo)
         {
+
             using (var context = _tipsWarehouseDbContext)
             {
                 var query = _tipsWarehouseDbContext.Inventory.AsQueryable();
 
-                // Check if inventoryBalQty object is not null
-                if (InventoryItemNo != null)
+                // Check if inventoryItemNo object is not null
+                if (inventoryItemNo != null)
                 {
-                    // Apply filtering based on the inventoryBalQty properties if they are not null
-                    if (InventoryItemNo.PartNumber != null && InventoryItemNo.PartNumber.Any())
+                    // Apply filtering based on the inventoryItemNo properties if they are not null
+                    if (inventoryItemNo.PartNumber != null && inventoryItemNo.PartNumber.Any())
                     {
-                        query = query.Where(inv => InventoryItemNo.PartNumber.Contains(inv.PartNumber));
+                        query = query.Where(inv => inventoryItemNo.PartNumber.Contains(inv.PartNumber));
                     }
                 }
 
                 // Retrieve the filtered inventory items
                 var inventoryItems = await query.ToListAsync();
 
-                // Group the inventory items by PartNumber using a for loop
+                // Group the inventory items by PartNumber using LINQ's GroupBy
+                //var groupedItems = inventoryItems.GroupBy(inv => inv.PartNumber)
+                //    .ToDictionary(g => g.Key, g => g.ToList());
                 var groupedItems = new Dictionary<string, List<Inventory>>();
                 foreach (var item in inventoryItems)
                 {
@@ -49,20 +52,69 @@ namespace Tips.Warehouse.Api.Repository
                         groupedItems[key].Add(item);
                     }
                 }
-
-
                 // Calculate the sum of Balance_Quantity for each group and update the first item in the group
                 foreach (var group in groupedItems)
                 {
                     var sum = group.Value.Sum(inv => inv.Balance_Quantity);
                     var firstItem = group.Value.First();
                     firstItem.Balance_Quantity = sum;
-                   
+
                 }
+                //    foreach (var group in groupedItems.Values)
+                //{
+                //    var sum = group.Sum(inv => inv.Balance_Quantity);
+                //    var firstItem = group.First();
+                //    firstItem.Balance_Quantity = sum;
+                //}
 
                 // Return the updated first items from each group
                 return groupedItems.Values.Select(group => group.First());
             }
+            //using (var context = _tipsWarehouseDbContext)
+            //{
+            //    var query = _tipsWarehouseDbContext.Inventory.AsQueryable();
+
+            //    // Check if inventoryBalQty object is not null
+            //    if (InventoryItemNo != null)
+            //    {
+            //        // Apply filtering based on the inventoryBalQty properties if they are not null
+            //        if (InventoryItemNo.PartNumber != null && InventoryItemNo.PartNumber.Any())
+            //        {
+            //            query = query.Where(inv => InventoryItemNo.PartNumber.Contains(inv.PartNumber));
+            //        }
+            //    }
+
+            //    // Retrieve the filtered inventory items
+            //    var inventoryItems = await query.ToListAsync();
+
+            //    // Group the inventory items by PartNumber using a for loop
+            //    var groupedItems = new Dictionary<string, List<Inventory>>();
+            //    foreach (var item in inventoryItems)
+            //    {
+            //        var key = item.PartNumber;
+            //        if (!groupedItems.ContainsKey(key))
+            //        {
+            //            groupedItems[key] = new List<Inventory> { item };
+            //        }
+            //        else
+            //        {
+            //            groupedItems[key].Add(item);
+            //        }
+            //    }
+
+
+            //    // Calculate the sum of Balance_Quantity for each group and update the first item in the group
+            //    foreach (var group in groupedItems)
+            //    {
+            //        var sum = group.Value.Sum(inv => inv.Balance_Quantity);
+            //        var firstItem = group.Value.First();
+            //        firstItem.Balance_Quantity = sum;
+
+            //    }
+
+            //    // Return the updated first items from each group
+            //    return groupedItems.Values.Select(group => group.First());
+       // }
         }
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfStock(InventoryBalQty inventoryBalQty)
         {
@@ -94,10 +146,10 @@ namespace Tips.Warehouse.Api.Repository
                 var inventoryItems = await query.ToListAsync();
 
                 // Group the inventory items by PartNumber, Warehouse, and Location using a for loop
-                var groupedItems = new Dictionary<(string, string, string), List<Inventory>>();
+                var groupedItems = new Dictionary<string, List<Inventory>>();
                 foreach (var item in inventoryItems)
                 {
-                    var key = (item.PartNumber, item.Warehouse, item.Location);
+                    var key = item.PartNumber;
                     if (!groupedItems.ContainsKey(key))
                     {
                         groupedItems[key] = new List<Inventory> { item };

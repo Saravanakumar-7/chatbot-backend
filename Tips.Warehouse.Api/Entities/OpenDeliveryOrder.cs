@@ -8,7 +8,7 @@ namespace Tips.Warehouse.Api.Entities
     {
         [Key]
         public int Id { get; set; }
-        public DateTime? DODate { get; set; }
+        public DateTime? OpenDODate { get; set; }
         public string OpenDONumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }

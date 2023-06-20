@@ -67,14 +67,18 @@ namespace Tips.Purchase.Api.Repository
                 {
                     query = query.Where(po => po.PrNumber.Contains(searchParammes.SearchValue)
                     || po.PrDate.ToString().Contains(searchParammes.SearchValue)
-                   //|| po.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
+                    //|| po.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
                     || po.ProcurementType.Contains(searchParammes.SearchValue)
                     || po.ShippingMode.Contains(searchParammes.SearchValue)
                     || po.PaymentTerms.Contains(searchParammes.SearchValue)
                     || po.DeliveryTerms.Contains(searchParammes.SearchValue)
                     || po.PrItemsDtoList.Any(s => s.ItemNumber.Contains(searchParammes.SearchValue) ||
                     s.Description.Contains(searchParammes.SearchValue)
-                    || s.MftrItemNumber.Contains(searchParammes.SearchValue)));
+                    || s.MftrItemNumber.Contains(searchParammes.SearchValue)))
+                         .Include(itm => itm.PrItemsDtoList)
+                        .ThenInclude(pr => pr.prAddprojectsDtoList)
+                         .Include(itm => itm.PrItemsDtoList)
+                        .ThenInclude(pr => pr.prAddDeliverySchedulesDtoList);
                 }
                 return query.ToList();
             }
@@ -92,7 +96,11 @@ namespace Tips.Purchase.Api.Repository
                     (po => (purchaseRequisitionSearch.PrNumber.Any() ? purchaseRequisitionSearch.PrNumber.Contains(po.PrNumber) : true)
                    && (purchaseRequisitionSearch.ProcurementType.Any() ? purchaseRequisitionSearch.ProcurementType.Contains(po.ProcurementType) : true)
                    && (purchaseRequisitionSearch.ShippingMode.Any() ? purchaseRequisitionSearch.ShippingMode.Contains(po.ShippingMode) : true)
-                   && (purchaseRequisitionSearch.PRStatus.Any() ? purchaseRequisitionSearch.PRStatus.Contains(po.Status) : true));
+                   && (purchaseRequisitionSearch.PRStatus.Any() ? purchaseRequisitionSearch.PRStatus.Contains(po.Status) : true))
+                    .Include(itm => itm.PrItemsDtoList)
+                    .ThenInclude(pr => pr.prAddprojectsDtoList)
+                    .Include(itm => itm.PrItemsDtoList)
+                    .ThenInclude(pr => pr.prAddDeliverySchedulesDtoList);
                 }
                 return query.ToList();
             }
@@ -127,6 +135,9 @@ namespace Tips.Purchase.Api.Repository
             inv.CreatedOn <= searchDatesParams.SearchToDate
             )))
             .Include(itm => itm.PrItemsDtoList)
+            .ThenInclude(pr => pr.prAddprojectsDtoList)
+             .Include(itm => itm.PrItemsDtoList)
+             .ThenInclude(pr => pr.prAddDeliverySchedulesDtoList)
             .ToList();
             return purchaseRequsisitionDetails;
         }

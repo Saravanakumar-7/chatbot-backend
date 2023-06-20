@@ -18,6 +18,8 @@ namespace Tips.SalesService.Api.Entities
         public string? FromUOM { get; set; }
         public string? ToUOM { get; set; }
         public string ToLocation { get; set; }
+        public string? FromWarehouse { get; set; }
+        public string? ToWarehouse { get; set; }
         public string? FromPartType { get; set; }
         public string? ToPartType { get; set; }
 

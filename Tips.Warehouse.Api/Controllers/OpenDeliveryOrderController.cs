@@ -445,7 +445,7 @@ namespace Tips.Warehouse.Api.Controllers
                         openDeliveryOrderHistory.ReasonForIssuingStock = openDeliveryorder.ReasonforIssuingStock;
                         openDeliveryOrderHistory.IssuedTo = openDeliveryorder.IssuedTo;
                         openDeliveryOrderHistory.ODOType = openDeliveryorder.IssuedTo;
-                        openDeliveryOrderHistory.ODODate = openDeliveryorder.DODate;
+                        openDeliveryOrderHistory.ODODate = openDeliveryorder.OpenDODate;
                         openDeliveryOrderHistory.ItemNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
                         openDeliveryOrderHistory.ItemDescription = openDeliveryOrderItemsDtoList[i].ItemDescription;
                         openDeliveryOrderHistory.ItemType = openDeliveryOrderItemsDtoList[i].ItemType;

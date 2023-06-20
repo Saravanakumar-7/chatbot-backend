@@ -244,8 +244,8 @@ namespace Tips.Warehouse.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Inventory with Itemnumber: {itemNumber}");
-                    ////var result = InventoryDetails;
-                    //serviceResponse.Data = InventoryDetails;
+                    //var result = InventoryDetails;
+                    //serviceResponse.Data = result;
                     //serviceResponse.Message = "Returned InventoryDetails with id Successfully";
                     //serviceResponse.Success = true;
                     //serviceResponse.StatusCode = HttpStatusCode.OK;

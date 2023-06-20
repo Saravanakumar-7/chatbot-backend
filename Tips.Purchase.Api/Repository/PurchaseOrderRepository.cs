@@ -95,7 +95,11 @@ namespace Tips.Purchase.Api.Repository
                    && (purchaseOrderSearch.ProcurementType.Any() ? purchaseOrderSearch.ProcurementType.Contains(po.ProcurementType) : true)
                    && (purchaseOrderSearch.ShippingMode.Any() ? purchaseOrderSearch.ShippingMode.Contains(po.ShippingMode) : true)
                    && (purchaseOrderSearch.VendorName.Any() ? purchaseOrderSearch.VendorName.Contains(po.VendorName) : true)
-                   && (purchaseOrderSearch.PoStatus.Any() ? purchaseOrderSearch.PoStatus.Contains(po.Status) : true));
+                   && (purchaseOrderSearch.PoStatus.Any() ? purchaseOrderSearch.PoStatus.Contains(po.Status) : true))
+                    .Include(itm => itm.POItems)
+                    .ThenInclude(po => po.POAddprojects)
+                    .Include(itm => itm.POItems)
+                    .ThenInclude(po => po.POAddDeliverySchedules);
                 }
                 return query.ToList();
             }
@@ -126,8 +130,11 @@ namespace Tips.Purchase.Api.Repository
                     s.Description.Contains(searchParammes.SearchValue)
                     || s.MftrItemNumber.Contains(searchParammes.SearchValue)
                     || s.PONumber.Contains(searchParammes.SearchValue)) ||
-                    (!isSearchValueInt || po.RevisionNumber == searchValueInt)
-                    );
+                    (!isSearchValueInt || po.RevisionNumber == searchValueInt))
+                    .Include(itm => itm.POItems)
+                    .ThenInclude(po => po.POAddprojects)
+                    .Include(itm => itm.POItems)
+                    .ThenInclude(po => po.POAddDeliverySchedules);
                 }
                 return query.ToList();
             }
@@ -149,6 +156,9 @@ namespace Tips.Purchase.Api.Repository
             inv.CreatedOn <= searchDatesParams.SearchToDate
             )))
             .Include(itm => itm.POItems)
+            .ThenInclude(po => po.POAddprojects)
+            .Include(itm => itm.POItems)
+            .ThenInclude(po => po.POAddDeliverySchedules)
             .ToList();
             return purchaseOrderDetails;        
     }
