@@ -4,19 +4,19 @@ using Entities.DTOs;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using NuGet.Protocol.Core.Types;
+//using NuGet.Protocol.Core.Types;
 using System.Net;
-using Tips.SalesService.Api.Contracts;
-using Tips.SalesService.Api.Entities.DTOs;
-using Tips.SalesService.Api.Entities;
-using Tips.SalesService.Api.Repository;
+using Tips.Warehouse.Api.Contracts;
+using Tips.Warehouse.Api.Entities.DTOs;
+using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Repository;
 using Microsoft.EntityFrameworkCore;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 using System.Net.Http;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace Tips.SalesService.Api.Controllers
+namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
@@ -24,14 +24,18 @@ namespace Tips.SalesService.Api.Controllers
     {
 
         private ILocationTransferRepository _locationTransferRepository;
+        private IInventoryRepository _inventoryRepository;
+
         private IMapper _mapper;
         private ILoggerManager _logger;
+        private object _context;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        public LocationTransferController(ILocationTransferRepository locationTransferRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        public LocationTransferController(IInventoryRepository inventoryRepository,ILocationTransferRepository locationTransferRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _locationTransferRepository = locationTransferRepository;
             _mapper = mapper;
+            _inventoryRepository = inventoryRepository;
             _logger = logger;
             _httpClient = httpClient;
             _config = config;
@@ -238,33 +242,82 @@ namespace Tips.SalesService.Api.Controllers
                 await _locationTransferRepository.CreateLocationTransfer(createLocationTransfer);
                 _locationTransferRepository.SaveAsync();
 
-                //var PartNumber = locationTransferPostDto.FromPartNumber;
-                //var ToPartNumber = locationTransferPostDto.ToPartNumber;
-                //var Location = locationTransferPostDto.FromLocation;
-                //var ToLocation = locationTransferPostDto.ToLocation;
-                //var availstock = locationTransferPostDto.AvailableStockInLocation;
-                //var TransferQty = locationTransferPostDto.TransferQty;
+                var fromPartNumber = locationTransferPostDto.FromPartNumber;
+                var toPartNumber = locationTransferPostDto.ToPartNumber;
+                var fromLocation = locationTransferPostDto.FromLocation;
+                var toLocation = locationTransferPostDto.ToLocation;
+                var fromWarehouse = locationTransferPostDto.FromWarehouse;
+                var toWarehouse = locationTransferPostDto.ToWarehouse;
+                var availstock = locationTransferPostDto.AvailableStockInLocation;
+                var transferQty = locationTransferPostDto.TransferQty;
 
-                //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                //              "GetInventoryDetailsByItemnumberandLocation?", "ItemNumber=", PartNumber, "&Location=", Location));
+                var itemDetailFromItemmaster = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
+                                    "GetItemMasterByItemNumber?", "&ItemNumber=", toPartNumber));
+                _logger.LogInfo("getitemmasterdata" + Convert.ToString(itemDetailFromItemmaster));
+                var itemDetail = await itemDetailFromItemmaster.Content.ReadAsStringAsync();
+                dynamic itemData = JsonConvert.DeserializeObject(itemDetail);
 
-                //var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                //dynamic inventoryObject = inventoryObjectData.data;
-                //var count = inventoryObject.Count;
-                //if(count != null)
-                //{
-                //    if (count.Count == 1)
-                //    {
+                var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse);
+                if (inventoryDetails != null)
+                {
+                    foreach (var inventoryItem in inventoryDetails)
+                    {
+                        if (transferQty >= inventoryItem.Balance_Quantity)
+                        {
+                            inventoryItem.PartNumber = toPartNumber;
+                            inventoryItem.MftrPartNumber = toPartNumber;
+                            inventoryItem.Description = itemData.description; 
+                            inventoryItem.UOM = itemData?.MftrPartNumber;
+                            inventoryItem.Warehouse = toWarehouse;
+                            inventoryItem.Location = toLocation;
+                            inventoryItem.PartType = itemData?.PartType;
+                            inventoryItem.ReferenceID = Convert.ToString(createLocationTransfer.Id);
+                            inventoryItem.ReferenceIDFrom = "LocationTransfer";
+                            await _inventoryRepository.UpdateInventory(inventoryItem);
+                            _inventoryRepository.SaveAsync();
+                            transferQty -= inventoryItem.Balance_Quantity;
+                        }
+                        else
+                        {
 
-                //    }
-                //}
+                            inventoryItem.Balance_Quantity -= transferQty;
+                            await _inventoryRepository.UpdateInventory(inventoryItem);
+
+
+                            Inventory inventoryPost = new Inventory();
+                            inventoryPost.PartNumber = toPartNumber;
+                            inventoryPost.MftrPartNumber = toPartNumber;
+                            inventoryPost.ProjectNumber = "";
+                            inventoryPost.Description = itemData.description;
+                            inventoryPost.Balance_Quantity = transferQty;
+                            inventoryPost.UOM = itemData?.uom;
+                            inventoryPost.GrinMaterialType = "";
+                            inventoryPost.shopOrderNo = "";
+                            inventoryPost.Unit = itemData?.unit;
+                            inventoryPost.GrinNo = "";
+                            inventoryPost.GrinPartId = 0;
+                            inventoryPost.IsStockAvailable = true;
+                            inventoryPost.Warehouse = toWarehouse;
+                            inventoryPost.Location = toLocation;
+                            inventoryPost.PartType = itemData?.PartType;
+                            inventoryPost.ReferenceID = Convert.ToString(createLocationTransfer.Id);
+                            inventoryPost.ReferenceIDFrom = "LocationTransfer";
+                            await _inventoryRepository.CreateInventory(inventoryPost);
+                            transferQty = 0;
+
+                            _inventoryRepository.SaveAsync();
+                        }
+                        if (transferQty <= 0)
+                        {
+                            break;
+                        }
+                    }
+                } 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "locationTransfer Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetLocationTransferId", serviceResponse);
-
             }
             catch (Exception ex)
             {
@@ -276,6 +329,64 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateInventory(int id, [FromBody] InventoryDtoUpdate inventoryDtoUpdate)
+        {
+            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+
+            try
+            {
+                if (inventoryDtoUpdate is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Inventory object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Inventory object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Inventory object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Inventory object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var getInventoryById = await _inventoryRepository.GetInventoryById(id);
+                if (getInventoryById is null)
+                {
+                    _logger.LogError($"Inventory with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update Inventory with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                } 
+                var updateInventory = _mapper.Map(inventoryDtoUpdate, getInventoryById);
+                
+                string result = await _inventoryRepository.UpdateInventory(updateInventory);
+                _logger.LogInfo(result);
+                _inventoryRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside UpdateCommodity action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateLocationTransfer(int id, [FromBody] LocationTransferUpdateDto locationTransferUpdateDto)

@@ -163,4 +163,47 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public string PartNumber { get; set; }
     }
+
+    //public class UpdateInventoryBalanceQty
+    //{
+    //    public string? PartNumber { get; set; }
+    //    public List<MRStockDetailsUpdateDto> MRStockDetails { get; set; }
+    //}
+    //public class MRStockDetailsUpdateDto
+    //{
+    //    public string? Warehouse { get; set; }
+    //    public string? Location { get; set; }
+
+    //    [Precision(13, 3)]
+    //    public decimal LocationStock { get; set; }
+    //}
+    public class UpdateInventoryBalanceQty
+    {
+        public string? PartNumber { get; set; }
+        public List<InventoryUpdateDtoForMRWarehouse> MRNWarehouseList { get; set; }
+    }
+
+    public class InventoryUpdateDtoForMRWarehouse
+    {
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+
+        [Precision(13, 3)]
+        public decimal LocationStock { get; set; }
+    }
+
+    public class MRNUpdateInventoryBalanceQty
+    {
+        public string? PartNumber { get; set; }
+        public List<MRNInventoryUpdateDto> MRNWarehouseList { get; set; }
+    }
+
+    public class MRNInventoryUpdateDto
+    {
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        [Precision(13, 3)]
+        public decimal ReturnQty { get; set; }
+    }
+
 }

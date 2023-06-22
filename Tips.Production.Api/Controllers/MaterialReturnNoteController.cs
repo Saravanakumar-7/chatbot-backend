@@ -409,12 +409,37 @@ namespace Tips.Production.Api.Controllers
                     for (int i = 0; i < materialReturnNotesItemDto.Count; i++)
                     {
                         MaterialReturnNoteItem materialReturnNoteItem = _mapper.Map<MaterialReturnNoteItem>(materialReturnNotesItemDto[i]);
+                        materialReturnNoteItem.MRNWarehouseList = _mapper.Map<List<MRNWarehouseDetails>>(materialReturnNotesItemDto[i].MRNWarehouseList);
+
                         materialReturnNoteItemList.Add(materialReturnNoteItem);
 
                     }
                 }
+
+               
+                var mapperConfiguration = new MapperConfiguration(cfg =>
+                {
+                    cfg.CreateMap<MaterialReturnNoteItem, MRNUpdateInventoryBalanceQty>()
+                        .ForMember(dest => dest.PartNumber, opt => opt.MapFrom(src => src.PartNumber))
+                        .ForMember(dest => dest.MRNWarehouseList, opt => opt.MapFrom(src => src.MRNWarehouseList.Select(detail => new MRNInventoryUpdateDto
+                        {
+                            Warehouse = detail.Warehouse,
+                            Location = detail.Location,
+                            ReturnQty = detail.ReturnQty
+                        }).ToList()));
+                });
+
+                var mapper = mapperConfiguration.CreateMapper();
+                var materialReturnNoteDetails = materialReturnNoteItemList.Select(item => mapper.Map<MRNUpdateInventoryBalanceQty>(item)).ToList();
+
+                var json = JsonConvert.SerializeObject(materialReturnNoteDetails);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialReturnNoteInventoryBalanceQty"), data);
+
                 materialReturnNoteDetail.MaterialReturnNoteItems = materialReturnNoteItemList;
                 var updateMaterialReturnNoteItem = _mapper.Map(materialReturnNoteUpdateDto, materialReturnNoteDetailById);
+
+
                 materialReturnNoteDetail.MrnStatus = MaterialStatus.close;
                 string result = await _materialReturnNoteRepository.UpdateMaterialReturnNote(updateMaterialReturnNoteItem);               
                 _materialReturnNoteRepository.SaveAsync();

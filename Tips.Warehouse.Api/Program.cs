@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
 using System.Text.Json.Serialization;
 using Tips.Warehouse.Api.Contracts;
+using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Extensions;
 using Tips.Warehouse.Api.Repository;
 
@@ -29,15 +30,17 @@ builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderReposi
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();  
+builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();
 builder.Services.AddScoped<IBTODeliveryOrderRepository, BTODeliveryOrderRepository>();
 builder.Services.AddScoped<IDeliveryOrderRepository, DeliveryOrderRepository>();
+builder.Services.AddScoped<IOpenDeliveryOrderHistoryRepository, OpenDeliveryOrderHistoryRepository>();
 builder.Services.AddScoped<IReturnBtoDeliveryOrderRepository, ReturnBtoDeliveryOrderRepository>();
 builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 builder.Services.AddScoped<IInventoryTranctionRepository, InventoryTranctionRepository>();
 builder.Services.AddScoped<IReturnInvoiceRepository, ReturnInvoiceRepository>();
 builder.Services.AddScoped<IBTODeliveryOrderItemsRepository, BTODeliveryOrderItemRepository>();
 builder.Services.AddScoped<IInvoiceChildRepository, InvoiceChildRepository>();
+builder.Services.AddScoped<ILocationTransferRepository, LocationTransferRepository>();
 
 builder.Services.AddScoped<IBTODeliveryOrderHistoryRepository, BTODeliveryOrderHistoryRepository>();
 
@@ -57,8 +60,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI();
 //}
 
 app.UseHttpsRedirection();

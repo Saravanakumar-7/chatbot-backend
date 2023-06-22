@@ -9,6 +9,11 @@ using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.Enums;
 using Tips.Production.Api.Repository;
+using Microsoft.EntityFrameworkCore;
+using System.Net.Http;
+using System.Text;
+using static Org.BouncyCastle.Math.EC.ECCurve;
+using Entities.Migrations;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,13 +27,17 @@ namespace Tips.Production.Api.Controllers
         private IMaterialRequestsRepository _materialRequestRepository;
         private IMapper _mapper;
         private ILoggerManager _logger;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
 
 
-        public MaterialRequestsController(IMaterialRequestsRepository materialRequestRepository, IMapper mapper, ILoggerManager logger)
+        public MaterialRequestsController(IConfiguration config, HttpClient httpClient,IMaterialRequestsRepository materialRequestRepository, IMapper mapper, ILoggerManager logger)
         {
             _materialRequestRepository = materialRequestRepository;
             _mapper = mapper;
             _logger = logger;
+            _httpClient = httpClient;
+            _config = config;
         }
 
 
@@ -267,7 +276,7 @@ namespace Tips.Production.Api.Controllers
 
                 var dateFormat = days + months + years;
                 var mrNumber = await _materialRequestRepository.GenerateMRNumber();
-                createMaterialReq.MRNumber = dateFormat + mrNumber;
+                createMaterialReq.MRNumber = mrNumber;
 
                 await _materialRequestRepository.CreateMaterialRequest(createMaterialReq);
 
@@ -415,8 +424,33 @@ namespace Tips.Production.Api.Controllers
                     materialItemDetail.MRStockDetails = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
 
                     materialReqItemList.Add(materialItemDetail);
-
+                     
                 }
+
+                //var materialRequestDetails = _mapper.Map<List<UpdateInventoryBalanceQty>>(materialReqItemList);
+
+                //var json = JsonConvert.SerializeObject(materialRequestDetails);
+                //var data = new StringContent(json, Encoding.UTF8, "application/json");
+                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialInventoryBalanceQty"), data);
+
+                var mapperConfiguration = new MapperConfiguration(cfg =>
+                {
+                    cfg.CreateMap<MaterialRequestItems, UpdateInventoryBalanceQty>()
+                        .ForMember(dest => dest.PartNumber, opt => opt.MapFrom(src => src.PartNumber))
+                        .ForMember(dest => dest.MRNWarehouseList, opt => opt.MapFrom(src => src.MRStockDetails.Select(detail => new InventoryUpdateDtoForMRWarehouse
+                        {
+                            Warehouse = detail.Warehouse,
+                            Location = detail.Location,
+                            LocationStock = detail.LocationStock
+                        }).ToList()));
+                });
+
+                var mapper = mapperConfiguration.CreateMapper();
+                var materialRequestDetails = materialReqItemList.Select(item => mapper.Map<UpdateInventoryBalanceQty>(item)).ToList();
+                
+                var json = JsonConvert.SerializeObject(materialRequestDetails);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialInventoryBalanceQty"), data);
 
 
                 updateMaterialReqquest.MaterialRequestItems = materialReqItemList;

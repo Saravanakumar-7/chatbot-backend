@@ -139,8 +139,49 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        //passing itemnumber and location
 
-        
+        [HttpGet]
+        public async Task<IActionResult> GetInventoryDetailsByItemnumberandLocation(string ItemNumber, string Location, string Warehouse)
+
+        {
+            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+
+            try
+            {
+                var getInventoryDetailsByItemNoandLoc = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(ItemNumber, Location, Warehouse);
+                if (getInventoryDetailsByItemNoandLoc == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory with id: {ItemNumber}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with id: {ItemNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with id: {ItemNumber}");
+                    var result = _mapper.Map<InventoryDto>(getInventoryDetailsByItemNoandLoc);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned Inventory with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetInventoryById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
 
 
 
@@ -300,6 +341,41 @@ namespace Tips.Warehouse.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+        }
+        //update material request issued item
+
+        [HttpPost]
+        public async Task<IActionResult> MaterialInventoryBalanceQty([FromBody] List<UpdateInventoryBalanceQty> updateInventoryBalanceQty)
+        {             
+            foreach (var materialIssueQty in updateInventoryBalanceQty)
+            {
+                foreach (var Location in materialIssueQty.MRNWarehouseList)
+                {
+                    IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(materialIssueQty.PartNumber, Location.Location, Location.Warehouse);
+                    var inventoryItem = inventories.FirstOrDefault();
+                    inventoryItem.Balance_Quantity = inventoryItem.Balance_Quantity - Location.LocationStock;
+                    await _inventoryRepository.UpdateInventory(inventoryItem);
+                }
+            }
+            _inventoryRepository.SaveAsync();
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MaterialReturnNoteInventoryBalanceQty([FromBody] List<MRNUpdateInventoryBalanceQty> updateInventoryBalanceQty)
+        {
+            foreach (var materialReturnQty in updateInventoryBalanceQty)
+            {
+                foreach (var Location in materialReturnQty.MRNWarehouseList)
+                {
+                    IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(materialReturnQty.PartNumber, Location.Location, Location.Warehouse);
+                    var inventoryItem = inventories.FirstOrDefault();
+                    inventoryItem.Balance_Quantity = inventoryItem.Balance_Quantity + Location.ReturnQty;
+                    await _inventoryRepository.UpdateInventory(inventoryItem);
+                }
+            }
+            _inventoryRepository.SaveAsync();
+            return Ok();
         }
 
 

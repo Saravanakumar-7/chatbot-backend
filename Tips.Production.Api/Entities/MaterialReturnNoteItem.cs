@@ -20,6 +20,7 @@ namespace Tips.Production.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public int? MaterialReturnNoteId { get; set; }
-        public MaterialReturnNote? MaterialReturnNote { get; set; }
+        public MaterialReturnNote? MaterialReturnNote { get; set; } 
+
     }
 }
