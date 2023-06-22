@@ -7,14 +7,22 @@ namespace Tips.Production.Api.Entities.DTOs
         public int Id { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
-        public decimal ReturnQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal Qty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal LocationStock { get; set; }
     }
     public class MRNWarehouseDetailsPostDto
     {
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         [Precision(13, 3)]
-        public decimal ReturnQty { get; set; }
+        public decimal Qty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal LocationStock { get; set; }
     }
     public class MRNWarehouseDetailsUpdateDto
     {
@@ -23,6 +31,9 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         [Precision(13, 3)]
-        public decimal ReturnQty { get; set; }
+        public decimal Qty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal LocationStock { get; set; }
     }
 }

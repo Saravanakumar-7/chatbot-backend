@@ -6,8 +6,16 @@ namespace Tips.Production.Api.Entities
     {
         public int Id { get; set; }
         public string? Warehouse { get; set; }
-        public string? Location { get; set; }
         [Precision(13, 3)]
-        public decimal ReturnQty { get; set; }
+        public string? Location { get; set; }
+
+        [Precision(13, 3)]
+        public decimal LocationStock { get; set; }
+
+        [Precision(13, 3)]
+        public decimal Qty { get; set; }
+
+        public int? MaterialReturnNoteItemId { get; set; }
+        public MaterialReturnNoteItem? MaterialReturnNoteItem { get; set; }
     }
 }

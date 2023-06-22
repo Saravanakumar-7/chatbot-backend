@@ -441,7 +441,8 @@ namespace Tips.Production.Api.Controllers
                         {
                             Warehouse = detail.Warehouse,
                             Location = detail.Location,
-                            LocationStock = detail.LocationStock
+                            LocationStock = detail.LocationStock,
+                            Qty = detail.Qty,
                         }).ToList()));
                 });
 

@@ -9,6 +9,9 @@ namespace Tips.Production.Api.Entities
         public string? Location { get; set; }
 
         [Precision(13, 3)]
+        public decimal Qty { get; set; }
+
+        [Precision(13, 3)]
         public decimal LocationStock { get; set; }
         public int? MaterialRequestItemsId { get; set; }
         public MaterialRequestItems? MaterialRequestItems { get; set; }
