@@ -421,8 +421,8 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryDto.PartType = "PurchasePart";  //We need to check this
                             grinInventoryDto.ReferenceID = Convert.ToString(parts.Id);
                             grinInventoryDto.ReferenceIDFrom = "GRIN";
-                            grinInventoryDto.GrinMaterialType = null;
-                            grinInventoryDto.ShopOrderNo = null;
+                            grinInventoryDto.GrinMaterialType = "";
+                            grinInventoryDto.ShopOrderNo = "";
 
                             var json = JsonConvert.SerializeObject(grinInventoryDto);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");

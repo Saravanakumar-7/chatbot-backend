@@ -518,6 +518,7 @@ namespace Tips.Grin.Api.Controllers
                         var binningLocations = binningsItemsDto[i].BinningLocations;
                         
                         int j = 0;
+                        
                         foreach (var location in binningLocations)
                         {
                             if (j == 0)
@@ -539,25 +540,26 @@ namespace Tips.Grin.Api.Controllers
                                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                                 var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
                                     "UpdateInventory?id=", inventoryObject.id), data);
+                                j++;
                             }
                             else
                             {
+                              
                                 var grinId = binningsItemsDto[i].GrinPartId;
                                 var grinDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinId);
-                                dynamic inventoryObjectNew = new ExpandoObject();
+                                BinningInventoryDtoPost inventoryObjectNew = new BinningInventoryDtoPost();
                                 inventoryObjectNew.PartNumber = binningsItemsDto[i].ItemNumber;
                                 inventoryObjectNew.MftrPartNumber = grinDetails.MftrItemNumber;
                                 inventoryObjectNew.Description = grinDetails.ItemDescription;
-                                inventoryObjectNew.ProjectNumbers = location.ProjectNumber;
+                                inventoryObjectNew.ProjectNumber = location.ProjectNumber;
                                 inventoryObjectNew.Balance_Quantity = location.Qty;
                                 inventoryObjectNew.UOM = grinDetails.UOM;
-                                inventoryObjectNew.IsStockAvailable = true;
                                 inventoryObjectNew.Warehouse = location.Warehouse;
                                 inventoryObjectNew.Location = location.Location;
                                 inventoryObjectNew.GrinNo = binningDetail.GrinNumber;
-                                inventoryObjectNew.GrinPartId = Convert.ToInt32(grinPartId);
+                                inventoryObjectNew.GrinPartId = grinId;
                                 inventoryObjectNew.PartType = "PurchasePart"; // we have to take parttype from grinparts model;
-                                inventoryObjectNew.ReferenceID = grinPartId;
+                                inventoryObjectNew.ReferenceID = Convert.ToString(grinId);
                                 inventoryObjectNew.ReferenceIDFrom = "GRIN";
 
                                 var json = JsonConvert.SerializeObject(inventoryObjectNew);

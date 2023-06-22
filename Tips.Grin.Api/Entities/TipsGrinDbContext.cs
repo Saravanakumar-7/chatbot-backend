@@ -24,7 +24,8 @@ namespace Tips.Grin.Api.Entities
         public DbSet<ReturnGrin> ReturnGrins { get; set; }
         public DbSet<ReturnGrinParts> ReturnGrinParts { get; set; }
         public DbSet<ReturnGrinDocumentUpload> ReturnGrinDocumentUploads { get; set; }
-
+        public DbSet<OpenGrin> OpenGrin { get; set; }
+        public DbSet<OpenGrinParts> OpenGrinParts { get; set; }
 
     }
 }

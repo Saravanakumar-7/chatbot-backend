@@ -110,8 +110,8 @@ namespace Tips.Purchase.Api.Repository
             using (var context = _tipsPurchaseDbContext)
             {
                 var query = _tipsPurchaseDbContext.PurchaseOrders.Include("POItems");
-                 int searchValueInt;
-                bool isSearchValueInt = int.TryParse(searchParammes.SearchValue, out searchValueInt);
+                // int searchValueInt;
+                //bool isSearchValueInt = int.TryParse(searchParammes.SearchValue, out searchValueInt);
 
                 if (!string.IsNullOrEmpty(searchParammes.SearchValue))
                 {
@@ -129,8 +129,8 @@ namespace Tips.Purchase.Api.Repository
                     || po.POItems.Any(s => s.ItemNumber.Contains(searchParammes.SearchValue) ||
                     s.Description.Contains(searchParammes.SearchValue)
                     || s.MftrItemNumber.Contains(searchParammes.SearchValue)
-                    || s.PONumber.Contains(searchParammes.SearchValue)) ||
-                    (!isSearchValueInt || po.RevisionNumber == searchValueInt))
+                    || s.PONumber.Contains(searchParammes.SearchValue)))//||
+                   // (!isSearchValueInt || po.RevisionNumber == searchValueInt))
                     .Include(itm => itm.POItems)
                     .ThenInclude(po => po.POAddprojects)
                     .Include(itm => itm.POItems)

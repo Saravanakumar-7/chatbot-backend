@@ -66,6 +66,14 @@ namespace Tips.Grin.Api
             CreateMap<Grins, BinningDto>().ReverseMap();
             CreateMap<GrinParts, BinningItemsDto>().ReverseMap();
             CreateMap<GrinParts, BinningLocationDto>().ReverseMap();
+
+            CreateMap<OpenGrin, OpenGrinDto>().ReverseMap();
+            CreateMap<OpenGrin, OpenGrinPostDto>().ReverseMap();
+            CreateMap<OpenGrin, OpenGrinUpdateDto>().ReverseMap();
+
+            CreateMap<OpenGrinParts, OpenGrinPartsDto>().ReverseMap();
+            CreateMap<OpenGrinParts, OpenGrinPartsPostDto>().ReverseMap();
+            CreateMap<OpenGrinParts, OpenGrinPartsUpdateDto>().ReverseMap();
         }
     }
 }
