@@ -539,6 +539,7 @@ namespace Tips.Grin.Api.Controllers
                                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                                 var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
                                     "UpdateInventory?id=", inventoryObject.id), data);
+                                j++;
                             }
                             else
                             {

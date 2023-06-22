@@ -281,7 +281,20 @@ namespace Tips.Warehouse.Api.Repository
 
             return getInventoryDetailsById;
         }
+        public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse)
+        {
+            var getInventoryDetailsByItemAndLoc = await _tipsWarehouseDbContext.Inventory
+                .Where(x => x.PartNumber == ItemNumber && x.Location == Location && x.Warehouse == Warehouse && x.IsStockAvailable == true).ToListAsync();
 
+            return getInventoryDetailsByItemAndLoc;
+        }
+        public async Task<Inventory> GetSingleInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse)
+        {
+            var getInventoryDetailsByItemAndLoc = await _tipsWarehouseDbContext.Inventory
+                .Where(x => x.PartNumber == ItemNumber && x.Location == Location && x.Warehouse == Warehouse && x.IsStockAvailable == true).FirstOrDefaultAsync();
+
+            return getInventoryDetailsByItemAndLoc;
+        }
         public async Task<Inventory> GetInventoryDetailsByItemNo(string ItemNumber)
         {
             var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x =>x.PartNumber == ItemNumber && x.IsStockAvailable == true)
@@ -289,6 +302,23 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryDetail;
         }
+
+        public async Task<Inventory> GetInventoryDetailsByItemNoandPartType(string ItemNumber, string PartType)
+        {
+            var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == ItemNumber && x.PartType == PartType && x.IsStockAvailable == true)
+                          .FirstOrDefaultAsync();
+
+            return inventoryDetail;
+        }
+
+        public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandPartTypes(string ItemNumber)
+        {
+            var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == ItemNumber  && x.IsStockAvailable == true)
+                          .ToListAsync();
+
+            return inventoryDetail;
+        }
+
 
         public async Task<decimal> GetStockDetailsForAllLocationWarehouseByItemNo(string ItemNumber)
         {
@@ -342,7 +372,8 @@ namespace Tips.Warehouse.Api.Repository
 
             return getInventoryById;
         }
-
+         
+         
         public async Task<string> UpdateInventory(Inventory inventory)
         {
             inventory.LastModifiedBy = "Admin";

@@ -11,9 +11,7 @@ namespace Tips.Production.Api.Entities
         [Key]
         public int Id { get; set; }
 
-
-        [Required(ErrorMessage = "MRNumber is required")]
-        public string MRNumber { get; set; }
+        public string? MRNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public string? FGItemNumber { get; set; }
         public PartType ShopOrderType { get; set; }

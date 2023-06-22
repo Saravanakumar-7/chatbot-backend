@@ -56,4 +56,17 @@ namespace Tips.Production.Api.Entities.DTOs
         public List<string>? SAShopOrderNumber { get; set; }
         public List<string>? ShopOrderNumber { get; set; }
     }
+    public class MRNUpdateInventoryBalanceQty
+    {
+        public string? PartNumber { get; set; }
+        public List<MRNInventoryUpdateDto> MRNWarehouseList { get; set; }
+    }
+
+    public class MRNInventoryUpdateDto
+    {
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        [Precision(13, 3)]
+        public decimal ReturnQty { get; set; }
+    }
 }

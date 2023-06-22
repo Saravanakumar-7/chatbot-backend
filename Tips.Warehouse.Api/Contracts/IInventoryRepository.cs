@@ -2,8 +2,10 @@
 using Entities;
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
+using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 
 namespace Tips.Warehouse.Api.Contracts
 {
@@ -16,7 +18,9 @@ namespace Tips.Warehouse.Api.Contracts
         Task<string> DeleteInventory(Inventory inventory);
         Task<List<InventoryItemNoStock>> GetItemNoByInventoryStock();
         Task<Inventory> GetInventoryById(int id);
-        
+
+
+
         Task<Inventory> GetInventoryDetails(string ItemNumber);
 
         Task<Inventory> GetInventoryFGDetailsByItemNumber(string ItemNumber);
@@ -40,6 +44,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<Inventory>> SearchInventory([FromQuery] SearchParames searchParames);
         Task<IEnumerable<Inventory>> SearchInventoryDate([FromQuery] SearchsDateParms searchsDateParms);
         Task<IEnumerable<Inventory>> GetInventoryByItemNumber(string ItemNumber);
-
+        Task<Inventory> GetSingleInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse);
+        Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse);
+        Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandPartTypes(string ItemNumber);
     }
 }

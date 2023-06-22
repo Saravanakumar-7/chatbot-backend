@@ -95,6 +95,10 @@ namespace Tips.Warehouse.Api
             CreateMap<InvoiceAdditionalCharges, InvoiceAdditionalChargesPostDto>().ReverseMap();
             CreateMap<InvoiceAdditionalCharges, InvoiceAdditionalChargesUpdateDto>().ReverseMap();
 
+            CreateMap<LocationTransfer, LocationTransferDto>().ReverseMap();
+            CreateMap<LocationTransfer, LocationTransferPostDto>().ReverseMap();
+            CreateMap<LocationTransfer, LocationTransferUpdateDto>().ReverseMap();
+
             //CreateMap<bTODeliveryOrderItems, inven>().ReverseMap();
         }
     }

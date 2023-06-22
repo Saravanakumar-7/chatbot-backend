@@ -11,7 +11,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? Location { get; set; }
 
         [Precision(13,3)]
-        public decimal? LocationStock { get; set; }
+        public decimal LocationStock { get; set; }
 
 
     }
@@ -23,7 +23,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? Location { get; set; }
 
         [Precision(13, 3)]
-        public decimal? LocationStock { get; set; }
+        public decimal LocationStock { get; set; }
 
     }
     public class MRStockDetailsUpdateDto
@@ -33,7 +33,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? Location { get; set; }
 
         [Precision(13, 3)]
-        public decimal? LocationStock { get; set; }
+        public decimal LocationStock { get; set; }
     }
 
 
