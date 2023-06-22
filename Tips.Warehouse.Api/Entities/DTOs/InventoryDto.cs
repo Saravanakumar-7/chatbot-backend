@@ -189,21 +189,28 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? Location { get; set; }
 
         [Precision(13, 3)]
+        public decimal Qty { get; set; }
+
+        [Precision(13, 3)]
         public decimal LocationStock { get; set; }
     }
 
     public class MRNUpdateInventoryBalanceQty
     {
         public string? PartNumber { get; set; }
-        public List<MRNInventoryUpdateDto> MRNWarehouseList { get; set; }
+        public List<MRNInventoryUpdateDto> MRNDetails { get; set; }
     }
 
     public class MRNInventoryUpdateDto
     {
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
+
         [Precision(13, 3)]
-        public decimal ReturnQty { get; set; }
+        public decimal Qty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal LocationStock { get; set; }
     }
 
 }

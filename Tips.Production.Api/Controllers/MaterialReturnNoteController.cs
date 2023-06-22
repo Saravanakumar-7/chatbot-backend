@@ -421,11 +421,12 @@ namespace Tips.Production.Api.Controllers
                 {
                     cfg.CreateMap<MaterialReturnNoteItem, MRNUpdateInventoryBalanceQty>()
                         .ForMember(dest => dest.PartNumber, opt => opt.MapFrom(src => src.PartNumber))
-                        .ForMember(dest => dest.MRNWarehouseList, opt => opt.MapFrom(src => src.MRNWarehouseList.Select(detail => new MRNInventoryUpdateDto
+                        .ForMember(dest => dest.MRNDetails, opt => opt.MapFrom(src => src.MRNWarehouseList.Select(detail => new MRNInventoryUpdateDto
                         {
                             Warehouse = detail.Warehouse,
                             Location = detail.Location,
-                            ReturnQty = detail.ReturnQty
+                            Qty = detail.Qty,
+                            LocationStock = detail.LocationStock,
                         }).ToList()));
                 });
 

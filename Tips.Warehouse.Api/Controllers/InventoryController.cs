@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
+using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 
 
 namespace Tips.Warehouse.Api.Controllers
@@ -353,7 +354,7 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(materialIssueQty.PartNumber, Location.Location, Location.Warehouse);
                     var inventoryItem = inventories.FirstOrDefault();
-                    inventoryItem.Balance_Quantity = inventoryItem.Balance_Quantity - Location.LocationStock;
+                    inventoryItem.Balance_Quantity = inventoryItem.Balance_Quantity - Location.Qty;
                     await _inventoryRepository.UpdateInventory(inventoryItem);
                 }
             }
@@ -364,14 +365,40 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> MaterialReturnNoteInventoryBalanceQty([FromBody] List<MRNUpdateInventoryBalanceQty> updateInventoryBalanceQty)
         {
-            foreach (var materialReturnQty in updateInventoryBalanceQty)
+            foreach (var materialReturnQty in updateInventoryBalanceQty) 
             {
-                foreach (var Location in materialReturnQty.MRNWarehouseList)
+                foreach (var Location in materialReturnQty.MRNDetails)
                 {
                     IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(materialReturnQty.PartNumber, Location.Location, Location.Warehouse);
                     var inventoryItem = inventories.FirstOrDefault();
-                    inventoryItem.Balance_Quantity = inventoryItem.Balance_Quantity + Location.ReturnQty;
-                    await _inventoryRepository.UpdateInventory(inventoryItem);
+                    if (inventoryItem == null)
+                    {
+                        Inventory inventoryPost = new Inventory();
+                        inventoryPost.PartNumber = materialReturnQty.PartNumber;
+                        inventoryPost.MftrPartNumber = materialReturnQty.PartNumber;
+                        inventoryPost.ProjectNumber = "Project";
+                        inventoryPost.Description = "";
+                        inventoryPost.Balance_Quantity = Location.Qty;
+                        inventoryPost.UOM = "";
+                        inventoryPost.GrinMaterialType = "";
+                        inventoryPost.shopOrderNo = "";
+                        inventoryPost.Unit = "";
+                        inventoryPost.GrinNo = "";
+                        inventoryPost.GrinPartId = 0;
+                        inventoryPost.IsStockAvailable = true;
+                        inventoryPost.Warehouse = Location.Warehouse;
+                        inventoryPost.Location = Location.Location;
+                        inventoryPost.PartType = "";
+                        inventoryPost.ReferenceID = "0";
+                        inventoryPost.ReferenceIDFrom = "MaterialReturnNote";
+                        await _inventoryRepository.CreateInventory(inventoryPost);
+                        _inventoryRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        inventoryItem.Balance_Quantity = inventoryItem.Balance_Quantity + Location.Qty;
+                        await _inventoryRepository.UpdateInventory(inventoryItem);
+                    }
                 }
             }
             _inventoryRepository.SaveAsync();

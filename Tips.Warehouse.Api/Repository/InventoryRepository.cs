@@ -282,6 +282,7 @@ namespace Tips.Warehouse.Api.Repository
             return getInventoryDetailsById;
         }
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse)
+        
         {
             var getInventoryDetailsByItemAndLoc = await _tipsWarehouseDbContext.Inventory
                 .Where(x => x.PartNumber == ItemNumber && x.Location == Location && x.Warehouse == Warehouse && x.IsStockAvailable == true).ToListAsync();
