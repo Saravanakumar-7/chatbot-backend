@@ -15,7 +15,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Required]
 
         public string? ItemNumber { get; set; }
-        public string? GrinNumber { get; set; }
         public int GrinPartId { get; set; }  
 
         [Required]
@@ -85,7 +84,6 @@ namespace Tips.Grin.Api.Entities.DTOs
     }
     public class GrinPartsPostDto
     {
-        public string? GrinNumber { get; set; }
         public string ItemDescription { get; set; }
         public string? PONumber { get; set; }
 
@@ -147,7 +145,6 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class GrinPartsUpdateDto
     {
 
-        public string? GrinNumber { get; set; }
         [Required(ErrorMessage = "ItemDescription is required")]
         [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
         public string ItemDescription { get; set; }

@@ -5,7 +5,6 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class IQCConfirmationItemsDto
     {
         public int? Id { get; set; }
-        public string? GrinNumber { get; set; }
         public string? PONumber { get; set; }
         public int GrinPartId { get; set; } 
         public string? ItemNumber { get; set; }
@@ -37,7 +36,6 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class IQCConfirmationItemsPostDto
     {
         public string? ItemNumber { get; set; }
-        public string? GrinNumber { get; set; }
         public int GrinPartId { get; set; }
         public decimal ReceivedQty { get; set; }
         public decimal AcceptedQty { get; set; }
@@ -47,7 +45,6 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public int? Id { get; set; }
         public string? ItemNumber { get; set; }
-        public string? GrinNumber { get; set; }
         public int GrinPartId { get; set; }
         public decimal ReceivedQty { get; set; }
         public decimal AcceptedQty { get; set; }

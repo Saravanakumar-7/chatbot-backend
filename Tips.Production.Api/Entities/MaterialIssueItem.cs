@@ -8,7 +8,6 @@ namespace Tips.Production.Api.Entities
     public class MaterialIssueItem
     {
         public int Id { get; set; }
-        public string? ShopOrderNumber { get; set; }
         public string? PartNumber { get; set; }
         [MaxLength(500)]
         public string? Description { get; set; }

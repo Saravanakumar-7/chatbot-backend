@@ -14,8 +14,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class ScheduleDateDto
     {
         public int? Id { get; set; }
-        public string? ItemNumber { get; set; }
-        public string? SalesOrderNumber { get; set; }
         public DateTime? Date { get; set; }
 
         [Precision(13, 1)]
@@ -23,8 +21,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class ScheduleDatePostDto
     {
-        public string? ItemNumber { get; set; }
-        public string? SalesOrderNumber { get; set; }
         public DateTime? Date { get; set; }
 
         [Precision(13, 1)]
@@ -32,8 +28,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class ScheduleDateUpdateDto
     {
-        public string? ItemNumber { get; set; }
-        public string? SalesOrderNumber { get; set; }
         public DateTime? Date { get; set; }
 
         [Precision(13, 1)]

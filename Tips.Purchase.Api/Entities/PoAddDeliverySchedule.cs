@@ -7,8 +7,6 @@ namespace Tips.Purchase.Api.Entities
     {
         [Key]
         public int Id { get; set; }
-        public string? ItemNumber { get; set; }
-        public string? PONumber { get; set; }
         public DateTime PODeliveryDate { get; set; }
 
         [Precision(13, 3)]

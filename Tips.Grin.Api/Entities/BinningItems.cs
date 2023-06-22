@@ -13,7 +13,6 @@ namespace Tips.Grin.Api.Entities
         [Key]
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
-        public string? GrinNumber { get; set; }
 
         public int GrinPartId { get; set; } 
         

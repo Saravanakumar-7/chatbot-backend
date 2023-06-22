@@ -13,8 +13,6 @@ namespace Tips.Purchase.Api.Entities
     {
         [Key]
         public int Id { get; set; }
-        public string? ItemNumber { get; set; }
-        public string? PrNumber { get; set; }
         public string? ProjectNumber { get; set; }
 
         [Precision(13, 3)]

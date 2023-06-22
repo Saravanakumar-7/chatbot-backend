@@ -7,7 +7,6 @@ namespace Tips.Grin.Api.Entities
     {
         public int? Id { get; set; }
         public string? ItemNumber { get; set; }
-        public string? GrinNumber { get; set; }
         public int GrinPartId { get; set; }
         [Precision(13,3)]
         public decimal ReceivedQty { get; set; }

@@ -7,7 +7,6 @@ namespace Tips.SalesService.Api.Entities
     {
         [Key]
         public int Id { get; set; }
-        public string? SalesOrderNumber { get; set; }
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
 
