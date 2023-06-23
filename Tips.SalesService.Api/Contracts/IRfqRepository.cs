@@ -16,6 +16,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> GetRfqNumberAutoIncrementCount(DateTime date);
         Task<string> GetRfqNumberAutoIncrementNumber();
         Task<string> GenerateRFQNumber();
+        Task<string> GenerateRFQTrascconNumber();
         Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberList();
         Task<IEnumerable<RfqNumberListDto>> GetAllRfqNumberList();
         Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberListByCustomerId(string CustomerId);
