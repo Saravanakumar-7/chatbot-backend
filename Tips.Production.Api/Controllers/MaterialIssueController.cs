@@ -184,6 +184,59 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetMaterialIssueByShopOrderNo(string shopOrderNumber)
+        {
+            ServiceResponse<MaterialIssueDto> serviceResponse = new ServiceResponse<MaterialIssueDto>();
+
+            try
+            {
+                var materialIssueDetail = await _materialIssueRepository.GetMaterialIssueByShopOrderNo(shopOrderNumber);
+
+                if (materialIssueDetail == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"MaterialIssue with shopOrderNumber hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"MaterialIssue with shopOrderNumber: {shopOrderNumber}, hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+
+                {
+                    _logger.LogInfo($"Returned MaterialIssueDetails with shopOrderNumber: {shopOrderNumber}");
+
+                    MaterialIssueDto materialIssueDto = _mapper.Map<MaterialIssueDto>(materialIssueDetail);
+
+                    List<MaterialIssueItemDto> MaterialIssueItemList = new List<MaterialIssueItemDto>();
+
+                    foreach (var materialIssueItemDetails in materialIssueDetail.materialIssueItems)
+                    {
+                        MaterialIssueItemDto MaterialIssueItemDto = _mapper.Map<MaterialIssueItemDto>(materialIssueItemDetails);
+                        MaterialIssueItemList.Add(MaterialIssueItemDto);
+                    }
+
+                    materialIssueDto.materialIssueItems = MaterialIssueItemList;
+                    serviceResponse.Data = materialIssueDto;
+                    serviceResponse.Message = $"Returned MaterialIssueDetails";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetMaterialIssueByShopOrderNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         // POST api/<MaterialIssueController>
         [HttpPost]
         public IActionResult CreateMaterialIssue([FromBody] MaterialIssuePostDto materialIssuePostDto)
