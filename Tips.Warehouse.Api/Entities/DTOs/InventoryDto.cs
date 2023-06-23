@@ -212,5 +212,12 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal LocationStock { get; set; }
     }
+    public class InventoryDetailsLocationStock
+    {
+        public string PartNumber { get; set; }
+        public string Warehouse { get; set; }
+        public string? Location { get; set; }
+        public decimal LocationStock { get; set; }
 
+    }
 }

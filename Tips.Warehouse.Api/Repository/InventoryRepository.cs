@@ -233,6 +233,22 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryItemNoStock;
         }
+        public async Task<List<InventoryDetailsLocationStock>> GetInventoryDetailsWithInventoryStock(string partNumber,string warehouse,string location)
+        {
+            List<InventoryDetailsLocationStock> inventoryItemNoStock = _tipsWarehouseDbContext.Inventory
+                 .Where(x => x.PartNumber == partNumber && x.Warehouse == warehouse && x.Location == location)
+                       .GroupBy(l => new { l.PartNumber,l.Warehouse,l.Location })
+                       .Select(group => new InventoryDetailsLocationStock
+                       {
+                           PartNumber = group.Key.PartNumber,
+                           Warehouse = group.Key.Warehouse,
+                           Location = group.Key.Location,
+                           LocationStock = group.Sum(c => c.Balance_Quantity),
+
+                       }).ToList();
+
+            return inventoryItemNoStock;
+        }
         public async Task<int?> CreateInventory(Inventory inventory)
         {
             inventory.CreatedBy = "Admin";
