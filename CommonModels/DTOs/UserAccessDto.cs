@@ -42,6 +42,8 @@ namespace Entities.DTOs
         [DefaultValue(false)]
         public bool Print { get; set; }
         public int UserId { get; set; }
+        [DefaultValue(false)]
+        public bool Table { get; set; }
         public string? UserName { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
@@ -75,6 +77,8 @@ namespace Entities.DTOs
         public bool ApprovalII { get; set; }
         [DefaultValue(false)]
         public bool Print { get; set; }
+        [DefaultValue(false)]
+        public bool Table { get; set; }
         public int UserId { get; set; }
         public string? UserName { get; set; }
 
@@ -105,6 +109,9 @@ namespace Entities.DTOs
 
         [DefaultValue(false)]
         public bool ApprovalI { get; set; }
+
+        [DefaultValue(false)]
+        public bool Table { get; set; }
 
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }

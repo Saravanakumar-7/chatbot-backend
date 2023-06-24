@@ -73,6 +73,14 @@ namespace Repository
 
             return registrationFormById;
         }
+        //test
+        public async Task<RegistrationForm> GetRegistrationFormByUserNameandPassword(string username,string password)
+        {
+            var registrationFormDetails = await TipsMasterDbContext.RegistrationForms.Where(x => x.UserName == username && x.Password == password)
+                 .FirstOrDefaultAsync();
+
+            return registrationFormDetails;
+        }
 
         public async Task<IEnumerable<RegistrationFormDetailsDto>> GetAllActiveRegistrationFormList()
         {

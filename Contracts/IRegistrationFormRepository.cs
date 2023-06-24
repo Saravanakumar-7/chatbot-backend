@@ -18,5 +18,6 @@ namespace Contracts
         Task<string> UpdateRegistrationForm(RegistrationForm registrationForm);
         Task<string> DeleteRegistrationForm(RegistrationForm registrationForm);
         Task<IEnumerable<RegistrationFormDetailsDto>> GetAllActiveRegistrationFormList();
+        Task<RegistrationForm> GetRegistrationFormByUserNameandPassword(string username, string password);
     }
 }
