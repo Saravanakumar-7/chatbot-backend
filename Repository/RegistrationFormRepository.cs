@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Entities.DTOs;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,15 +18,22 @@ namespace Repository
 {
     public class RegistrationFormRepository : RepositoryBase<RegistrationForm>, IRegistrationFormRepository
     {
-        public RegistrationFormRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        
+        public RegistrationFormRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+ 
         }
 
         public async Task<int?> CreateRegistrationForm(RegistrationForm registrationForm)
         {
-            registrationForm.CreatedBy = "Admin";
+            registrationForm.CreatedBy = _createdBy;
             registrationForm.CreatedOn = DateTime.Now;
-            registrationForm.Unit = "Bangalore";
             var result = await Create(registrationForm);
 
             return result.Id;

@@ -12,24 +12,34 @@ using System.Threading.Tasks;
 using System.Linq.Expressions;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace Tips.Grin.Api.Repository
 {
     public class GrinRepository : RepositoryBase<Grins>, IGrinRepository
     {
         private TipsGrinDbContext _tipsGrinDbContext;
-        public GrinRepository(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public GrinRepository(TipsGrinDbContext tipsGrinDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsGrinDbContext)
         {
             _tipsGrinDbContext = tipsGrinDbContext;
-        } 
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+        }
         public async Task<int?> CreateGrin(Grins grins)
         {
             var date = DateTime.Now;
-            grins.CreatedBy = "Admin";
+            grins.CreatedBy = _createdBy;
             grins.CreatedOn = date.Date;
             //Guid grinId = Guid.NewGuid();
             //grins.GrinNumber = "GR-" + grinId.ToString();
-            grins.Unit = "Bangalore";       
+            grins.Unit = _unitname;       
 
             var result = await Create(grins);
             return result.Id;
@@ -212,7 +222,7 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<string> UpdateGrin(Grins grins)
         {
-            grins.LastModifiedBy = "Admin";
+            grins.LastModifiedBy = _createdBy;
             grins.LastModifiedOn = DateTime.Now;
             Update(grins);
             string result = $"Grin Detail {grins.Id} is updated successfully!";
@@ -225,9 +235,17 @@ namespace Tips.Grin.Api.Repository
     public class UploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository
     {
         private TipsGrinDbContext _tipsGrinDbContext;
-        public UploadDocumentRepository(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public UploadDocumentRepository(TipsGrinDbContext tipsGrinDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsGrinDbContext)
         {
             _tipsGrinDbContext = tipsGrinDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
         public async Task<DocumentUpload> GetUploadDocById(int id)
         {
@@ -247,9 +265,9 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<int?> CreateUploadDocumentGrin(DocumentUpload documentUpload)
         {
-            documentUpload.CreatedBy = "Admin";
+            documentUpload.CreatedBy = _createdBy;
             documentUpload.CreatedOn = DateTime.Now;
-            documentUpload.LastModifiedBy = "Admin";
+            documentUpload.LastModifiedBy = _createdBy;
             documentUpload.LastModifiedOn = DateTime.Now;
 
             var result = await Create(documentUpload);

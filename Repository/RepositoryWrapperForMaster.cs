@@ -1128,7 +1128,7 @@ namespace Repository
             {
                 if (_registrationFormRepo == null)
                 {
-                    _registrationFormRepo = new RegistrationFormRepository(_tipsMasterDbContext);
+                    _registrationFormRepo = new RegistrationFormRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _registrationFormRepo;
             }
@@ -1140,7 +1140,7 @@ namespace Repository
             {
                 if (_userAccessRepository == null)
                 {
-                    _userAccessRepository = new UserAccessRepository(_tipsMasterDbContext);
+                    _userAccessRepository = new UserAccessRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _userAccessRepository;
             }

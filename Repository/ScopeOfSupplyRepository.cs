@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 namespace Repository
 {
     public class ScopeOfSupplyRepository : RepositoryBase<ScopeOfSupply>, IScopeOfSupplyRepository
-
     {
         public ScopeOfSupplyRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
         {
+
         }
 
         public async Task<int?> CreateScopeOfSupply(ScopeOfSupply scopeOfSupply)

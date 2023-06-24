@@ -3,10 +3,12 @@ using Entities;
 using Entities.DTOs;
 using Entities.Helper;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,17 +16,26 @@ namespace Repository
 {
     public class VendorRepository : RepositoryBase<VendorMaster>, IVendorRepository
     {
-        public VendorRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public VendorRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateVendorMaster(VendorMaster vendorMaster)
         {
-                vendorMaster.CreatedBy = "Admin";
+                vendorMaster.CreatedBy = _createdBy;
                 vendorMaster.CreatedOn = DateTime.Now;
-                vendorMaster.LastModifiedBy = "Admin";
+                vendorMaster.LastModifiedBy = _createdBy;
                 vendorMaster.LastModifiedOn = DateTime.Now;
-                 vendorMaster.Unit = "Bangalore";
+                 vendorMaster.Unit = _unitname;
                  var result = await Create(vendorMaster);
            
             return result.Id; 
@@ -68,7 +79,7 @@ namespace Repository
 
         public async Task<string> UpdateVendorMaster(VendorMaster DataUpdate)             
         {
-            DataUpdate.LastModifiedBy = "Admin";
+            DataUpdate.LastModifiedBy = _createdBy;
             DataUpdate.LastModifiedOn = DateTime.Now; 
             Update(DataUpdate);
             string result = $"VendorMaster of Detail {DataUpdate.Id} is updated successfully!";

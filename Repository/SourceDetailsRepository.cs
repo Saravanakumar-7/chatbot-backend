@@ -1,22 +1,33 @@
 ﻿using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 namespace Repository
 {
     public class SourceDetailsRepository : RepositoryBase<SourceDetails>, ISourceDetailsRepository
     {
-        public SourceDetailsRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
-        { }
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public SourceDetailsRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+        }
         public async Task<int?> CreateSourceDetails(SourceDetails sourceDetails)
         {
-            sourceDetails.CreatedBy = "Admin";
+            sourceDetails.CreatedBy = _createdBy;
             sourceDetails.CreatedOn = DateTime.Now;
-            sourceDetails.Unit = "Bangalore";
+            sourceDetails.Unit = _unitname;
             var result = await Create(sourceDetails); return result.Id;
         }
         public async Task<string> DeleteSourceDetails(SourceDetails sourceDetails)
@@ -40,7 +51,7 @@ namespace Repository
         }
         public async Task<string> UpdateSourceDetails(SourceDetails sourceDetails)
         {
-            sourceDetails.LastModifiedBy = "Admin";
+            sourceDetails.LastModifiedBy = _createdBy;
             sourceDetails.LastModifiedOn = DateTime.Now;
             Update(sourceDetails);
             string result = $"sourceDetails details of {sourceDetails.Id} is updated successfully!";

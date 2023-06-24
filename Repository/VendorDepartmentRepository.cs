@@ -1,7 +1,9 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,15 +15,24 @@ namespace Repository
 {
     public class VendorDepartmentRepository : RepositoryBase<VendorDepartment>, IVendorDepartmentRepository
     {
-        public VendorDepartmentRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public VendorDepartmentRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateVendorDepartment(VendorDepartment vendorDepartment)
         {
-            vendorDepartment.CreatedBy = "Admin";
+            vendorDepartment.CreatedBy = _createdBy;
             vendorDepartment.CreatedOn = DateTime.Now;
-            vendorDepartment.Unit = "Bangalore";
+            vendorDepartment.Unit = _unitname;
             var result = await Create(vendorDepartment);
             
             return result.Id;
@@ -56,7 +67,7 @@ namespace Repository
 
         public async Task<string> UpdateVendorDepartment(VendorDepartment vendorDepartment)
         {
-            vendorDepartment.LastModifiedBy = "Admin";
+            vendorDepartment.LastModifiedBy = _createdBy;
             vendorDepartment.LastModifiedOn = DateTime.Now;
             Update(vendorDepartment);
             string result = $"Vendor Department of Detail {vendorDepartment.Id} is updated successfully!";

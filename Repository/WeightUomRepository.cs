@@ -7,20 +7,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Repository
 {
     public class WeightUomRepository : RepositoryBase<WeightUom>, IWeightUomRepository
     {
-        public WeightUomRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public WeightUomRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateWeightUom(WeightUom weightUom)
         {
-            weightUom.CreatedBy = "Admin";
+            weightUom.CreatedBy = _createdBy;
             weightUom.CreatedOn = DateTime.Now;
-            weightUom.Unit = "Bangalore";
+            weightUom.Unit = _unitname;
             var result = await Create(weightUom);
             
             return result.Id;
@@ -56,7 +67,7 @@ namespace Repository
 
         public async Task<string> UpdateWeightUom(WeightUom weightUom)
         {
-            weightUom.LastModifiedBy = "Admin";
+            weightUom.LastModifiedBy = _createdBy;
             weightUom.LastModifiedOn = DateTime.Now;
             Update(weightUom);
             string result = $"Weight Uom of Detail {weightUom.Id} is updated successfully!";
