@@ -4,15 +4,24 @@ using Microsoft.AspNetCore.Mvc;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Tips.Grin.Api.Repository
 {
     public class GrinPartsRepository : RepositoryBase<GrinParts>, IGrinPartsRepository
     {
         private TipsGrinDbContext _tipsGrinDbContext;
-        public GrinPartsRepository(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public GrinPartsRepository(TipsGrinDbContext tipsGrinDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsGrinDbContext)
         {
             _tipsGrinDbContext = tipsGrinDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<PagedList<GrinParts>> GetAllGrinParts([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
@@ -82,7 +91,7 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<string> UpdateGrinQty(GrinParts grinParts)
         {
-            grinParts.LastModifiedBy = "Admin";
+            grinParts.LastModifiedBy = _createdBy;
             grinParts.LastModifiedOn = DateTime.Now;
             Update(grinParts);
             string result = $"GrinParts Detail {grinParts.Id} is updated successfully!";

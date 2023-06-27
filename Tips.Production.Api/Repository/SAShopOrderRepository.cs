@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.Enums;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Tips.Production.Api.Repository
 {
@@ -12,20 +14,27 @@ namespace Tips.Production.Api.Repository
     {
         private TipsProductionDbContext _tipsProductionDbContext;
 
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
 
-
-        public SAShopOrderRepository(TipsProductionDbContext repositoryContext) : base(repositoryContext)
+        public SAShopOrderRepository(TipsProductionDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsProductionDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<long> CreateSAShopOrder(SAShopOrder sAShopOrder)
         {
-            sAShopOrder.LastModifiedBy = "Admin";
+            sAShopOrder.LastModifiedBy = _createdBy;
             sAShopOrder.LastModifiedOn = DateTime.Now;
-            sAShopOrder.CreatedBy = "Admin";
+            sAShopOrder.CreatedBy = _createdBy;
             sAShopOrder.CreatedOn = DateTime.Now;
-            sAShopOrder.Unit = "Bangalore";
+            sAShopOrder.Unit = _unitname;
             var result = await Create(sAShopOrder);
             return result.Id;
         }
@@ -51,7 +60,7 @@ namespace Tips.Production.Api.Repository
 
         public async Task<string> UpdateSAShopOrder(SAShopOrder sAShopOrders)
         {
-            sAShopOrders.LastModifiedBy = "Admin";
+            sAShopOrders.LastModifiedBy = _createdBy;
             sAShopOrders.LastModifiedOn = DateTime.Now;
             Update(sAShopOrders);
             string result = $"SAShopOrder details of {sAShopOrders.Id} is updated successfully!";

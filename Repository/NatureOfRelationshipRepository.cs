@@ -1,28 +1,39 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Repository
 {
-    internal class NatureOfRelationshipRepository : RepositoryBase<NatureOfRelationship>, INatureOfRelationshipRepository
+    public class NatureOfRelationshipRepository : RepositoryBase<NatureOfRelationship>, INatureOfRelationshipRepository
     {
-        public NatureOfRelationshipRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public NatureOfRelationshipRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateNatureOfRelationship(NatureOfRelationship natureOfRelationship)
         {
-            natureOfRelationship.CreatedBy = "Admin";
+            natureOfRelationship.CreatedBy = _createdBy;
             natureOfRelationship.CreatedOn = DateTime.Now;
-            natureOfRelationship.Unit = "Bangalore";
+            natureOfRelationship.Unit = _unitname;
             var result = await Create(natureOfRelationship);
             
             return result.Id;
@@ -63,7 +74,7 @@ namespace Repository
 
         public async Task<string> UpdateNatureOfRelationship(NatureOfRelationship natureOfRelationship)
         {
-            natureOfRelationship.LastModifiedBy = "Admin";
+            natureOfRelationship.LastModifiedBy = _createdBy;
             natureOfRelationship.LastModifiedOn = DateTime.Now;
             Update(natureOfRelationship);
             string result = $"Customer Type details of {natureOfRelationship.Id} is updated successfully!";

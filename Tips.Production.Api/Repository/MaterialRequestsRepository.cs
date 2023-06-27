@@ -1,7 +1,9 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
@@ -12,17 +14,25 @@ namespace Tips.Production.Api.Repository
     public class MaterialRequestsRepository : RepositoryBase<MaterialRequests>, IMaterialRequestsRepository
     {
         private TipsProductionDbContext _tipsProductionDbContext;
-        public MaterialRequestsRepository(TipsProductionDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public MaterialRequestsRepository(TipsProductionDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsProductionDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateMaterialRequest(MaterialRequests request)
         {
 
-            request.CreatedBy = "Admin";
+            request.CreatedBy = _createdBy;
             request.CreatedOn = DateTime.Now;
-            request.Unit = "Bangalore";
+            request.Unit = _unitname;
             var result = await Create(request);
             return result.Id;
         }
@@ -128,7 +138,7 @@ namespace Tips.Production.Api.Repository
 
         public async Task<string> UpdateMaterialRequest(MaterialRequests request)
         {
-            request.LastModifiedBy = "Admin";
+            request.LastModifiedBy = _createdBy;
             request.LastModifiedOn = DateTime.Now;
             Update(request);
             string result = $"MaterialRequest of Detail {request.Id} is updated successfully!";

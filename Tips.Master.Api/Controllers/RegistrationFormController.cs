@@ -119,6 +119,49 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        //test
+
+        [HttpGet]
+        public async Task<IActionResult> GetRegistrationFormByUserNameandPassword(string username, string password)
+        {
+            ServiceResponse<RegistrationFormDto> serviceResponse = new ServiceResponse<RegistrationFormDto>();
+
+            try
+            {
+                var registrationFormDetails = await _repository.RegistrationFormRepository.GetRegistrationFormByUserNameandPassword(username, password);
+                if (registrationFormDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RegistrationForm hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"RegistrationForm with id: {registrationFormDetails.Id}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
+                }
+                else
+                {
+
+                    _logger.LogInfo($"Returned RegistrationForm with id: {registrationFormDetails.Id}");
+                    var result = _mapper.Map<RegistrationFormDto>(registrationFormDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned RegistrationForm with id successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetRegistrationFormById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetRegistrationFormById(int id)
         {

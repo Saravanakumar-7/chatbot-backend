@@ -140,14 +140,18 @@ namespace Tips.Production.Api.Controllers
                     { 
                             for (int i = 0; i < materialIssueDetails.materialIssueItems.Count(); i++)
                             {
-                                var partnumber = materialIssueDetailById.materialIssueItems[i].PartNumber;
+                            var balanceQty = 0;
+                            var partnumber = materialIssueDetailById.materialIssueItems[i].PartNumber;
                                 var projectnumber = materialIssueDetailById.materialIssueItems[i].ProjectNumber;
                                 var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
                                   "GetInventoryDetailsByItemNo?", "itemNumber=", partnumber));
+                            if (inventoryObjectResult != null && inventoryObjectResult.StatusCode == HttpStatusCode.OK)
+                            {
                                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                 dynamic inventoryObject = inventoryObjectData.data;
-                                var balanceQty = inventoryObject.balance_Quantity;
+                                balanceQty = inventoryObject.balance_Quantity;
+                            }
                                 materialIssueDetails.materialIssueItems[i].AvailableQty = balanceQty;
                             }                        
 
@@ -156,14 +160,18 @@ namespace Tips.Production.Api.Controllers
                     {
                         for (int i = 0; i < materialIssueDetails.materialIssueItems.Count(); i++)
                         {
+                            var balanceQty = 0;
                             var partnumber = materialIssueDetailById.materialIssueItems[i].PartNumber;
                             var projectnumber = materialIssueDetailById.materialIssueItems[i].ProjectNumber;
                             var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
                               "GetInventoryDetailsByItemAndProjectNo?", "itemNumber=", partnumber, "&projectNumber=", projectnumber));
-                            var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                            dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                            dynamic inventoryObject = inventoryObjectData.data;
-                            var balanceQty = inventoryObject.balance_Quantity;
+                            if(inventoryObjectResult !=null && inventoryObjectResult.StatusCode == HttpStatusCode.OK)
+                            {
+                                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                                dynamic inventoryObject = inventoryObjectData.data;
+                                balanceQty = inventoryObject.balance_Quantity;
+                            } 
                             materialIssueDetails.materialIssueItems[i].AvailableQty = balanceQty;
                         }
                     }

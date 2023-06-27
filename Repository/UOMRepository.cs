@@ -21,12 +21,9 @@ namespace Repository
         {
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
-
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
-            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName") != null ? jwtClaims.FirstOrDefault(c => c.Type == "UnitName").Value : "Bangalore";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
-
-
         public async Task<int?> CreateUOM(UOM uom)
         { 
             uom.CreatedBy = _createdBy;

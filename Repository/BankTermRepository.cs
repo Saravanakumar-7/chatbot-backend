@@ -2,11 +2,13 @@
 using Entities;
 using Entities.Helper;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,15 +16,23 @@ namespace Repository
 {
     public class BankTermRepository : RepositoryBase<Bank>, IBankRepository
     {
-        public BankTermRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public BankTermRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateBank(Bank bank)
         {
-            bank.CreatedBy = "Admin";
+            bank.CreatedBy = _createdBy;
             bank.CreatedOn = DateTime.Now;
-            bank.Unit = "Bangalore";
+            bank.Unit = _unitname;
             var result = await Create(bank);
             return result.Id;
         }
@@ -59,7 +69,7 @@ namespace Repository
 
         public async Task<string> UpdateBank(Bank bank)
         {
-            bank.LastModifiedBy = "Admin";
+            bank.LastModifiedBy = _createdBy;
             bank.LastModifiedOn = DateTime.Now;
             Update(bank);
             string result = $"Bank of Detail {bank.Id} is updated successfully!";

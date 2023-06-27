@@ -4,6 +4,7 @@ using Entities.DTOs;
 using Entities.Enums;
 using Entities.Helper;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,17 +21,25 @@ namespace Repository
 {
     public class EngineeringBomRepository : RepositoryBase<EnggBom>, IEnggBomRepository
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
         private TipsMasterDbContext _tipsMasterDbContext;
-        public EngineeringBomRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        public EngineeringBomRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
             _tipsMasterDbContext = repositoryContext;
         }
 
         public async Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom)
         {
-            enggBom.CreatedBy = "Admin";
+            enggBom.CreatedBy = _createdBy;
             enggBom.CreatedOn = DateTime.Now;
-            enggBom.Unit = "Bangalore";
+            enggBom.Unit = _unitname;
             var getOldRevisionNumber = _tipsMasterDbContext.EnggBoms
                 .Where(x => x.ItemNumber == enggBom.ItemNumber)
                 .OrderByDescending(x => x.BOMId)
@@ -44,11 +54,11 @@ namespace Repository
 
         public async Task<int?> CreateEnggBom(EnggBom enggBom)
         { 
-            enggBom.CreatedBy = "Admin";
+            enggBom.CreatedBy = _createdBy;
             enggBom.CreatedOn = DateTime.Now;
-            enggBom.LastModifiedBy = "Admin";
+            enggBom.LastModifiedBy = _createdBy;
             enggBom.LastModifiedOn = DateTime.Now;
-            enggBom.Unit = "Bangalore"; 
+            enggBom.Unit = _unitname; 
             var result = await Create(enggBom);
             return result.BOMId;
         }
@@ -178,7 +188,7 @@ namespace Repository
 
         public async Task<string> UpdateEnggBom(EnggBom enggBom)
         {
-            enggBom.LastModifiedBy = "Admin";
+            enggBom.LastModifiedBy = _createdBy;
             enggBom.LastModifiedOn = DateTime.Now;
             Update(enggBom);
             string result = $"Engineering BOM Detail {enggBom.BOMId} is updated successfully!";
@@ -251,17 +261,25 @@ namespace Repository
 
     public class ReleaseEnggBomRepository : RepositoryBase<EngineeringBom>, IReleaseEnggBomRepository
     {
-        private TipsMasterDbContext _tipsMasterDbContext;
-        public ReleaseEnggBomRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private TipsMasterDbContext _tipsMasterDbContext; 
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ReleaseEnggBomRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
-            _tipsMasterDbContext = repositoryContext;
+            _tipsMasterDbContext = repositoryContext; 
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateReleaseEnggBom(EngineeringBom releaseEnggBom)
         {
-            releaseEnggBom.CreatedBy = "Admin";
+            releaseEnggBom.CreatedBy = _createdBy;
             releaseEnggBom.CreatedOn = DateTime.Now;
-            releaseEnggBom.LastModifiedBy = "Admin";
+            releaseEnggBom.LastModifiedBy = _createdBy;
             releaseEnggBom.LastModifiedOn = DateTime.Now;
             var result = await Create(releaseEnggBom);
             return result.Id;
@@ -300,7 +318,7 @@ namespace Repository
 
         public async Task<string> UpdateReleaseEnggBom(EngineeringBom releaseEnggBom)
         {
-            releaseEnggBom.LastModifiedBy = "Admin";
+            releaseEnggBom.LastModifiedBy = _createdBy;
             releaseEnggBom.LastModifiedOn = DateTime.Now;
             Update(releaseEnggBom);
             string result = $"ReleaseEnggBom Detail {releaseEnggBom.Id} is updated successfully!";
@@ -330,17 +348,25 @@ namespace Repository
 
     public class ReleaseCostBomRepository : RepositoryBase<CostingBom>, IReleaseCostBomRepository
     {
-        private TipsMasterDbContext _tipsMasterDbContext;
-        public ReleaseCostBomRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private TipsMasterDbContext _tipsMasterDbContext; 
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ReleaseCostBomRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsMasterDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateReleaseCostBom(CostingBom releaseCostBom)
         {
-            releaseCostBom.CreatedBy = "Admin";
+            releaseCostBom.CreatedBy = _createdBy;
             releaseCostBom.CreatedOn = DateTime.Now;
-            releaseCostBom.LastModifiedBy = "Admin";
+            releaseCostBom.LastModifiedBy = _createdBy;
             releaseCostBom.LastModifiedOn = DateTime.Now;
             var result = await Create(releaseCostBom);
             return result.Id;
@@ -407,17 +433,25 @@ namespace Repository
 
         public class ReleaseProductBomRepository : RepositoryBase<ProductionBom>, IReleaseProductBomRepository
         {
-            private TipsMasterDbContext _tipsMasterDbContext;
-            public ReleaseProductBomRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private TipsMasterDbContext _tipsMasterDbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ReleaseProductBomRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
             {
                 _tipsMasterDbContext = repositoryContext;
-            }
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
-            public async Task<int?> CreateReleaseProductBom(ProductionBom releaseProductBom)
+        }
+
+        public async Task<int?> CreateReleaseProductBom(ProductionBom releaseProductBom)
             {
-                releaseProductBom.CreatedBy = "Admin";
+                releaseProductBom.CreatedBy = _createdBy;
                 releaseProductBom.CreatedOn = DateTime.Now;
-                releaseProductBom.LastModifiedBy = "Admin";
+                releaseProductBom.LastModifiedBy = _createdBy;
                 releaseProductBom.LastModifiedOn = DateTime.Now;
                 var result = await Create(releaseProductBom);
                 return result.Id;
@@ -545,17 +579,25 @@ namespace Repository
 
         public class EnggBomGroupRepository : RepositoryBase<EnggBomGroup>, IEnggBomGroupRepository
         {
-            private TipsMasterDbContext _tipsMasterDbContext;
-            public EnggBomGroupRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private TipsMasterDbContext _tipsMasterDbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public EnggBomGroupRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
             {
                 _tipsMasterDbContext = repositoryContext;
-            }
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
-            public async Task<int?> CreateEnggBomGroup(EnggBomGroup enggbomGroup)
+        }
+
+        public async Task<int?> CreateEnggBomGroup(EnggBomGroup enggbomGroup)
             {
-                enggbomGroup.CreatedBy = "Admin";
+                enggbomGroup.CreatedBy = _createdBy;
                 enggbomGroup.CreatedOn = DateTime.Now;
-                enggbomGroup.LastModifiedBy = "Admin";
+                enggbomGroup.LastModifiedBy = _createdBy;
                 enggbomGroup.LastModifiedOn = DateTime.Now;
                 var result = await Create(enggbomGroup);
                 return result.Id;
@@ -620,7 +662,7 @@ namespace Repository
 
             public async Task<string> UpdateEnggBomGroup(EnggBomGroup enggbomGroup)
             {
-                enggbomGroup.LastModifiedBy = "Admin";
+                enggbomGroup.LastModifiedBy = _createdBy;
                 enggbomGroup.LastModifiedOn = DateTime.Now;
                 Update(enggbomGroup);
                 string result = $"EnggBomGroup Detail {enggbomGroup.Id} is updated successfully!";
@@ -630,16 +672,24 @@ namespace Repository
         public class EnggCustomFieldRepository : RepositoryBase<EnggCustomField>, IEnggCustomFieldRepository
         {
             private TipsMasterDbContext _tipsMasterDbContext;
-            public EnggCustomFieldRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public EnggCustomFieldRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
             {
-                _tipsMasterDbContext = repositoryContext;
-            }
+                _tipsMasterDbContext = repositoryContext; 
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
-            public async Task<int?> CreateEnggCustomField(EnggCustomField enggcustomFields)
+        }
+
+        public async Task<int?> CreateEnggCustomField(EnggCustomField enggcustomFields)
             {
-                enggcustomFields.CreatedBy = "Admin";
+                enggcustomFields.CreatedBy = _createdBy;
                 enggcustomFields.CreatedOn = DateTime.Now;
-                enggcustomFields.LastModifiedBy = "Admin";
+                enggcustomFields.LastModifiedBy = _createdBy;
                 enggcustomFields.LastModifiedOn = DateTime.Now;
                 var result = await Create(enggcustomFields);
                 return result.Id;
@@ -697,7 +747,7 @@ namespace Repository
 
             public async Task<string> UpdateEnggCustomField(EnggCustomField enggcustomFields)
             {
-                enggcustomFields.LastModifiedBy = "Admin";
+                enggcustomFields.LastModifiedBy = _createdBy;
                 enggcustomFields.LastModifiedOn = DateTime.Now;
                 Update(enggcustomFields);
                 string result = $"EnggCustomFields Detail {enggcustomFields.Id} is updated successfully!";
@@ -708,12 +758,20 @@ namespace Repository
         public class EngineeringNREConsumableRepository : RepositoryBase<NREConsumable>, IEnggBomNREConsumableRepository
         {
             private TipsMasterDbContext _tipsMasterDbContext;
-            public EngineeringNREConsumableRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public EngineeringNREConsumableRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
             {
                 _tipsMasterDbContext = repositoryContext;
-            }
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
-            public Task<int?> CreateEnggNREConsumable(NREConsumable bomNREConsumable)
+        }
+
+        public Task<int?> CreateEnggNREConsumable(NREConsumable bomNREConsumable)
             {
                 throw new NotImplementedException();
             }

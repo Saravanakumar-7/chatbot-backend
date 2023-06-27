@@ -1420,6 +1420,8 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
+
                 if (rfqPostDto is null)
                 {
                     _logger.LogError("Rfq object sent from client is null.");
@@ -1463,10 +1465,18 @@ namespace Tips.SalesService.Api.Controllers
                 //    int num = Int32.Parse(spliValue);
                 //    createRfq.RfqNumber = "RFQ-" + (num + 1);
                 // }
-
-                var dateFormat = days + months + years;
-                var rfqNumber = await _rfqRepository.GenerateRFQNumber();
-                createRfq.RfqNumber = dateFormat + rfqNumber;
+                if (serverKey == "keus")
+                {
+                    var dateFormat = days + months + years;
+                    var rfqNumber = await _rfqRepository.GenerateRFQNumber();
+                    createRfq.RfqNumber = dateFormat + rfqNumber;
+                }
+                else
+                {
+                    //var dateFormat = days + months + years;
+                    //var rfqNumber = await _rfqRepository.GenerateRFQTrascconNumber();
+                    //createRfq.RfqNumber = dateFormat + rfqNumber;
+                }
 
                 await _rfqRepository.CreateRfq(createRfq);
                 var rfqDetails = _mapper.Map<RfqDto>(createRfq);
@@ -1487,6 +1497,21 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
+            }
+        }
+
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else
+            {
+                return "trasccon";
             }
         }
 

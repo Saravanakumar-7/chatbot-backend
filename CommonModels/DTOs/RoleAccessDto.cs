@@ -38,6 +38,8 @@ namespace Entities.DTOs
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
         [DefaultValue(false)]
+        public bool Table { get; set; }
+        [DefaultValue(false)]
         public bool Print { get; set; }
         public int RoleId { get; set; }
         public string RoleName { get; set; }
@@ -69,6 +71,8 @@ namespace Entities.DTOs
 
         [DefaultValue(false)]
         public bool ApprovalI { get; set; }
+        [DefaultValue(false)]
+        public bool Table { get; set; }
 
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
@@ -106,6 +110,8 @@ namespace Entities.DTOs
 
         [DefaultValue(false)]
         public bool ApprovalI { get; set; }
+        [DefaultValue(false)]
+        public bool Table { get; set; }
 
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }

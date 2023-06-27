@@ -1,24 +1,34 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 namespace Repository
 {
     public class BHKRepository : RepositoryBase<BHK>, IBHKRepository
     {
-        public BHKRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
-        { }
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public BHKRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+        }
         public async Task<int?> CreateBHK(BHK bHK)
         {
-            bHK.CreatedBy = "Admin";
+            bHK.CreatedBy = _createdBy;
             bHK.CreatedOn = DateTime.Now;
-            bHK.Unit = "Bangalore";
+            bHK.Unit = _unitname;
             var result = await Create(bHK); return result.Id;
         }
         public async Task<string> DeleteBHK(BHK bHK)
@@ -48,7 +58,7 @@ namespace Repository
         }
         public async Task<string> UpdateBHK(BHK bHK)
         {
-            bHK.LastModifiedBy = "Admin";
+            bHK.LastModifiedBy = _createdBy;
             bHK.LastModifiedOn = DateTime.Now;
             Update(bHK);
             string result = $"bHK details of {bHK.Id} is updated successfully!";

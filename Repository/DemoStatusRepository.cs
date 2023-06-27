@@ -1,11 +1,13 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,16 +15,23 @@ namespace Repository
 {
     public class DemoStatusRepository : RepositoryBase<DemoStatus>, IDemoStatusRepository
     {
-        public DemoStatusRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public DemoStatusRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
 
         public async Task<int?> CreateDemoStatus(DemoStatus demoStatus)
         {
-            demoStatus.CreatedBy = "Admin";
+            demoStatus.CreatedBy = _createdBy;
             demoStatus.CreatedOn = DateTime.Now;
-            demoStatus.Unit = "Bangalore";
+            demoStatus.Unit = _unitname;
             var result = await Create(demoStatus);
            
             return result.Id;
@@ -65,7 +74,7 @@ namespace Repository
         public async Task<string> UpdateDemoStatus(DemoStatus demoStatus)
         {
 
-            demoStatus.LastModifiedBy = "Admin";
+            demoStatus.LastModifiedBy = _createdBy;
             demoStatus.LastModifiedOn = DateTime.Now;
             Update(demoStatus);
             string result = $"demoStatus details of {demoStatus.Id} is updated successfully!";

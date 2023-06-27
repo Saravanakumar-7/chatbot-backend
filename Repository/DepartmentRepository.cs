@@ -2,11 +2,13 @@
 using Entities;
 using Entities.Helper;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,15 +16,23 @@ namespace Repository
 {
     public class DepartmentRepository : RepositoryBase<Department>, IDepartmentRepository
     {
-        public DepartmentRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public DepartmentRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateDepartment(Department department)
         {
-            department.CreatedBy = "Admin";
+            department.CreatedBy = _createdBy;
             department.CreatedOn = DateTime.Now;
-            department.Unit = "Bangalore";
+            department.Unit = _unitname;
             var result = await Create(department);
             
             return result.Id;
@@ -61,7 +71,7 @@ namespace Repository
 
         public async Task<string> UpdateDepartment(Department department)
         {
-            department.LastModifiedBy = "Admin";
+            department.LastModifiedBy = _createdBy;
             department.LastModifiedOn = DateTime.Now;
             Update(department);
             string result = $"Department of Detail {department.Id} is updated successfully!";

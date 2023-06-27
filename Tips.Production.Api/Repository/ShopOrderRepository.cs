@@ -10,28 +10,36 @@ using Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Entities.DTOs;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Tips.Production.Api.Repository
 {
     public class ShopOrderRepository : RepositoryBase<ShopOrder>, IShopOrderRepository
     {
         private TipsProductionDbContext _tipsProductionDbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
 
-        
-
-        public ShopOrderRepository(TipsProductionDbContext repositoryContext) : base(repositoryContext)
+        public ShopOrderRepository(TipsProductionDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsProductionDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
-        
+
         public async Task<int?> CreateShopOrder(ShopOrder shopOrder)
         {
-            shopOrder.CreatedBy = "Admin";
+            shopOrder.CreatedBy = _createdBy;
             shopOrder.CreatedOn = DateTime.Now;
             Guid shopOrderNumber = Guid.NewGuid();
             shopOrder.ShopOrderNumber = "SH-" + shopOrderNumber.ToString();
-            shopOrder.Unit = "Bangalore";
+            shopOrder.Unit = _unitname;
             var result = await Create(shopOrder);
             return result.Id;
         }
@@ -184,7 +192,7 @@ namespace Tips.Production.Api.Repository
 
         public async Task<string> UpdateShopOrder(ShopOrder shopOrder)
         {
-            shopOrder.LastModifiedBy = "Admin";
+            shopOrder.LastModifiedBy = _createdBy;
             shopOrder.LastModifiedOn = DateTime.Now;
             Update(shopOrder);
             string result = $"ShopOrder details of {shopOrder.Id} is updated successfully!";

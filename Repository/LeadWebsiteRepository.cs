@@ -1,11 +1,13 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,16 +15,23 @@ namespace Repository
 {
     public class LeadWebsiteRepository : RepositoryBase<LeadWebsite>, ILeadWebsiteRepository
     {
-        public LeadWebsiteRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public LeadWebsiteRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
 
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateLeadWebsite(LeadWebsite leadWebsite)
         {
-            leadWebsite.CreatedBy = "Admin";
+            leadWebsite.CreatedBy = _createdBy;
             leadWebsite.CreatedOn = DateTime.Now;
-            leadWebsite.Unit = "Bangalore";
+            leadWebsite.Unit = _unitname;
             var result = await Create(leadWebsite);
             return result.Id;
         }
@@ -60,7 +69,7 @@ namespace Repository
         public async Task<string> UpdateLeadWebsite(LeadWebsite leadWebsite)
         {
 
-            leadWebsite.LastModifiedBy = "Admin";
+            leadWebsite.LastModifiedBy = _createdBy;
             leadWebsite.LastModifiedOn = DateTime.Now;
             Update(leadWebsite);
             string result = $"leadWebsite details of {leadWebsite.Id} is updated successfully!";

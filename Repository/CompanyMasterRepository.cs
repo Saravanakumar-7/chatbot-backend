@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Data;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts;
@@ -10,6 +11,7 @@ using Entities;
 using Entities.DTOs;
 using Entities.Helper;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,15 +19,23 @@ namespace Repository
 {
     public class CompanyMasterRepository : RepositoryBase<CompanyMaster>, ICompanyMasterRepository
     {
-        public CompanyMasterRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public CompanyMasterRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateCompanyMaster(CompanyMaster companyMaster)
         {
-            companyMaster.CreatedBy = "Admin";
+            companyMaster.CreatedBy = _createdBy;
             companyMaster.CreatedOn = DateTime.Now;
-            companyMaster.Unit = "Bangalore";
+            companyMaster.Unit = _unitname;
             var result = await Create(companyMaster);
             
             return result.Id;
@@ -113,7 +123,7 @@ namespace Repository
 
         public async Task<string> UpdateCompanyMaster(CompanyMaster companyMaster)
         {
-            companyMaster.LastModifiedBy = "Admin";
+            companyMaster.LastModifiedBy = _createdBy;
             companyMaster.LastModifiedOn = DateTime.Now;
             Update(companyMaster);
             string result = $"companyMaster of Detail {companyMaster.Id} is updated successfully!";

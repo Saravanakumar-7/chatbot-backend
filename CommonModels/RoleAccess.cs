@@ -39,7 +39,8 @@ namespace Entities
         public bool ApprovalII { get; set; }
         [DefaultValue(false)]
         public bool Print { get; set; }
-
+        [DefaultValue(false)]
+        public bool Table { get; set; }
         public string? LastModifiedBy { get; set; }
         
         public DateTime? LastModifiedOn { get; set; }

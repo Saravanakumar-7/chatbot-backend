@@ -36,6 +36,10 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<InvoiceAdditionalCharges> InvoiceAdditionalCharges { get; set; }
 
         public DbSet<LocationTransfer> locationTransfers { get; set; }
+        public DbSet<ConsumptionReport> ConsumptionReport { get; set; }
+
+        
+
 
 
     }

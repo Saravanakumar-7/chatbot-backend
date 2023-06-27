@@ -1,11 +1,13 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,15 +15,23 @@ namespace Repository
 {
     public class DeliveryTermRepository : RepositoryBase<DeliveryTerm>, IDeliveryTermRepository
     {
-        public DeliveryTermRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public DeliveryTermRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateDeliveryTerm(DeliveryTerm deliveryTerm)
         {
-            deliveryTerm.CreatedBy = "Admin";
+            deliveryTerm.CreatedBy = _createdBy;
             deliveryTerm.CreatedOn = DateTime.Now;
-            deliveryTerm.Unit = "Bangalore";
+            deliveryTerm.Unit = _unitname;
             var result = await Create(deliveryTerm);
             return result.Id;
         }
@@ -63,7 +73,7 @@ namespace Repository
 
         public async Task<string> UpdateDeliveryTerm(DeliveryTerm deliveryTerm)
         {
-            deliveryTerm.LastModifiedBy = "Admin";
+            deliveryTerm.LastModifiedBy = _createdBy;
             deliveryTerm.LastModifiedOn = DateTime.Now;
             Update(deliveryTerm);
             string result = $"Delivery Term of Detail {deliveryTerm.Id} is updated successfully!";

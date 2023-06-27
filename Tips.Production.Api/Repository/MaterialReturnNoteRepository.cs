@@ -1,7 +1,9 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
@@ -13,17 +15,24 @@ namespace Tips.Production.Api.Repository
     public class MaterialReturnNoteRepository : RepositoryBase<MaterialReturnNote>, IMaterialReturnNoteRepository
     {
         private TipsProductionDbContext _tipsProductionDbContext;
-
-        public MaterialReturnNoteRepository(TipsProductionDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public MaterialReturnNoteRepository(TipsProductionDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsProductionDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateMaterialReturnNote(MaterialReturnNote materialReturnNote)
         {
-            materialReturnNote.CreatedBy = "Admin";
+            materialReturnNote.CreatedBy = _createdBy;
             materialReturnNote.CreatedOn = DateTime.Now;
-            materialReturnNote.Unit = "Bangalore";
+            materialReturnNote.Unit = _unitname;
             var result = await Create(materialReturnNote);
             return result.Id;
         }
@@ -123,7 +132,7 @@ namespace Tips.Production.Api.Repository
 
         public async Task<string> UpdateMaterialReturnNote(MaterialReturnNote materialReturnNote)
         {
-            materialReturnNote.LastModifiedBy = "Admin";
+            materialReturnNote.LastModifiedBy = _createdBy;
             materialReturnNote.LastModifiedOn = DateTime.Now;
             Update(materialReturnNote);
             string result = $"MaterialReturnNote of Detail {materialReturnNote.Id} is updated successfully!";

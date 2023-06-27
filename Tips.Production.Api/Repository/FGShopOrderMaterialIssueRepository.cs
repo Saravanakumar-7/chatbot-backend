@@ -1,7 +1,9 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 
@@ -10,19 +12,26 @@ namespace Tips.Production.Api.Repository
     public class FGShopOrderMaterialIssueRepository : RepositoryBase<FGShopOrderMaterialIssue>, IFGShopOrderMaterialIssueRepository
     {
         private TipsProductionDbContext _tipsProductionDbContext;
-
-        public FGShopOrderMaterialIssueRepository(TipsProductionDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public FGShopOrderMaterialIssueRepository(TipsProductionDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsProductionDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<long> CreateFGShopOrderMaterialIssue(FGShopOrderMaterialIssue fGShopOrderMaterialIssue)
         {
-            fGShopOrderMaterialIssue.LastModifiedBy = "Admin";
+            fGShopOrderMaterialIssue.LastModifiedBy = _createdBy;
             fGShopOrderMaterialIssue.LastModifiedOn = DateTime.Now;
-            fGShopOrderMaterialIssue.CreatedBy = "Admin";
+            fGShopOrderMaterialIssue.CreatedBy = _createdBy;
             fGShopOrderMaterialIssue.CreatedOn = DateTime.Now;
-            fGShopOrderMaterialIssue.Unit = "Bangalore";
+            fGShopOrderMaterialIssue.Unit = _unitname;
             var result = await Create(fGShopOrderMaterialIssue);
             return result.Id;
         }
@@ -55,7 +64,7 @@ namespace Tips.Production.Api.Repository
 
         public async Task<string> UpdateFGShopOrderMaterialIssue(FGShopOrderMaterialIssue fGShopOrderMaterialIssue)
         {
-            fGShopOrderMaterialIssue.LastModifiedBy = "Admin";
+            fGShopOrderMaterialIssue.LastModifiedBy = _createdBy;
             fGShopOrderMaterialIssue.LastModifiedOn = DateTime.Now;
             Update(fGShopOrderMaterialIssue);
             string result = $"FGShopOrderMaterialIssue of Detail {fGShopOrderMaterialIssue.Id} is updated successfully!";

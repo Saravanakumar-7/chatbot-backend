@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,18 +17,27 @@ namespace Repository
 {
     public class LeadRepository : RepositoryBase<Lead>, ILeadRepository
     {
-        public LeadRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public LeadRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<Lead> CreateLead(Lead lead)
         { 
             var date = DateTime.Now;
-            lead.CreatedBy = "Admin";
+            lead.CreatedBy = _createdBy;
             lead.CreatedOn = date.Date;
-            lead.LastModifiedBy = "Admin";
+            lead.LastModifiedBy = _createdBy;
             lead.LastModifiedOn = DateTime.Now;
-            lead.Unit = "Bangalore";
+            lead.Unit = _unitname;
             var result = await Create(lead);
             
             return result;
@@ -67,7 +78,7 @@ namespace Repository
 
         public async Task<string> UpdateLead(Lead lead)
         {
-            lead.LastModifiedBy = "Admin";
+            lead.LastModifiedBy = _createdBy;
             lead.LastModifiedOn = DateTime.Now;
             Update(lead);
             string result = $"Lead of Detail {lead.Id} is updated successfully!";

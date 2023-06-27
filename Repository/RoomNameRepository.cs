@@ -1,9 +1,11 @@
 ﻿using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,15 +13,24 @@ namespace Repository
 {
     public class RoomNameRepository : RepositoryBase<RoomNames>, IRoomNameRepository
     {
-        public RoomNameRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public RoomNameRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateRoomName(RoomNames roomName)
         {
-            roomName.CreatedBy = "Admin";
+            roomName.CreatedBy = _createdBy;
             roomName.CreatedOn = DateTime.Now;
-            roomName.Unit = "Bangalore";
+            roomName.Unit = _unitname;
             var result = await Create(roomName);
 
             return result.Id;
@@ -48,7 +59,7 @@ namespace Repository
 
         public async Task<string> UpdateRoomName(RoomNames roomName)
         {
-            roomName.LastModifiedBy = "Admin";
+            roomName.LastModifiedBy = _createdBy;
             roomName.LastModifiedOn = DateTime.Now;
             Update(roomName);
             string result = $"typeSolution details of {roomName.Id} is updated successfully!";

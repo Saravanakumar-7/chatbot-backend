@@ -1,22 +1,33 @@
 ﻿using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 namespace Repository
 {
     public class ProjectNameRepository : RepositoryBase<ProjectName>, IProjectNameRepository
     {
-        public ProjectNameRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
-        { }
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ProjectNameRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+        }
         public async Task<int?> CreateProjectName(ProjectName projectName)
         {
-            projectName.CreatedBy = "Admin";
+            projectName.CreatedBy = _createdBy;
             projectName.CreatedOn = DateTime.Now;
-            projectName.Unit = "Bangalore";
+            projectName.Unit = _unitname;
             var result = await Create(projectName); return result.Id;
         }
         public async Task<string> DeleteProjectName(ProjectName projectName)
@@ -40,7 +51,7 @@ namespace Repository
         }
         public async Task<string> UpdateProjectName(ProjectName projectName)
         {
-            projectName.LastModifiedBy = "Admin";
+            projectName.LastModifiedBy = _createdBy;
             projectName.LastModifiedOn = DateTime.Now;
             Update(projectName);
             string result = $"projectName details of {projectName.Id} is updated successfully!";

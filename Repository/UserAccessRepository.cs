@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,8 +16,17 @@ namespace Repository
 {
     public class UserAccessRepository : RepositoryBase<UserAccess>, IUserAccessRepository
     {
-        public UserAccessRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public UserAccessRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateUserAccess(UserAccess userAccess)
@@ -68,7 +79,7 @@ namespace Repository
 
         public async Task<string> UpdateUserAccess(UserAccess userAccess)
         {
-            userAccess.LastModifiedBy = "Admin";
+            userAccess.LastModifiedBy = _createdBy;
             userAccess.LastModifiedOn = DateTime.Now;
             Update(userAccess);
             string result = $"UserAccess of Detail {userAccess.Id} is updated successfully!";

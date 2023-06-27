@@ -1,11 +1,13 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,16 +15,23 @@ namespace Repository
 {
     public class LeadStatusRepository : RepositoryBase<LeadStatus>, ILeadStatusRepository
     {
-        public LeadStatusRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public LeadStatusRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
 
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateLeadStatus(LeadStatus leadStatus)
         {
-            leadStatus.CreatedBy = "Admin";
+            leadStatus.CreatedBy = _createdBy;
             leadStatus.CreatedOn = DateTime.Now;
-            leadStatus.Unit = "Bangalore";
+            leadStatus.Unit = _unitname;
             var result = await Create(leadStatus);
             
             return result.Id;
@@ -64,7 +73,7 @@ namespace Repository
         public async Task<string> UpdateLeadStatus(LeadStatus leadStatus)
         {
 
-            leadStatus.LastModifiedBy = "Admin";
+            leadStatus.LastModifiedBy = _createdBy;
             leadStatus.LastModifiedOn = DateTime.Now;
             Update(leadStatus);
             string result = $"leadStatus details of {leadStatus.Id} is updated successfully!";

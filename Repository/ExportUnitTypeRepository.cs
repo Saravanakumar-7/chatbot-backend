@@ -1,28 +1,38 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Repository
 {
-    internal class ExportUnitTypeRepository : RepositoryBase<ExportUnitType>, IExportUnitTypeRepository
+    public class ExportUnitTypeRepository : RepositoryBase<ExportUnitType>, IExportUnitTypeRepository
     {
-        public ExportUnitTypeRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ExportUnitTypeRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateExportUnitType(ExportUnitType exportUnitType)
         {
-            exportUnitType.CreatedBy = "Admin";
+            exportUnitType.CreatedBy = _createdBy;
             exportUnitType.CreatedOn = DateTime.Now;
-            exportUnitType.Unit = "Bangalore";
+            exportUnitType.Unit = _unitname;
             var result = await Create(exportUnitType);
             
             return result.Id;
@@ -58,7 +68,7 @@ namespace Repository
 
         public async Task<string> UpdateExportUnitType(ExportUnitType exportUnitType)
         {
-            exportUnitType.LastModifiedBy = "Admin";
+            exportUnitType.LastModifiedBy = _createdBy;
             exportUnitType.LastModifiedOn = DateTime.Now;
             Update(exportUnitType);
             string result = $"ExportUnitType details of {exportUnitType.Id} is updated successfully!";

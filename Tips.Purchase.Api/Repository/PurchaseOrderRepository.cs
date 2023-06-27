@@ -2,9 +2,11 @@
 using Entities;
 using Entities.DTOs;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1.Misc;
+using System.Security.Claims;
 using Tips.Purchase.Api.Contracts;
 using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.Dto;
@@ -15,21 +17,29 @@ namespace Tips.Purchase.Api.Repository
     public class PurchaseOrderRepository : RepositoryBase<PurchaseOrder>, IPurchaseOrderRepository
     {
         private TipsPurchaseDbContext _tipsPurchaseDbContext;
-        public PurchaseOrderRepository(TipsPurchaseDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public PurchaseOrderRepository(TipsPurchaseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsPurchaseDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<long> CreatePurchaseOrder(PurchaseOrder purchaseOrder)
         {
             var date = DateTime.Now;
-            purchaseOrder.CreatedBy = "Admin";
+            purchaseOrder.CreatedBy = _createdBy;
             purchaseOrder.CreatedOn = date.Date;
-            purchaseOrder.LastModifiedBy = "Admin";
+            purchaseOrder.LastModifiedBy = _createdBy;
             purchaseOrder.LastModifiedOn = DateTime.Now;
             //Guid purchaseOrderNumber = Guid.NewGuid();
             //purchaseOrder.PONumber = "PO-" + purchaseOrderNumber.ToString();
-            purchaseOrder.Unit = "Banglore";
+            purchaseOrder.Unit = _unitname;
             purchaseOrder.RevisionNumber = 1;
             var result = await Create(purchaseOrder);
             return result.Id;
@@ -43,14 +53,14 @@ namespace Tips.Purchase.Api.Repository
             if (getOldPODetails != null)
             {
                 getOldPODetails.IsModified=true;
-                getOldPODetails.LastModifiedBy = "Admin";
+                getOldPODetails.LastModifiedBy = _createdBy;
                 getOldPODetails.LastModifiedOn = DateTime.Now;
                 Update(getOldPODetails);
             }
 
             purchaseOrder.CreatedBy = purchaseOrder.CreatedBy;
             purchaseOrder.CreatedOn = purchaseOrder.CreatedOn;
-            purchaseOrder.LastModifiedBy = "Admin";
+            purchaseOrder.LastModifiedBy = _createdBy;
             purchaseOrder.LastModifiedOn = DateTime.Now;
             var getOldRevisionNumber = _tipsPurchaseDbContext.PurchaseOrders
                 .Where(x => x.PONumber == purchaseOrder.PONumber)
@@ -364,7 +374,7 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<string> UpdatePurchaseOrder(PurchaseOrder purchaseOrder)
         {
-            purchaseOrder.LastModifiedBy = "Admin";
+            purchaseOrder.LastModifiedBy = _createdBy;
             purchaseOrder.LastModifiedOn = DateTime.Now;
             Update(purchaseOrder);
             string result = $"PurchaseOrder of Detail {purchaseOrder.Id} is updated successfully!";
@@ -420,16 +430,24 @@ namespace Tips.Purchase.Api.Repository
     public class UploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository
     {
         private TipsPurchaseDbContext _tipsPurchaseDbContexts;
-        public UploadDocumentRepository(TipsPurchaseDbContext tipsPurchaseDbContext) : base(tipsPurchaseDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public UploadDocumentRepository(TipsPurchaseDbContext tipsPurchaseDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsPurchaseDbContext)
         {
             _tipsPurchaseDbContexts = tipsPurchaseDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
-         
+
         public async Task<int?> CreateUploadDocumentPO(DocumentUpload documentUpload)
         {
-            documentUpload.CreatedBy = "Admin";
+            documentUpload.CreatedBy = _createdBy;
             documentUpload.CreatedOn = DateTime.Now;
-            documentUpload.LastModifiedBy = "Admin";
+            documentUpload.LastModifiedBy = _createdBy;
             documentUpload.LastModifiedOn = DateTime.Now;
 
             var result = await Create(documentUpload);
@@ -453,9 +471,17 @@ namespace Tips.Purchase.Api.Repository
     public class PurchaseOrderItemRepository : RepositoryBase<PoItem>, IPoItemsRepository
     {
         private TipsPurchaseDbContext _tipsPurchaseDbContexts;
-        public PurchaseOrderItemRepository(TipsPurchaseDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public PurchaseOrderItemRepository(TipsPurchaseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsPurchaseDbContexts = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<IEnumerable<PoItem>> GetPODetailsByPONumberandItemNo(string ItemNumber, string PONumber)

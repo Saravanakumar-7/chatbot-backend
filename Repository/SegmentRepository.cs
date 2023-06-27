@@ -1,26 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
     public class SegmentRepository : RepositoryBase<Segment>, ISegmentRepository
     {
-        public SegmentRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public SegmentRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
 
         }
 
         public async Task<int?> CreateSegment(Segment segment)
         {
-            segment.CreatedBy = "Admin";
+            segment.CreatedBy = _createdBy;
             segment.CreatedOn = DateTime.Now;
-            segment.Unit = "Bangalore";
+            segment.Unit = _unitname;
             var result = await Create(segment);
           
             return result.Id;
@@ -53,7 +64,7 @@ namespace Repository
 
         public async Task<string> UpdateSegment(Segment segment)
         {
-            segment.LastModifiedBy = "Admin";
+            segment.LastModifiedBy = _createdBy;
             segment.LastModifiedOn = DateTime.Now;
             Update(segment);
             string result = $"Segment details of {segment.Id} is updated successfully!";

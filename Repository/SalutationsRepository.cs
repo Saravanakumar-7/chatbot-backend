@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,17 +11,26 @@ using System.Text;
 using System.Threading.Tasks;
 namespace Repository
 {
-    internal class SalutationsRepository : RepositoryBase<Salutations>, ISalutationsRepository
+    public class SalutationsRepository : RepositoryBase<Salutations>, ISalutationsRepository
     {
-        public SalutationsRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public SalutationsRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateSalutations(Salutations salutations)
         {
-            salutations.CreatedBy = "Admin";
+            salutations.CreatedBy = _createdBy;
             salutations.CreatedOn = DateTime.Now;
-            salutations.Unit = "Bangalore";
+            salutations.Unit = _unitname;
             var result = await Create(salutations);
             
             return result.Id;
@@ -56,7 +67,7 @@ namespace Repository
 
         public async Task<string> UpdateSalutations(Salutations salutations)
         {
-            salutations.LastModifiedBy = "Admin";
+            salutations.LastModifiedBy = _createdBy;
             salutations.LastModifiedOn = DateTime.Now;
             Update(salutations);
             string result = $"Salutations details of {salutations.Id} is updated successfully!";
