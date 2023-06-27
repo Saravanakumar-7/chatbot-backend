@@ -244,6 +244,8 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var fromPartNumber = locationTransferPostDto.FromPartNumber;
                 var toPartNumber = locationTransferPostDto.ToPartNumber;
+                var fromProjectNumber = locationTransferPostDto.FromProjectNumber;
+                var toProjectNumber = locationTransferPostDto.ToProjectNumber;
                 var fromLocation = locationTransferPostDto.FromLocation;
                 var toLocation = locationTransferPostDto.ToLocation;
                 var fromWarehouse = locationTransferPostDto.FromWarehouse;
@@ -257,7 +259,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var itemDetail = await itemDetailFromItemmaster.Content.ReadAsStringAsync();
                 dynamic itemData = JsonConvert.DeserializeObject(itemDetail);
 
-                var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse);
+                var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber);
                 if (inventoryDetails != null)
                 {
                     foreach (var inventoryItem in inventoryDetails)
@@ -265,6 +267,7 @@ namespace Tips.Warehouse.Api.Controllers
                         if (transferQty >= inventoryItem.Balance_Quantity)
                         {
                             inventoryItem.PartNumber = toPartNumber;
+                            inventoryItem.ProjectNumber = toProjectNumber;
                             inventoryItem.MftrPartNumber = toPartNumber;
                             inventoryItem.Description = itemData.description; 
                             inventoryItem.UOM = itemData?.MftrPartNumber;
@@ -287,7 +290,7 @@ namespace Tips.Warehouse.Api.Controllers
                             Inventory inventoryPost = new Inventory();
                             inventoryPost.PartNumber = toPartNumber;
                             inventoryPost.MftrPartNumber = toPartNumber;
-                            inventoryPost.ProjectNumber = "";
+                            inventoryPost.ProjectNumber = toProjectNumber;
                             inventoryPost.Description = itemData.description;
                             inventoryPost.Balance_Quantity = transferQty;
                             inventoryPost.UOM = itemData?.uom;

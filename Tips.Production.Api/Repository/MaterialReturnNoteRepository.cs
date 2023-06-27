@@ -135,14 +135,16 @@ namespace Tips.Production.Api.Repository
             {
                 var query = _tipsProductionDbContext.MaterialReturnNotes.Include("MaterialReturnNoteItems");
                 if (materialReturnNoteSearch != null || (materialReturnNoteSearch.ProjectNumber.Any())
-               && materialReturnNoteSearch.ShopOrderNumber.Any() && materialReturnNoteSearch.FGShopOrderNumber.Any()
-               && materialReturnNoteSearch.SAShopOrderNumber.Any())
+               && materialReturnNoteSearch.ShopOrderNumber.Any() && materialReturnNoteSearch.MRNNumber.Any())
                 {
                     query = query.Where
-                    (po => (materialReturnNoteSearch.ProjectNumber.Any() ? materialReturnNoteSearch.ProjectNumber.Contains(po.ProjectNumber) : true)
-                   && (materialReturnNoteSearch.ShopOrderNumber.Any() ? materialReturnNoteSearch.ShopOrderNumber.Contains(po.ShopOrderNumber) : true));
+                    (mrn => (materialReturnNoteSearch.ProjectNumber.Any() ? materialReturnNoteSearch.ProjectNumber.Contains(mrn.ProjectNumber) : true)
+                   && (materialReturnNoteSearch.ShopOrderNumber.Any() ? materialReturnNoteSearch.ShopOrderNumber.Contains(mrn.ShopOrderNumber) : true)
+                   && (materialReturnNoteSearch.MRNNumber.Any() ? materialReturnNoteSearch.MRNNumber.Contains(mrn.MRNNumber) : true))
                     //&& (materialReturnNoteSearch.FGShopOrderNumber.Any() ? materialReturnNoteSearch.FGShopOrderNumber.Contains(po.FGShopOrderNumber) : true)
                     //  && (materialReturnNoteSearch.SAShopOrderNumber.Any() ? materialReturnNoteSearch.SAShopOrderNumber.Contains(po.SAShopOrderNumber) : true));
+                    .Include(x => x.MaterialReturnNoteItems)
+                    .ThenInclude(s => s.MRNWarehouseList);
                 }
                 return query.ToList();
             }
@@ -160,7 +162,9 @@ namespace Tips.Production.Api.Repository
                     || po.ShopOrderNumber.Contains(searchParammes.SearchValue)
                     || po.MaterialReturnNoteItems.Any(s => s.PartNumber.Contains(searchParammes.SearchValue) ||
                     s.PartDescription.Contains(searchParammes.SearchValue)
-                    || s.MftrPartNumber.Contains(searchParammes.SearchValue)));
+                    || s.MftrPartNumber.Contains(searchParammes.SearchValue)))
+                        .Include(x => x.MaterialReturnNoteItems)
+                    .ThenInclude(s => s.MRNWarehouseList) ;
                 }
                 return query.ToList();
             }
@@ -172,6 +176,7 @@ namespace Tips.Production.Api.Repository
             inv.CreatedOn <= searchDatesParams.SearchToDate
             )))
             .Include(itm => itm.MaterialReturnNoteItems)
+            .ThenInclude(s => s.MRNWarehouseList)
             .ToList();
             return materialReturnNoteDetails;
         }

@@ -9,8 +9,8 @@ using System.Net.Http;
 using System.Text;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
-using Tips.Production.Api.Entities.DTOs; 
-
+using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Entities.Enums;
 using Tips.Production.Api.Repository;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 
@@ -22,14 +22,16 @@ namespace Tips.Production.Api.Controllers
     [ApiController]
     public class MaterialIssueController : ControllerBase
     {
+        private IMaterialIssueHistoryRepository _materialIssueHistoryRepository;
         private IMaterialIssueRepository  _materialIssueRepository;
         private ILoggerManager _logger;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private IMapper _mapper; 
 
-        public MaterialIssueController(IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        public MaterialIssueController(IMaterialIssueHistoryRepository materialIssueHistoryRepository,IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
+            _materialIssueHistoryRepository = materialIssueHistoryRepository;
             _materialIssueRepository = materialIssueRepository;
             _logger = logger;
             _httpClient = httpClient;
@@ -334,7 +336,9 @@ namespace Tips.Production.Api.Controllers
 
                     materialIssueItem.IssuedQty += item.NewIssueQty;
                     materialIssueItems.Add(materialIssueItem);
+
                     //update inventory 
+
                     var partnumber = materialIssueItem.PartNumber;
                     var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
                      "GetInventoryDetailsByItemNo?", "&itemNumber=", partnumber));
@@ -351,7 +355,23 @@ namespace Tips.Production.Api.Controllers
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
                     var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
                         "UpdateInventory?id=",Convert.ToInt32(inventoryObject.id)), data);
-                     
+
+                    MaterialIssueHistory materialissueHistory = new MaterialIssueHistory();
+                    materialissueHistory.Id = materialIssueItem.Id;
+                    materialissueHistory.PartNumber = materialIssueItem.PartNumber;
+                    materialissueHistory.ShopOrderNumber = updateMaterialIssue.ShopOrderNumber;
+                    materialissueHistory.Description = materialIssueItem.Description;
+                    materialissueHistory.ProjectNumber = materialIssueItem.ProjectNumber;
+                    materialissueHistory.PartType = materialIssueItem.PartType;
+                    materialissueHistory.UOM = materialIssueItem.UOM;
+                    materialissueHistory.RequiredQty = materialIssueItem.RequiredQty;
+                    materialissueHistory.IssuedQty = materialIssueItem.IssuedQty;
+                    materialissueHistory.MaterialIssuedStatus = materialIssueItem.MaterialIssuedStatus;
+                    materialissueHistory.Unit = materialIssueItem.Unit;
+
+                    _materialIssueHistoryRepository.CreateMaterialIssueHistory(materialissueHistory);
+                    _materialIssueHistoryRepository.SaveAsync();
+
                 }
                 updateMaterialIssue.materialIssueItems = materialIssueItems;
                 string result = await _materialIssueRepository.UpdateMaterialIssue(updateMaterialIssue);

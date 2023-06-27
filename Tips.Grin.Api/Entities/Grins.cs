@@ -47,6 +47,9 @@ namespace Tips.Grin.Api.Entities
 
         [DefaultValue(0)]
         public Status Status { get; set; }
+        public bool IsGrinCompleted { get; set; }
+        public bool IsIqcCompleted { get; set; }
+        public bool IsBinningCompleted { get; set; }
 
         //public string? GrinDocuments { get; set; }
 

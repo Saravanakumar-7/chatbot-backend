@@ -143,14 +143,14 @@ namespace Tips.Warehouse.Api.Controllers
         //passing itemnumber and location
 
         [HttpGet]
-        public async Task<IActionResult> GetInventoryDetailsByItemnumberandLocation(string ItemNumber, string Location, string Warehouse)
+        public async Task<IActionResult> GetInventoryDetailsByItemnumberandLocation(string ItemNumber, string Location, string Warehouse,string projectNumber)
 
         {
             ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
 
             try
             {
-                var getInventoryDetailsByItemNoandLoc = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(ItemNumber, Location, Warehouse);
+                var getInventoryDetailsByItemNoandLoc = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(ItemNumber, Location, Warehouse, projectNumber);
                 if (getInventoryDetailsByItemNoandLoc == null)
                 {
                     serviceResponse.Data = null;
@@ -389,7 +389,7 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 foreach (var Location in materialIssueQty.MRNWarehouseList)
                 {
-                    IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(materialIssueQty.PartNumber, Location.Location, Location.Warehouse);
+                    IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNoandLocationandwarehouse(materialIssueQty.PartNumber, Location.Location, Location.Warehouse);
                     var inventoryItem = inventories.FirstOrDefault();
                     inventoryItem.Balance_Quantity = inventoryItem.Balance_Quantity - Location.Qty;
                     await _inventoryRepository.UpdateInventory(inventoryItem);
@@ -406,7 +406,7 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 foreach (var Location in materialReturnQty.MRNDetails)
                 {
-                    IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(materialReturnQty.PartNumber, Location.Location, Location.Warehouse);
+                    IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNoandLocationandwarehouse(materialReturnQty.PartNumber, Location.Location, Location.Warehouse);
                     var inventoryItem = inventories.FirstOrDefault();
                     if (inventoryItem == null)
                     {
@@ -619,6 +619,46 @@ namespace Tips.Warehouse.Api.Controllers
             try
             {
                 var inventoryDetails = await _inventoryRepository.GetInventoryDetailsWithSumOfStock(inventoryBalQty);
+
+                _logger.LogInfo("Returned all Inventory");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<Inventory, InventoryDto>().ReverseMap();
+                //});
+                //var mapper = config.CreateMapper();
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.CreateMap<Inventory, InventoryDto>()
+                        .ForMember(dest => dest.Balance_Quantity, opt => opt.MapFrom(src => src.Balance_Quantity));
+                });
+                var mapper = config.CreateMapper();
+
+                var result = mapper.Map<IEnumerable<InventoryDto>>(inventoryDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all InventoryDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetInventoryDetailsWithSumOfBalQty([FromBody] InventoryDetailsBalQty inventoryDetailsBalQty)
+        {
+            ServiceResponse<IEnumerable<InventoryDto>> serviceResponse = new ServiceResponse<IEnumerable<InventoryDto>>();
+            try
+            {
+                var inventoryDetails = await _inventoryRepository.GetInventoryDetailsWithSumOfBalQty(inventoryDetailsBalQty);
 
                 _logger.LogInfo("Returned all Inventory");
                 //var config = new MapperConfiguration(cfg =>

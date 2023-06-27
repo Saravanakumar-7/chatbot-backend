@@ -20,7 +20,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<Inventory> GetInventoryById(int id);
         Task<List<InventoryDetailsLocationStock>> GetInventoryDetailsWithInventoryStock(string partNumber, string wareHouse, string location);
 
-
+        Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandLocationandwarehouse(string ItemNumber, string Location, string Warehouse);
         Task<Inventory> GetInventoryDetails(string ItemNumber);
 
         Task<Inventory> GetInventoryFGDetailsByItemNumber(string ItemNumber);
@@ -45,7 +45,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<Inventory>> SearchInventoryDate([FromQuery] SearchsDateParms searchsDateParms);
         Task<IEnumerable<Inventory>> GetInventoryByItemNumber(string ItemNumber);
         Task<Inventory> GetSingleInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse);
-        Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse);
+        Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse, string projectNumber);
         Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandPartTypes(string ItemNumber);
+        Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfBalQty(InventoryDetailsBalQty inventoryDetailsBalQty);
     }
 }

@@ -20,6 +20,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ToWarehouse { get; set; }
         public string? FromPartType { get; set; }
         public string? ToPartType { get; set; }
+        public string? FromProjectNumber { get; set; }
+        public string? ToProjectNumber { get; set; }
 
         [Precision(13, 3)]
         public decimal? TransferQty { get; set; }
@@ -56,6 +58,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ToWarehouse { get; set; }
         public string? FromPartType { get; set; }
         public string? ToPartType { get; set; }
+        public string? FromProjectNumber { get; set; }
+        public string? ToProjectNumber { get; set; }
 
         [Precision(13, 3)]       
         public decimal TransferQty { get; set; }
@@ -92,6 +96,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ToWarehouse { get; set; }
         public string? FromPartType { get; set; }
         public string? ToPartType { get; set; }
+        public string? FromProjectNumber { get; set; }
+        public string? ToProjectNumber { get; set; }
 
         [Precision(13, 3)]
         public decimal TransferQty { get; set; }

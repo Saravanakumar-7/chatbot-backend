@@ -15,6 +15,7 @@ using System.IO;
 using Tips.Grin.Api.Repository;
 using Entities.DTOs;
 using MySqlX.XDevAPI.Common;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Tips.Grin.Api.Controllers
 {
@@ -30,7 +31,8 @@ namespace Tips.Grin.Api.Controllers
         private readonly IConfiguration _config;
         private IGrinRepository _grinRepository;
         private IGrinPartsRepository _grinPartsRepository;
-        public BinningController(IGrinPartsRepository grinPartsRepository, IGrinRepository grinRepository,IBinningRepository binningRepository, IBinningItemsRepository binningItemsRepository,ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        private IIQCConfirmationRepository _iQCConfirmationRepository;
+        public BinningController(IIQCConfirmationRepository iQCConfirmationRepository,IGrinPartsRepository grinPartsRepository, IGrinRepository grinRepository,IBinningRepository binningRepository, IBinningItemsRepository binningItemsRepository,ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _logger = logger;
             _binningRepository = binningRepository;
@@ -40,6 +42,7 @@ namespace Tips.Grin.Api.Controllers
             _config = config;
             _grinRepository = grinRepository;
             _grinPartsRepository = grinPartsRepository;
+            _iQCConfirmationRepository = iQCConfirmationRepository;
         }
 
         [HttpGet]
@@ -502,11 +505,24 @@ namespace Tips.Grin.Api.Controllers
                     }
                 }
                 binningDetail.BinningItems = binningItemList;
-
-              binningDetails = await  _binningRepository.CreateBinning(binningDetail);
-
-
+                binningDetail.IsBinningCompleted = true;
+                binningDetails = await  _binningRepository.CreateBinning(binningDetail);
                 _binningRepository.SaveAsync();
+
+                //Updating Binning Status in Grin
+
+                var grinNumber = binningDetail.GrinNumber;
+                var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNumber);
+                grinDetails.IsBinningCompleted = true;
+                await _grinRepository.UpdateGrin(grinDetails);
+                _grinRepository.SaveAsync();
+
+                //Updating Binning Status in IQC
+                
+                var iqcDetails = await _iQCConfirmationRepository.GetIqcDetailsbyGrinNo(grinNumber);
+                iqcDetails.IsBinningCompleted = true;
+                await _iQCConfirmationRepository.UpdateIqc(iqcDetails);
+                _iQCConfirmationRepository.SaveAsync();
 
                 // Inventory Update Code
                 string grinPartId = "";
@@ -546,14 +562,14 @@ namespace Tips.Grin.Api.Controllers
                             {
                               
                                 var grinId = binningsItemsDto[i].GrinPartId;
-                                var grinDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinId);
+                                var grinPartsDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinId);
                                 BinningInventoryDtoPost inventoryObjectNew = new BinningInventoryDtoPost();
                                 inventoryObjectNew.PartNumber = binningsItemsDto[i].ItemNumber;
-                                inventoryObjectNew.MftrPartNumber = grinDetails.MftrItemNumber;
-                                inventoryObjectNew.Description = grinDetails.ItemDescription;
+                                inventoryObjectNew.MftrPartNumber = grinPartsDetails.MftrItemNumber;
+                                inventoryObjectNew.Description = grinPartsDetails.ItemDescription;
                                 inventoryObjectNew.ProjectNumber = location.ProjectNumber;
                                 inventoryObjectNew.Balance_Quantity = location.Qty;
-                                inventoryObjectNew.UOM = grinDetails.UOM;
+                                inventoryObjectNew.UOM = grinPartsDetails.UOM;
                                 inventoryObjectNew.Warehouse = location.Warehouse;
                                 inventoryObjectNew.Location = location.Location;
                                 inventoryObjectNew.GrinNo = binningDetail.GrinNumber;

@@ -94,12 +94,13 @@ namespace Tips.Grin.Api.Repository
             return PagedList<IQCConfirmation>.ToPagedList(getallIQCList, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
-        public async Task<IEnumerable<IQCConfirmation>> GetIqcDetailsbyGrinNo(string grinNumber)
+        public async Task<IQCConfirmation> GetIqcDetailsbyGrinNo(string grinNumber)
         { 
             var iQCDetail = await _tipsGrinDbContext.IQCConfirmations
+                .Where(x => x.GrinNumber == grinNumber)
                .Include(t => t.IQCConfirmationItems)
-             .Where(x => x.GrinNumber == grinNumber)
-                       .ToListAsync();
+             
+                       .FirstOrDefaultAsync();
             return iQCDetail;
         }
 

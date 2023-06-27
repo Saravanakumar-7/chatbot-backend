@@ -121,6 +121,33 @@ namespace Tips.Grin.Api.Repository
 
             return allActiveGrinNoList;
         }
+
+        public async Task<IEnumerable<GrinNoForIqcAndBinning>> GetAllGrinNumberForIqc()
+        {
+            IEnumerable<GrinNoForIqcAndBinning> grinNoForIqc = await _tipsGrinDbContext.Grins
+                .Where(x => x.IsGrinCompleted == true && x.IsIqcCompleted == false && x.IsBinningCompleted == false)
+                                .Select(x => new GrinNoForIqcAndBinning()
+                                {
+                                    GrinNumber = x.GrinNumber,
+                                })
+                              .ToListAsync();
+
+            return grinNoForIqc;
+        }
+
+        public async Task<IEnumerable<GrinNoForIqcAndBinning>> GetAllGrinNumberForBinning()
+        {
+            IEnumerable<GrinNoForIqcAndBinning> grinNoForBinning = await _tipsGrinDbContext.Grins
+                .Where(x => x.IsGrinCompleted == true && x.IsIqcCompleted == true && x.IsBinningCompleted == false)
+                                .Select(x => new GrinNoForIqcAndBinning()
+                                {
+                                    GrinNumber = x.GrinNumber,
+                                })
+                              .ToListAsync();
+
+            return grinNoForBinning;
+        }
+
         public async Task<IEnumerable<Grins>> GetAllGrinsWithItems(GrinSearchDto grinSearchDto)
         {
             using (var context = _tipsGrinDbContext)

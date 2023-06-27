@@ -507,10 +507,16 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 iQCCreate.IQCConfirmationItems = iQCItemList;
+                iQCCreate.IsIqcCompleted = true;
                 await _iQCConfirmationRepository.CreateIqc(iQCCreate);
-
                 _iQCConfirmationRepository.SaveAsync();
-                 
+
+                //Updating IQC Status in Grin
+                var grinNumber = iQCCreate.GrinNumber;
+                var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNumber);
+                grinDetails.IsIqcCompleted = true;
+                await _grinRepository.UpdateGrin(grinDetails);
+                _grinRepository.SaveAsync();
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "IQCConfirmation Successfully Created";

@@ -33,6 +33,7 @@ namespace Tips.Production.Api.Entities
         public DbSet<MaterialRequests> MaterialRequests { get; set; }
         public DbSet<MRStockDetails> MRStockDetails { get; set; }
         public DbSet<MaterialRequestItems> MaterialRequestItems { get; set; }
+        public DbSet<MaterialIssueHistory> MaterialIssueHistories { get; set; }
 
     }
 }

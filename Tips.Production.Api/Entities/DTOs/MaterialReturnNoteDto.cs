@@ -52,8 +52,7 @@ namespace Tips.Production.Api.Entities.DTOs
     public class MaterialReturnNoteSearchDto
     {
         public List<string>? ProjectNumber { get; set; }
-        public List<string>? FGShopOrderNumber { get; set; }
-        public List<string>? SAShopOrderNumber { get; set; }
+        public List<string>? MRNNumber { get; set; }
         public List<string>? ShopOrderNumber { get; set; }
     }
     public class MRNUpdateInventoryBalanceQty

@@ -15,7 +15,7 @@ namespace Tips.Grin.Api.Contracts
     public interface IIQCConfirmationRepository : IRepositoryBase<IQCConfirmation>
     {
         Task<PagedList<IQCConfirmation>> GetAllIqcDetails( PagingParameter pagingParameter, SearchParams searchParams);
-        Task<IEnumerable<IQCConfirmation>> GetIqcDetailsbyGrinNo(string grinNumber);
+        Task<IQCConfirmation> GetIqcDetailsbyGrinNo(string grinNumber);
         Task<string> UpdateIqc(IQCConfirmation iQCConfirmation);
         Task<IEnumerable<IQCConfirmationIdNameListDto>> GetAllActiveIQCConfirmationNameList();
         Task<IQCConfirmation> GetIqcDetailsbyId(int id);              

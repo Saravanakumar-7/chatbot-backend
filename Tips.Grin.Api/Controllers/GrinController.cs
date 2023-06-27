@@ -374,9 +374,10 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 grins.GrinParts = grinPartsList;
+                grins.IsGrinCompleted = true;
                 //grins.GrinDocuments = grinDocumentUploadDtoList;
                 //grins.GrinDocuments = grinPostDto.GrinDocuments;
-                
+
 
                 if (grins.GrinDocuments != null && grins.GrinDocuments.Count > 0)
                 {
@@ -1161,6 +1162,58 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetAllActiveGrinNoList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllGrinNumberForIqc()
+        {
+            ServiceResponse<IEnumerable<GrinNoForIqcAndBinning>> serviceResponse = new ServiceResponse<IEnumerable<GrinNoForIqcAndBinning>>();
+            try
+            {
+                var grinNoForIqc = await _repository.GetAllGrinNumberForIqc();
+                var result = _mapper.Map<IEnumerable<GrinNoForIqcAndBinning>>(grinNoForIqc);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all GrinNumberForIqc";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllGrinNumberForIqc action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllGrinNumberForBinning()
+        {
+            ServiceResponse<IEnumerable<GrinNoForIqcAndBinning>> serviceResponse = new ServiceResponse<IEnumerable<GrinNoForIqcAndBinning>>();
+            try
+            {
+                var grinNoForBinning = await _repository.GetAllGrinNumberForBinning();
+                var result = _mapper.Map<IEnumerable<GrinNoForIqcAndBinning>>(grinNoForBinning);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all GrinNumberForBinning";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllGrinNumberForBinning action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

@@ -194,5 +194,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ShopOrderNo { get; set; }
 
     }
-
+    public class GrinNoForIqcAndBinning
+    {
+        public string? GrinNumber { get; set; }
     }
+
+}
