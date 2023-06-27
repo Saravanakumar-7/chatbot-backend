@@ -1,16 +1,24 @@
-﻿using System.Net;
+﻿using System.Data;
+using System.Net;
 using AutoMapper;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
+using MySql.Data.MySqlClient;
+using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+ using System.IO;
+
+using System.Configuration;
+
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
-
-
+ 
 namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
@@ -304,6 +312,21 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //consumptoion report
+        //[HttpGet]
+        //public async Task<IEnumerable<ConsumptionReport>> ExecuteStoredProcedure(string? itemNumber, string? salesOrderNumber)
+        //{
+        //    try
+        //    {
+        //        var result =await _inventoryRepository.ExecuteStoredProcedure(itemNumber, salesOrderNumber);
+
+        //        return result;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return null;
+        //    }
+        //}
 
 
         [HttpGet]
@@ -344,12 +367,12 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetInventoryDetailsWithInventoryStock(string itemNumber,string warehouse,string location)
+        public async Task<IActionResult> GetInventoryDetailsWithInventoryStock(string itemNumber,string warehouse,string location, string projectNumber)
         {
             ServiceResponse<IEnumerable<InventoryDetailsLocationStock>> serviceResponse = new ServiceResponse<IEnumerable<InventoryDetailsLocationStock>>();
             try
             {
-                var InventoryDetails = await _inventoryRepository.GetInventoryDetailsWithInventoryStock(itemNumber, warehouse, location);
+                var InventoryDetails = await _inventoryRepository.GetInventoryDetailsWithInventoryStock(itemNumber, warehouse, location, projectNumber);
                 if (InventoryDetails == null)
                 {
                     serviceResponse.Data = null;

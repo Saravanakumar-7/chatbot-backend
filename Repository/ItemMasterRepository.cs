@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts;
@@ -8,6 +9,7 @@ using Entities;
 using Entities.DTOs;
 using Entities.Enums;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
@@ -16,18 +18,26 @@ namespace Repository
 {
     public class ItemMasterRepository : RepositoryBase<ItemMaster>, IItemMasterRepository
     {
-        public ItemMasterRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ItemMasterRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
 
         public async Task<long> CreateItemMaster(ItemMaster itemMaster)
         {
-            itemMaster.CreatedBy = "Admin";
+            itemMaster.CreatedBy = _createdBy;
             itemMaster.CreatedOn = DateTime.Now;
-            itemMaster.LastModifiedBy = "Admin";
+            itemMaster.LastModifiedBy = _createdBy;
             itemMaster.LastModifiedOn = DateTime.Now;
-            itemMaster.Unit = "Bangalore";
+            itemMaster.Unit = _unitname;
             var result = await Create(itemMaster);
             
             return result.Id;
@@ -225,7 +235,7 @@ namespace Repository
 
         public async Task<string> UpdateItemMaster(ItemMaster itemMaster)
         {
-            itemMaster.LastModifiedBy = "Admin";
+            itemMaster.LastModifiedBy = _createdBy;
             itemMaster.LastModifiedOn = DateTime.Now;
             Update(itemMaster);
             string result = $"ItemMaster details of {itemMaster.Id} is updated successfully!";
@@ -308,15 +318,23 @@ namespace Repository
 
     public class FileUploadDocumentRepository : RepositoryBase<FileUpload>, IFileUploadRepository
     {
-         public FileUploadDocumentRepository(TipsMasterDbContext tipsMasterDbContext) : base(tipsMasterDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public FileUploadDocumentRepository(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsMasterDbContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
 
-        } 
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+        }
         public async Task<int?> CreateFileUploadDocument(FileUpload fileUpload)
         {
-            fileUpload.CreatedBy = "Admin";
+            fileUpload.CreatedBy = _createdBy;
             fileUpload.CreatedOn = DateTime.Now;
-            fileUpload.LastModifiedBy = "Admin";
+            fileUpload.LastModifiedBy = _createdBy;
             fileUpload.LastModifiedOn = DateTime.Now;
             var result = await Create(fileUpload);
             return result.Id;
@@ -324,9 +342,9 @@ namespace Repository
 
         public async Task<int?> CreateImageUploadDocument(FileUpload fileUpload)
         {
-            fileUpload.CreatedBy = "Admin";
+            fileUpload.CreatedBy = _createdBy;
             fileUpload.CreatedOn = DateTime.Now;
-            fileUpload.LastModifiedBy = "Admin";
+            fileUpload.LastModifiedBy = _createdBy;
             fileUpload.LastModifiedOn = DateTime.Now;
             var result = await Create(fileUpload);
             return result.Id;
@@ -336,16 +354,24 @@ namespace Repository
 
     public class ImageUploadDocumentRepository : RepositoryBase<ImageUpload>, IImageUploadRepository
     {
-        public ImageUploadDocumentRepository(TipsMasterDbContext tipsMasterDbContext) : base(tipsMasterDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ImageUploadDocumentRepository(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsMasterDbContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
 
-        } 
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+        }
 
         public async Task<int?> ImageUploadDocument(ImageUpload imageUpload)
         {
-            imageUpload.CreatedBy = "Admin";
+            imageUpload.CreatedBy = _createdBy;
             imageUpload.CreatedOn = DateTime.Now;
-            imageUpload.LastModifiedBy = "Admin";
+            imageUpload.LastModifiedBy = _createdBy;
             imageUpload.LastModifiedOn = DateTime.Now;
             var result = await Create(imageUpload);
             return result.Id;

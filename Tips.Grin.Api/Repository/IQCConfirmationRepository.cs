@@ -11,24 +11,32 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Tips.Grin.Api.Repository
 {
     public class IQCConfirmationRepository : RepositoryBase<IQCConfirmation>, IIQCConfirmationRepository
     {
         private TipsGrinDbContext _tipsGrinDbContext;
-
-        public IQCConfirmationRepository(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public IQCConfirmationRepository(TipsGrinDbContext tipsGrinDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsGrinDbContext)
         {
             _tipsGrinDbContext = tipsGrinDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
 
         public async Task<int?> CreateIqc(IQCConfirmation iQCConfirmation)
         {
-            iQCConfirmation.CreatedBy = "Admin";
+            iQCConfirmation.CreatedBy = _createdBy;
             iQCConfirmation.CreatedOn = DateTime.Now;
-            iQCConfirmation.Unit = "Bangalore";
+            iQCConfirmation.Unit = _unitname;
             var result = await Create(iQCConfirmation);
             return result.Id;
         }
@@ -105,7 +113,7 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<string> UpdateIqc(IQCConfirmation iQCConfirmation)
         {
-            iQCConfirmation.LastModifiedBy = "Admin";
+            iQCConfirmation.LastModifiedBy = _createdBy;
             iQCConfirmation.LastModifiedOn = DateTime.Now;
             Update(iQCConfirmation);
             string result = $"IQC details of {iQCConfirmation.Id} is updated successfully!";

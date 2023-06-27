@@ -18,7 +18,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<string> DeleteInventory(Inventory inventory);
         Task<List<InventoryItemNoStock>> GetItemNoByInventoryStock();
         Task<Inventory> GetInventoryById(int id);
-        Task<List<InventoryDetailsLocationStock>> GetInventoryDetailsWithInventoryStock(string partNumber, string wareHouse, string location);
+        Task<List<InventoryDetailsLocationStock>> GetInventoryDetailsWithInventoryStock(string partNumber, string wareHouse, string location, string projectNumber);
 
 
         Task<Inventory> GetInventoryDetails(string ItemNumber);
@@ -41,6 +41,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<GetInventoryListByItemNo>> GetInventoryListByItemNo(string ItemNumber );
         Task<Inventory> GetInventoryDetailsByItemNoProjectNoUnitWarehouseAndLocation(string itemNumber, string projectNumber, string unit, string warehouse, string location);
         Task<IEnumerable<Inventory>> GetAllInventoryWithItems(InventorySearchDto inventorySearch);
+        //Task<IEnumerable<ConsumptionReport>> ExecuteStoredProcedure(string? itemNumber, string? salesOrderNumber);
         Task<IEnumerable<Inventory>> SearchInventory([FromQuery] SearchParames searchParames);
         Task<IEnumerable<Inventory>> SearchInventoryDate([FromQuery] SearchsDateParms searchsDateParms);
         Task<IEnumerable<Inventory>> GetInventoryByItemNumber(string ItemNumber);

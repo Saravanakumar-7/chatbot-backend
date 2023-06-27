@@ -10,21 +10,31 @@ using Microsoft.EntityFrameworkCore;
 using Entities.Helper;
 using System.Collections.Immutable;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Repository
 {
     public class LocationsRepository : RepositoryBase<Locations>, ILocationsRepository
     {
-        public LocationsRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public LocationsRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
 
         public async Task<int?> CreateLocations(Locations locations)
         {
-            locations.CreatedBy = "Admin";
+            locations.CreatedBy = _createdBy;
             locations.CreatedOn = DateTime.Now;
-            locations.Unit = "Bangalore";
+            locations.Unit = _unitname;
             var result = await Create(locations);
 
             return result.Id;
@@ -61,7 +71,7 @@ namespace Repository
 
         public async Task<string> UpdateLocations(Locations locations)
         {
-            locations.LastModifiedBy = "Admin";
+            locations.LastModifiedBy = _createdBy;
             locations.LastModifiedOn = DateTime.Now;
             Update(locations);
             string result = $"Locations details of {locations.Id} is updated successfully!";

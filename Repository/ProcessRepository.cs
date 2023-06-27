@@ -1,9 +1,11 @@
 ﻿using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,15 +14,24 @@ namespace Repository
 {
     public class ProcessRepository : RepositoryBase<Process>, IProcessRepository
     {
-        public ProcessRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ProcessRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateProcess(Process process)
         {
-            process.CreatedBy = "Admin";
+            process.CreatedBy = _createdBy;
             process.CreatedOn = DateTime.Now;
-            process.Unit = "Bangalore";
+            process.Unit = _unitname;
             var result = await Create(process);
 
             return result.Id;
@@ -55,7 +66,7 @@ namespace Repository
 
         public async Task<string> UpdateProcess(Process process)
         {
-            process.LastModifiedBy = "Admin";
+            process.LastModifiedBy = _createdBy;
             process.LastModifiedOn = DateTime.Now;
             Update(process);
             string result = $"Process details of {process.Id} is updated successfully!";

@@ -99,6 +99,10 @@ namespace Tips.Warehouse.Api
             CreateMap<LocationTransfer, LocationTransferPostDto>().ReverseMap();
             CreateMap<LocationTransfer, LocationTransferUpdateDto>().ReverseMap();
 
+            //CreateMap<Inventory, ConsumptionDto>().ReverseMap();
+
+            
+
             //CreateMap<bTODeliveryOrderItems, inven>().ReverseMap();
         }
     }

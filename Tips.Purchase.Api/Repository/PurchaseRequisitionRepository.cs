@@ -1,10 +1,11 @@
 ﻿
 using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 using Tips.Purchase.Api.Contracts;
+using System.Security.Claims;
 using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.DTOs;
 
@@ -13,19 +14,27 @@ namespace Tips.Purchase.Api.Repository
     public class PurchaseRequisitionRepository : RepositoryBase<PurchaseRequisition>, IPurchaseRequisitionRepository
     {
         private TipsPurchaseDbContext _tipsPurchaseDbContext;
-        public PurchaseRequisitionRepository(TipsPurchaseDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public PurchaseRequisitionRepository(TipsPurchaseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsPurchaseDbContext= repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<long> CreatePurchaseRequisition(PurchaseRequisition purchaseRequisitions)
         {
             var date = DateTime.Now;
-            purchaseRequisitions.CreatedBy = "Admin";
+            purchaseRequisitions.CreatedBy = _createdBy;
             purchaseRequisitions.CreatedOn = date.Date;
            // Guid purchaseRequisitionsNumber = Guid.NewGuid();
            // purchaseRequisitions.PRNumber = "PR-" + purchaseRequisitionsNumber.ToString();
-            purchaseRequisitions.Unit = "Bangalore";
+            purchaseRequisitions.Unit = _unitname;
             purchaseRequisitions.RevisionNumber = 1;
             var result = await Create(purchaseRequisitions);
             return result.Id;
@@ -167,13 +176,13 @@ namespace Tips.Purchase.Api.Repository
             if (getOldPRDetails != null)
             {
                 getOldPRDetails.IsModified = true;
-                getOldPRDetails.LastModifiedBy = "Admin";
+                getOldPRDetails.LastModifiedBy = _createdBy;
                 getOldPRDetails.LastModifiedOn = DateTime.Now;
                 Update(getOldPRDetails);
             }
             purchaseRequisition.CreatedBy = purchaseRequisition.CreatedBy;
             purchaseRequisition.CreatedOn = purchaseRequisition.CreatedOn;
-            purchaseRequisition.LastModifiedBy = "Admin";
+            purchaseRequisition.LastModifiedBy = _createdBy;
             purchaseRequisition.LastModifiedOn = DateTime.Now;
             var getOldRevisionNumber = _tipsPurchaseDbContext.PurchaseRequisitions
             .Where(x => x.PrNumber == purchaseRequisition.PrNumber)
@@ -333,7 +342,7 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<string> UpdatePurchaseRequisition(PurchaseRequisition purchaseRequisitions)
         {
-            purchaseRequisitions.LastModifiedBy = "Admin";
+            purchaseRequisitions.LastModifiedBy = _createdBy;
             purchaseRequisitions.LastModifiedOn = DateTime.Now;
             Update(purchaseRequisitions);
             string result = $"PurchaseRequisitions of Detail {purchaseRequisitions.Id} is updated successfully!";
@@ -360,16 +369,24 @@ namespace Tips.Purchase.Api.Repository
     public class PRUploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository
     {
         private TipsPurchaseDbContext _tipsPurchaseDbContext;
-        public PRUploadDocumentRepository(TipsPurchaseDbContext tipsPurchaseDbContext) : base(tipsPurchaseDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public PRUploadDocumentRepository(TipsPurchaseDbContext tipsPurchaseDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsPurchaseDbContext)
         {
             _tipsPurchaseDbContext = tipsPurchaseDbContext;
-        }
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+    }
 
         public async Task<int?> CreateUploadDocumentPO(DocumentUpload documentUpload)
         {
-            documentUpload.CreatedBy = "Admin";
+            documentUpload.CreatedBy = _createdBy;
             documentUpload.CreatedOn = DateTime.Now;
-            documentUpload.LastModifiedBy = "Admin";
+            documentUpload.LastModifiedBy = _createdBy;
             documentUpload.LastModifiedOn = DateTime.Now;
 
             var result = await Create(documentUpload);

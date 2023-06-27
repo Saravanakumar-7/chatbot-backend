@@ -1,8 +1,10 @@
 ﻿using Entities;
 using Entities.Enums;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
@@ -13,18 +15,26 @@ namespace Tips.Production.Api.Repository
     public class ShopOrderConfirmationRepository : RepositoryBase<ShopOrderConfirmation>, IShopOrderConfirmationRepository
     {
         private TipsProductionDbContext _tipsProductionDbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
 
-        public ShopOrderConfirmationRepository(TipsProductionDbContext repositoryContext) : base(repositoryContext)
+        public ShopOrderConfirmationRepository(TipsProductionDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsProductionDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<long> CreateShopOrderConfirmation(ShopOrderConfirmation shopOrderConfirmation)
         {
         
-            shopOrderConfirmation.CreatedBy = "Admin";
+            shopOrderConfirmation.CreatedBy = _createdBy;
             shopOrderConfirmation.CreatedOn = DateTime.Now;
-            shopOrderConfirmation.Unit = "Banglore";
+            shopOrderConfirmation.Unit = _unitname;
             var result = await Create(shopOrderConfirmation);
             return result.Id;
         }
@@ -52,7 +62,7 @@ namespace Tips.Production.Api.Repository
 
         public async Task<string> UpdateShopOrderConfirmation(ShopOrderConfirmation shopOrderConfirmation)
         {
-            shopOrderConfirmation.LastModifiedBy = "Admin";
+            shopOrderConfirmation.LastModifiedBy = _createdBy;
             shopOrderConfirmation.LastModifiedOn = DateTime.Now;
             Update(shopOrderConfirmation);
             string result = $"ShopOrderConfirmation details of {shopOrderConfirmation.Id} is updated successfully!";

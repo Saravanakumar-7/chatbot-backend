@@ -1,20 +1,32 @@
 ﻿using Entities;
 using Entities.DTOs;
 using Entities.Helper;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using MySql.Data.MySqlClient;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
-
+using System.Data.SqlClient;
+using System.Linq;
 namespace Tips.Warehouse.Api.Repository
 {
     public class InventoryRepository : RepositoryBase<Inventory>, IInventoryRepository
     {
-        public InventoryRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        private readonly string _connectionString;
+        private readonly MySqlConnection _connection;
+ 
+        public InventoryRepository(TipsWarehouseDbContext repositoryContext, MySqlConnection connection) : base(repositoryContext)
         {
+            _connection = connection; 
         }
         public async Task<IEnumerable<Inventory>> SearchInventoryDetailsWithSumOfStock(InventoryItemNo inventoryItemNo)
         {
@@ -116,6 +128,88 @@ namespace Tips.Warehouse.Api.Repository
             //    return groupedItems.Values.Select(group => group.First());
        // }
         }
+
+        //public async Task<IEnumerable<ConsumptionReport>> ExecuteStoredProcedure(string? itemNumber, string? salesOrderNumber)
+        //{
+
+        //    //var context = new TipsWarehouseDbContext();
+        //    //var nameParam = new SqlParameter("@Name", name);
+        //    //var ageParam = new SqlParameter("@Age", age);
+
+        //    //var students = context.FromSql("EXEC GetStudents @Name, @Age", nameParam, ageParam)
+        //    //                      .ToList();
+
+        //    var ItemNumber = new SqlParameter("@ItemNumber", itemNumber);
+        //    var SalesOrderNumber = new SqlParameter("@SalesOrderNumber", salesOrderNumber);
+
+        //    var result = _tipsWarehouseDbContext.ConsumptionReport.FromSql("ProductDemand_Vs_AvailableStock_With_Parameter {0}, {1}", ItemNumber, SalesOrderNumber).ToList();
+
+        //    //var result = _tipsWarehouseDbContext.Database.SqlQuery<ConsumptionReport>("EXEC ProductDemand_Vs_AvailableStock_With_Parameter @ItemNumber, @SalesOrderNumber", ItemNumber, SalesOrderNumber)
+        //    //    .ToList();
+            
+        //    //var result = _tipsWarehouseDbContext.Database.FromSql<ConsumptionReport>($"ProductDemand_Vs_AvailableStock_With_Parameter {itemNumber}").ToList();
+
+        //    ////string conStr = ConfigurationManager.ConnectionStrings["TipsWarehouseDbContext"].ConnectionString;
+
+        //    ////string connectionString = "server=10.10.201.144;database=getapcs_keus_warehouse;user=nayagam;password=%FJx9rpr=Z+SAYE8;";
+
+        //    //List<ConsumptionDto> consumptionList = new List<ConsumptionDto>();
+
+        //    //using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    //{
+        //    //    connection.Open();
+
+        //    //    // Execute stored procedure
+        //    //    using (MySqlCommand command = new MySqlCommand("ProductDemand_Vs_AvailableStock_With_Parameter", connection))
+        //    //    {
+        //    //        command.CommandType = CommandType.StoredProcedure;
+
+        //    //        // Set input parameters if needed
+        //    //        command.Parameters.AddWithValue("@ItemNumber", itemNumber);
+        //    //        command.Parameters.AddWithValue("@SalesOrderNumber", salesOrderNumber);
+        //    //        try
+        //    //        {
+        //    //            // Execute the command
+        //    //            using (MySqlDataReader reader = command.ExecuteReader())
+        //    //            {
+        //    //                // Process the results
+
+        //    //                while (reader.Read())
+        //    //                {
+        //    //                    // Create a new ConsumptionDto instance
+        //    //                    ConsumptionDto consumption = new ConsumptionDto();
+
+        //    //                    // Set the properties of ConsumptionDto from the reader
+        //    //                    consumption.ItemNumber = reader.GetString("ItemNumber");
+        //    //                    consumption.SalesOrderNumber = reader.GetString("SalesOrderNumber");
+        //    //                    consumption.Description = reader.GetString("Description");
+        //    //                    consumption.ForecastQty = reader.GetDecimal("ForecastQty");
+        //    //                    consumption.FGStock = reader.GetDecimal("FGStock");
+        //    //                    consumption.BalanceForecastQty = reader.GetDecimal("BalanceForecastQty");
+        //    //                    consumption.Child = reader.GetString("Child");
+        //    //                    consumption.ChildPartDescription = reader.GetString("ChildPartDescription");
+        //    //                    consumption.QtyPerUnit = reader.GetDecimal("QtyPerUnit");
+        //    //                    consumption.ChildRequiredQty = reader.GetDecimal("ChildRequiredQty");
+        //    //                    consumption.TotalChildReqQty = reader.GetDecimal("TotalChildReqQty");
+
+        //    //                    // Add the ConsumptionDto instance to the list
+        //    //                    consumptionList.Add(consumption);
+        //    //                }
+
+
+        //    //            }
+        //    //        }
+        //    //        catch (MySql.Data.MySqlClient.MySqlException ex)
+        //    //        {
+        //    //            return null;
+        //    //        }
+        //    //    }
+        //    //}
+
+        //    return result;
+
+        //}
+
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfStock(InventoryBalQty inventoryBalQty)
         {
             using (var context = _tipsWarehouseDbContext)
@@ -173,7 +267,11 @@ namespace Tips.Warehouse.Api.Repository
                 return groupedItems.Values.Select(group => group.First());
             }
         }
-
+         
+        //public async Task<IEnumerable<ConsumptionDto>> ExecuteYourStoredProcedure(string itemNumber, string salesOrderNumber)
+        //{
+           
+        //}
 
         public async Task<IEnumerable<Inventory>> GetAllInventoryWithItems(InventorySearchDto inventorySearch)
         {
@@ -233,18 +331,18 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryItemNoStock;
         }
-        public async Task<List<InventoryDetailsLocationStock>> GetInventoryDetailsWithInventoryStock(string partNumber,string warehouse,string location)
+        public async Task<List<InventoryDetailsLocationStock>> GetInventoryDetailsWithInventoryStock(string partNumber,string warehouse,string location, string projectNumber)
         {
             List<InventoryDetailsLocationStock> inventoryItemNoStock = _tipsWarehouseDbContext.Inventory
-                 .Where(x => x.PartNumber == partNumber && x.Warehouse == warehouse && x.Location == location)
-                       .GroupBy(l => new { l.PartNumber,l.Warehouse,l.Location })
+                 .Where(x => x.PartNumber == partNumber && x.Warehouse == warehouse && x.Location == location && x.ProjectNumber == projectNumber)
+                       .GroupBy(l => new { l.PartNumber,l.Warehouse,l.Location,l.ProjectNumber })
                        .Select(group => new InventoryDetailsLocationStock
                        {
                            PartNumber = group.Key.PartNumber,
                            Warehouse = group.Key.Warehouse,
+                           ProjectNumber = group.Key.ProjectNumber,
                            Location = group.Key.Location,
                            LocationStock = group.Sum(c => c.Balance_Quantity),
-
                        }).ToList();
 
             return inventoryItemNoStock;

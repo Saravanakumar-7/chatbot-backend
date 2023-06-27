@@ -1,7 +1,9 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
 using Tips.Grin.Api.Entities.DTOs;
@@ -11,18 +13,24 @@ namespace Tips.Grin.Api.Repository
     public class ReturnGrinRepository : RepositoryBase<ReturnGrin>, IReturnGrinRepository
     {
         private TipsGrinDbContext _tipsGrinDbContext;
-
-        public ReturnGrinRepository(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ReturnGrinRepository(TipsGrinDbContext tipsGrinDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsGrinDbContext)
         {
-            _tipsGrinDbContext = tipsGrinDbContext;
+            _tipsGrinDbContext = tipsGrinDbContext; 
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
 
         public async Task<ReturnGrin> CreateReturnGrin(ReturnGrin returnGrin)
         {
-            returnGrin.CreatedBy = "Admin";
+            returnGrin.CreatedBy = _createdBy;
             returnGrin.CreatedOn = DateTime.Now;
-            returnGrin.Unit = "Bangalore";
+            returnGrin.Unit = _unitname;
             var result = await Create(returnGrin);
             return result;
         }

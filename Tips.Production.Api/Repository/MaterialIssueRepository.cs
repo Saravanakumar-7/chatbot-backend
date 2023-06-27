@@ -1,7 +1,9 @@
 ﻿using System.Linq;
+using System.Security.Claims;
 using Entities;
 using Entities.Enums;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
@@ -13,16 +15,24 @@ namespace Tips.Production.Api.Repository
     public class MaterialIssueRepository : RepositoryBase<MaterialIssue>, IMaterialIssueRepository
     {
         private TipsProductionDbContext _tipsProductionDbContext;
-        public MaterialIssueRepository(TipsProductionDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public MaterialIssueRepository(TipsProductionDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsProductionDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int> CreateMaterialIssue(MaterialIssue materialIssue)
         {
-            materialIssue.CreatedBy = "Admin";
+            materialIssue.CreatedBy = _createdBy;
             materialIssue.CreatedOn = DateTime.Now;
-            materialIssue.Unit = "Bangalore";
+            materialIssue.Unit = _unitname;
             var result = await Create(materialIssue);
             return result.Id;
         }
@@ -82,7 +92,7 @@ namespace Tips.Production.Api.Repository
 
         public  async Task<string> UpdateMaterialIssue(MaterialIssue materialIssue)
         {
-            materialIssue.LastModifiedBy = "Admin";
+            materialIssue.LastModifiedBy = _createdBy;
             materialIssue.LastModifiedOn = DateTime.Now;
             Update(materialIssue);
             string result = $"MaterialIssue of Detail {materialIssue.Id} is updated successfully!";

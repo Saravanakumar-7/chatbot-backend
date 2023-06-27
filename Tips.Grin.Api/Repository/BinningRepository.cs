@@ -5,25 +5,33 @@ using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Tips.Grin.Api.Entities.DTOs;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Tips.Grin.Api.Repository
 {
     public class BinningRepository : RepositoryBase<Binning>, IBinningRepository
     {
         private TipsGrinDbContext _tipsGrinDbContext;
-
-        public BinningRepository(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public BinningRepository(TipsGrinDbContext tipsGrinDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsGrinDbContext)
         {
             _tipsGrinDbContext = tipsGrinDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
 
         public async Task<Binning> CreateBinning(Binning binning)
         {
 
-            binning.CreatedBy = "Admin";
+            binning.CreatedBy = _createdBy;
             binning.CreatedOn = DateTime.Now;
-            binning.Unit = "Bangalore";
+            binning.Unit = _unitname;
             var result = await Create(binning);
             return result;
         }
@@ -92,7 +100,7 @@ namespace Tips.Grin.Api.Repository
         }
         public async Task<string> UpdateBinning(Binning binning)
         {
-            binning.LastModifiedBy = "Admin";
+            binning.LastModifiedBy = _createdBy;
             binning.LastModifiedOn = DateTime.Now;
             Update(binning);
             string result = $"binning details of {binning.Id} is updated successfully!";
@@ -138,10 +146,16 @@ namespace Tips.Grin.Api.Repository
     public class BinningItemsRepository : RepositoryBase<BinningItems>, IBinningItemsRepository
     {
         private TipsGrinDbContext _tipsGrinDbContext;
-
-        public BinningItemsRepository(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public BinningItemsRepository(TipsGrinDbContext tipsGrinDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsGrinDbContext)
         {
             _tipsGrinDbContext = tipsGrinDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
 
@@ -168,16 +182,22 @@ namespace Tips.Grin.Api.Repository
     public class BinningLocations : RepositoryBase<BinningLocation>, IBinningLocations
     {
         private TipsGrinDbContext _tipsGrinDbContext;
-
-        public BinningLocations(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public BinningLocations(TipsGrinDbContext tipsGrinDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsGrinDbContext)
         {
             _tipsGrinDbContext = tipsGrinDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
 
         public async Task<string> UpdateBinning(BinningLocation binningLocation)
         {
-            binningLocation.LastModifiedBy = "Admin";
+            binningLocation.LastModifiedBy = _createdBy;
             binningLocation.LastModifiedOn = DateTime.Now;
             Update(binningLocation);
             string result = $"binningLocation details of {binningLocation.Id} is updated successfully!";

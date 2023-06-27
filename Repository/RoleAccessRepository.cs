@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,8 +16,17 @@ namespace Repository
 {
     public class RoleAccessRepository : RepositoryBase<RoleAccess>, IRoleAccessRepository
     {
-        public RoleAccessRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public RoleAccessRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateRoleAccess(RoleAccess roleAccess)
@@ -68,7 +79,7 @@ namespace Repository
 
         public async Task<string> UpdateRoleAccess(RoleAccess roleAccess)
         {
-            roleAccess.LastModifiedBy = "Admin";
+            roleAccess.LastModifiedBy = _createdBy;
             roleAccess.LastModifiedOn = DateTime.Now;
             Update(roleAccess);
             string result = $"RoleAccess of Detail {roleAccess.Id} is updated successfully!";

@@ -2,9 +2,11 @@
 using Entities;
 using Entities.Enums;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
@@ -13,16 +15,24 @@ namespace Tips.Production.Api.Repository
 {
     public class OQCRepository : RepositoryBase<OQC>, IOQCRepository
     {
-        public OQCRepository(TipsProductionDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public OQCRepository(TipsProductionDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateOQC(OQC oqc)
         {
 
-            oqc.CreatedBy = "Admin";
+            oqc.CreatedBy = _createdBy;
             oqc.CreatedOn = DateTime.Now;
-            oqc.Unit = "Bangalore";
+            oqc.Unit = _unitname;
             var result = await Create(oqc);
 
             return result.Id;
@@ -160,7 +170,7 @@ namespace Tips.Production.Api.Repository
 
         public async Task<string> UpdateOQC(OQC oqc)
         {
-            oqc.LastModifiedBy = "Admin";
+            oqc.LastModifiedBy = _createdBy;
             oqc.LastModifiedOn = DateTime.Now;
             Update(oqc);
             string result = $"OQC details of {oqc.Id} is updated successfully!";

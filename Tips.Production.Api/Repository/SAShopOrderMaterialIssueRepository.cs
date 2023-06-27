@@ -1,7 +1,9 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 
@@ -10,19 +12,26 @@ namespace Tips.Production.Api.Repository
     public class SAShopOrderMaterialIssueRepository : RepositoryBase<SAShopOrderMaterialIssue>, ISAShopOrderMaterialIssueRepository
     {
         private TipsProductionDbContext _tipsProductionDbContext;
-
-        public SAShopOrderMaterialIssueRepository(TipsProductionDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public SAShopOrderMaterialIssueRepository(TipsProductionDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsProductionDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<long> CreateSAShopOrderMaterialIssue(SAShopOrderMaterialIssue sAShopOrderMaterialIssue)
         {
-            sAShopOrderMaterialIssue.LastModifiedBy = "Admin";
+            sAShopOrderMaterialIssue.LastModifiedBy = _createdBy;
             sAShopOrderMaterialIssue.LastModifiedOn = DateTime.Now;
-            sAShopOrderMaterialIssue.CreatedBy = "Admin";
+            sAShopOrderMaterialIssue.CreatedBy = _createdBy;
             sAShopOrderMaterialIssue.CreatedOn = DateTime.Now;
-            sAShopOrderMaterialIssue.Unit = "Bangalore";
+            sAShopOrderMaterialIssue.Unit = _unitname;
             var result = await Create(sAShopOrderMaterialIssue);
             return result.Id;
         }
@@ -54,7 +63,7 @@ namespace Tips.Production.Api.Repository
 
         public async Task<string> UpdateSAShopOrderMaterialIssue(SAShopOrderMaterialIssue sAShopOrderMaterialIssue)
         {
-            sAShopOrderMaterialIssue.LastModifiedBy = "Admin";
+            sAShopOrderMaterialIssue.LastModifiedBy = _createdBy;
             sAShopOrderMaterialIssue.LastModifiedOn = DateTime.Now;
             Update(sAShopOrderMaterialIssue);
             string result = $"SAShopOrderMaterialIssue of Detail {sAShopOrderMaterialIssue.Id} is updated successfully!";

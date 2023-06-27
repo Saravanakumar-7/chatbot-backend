@@ -129,7 +129,7 @@ namespace Repository
             {
                 if (_companyCategoryRepository == null)
                 {
-                    _companyCategoryRepository = new CompanyCategoryRepository(_tipsMasterDbContext);
+                    _companyCategoryRepository = new CompanyCategoryRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _companyCategoryRepository;
             }
@@ -140,7 +140,7 @@ namespace Repository
             {
                 if (_customerCategoryRepository == null)
                 {
-                    _customerCategoryRepository = new CustomerCategoryRepository(_tipsMasterDbContext);
+                    _customerCategoryRepository = new CustomerCategoryRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _customerCategoryRepository;
             }
@@ -152,7 +152,7 @@ namespace Repository
             {
                 if (_additionalChargesRepository == null)
                 {
-                    _additionalChargesRepository = new AdditionalChargesRepository(_tipsMasterDbContext);
+                    _additionalChargesRepository = new AdditionalChargesRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _additionalChargesRepository;
             }
@@ -164,7 +164,7 @@ namespace Repository
             {
                 if (issuingStockRepository == null)
                 {
-                    issuingStockRepository = new IssuingStockRepository(_tipsMasterDbContext);
+                    issuingStockRepository = new IssuingStockRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return issuingStockRepository;
             }
@@ -176,7 +176,7 @@ namespace Repository
             {
                 if (_orderTypeRepository == null)
                 {
-                    _orderTypeRepository = new OrderTypeRepository(_tipsMasterDbContext);
+                    _orderTypeRepository = new OrderTypeRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _orderTypeRepository;
             }
@@ -188,7 +188,7 @@ namespace Repository
             {
                 if (_enggBomRepository == null)
                 {
-                    _enggBomRepository = new EngineeringBomRepository(_tipsMasterDbContext);
+                    _enggBomRepository = new EngineeringBomRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _enggBomRepository;
             }
@@ -199,7 +199,7 @@ namespace Repository
             {
                 if (_leadWebsiteRepository == null)
                 {
-                    _leadWebsiteRepository = new LeadWebsiteRepository(_tipsMasterDbContext);
+                    _leadWebsiteRepository = new LeadWebsiteRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _leadWebsiteRepository;
             }
@@ -243,7 +243,7 @@ namespace Repository
             {
                 if (_pmcContractorRepository == null)
                 {
-                    _pmcContractorRepository = new PmcContractorRepository(_tipsMasterDbContext);
+                    _pmcContractorRepository = new PmcContractorRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _pmcContractorRepository;
             }
@@ -254,7 +254,7 @@ namespace Repository
             {
                 if (_cityRepository == null)
                 {
-                    _cityRepository = new CityRepository(_tipsMasterDbContext);
+                    _cityRepository = new CityRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _cityRepository;
             }
@@ -265,7 +265,7 @@ namespace Repository
             {
                 if (_architectureRepository == null)
                 {
-                    _architectureRepository = new ArchitectureRepository(_tipsMasterDbContext);
+                    _architectureRepository = new ArchitectureRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _architectureRepository;
             }
@@ -276,7 +276,7 @@ namespace Repository
             {
                 if (_lightningDesignerRepository == null)
                 {
-                    _lightningDesignerRepository = new LightningDesignerRepository(_tipsMasterDbContext);
+                    _lightningDesignerRepository = new LightningDesignerRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _lightningDesignerRepository;
             }
@@ -298,7 +298,7 @@ namespace Repository
             {
                 if (_projectNameRepository == null)
                 {
-                    _projectNameRepository = new ProjectNameRepository(_tipsMasterDbContext);
+                    _projectNameRepository = new ProjectNameRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _projectNameRepository;
             }
@@ -310,7 +310,7 @@ namespace Repository
             {
                 if (_bHKRepository == null)
                 {
-                    _bHKRepository = new BHKRepository(_tipsMasterDbContext);
+                    _bHKRepository = new BHKRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _bHKRepository;
             }
@@ -344,7 +344,7 @@ namespace Repository
             {
                 if (_fileUploadRepo == null)
                 {
-                    _fileUploadRepo = new FileUploadDocumentRepository(_tipsMasterDbContext);
+                    _fileUploadRepo = new FileUploadDocumentRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _fileUploadRepo;
             }
@@ -355,7 +355,7 @@ namespace Repository
             {
                 if (_imageUploadRepository == null)
                 {
-                    _imageUploadRepository = new ImageUploadDocumentRepository(_tipsMasterDbContext);
+                    _imageUploadRepository = new ImageUploadDocumentRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _imageUploadRepository;
             }
@@ -368,7 +368,7 @@ namespace Repository
             {
                 if (_enggBomNREConsumableRepository == null)
                 {
-                    _enggBomNREConsumableRepository = new EngineeringNREConsumableRepository(_tipsMasterDbContext);
+                    _enggBomNREConsumableRepository = new EngineeringNREConsumableRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _enggBomNREConsumableRepository;
             }
@@ -380,7 +380,7 @@ namespace Repository
             {
                 if (_itemmasterRoutingRepository == null)
                 {
-                    _itemmasterRoutingRepository = new ItemMasterRoutingRepository(_tipsMasterDbContext);
+                    _itemmasterRoutingRepository = new ItemMasterRoutingRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _itemmasterRoutingRepository;
             }
@@ -391,7 +391,7 @@ namespace Repository
             {
                 if (_roomNameRepository == null)
                 {
-                    _roomNameRepository = new RoomNameRepository(_tipsMasterDbContext);
+                    _roomNameRepository = new RoomNameRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _roomNameRepository;
             }
@@ -414,7 +414,7 @@ namespace Repository
             {
                 if (_productTypeRepository == null)
                 {
-                    _productTypeRepository = new ProductTypeRepository(_tipsMasterDbContext);
+                    _productTypeRepository = new ProductTypeRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _productTypeRepository;
             }
@@ -448,7 +448,7 @@ namespace Repository
             {
                 if (_leadStatusRepo == null)
                 {
-                    _leadStatusRepo = new LeadStatusRepository(_tipsMasterDbContext);
+                    _leadStatusRepo = new LeadStatusRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _leadStatusRepo;
             }
@@ -459,7 +459,7 @@ namespace Repository
             {
                 if (_leadTypeRepo == null)
                 {
-                    _leadTypeRepo = new LeadTypeRepository(_tipsMasterDbContext);
+                    _leadTypeRepo = new LeadTypeRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _leadTypeRepo;
             }
@@ -471,7 +471,7 @@ namespace Repository
             {
                 if (_demoStatusRepo == null)
                 {
-                    _demoStatusRepo = new DemoStatusRepository(_tipsMasterDbContext);
+                    _demoStatusRepo = new DemoStatusRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _demoStatusRepo;
             }
@@ -483,7 +483,7 @@ namespace Repository
             {
                 if (_leadRepo == null)
                 {
-                    _leadRepo = new LeadRepository(_tipsMasterDbContext);
+                    _leadRepo = new LeadRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _leadRepo;
             }
@@ -494,7 +494,7 @@ namespace Repository
             {
                 if (_parttypesRepo == null)
                 {
-                    _parttypesRepo = new PartTypesRepository(_tipsMasterDbContext);
+                    _parttypesRepo = new PartTypesRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _parttypesRepo;
             }
@@ -505,7 +505,7 @@ namespace Repository
             {
                 if (_processRepo == null)
                 {
-                    _processRepo = new ProcessRepository(_tipsMasterDbContext);
+                    _processRepo = new ProcessRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _processRepo;
             }
@@ -516,7 +516,7 @@ namespace Repository
             {
                 if (_preferredFreightForwarderRepo == null)
                 {
-                    _preferredFreightForwarderRepo = new PreferredFreightForwarderRepository(_tipsMasterDbContext);
+                    _preferredFreightForwarderRepo = new PreferredFreightForwarderRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _preferredFreightForwarderRepo;
             }
@@ -530,7 +530,7 @@ namespace Repository
             {
                 if (_pricelistRepo == null)
                 {
-                    _pricelistRepo = new PriceListRepository(_tipsMasterDbContext);
+                    _pricelistRepo = new PriceListRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _pricelistRepo;
             }
@@ -552,7 +552,7 @@ namespace Repository
             {
                 if (_gstpercentageRepo == null)
                 {
-                    _gstpercentageRepo = new GST_PercentageRepository(_tipsMasterDbContext);
+                    _gstpercentageRepo = new GST_PercentageRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _gstpercentageRepo;
             }
@@ -563,7 +563,7 @@ namespace Repository
             {
                 if (_locationsRepo == null)
                 {
-                    _locationsRepo = new LocationsRepository(_tipsMasterDbContext);
+                    _locationsRepo = new LocationsRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _locationsRepo;
             }
@@ -574,7 +574,7 @@ namespace Repository
             {
                 if (_commodityRepo == null)
                 {
-                    _commodityRepo = new CommodityRepository(_tipsMasterDbContext);
+                    _commodityRepo = new CommodityRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _commodityRepo;
             }
@@ -607,7 +607,7 @@ namespace Repository
             {
                 if (_paymentTermRepo == null)
                 {
-                    _paymentTermRepo = new PaymentTermRepository(_tipsMasterDbContext);
+                    _paymentTermRepo = new PaymentTermRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _paymentTermRepo;
             }
@@ -644,7 +644,7 @@ namespace Repository
             {
                 if (_quoteTermsRepo == null)
                 {
-                    _quoteTermsRepo = new QuoteTermsRepository(_tipsMasterDbContext);
+                    _quoteTermsRepo = new QuoteTermsRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _quoteTermsRepo;
             }
@@ -656,7 +656,7 @@ namespace Repository
             {
                 if (_riskCategoryRepo == null)
                 {
-                    _riskCategoryRepo = new RiskCategoryRepository(_tipsMasterDbContext);
+                    _riskCategoryRepo = new RiskCategoryRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _riskCategoryRepo;
             }
@@ -667,7 +667,7 @@ namespace Repository
             {
                 if (_categoryRepo == null)
                 {
-                    _categoryRepo = new CategoryRepository(_tipsMasterDbContext);
+                    _categoryRepo = new CategoryRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _categoryRepo;
             }
@@ -692,7 +692,7 @@ namespace Repository
             {
                 if (_companyMasterRepo == null)
                 {
-                    _companyMasterRepo = new CompanyMasterRepository(_tipsMasterDbContext);
+                    _companyMasterRepo = new CompanyMasterRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _companyMasterRepo;
             }
@@ -704,7 +704,7 @@ namespace Repository
             {
                 if (_customerMasterRepo == null)
                 {
-                    _customerMasterRepo = new CustomerMasterRepository(_tipsMasterDbContext);
+                    _customerMasterRepo = new CustomerMasterRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _customerMasterRepo;
             }
@@ -718,7 +718,7 @@ namespace Repository
             {
                 if (_leadTimeRepo == null)
                 {
-                    _leadTimeRepo = new LeadTimeRepository(_tipsMasterDbContext);
+                    _leadTimeRepo = new LeadTimeRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _leadTimeRepo;
             }
@@ -729,7 +729,7 @@ namespace Repository
             {
                 if (_customerTypeRepo == null)
                 {
-                    _customerTypeRepo = new CustomerTypeRepository(_tipsMasterDbContext);
+                    _customerTypeRepo = new CustomerTypeRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _customerTypeRepo;
             }
@@ -740,7 +740,7 @@ namespace Repository
             {
                 if (_packingInstructionRepo == null)
                 {
-                    _packingInstructionRepo = new PackingInstructionRepository(_tipsMasterDbContext);
+                    _packingInstructionRepo = new PackingInstructionRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _packingInstructionRepo;
             }
@@ -751,7 +751,7 @@ namespace Repository
             {
                 if (_materialTypeRepo == null)
                 {
-                    _materialTypeRepo = new MaterialTypeRepository(_tipsMasterDbContext);
+                    _materialTypeRepo = new MaterialTypeRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _materialTypeRepo;
             }
@@ -764,7 +764,7 @@ namespace Repository
             {
                 if (_procurementTypeRepo == null)
                 {
-                    _procurementTypeRepo = new ProcurementTypeRepository(_tipsMasterDbContext);
+                    _procurementTypeRepo = new ProcurementTypeRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _procurementTypeRepo;
             }
@@ -776,7 +776,7 @@ namespace Repository
             {
                 if (_itemMasterRepo == null)
                 {
-                    _itemMasterRepo = new ItemMasterRepository(_tipsMasterDbContext);
+                    _itemMasterRepo = new ItemMasterRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _itemMasterRepo;
             }
@@ -788,7 +788,7 @@ namespace Repository
             {
                 if (_deliveryTermRepo == null)
                 {
-                    _deliveryTermRepo = new DeliveryTermRepository(_tipsMasterDbContext);
+                    _deliveryTermRepo = new DeliveryTermRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _deliveryTermRepo;
             }
@@ -824,7 +824,7 @@ namespace Repository
             {
                 if (_bankRepo == null)
                 {
-                    _bankRepo = new BankTermRepository(_tipsMasterDbContext);
+                    _bankRepo = new BankTermRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _bankRepo;
             }
@@ -836,7 +836,7 @@ namespace Repository
             {
                 if (_departmentRepo == null)
                 {
-                    _departmentRepo = new DepartmentRepository(_tipsMasterDbContext);
+                    _departmentRepo = new DepartmentRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _departmentRepo;
             }
@@ -848,7 +848,7 @@ namespace Repository
             {
                 if (_incoTermRepo == null)
                 {
-                    _incoTermRepo = new IncoTermRepository(_tipsMasterDbContext);
+                    _incoTermRepo = new IncoTermRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _incoTermRepo;
             }
@@ -860,7 +860,7 @@ namespace Repository
             {
                 if (_currency == null)
                 {
-                    _currency = new CurrencyRepository(_tipsMasterDbContext);
+                    _currency = new CurrencyRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _currency;
             }
@@ -871,7 +871,7 @@ namespace Repository
             {
                 if (_basisOfApproval == null)
                 {
-                    _basisOfApproval = new BasisOfApprovalRepository(_tipsMasterDbContext);
+                    _basisOfApproval = new BasisOfApprovalRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _basisOfApproval;
             }
@@ -907,7 +907,7 @@ namespace Repository
             {
                 if (_scopeOfSupply == null)
                 {
-                    _scopeOfSupply = new ScopeOfSupplyRepository(_tipsMasterDbContext);
+                    _scopeOfSupply = new ScopeOfSupplyRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _scopeOfSupply;
             }
@@ -930,7 +930,7 @@ namespace Repository
             {
                 if (_purchaseGroupRepo == null)
                 {
-                    _purchaseGroupRepo = new PurchaseGroupRepository(_tipsMasterDbContext);
+                    _purchaseGroupRepo = new PurchaseGroupRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _purchaseGroupRepo;
             }
@@ -941,7 +941,7 @@ namespace Repository
             {
                 if (_costCenterRepo == null)
                 {
-                    _costCenterRepo = new CostCenterRepository(_tipsMasterDbContext);
+                    _costCenterRepo = new CostCenterRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _costCenterRepo;
             }
@@ -952,7 +952,7 @@ namespace Repository
             {
                 if (_costingMethodRepo == null)
                 {
-                    _costingMethodRepo = new CostingMethodRepository(_tipsMasterDbContext);
+                    _costingMethodRepo = new CostingMethodRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _costingMethodRepo;
             }
@@ -966,7 +966,7 @@ namespace Repository
             {
                 if (_exportUnitTypeRepo == null)
                 {
-                    _exportUnitTypeRepo = new ExportUnitTypeRepository(_tipsMasterDbContext);
+                    _exportUnitTypeRepo = new ExportUnitTypeRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _exportUnitTypeRepo;
             }
@@ -980,7 +980,7 @@ namespace Repository
             {
                 if (_salutationsRepo == null)
                 {
-                    _salutationsRepo = new SalutationsRepository(_tipsMasterDbContext);
+                    _salutationsRepo = new SalutationsRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _salutationsRepo;
             }
@@ -994,7 +994,7 @@ namespace Repository
             {
                 if (_languageRepo == null)
                 {
-                    _languageRepo = new LanguageRepository(_tipsMasterDbContext);
+                    _languageRepo = new LanguageRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _languageRepo;
             }
@@ -1016,7 +1016,7 @@ namespace Repository
             {
                 if (_abilityOfRelationshipRepo == null)
                 {
-                    _abilityOfRelationshipRepo = new NatureOfRelationshipRepository(_tipsMasterDbContext);
+                    _abilityOfRelationshipRepo = new NatureOfRelationshipRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _abilityOfRelationshipRepo;
             }
@@ -1030,7 +1030,7 @@ namespace Repository
             {
                 if (_auditFrequencyRepo == null)
                 {
-                    _auditFrequencyRepo = new AuditFrequencyRepository(_tipsMasterDbContext);
+                    _auditFrequencyRepo = new AuditFrequencyRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _auditFrequencyRepo;
             }
@@ -1042,7 +1042,7 @@ namespace Repository
             {
                 if (_releaseEnggBomRepo == null)
                 {
-                    _releaseEnggBomRepo = new ReleaseEnggBomRepository(_tipsMasterDbContext);
+                    _releaseEnggBomRepo = new ReleaseEnggBomRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _releaseEnggBomRepo;
             }
@@ -1055,7 +1055,7 @@ namespace Repository
             {
                 if (_releaseCostBomRepo == null)
                 {
-                    _releaseCostBomRepo = new ReleaseCostBomRepository(_tipsMasterDbContext);
+                    _releaseCostBomRepo = new ReleaseCostBomRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _releaseCostBomRepo;
             }
@@ -1068,7 +1068,7 @@ namespace Repository
             {
                 if (_releaseProductBomRepo == null)
                 {
-                    _releaseProductBomRepo = new ReleaseProductBomRepository(_tipsMasterDbContext);
+                    _releaseProductBomRepo = new ReleaseProductBomRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _releaseProductBomRepo;
             }
@@ -1080,7 +1080,7 @@ namespace Repository
             {
                 if (_enggbomGroupRepo == null)
                 {
-                    _enggbomGroupRepo = new EnggBomGroupRepository(_tipsMasterDbContext);
+                    _enggbomGroupRepo = new EnggBomGroupRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _enggbomGroupRepo;
             }
@@ -1092,7 +1092,7 @@ namespace Repository
             {
                 if (_enggcustomFieldRepo == null)
                 {
-                    _enggcustomFieldRepo = new EnggCustomFieldRepository(_tipsMasterDbContext);
+                    _enggcustomFieldRepo = new EnggCustomFieldRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _enggcustomFieldRepo;
             }
@@ -1104,7 +1104,7 @@ namespace Repository
             {
                 if (_roleRepository == null)
                 {
-                    _roleRepository = new RoleRepository(_tipsMasterDbContext);
+                    _roleRepository = new RoleRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _roleRepository;
             }
@@ -1116,7 +1116,7 @@ namespace Repository
             {
                 if (_roleAccessRepository == null)
                 {
-                    _roleAccessRepository = new RoleAccessRepository(_tipsMasterDbContext);
+                    _roleAccessRepository = new RoleAccessRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _roleAccessRepository;
             }
@@ -1152,7 +1152,7 @@ namespace Repository
             {
                 if (_formsAccessRepository == null)
                 {
-                    _formsAccessRepository = new FormsAccessRepository(_tipsMasterDbContext);
+                    _formsAccessRepository = new FormsAccessRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _formsAccessRepository;
             }

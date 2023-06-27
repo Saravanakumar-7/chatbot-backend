@@ -20,20 +20,23 @@ namespace Repository
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
-        
+        private readonly String _unitname;
+
         public RegistrationFormRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
 
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
- 
+            //_unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateRegistrationForm(RegistrationForm registrationForm)
         {
             registrationForm.CreatedBy = _createdBy;
             registrationForm.CreatedOn = DateTime.Now;
+            //registrationForm.Unit = _unitname;
             var result = await Create(registrationForm);
 
             return result.Id;
@@ -100,7 +103,7 @@ namespace Repository
 
         public async Task<string> UpdateRegistrationForm(RegistrationForm registrationForm)
         {
-            registrationForm.LastModifiedBy = "Admin";
+            registrationForm.LastModifiedBy = _createdBy;
             registrationForm.LastModifiedOn = DateTime.Now;
             Update(registrationForm);
             string result = $"RegistrationForm of Detail {registrationForm.Id} is updated successfully!";
