@@ -84,7 +84,7 @@ namespace Tips.Production.Api.Controllers
             if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
             {
                 return "keus";
-            }
+            } 
             else
             {
                 return "trasccon";

@@ -36,9 +36,18 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<InvoiceAdditionalCharges> InvoiceAdditionalCharges { get; set; }
 
         public DbSet<LocationTransfer> locationTransfers { get; set; }
+        //public DbSet<ConsumptionReport> ConsumptionReport { get; set; }
+
         public DbSet<ConsumptionReport> ConsumptionReport { get; set; }
 
-        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ConsumptionReport>().HasNoKey();
+
+            // Other entity configurations can be added here
+
+            base.OnModelCreating(modelBuilder);
+        }
 
 
 

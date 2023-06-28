@@ -129,82 +129,50 @@ namespace Tips.Warehouse.Api.Repository
        // }
         }
 
+
+        public async Task<IEnumerable<ConsumptionReport>> ConsumptionReports()
+        {
+            var result = _tipsWarehouseDbContext.Set<ConsumptionReport>()
+    .FromSqlRaw("CALL ProductDemand_Vs_AvailableStock_WO_Parameter();")
+    .ToList<ConsumptionReport>(); 
+
+            return result;
+
+        }
+
+
         //public async Task<IEnumerable<ConsumptionReport>> ExecuteStoredProcedure(string? itemNumber, string? salesOrderNumber)
         //{
-
-        //    //var context = new TipsWarehouseDbContext();
-        //    //var nameParam = new SqlParameter("@Name", name);
-        //    //var ageParam = new SqlParameter("@Age", age);
-
-        //    //var students = context.FromSql("EXEC GetStudents @Name, @Age", nameParam, ageParam)
-        //    //                      .ToList();
-
-        //    var ItemNumber = new SqlParameter("@ItemNumber", itemNumber);
-        //    var SalesOrderNumber = new SqlParameter("@SalesOrderNumber", salesOrderNumber);
-
-        //    var result = _tipsWarehouseDbContext.ConsumptionReport.FromSql("ProductDemand_Vs_AvailableStock_With_Parameter {0}, {1}", ItemNumber, SalesOrderNumber).ToList();
-
-        //    //var result = _tipsWarehouseDbContext.Database.SqlQuery<ConsumptionReport>("EXEC ProductDemand_Vs_AvailableStock_With_Parameter @ItemNumber, @SalesOrderNumber", ItemNumber, SalesOrderNumber)
-        //    //    .ToList();
-
-        //    //var result = _tipsWarehouseDbContext.Database.FromSql<ConsumptionReport>($"ProductDemand_Vs_AvailableStock_With_Parameter {itemNumber}").ToList();
-
-        //    ////string conStr = ConfigurationManager.ConnectionStrings["TipsWarehouseDbContext"].ConnectionString;
-
-        //    ////string connectionString = "server=10.10.201.144;database=getapcs_keus_warehouse;user=nayagam;password=%FJx9rpr=Z+SAYE8;";
-
-        //    //List<ConsumptionDto> consumptionList = new List<ConsumptionDto>();
-
-        //    //using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    //var parameter1 = new MySqlParameter("@ItemNumber", MySqlDbType.VarString)
         //    //{
-        //    //    connection.Open();
+        //    //    Value = itemNumber
+        //    //};
 
-        //    //    // Execute stored procedure
-        //    //    using (MySqlCommand command = new MySqlCommand("ProductDemand_Vs_AvailableStock_With_Parameter", connection))
-        //    //    {
-        //    //        command.CommandType = CommandType.StoredProcedure;
+        //    //var parameter2 = new MySqlParameter("@SalesOrderNumber", MySqlDbType.VarString)
+        //    //{
+        //    //    Value = salesOrderNumber
+        //    //};
 
-        //    //        // Set input parameters if needed
-        //    //        command.Parameters.AddWithValue("@ItemNumber", itemNumber);
-        //    //        command.Parameters.AddWithValue("@SalesOrderNumber", salesOrderNumber);
-        //    //        try
-        //    //        {
-        //    //            // Execute the command
-        //    //            using (MySqlDataReader reader = command.ExecuteReader())
-        //    //            {
-        //    //                // Process the results
+        //    //var result = _tipsWarehouseDbContext.Set<ConsumptionReport>()
+        //    //    .FromSqlRaw("CALL ProductDemand_Vs_AvailableStock_With_Parameter(@ItemNumber, @SalesOrderNumber);", parameter1, parameter2)
+        //    //    .ToList<ConsumptionReport>(); 
+        //    string convertedItemNumber = string.IsNullOrEmpty(itemNumber) ? null : itemNumber;
+        //    string convertedSalesOrderNumber = string.IsNullOrEmpty(salesOrderNumber) ? null : salesOrderNumber;
 
-        //    //                while (reader.Read())
-        //    //                {
-        //    //                    // Create a new ConsumptionDto instance
-        //    //                    ConsumptionDto consumption = new ConsumptionDto();
+        //    var parameter1 = new MySqlParameter("@ItemNumber", MySqlDbType.VarString)
+        //    {
+        //        Value = convertedItemNumber != null ? (object)convertedItemNumber : DBNull.Value
+        //    };
 
-        //    //                    // Set the properties of ConsumptionDto from the reader
-        //    //                    consumption.ItemNumber = reader.GetString("ItemNumber");
-        //    //                    consumption.SalesOrderNumber = reader.GetString("SalesOrderNumber");
-        //    //                    consumption.Description = reader.GetString("Description");
-        //    //                    consumption.ForecastQty = reader.GetDecimal("ForecastQty");
-        //    //                    consumption.FGStock = reader.GetDecimal("FGStock");
-        //    //                    consumption.BalanceForecastQty = reader.GetDecimal("BalanceForecastQty");
-        //    //                    consumption.Child = reader.GetString("Child");
-        //    //                    consumption.ChildPartDescription = reader.GetString("ChildPartDescription");
-        //    //                    consumption.QtyPerUnit = reader.GetDecimal("QtyPerUnit");
-        //    //                    consumption.ChildRequiredQty = reader.GetDecimal("ChildRequiredQty");
-        //    //                    consumption.TotalChildReqQty = reader.GetDecimal("TotalChildReqQty");
+        //    var parameter2 = new MySqlParameter("@SalesOrderNumber", MySqlDbType.VarString)
+        //    {
+        //        Value = convertedSalesOrderNumber != null ? (object)convertedSalesOrderNumber : DBNull.Value
+        //    };
 
-        //    //                    // Add the ConsumptionDto instance to the list
-        //    //                    consumptionList.Add(consumption);
-        //    //                }
+        //    var result = _tipsWarehouseDbContext.Set<ConsumptionReport>()
+        //        .FromSqlRaw("CALL ProductDemand_Vs_AvailableStock_With_Parameter(@ItemNumber, @SalesOrderNumber);", parameter1, parameter2)
+        //        .ToList<ConsumptionReport>();
 
-
-        //    //            }
-        //    //        }
-        //    //        catch (MySql.Data.MySqlClient.MySqlException ex)
-        //    //        {
-        //    //            return null;
-        //    //        }
-        //    //    }
-        //    //}
 
         //    return result;
 
