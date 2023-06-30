@@ -309,6 +309,8 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
+
                 if (shopOrderPostDto == null)
                 {
                     _logger.LogError("ShopOrder object sent from client is null.");
@@ -329,6 +331,9 @@ namespace Tips.Production.Api.Controllers
                 }
                 var shopOrder = _mapper.Map<ShopOrder>(shopOrderPostDto);
                 var shopOrderDto = shopOrderPostDto.ShopOrderItems;
+
+
+
                 var ShoporderItemList = new List<ShopOrderItem>();
                 if (shopOrderDto != null)
                 {
@@ -339,6 +344,23 @@ namespace Tips.Production.Api.Controllers
                     }
                 }
                 shopOrder.ShopOrderItems = ShoporderItemList;
+
+                if (serverKey == "trasccon")                
+                { 
+                    var date = DateTime.Now;
+                    var days = Convert.ToString(date.Day.ToString("D2"));
+                    var months = Convert.ToString(date.Month.ToString("D2"));
+                    var years = Convert.ToString(date.ToString("yy"));
+                    var dateFormat = days + months + years;
+                    var soNumber = await _shopOrderRepository.GenerateSONumber();
+                    shopOrder.ShopOrderNumber = dateFormat + soNumber;
+                }
+                else
+                {
+                    Guid shopOrderNumber = Guid.NewGuid();
+                    shopOrder.ShopOrderNumber = "SH-" + shopOrderNumber.ToString();
+                }
+
                 await _shopOrderRepository.CreateShopOrder(shopOrder);
 
                 _shopOrderRepository.SaveAsync();
@@ -362,7 +384,20 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
 
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
         private async Task<IActionResult> CreateMaterialIssueDetails(ShopOrder shopOrder)
         {
             ServiceResponse<MaterialIssueDto> serviceResponse = new ServiceResponse<MaterialIssueDto>();

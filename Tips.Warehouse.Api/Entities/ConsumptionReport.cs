@@ -13,7 +13,7 @@ namespace Tips.Warehouse.Api.Entities
         public decimal ForecastQty { get; set; }
         public decimal FGStock { get; set; }
 
-        public decimal BalanceForecastQty { get; set; }
+        public decimal BalanceForcastQty { get; set; }
         public string Child { get; set; }
         public string ChildPartDescription { get; set; }
 

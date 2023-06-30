@@ -36,14 +36,30 @@ namespace Tips.Production.Api.Repository
         public async Task<int?> CreateShopOrder(ShopOrder shopOrder)
         {
             shopOrder.CreatedBy = _createdBy;
-            shopOrder.CreatedOn = DateTime.Now;
-            Guid shopOrderNumber = Guid.NewGuid();
-            shopOrder.ShopOrderNumber = "SH-" + shopOrderNumber.ToString();
+            shopOrder.CreatedOn = DateTime.Now;            
             shopOrder.Unit = _unitname;
             var result = await Create(shopOrder);
             return result.Id;
-        }
+        }   
+        public async Task<string> GenerateSONumber()
+        {
+            using var transaction = await _tipsProductionDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
 
+            try
+            {
+                var poNumberEntity = await _tipsProductionDbContext.SONumbers.SingleAsync();
+                poNumberEntity.CurrentValue += 1;
+                _tipsProductionDbContext.Update(poNumberEntity);
+                await _tipsProductionDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"WO-{poNumberEntity.CurrentValue:D5}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
 
         public async Task<PagedList<ShopOrder>> GetAllShopOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
