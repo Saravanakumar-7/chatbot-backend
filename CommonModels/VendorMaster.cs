@@ -46,11 +46,11 @@ namespace Entities
 
         //Related Vendor
 
-        public string? RelatedVendorName { get; set; }
+        //public string? RelatedVendorName { get; set; }
 
-        public string? RelatedVendorAlias { get; set; }
+        //public string? RelatedVendorAlias { get; set; }
 
-        public string? NatureOfRelationship { get; set; }
+        //public string? NatureOfRelationship { get; set; }
 
         //term
 
@@ -139,8 +139,8 @@ namespace Entities
 
         public List<VendorBanking>? VendorBankings { get; set; }
         public List<VendorContacts>? Contacts { get; set; }
-        public List<VendorAddress>? Addresses { get; set; } 
-
+        public List<VendorAddress>? Addresses { get; set; }
+        public List<VendorRelatedVendor>? RelatedVendors { get; set; }
         public List<VendorHeadCounting>? HeadCountings { get; set; }
 
     }

@@ -144,6 +144,9 @@ namespace Entities
  public DbSet<Unit> Units { get; set; }
 
         public DbSet<IssuingStock> IssuingStocks { get; set; }
+        public DbSet<VendorRelatedVendor>? RelatedVendors { get; set; }
+        public DbSet<CustomerRelatedCustomer> RelatedCustomers { get; set; }
+
         public DbSet<AdditionalCharges> AdditionalCharges { get; set; }
         public DbSet<CustomerCategory> CustomerCategories { get; set; }
         public DbSet<CompanyCategory> CompanyCategories { get; set; }

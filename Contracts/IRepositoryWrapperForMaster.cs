@@ -138,6 +138,10 @@ namespace Contracts
         IAdditionalChargesRepository AdditionalChargesRepository { get; }
         ICompanyCategoryRepository CompanyCategoryRepository { get; }
         ICustomerCategoryRepository CustomerCategoryRepository { get; }
+        IVendorRelatedVendorRepository VendorRelatedVendorRepository { get; }
+        ICustomerRelatedCustomerRepository CustomerRelatedCustomerRepository { get; }
+
+
         void SaveAsync();
     }
 }

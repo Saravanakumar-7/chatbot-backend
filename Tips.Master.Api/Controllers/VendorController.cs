@@ -140,12 +140,14 @@ namespace Tips.Master.Api.Controllers
                 var address = _mapper.Map<IEnumerable<VendorAddress>>(vendorMasterPost.Addresses);
                 var contact = _mapper.Map<IEnumerable<VendorContacts>>(vendorMasterPost.Contacts);
                 var banking = _mapper.Map<IEnumerable<VendorBanking>>(vendorMasterPost.VendorBankings);
+                var related = _mapper.Map<IEnumerable<VendorRelatedVendor>>(vendorMasterPost.RelatedVendors);
                 var headcount = _mapper.Map<IEnumerable<VendorHeadCounting>>(vendorMasterPost.HeadCountings);
                 var vendorMaster = _mapper.Map<VendorMaster>(vendorMasterPost);
 
                 vendorMaster.Addresses = address.ToList();
                 vendorMaster.Contacts = contact.ToList();
                 vendorMaster.VendorBankings = banking.ToList();
+                vendorMaster.RelatedVendors = related.ToList();
                 vendorMaster.HeadCountings = headcount.ToList();
 
                 await _repository.VendorRepository.CreateVendorMaster(vendorMaster); 
@@ -213,6 +215,7 @@ namespace Tips.Master.Api.Controllers
                 var contact = _mapper.Map<IEnumerable<VendorContacts>>(vendorMasterUpdateDto.Contacts);
 
                 var banking = _mapper.Map<IEnumerable<VendorBanking>>(vendorMasterUpdateDto.VendorBankings);
+                var related = _mapper.Map<IEnumerable<VendorRelatedVendor>>(vendorMasterUpdateDto.RelatedVendors);
 
                 var headcount = _mapper.Map<IEnumerable<VendorHeadCounting>>(vendorMasterUpdateDto.HeadCountings);
 
@@ -222,6 +225,7 @@ namespace Tips.Master.Api.Controllers
                 vendorMaster.Addresses = address.ToList();
                 vendorMaster.Contacts = contact.ToList();
                 vendorMaster.VendorBankings = banking.ToList();
+                vendorMaster.RelatedVendors = related.ToList();
                 vendorMaster.HeadCountings = headcount.ToList();
 
                 string result = await _repository.VendorRepository.UpdateVendorMaster(vendorMaster);

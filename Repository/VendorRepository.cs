@@ -57,6 +57,7 @@ namespace Repository
             inv.VendorType.Contains(searchParams.SearchValue) || inv.VendorAliasName.Contains(searchParams.SearchValue))))
             .Include(a => a.VendorBankings)
             .Include(a => a.Addresses)
+            .Include(a => a.RelatedVendors)
             .Include(a => a.HeadCountings)
             .Include(a => a.Contacts);
 
@@ -68,6 +69,7 @@ namespace Repository
           var getVendorMasterbyId = await TipsMasterDbContext.VendorMasters.Where(x=> x.Id == id)
                               .Include(x => x.VendorBankings)
                               .Include(x => x.Addresses)
+                              .Include(a => a.RelatedVendors)
                               .Include(m => m.Contacts)
                               .Include(v => v.HeadCountings)
                               .FirstOrDefaultAsync();

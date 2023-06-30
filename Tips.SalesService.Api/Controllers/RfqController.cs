@@ -1450,21 +1450,23 @@ namespace Tips.SalesService.Api.Controllers
                 var years = Convert.ToString(date.ToString("yy"));
 
                 ////var newcount = await _rfqRepository.GetRfqNumberAutoIncrementCount(date);
+                if (serverKey == "trasccon")
+                {
+                    var latestRfqNo = await _rfqRepository.GetRfqNumberAutoIncrementNumber();
 
-                //var latestRfqNo = await _rfqRepository.GetRfqNumberAutoIncrementNumber();
-
-                //if (latestRfqNo == null)
-                //{ 
-                //    int num = 0;
-                //    createRfq.RfqNumber = "RFQ-" + (num + 1);
-                //}
-                //else
-                //{ 
-                //    string result = latestRfqNo.Substring(0, latestRfqNo.IndexOf("-")).Trim();
-                //    string spliValue = latestRfqNo.Split('-').Last();
-                //    int num = Int32.Parse(spliValue);
-                //    createRfq.RfqNumber = "RFQ-" + (num + 1);
-                // }
+                    if (latestRfqNo == null)
+                    {
+                        int num = 0;
+                        createRfq.RfqNumber = "TISPL-" + (num + 1);
+                    }
+                    else
+                    {
+                        //string result = latestRfqNo.Substring(0, latestRfqNo.IndexOf("-")).Trim();
+                        //string spliValue = latestRfqNo.Split('-').Last();
+                        //int num = Int32.Parse(spliValue);
+                        createRfq.RfqNumber = latestRfqNo;
+                    }
+                }
                 if (serverKey == "keus")
                 {
                     var dateFormat = days + months + years;

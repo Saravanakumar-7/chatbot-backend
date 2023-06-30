@@ -171,6 +171,7 @@ namespace Tips.Master.Api.Controllers
                 var contacts = _mapper.Map<IEnumerable<CustomerContacts>>(customerMasterDtoPost.CustomerContacts);
                 var shippingAddresses = _mapper.Map<IEnumerable<CustomerShippingAddresses>>(customerMasterDtoPost.CustomerShippingAddresses);
                 var addresses = _mapper.Map<IEnumerable<CustomerAddresses>>(customerMasterDtoPost.CustomerAddress);
+                var related= _mapper.Map<IEnumerable<CustomerRelatedCustomer>>(customerMasterDtoPost.RelatedCustomers);
                 var banking = _mapper.Map<IEnumerable<CustomerBanking>>(customerMasterDtoPost.CustomerBankings);
                 var headcount = _mapper.Map<IEnumerable<CustomerMasterHeadCounting>>(customerMasterDtoPost.CustomerMasterHeadCountings);
 
@@ -179,6 +180,7 @@ namespace Tips.Master.Api.Controllers
                 customerMaster.CustomerAddresses = addresses.ToList();
                 customerMaster.CustomerContacts = contacts.ToList();
                 customerMaster.CustomerShippingAddresses = shippingAddresses.ToList();
+                customerMaster.RelatedCustomers= related.ToList();
                 customerMaster.CustomerBanking = banking.ToList();
                 customerMaster.CustomerMasterHeadCountings= headcount.ToList();
 
@@ -264,6 +266,7 @@ namespace Tips.Master.Api.Controllers
 
                
                 var addresses = _mapper.Map<IEnumerable<CustomerAddresses>>(customerMasterDtoUpdate.CustomerAddress);
+                var related = _mapper.Map<IEnumerable<CustomerRelatedCustomer>>(customerMasterDtoUpdate.RelatedCustomers);
                 var contacts = _mapper.Map<IEnumerable<CustomerContacts>>(customerMasterDtoUpdate.CustomerContacts);
                 var shippingAddresses = _mapper.Map<IEnumerable<CustomerShippingAddresses>>(customerMasterDtoUpdate.CustomerShippingAddresses);
                 var banking = _mapper.Map<IEnumerable<CustomerBanking>>(customerMasterDtoUpdate.CustomerBankings);
@@ -273,6 +276,7 @@ namespace Tips.Master.Api.Controllers
 
                 customerMasters.CustomerAddresses= addresses.ToList();
                 customerMasters.CustomerContacts= contacts.ToList();
+                customerMasters.RelatedCustomers = related.ToList();
                 customerMasters.CustomerShippingAddresses= shippingAddresses.ToList();
                 customerMasters.CustomerBanking= banking.ToList();
                 customerMasters.CustomerMasterHeadCountings = HeadcountDetails.ToList();

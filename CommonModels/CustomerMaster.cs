@@ -43,11 +43,11 @@ namespace Entities
 
         //RelatedLink
 
-        public string? RelatedCustomerName { get; set; }
+        //public string? RelatedCustomerName { get; set; }
 
-        public string? RelatedCustomerAlias { get; set; }
+        //public string? RelatedCustomerAlias { get; set; }
 
-        public string? NatureOfRelationship { get; set; }
+        //public string? NatureOfRelationship { get; set; }
     
         //Dispatch
 
@@ -130,6 +130,9 @@ namespace Entities
         public DateTime? LastModifiedOn { get; set; }
 
         public List<CustomerAddresses>? CustomerAddresses { get; set; }
+
+        public List<CustomerRelatedCustomer>? RelatedCustomers { get; set; }
+
         public List<CustomerShippingAddresses>? CustomerShippingAddresses { get; set; }
         public List<CustomerContacts>? CustomerContacts { get; set; }
         public List<CustomerBanking>? CustomerBanking { get; set; }

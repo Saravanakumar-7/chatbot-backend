@@ -107,6 +107,7 @@ namespace Repository
         {
             var allActiveCompanyMasters = await FindByCondition(x => x.IsActive == true)
             .Include(t => t.CustomerAddresses)
+            .Include(t => t.RelatedCustomers)
             .Include(t => t.CustomerShippingAddresses)
             .Include(t => t.CustomerContacts)
             .Include(d => d.CustomerBanking)
@@ -128,6 +129,7 @@ namespace Repository
                   .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue) ||
                                          inv.CustomerAliasName.Contains(searchParams.SearchValue))))
                     .Include(t => t.CustomerAddresses)
+                   .Include(t => t.RelatedCustomers)
                  .Include(t => t.CustomerShippingAddresses)
                  .Include(t => t.CustomerContacts)
                   .Include(d => d.CustomerBanking)
@@ -141,6 +143,7 @@ namespace Repository
         {
             var getCustomerMasterById = await TipsMasterDbContext.CustomerMasters.Where(x => x.Id == id)
                               .Include(x => x.CustomerAddresses)
+                              .Include(t => t.RelatedCustomers)
                               .Include(x => x.CustomerShippingAddresses)
                               .Include(m => m.CustomerContacts)
                               .Include(s=>s.CustomerBanking)
@@ -163,6 +166,7 @@ namespace Repository
         {
             var customerMasterDetails = await TipsMasterDbContext.CustomerMasters.Where(x => x.CustomerNumber == customerNumber)
                               .Include(x => x.CustomerAddresses)
+                              .Include(t => t.RelatedCustomers)
                               .Include(x => x.CustomerShippingAddresses)
                               .Include(m => m.CustomerContacts)
                               .Include(s => s.CustomerBanking)

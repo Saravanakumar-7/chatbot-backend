@@ -46,11 +46,11 @@ namespace Entities.DTOs
 
         //RelatedLink
 
-        public string? RelatedCustomerName { get; set; }
+        //public string? RelatedCustomerName { get; set; }
 
-        public string? RelatedCustomerAlias { get; set; }
+        //public string? RelatedCustomerAlias { get; set; }
 
-        public string? NatureOfRelationship { get; set; }
+        //public string? NatureOfRelationship { get; set; }
 
         //Dispatch
 
@@ -133,6 +133,8 @@ namespace Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
         public List<CustomerAddressesDto>? CustomerAddresses { get; set; }
+        public List<CustomerRelatedCustomerDto>? RelatedCustomers { get; set; }
+
         public List<CustomerShippingAddressesDto>? CustomerShippingAddresses { get; set; }
         public List<CustomerContactsDto>? CustomerContacts { get; set; }
         public List<CustomerBankingDto>? CustomerBanking { get; set; }
@@ -169,11 +171,11 @@ namespace Entities.DTOs
 
         //RelatedLink
 
-        public string? RelatedCustomerName { get; set; }
+        //public string? RelatedCustomerName { get; set; }
 
-        public string? RelatedCustomerAlias { get; set; }
+        //public string? RelatedCustomerAlias { get; set; }
 
-        public string? NatureOfRelationship { get; set; }
+        //public string? NatureOfRelationship { get; set; }
 
         //Dispatch
 
@@ -253,6 +255,8 @@ namespace Entities.DTOs
         public bool IsActive { get; set; } = true;
 
         public List<CustomerAddressesDtoPost>? CustomerAddress { get; set; }
+        public List<CustomerRelatedCustomerPostDto>? RelatedCustomers { get; set; }
+
         public List<CustomerShippingAddressesDtoPost>? CustomerShippingAddresses { get; set; }
         public List<CustomerContactsDtoPost>? CustomerContacts { get; set; }
         public List<CustomerBankingDtoPost>? CustomerBankings { get; set; }
@@ -290,11 +294,11 @@ namespace Entities.DTOs
 
         //RelatedLink
 
-        public string? RelatedCustomerName { get; set; }
+    //    public string? RelatedCustomerName { get; set; }
 
-    public string? RelatedCustomerAlias { get; set; }
+    //public string? RelatedCustomerAlias { get; set; }
 
-    public string? NatureOfRelationship { get; set; }
+    //public string? NatureOfRelationship { get; set; }
 
     //Dispatch
 
@@ -382,7 +386,9 @@ namespace Entities.DTOs
     public DateTime? LastModifiedOn { get; set; }
 
     public List<CustomerAddressesDtoUpdate>? CustomerAddress { get; set; }
-    public List<CustomerShippingAddressesDtoUpdate>? CustomerShippingAddresses { get; set; }
+        public List<CustomerRelatedCustomerUpdateDto>? RelatedCustomers { get; set; }
+
+        public List<CustomerShippingAddressesDtoUpdate>? CustomerShippingAddresses { get; set; }
     public List<CustomerContactsDtoUpdate>? CustomerContacts { get; set; }
     public List<CustomerBankingDtoUpdate>? CustomerBankings { get; set; }
     public List<CustomerMasterHeadCountingDtoUpdate>? CustomerMasterHeadCountings { get; set; }

@@ -47,11 +47,11 @@ namespace Entities.DTOs
 
         //Related Vendor
 
-        public string? RelatedVendorName { get; set; }
+        //public string? RelatedVendorName { get; set; }
 
-        public string? RelatedVendorAlias { get; set; }
+        //public string? RelatedVendorAlias { get; set; }
 
-        public string? NatureOfRelationship { get; set; }
+        //public string? NatureOfRelationship { get; set; }
 
         //term
 
@@ -139,6 +139,7 @@ namespace Entities.DTOs
         public List<VendorAddressDto>? Addresses { get; set; }
         public List<VendorContactsDto>? Contacts { get; set; }
         public List<VendorBankingDto>? VendorBankings { get; set; }
+        public List<VendorRelatedVendorDto>? RelatedVendors { get; set; }
         public List<VendorHeadCountingDto>? HeadCountings { get; set; }
     }
 
@@ -187,11 +188,11 @@ namespace Entities.DTOs
 
         //Related Vendor
 
-        public string? RelatedVendorName { get; set; }
+        //public string? RelatedVendorName { get; set; }
 
-        public string? RelatedVendorAlias { get; set; }
+        //public string? RelatedVendorAlias { get; set; }
 
-        public string? NatureOfRelationship { get; set; }
+        //public string? NatureOfRelationship { get; set; }
 
         //term
 
@@ -274,7 +275,7 @@ namespace Entities.DTOs
         public List<VendorAddressPostDto>? Addresses { get; set; }
         public List<VendorContactsPostDto>? Contacts { get; set; }
         public List<VendorBankingPostDto>? VendorBankings { get; set; }
-
+        public List<VendorRelatedVendorPostDto>? RelatedVendors { get; set; }
         public List<HeadCountingPostDto>? HeadCountings { get; set; }
 
     }
@@ -323,11 +324,11 @@ namespace Entities.DTOs
 
         //Related Vendor
 
-        public string? RelatedVendorName { get; set; }
+        //public string? RelatedVendorName { get; set; }
 
-        public string? RelatedVendorAlias { get; set; }
+        //public string? RelatedVendorAlias { get; set; }
 
-        public string? NatureOfRelationship { get; set; }
+        //public string? NatureOfRelationship { get; set; }
 
         //term
 
@@ -413,6 +414,7 @@ namespace Entities.DTOs
         public List<VendorAddressUpdateDto>? Addresses { get; set; }
         public List<VendorContactsUpdateDto>? Contacts { get; set; }
         public List<VendorBankingUpdateDto>? VendorBankings { get; set; }
+        public List<VendorRelatedVendorUpdateDto>? RelatedVendors { get; set; }
 
         public List<HeadCountingUpdateDto>? HeadCountings { get; set; }
     }

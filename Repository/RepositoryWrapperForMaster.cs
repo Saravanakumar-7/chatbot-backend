@@ -1197,7 +1197,11 @@ namespace Repository
 
         public IEnggBomChildItemRepository EnggBomChildItemRepository => throw new NotImplementedException();
 
- 
+        public IVendorRelatedVendorRepository VendorRelatedVendorRepository => throw new NotImplementedException();
+
+        public ICustomerRelatedCustomerRepository CustomerRelatedCustomerRepository => throw new NotImplementedException();
+
+
         //public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
 
         //add new

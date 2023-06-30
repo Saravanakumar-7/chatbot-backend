@@ -447,11 +447,29 @@ namespace Tips.SalesService.Api.Repository
         }
         public async Task<string> GetRfqNumberAutoIncrementNumber()
         {
-            var getRfqNumberAutoIncrementNumber = await _tipsSalesServiceDbContext.Rfqs.OrderByDescending(x => x.Id)
-             .Select(x => x.RfqNumber)
-             .FirstOrDefaultAsync();
+            //var getRfqNumberAutoIncrementNumber = await _tipsSalesServiceDbContext.Rfqs.OrderByDescending(x => x.Id)
+            // .Select(x => x.RfqNumber)
+            // .FirstOrDefaultAsync();
 
-            return getRfqNumberAutoIncrementNumber;
+            //return getRfqNumberAutoIncrementNumber;
+            var rfqNumbers = await _tipsSalesServiceDbContext.Rfqs
+       .Select(x => x.RfqNumber)
+       .ToListAsync();
+
+            int maxNumber = 0;
+            foreach (var rfqNumber in rfqNumbers)
+            {
+                if (int.TryParse(rfqNumber.Split('-').Last(), out int num))
+                {
+                    if (num > maxNumber)
+                    {
+                        maxNumber = num;
+                    }
+                }
+            }
+
+            string newRfqNumber = $"TISPL-{maxNumber + 1}";
+            return newRfqNumber;
         }
         public async Task<string> DeleteRfq(Rfq rfq)
         {
