@@ -158,7 +158,22 @@ namespace Tips.SalesService.Api.Repository
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
 
         }
+        public async Task<IEnumerable<string>> GetRfqCsandForecastCsDetailListByItemNumber(string itemNumber)
+        {
+            var rfqNumber = _tipsSalesServiceDbContext.RfqCustomerSupportItems
+                             .Where(r => r.ItemNumber == itemNumber)
+                             .Select(r=> r.RfqNumber)
+                             .ToList();
 
+            var forecastNumber = _tipsSalesServiceDbContext.foreCastCustomerSupportItems
+                                    .Where(r => r.ItemNumber == itemNumber)
+                                    .Select(r => r.ForecastNumber)
+                                    .ToList();
+            var rfqAndForecastNumbers = rfqNumber.Concat(forecastNumber);
+
+            return rfqAndForecastNumbers;
+
+        }
         public async Task<string> ActivateRfqCustomerSupportItemById(RfqCustomerSupportItems rfqCustomerSupportItems)
         {
             rfqCustomerSupportItems.LastModifiedBy = "Admin";

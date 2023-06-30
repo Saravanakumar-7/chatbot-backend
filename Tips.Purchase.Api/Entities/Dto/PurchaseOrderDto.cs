@@ -139,5 +139,11 @@ namespace Tips.Purchase.Api.Entities.DTOs
     {
         public int? RevisionNumber { get; set; }
     }
+    public class PRNoandQtyListDto
+    {
+        public string? PRNumber { get; set; }
+        public decimal? Qty { get; set; }
+
+    }
 
 }

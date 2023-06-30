@@ -87,7 +87,9 @@ namespace Tips.Purchase.Api.Repository
                          .Include(itm => itm.PrItemsDtoList)
                         .ThenInclude(pr => pr.prAddprojectsDtoList)
                          .Include(itm => itm.PrItemsDtoList)
-                        .ThenInclude(pr => pr.prAddDeliverySchedulesDtoList);
+                        .ThenInclude(pr => pr.prAddDeliverySchedulesDtoList)
+                          .Include(itm => itm.PrItemsDtoList)
+                        .ThenInclude(pr => pr.prSpecialInstructionsDtoList);
                 }
                 return query.ToList();
             }
@@ -109,7 +111,9 @@ namespace Tips.Purchase.Api.Repository
                     .Include(itm => itm.PrItemsDtoList)
                     .ThenInclude(pr => pr.prAddprojectsDtoList)
                     .Include(itm => itm.PrItemsDtoList)
-                    .ThenInclude(pr => pr.prAddDeliverySchedulesDtoList);
+                    .ThenInclude(pr => pr.prAddDeliverySchedulesDtoList)
+                    .Include(itm => itm.PrItemsDtoList)
+                     .ThenInclude(pr => pr.prSpecialInstructionsDtoList);
                 }
                 return query.ToList();
             }
@@ -133,7 +137,10 @@ namespace Tips.Purchase.Api.Repository
             .ThenInclude(x => x.prAddprojectsDtoList)
             .Include(m => m.PrItemsDtoList)
             .ThenInclude(i => i.prAddDeliverySchedulesDtoList)
+            .Include(itm => itm.PrItemsDtoList)
+             .ThenInclude(pr => pr.prSpecialInstructionsDtoList)
             .FirstOrDefaultAsync();
+
             return purchaseRequisitionDetail;
         }
 
@@ -147,7 +154,10 @@ namespace Tips.Purchase.Api.Repository
             .ThenInclude(pr => pr.prAddprojectsDtoList)
              .Include(itm => itm.PrItemsDtoList)
              .ThenInclude(pr => pr.prAddDeliverySchedulesDtoList)
+             .Include(itm => itm.PrItemsDtoList)
+              .ThenInclude(pr => pr.prSpecialInstructionsDtoList)
             .ToList();
+
             return purchaseRequsisitionDetails;
         }
 
@@ -225,7 +235,10 @@ namespace Tips.Purchase.Api.Repository
                                 .Include(t => t.PrItemsDtoList)
                                 .ThenInclude(x => x.prAddprojectsDtoList)
                                 .Include(m => m.PrItemsDtoList)
-                                .ThenInclude(i => i.prAddDeliverySchedulesDtoList);
+                                .ThenInclude(i => i.prAddDeliverySchedulesDtoList)
+                                .Include(itm => itm.PrItemsDtoList)
+                                .ThenInclude(pr => pr.prSpecialInstructionsDtoList);
+
             return activePurchaseRequsitionDetails;
         }
 
@@ -310,7 +323,10 @@ namespace Tips.Purchase.Api.Repository
                                   .Include(t => t.PrItemsDtoList)
                                   .ThenInclude(x => x.prAddprojectsDtoList)
                                   .Include(m => m.PrItemsDtoList)
-                                  .ThenInclude(i => i.prAddDeliverySchedulesDtoList);
+                                  .ThenInclude(i => i.prAddDeliverySchedulesDtoList)
+                                  .Include(itm => itm.PrItemsDtoList)
+                                  .ThenInclude(pr => pr.prSpecialInstructionsDtoList);
+
             return PagedList<PurchaseRequisition>.ToPagedList(purchaseRequistionDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
         public async Task<PurchaseRequisition> GetPurchaseRequisitionById(int id)
@@ -321,6 +337,8 @@ namespace Tips.Purchase.Api.Repository
                                 .ThenInclude(x => x.prAddprojectsDtoList)
                                 .Include(m => m.PrItemsDtoList)
                                 .ThenInclude(i => i.prAddDeliverySchedulesDtoList)
+                                .Include(itm => itm.PrItemsDtoList)
+                                .ThenInclude(pr => pr.prSpecialInstructionsDtoList)
                                 .FirstOrDefaultAsync();
 
             return purchaseRequistionDetailById;
@@ -335,6 +353,8 @@ namespace Tips.Purchase.Api.Repository
                                 .ThenInclude(x => x.prAddprojectsDtoList)
                                 .Include(m => m.PrItemsDtoList)
                                 .ThenInclude(i => i.prAddDeliverySchedulesDtoList)
+                                .Include(itm => itm.PrItemsDtoList)
+                                .ThenInclude(pr => pr.prSpecialInstructionsDtoList)
                                 .FirstOrDefaultAsync();
 
             return purchaseRequistionByPRNumber;

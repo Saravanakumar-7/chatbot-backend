@@ -70,6 +70,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal TotalFinalAmount { get; set; }
         [DefaultValue(false)]
         public bool ConfirmStatus { get; set; }
+        public DateTime? ConfirmDate { get; set; }
         [DefaultValue(false)]
         public bool ApproveStatus { get; set; }
         public string? CreatedBy { get; set; }
@@ -121,6 +122,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? SpecialDiscountAmount { get; set; }
+        public DateTime? ConfirmDate { get; set; }
         [Precision(18, 3)]
         public decimal? TotalAmount { get; set; }
         [Precision(18, 3)]
