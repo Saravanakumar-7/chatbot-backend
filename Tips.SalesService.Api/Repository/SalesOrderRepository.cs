@@ -192,7 +192,18 @@ namespace Tips.SalesService.Api.Repository
 
             return getSalesOrderbyId;
         }
+        public async Task<SalesOrder> GetSalesOrderDetailsBySONumber(string salesOrderNumber)
+        {
+            var salesOrderDetails = await _tipsSalesServiceDbContext.SalesOrders
+                .Where(x => x.SalesOrderNumber == salesOrderNumber && x.IsShortClosed == false)
+                .Include(o => o.SalesOrdersItems)
+                .ThenInclude(x => x.ScheduleDates)
+                .Include(t => t.SalesOrderAdditionalCharges)
+                                
+                                .FirstOrDefaultAsync();
 
+            return salesOrderDetails;
+        }
         public async Task<IEnumerable<ListofSalesOrderDetails>> GetSalesOrderDetailsByCustomerId(string Customerid)
         {
 

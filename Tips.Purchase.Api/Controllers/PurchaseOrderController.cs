@@ -177,6 +177,31 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetPRNumberandQtyListByItemNumber(string itemMaster)
+        {
+            ServiceResponse<IEnumerable<PRNoandQtyListDto>> serviceResponse = new ServiceResponse<IEnumerable<PRNoandQtyListDto>>();
+            try
+            {
+                var revNumberDetailsbyPONumber = await _repository.GetPRNumberandQtyListByItemNumber(itemMaster);
+                var result = _mapper.Map<IEnumerable<PRNoandQtyListDto>>(revNumberDetailsbyPONumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PRNumberandQtyList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPRNumberandQtyListByItemNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetPurchaseOrderByPoNoAndRevNo(string PONumber,int revisionNumber)
         {
             ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();

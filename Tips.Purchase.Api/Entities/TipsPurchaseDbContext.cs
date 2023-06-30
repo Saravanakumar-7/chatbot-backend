@@ -22,8 +22,8 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PrAddDeliverySchedule> PrAddDeliverySchedules { get; set; }
 
         public DbSet<DocumentUpload> DocumentUploads { get; set; }
+        public DbSet<PrSpecialInstruction> PrSpecialInstructions { get; set; }
 
- 
 
     }
 }

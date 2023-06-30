@@ -15,10 +15,10 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
-        public string? SpecialInstruction { get; set; }
-
+      
         public List<PrAddProjectDto>? PrAddprojectsDtoList { get; set; }
         public List<PrAddDeliveryScheduleDto>? PrAddDeliverySchedulesDtoList { get; set; }
+        public List<PrSpecialInstructionDto>? prSpecialInstructionsDtoList { get; set; }
     }
 
     public class PrItemsPostDto
@@ -31,10 +31,10 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
-        public string? SpecialInstruction { get; set; }
-
+    
         public List<PrAddProjectPostDto>? PrAddprojectsDtoPostList { get; set; }
         public List<PrAddDeliverySchedulePostDto>? PrAddDeliverySchedulesDtoPostList { get; set; }
+        public List<PrSpecialInstructionPostDto>? prSpecialInstructionsPostList { get; set; }
     }
 
     public class PrItemsUpdateDto
@@ -47,10 +47,10 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
-        public string? SpecialInstruction { get; set; }
 
         public List<PrAddProjectDtoUpdate>? PrAddprojectsDtoUpdateList { get; set; }
         public List<PrAddDeliveryScheduleUpdateDto>? PrAddDeliverySchedulesDtoUpdateList { get; set; }
+        public List<PrSpecialInstructionUpdateDto>? prSpecialInstructionsUpdateList { get; set; }
     }
 
 }

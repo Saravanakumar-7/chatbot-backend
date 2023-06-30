@@ -122,6 +122,7 @@ namespace Tips.Purchase.Api.Controllers
                             PrItemsDto prItemDtos = _mapper.Map<PrItemsDto>(prItemDetails);
                             prItemDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(prItemDetails.prAddprojectsDtoList);
                             prItemDtos.PrAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliveryScheduleDto>>(prItemDetails.prAddDeliverySchedulesDtoList);
+                            prItemDtos.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstructionDto>>(prItemDetails.prSpecialInstructionsDtoList);
                             prItemDtoList.Add(prItemDtos);
                         }
                     }
@@ -295,6 +296,7 @@ namespace Tips.Purchase.Api.Controllers
                             PrItemsDto prItemDtos = _mapper.Map<PrItemsDto>(itemDetails);
                             prItemDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(itemDetails.prAddprojectsDtoList);
                             prItemDtos.PrAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliveryScheduleDto>>(itemDetails.prAddDeliverySchedulesDtoList);
+                            prItemDtos.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstructionDto>>(itemDetails.prSpecialInstructionsDtoList);
                             prItemDtoList.Add(prItemDtos);
                         }
                     }
@@ -423,6 +425,7 @@ namespace Tips.Purchase.Api.Controllers
                         PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
                         prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoPostList);
                         prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoPostList);
+                        prItemDetails.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstruction>>(prItemDto[i].prSpecialInstructionsPostList);
                         prItemDtoList.Add(prItemDetails);
                     }
                 }
@@ -488,6 +491,7 @@ namespace Tips.Purchase.Api.Controllers
                         PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
                         prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoUpdateList);
                         prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoUpdateList);
+                        prItemDetails.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstruction>>(prItemDto[i].prSpecialInstructionsUpdateList);
                         prItemDtoList.Add(prItemDetails);
                     }
                 }

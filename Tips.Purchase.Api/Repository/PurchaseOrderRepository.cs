@@ -159,6 +159,21 @@ namespace Tips.Purchase.Api.Repository
 
             return revNoListbyPONumber;
         }
+        public async Task<IEnumerable<PRNoandQtyListDto>> GetPRNumberandQtyListByItemNumber(string itemNumber)
+        {
+            
+                     var Join = from pri in _tipsPurchaseDbContext.PrItems
+                                where pri.ItemNumber == itemNumber 
+                                join pr in _tipsPurchaseDbContext.PurchaseRequisitions on pri.PurchaseRequistionId equals pr.Id
+                                select new PRNoandQtyListDto
+                                {
+                                    PRNumber =pr.PrNumber,
+                                    Qty = pri.Qty,
+                                };
+                var postdata = Join.ToList();
+
+            return postdata;
+        }
         public async Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrderDate([FromQuery] SearchDatesParams searchDatesParams)
         {
             var purchaseOrderDetails = _tipsPurchaseDbContext.PurchaseOrders

@@ -1165,6 +1165,80 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPut]
+        public async Task<IActionResult> ActivateSalesOrderApprovalStatus(string salesOrderNumber)
+        {
+            ServiceResponse<SalesOrderDto> serviceResponse = new ServiceResponse<SalesOrderDto>();
+
+            try
+            {
+                var salesOrderDetails= await _repository.GetSalesOrderDetailsBySONumber(salesOrderNumber);
+                if (salesOrderDetails is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "SalesOrderApprovalStatus object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"SalesOrderApprovalStatus with string: {salesOrderNumber}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
+                }
+                salesOrderDetails.ApproveStatus = true;
+                string result = await _repository.UpdateSalesOrder(salesOrderDetails);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Message = "SalesOrderApprovalStatus Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside ActivateSalesOrderApprovalStatus action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPut]
+        public async Task<IActionResult> ActivateSalesOrderConfirmStatus(string salesOrderNumber,DateTime confirmDate)
+        {
+            ServiceResponse<SalesOrderDto> serviceResponse = new ServiceResponse<SalesOrderDto>();
+
+            try
+            {
+                var salesOrderDetails = await _repository.GetSalesOrderDetailsBySONumber(salesOrderNumber);
+                if (salesOrderDetails is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "SalesOrderConfirmStatus object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"SalesOrderConfirmStatus with string: {salesOrderNumber}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
+                }
+
+                salesOrderDetails.ConfirmDate = confirmDate;
+                salesOrderDetails.ConfirmStatus = true;
+                string result = await _repository.UpdateSalesOrder(salesOrderDetails);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Message = "SalesOrderConfirmStatus Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside ActivateSalesOrderConfirmStatus action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
     }
 

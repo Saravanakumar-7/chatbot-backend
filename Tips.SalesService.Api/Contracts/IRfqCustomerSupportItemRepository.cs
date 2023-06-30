@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Tips.SalesService.Api.Entities;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Contracts
 {
@@ -33,7 +34,7 @@ namespace Tips.SalesService.Api.Contracts
 
         Task<bool> IsFullyReleasedRfqCs(string rfqNumber, decimal revNumber);
         Task<bool> IsNotYetReleasedRfqCs(string rfqNumber, decimal revNumber);
-
+        Task<IEnumerable<string>> GetRfqCsandForecastCsDetailListByItemNumber(string itemNumber);
 
 
 

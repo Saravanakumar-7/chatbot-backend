@@ -15,8 +15,7 @@ namespace Tips.Purchase.Api.Entities
         public PartType PartType { get; set; }
 
         [Precision(13, 3)]
-        public decimal? Qty { get; set; }
-        public string? SpecialInstruction { get; set; }
+        public decimal? Qty { get; set; }      
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -27,5 +26,6 @@ namespace Tips.Purchase.Api.Entities
 
         public List<PrAddProject>? prAddprojectsDtoList { get; set; }
         public List<PrAddDeliverySchedule>? prAddDeliverySchedulesDtoList { get; set; }
+        public List<PrSpecialInstruction>? prSpecialInstructionsDtoList { get; set; }
     }
 }
