@@ -164,6 +164,24 @@ namespace Repository
             return getAllBomGroupList;
         }
 
+        public async Task<IEnumerable<EnggBomFGItemNumber>> GetAllEnggBomChildFGItemNoListByItemNumber(string itemNumber)
+        {
+            var bomDetails = await _tipsMasterDbContext.EnggBoms
+                                .Where(x => x.ItemNumber == itemNumber)
+                                .Select(x => x.BOMId).Distinct().ToListAsync();
+
+            IEnumerable<EnggBomFGItemNumber> getAllBomGroupList = await _tipsMasterDbContext.EnggChildItems
+                .Where(x => bomDetails.Contains(x.EnggBomId) && x.PartType == PartType.FG)
+                .Select(c => new EnggBomFGItemNumber()
+                {
+                    ItemNumber = c.ItemNumber,
+                    Description = c.Description
+                })
+                             .ToListAsync();
+
+            return getAllBomGroupList;
+        }
+
         public async Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber)
         {
             var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber)                              

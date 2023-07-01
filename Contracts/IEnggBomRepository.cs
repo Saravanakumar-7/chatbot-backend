@@ -26,5 +26,6 @@ namespace Contracts
         Task<IEnumerable<EngineeringBom>> GetAllEnggBomVersionListByItemNumber(string itemNumber);
         Task<IEnumerable<EnggBomItemDto>> GetAllEnggBOMItemNumber();
         Task<List<EnggBomFGItemNumberWithQtyDto>> GetFGBomItemsChildDetails(List<string> itemNumberList);
+        Task<IEnumerable<EnggBomFGItemNumber>> GetAllEnggBomChildFGItemNoListByItemNumber(string itemNumber);
     }
 }

@@ -1093,7 +1093,44 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-            [HttpGet]
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllEnggBomChildFGItemNoListByItemNumber(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<EnggBomFGItemNumber>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomFGItemNumber>>();
+            try
+            {
+                var enggBomChildFGItemNoDetails = await _enggBomRepository.GetAllEnggBomChildFGItemNoListByItemNumber(itemNumber);
+                if (enggBomChildFGItemNoDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"EnggBom FGItemNumber is Invalid.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ProductionBomDetails with id: {itemNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var result = _mapper.Map<IEnumerable<EnggBomFGItemNumber>>(enggBomChildFGItemNoDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned all EnggBomChildFGItemNumberList";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllEnggBomChildFGItemNoListByItemNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
         public async Task<IActionResult> GetProductionBomByItemAndBomVersionNo(string itemNumber,decimal bomVersionNo)
         {
             ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
