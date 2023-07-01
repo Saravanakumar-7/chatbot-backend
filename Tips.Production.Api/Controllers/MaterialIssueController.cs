@@ -23,14 +23,16 @@ namespace Tips.Production.Api.Controllers
     public class MaterialIssueController : ControllerBase
     {
         private IMaterialIssueHistoryRepository _materialIssueHistoryRepository;
-        private IMaterialIssueRepository  _materialIssueRepository;
+        private IMaterialIssueRepository _materialIssueRepository;
+        private IMaterialIssueItemRepository _materialIssueItemRepository;
         private ILoggerManager _logger;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        private IMapper _mapper; 
+        private IMapper _mapper;
 
-        public MaterialIssueController(IMaterialIssueHistoryRepository materialIssueHistoryRepository,IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        public MaterialIssueController(IMaterialIssueItemRepository materialIssueItemRepository,IMaterialIssueHistoryRepository materialIssueHistoryRepository, IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
+            _materialIssueItemRepository = materialIssueItemRepository;
             _materialIssueHistoryRepository = materialIssueHistoryRepository;
             _materialIssueRepository = materialIssueRepository;
             _logger = logger;
@@ -84,7 +86,7 @@ namespace Tips.Production.Api.Controllers
             if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
             {
                 return "keus";
-            } 
+            }
             else
             {
                 return "trasccon";
@@ -118,7 +120,7 @@ namespace Tips.Production.Api.Controllers
             try
             {
                 string serverKey = GetServerKey();// Set the server key here dynamically based on your logic
-                
+
                 var materialIssueDetailById = await _materialIssueRepository.GetMaterialIssueById(id);
 
 
@@ -137,14 +139,14 @@ namespace Tips.Production.Api.Controllers
                     var materialIssueDetails = _mapper.Map<MaterialIssueDto>(materialIssueDetailById);
 
                     if (serverKey == "keus")
-                    { 
-                            for (int i = 0; i < materialIssueDetails.materialIssueItems.Count(); i++)
-                            {
+                    {
+                        for (int i = 0; i < materialIssueDetails.materialIssueItems.Count(); i++)
+                        {
                             var balanceQty = 0;
                             var partnumber = materialIssueDetailById.materialIssueItems[i].PartNumber;
-                                var projectnumber = materialIssueDetailById.materialIssueItems[i].ProjectNumber;
-                                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                                  "GetInventoryDetailsByItemNo?", "itemNumber=", partnumber));
+                            var projectnumber = materialIssueDetailById.materialIssueItems[i].ProjectNumber;
+                            var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                              "GetInventoryDetailsByItemNo?", "itemNumber=", partnumber));
                             if (inventoryObjectResult != null && inventoryObjectResult.StatusCode == HttpStatusCode.OK)
                             {
                                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
@@ -152,8 +154,8 @@ namespace Tips.Production.Api.Controllers
                                 dynamic inventoryObject = inventoryObjectData.data;
                                 balanceQty = inventoryObject.balance_Quantity;
                             }
-                                materialIssueDetails.materialIssueItems[i].AvailableQty = balanceQty;
-                            }                        
+                            materialIssueDetails.materialIssueItems[i].AvailableQty = balanceQty;
+                        }
 
                     }
                     else
@@ -165,13 +167,13 @@ namespace Tips.Production.Api.Controllers
                             var projectnumber = materialIssueDetailById.materialIssueItems[i].ProjectNumber;
                             var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
                               "GetInventoryDetailsByItemAndProjectNo?", "itemNumber=", partnumber, "&projectNumber=", projectnumber));
-                            if(inventoryObjectResult !=null && inventoryObjectResult.StatusCode == HttpStatusCode.OK)
+                            if (inventoryObjectResult != null && inventoryObjectResult.StatusCode == HttpStatusCode.OK)
                             {
                                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                 dynamic inventoryObject = inventoryObjectData.data;
                                 balanceQty = inventoryObject.balance_Quantity;
-                            } 
+                            }
                             materialIssueDetails.materialIssueItems[i].AvailableQty = balanceQty;
                         }
                     }
@@ -273,10 +275,10 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogError("Invalid MaterialIssue object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var  materialIssue = _mapper.Map<MaterialIssue>(materialIssuePostDto);
+                var materialIssue = _mapper.Map<MaterialIssue>(materialIssuePostDto);
 
                 _materialIssueRepository.CreateMaterialIssue(materialIssue);
-                _materialIssueRepository.SaveAsync(); 
+                _materialIssueRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "MaterialIssue Successfully Created";
                 serviceResponse.Success = true;
@@ -331,61 +333,57 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                var updateMaterialIssue = _mapper.Map(materialIssueUpdateDto, materialIssueDetailsById);
-                //_mapper.Map(materialIssueUpdateDto, materialIssueDetailsById);
+                var allMaterialIssueItems = await _materialIssueItemRepository.GetMaterialIssueItemById(id);
 
-                
-
-                List<MaterialIssueItem> materialIssueItems = new List<MaterialIssueItem>();
-
-                foreach (var item in materialIssueUpdateDto.MaterialIssueItems)
+                foreach (var updatedItem in materialIssueUpdateDto.MaterialIssueItems)
                 {
-                    MaterialIssueItem materialIssueItem = _mapper.Map<MaterialIssueItem>(item);
+                    var existingItem = allMaterialIssueItems
+                        .FirstOrDefault(i => i.Id == updatedItem.Id);
 
-                    materialIssueItem.IssuedQty += item.NewIssueQty;
-                    materialIssueItems.Add(materialIssueItem);
-
-                    //update inventory 
-
-                    var partnumber = materialIssueItem.PartNumber;
-                    var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                     "GetInventoryDetailsByItemNo?", "&itemNumber=", partnumber));
-                    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                    dynamic inventoryObject = inventoryObjectData.data;
-                    inventoryObject.balance_Quantity -= item.NewIssueQty; 
-                    if(inventoryObject.balance_Quantity == 0)
+                    if (existingItem != null)
                     {
-                        inventoryObject.isStockAvailable = false;
+                        existingItem.PartNumber = updatedItem.PartNumber;
+                        existingItem.Description = updatedItem.Description;
+                        existingItem.PartType = updatedItem.PartType;
+                        existingItem.UOM = updatedItem.UOM;
+                        existingItem.RequiredQty = updatedItem.RequiredQty;
+                        existingItem.Unit = updatedItem.Unit;
+                        existingItem.MaterialIssuedStatus = updatedItem.MaterialIssuedStatus;
+                        // Update existing item properties
+                        existingItem.IssuedQty += updatedItem.NewIssueQty;
+
+                        // Update inventory
+                        var partnumber = updatedItem.PartNumber;
+                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                            "GetInventoryDetailsByItemNo?", "&itemNumber=", partnumber));
+                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        dynamic inventoryObject = inventoryObjectData.data;
+                        inventoryObject.balance_Quantity -= updatedItem.NewIssueQty;
+                        if (inventoryObject.balance_Quantity == 0)
+                        {
+                            inventoryObject.isStockAvailable = false;
+                        }
+
+                        var json = JsonConvert.SerializeObject(inventoryObject);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
+                            "UpdateInventory?id=", Convert.ToInt32(inventoryObject.id)), data);
+
+                        // Update the remaining properties of the material issue item
+                        existingItem.MaterialIssuedStatus = updatedItem.MaterialIssuedStatus;
+                        // ... Update other properties as needed
+
+                        //var matertialIssueItem = _mapper.Map(allMaterialIssueItems, updatedItem);
+                        await _materialIssueItemRepository.UpdateMaterialIssueItem(existingItem);
+                        _materialIssueItemRepository.SaveAsync();
                     }
-                    
-                    var json = JsonConvert.SerializeObject(inventoryObject);
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
-                        "UpdateInventory?id=",Convert.ToInt32(inventoryObject.id)), data);
-
-                    MaterialIssueHistory materialissueHistory = new MaterialIssueHistory();
-                    materialissueHistory.Id = materialIssueItem.Id;
-                    materialissueHistory.PartNumber = materialIssueItem.PartNumber;
-                    materialissueHistory.ShopOrderNumber = updateMaterialIssue.ShopOrderNumber;
-                    materialissueHistory.Description = materialIssueItem.Description;
-                    materialissueHistory.ProjectNumber = materialIssueItem.ProjectNumber;
-                    materialissueHistory.PartType = materialIssueItem.PartType;
-                    materialissueHistory.UOM = materialIssueItem.UOM;
-                    materialissueHistory.RequiredQty = materialIssueItem.RequiredQty;
-                    materialissueHistory.IssuedQty = materialIssueItem.IssuedQty;
-                    materialissueHistory.MaterialIssuedStatus = materialIssueItem.MaterialIssuedStatus;
-                    materialissueHistory.Unit = materialIssueItem.Unit;
-
-                    _materialIssueHistoryRepository.CreateMaterialIssueHistory(materialissueHistory);
-                    _materialIssueHistoryRepository.SaveAsync();
-
                 }
-                updateMaterialIssue.materialIssueItems = materialIssueItems;
-                string result = await _materialIssueRepository.UpdateMaterialIssue(updateMaterialIssue);
 
-                _logger.LogInfo(result);
-                _materialIssueRepository.SaveAsync();
+                //string result = await _materialIssueRepository.UpdateMaterialIssue(materialIssueDetailsById);
+
+                //_logger.LogInfo(result);
+                 //_materialIssueRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "MaterialIssue Updated Successfully";
                 serviceResponse.Success = true;
