@@ -232,6 +232,8 @@ namespace Tips.Grin.Api.Repository
               //.ThenInclude(c => c.CoCUpload)
               .Include(t => t.GrinParts)
                .ThenInclude(d => d.ProjectNumbers)
+               .Include(d => d.OtherCharges)
+
                                .FirstOrDefaultAsync();
 
             return grinDetailsbyId;

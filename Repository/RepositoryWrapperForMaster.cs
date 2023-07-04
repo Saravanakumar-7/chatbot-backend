@@ -118,10 +118,22 @@ namespace Repository
         private IAdditionalChargesRepository? _additionalChargesRepository;
         private ICompanyCategoryRepository? _companyCategoryRepository;
         private ICustomerCategoryRepository? _customerCategoryRepository;
+        private IOtherChargesRepository? _otherChargesRepository;
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
             _httpContextAccessor = httpContextAccessor;
+        }
+        public IOtherChargesRepository OtherChargesRepository
+        {
+            get
+            {
+                if (_otherChargesRepository == null)
+                {
+                    _otherChargesRepository = new OtherChargesRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _otherChargesRepository;
+            }
         }
         public ICompanyCategoryRepository CompanyCategoryRepository
         {

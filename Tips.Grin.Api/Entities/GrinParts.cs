@@ -58,7 +58,7 @@ namespace Tips.Grin.Api.Entities
 
         [Required]
         public string UOM { get; set; }
-
+        public string? UOC { get; set; }
         [DefaultValue(0)]
         public GrinStatus Status { get; set; }
 
@@ -68,7 +68,6 @@ namespace Tips.Grin.Api.Entities
         public bool IsCOCUploaded { get; set; } = false;
 
         public List<DocumentUpload>? CoCUpload { get; set; }
-
 
         [Precision(13, 3)]
         public decimal? SGST { get; set; }

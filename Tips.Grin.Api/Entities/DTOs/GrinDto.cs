@@ -42,7 +42,12 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? BEDate { get; set; }
 
         public decimal? TotalInvoiceValue { get; set; }
-
+        public string? BCD { get; set; }
+        public string? CESS { get; set; }
+        public string? Insurance { get; set; }
+        public string? Freight { get; set; }
+        public string? LocalTransport { get; set; }
+        public string? Remarks { get; set; }
         public List<DocumentUploadDto>? GrinDocuments { get; set; }
 
         //public string? GrinDocuments { get; set; }
@@ -55,7 +60,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
         public List<GrinPartsDto>? GrinParts { get; set; }
-
+        public List<OtherChargesDto>? OtherCharges { get; set; }
 
     }
     public class GrinPostDto
@@ -96,14 +101,19 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? BEDate { get; set; }
 
         public decimal? TotalInvoiceValue { get; set; }
-
+        public string? BCD { get; set; }
+        public string? CESS { get; set; }
+        public string? Insurance { get; set; }
+        public string? Freight { get; set; }
+        public string? LocalTransport { get; set; }
+        public string? Remarks { get; set; }
         public List<DocumentUploadPostDto>? GrinDocuments { get; set; }
 
         //public string? GrinDocuments { get; set; }
 
 
         public List<GrinPartsPostDto>? GrinParts { get; set; }
-
+        public List<OtherChargesPostDto>? OtherCharges { get; set; }
 
     }
     public class GrinUpdateDto
@@ -140,6 +150,12 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? BEDate { get; set; }
 
         public decimal? TotalInvoiceValue { get; set; }
+        public string? BCD { get; set; }
+        public string? CESS { get; set; }
+        public string? Insurance { get; set; }
+        public string? Freight { get; set; }
+        public string? LocalTransport { get; set; }
+        public string? Remarks { get; set; }
         public List<DocumentUploadUpdateDto>? GrinDocuments { get; set; }
 
         //public string? GrinDocuments { get; set; }
@@ -151,7 +167,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public List<GrinPartsUpdateDto>? GrinParts { get; set; }
-
+        public List<OtherChargesUpdateDto>? OtherCharges { get; set; }
 
     }
     public class GrinNumberListDto

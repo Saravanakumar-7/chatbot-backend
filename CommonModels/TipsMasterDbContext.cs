@@ -150,6 +150,7 @@ namespace Entities
         public DbSet<AdditionalCharges> AdditionalCharges { get; set; }
         public DbSet<CustomerCategory> CustomerCategories { get; set; }
         public DbSet<CompanyCategory> CompanyCategories { get; set; }
+        public DbSet<OtherCharges> OtherCharges { get; set; }
 
 
     }
