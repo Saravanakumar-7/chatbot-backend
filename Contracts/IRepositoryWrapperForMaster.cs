@@ -140,7 +140,7 @@ namespace Contracts
         ICustomerCategoryRepository CustomerCategoryRepository { get; }
         IVendorRelatedVendorRepository VendorRelatedVendorRepository { get; }
         ICustomerRelatedCustomerRepository CustomerRelatedCustomerRepository { get; }
-
+        IOtherChargesRepository OtherChargesRepository { get; }
 
         void SaveAsync();
     }

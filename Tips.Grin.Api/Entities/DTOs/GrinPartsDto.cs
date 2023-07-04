@@ -55,7 +55,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Required]
         public string UOM { get; set; }
-
+        public string? UOC { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
 
@@ -79,7 +79,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
         public List<ProjectNumbersDto>? ProjectNumbers { get; set; }
-
+       
 
     }
     public class GrinPartsPostDto
@@ -121,7 +121,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Required(ErrorMessage = "UOM is required")]
         public string UOM { get; set; }
-
+        public string? UOC { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
 
@@ -135,12 +135,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? CGST { get; set; }
 
         public decimal? UTGST { get; set; }
-        
-
 
         public List<ProjectNumbersDtoPost>? ProjectNumbers { get; set; }
-
- 
     }
     public class GrinPartsUpdateDto
     {
@@ -183,7 +179,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Required(ErrorMessage = "UOM is required")]
         public string UOM { get; set; }
-
+        public string? UOC { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
 
