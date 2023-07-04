@@ -1095,19 +1095,19 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllEnggBomChildFGItemNoListByItemNumber(string itemNumber)
+        public async Task<IActionResult> GetAllEnggBomChildFGItemNoListByItemNumber(string childItemNumber)
         {
             ServiceResponse<IEnumerable<EnggBomFGItemNumber>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomFGItemNumber>>();
             try
             {
-                var enggBomChildFGItemNoDetails = await _enggBomRepository.GetAllEnggBomChildFGItemNoListByItemNumber(itemNumber);
+                var enggBomChildFGItemNoDetails = await _enggBomRepository.GetFgItemsList(childItemNumber);
                 if (enggBomChildFGItemNoDetails == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"EnggBom FGItemNumber is Invalid.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"ProductionBomDetails with id: {itemNumber}, hasn't been found in db.");
+                    _logger.LogError($"ProductionBomDetails with id: {childItemNumber}, hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else

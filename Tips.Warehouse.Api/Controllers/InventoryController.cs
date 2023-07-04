@@ -312,43 +312,44 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        //[HttpGet]
-        //public async Task<IEnumerable<ConsumptionReport>> ConsumptionReport()
-        //{
-        //    ServiceResponse<ConsumptionDto> serviceResponse = new ServiceResponse<ConsumptionDto>();
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ConsumptionReport>>> CoverageReport()
+        {
+            ServiceResponse<IEnumerable<ConsumptionReport>> serviceResponse = new ServiceResponse<IEnumerable<ConsumptionReport>>();
 
-        //    try
-        //    {
-        //        var consumptionDetails = await _inventoryRepository.ConsumptionReports();
-        //        if (consumptionDetails == null)
-        //        {
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = $"Counsumption Report is getting Zero Record";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
-        //             return Ok(serviceResponse);
-        //        }
-        //        else
-        //        {
-        //            _logger.LogInfo($"Returned Inventory with Itemnumber: {itemNumber}");
-        //            var result = consumptionDetails;
-        //            serviceResponse.Data = consumptionDetails;
-        //            serviceResponse.Message = "Returned InventoryDetails with id Successfully";
-        //            serviceResponse.Success = true;
-        //            serviceResponse.StatusCode = HttpStatusCode.OK;
-        //            return Ok(consumptionDetails);
-        //        } 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Consumption Report getting Null: {ex.Message},{ex.InnerException}");
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = "Internal Server Error";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    }
-        //}
+            try
+            {
+                var consumptionDetails = await _inventoryRepository.ConsumptionReports();
+                if (consumptionDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Consumption Report is getting Zero Record";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    var result = _mapper.Map<IEnumerable<ConsumptionReport>>(consumptionDetails);
+
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned Coverage Details with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Coverage Report getting Null: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //[HttpGet]
         //public async Task<IEnumerable<ConsumptionReport>> ExecuteStoredProcedure(string? itemNumber, string? salesOrderNumber)
         //{

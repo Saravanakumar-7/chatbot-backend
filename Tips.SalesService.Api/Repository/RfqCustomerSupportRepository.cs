@@ -163,11 +163,13 @@ namespace Tips.SalesService.Api.Repository
             var rfqNumber = _tipsSalesServiceDbContext.RfqCustomerSupportItems
                              .Where(r => r.ItemNumber == itemNumber)
                              .Select(r=> r.RfqNumber)
+                             .Distinct()
                              .ToList();
 
             var forecastNumber = _tipsSalesServiceDbContext.foreCastCustomerSupportItems
                                     .Where(r => r.ItemNumber == itemNumber)
                                     .Select(r => r.ForecastNumber)
+                                    .Distinct()
                                     .ToList();
             var rfqAndForecastNumbers = rfqNumber.Concat(forecastNumber);
 

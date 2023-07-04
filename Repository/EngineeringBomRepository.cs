@@ -164,22 +164,139 @@ namespace Repository
             return getAllBomGroupList;
         }
 
-        public async Task<IEnumerable<EnggBomFGItemNumber>> GetAllEnggBomChildFGItemNoListByItemNumber(string itemNumber)
+        //test
+        // Define a recursive method to find the parent FG item number for a given SA item number
+        public async Task<string> FindParentFgItemNumberRecursive(string saItemNumber)
         {
-            var bomDetails = await _tipsMasterDbContext.EnggBoms
-                                .Where(x => x.ItemNumber == itemNumber)
-                                .Select(x => x.BOMId).Distinct().ToListAsync();
+            // Fetch the EnggBomId of the SA item number
+            var saEnggBomId = await _tipsMasterDbContext.EnggChildItems
+                .Where(x => x.ItemNumber == saItemNumber)
+                .Select(x => x.EnggBomId)
+                .FirstOrDefaultAsync();
 
-            IEnumerable<EnggBomFGItemNumber> getAllBomGroupList = await _tipsMasterDbContext.EnggChildItems
-                .Where(x => bomDetails.Contains(x.EnggBomId) && x.PartType == PartType.FG)
-                .Select(c => new EnggBomFGItemNumber()
+            //if (saEnggBomId == null)
+            //{
+            //    // SA item number not found, return null or handle the situation accordingly
+            //    return null;
+            //}
+
+            // Fetch the parent FG item number using the EnggBomId
+            var parentFgItemNumber = await _tipsMasterDbContext.EnggBoms
+                .Where(x => x.BOMId == saEnggBomId && x.ItemType == PartType.FG)
+                .Select(x => x.ItemNumber)
+                .FirstOrDefaultAsync();
+
+            //if (parentFgItemNumber == null)
+            //{
+            //    // Parent FG item number not found, return null or handle the situation accordingly
+            //    return null;
+            //}
+
+            // Check if the parent FG item has any child SA items and recursively find their parent FG item numbers
+            var childSaItemNumbers = await _tipsMasterDbContext.EnggChildItems
+                .Where(x => x.EnggBomId == saEnggBomId && x.PartType == PartType.SA)
+                .Select(x => x.ItemNumber)
+                .ToListAsync();
+
+            foreach (var childSaItemNumber in childSaItemNumbers)
+            {
+                var recursiveParentFgItemNumber = await FindParentFgItemNumberRecursive(childSaItemNumber);
+
+                if (recursiveParentFgItemNumber != null)
+                {
+                     return recursiveParentFgItemNumber;
+                }
+            }
+
+            // Return the parent FG item number
+            return parentFgItemNumber;
+        }
+        //test2
+        public async Task<List<EnggBomFGItemNumber>> GetFgItemsList(string childItemNumber)
+        {
+            List<EnggBomFGItemNumber> fgItemsList = new List<EnggBomFGItemNumber>();
+            await GetFgParentItemNumbers(childItemNumber, fgItemsList);
+
+            return fgItemsList;
+        }
+
+        private async Task GetFgParentItemNumbers(string childItemNumber, List<EnggBomFGItemNumber> fgItemsList)
+        {
+            var saParentItemNumber = await GetSAParentItemNumber(childItemNumber);
+
+            if (saParentItemNumber != null)
+            {
+                var fgParentItems = await GetFgParentItems(saParentItemNumber);
+                fgItemsList.AddRange(fgParentItems);
+
+                foreach (var fgParentItem in fgParentItems)
+                {
+                    await GetFgParentItemNumbers(fgParentItem.ItemNumber, fgItemsList);
+                }
+            }
+        }
+
+        private async Task<string> GetSAParentItemNumber(string childItemNumber)
+        {
+            var saParentItem = await _tipsMasterDbContext.EnggBoms
+                .FirstOrDefaultAsync(x => x.ItemType == PartType.SA && x.EnggChildItems.Any(item => item.ItemNumber == childItemNumber));
+
+            return saParentItem?.ItemNumber;
+        }
+
+        private async Task<List<EnggBomFGItemNumber>> GetFgParentItems(string saItemNumber)
+        {
+
+            var items = await _tipsMasterDbContext.EnggChildItems
+                .Where(x => x.ItemNumber == saItemNumber && x.PartType == PartType.SA).Select(x => x.EnggBomId).ToListAsync();
+
+            var fgParentItems = await _tipsMasterDbContext.EnggBoms
+        .Where(x => items.Contains(x.BOMId) && x.ItemType == PartType.FG)
+            .Select(c => new EnggBomFGItemNumber()
                 {
                     ItemNumber = c.ItemNumber,
-                    Description = c.Description
+                    Description = c.ItemDescription
                 })
-                             .ToListAsync();
+                .ToListAsync(); 
 
-            return getAllBomGroupList;
+
+            //var fgParentItems = await _tipsMasterDbContext.EnggBoms
+            //    .Where(x => x.ItemNumber == saItemNumber && x.ItemType == PartType.FG)
+            //    .Select(c => new EnggBomFGItemNumber()
+            //    {
+            //        ItemNumber = c.ItemNumber,
+            //        Description = c.ItemDescription
+            //    })
+            //    .ToListAsync();
+
+            return fgParentItems;
+        }
+
+        //end test2
+
+        public async Task<IEnumerable<EnggBomFGItemNumber>> GetAllEnggBomChildFGItemNoListByItemNumber(string itemNumber)
+        {
+
+            // Replace this with the actual SA child item number you want to find the parent FG item number for
+
+            var fgParentItemNumbers = await _tipsMasterDbContext.EnggChildItems
+      .Where(x => x.ItemNumber == itemNumber && x.PartType == PartType.SA)
+      .Join(
+          _tipsMasterDbContext.EnggChildItems,
+          childBomId => childBomId.EnggBomId,
+          parentBomId => parentBomId.EnggBomId,
+          (childBomId, parentBomId) => parentBomId
+      )
+      .Join(
+          _tipsMasterDbContext.EnggBoms,
+          parentItem => parentItem.EnggBomId,
+          bom => bom.BOMId,
+          (parentItem, bom) => bom
+      )
+      .Where(x => x.ItemType == PartType.FG)
+      .Select(x => x.ItemNumber)
+      .ToListAsync(); 
+            return (IEnumerable<EnggBomFGItemNumber>)fgParentItemNumbers;
         }
 
         public async Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber)

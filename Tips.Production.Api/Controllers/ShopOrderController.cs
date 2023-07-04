@@ -393,6 +393,10 @@ namespace Tips.Production.Api.Controllers
             {
                 return "keus";
             }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+            }
             else
             {
                 return "trasccon";

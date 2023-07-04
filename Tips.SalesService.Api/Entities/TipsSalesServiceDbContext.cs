@@ -94,5 +94,8 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<CollectionTracker> CollectionTrackers { get; set; }
         public DbSet<SOBreakDown> SOBreakDowns { get; set; }
 
+        public DbSet<CoverageReport> CoverageReports { get; set; }
+
+
     }
 }
