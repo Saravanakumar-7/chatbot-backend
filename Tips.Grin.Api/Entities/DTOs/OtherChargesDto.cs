@@ -6,14 +6,17 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         [Key]
         public int Id { get; set; }
-        public string? OtherCharge { get; set; }
+        public string? OtherChargesName { get; set; }
+        public string? OtherChargesValue { get; set; }
     }
     public class OtherChargesPostDto
     {
-        public string? OtherCharge { get; set; }
+        public string? OtherChargesName { get; set; }
+        public string? OtherChargesValue { get; set; }
     }
     public class OtherChargesUpdateDto
     {
-        public string? OtherCharge { get; set; }
+        public string? OtherChargesName { get; set; }
+        public string? OtherChargesValue { get; set; }
     }
 }

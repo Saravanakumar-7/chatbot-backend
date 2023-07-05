@@ -23,6 +23,7 @@ namespace Tips.Purchase.Api.Entities
 
         public DbSet<DocumentUpload> DocumentUploads { get; set; }
         public DbSet<PrSpecialInstruction> PrSpecialInstructions { get; set; }
+        public DbSet<PoSpecialInstruction> PoSpecialInstructions { get; set; }
 
 
     }

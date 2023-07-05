@@ -1,4 +1,5 @@
 ﻿using Entities.DTOs;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -42,12 +43,19 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? BEDate { get; set; }
 
         public decimal? TotalInvoiceValue { get; set; }
-        public string? BCD { get; set; }
-        public string? CESS { get; set; }
-        public string? Insurance { get; set; }
-        public string? Freight { get; set; }
-        public string? LocalTransport { get; set; }
-        public string? Remarks { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Insurance { get; set; }
+        [Precision(13, 3)]
+        public decimal? LoadingorUnLoading { get; set; }
+        public DateTime? GateEntryDate { get; set; }
+        [Precision(13, 3)]
+        public decimal? CurrencyConversion { get; set; }
+        [Precision(13, 3)]
+        public decimal? Transport { get; set; }
+        [Precision(13, 3)]
+        public decimal? BECurrencyValue { get; set; }
         public List<DocumentUploadDto>? GrinDocuments { get; set; }
 
         //public string? GrinDocuments { get; set; }
@@ -101,12 +109,19 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? BEDate { get; set; }
 
         public decimal? TotalInvoiceValue { get; set; }
-        public string? BCD { get; set; }
-        public string? CESS { get; set; }
-        public string? Insurance { get; set; }
-        public string? Freight { get; set; }
-        public string? LocalTransport { get; set; }
-        public string? Remarks { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Insurance { get; set; }
+        [Precision(13, 3)]
+        public decimal? LoadingorUnLoading { get; set; }
+        public DateTime? GateEntryDate { get; set; }
+        [Precision(13, 3)]
+        public decimal? CurrencyConversion { get; set; }
+        [Precision(13, 3)]
+        public decimal? Transport { get; set; }
+        [Precision(13, 3)]
+        public decimal? BECurrencyValue { get; set; }
         public List<DocumentUploadPostDto>? GrinDocuments { get; set; }
 
         //public string? GrinDocuments { get; set; }
@@ -149,13 +164,19 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public DateTime? BEDate { get; set; }
 
-        public decimal? TotalInvoiceValue { get; set; }
-        public string? BCD { get; set; }
-        public string? CESS { get; set; }
-        public string? Insurance { get; set; }
-        public string? Freight { get; set; }
-        public string? LocalTransport { get; set; }
-        public string? Remarks { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Insurance { get; set; }
+        [Precision(13, 3)]
+        public decimal? LoadingorUnLoading { get; set; }
+        public DateTime? GateEntryDate { get; set; }
+        [Precision(13, 3)]
+        public decimal? CurrencyConversion { get; set; }
+        [Precision(13, 3)]
+        public decimal? Transport { get; set; }
+        [Precision(13, 3)]
+        public decimal? BECurrencyValue { get; set; }
         public List<DocumentUploadUpdateDto>? GrinDocuments { get; set; }
 
         //public string? GrinDocuments { get; set; }

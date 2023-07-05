@@ -127,6 +127,7 @@ namespace Tips.Purchase.Api.Controllers
                             PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
                             poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
+                            poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
                             poItemDtoList.Add(poItemDtos);
                         }
                     }
@@ -243,6 +244,7 @@ namespace Tips.Purchase.Api.Controllers
                             PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
                             poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
+                            poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions); 
                             poItemDtoList.Add(poItemDtos);
                         }
                     }
@@ -310,6 +312,7 @@ namespace Tips.Purchase.Api.Controllers
                             PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
                             poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
+                            poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
                             poItemDtoList.Add(poItemDtos);
                         }
                     }
@@ -567,7 +570,7 @@ namespace Tips.Purchase.Api.Controllers
                         poItemDetails.PONumber = purchaseOrderDetails.PONumber;
                         poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
-
+                        poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
                         poItemDtoList.Add(poItemDetails);
                     }
                 }
@@ -960,7 +963,7 @@ namespace Tips.Purchase.Api.Controllers
                         PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
                         poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
-
+                        poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
                         poItemDtoList.Add(poItemDetails);
                     }
                 }

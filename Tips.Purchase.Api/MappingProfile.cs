@@ -59,6 +59,10 @@ namespace Tips.Purchase.Api
             CreateMap<PrSpecialInstruction, PrSpecialInstructionPostDto>().ReverseMap();
             CreateMap<PrSpecialInstruction, PrSpecialInstructionUpdateDto>().ReverseMap();
 
+            CreateMap<PoSpecialInstruction, PoSpecialInstructionDto>().ReverseMap();
+            CreateMap<PoSpecialInstruction, PoSpecialInstructionPostDto>().ReverseMap();
+            CreateMap<PoSpecialInstruction, PoSpecialInstructionUpdateDto>().ReverseMap();
+
         }
     }
 }

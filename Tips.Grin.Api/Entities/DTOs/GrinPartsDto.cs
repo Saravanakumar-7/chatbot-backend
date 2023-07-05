@@ -52,7 +52,8 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal RejectedQty { get; set; }
-
+        [Precision(13, 3)]
+        public decimal WeightedAverage { get; set; }
         [Required]
         public string UOM { get; set; }
         public string? UOC { get; set; }
@@ -117,7 +118,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
 
-        
+        [Precision(13, 3)]
+        public decimal WeightedAverage { get; set; }
 
         [Required(ErrorMessage = "UOM is required")]
         public string UOM { get; set; }
@@ -175,7 +177,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Required(ErrorMessage = "POUnitPrice is required")]
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
-
+        [Precision(13, 3)]
+        public decimal WeightedAverage { get; set; }
 
         [Required(ErrorMessage = "UOM is required")]
         public string UOM { get; set; }

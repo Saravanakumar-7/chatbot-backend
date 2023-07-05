@@ -44,12 +44,19 @@ namespace Tips.Grin.Api.Entities
 
         [Precision(13,3)]
         public decimal? TotalInvoiceValue { get; set; }
-        public string? BCD { get; set; }
-        public string? CESS { get; set; }
-        public string? Insurance { get; set; }
-        public string? Freight { get; set; }
-        public string? LocalTransport { get; set; }
-        public string? Remarks { get; set; }
+        [Precision(13, 3)]
+        public decimal Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Insurance { get; set; }
+        [Precision(13, 3)]
+        public decimal? LoadingorUnLoading { get; set; }
+        public DateTime? GateEntryDate { get; set; }
+        [Precision(13, 3)]
+        public decimal? CurrencyConversion { get; set; }
+        [Precision(13, 3)]
+        public decimal? Transport { get; set; }
+        [Precision(13, 3)]
+        public decimal? BECurrencyValue { get; set; }
 
         [DefaultValue(0)]
         public Status Status { get; set; }

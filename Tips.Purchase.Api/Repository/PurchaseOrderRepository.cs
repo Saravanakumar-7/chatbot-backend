@@ -109,7 +109,9 @@ namespace Tips.Purchase.Api.Repository
                     .Include(itm => itm.POItems)
                     .ThenInclude(po => po.POAddprojects)
                     .Include(itm => itm.POItems)
-                    .ThenInclude(po => po.POAddDeliverySchedules);
+                    .ThenInclude(po => po.POAddDeliverySchedules)
+                    .Include(itm => itm.POItems)
+                    .ThenInclude(po => po.POSpecialInstructions);
                 }
                 return query.ToList();
             }
@@ -144,7 +146,9 @@ namespace Tips.Purchase.Api.Repository
                     .Include(itm => itm.POItems)
                     .ThenInclude(po => po.POAddprojects)
                     .Include(itm => itm.POItems)
-                    .ThenInclude(po => po.POAddDeliverySchedules);
+                    .ThenInclude(po => po.POAddDeliverySchedules)
+                    .Include(itm => itm.POItems)
+                    .ThenInclude(po => po.POSpecialInstructions);
                 }
                 return query.ToList();
             }
@@ -184,6 +188,8 @@ namespace Tips.Purchase.Api.Repository
             .ThenInclude(po => po.POAddprojects)
             .Include(itm => itm.POItems)
             .ThenInclude(po => po.POAddDeliverySchedules)
+            .Include(itm => itm.POItems)
+            .ThenInclude(po => po.POSpecialInstructions)
             .ToList();
             return purchaseOrderDetails;        
     }
@@ -246,7 +252,10 @@ namespace Tips.Purchase.Api.Repository
                                 .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
                                 .Include(m => m.POItems)
-                                .ThenInclude(i => i.POAddDeliverySchedules);
+                                .ThenInclude(i => i.POAddDeliverySchedules)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.POSpecialInstructions);
+
             return activePurchaseOrderDetails;
         }
 
@@ -335,7 +344,10 @@ namespace Tips.Purchase.Api.Repository
                                .Include(t => t.POItems)
                                .ThenInclude(x => x.POAddprojects)
                                .Include(m => m.POItems)
-                               .ThenInclude(i => i.POAddDeliverySchedules);
+                               .ThenInclude(i => i.POAddDeliverySchedules)
+                               .Include(itm => itm.POItems)
+                               .ThenInclude(po => po.POSpecialInstructions);
+
             return PagedList<PurchaseOrder>.ToPagedList(purchaseOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
@@ -348,7 +360,8 @@ namespace Tips.Purchase.Api.Repository
                                 .ThenInclude(x => x.POAddprojects)
                                 .Include(m => m.POItems)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
-
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.POSpecialInstructions)
                                 .FirstOrDefaultAsync();
 
 
@@ -364,7 +377,8 @@ namespace Tips.Purchase.Api.Repository
                                 .ThenInclude(x => x.POAddprojects)
                                 .Include(m => m.POItems)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
-
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.POSpecialInstructions)
                                 .FirstOrDefaultAsync();
 
 
@@ -380,7 +394,8 @@ namespace Tips.Purchase.Api.Repository
                                 .ThenInclude(x => x.POAddprojects)
                                 .Include(m => m.POItems)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
-
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.POSpecialInstructions)
                                 .FirstOrDefaultAsync();
 
 
