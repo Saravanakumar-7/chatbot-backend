@@ -44,7 +44,7 @@ namespace Tips.SalesService.Api.Repository
                 )
                 .ToListAsync();
 
-            return result; 
+            return null; 
         }
 
     }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Net;
 using AutoMapper;
 using Contracts;
@@ -17,7 +18,8 @@ namespace Tips.Master.Api.Controllers
     public class ItemMasterController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
-        private ILoggerManager _logger;
+        private ILoggerManager _logger; 
+
         private IMapper _mapper;
         private IFileUploadRepository _fileUploadRepository;
         private IImageUploadRepository _imageUploadRepository;
@@ -25,7 +27,7 @@ namespace Tips.Master.Api.Controllers
         {
             _repository = repository;
             _logger = logger;
-            _fileUploadRepository = fileUploadRepository;
+            _fileUploadRepository = fileUploadRepository; 
             _imageUploadRepository = imageUploadRepository;
             _mapper = mapper;
         }
@@ -215,12 +217,25 @@ namespace Tips.Master.Api.Controllers
                     List<ItemmasterAlternateDto> itemmasterAlternateDtos = new List<ItemmasterAlternateDto>();
 
                     List<FileUploadDto> fileUploads = new List<FileUploadDto>();
+                    List<ImageUploadDto> imageUploads = new List<ImageUploadDto>();
+
+                    if (itemMasterDto.ImageUpload.Count() != 0)
+                    {
+                        foreach (var imageUploadDetails in itemMasterDto.ImageUpload)
+                        {
+                            ImageUploadDto imageUploadDto = _mapper.Map<ImageUploadDto>(imageUploadDetails);
+                            imageUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", imageUploadDto.FileName);
+                            imageUploads.Add(imageUploadDto);
+                        }
+                    }
+
 
                     if (itemMasterDto.FileUpload.Count() != 0)
                     {
                         foreach (var fileUploadDetails in itemMasterDto.FileUpload)
                         {
                             FileUploadDto fileUploadDto = _mapper.Map<FileUploadDto>(fileUploadDetails);
+                            fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileUploadDto.FileName);
                             fileUploads.Add(fileUploadDto);
                         }
                     }
@@ -523,7 +538,7 @@ namespace Tips.Master.Api.Controllers
                             {
                                 FileName = imageName,
                                 FileExtension = imageExt,
-                                FilePath = imagePath,
+                                FilePath = $"{Request.Scheme}://{Request.Host}/api/ItemMaster/Upload/ImageUpload/{imageName}",
                                 ParentId = itemNumbers,
                                 DocumentFrom = "ItemMaster Image Document"
                             };

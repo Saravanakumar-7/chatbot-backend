@@ -455,11 +455,19 @@ namespace Tips.Master.Api
 
             CreateMap<CustomerCategory, CustomerCategoryDto>().ReverseMap();
             CreateMap<CustomerCategory, CustomerCategoryPostDto>().ReverseMap();
-            CreateMap<CustomerCategory, CustomerCategoryUpdateDto>().ReverseMap();
+            CreateMap<CustomerCategory, CustomerCategoryPostDto>().ReverseMap();
 
             CreateMap<CompanyCategory, CompanyCategoryDto>().ReverseMap();
             CreateMap<CompanyCategory, CompanyCategoryPostDto>().ReverseMap();
-            CreateMap<CompanyCategory, CompanyCategoryUpdateDto>().ReverseMap();
+            CreateMap<CompanyCategory, CompanyCategoryPostDto>().ReverseMap();
+
+            CreateMap<VendorRelatedVendor, VendorRelatedVendorDto>().ReverseMap();
+            CreateMap<VendorRelatedVendor, VendorRelatedVendorPostDto>().ReverseMap();
+            CreateMap<VendorRelatedVendor, VendorRelatedVendorUpdateDto>().ReverseMap();
+
+            CreateMap<CustomerRelatedCustomer, CustomerRelatedCustomerDto>().ReverseMap();
+            CreateMap<CustomerRelatedCustomer, CustomerRelatedCustomerPostDto>().ReverseMap();
+            CreateMap<CustomerRelatedCustomer, CustomerRelatedCustomerUpdateDto>().ReverseMap();
 
             CreateMap<OtherCharges, OtherChargesDto>().ReverseMap();
             CreateMap<OtherCharges, OtherChargesPostDto>().ReverseMap();

@@ -10,7 +10,7 @@ namespace Entities
     public class OtherCharges
     {
         [Key]
-        public int? Id { get; set; }
+        public int Id { get; set; }
         public string? OtherChargesName { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
