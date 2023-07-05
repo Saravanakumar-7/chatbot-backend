@@ -646,25 +646,28 @@ namespace Tips.SalesService.Api.Controllers
                     itemsRoutingDetailsDynamic = data.ToObject<List<ItemMasterRoutingListDto>>();
                 }
 
-                var rfqLpCostingDetails = await _rfqlpcostingRepository.GetRfqLPCostingByRfqNumber(rfqNumber);
-                var rfqLpCostingitemDetails = rfqLpCostingDetails.RfqLPCostingItems;
+                //var rfqLpCostingDetails = await _rfqlpcostingRepository.GetRfqLPCostingByRfqNumber(rfqNumber);
+                //if (rfqLpCostingDetails != null)
+                //{
+                //    var rfqLpCostingitemDetails = rfqLpCostingDetails.RfqLPCostingItems;
+                //} 
                 List<RfqLPCostingItem> rfqLPCostingItems = new List<RfqLPCostingItem>();
                 
                 foreach (var item in rfqEnggDetails.RfqEnggItems)
                 {
                     var itemProcessList = itemsRoutingDetailsDynamic.Where(i => i.ItemNumber == item.ItemNumber).ToList();
-                    List<RfqLPCostingProcess> processStepsList = _mapper.Map<List<RfqLPCostingProcess>>(itemProcessList);                  
+                    List<RfqLPCostingProcess> processStepsList = _mapper.Map<List<RfqLPCostingProcess>>(itemProcessList);
                     RfqLPCostingItem rfqLPCostingItem = new RfqLPCostingItem
                     {
                         ItemNumber = item.ItemNumber,
                         Description = item.Description,
                         CustomerItemNumber = item.CustomerItemNumber,
                         TotalCost = 0,
-                        MaterialCost =0,
-                        MarkUpForMaterial =0,
+                        MaterialCost = 0,
+                        MarkUpForMaterial = 0,
                         RfqLPCostingProcesses = processStepsList,
-                        RfqLPCostingNREConsumables = rfqLpCostingitemDetails[0].RfqLPCostingNREConsumables,
-                        RfqLPCostingOtherCharges = rfqLpCostingitemDetails[0].RfqLPCostingOtherCharges
+                        RfqLPCostingNREConsumables = null,
+                        RfqLPCostingOtherCharges = null
                     };
                     rfqLPCostingItems.Add(rfqLPCostingItem);
                 }
@@ -1499,6 +1502,9 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 else
                 {
+                    var dateFormat = days + months + years;
+                    var rfqNumber = await _rfqRepository.GenerateRFQNumber();
+                    createRfq.RfqNumber = dateFormat + rfqNumber;
                     //var dateFormat = days + months + years;
                     //var rfqNumber = await _rfqRepository.GenerateRFQTrascconNumber();
                     //createRfq.RfqNumber = dateFormat + rfqNumber;

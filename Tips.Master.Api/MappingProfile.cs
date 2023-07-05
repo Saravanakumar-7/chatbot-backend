@@ -468,6 +468,10 @@ namespace Tips.Master.Api
             CreateMap<CustomerRelatedCustomer, CustomerRelatedCustomerDto>().ReverseMap();
             CreateMap<CustomerRelatedCustomer, CustomerRelatedCustomerPostDto>().ReverseMap();
             CreateMap<CustomerRelatedCustomer, CustomerRelatedCustomerUpdateDto>().ReverseMap();
+
+            CreateMap<OtherCharges, OtherChargesDto>().ReverseMap();
+            CreateMap<OtherCharges, OtherChargesPostDto>().ReverseMap();
+            CreateMap<OtherCharges, OtherChargesUpdateDto>().ReverseMap();
         }
     }
 }
