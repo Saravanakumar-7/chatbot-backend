@@ -63,6 +63,14 @@ namespace Tips.Purchase.Api
             CreateMap<PoSpecialInstruction, PoSpecialInstructionPostDto>().ReverseMap();
             CreateMap<PoSpecialInstruction, PoSpecialInstructionUpdateDto>().ReverseMap();
 
+            CreateMap<POCollectionTracker, POCollectionTrackerDto>().ReverseMap();
+            CreateMap<POCollectionTracker, POCollectionTrackerPostDto>().ReverseMap();
+            CreateMap<POCollectionTracker, POCollectionTrackerUpdateDto>().ReverseMap();
+
+            CreateMap<POBreakDown, POBreakDownDto>().ReverseMap();
+            CreateMap<POBreakDown, POBreakDownPostDto>().ReverseMap();
+            CreateMap<POBreakDown, POBreakDownUpdateDto>().ReverseMap();
+
         }
     }
 }
