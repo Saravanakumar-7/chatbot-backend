@@ -76,6 +76,14 @@ namespace Repository
 
             return registrationFormById;
         }
+        public async Task<int> GetRegistrationUserById(int id)
+        {
+            var getRoleId = await TipsMasterDbContext.RegistrationForms.Where(x => x.Id == id)
+                .Select(x=>x.RoleId)
+                 .FirstOrDefaultAsync();
+
+            return getRoleId;
+        }
         //test
         public async Task<RegistrationForm> GetRegistrationFormByUserNameandPassword(string username,string password)
         {

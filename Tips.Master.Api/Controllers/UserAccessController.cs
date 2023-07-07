@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IO;
+using MySqlX.XDevAPI.Common;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -131,6 +132,51 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        //test
+        [HttpGet("{roleId}")]
+        public async Task<IActionResult> GetRoleAccessByRoleId(int roleId)
+        {
+            ServiceResponse<IEnumerable<RoleAccessDto>> serviceResponse = new ServiceResponse<IEnumerable<RoleAccessDto>>();
+
+            try
+            {
+                var roleAccessByRoleId = await _repository.RoleAccessRepository.GetRoleAccessByRoleId(roleId);
+
+
+                if (roleAccessByRoleId.Count() == 0)
+                {
+                    var formAccessList = await _repository.FormsAccessRepository.GetAllFormsAccess();
+                    var formAccess = _mapper.Map<List<RoleAccessDto>>(formAccessList);
+                    serviceResponse.Data = formAccess;
+                    serviceResponse.Message = "Returned FormAccessDetials Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+
+                    _logger.LogInfo($"Returned RoleAccess with id: {roleId}");
+                    var result = _mapper.Map<List<RoleAccessDto>>(roleAccessByRoleId);
+
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned RoleAccess with Roleid successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                } 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetRoleAccessByRoleId action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetUserAccessByUserId(int userId)
         {
@@ -140,16 +186,40 @@ namespace Tips.Master.Api.Controllers
             {
                 var userAccessByRoleId = await _repository.UserAccessRepository.GetUserAccessByUserId(userId);
 
-
                 if (userAccessByRoleId.Count() == 0)
                 {
-                    var formAccessList = await _repository.FormsAccessRepository.GetAllFormsAccess();
-                    var formAccess = _mapper.Map<List<UserAccessDto>>(formAccessList);
-                    serviceResponse.Data = formAccess;
-                    serviceResponse.Message = "Returned FormAccessDetials Successfully";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
+                    var getRoleId = await _repository.RegistrationFormRepository.GetRegistrationUserById(userId);
+
+                    var roleAccessByRoleId = await _repository.RoleAccessRepository.GetRoleAccessByRoleId(getRoleId);
+
+
+                    if (roleAccessByRoleId.Count() != 0)
+                    {
+                      var result =  await GetRoleAccessByRoleId(getRoleId);
+                      return result;
+                    }
+                    else
+                    {
+
+                        //if (roleAccessByRoleId.Count() != 0)
+                        //{
+                        //    var result = _mapper.Map<List<RoleAccessDto>>(roleAccessByRoleId);
+                        //    serviceResponse.Data = result;
+                        //    serviceResponse.Message = "Returned RoleAccessDetials Successfully";
+                        //    serviceResponse.Success = true;
+                        //    serviceResponse.StatusCode = HttpStatusCode.OK;
+                        //    return Ok(serviceResponse);
+                        //}
+                        var formAccessList = await _repository.FormsAccessRepository.GetAllFormsAccess();
+                        var formAccess = _mapper.Map<List<UserAccessDto>>(formAccessList);
+                        serviceResponse.Data = formAccess;
+                        serviceResponse.Message = "Returned FormAccessDetials Successfully";
+                        serviceResponse.Success = true;
+                        serviceResponse.StatusCode = HttpStatusCode.OK;
+                        return Ok(serviceResponse);
+                    }
+                   
+
                 }
                 else
                 {

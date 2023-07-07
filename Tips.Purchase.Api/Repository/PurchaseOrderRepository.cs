@@ -371,7 +371,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PurchaseOrder> GetPurchaseOrderByPONumber(string poNumber)
         {
             var purchaseOrderDetailbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders
-                .Where(x => x.PONumber == poNumber && x.IsDeleted== false && x.IsModified == false)
+                .Where(x => x.PONumber == poNumber &&  x.IsDeleted== false && x.IsModified == false)
                 .Include(o => o.POFiles)
                 .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)

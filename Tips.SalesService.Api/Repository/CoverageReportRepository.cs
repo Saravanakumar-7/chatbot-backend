@@ -18,9 +18,9 @@ namespace Tips.SalesService.Api.Repository
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
         }
 
-        public async Task<List<CoverageReport>> GetAllCollectionTrackers()
+        public async Task<List<CoverageReportDto>> GetAllSalesOrderDetails()
         {
-            var result = _tipsSalesServiceDbContext.SalesOrders
+            List<CoverageReportDto> result = await _tipsSalesServiceDbContext.SalesOrders
                 .GroupJoin(
                     _tipsSalesServiceDbContext.SalesOrdersItems,
                     s => s.Id,
@@ -35,7 +35,7 @@ namespace Tips.SalesService.Api.Repository
                 .GroupBy(
                     x => new { x.Item.ItemNumber, x.Item.Description },
                     x => x.Item.BalanceQty,
-                    (key, balances) => new
+                    (key, balances) => new CoverageReportDto
                     {
                         ItemNumber = key.ItemNumber,
                         Description = key.Description,
@@ -44,7 +44,7 @@ namespace Tips.SalesService.Api.Repository
                 )
                 .ToListAsync();
 
-            return null; 
+            return result; 
         }
 
     }
