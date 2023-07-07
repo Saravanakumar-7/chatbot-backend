@@ -26,24 +26,14 @@ namespace Tips.Master.Api.Controllers
         }
 
          [HttpGet]
-        public async Task<IActionResult> GetAllCostCenters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllCostCenters()
         {
             ServiceResponse<IEnumerable<CostCenterDto>> serviceResponse = new ServiceResponse<IEnumerable<CostCenterDto>>();
             try
             {
 
-                var GetallCostCenters = await _repository.CostCenterRepository.GetAllCostCenters(pagingParameter, searchParams);
+                var GetallCostCenters = await _repository.CostCenterRepository.GetAllCostCenters();
 
-                var metadata = new
-                {
-                    GetallCostCenters.TotalCount,
-                    GetallCostCenters.PageSize,
-                    GetallCostCenters.CurrentPage,
-                    GetallCostCenters.HasNext,
-                    GetallCostCenters.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all CostCenters");
                 var result = _mapper.Map<IEnumerable<CostCenterDto>>(GetallCostCenters);
                 serviceResponse.Data = result;
@@ -65,13 +55,13 @@ namespace Tips.Master.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCostCenters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveCostCenters()
         {
             ServiceResponse<IEnumerable<CostCenterDto>> serviceResponse = new ServiceResponse<IEnumerable<CostCenterDto>>();
 
             try
             {
-                var AllActiveCostCenters = await _repository.CostCenterRepository.GetAllActiveCostCenters(pagingParameter,searchParams);
+                var AllActiveCostCenters = await _repository.CostCenterRepository.GetAllActiveCostCenters();
                 _logger.LogInfo("Returned all CostCenters");
                 var result = _mapper.Map<IEnumerable<CostCenterDto>>(AllActiveCostCenters);
                 serviceResponse.Data = result;

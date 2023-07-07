@@ -44,21 +44,16 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<LeadTime>> GetAllActiveLeadTime([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<LeadTime>> GetAllActiveLeadTime()
         {
-            var leadTimeDetails = FindAll()
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Days.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<LeadTime>.ToPagedList(leadTimeDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var leadTimeDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return leadTimeDetails;
         }
 
-        public async Task<PagedList<LeadTime>> GetAllLeadTime([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<LeadTime>> GetAllLeadTime()
         {
-            var leadTimeDetails = FindAll().OrderByDescending(x => x.Id)
-              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Days.Contains(searchParams.SearchValue) ||
-                 inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<LeadTime>.ToPagedList(leadTimeDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var leadTimeDetails = await FindAll().ToListAsync();
+            return leadTimeDetails;
         }
 
         public async Task<LeadTime> GetLeadTimeById(int id)

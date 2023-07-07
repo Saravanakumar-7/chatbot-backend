@@ -44,21 +44,16 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<CostingMethod>> GetAllActiveCostingMethods([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<CostingMethod>> GetAllActiveCostingMethods()
         {
-            var costCenterDetails = FindAll()
-                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CostingMethodName.Contains(searchParams.SearchValue) ||
-                      inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<CostingMethod>.ToPagedList(costCenterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var costingMethodDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return costingMethodDetails;
         }
 
-        public async Task<PagedList<CostingMethod>> GetAllCostingMethods([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<CostingMethod>> GetAllCostingMethods()
         {
-            var costCenterDetails = FindAll().OrderByDescending(x => x.Id)
-            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CostingMethodName.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<CostingMethod>.ToPagedList(costCenterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var costingMethodDetails = await FindAll().ToListAsync();
+            return costingMethodDetails;
         }
 
         public async Task<CostingMethod> GetCostingMethodById(int id)

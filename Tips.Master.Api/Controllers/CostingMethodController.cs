@@ -26,24 +26,14 @@ namespace Tips.Master.Api.Controllers
         }
  
         [HttpGet]
-        public async Task<IActionResult> GetAllCostingMethods([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllCostingMethods()
         {
             ServiceResponse<IEnumerable<CostingMethodDto>> serviceResponse = new ServiceResponse<IEnumerable<CostingMethodDto>>();
             try
             {
 
-                var GetallCostingMethod = await _repository.CostingMethodRepository.GetAllCostingMethods(pagingParameter, searchParams);
+                var GetallCostingMethod = await _repository.CostingMethodRepository.GetAllCostingMethods();
 
-                var metadata = new
-                {
-                    GetallCostingMethod.TotalCount,
-                    GetallCostingMethod.PageSize,
-                    GetallCostingMethod.CurrentPage,
-                    GetallCostingMethod.HasNext,
-                    GetallCostingMethod.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all CostingMethods");
                 var result = _mapper.Map<IEnumerable<CostingMethodDto>>(GetallCostingMethod);
                 serviceResponse.Data = result;
@@ -64,13 +54,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCostingMethods([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveCostingMethods()
         {
             ServiceResponse<IEnumerable<CostingMethodDto>> serviceResponse = new ServiceResponse<IEnumerable<CostingMethodDto>>();
 
             try
             {
-                var AllActiveCostingMethods = await _repository.CostingMethodRepository.GetAllActiveCostingMethods(pagingParameter,searchParams);
+                var AllActiveCostingMethods = await _repository.CostingMethodRepository.GetAllActiveCostingMethods();
                 _logger.LogInfo("Returned all CostingMethods");
                 var result = _mapper.Map<IEnumerable<CostingMethodDto>>(AllActiveCostingMethods);
                 serviceResponse.Data = result;

@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface IIncoTermRepository : IRepositoryBase<IncoTerm>
     {
-        Task<PagedList<IncoTerm>> GetAllIncoTerm(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<IncoTerm>> GetAllIncoTerm();
         Task<IncoTerm> GetIncoTermById(int id);
-        Task<PagedList<IncoTerm>> GetAllActiveIncoTerm(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<IncoTerm>> GetAllActiveIncoTerm();
         Task<int?> CreateIncoTerm(IncoTerm incoTerm);
         Task<string> UpdateIncoTerm(IncoTerm incoTerm);
         Task<string> DeleteIncoTerm(IncoTerm incoTerm);

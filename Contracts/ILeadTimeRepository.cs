@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface ILeadTimeRepository : IRepositoryBase<LeadTime>
     {
-        Task<PagedList<LeadTime>> GetAllLeadTime(PagingParameter pagingParameter, SearchParames searchParames);
+        Task<IEnumerable<LeadTime>> GetAllLeadTime();
         Task<LeadTime> GetLeadTimeById(int id);
-        Task<PagedList<LeadTime>> GetAllActiveLeadTime(PagingParameter pagingParameter, SearchParames searchParames);
+        Task<IEnumerable<LeadTime>> GetAllActiveLeadTime();
         Task<int?> CreateLeadTime(LeadTime leadTime);
         Task<string> UpdateLeadTime(LeadTime leadTime);
         Task<string> DeleteLeadTime(LeadTime leadTime);

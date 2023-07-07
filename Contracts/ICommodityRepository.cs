@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface ICommodityRepository : IRepositoryBase<Commodity>
     {
-        Task<PagedList<Commodity>> GetAllCommodity(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<Commodity>> GetAllCommodity();
         Task<Commodity> GetCommodityById(int id);
-        Task<PagedList<Commodity>> GetAllActiveCommodity(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<Commodity>> GetAllActiveCommodity();
         Task<int?> CreateCommodity(Commodity commodity);
         Task<string> UpdateCommodity(Commodity commodity);
         Task<string> DeleteCommodity(Commodity commodity);

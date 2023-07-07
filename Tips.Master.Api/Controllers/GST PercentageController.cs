@@ -26,24 +26,14 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<GST_PercentageController>
         [HttpGet]
-        public async Task<IActionResult> GetAllGST_Percentages([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllGST_Percentages()
         {
             ServiceResponse<IEnumerable<GST_PercentageDto>> serviceResponse = new ServiceResponse<IEnumerable<GST_PercentageDto>>();
             try
             {
 
-                var GST_PercentageList = await _repository.GST_PercentageRepository.GetAllGST_Percentages(pagingParameter, searchParams);
+                var GST_PercentageList = await _repository.GST_PercentageRepository.GetAllGST_Percentages();
 
-                var metadata = new
-                {
-                    GST_PercentageList.TotalCount,
-                    GST_PercentageList.PageSize,
-                    GST_PercentageList.CurrentPage,
-                    GST_PercentageList.HasNext,
-                    GST_PercentageList.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all GST_Percentages");
                 var result = _mapper.Map<IEnumerable<GST_PercentageDto>>(GST_PercentageList);
                 serviceResponse.Data = result;
@@ -65,13 +55,13 @@ namespace Tips.Master.Api.Controllers
 
         [HttpGet]
 
-        public async Task<IActionResult> GetAllActiveGST_Percentages([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveGST_Percentages()
         {
             ServiceResponse<IEnumerable<GST_PercentageDto>> serviceResponse = new ServiceResponse<IEnumerable<GST_PercentageDto>>();
 
             try
             {
-                var GST_Percentage = await _repository.GST_PercentageRepository.GetAllActiveGST_Percentages(pagingParameter, searchParams);
+                var GST_Percentage = await _repository.GST_PercentageRepository.GetAllActiveGST_Percentages();
                 _logger.LogInfo("Returned all GST_Percentages");
                 var result = _mapper.Map<IEnumerable<GST_PercentageDto>>(GST_Percentage);
                 serviceResponse.Data = result;

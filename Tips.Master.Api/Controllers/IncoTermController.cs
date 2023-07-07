@@ -29,24 +29,14 @@ namespace Tips.Master.Api.Controllers
         }
  
         [HttpGet]
-        public async Task<IActionResult> GetAllIncoTerms([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllIncoTerms()
         {
             ServiceResponse<IEnumerable<IncoTermDto>> serviceResponse = new ServiceResponse<IEnumerable<IncoTermDto>>();
 
             try
             {
-                var incoTerms = await _repository.IncoTermRepository.GetAllIncoTerm(pagingParameter, searchParams);
+                var incoTerms = await _repository.IncoTermRepository.GetAllIncoTerm();
 
-                var metadata = new
-                {
-                    incoTerms.TotalCount,
-                    incoTerms.PageSize,
-                    incoTerms.CurrentPage,
-                    incoTerms.HasNext,
-                    incoTerms.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all Inco Term");
                 var result = _mapper.Map<IEnumerable<IncoTermDto>>(incoTerms);
                 serviceResponse.Data = result;
@@ -67,13 +57,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveIncoTerms([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveIncoTerms()
         {
             ServiceResponse<IEnumerable<IncoTermDto>> serviceResponse = new ServiceResponse<IEnumerable<IncoTermDto>>();
 
             try
             {
-                var incoTerms = await _repository.IncoTermRepository.GetAllActiveIncoTerm(pagingParameter, searchParams);
+                var incoTerms = await _repository.IncoTermRepository.GetAllActiveIncoTerm();
                 _logger.LogInfo("Returned all IncoTerms");
                 var result = _mapper.Map<IEnumerable<IncoTermDto>>(incoTerms);
                 serviceResponse.Data = result;

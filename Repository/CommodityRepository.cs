@@ -44,21 +44,16 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<Commodity>> GetAllActiveCommodity([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<Commodity>> GetAllActiveCommodity()
         {
-            var commodityDetails = FindAll()
-                                  .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CommodityType.Contains(searchParams.SearchValue) ||
-                                  inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<Commodity>.ToPagedList(commodityDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var commodityDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return commodityDetails;
         }
 
-        public async Task<PagedList<Commodity>> GetAllCommodity([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<Commodity>> GetAllCommodity()
         {
-            var commodityDetails = FindAll().OrderByDescending(x => x.Id)
-            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CommodityType.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<Commodity>.ToPagedList(commodityDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var commodityDetails = await FindAll().ToListAsync();
+            return commodityDetails;
         }
 
 

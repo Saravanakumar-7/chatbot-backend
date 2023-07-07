@@ -26,24 +26,14 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<NatureOfRelationshipController>
         [HttpGet]
-        public async Task<IActionResult> GetAllNatureOfRelationships([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllNatureOfRelationships()
         {
             ServiceResponse<IEnumerable<NatureOfRelationshipDto>> serviceResponse = new ServiceResponse<IEnumerable<NatureOfRelationshipDto>>();
             try
             {
 
-                var natureOfRelationshiplist = await _repository.NatureOfRelationshipRepository.GetAllNatureOfRelationships(pagingParameter, searchParams);
+                var natureOfRelationshiplist = await _repository.NatureOfRelationshipRepository.GetAllNatureOfRelationships();
 
-                var metadata = new
-                {
-                    natureOfRelationshiplist.TotalCount,
-                    natureOfRelationshiplist.PageSize,
-                    natureOfRelationshiplist.CurrentPage,
-                    natureOfRelationshiplist.HasNext,
-                    natureOfRelationshiplist.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all NatureOfRelationships");
                 var result = _mapper.Map<IEnumerable<NatureOfRelationshipDto>>(natureOfRelationshiplist);
                 serviceResponse.Data = result;
@@ -63,13 +53,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveNatureOfRelationships([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveNatureOfRelationships()
         {
             ServiceResponse<IEnumerable<NatureOfRelationshipDto>> serviceResponse = new ServiceResponse<IEnumerable<NatureOfRelationshipDto>>();
 
             try
             {
-                var NatureOfRelationships = await _repository.NatureOfRelationshipRepository.GetAllActiveNatureOfRelationships(pagingParameter, searchParams);
+                var NatureOfRelationships = await _repository.NatureOfRelationshipRepository.GetAllActiveNatureOfRelationships();
                 _logger.LogInfo("Returned all NatureOfRelationships");
                 var result = _mapper.Map<IEnumerable<NatureOfRelationshipDto>>(NatureOfRelationships);
                 serviceResponse.Data = result;

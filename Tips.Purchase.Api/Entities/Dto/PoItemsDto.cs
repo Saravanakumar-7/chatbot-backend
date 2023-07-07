@@ -39,6 +39,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public List<PoAddProjectDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleDto>? POAddDeliverySchedules { get; set; }
         public List<PoSpecialInstructionDto>? POSpecialInstructions { get; set; }
+        public List<PrDetailsDto>? PrDetails { get; set; }
 
     }
 
@@ -72,6 +73,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public List<PoAddProjectPostDto>? POAddprojects { get; set; }
         public List<PoAddDeliverySchedulePostDto>? POAddDeliverySchedules { get; set; }
         public List<PoSpecialInstructionPostDto>? POSpecialInstructions { get; set; }
+        public List<PrDetailsPostDto>? PrDetails { get; set; }
 
     }
 
@@ -105,6 +107,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public List<PoAddProjectUpdateDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleUpdateDto>? POAddDeliverySchedules { get; set; }
         public List<PoSpecialInstructionUpdateDto>? POSpecialInstructions { get; set; }
+        public List<PrDetailsUpdateDto>? PrDetails { get; set; }
 
     }
     public class PurchaseOrderItemNoListDto

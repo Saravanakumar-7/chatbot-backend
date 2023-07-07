@@ -48,6 +48,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
         public List<PoItemsDto>? POItems { get; set; }
+        public List<PoIncoTermDto>? POIncoTerms { get; set; }
 
     }
 
@@ -82,6 +83,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
 
         public List<PoItemsPostDto>? POItems { get; set; }
+        public List<PoIncoTermPostDto>? POIncoTerms { get; set; }
 
     }
     public class PurchaseOrderUpdateDto
@@ -118,6 +120,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
         public List<PoItemsUpdateDto>? POItems { get; set; }
+        public List<PoIncoTermUpdateDto>? POIncoTerms { get; set; }
 
     }
     public class PurchaseOrderIdNameListDto

@@ -46,22 +46,17 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<CostCenter>> GetAllActiveCostCenters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<CostCenter>> GetAllActiveCostCenters()
         {
-            var costCenterDetails = FindAll()
-                                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CostCenterName.Contains(searchParams.SearchValue) ||
-                                inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<CostCenter>.ToPagedList(costCenterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var costCenterDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return costCenterDetails;
         }
 
-        public async Task<PagedList<CostCenter>> GetAllCostCenters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<CostCenter>> GetAllCostCenters()
         {
 
-            var costCenterDetails = FindAll().OrderByDescending(x => x.Id)
-            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CostCenterName.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<CostCenter>.ToPagedList(costCenterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var costCenterDetails = await FindAll().ToListAsync();
+            return costCenterDetails;
         }
 
         public async Task<CostCenter> GetCostCenterById(int id)

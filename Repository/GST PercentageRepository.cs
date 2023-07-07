@@ -45,21 +45,16 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<GST_Percentage>> GetAllActiveGST_Percentages([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<GST_Percentage>> GetAllActiveGST_Percentages()
         {
-            var gstPercentDetails = FindAll()
-                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GSTPercentage.Contains(searchParams.SearchValue) ||
-                       inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<GST_Percentage>.ToPagedList(gstPercentDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var gstPercentageDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return gstPercentageDetails;
         }
 
-        public async Task<PagedList<GST_Percentage>> GetAllGST_Percentages([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<GST_Percentage>> GetAllGST_Percentages()
         {
-            var gstPercentDetails = FindAll().OrderByDescending(x => x.Id)
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GSTPercentage.Contains(searchParams.SearchValue) ||
-             inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<GST_Percentage>.ToPagedList(gstPercentDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var gstPercentageDetails = await FindAll().ToListAsync();
+            return gstPercentageDetails;
         }
         public async Task<GST_Percentage> GetGST_PercentageById(int id)
         {

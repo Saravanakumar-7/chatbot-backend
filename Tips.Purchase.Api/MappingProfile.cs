@@ -71,6 +71,14 @@ namespace Tips.Purchase.Api
             CreateMap<POBreakDown, POBreakDownPostDto>().ReverseMap();
             CreateMap<POBreakDown, POBreakDownUpdateDto>().ReverseMap();
 
+            CreateMap<PrDetails, PrDetailsDto>().ReverseMap();
+            CreateMap<PrDetails, PrDetailsPostDto>().ReverseMap();
+            CreateMap<PrDetails, PrDetailsUpdateDto>().ReverseMap();
+
+            CreateMap<PoIncoTerm, PoIncoTermDto>().ReverseMap();
+            CreateMap<PoIncoTerm, PoIncoTermPostDto>().ReverseMap();
+            CreateMap<PoIncoTerm, PoIncoTermUpdateDto>().ReverseMap();
+
         }
     }
 }

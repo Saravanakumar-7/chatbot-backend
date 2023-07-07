@@ -222,10 +222,29 @@ namespace Tips.Grin.Api.Controllers
                     
                     List<GrinPartsDto> grinPartsDtos = new List<GrinPartsDto>();
 
+
                     foreach (var GrinpartsDetails in GrinDetailsbyId.GrinParts)
                     {
                         GrinPartsDto grinPartsDto = _mapper.Map<GrinPartsDto>(GrinpartsDetails);
                         grinPartsDto.ProjectNumbers = _mapper.Map<List<ProjectNumbersDto>>(GrinpartsDetails.ProjectNumbers);
+
+                        // Add ItemMasterEnggDetails in GrinParts
+                        var ItemNumber = grinPartsDto.ItemNumber;
+                        var ItemMasterDetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
+                            "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
+
+                        //var inventoryObjectString = await ItemMasterDetails.Content.ReadAsStringAsync();
+                        //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        var itemMasterString = await ItemMasterDetails.Content.ReadAsStringAsync();
+                        var itemMasterData = JsonConvert.DeserializeObject<dynamic>(itemMasterString);
+
+                        grinPartsDto.DrawingNo = itemMasterData.DrawingNo;
+                        grinPartsDto.DocRet = itemMasterData.DocRet;
+                        grinPartsDto.IsCocRequired = itemMasterData.IsCocRequired;
+                        grinPartsDto.IsRohsItem = itemMasterData.IsRohsItem;
+                        grinPartsDto.IsShelfLife = itemMasterData.IsShelfLife;
+                        grinPartsDto.IsReachItem = itemMasterData.IsReachItem;
+                        grinPartsDto.FileUpload = itemMasterData.FileUpload;
                         grinPartsDtos.Add(grinPartsDto);
                     }
 
@@ -307,7 +326,6 @@ namespace Tips.Grin.Api.Controllers
                 var grinPartsList = new List<GrinParts>();
                 var grinDocumentUploadDtoList = new List<DocumentUpload>();
                 var grinPartsDocumentUploadDtoList = new List<DocumentUpload>();
-                var totalGrinCost = grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.CurrencyConversion + grins.Transport + grins.BECurrencyValue;
 
                 //// grin upload
 
@@ -382,19 +400,22 @@ namespace Tips.Grin.Api.Controllers
                         GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
                         sumOfTotal += grinParts.Qty * grinParts.UnitPrice;
                     }
-
-                    for (int i = 0; i < grinPartsDto.Count; i++)
+                    var totalGrinCost = grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.CurrencyConversion + grins.Transport + grins.BECurrencyValue;
+                    if (totalGrinCost != 0)
                     {
-                        GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
-                        total = grinParts.Qty * grinParts.UnitPrice;
-                        var Cost = totalGrinCost * total / sumOfTotal;
-                        var finalCost = Cost / grinParts.Qty;
-                        var weightageCost = grinParts.UnitPrice + finalCost;
-                        total = 0;
-                        grinParts.WeightedAverage = weightageCost;
-                        grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
-                        grinPartsList.Add(grinParts);
+                        for (int i = 0; i < grinPartsDto.Count; i++)
+                        {
+                            GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
+                            total = grinParts.Qty * grinParts.UnitPrice;
+                            var Cost = totalGrinCost * total / sumOfTotal;
+                            var finalCost = Cost / grinParts.Qty;
+                            var weightageCost = grinParts.UnitPrice + finalCost;
+                            total = 0;
+                            grinParts.WeightedAverage = weightageCost;
+                            grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
+                            grinPartsList.Add(grinParts);
 
+                        }
                     }
                 }
                 grins.GrinParts = grinPartsList;

@@ -46,22 +46,17 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<NatureOfRelationship>> GetAllActiveNatureOfRelationships([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<NatureOfRelationship>> GetAllActiveNatureOfRelationships()
         {
 
-            var natureOfRelationshipDetails = FindAll()
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.NatureOfRelationshipName.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<NatureOfRelationship>.ToPagedList(natureOfRelationshipDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var natureOfRelationshipDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return natureOfRelationshipDetails;
         }
 
-        public async Task<PagedList<NatureOfRelationship>> GetAllNatureOfRelationships([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<NatureOfRelationship>> GetAllNatureOfRelationships()
         {
-            var natureOfRelationshipDetails = FindAll().OrderByDescending(x => x.Id)
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.NatureOfRelationshipName.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<NatureOfRelationship>.ToPagedList(natureOfRelationshipDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var natureOfRelationshipDetails = await FindAll().ToListAsync();
+            return natureOfRelationshipDetails;
         }
 
         public async Task<NatureOfRelationship> GetNatureOfRelationshipById(int id)

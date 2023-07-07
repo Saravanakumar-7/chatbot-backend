@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface IMaterialTypeRepository:IRepositoryBase<MaterialType>
     {
-        Task<PagedList<MaterialType>> GetAllMaterialType(PagingParameter pagingParameter, SearchParames searchParames);
+        Task<IEnumerable<MaterialType>> GetAllMaterialType();
         Task<MaterialType> GetMaterialTypeById(int id);
-        Task<PagedList<MaterialType>> GetAllActiveMaterialType(PagingParameter pagingParameter, SearchParames searchParames);
+        Task<IEnumerable<MaterialType>> GetAllActiveMaterialType();
         Task<int?> CreateMaterialType(MaterialType materialType);
         Task<string> UpdateMaterialType(MaterialType materialType);
         Task<string> DeleteMaterialType(MaterialType materialType);

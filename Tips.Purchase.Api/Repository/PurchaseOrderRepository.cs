@@ -111,7 +111,10 @@ namespace Tips.Purchase.Api.Repository
                     .Include(itm => itm.POItems)
                     .ThenInclude(po => po.POAddDeliverySchedules)
                     .Include(itm => itm.POItems)
-                    .ThenInclude(po => po.POSpecialInstructions);
+                    .ThenInclude(po => po.POSpecialInstructions)
+                     .Include(itm => itm.POItems)
+                    .ThenInclude(po => po.PrDetails)
+                    .Include(itm => itm.PoIncoTerms);
                 }
                 return query.ToList();
             }
@@ -148,7 +151,10 @@ namespace Tips.Purchase.Api.Repository
                     .Include(itm => itm.POItems)
                     .ThenInclude(po => po.POAddDeliverySchedules)
                     .Include(itm => itm.POItems)
-                    .ThenInclude(po => po.POSpecialInstructions);
+                    .ThenInclude(po => po.POSpecialInstructions)
+                    .Include(itm => itm.POItems)
+                    .ThenInclude(po => po.PrDetails)
+                    .Include(itm => itm.PoIncoTerms);
                 }
                 return query.ToList();
             }
@@ -190,6 +196,9 @@ namespace Tips.Purchase.Api.Repository
             .ThenInclude(po => po.POAddDeliverySchedules)
             .Include(itm => itm.POItems)
             .ThenInclude(po => po.POSpecialInstructions)
+            .Include(itm => itm.POItems)
+             .ThenInclude(po => po.PrDetails)
+             .Include(itm => itm.PoIncoTerms)
             .ToList();
             return purchaseOrderDetails;        
     }
@@ -254,7 +263,10 @@ namespace Tips.Purchase.Api.Repository
                                 .Include(m => m.POItems)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
                                 .Include(itm => itm.POItems)
-                                .ThenInclude(po => po.POSpecialInstructions);
+                                .ThenInclude(po => po.POSpecialInstructions)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.PrDetails)
+                                .Include(itm => itm.PoIncoTerms);
 
             return activePurchaseOrderDetails;
         }
@@ -346,7 +358,10 @@ namespace Tips.Purchase.Api.Repository
                                .Include(m => m.POItems)
                                .ThenInclude(i => i.POAddDeliverySchedules)
                                .Include(itm => itm.POItems)
-                               .ThenInclude(po => po.POSpecialInstructions);
+                               .ThenInclude(po => po.POSpecialInstructions)
+                               .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.PrDetails)
+                                .Include(itm => itm.PoIncoTerms);
 
             return PagedList<PurchaseOrder>.ToPagedList(purchaseOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
@@ -362,6 +377,9 @@ namespace Tips.Purchase.Api.Repository
                                 .ThenInclude(i => i.POAddDeliverySchedules)
                                 .Include(itm => itm.POItems)
                                 .ThenInclude(po => po.POSpecialInstructions)
+                                .Include(itm => itm.POItems)
+                                 .ThenInclude(po => po.PrDetails)
+                                 .Include(itm => itm.PoIncoTerms)
                                 .FirstOrDefaultAsync();
 
 
@@ -379,6 +397,9 @@ namespace Tips.Purchase.Api.Repository
                                 .ThenInclude(i => i.POAddDeliverySchedules)
                                 .Include(itm => itm.POItems)
                                 .ThenInclude(po => po.POSpecialInstructions)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.PrDetails)
+                                .Include(itm => itm.PoIncoTerms)
                                 .FirstOrDefaultAsync();
 
 
@@ -396,6 +417,9 @@ namespace Tips.Purchase.Api.Repository
                                 .ThenInclude(i => i.POAddDeliverySchedules)
                                 .Include(itm => itm.POItems)
                                 .ThenInclude(po => po.POSpecialInstructions)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.PrDetails)
+                                .Include(itm => itm.PoIncoTerms)
                                 .FirstOrDefaultAsync();
 
 

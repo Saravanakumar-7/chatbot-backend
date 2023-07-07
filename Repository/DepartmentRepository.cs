@@ -45,21 +45,16 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<Department>> GetAllActiveDepartment([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<Department>> GetAllActiveDepartment()
         {
-            var departmentDetails = FindAll()
-                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DepartmentName.Contains(searchParams.SearchValue) ||
-                       inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<Department>.ToPagedList(departmentDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var departmentDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return departmentDetails;
         }
 
-        public async Task<PagedList<Department>> GetAllDepartment([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<Department>> GetAllDepartment()
         {
-            var departmentDetails = FindAll().OrderByDescending(x => x.Id)
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DepartmentName.Contains(searchParams.SearchValue) ||
-             inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<Department>.ToPagedList(departmentDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var departmentDetails = await FindAll().ToListAsync();
+            return departmentDetails;
         }
 
         public async Task<Department> GetDepartmentById(int id)

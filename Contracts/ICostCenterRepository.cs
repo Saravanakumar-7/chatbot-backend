@@ -11,9 +11,9 @@ namespace Contracts
     public interface ICostCenterRepository : IRepositoryBase<CostCenter>
 
     {
-        Task<PagedList<CostCenter>> GetAllCostCenters(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CostCenter>> GetAllCostCenters();
         Task<CostCenter> GetCostCenterById(int id);
-        Task<PagedList<CostCenter>> GetAllActiveCostCenters(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CostCenter>> GetAllActiveCostCenters();
         Task<int?> CreateCostCenter(CostCenter costCenter);
         Task<string> UpdateCostCenter(CostCenter costCenter);
         Task<string> DeleteCostCenter(CostCenter costCenter);

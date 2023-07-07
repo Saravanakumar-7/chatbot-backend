@@ -46,21 +46,16 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<CustomerType>> GetAllActiveCustomerTypes([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<CustomerType>> GetAllActiveCustomerTypes()
         {
-            var currencyDetails = FindAll()
-                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerTypeName.Contains(searchParams.SearchValue) ||
-                      inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<CustomerType>.ToPagedList(currencyDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var customerTypeDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return customerTypeDetails;
         }
 
-        public async Task<PagedList<CustomerType>> GetAllCustomerTypes([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<CustomerType>> GetAllCustomerTypes()
         {
-            var currencyDetails = FindAll().OrderByDescending(x => x.Id)
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerTypeName.Contains(searchParams.SearchValue) ||
-             inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<CustomerType>.ToPagedList(currencyDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var customerTypeDetails = await FindAll().ToListAsync();
+            return customerTypeDetails;
         }
 
 

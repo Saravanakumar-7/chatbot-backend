@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -74,6 +76,26 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? UTGST { get; set; }
+        [NotMapped]
+        public string? DrawingNo { get; set; }
+        [NotMapped]
+        public string? DocRet { get; set; }
+        [NotMapped]
+        public string? RevNo { get; set; }
+        [NotMapped]
+        [DefaultValue(false)]
+        public bool IsCocRequired { get; set; }
+        [NotMapped]
+        [DefaultValue(false)]
+        public bool IsRohsItem { get; set; }
+        [NotMapped]
+        [DefaultValue(false)]
+        public bool IsShelfLife { get; set; }
+        [NotMapped]
+        [DefaultValue(false)]
+        public bool IsReachItem { get; set; }
+        [NotMapped]
+        public List<DocumentUpload>? FileUpload { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -211,4 +233,19 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? Qty { get; set; }
         public string? PONumber { get; set; }
     }
+    //public class ItemMasterEnggDetailsDto
+    //{
+    //    public string? DrawingNo { get; set; }
+    //    public string? DocRet { get; set; }
+    //    public string? RevNo { get; set; }
+    //    [DefaultValue(false)]
+    //    public bool IsCocRequired { get; set; }
+    //    [DefaultValue(false)]
+    //    public bool IsRohsItem { get; set; }
+    //    [DefaultValue(false)]
+    //    public bool IsShelfLife { get; set; }
+    //    [DefaultValue(false)]
+    //    public bool IsReachItem { get; set; }
+    //    public List<DocumentUpload>? FileUpload { get; set; }
+    //}
 }

@@ -30,24 +30,14 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<DeliveryTermController>
         [HttpGet]
-        public async Task<IActionResult> GetAllDeliveryTerms([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllDeliveryTerms()
         {
             ServiceResponse<IEnumerable<DeliveryTermGetDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryTermGetDto>>();
 
             try
             {
-                var deliveryTermsList = await _repository.DeliveryTermRepo.GetAllDeliveryTerms(pagingParameter,searchParams);
+                var deliveryTermsList = await _repository.DeliveryTermRepo.GetAllDeliveryTerms();
 
-                var metadata = new
-                {
-                    deliveryTermsList.TotalCount,
-                    deliveryTermsList.PageSize,
-                    deliveryTermsList.CurrentPage,
-                    deliveryTermsList.HasNext,
-                    deliveryTermsList.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all DeliveryTerms");
                 var result = _mapper.Map<IEnumerable<DeliveryTermGetDto>>(deliveryTermsList);
                 serviceResponse.Data = result;
@@ -67,13 +57,13 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveDeliveryTerms([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveDeliveryTerms()
         {
             ServiceResponse<IEnumerable<DeliveryTermGetDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryTermGetDto>>();
 
             try
             {
-                var deliveryTerms = await _repository.DeliveryTermRepo.GetAllActiveDeliveryTerms(pagingParameter,searchParams);
+                var deliveryTerms = await _repository.DeliveryTermRepo.GetAllActiveDeliveryTerms();
                 _logger.LogInfo("Returned all DeliveryTerms");
                 var result = _mapper.Map<IEnumerable<DeliveryTermGetDto>>(deliveryTerms);
                 serviceResponse.Data = result;
