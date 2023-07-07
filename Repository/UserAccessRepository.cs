@@ -76,6 +76,13 @@ namespace Repository
 
             return userAccessByUserId;
         }
+        public async Task<List<RoleAccess>> GetUserRoleAccessByUserId(int roleId)
+        {
+            var rolesAccessByRoleId = await TipsMasterDbContext.RoleAccesses.Where(x => x.RoleId == roleId)
+                 .ToListAsync();
+
+            return rolesAccessByRoleId;
+        }
 
         public async Task<string> UpdateUserAccess(UserAccess userAccess)
         {
