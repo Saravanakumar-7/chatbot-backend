@@ -329,9 +329,9 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateIqc(int id, [FromBody] IQCConfirmationDto IQCConfirmationUpdateDto)
+        public async Task<IActionResult> UpdateIqc(int id, [FromBody] IQCConfirmationUpdateDto IQCConfirmationUpdateDto)
         {
-            ServiceResponse<IQCConfirmationDto> serviceResponse = new ServiceResponse<IQCConfirmationDto>();
+            ServiceResponse<IQCConfirmationUpdateDto> serviceResponse = new ServiceResponse<IQCConfirmationUpdateDto>();
 
             try
             {
@@ -366,11 +366,11 @@ namespace Tips.Grin.Api.Controllers
                 //string result = await _iQCConfirmationRepository.UpdateIqc(iQCConfirmationUpdate);
 
 
-                var iqcItems = _mapper.Map<IEnumerable<IQCConfirmationItems>>(IQCConfirmationUpdateDto.IQCConfirmationItems);
+                var iqcItems = _mapper.Map<IEnumerable<IQCConfirmationItems>>(IQCConfirmationUpdateDto.IQCConfirmationItemsUpdateDtos);
 
                 var iqcItemsList = _mapper.Map<IQCConfirmation>(IQCConfirmationUpdateDto);
 
-                var iQCConfirmationItemsDtos = IQCConfirmationUpdateDto.IQCConfirmationItems;
+                var iQCConfirmationItemsDtos = IQCConfirmationUpdateDto.IQCConfirmationItemsUpdateDtos;
 
                 var IqcItemsList = new List<IQCConfirmationItems>();
                 for (int i = 0; i < iQCConfirmationItemsDtos.Count; i++)

@@ -117,6 +117,18 @@ namespace Repository
             }
 
         }
+        public async Task<IEnumerable<ItemNoListDto>> GetAllPurchasePartItemNoList()
+        {
+            IEnumerable<ItemNoListDto> itemNumberListDto = await TipsMasterDbContext.ItemMasters
+                               .Where(x => x.ItemType == PartType.PurchasePart)
+                               .Select(c => new ItemNoListDto()
+                               {
+                                   ItemNumber = c.ItemNumber,
+                               })
+                             .ToListAsync();
+
+            return itemNumberListDto;
+        }
         public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllFgTgItemMasterItemNoList()
         {
             IEnumerable<ItemMasterIdNoListDto> getAllActiveItemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters

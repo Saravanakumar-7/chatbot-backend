@@ -198,7 +198,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGrinById(int id)
         {
-            ServiceResponse<GrinDto> serviceResponse = new ServiceResponse<GrinDto>();
+            ServiceResponse<GrinItemMasterEnggDto> serviceResponse = new ServiceResponse<GrinItemMasterEnggDto>();
 
             try
             {
@@ -217,39 +217,40 @@ namespace Tips.Grin.Api.Controllers
 
                 {
                     _logger.LogInfo($"Returned GrinDetailsById with id: {id}");
-                    GrinDto grinDto = _mapper.Map<GrinDto>(GrinDetailsbyId);
+                    GrinItemMasterEnggDto grinItemMasterEnggDto = _mapper.Map<GrinItemMasterEnggDto>(GrinDetailsbyId);
 
                     
-                    List<GrinPartsDto> grinPartsDtos = new List<GrinPartsDto>();
+                    List<GrinPartsItemMasterEnggDto> grinPartsItemMasterEnggList = new List<GrinPartsItemMasterEnggDto>();
 
 
                     foreach (var GrinpartsDetails in GrinDetailsbyId.GrinParts)
                     {
-                        GrinPartsDto grinPartsDto = _mapper.Map<GrinPartsDto>(GrinpartsDetails);
-                        grinPartsDto.ProjectNumbers = _mapper.Map<List<ProjectNumbersDto>>(GrinpartsDetails.ProjectNumbers);
+                        GrinPartsItemMasterEnggDto grinPartsItemMasterEnggDto = _mapper.Map<GrinPartsItemMasterEnggDto>(GrinpartsDetails);
+                        grinPartsItemMasterEnggDto.ProjectNumbers = _mapper.Map<List<ProjectNumbersDto>>(GrinpartsDetails.ProjectNumbers);
 
                         // Add ItemMasterEnggDetails in GrinParts
-                        var ItemNumber = grinPartsDto.ItemNumber;
-                        var ItemMasterDetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
+                        var ItemNumber = grinPartsItemMasterEnggDto.ItemNumber;
+                        var itemMasterDetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
                             "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
 
-                        //var inventoryObjectString = await ItemMasterDetails.Content.ReadAsStringAsync();
-                        //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        var itemMasterString = await ItemMasterDetails.Content.ReadAsStringAsync();
-                        var itemMasterData = JsonConvert.DeserializeObject<dynamic>(itemMasterString);
+                        var inventoryObjectString = await itemMasterDetails.Content.ReadAsStringAsync();
+                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        dynamic inventoryObject = inventoryObjectData;
 
-                        grinPartsDto.DrawingNo = itemMasterData.DrawingNo;
-                        grinPartsDto.DocRet = itemMasterData.DocRet;
-                        grinPartsDto.IsCocRequired = itemMasterData.IsCocRequired;
-                        grinPartsDto.IsRohsItem = itemMasterData.IsRohsItem;
-                        grinPartsDto.IsShelfLife = itemMasterData.IsShelfLife;
-                        grinPartsDto.IsReachItem = itemMasterData.IsReachItem;
-                        grinPartsDto.FileUpload = itemMasterData.FileUpload;
-                        grinPartsDtos.Add(grinPartsDto);
+                        grinPartsItemMasterEnggDto.DrawingNo = inventoryObject.drawingNo;
+                        grinPartsItemMasterEnggDto.DocRet = inventoryObject.docRet;
+                        grinPartsItemMasterEnggDto.RevNo = inventoryObject.revNo;
+                        grinPartsItemMasterEnggDto.IsCocRequired = inventoryObject.isCocRequired;
+                        grinPartsItemMasterEnggDto.IsRohsItem = inventoryObject.isRohsItem;
+                        grinPartsItemMasterEnggDto.IsShelfLife = inventoryObject.isShelfLife;
+                        grinPartsItemMasterEnggDto.IsReachItem = inventoryObject.isReachItem;
+                        grinPartsItemMasterEnggDto.FileUpload = inventoryObject.fileUpload.ToObject<List<DocumentUpload>>();
+
+                        grinPartsItemMasterEnggList.Add(grinPartsItemMasterEnggDto);                       
                     }
 
-                    grinDto.GrinParts = grinPartsDtos;
-                    serviceResponse.Data = grinDto;
+                    grinItemMasterEnggDto.GrinParts = grinPartsItemMasterEnggList;
+                    serviceResponse.Data = grinItemMasterEnggDto;
                     serviceResponse.Message = $"Returned Grin with id: {id}";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
