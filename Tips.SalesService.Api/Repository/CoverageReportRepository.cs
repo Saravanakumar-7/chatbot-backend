@@ -38,7 +38,7 @@ namespace Tips.SalesService.Api.Repository
                               select new CoverageReportDto
                               {
                                   ItemNumber = g.Key.ItemNumber,
-                                  Description =g.Key.Description,
+                                  ItemDescription =g.Key.Description,
                                   BalanceForcastQty = g.Sum(k => k.BalanceQty)                                   
                               }).ToListAsync();
 

@@ -45,7 +45,7 @@ namespace Tips.SalesService.Api.Controllers
                 var getAllForecastLpCosting = await _coverageRepository.GetAllSalesOrderDetails();
 
                 _logger.LogInfo("Returned Coverage Report");
-                var result = _mapper.Map<IEnumerable<CoverageReportDto>>(getAllForecastLpCosting);
+                var result = _mapper.Map<List<CoverageReportDto>>(getAllForecastLpCosting);
                 //bom details
                 var json = JsonConvert.SerializeObject(result);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");

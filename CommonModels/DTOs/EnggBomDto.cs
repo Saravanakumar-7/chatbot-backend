@@ -136,8 +136,8 @@ namespace Entities.DTOs
     }
     public class EnggBomCoverageDto
     {
-        public string ItemNumber { get; set; }
-        public string Description { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
         public decimal? BalanceForcastQty { get; set; }
     }
     public class CoverageEnggChildDto
@@ -150,7 +150,7 @@ namespace Entities.DTOs
         //public decimal QtyPerUnit { get; set; }
         //public decimal? BalanceForcastQty { get; set; }
         public string ItemNumber { get; set; }
-        public string Description { get; set; }
+        public string ItemDescription { get; set; }
         public decimal? BalanceForcastQty { get; set; }
 
 

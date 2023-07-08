@@ -9,6 +9,7 @@ using Entities.Migrations;
 using System.Net;
 using Newtonsoft.Json;
 using Repository;
+using NuGet.Packaging;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -109,6 +110,8 @@ namespace Tips.Master.Api.Controllers
                 foreach (var item in enggBomCoverageDtos)
                 {
                     IEnumerable<CoverageEnggChildDto> coverageEnggChildDtos = await _enggBomRepository.GetEnggChildItemDetails(item.ItemNumber);
+                    List<string> allChildItems = await GetChildItemsRecursive(item.ItemNumber);
+
                     //var orderItem = salesOrderItems.FirstOrDefault();
                     //orderItem.BalanceQty = orderItem.BalanceQty + item.DispatchQty;
                     //orderItem.DispatchQty -= item.DispatchQty;
@@ -128,6 +131,39 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //coverage recurssion Method
+
+        private async Task<List<string>> GetChildItemsRecursive(string itemNumber)
+        {
+            List<string> allChildItems = new List<string>();
+
+
+            // Retrieve the reference ID of the itemNumber from the enggbom table
+            int enggBomId = await _enggBomRepository.GetEnggBomId(itemNumber);
+
+            if (enggBomId == null)
+            {
+                return allChildItems; // ItemNumber not found in enggbom table, return an empty list
+            }
+
+            // Retrieve the child items of the enggbom table
+            var childItems = await _enggBomRepository.GetEnggChildItemNumber(enggBomId);
+
+
+            allChildItems.AddRange(childItems);
+
+            foreach (var childItem in childItems)
+            {
+                // Recursively call the function to fetch child items of child items
+                allChildItems.AddRange(await GetChildItemsRecursive(childItem));
+            }
+
+            return allChildItems;
+        }
+
+
+
+        
 
         // GET api/<EngineeringBOMController>/5
         [HttpGet("{id}")]

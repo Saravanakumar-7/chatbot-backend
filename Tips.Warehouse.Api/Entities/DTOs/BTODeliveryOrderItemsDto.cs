@@ -69,7 +69,7 @@
     }
 
     public class BtoDeliveryOrderDispatchQtyDetailsDto
-    {
+    { 
 
         public string? FGItemNumber { get; set; }
         public int? SalesOrderId { get; set; } //salesorderno
