@@ -44,21 +44,16 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<BasisOfApproval>> GetAllBasisOfApproval([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<BasisOfApproval>> GetAllBasisOfApproval()
         {
-            var basisOfApprovalDetails = FindAll().OrderByDescending(x => x.Id)
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BasisOfApprovalName.Contains(searchParams.SearchValue) ||
-                inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<BasisOfApproval>.ToPagedList(basisOfApprovalDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var basisOfApprovalDetails = await FindAll().ToListAsync();
+            return basisOfApprovalDetails;
         }
 
-        public async Task<PagedList<BasisOfApproval>> GetAllActiveBasisOfApproval([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<BasisOfApproval>> GetAllActiveBasisOfApproval()
         {
-            var getAllActiveBasisOfApprovals = FindAll()
-            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BasisOfApprovalName.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<BasisOfApproval>.ToPagedList(getAllActiveBasisOfApprovals, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var basisOfApprovalDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return basisOfApprovalDetails;
         }
 
         public async Task<BasisOfApproval> GetBasisOfApprovalById(int id)

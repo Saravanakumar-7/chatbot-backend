@@ -46,22 +46,17 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<MaterialType>> GetAllActiveMaterialType([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<MaterialType>> GetAllActiveMaterialType()
         {
-            var materialTypeDetails = FindAll()
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.MaterialTypeName.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<MaterialType>.ToPagedList(materialTypeDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var materialTypeDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return materialTypeDetails;
         }
 
 
-        public async Task<PagedList<MaterialType>> GetAllMaterialType([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<MaterialType>> GetAllMaterialType()
         {
-            var materialTypeDetails = FindAll().OrderByDescending(x => x.Id)
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.MaterialTypeName.Contains(searchParams.SearchValue) ||
-            inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<MaterialType>.ToPagedList(materialTypeDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var materialTypeDetails = await FindAll().ToListAsync();
+            return materialTypeDetails;
         }
 
 

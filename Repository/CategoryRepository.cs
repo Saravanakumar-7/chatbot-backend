@@ -43,21 +43,16 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<Category>> GetAllActiveCategory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<Category>> GetAllActiveCategory()
         {
-            var categoryDetails = FindAll()
-                                    .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CategoryName.Contains(searchParams.SearchValue) ||
-                                    inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<Category>.ToPagedList(categoryDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var categoryDetails = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            return categoryDetails;
         }
 
-        public async Task<PagedList<Category>> GetAllCategory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParames)
+        public async Task<IEnumerable<Category>> GetAllCategory()
         {
-            var allcategoryDetails = FindAll().OrderByDescending(x => x.Id)
-            .Where(inv => ((string.IsNullOrWhiteSpace(searchParames.SearchValue) || inv.CategoryName.Contains(searchParames.SearchValue) ||
-            inv.Description.Contains(searchParames.SearchValue))));
-
-            return PagedList<Category>.ToPagedList(allcategoryDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var categoryDetails = await FindAll().ToListAsync();
+            return categoryDetails;
         }
 
         public async Task<Category> GetCategoryById(int id)

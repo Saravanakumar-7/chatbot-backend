@@ -53,6 +53,7 @@ namespace Tips.Purchase.Api.Entities
         public List<PoAddProject>? POAddprojects { get; set; }
         public List<PoAddDeliverySchedule>? POAddDeliverySchedules { get; set; }
         public List<PoSpecialInstruction>? POSpecialInstructions { get; set; }
+        public List<PrDetails>? PrDetails { get; set; }
 
     }
 }

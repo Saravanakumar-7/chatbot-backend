@@ -43,23 +43,18 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<DeliveryTerm>> GetAllActiveDeliveryTerms([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<DeliveryTerm>> GetAllActiveDeliveryTerms()
         {
-            var deliveryTermDetails = FindAll()
-                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DeliveryTermName.Contains(searchParams.SearchValue) ||
-                      inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<DeliveryTerm>.ToPagedList(deliveryTermDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var deliveryTermDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return deliveryTermDetails;
 
         }
 
-        public async Task<PagedList<DeliveryTerm>> GetAllDeliveryTerms([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<DeliveryTerm>> GetAllDeliveryTerms()
         {
 
-            var deliveryTermDetails = FindAll().OrderByDescending(x => x.Id)
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DeliveryTermName.Contains(searchParams.SearchValue) ||
-             inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<DeliveryTerm>.ToPagedList(deliveryTermDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var deliveryTermDetails = await FindAll().ToListAsync();
+            return deliveryTermDetails;
 
         }
 

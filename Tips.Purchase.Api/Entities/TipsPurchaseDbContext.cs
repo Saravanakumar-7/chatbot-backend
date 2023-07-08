@@ -26,6 +26,8 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PoSpecialInstruction> PoSpecialInstructions { get; set; }
         public DbSet<POCollectionTracker> POCollectionTrackers { get; set; }
         public DbSet<POBreakDown> POBreakDowns { get; set; }
+        public DbSet<PrDetails> PrDetails { get; set; }
+        public DbSet<PoIncoTerm> PoIncoTerms { get; set; }
 
     }
 }

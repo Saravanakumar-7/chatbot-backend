@@ -46,23 +46,18 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<PackingInstruction>> GetAllActivePackingInstruction([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<PackingInstruction>> GetAllActivePackingInstruction()
         {
 
-            var natureOfRelationshipDetails = FindAll()
-            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PackingInstructionsName.Contains(searchParams.SearchValue) ||
-           inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<PackingInstruction>.ToPagedList(natureOfRelationshipDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var packingInstructionDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return packingInstructionDetails;
         }
 
-        public async Task<PagedList<PackingInstruction>> GetAllPackingInstruction([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<PackingInstruction>> GetAllPackingInstruction()
         {
 
-            var natureOfRelationshipDetails = FindAll().OrderByDescending(x => x.Id)
-            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PackingInstructionsName.Contains(searchParams.SearchValue) ||
-           inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<PackingInstruction>.ToPagedList(natureOfRelationshipDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var packingInstructionDetails = await FindAll().ToListAsync();
+            return packingInstructionDetails;
         }
 
         public async Task<PackingInstruction> GetPackingInstructionById(int id)

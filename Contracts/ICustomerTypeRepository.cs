@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface ICustomerTypeRepository
     {
-        Task<PagedList<CustomerType>> GetAllCustomerTypes(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CustomerType>> GetAllCustomerTypes();
         Task<CustomerType> GetCustomerTypeById(int id);
-        Task<PagedList<CustomerType>> GetAllActiveCustomerTypes(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CustomerType>> GetAllActiveCustomerTypes();
         Task<int?> CreateCustomerType(CustomerType customerType);
         Task<string> UpdateCustomerType(CustomerType customerType);
         Task<string> DeleteCustomerType(CustomerType customerType);

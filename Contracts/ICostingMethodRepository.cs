@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface ICostingMethodRepository : IRepositoryBase<CostingMethod>
     {
-        Task<PagedList<CostingMethod>> GetAllCostingMethods(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CostingMethod>> GetAllCostingMethods();
         Task<CostingMethod> GetCostingMethodById(int id);
-        Task<PagedList<CostingMethod>> GetAllActiveCostingMethods(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<CostingMethod>> GetAllActiveCostingMethods();
         Task<int?> CreateCostingMethod(CostingMethod costingMethod);
         Task<string> UpdateCostingMethod(CostingMethod costingMethod);
         Task<string> DeleteCostingMethod(CostingMethod costingMethod);

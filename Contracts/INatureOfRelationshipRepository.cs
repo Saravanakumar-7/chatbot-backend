@@ -11,9 +11,9 @@ namespace Contracts
     public interface INatureOfRelationshipRepository : IRepositoryBase<NatureOfRelationship>
 
     {
-        Task<PagedList<NatureOfRelationship>> GetAllNatureOfRelationships(PagingParameter pagingParameter, SearchParames searchParames);
+        Task<IEnumerable<NatureOfRelationship>> GetAllNatureOfRelationships();
         Task<NatureOfRelationship> GetNatureOfRelationshipById(int id);
-        Task<PagedList<NatureOfRelationship>> GetAllActiveNatureOfRelationships(PagingParameter pagingParameter, SearchParames searchParames);
+        Task<IEnumerable<NatureOfRelationship>> GetAllActiveNatureOfRelationships();
         Task<int?> CreateNatureOfRelationship(NatureOfRelationship natureOfRelationship);
         Task<string> UpdateNatureOfRelationship(NatureOfRelationship natureOfRelationship);
         Task<string> DeleteNatureOfRelationship(NatureOfRelationship natureOfRelationship);

@@ -9,6 +9,7 @@ using AutoMapper;
 using Azure;
 using Contracts;
 using Entities;
+using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -108,7 +109,7 @@ namespace Tips.Purchase.Api.Controllers
 
                     PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetailbyPONumber);
                     List<PoItemsDto> poItemDtoList = new List<PoItemsDto>();
-
+                    var poIncoTermList = _mapper.Map<IEnumerable<PoIncoTerm>>(purchaseOrderDto.POIncoTerms);
                     List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
 
                     if (purchaseOrderDto.POFiles.Count() != 0)
@@ -120,6 +121,20 @@ namespace Tips.Purchase.Api.Controllers
                         }
                     }
                     purchaseOrderDto.POFiles = documentUplaodDtoList;
+
+                    var poIncoTermDto = purchaseOrderDto.POIncoTerms;
+
+                    var poIncoTermsList = new List<PoIncoTermDto>();
+                    if (poIncoTermDto != null)
+                    {
+                        for (int i = 0; i < poIncoTermDto.Count; i++)
+                        {
+                            PoIncoTermDto poIncoTermDetails = _mapper.Map<PoIncoTermDto>(poIncoTermDto[i]);
+                            poIncoTermsList.Add(poIncoTermDetails);
+                        }
+                    }
+                    purchaseOrderDto.POIncoTerms = poIncoTermsList;
+
                     if (purchaseOrderDetailbyPONumber.POItems != null)
                     {
                         foreach (var poItemDetails in purchaseOrderDetailbyPONumber.POItems)
@@ -128,6 +143,7 @@ namespace Tips.Purchase.Api.Controllers
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
                             poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
                             poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
+                            poItemDtos.PrDetails = _mapper.Map<List<PrDetailsDto>>(poItemDetails.PrDetails);
                             poItemDtoList.Add(poItemDtos);
                         }
                     }
@@ -237,6 +253,20 @@ namespace Tips.Purchase.Api.Controllers
                         }
                     }
                     purchaseOrderDto.POFiles = documentUplaodDtoList;
+
+                    var poIncoTermDto = purchaseOrderDto.POIncoTerms;
+
+                    var poIncoTermsList = new List<PoIncoTermDto>();
+                    if (poIncoTermDto != null)
+                    {
+                        for (int i = 0; i < poIncoTermDto.Count; i++)
+                        {
+                            PoIncoTermDto poIncoTermDetails = _mapper.Map<PoIncoTermDto>(poIncoTermDto[i]);
+                            poIncoTermsList.Add(poIncoTermDetails);
+                        }
+                    }
+                    purchaseOrderDto.POIncoTerms = poIncoTermsList;
+
                     if (purchaseOrderDetail.POItems != null)
                     {
                         foreach (var poItemDetails in purchaseOrderDetail.POItems)
@@ -244,7 +274,8 @@ namespace Tips.Purchase.Api.Controllers
                             PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
                             poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
-                            poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions); 
+                            poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
+                            poItemDtos.PrDetails = _mapper.Map<List<PrDetailsDto>>(poItemDetails.PrDetails);
                             poItemDtoList.Add(poItemDtos);
                         }
                     }
@@ -305,6 +336,20 @@ namespace Tips.Purchase.Api.Controllers
                         }
                     }
                     purchaseOrderDto.POFiles = documentUplaodDtoList;
+
+                    var poIncoTermDto = purchaseOrderDto.POIncoTerms;
+
+                    var poIncoTermsList = new List<PoIncoTermDto>();
+                    if (poIncoTermDto != null)
+                    {
+                        for (int i = 0; i < poIncoTermDto.Count; i++)
+                        {
+                            PoIncoTermDto poIncoTermDetails = _mapper.Map<PoIncoTermDto>(poIncoTermDto[i]);
+                            poIncoTermsList.Add(poIncoTermDetails);
+                        }
+                    }
+                    purchaseOrderDto.POIncoTerms = poIncoTermsList;
+
                     if (purchaseOrderDetailbyId.POItems != null)
                     {
                         foreach (var poItemDetails in purchaseOrderDetailbyId.POItems)
@@ -313,6 +358,7 @@ namespace Tips.Purchase.Api.Controllers
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
                             poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
                             poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
+                            poItemDtos.PrDetails = _mapper.Map<List<PrDetailsDto>>(poItemDetails.PrDetails);
                             poItemDtoList.Add(poItemDtos);
                         }
                     }
@@ -493,7 +539,7 @@ namespace Tips.Purchase.Api.Controllers
                 var poFile = purchaseOrderPostDto.POFiles;
                 var poItemDtoList = new List<PoItem>();
                 var poDocumentUploadDtoList = new List<DocumentUpload>();
-
+                var poIncoTermList = _mapper.Map<IEnumerable<PoIncoTerm>>(purchaseOrderPostDto.POIncoTerms);
 
                 var date = DateTime.Now;
                 purchaseOrderPostDto.QuotationDate = date;
@@ -571,12 +617,14 @@ namespace Tips.Purchase.Api.Controllers
                         poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
                         poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                        poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
                         poItemDtoList.Add(poItemDetails);
                     }
                 }
 
                 purchaseOrderDetails.POItems = poItemDtoList;
                 purchaseOrderDetails.POFiles = poDocumentUploadDtoList;
+                purchaseOrderDetails.PoIncoTerms = poIncoTermList.ToList();
                 await _repository.CreatePurchaseOrder(purchaseOrderDetails);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -955,6 +1003,18 @@ namespace Tips.Purchase.Api.Controllers
                 var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderPostDto);
                 var poItemDto = purchaseOrderPostDto.POItems;
                 var poItemDtoList = new List<PoItem>();
+                var poIncoTermDto = purchaseOrderPostDto.POIncoTerms;
+                var poIncoTermsList = new List<PoIncoTerm>();
+
+                if (poIncoTermDto != null)
+                {
+                    for (int i = 0; i < poIncoTermDto.Count; i++)
+                    {
+                        PoIncoTerm poIncoTermDetails = _mapper.Map<PoIncoTerm>(poIncoTermDto[i]);
+                        poIncoTermsList.Add(poIncoTermDetails);
+                    }
+                }
+                purchaseOrderDetails.PoIncoTerms = poIncoTermsList;
 
                 if (poItemDto != null)
                 {
@@ -964,6 +1024,7 @@ namespace Tips.Purchase.Api.Controllers
                         poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
                         poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                        poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
                         poItemDtoList.Add(poItemDetails);
                     }
                 }

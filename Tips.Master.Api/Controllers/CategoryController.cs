@@ -25,28 +25,46 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<CategoryController>
         [HttpGet]
-        public async Task<IActionResult> GetAllCategory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParames)
+        public async Task<IActionResult> GetAllCategory()
         {
             ServiceResponse<IEnumerable<CategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<CategoryDto>>();
             try
             {
-                var GetallCategoryList = await _repository.CategoryRepository.GetAllCategory(pagingParameter, searchParames);
+                var GetallCategoryList = await _repository.CategoryRepository.GetAllCategory();
 
-                var metadata = new
-                {
-                    GetallCategoryList.TotalCount,
-                    GetallCategoryList.PageSize,
-                    GetallCategoryList.CurrentPage,
-                    GetallCategoryList.HasNext,
-                    GetallCategoryList.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all Category");
                 var result = _mapper.Map<IEnumerable<CategoryDto>>(GetallCategoryList);
 
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Successfully Returned all Category";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong,Try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveCategory()
+        {
+            ServiceResponse<IEnumerable<CategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<CategoryDto>>();
+            try
+            {
+                var GetallCategoryList = await _repository.CategoryRepository.GetAllActiveCategory();
+
+                _logger.LogInfo("Returned all Active Category");
+                var result = _mapper.Map<IEnumerable<CategoryDto>>(GetallCategoryList);
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Successfully Returned all Active Category";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

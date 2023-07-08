@@ -28,24 +28,14 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<DepartmentController>
         [HttpGet]
-        public async Task<IActionResult> GetAllDepartment([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllDepartment()
         {
             ServiceResponse<IEnumerable<DepartmentDto>> serviceResponse = new ServiceResponse<IEnumerable<DepartmentDto>>();
 
             try
             {
-                var departments = await _repository.DepartmentRepository.GetAllDepartment(pagingParameter, searchParams);
+                var departments = await _repository.DepartmentRepository.GetAllDepartment();
 
-                var metadata = new
-                {
-                    departments.TotalCount,
-                    departments.PageSize,
-                    departments.CurrentPage,
-                    departments.HasNext,
-                    departments.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all Department");
                 var result = _mapper.Map<IEnumerable<DepartmentDto>>(departments);
                 serviceResponse.Data = result;
@@ -66,13 +56,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveDepartments([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveDepartments()
         {
             ServiceResponse<IEnumerable<DepartmentDto>> serviceResponse = new ServiceResponse<IEnumerable<DepartmentDto>>();
 
             try
             {
-                var departments = await _repository.DepartmentRepository.GetAllActiveDepartment(pagingParameter, searchParams);
+                var departments = await _repository.DepartmentRepository.GetAllActiveDepartment();
                 _logger.LogInfo("Returned all departments");
                 var result = _mapper.Map<IEnumerable<DepartmentDto>>(departments);
                 serviceResponse.Data = result;

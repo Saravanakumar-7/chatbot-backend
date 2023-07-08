@@ -26,24 +26,14 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<LeadTimeController>
         [HttpGet]
-        public async Task<IActionResult> GetAllLeadTimes([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllLeadTimes()
         {
             ServiceResponse<IEnumerable<LeadTimeDto>> serviceResponse = new ServiceResponse<IEnumerable<LeadTimeDto>>();
 
             try
             {
-                var LeadTimeList = await _repository.leadTimeRepository.GetAllLeadTime(pagingParameter, searchParams);
+                var LeadTimeList = await _repository.leadTimeRepository.GetAllLeadTime();
 
-                var metadata = new
-                {
-                    LeadTimeList.TotalCount,
-                    LeadTimeList.PageSize,
-                    LeadTimeList.CurrentPage,
-                    LeadTimeList.HasNext,
-                    LeadTimeList.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all LeadTimes");
                 var result = _mapper.Map<IEnumerable<LeadTimeDto>>(LeadTimeList);
                 serviceResponse.Data = result;
@@ -64,13 +54,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveLeadTimes([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveLeadTimes()
         {
             ServiceResponse<IEnumerable<LeadTimeDto>> serviceResponse = new ServiceResponse<IEnumerable<LeadTimeDto>>();
 
             try
             {
-                var LeadTimes = await _repository.leadTimeRepository.GetAllActiveLeadTime(pagingParameter, searchParams);
+                var LeadTimes = await _repository.leadTimeRepository.GetAllActiveLeadTime();
                 _logger.LogInfo("Returned all LeadTimes");
                 var result = _mapper.Map<IEnumerable<LeadTimeDto>>(LeadTimes);
                 serviceResponse.Data = result;

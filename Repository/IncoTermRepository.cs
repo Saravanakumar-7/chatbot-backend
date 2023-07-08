@@ -45,21 +45,16 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<IncoTerm>> GetAllActiveIncoTerm([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<IncoTerm>> GetAllActiveIncoTerm()
         {
-            var incotermDetails = FindAll()
-                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.IncoTermName.Contains(searchParams.SearchValue) ||
-                       inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<IncoTerm>.ToPagedList(incotermDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var incoTermDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return incoTermDetails;
         }
 
-        public async Task<PagedList<IncoTerm>> GetAllIncoTerm([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<IncoTerm>> GetAllIncoTerm()
         {
-            var incotermDetails = FindAll().OrderByDescending(x => x.Id)
-            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.IncoTermName.Contains(searchParams.SearchValue) ||
-                inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<IncoTerm>.ToPagedList(incotermDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var incoTermDetails = await FindAll().ToListAsync();
+            return incoTermDetails;
         }
 
 

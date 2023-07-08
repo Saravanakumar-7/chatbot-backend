@@ -46,22 +46,17 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<Language>> GetAllActiveLanguages([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<Language>> GetAllActiveLanguages()
         {
-            var languageDetails = FindAll()
-                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LanguageName.Contains(searchParams.SearchValue) ||
-                      inv.Description.Contains(searchParams.SearchValue))));
-            return PagedList<Language>.ToPagedList(languageDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var languageDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return languageDetails;
         }
 
 
-        public async Task<PagedList<Language>> GetAllLanguages([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<Language>> GetAllLanguages()
         {
-            var languageDetails = FindAll().OrderByDescending(x => x.Id)
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LanguageName.Contains(searchParams.SearchValue) ||
-                inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<Language>.ToPagedList(languageDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var languageDetails = await FindAll().ToListAsync();
+            return languageDetails;
         }
 
         public async Task<Language> GetLanguageById(int id)

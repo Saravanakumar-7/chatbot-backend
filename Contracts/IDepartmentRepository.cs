@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface IDepartmentRepository : IRepositoryBase<Department>
     {
-        Task<PagedList<Department>> GetAllDepartment(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<Department>> GetAllDepartment();
         Task<Department> GetDepartmentById(int id);
-        Task<PagedList<Department>> GetAllActiveDepartment(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<Department>> GetAllActiveDepartment();
         Task<int?> CreateDepartment(Department department);
         Task<string> UpdateDepartment(Department department);
         Task<string> DeleteDepartment(Department department);

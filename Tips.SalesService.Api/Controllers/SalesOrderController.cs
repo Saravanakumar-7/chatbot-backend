@@ -112,16 +112,16 @@ namespace Tips.SalesService.Api.Controllers
                     List<SalesOrderItemsDto> salesOrderItemsDtoList = new List<SalesOrderItemsDto>();
                     var salesAdditionalChargesDto = salesOrderDto.SalesOrderAdditionalCharges;
 
-                    var salesAdditionalChargesList = new List<SalesOrderAdditionalCharges>();
+                    var salesAdditionalChargesList = new List<SalesOrderAdditionalChargesDto>();
                     if (salesAdditionalChargesDto != null)
                     {
                         for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
                         {
-                            SalesOrderAdditionalCharges additionalChargesDetails = _mapper.Map<SalesOrderAdditionalCharges>(salesAdditionalChargesDto[i]);
+                            SalesOrderAdditionalChargesDto additionalChargesDetails = _mapper.Map<SalesOrderAdditionalChargesDto>(salesAdditionalChargesDto[i]);
                             salesAdditionalChargesList.Add(additionalChargesDetails);
                         }
                     }
-
+                    
                     foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
                     {
                         SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
@@ -139,6 +139,7 @@ namespace Tips.SalesService.Api.Controllers
                     }
 
                     salesOrderDto.SalesOrdersItems = salesOrderItemsDtoList;
+                    salesOrderDto.SalesOrderAdditionalCharges = salesAdditionalChargesList;
                     serviceResponse.Data = salesOrderDto;
                     serviceResponse.Message = $"Returned SalesOrder with id: {id}";
                     serviceResponse.Success = true;
