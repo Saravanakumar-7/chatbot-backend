@@ -117,11 +117,11 @@ namespace Repository
             }
 
         }
-        public async Task<IEnumerable<ItemNumberListDto>> GetAllPurchasePartItemNoList()
+        public async Task<IEnumerable<ItemNoListDto>> GetAllPurchasePartItemNoList()
         {
-            IEnumerable<ItemNumberListDto> itemNumberListDto = await TipsMasterDbContext.ItemMasters
+            IEnumerable<ItemNoListDto> itemNumberListDto = await TipsMasterDbContext.ItemMasters
                                .Where(x => x.ItemType == PartType.PurchasePart)
-                               .Select(c => new ItemNumberListDto()
+                               .Select(c => new ItemNoListDto()
                                {
                                    ItemNumber = c.ItemNumber,
                                })
