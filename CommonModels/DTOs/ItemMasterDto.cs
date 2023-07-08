@@ -352,5 +352,9 @@ namespace Entities.DTOs
         public List<string>? PurchaseGroup { get; set; }
         public List<string>? Department { get; set; }
     }
+    public class ItemNumberListDto
+    {
+        public string? ItemNumber { get; set; }
+    }
 
 }
