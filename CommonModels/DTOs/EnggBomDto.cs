@@ -1,5 +1,6 @@
 ﻿using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -133,4 +134,26 @@ namespace Entities.DTOs
         public string ItemNumber { get; set; }
 
     }
+    public class EnggBomCoverageDto
+    {
+        public string ItemNumber { get; set; }
+        public string Description { get; set; }
+        public decimal? BalanceForcastQty { get; set; }
+    }
+    public class CoverageEnggChildDto
+    {
+        //public string ItemNumber { get; set; }
+        //public string ChildNumber { get; set; }
+        //public string Description { get; set; }
+        //public string ChildDescription { get; set; }
+        //public PartType PartType { get; set; }        
+        //public decimal QtyPerUnit { get; set; }
+        //public decimal? BalanceForcastQty { get; set; }
+        public string ItemNumber { get; set; }
+        public string Description { get; set; }
+        public decimal? BalanceForcastQty { get; set; }
+
+
+    }
+
 }

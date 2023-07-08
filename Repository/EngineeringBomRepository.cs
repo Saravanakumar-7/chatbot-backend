@@ -272,6 +272,14 @@ namespace Repository
             return fgParentItems;
         }
 
+        public async Task<IEnumerable<CoverageEnggChildDto>> GetEnggChildItemDetails(string ItemNumber)
+        {
+             
+
+            return null;
+        }
+
+
         //end test2
 
         public async Task<IEnumerable<EnggBomFGItemNumber>> GetAllEnggBomChildFGItemNoListByItemNumber(string itemNumber)
