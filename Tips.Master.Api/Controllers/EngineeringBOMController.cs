@@ -79,7 +79,55 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //coverage
 
+        [HttpPost]
+        public async Task<IActionResult> CoverageEnggBomChildDetails([FromBody] List<EnggBomCoverageDto> enggBomCoverageDtos)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                if (enggBomCoverageDtos == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "EnggBom object sent from the client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("EnggBom object sent from the client is null.");
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid EnggBom object sent from the client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Enggbom object sent from the client.");
+                    return BadRequest(serviceResponse);
+                }
+                foreach (var item in enggBomCoverageDtos)
+                {
+                    IEnumerable<CoverageEnggChildDto> coverageEnggChildDtos = await _enggBomRepository.GetEnggChildItemDetails(item.ItemNumber);
+                    //var orderItem = salesOrderItems.FirstOrDefault();
+                    //orderItem.BalanceQty = orderItem.BalanceQty + item.DispatchQty;
+                    //orderItem.DispatchQty -= item.DispatchQty;
+                    //_salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+                }
+
+                //_salesOrderItemsRepository.SaveAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateDispatchDetails action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal error in EnggBomDetails";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         // GET api/<EngineeringBOMController>/5
         [HttpGet("{id}")]
