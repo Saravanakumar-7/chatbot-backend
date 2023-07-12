@@ -194,13 +194,13 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllPurchasePartItemNoList()
         {
-            ServiceResponse<IEnumerable<ItemNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemNumberListDto>>();
+            ServiceResponse<IEnumerable<ItemNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemNoListDto>>();
 
             try
             {
                 var purchasePartItemNo = await _repository.ItemMasterRepository.GetAllPurchasePartItemNoList();
                 _logger.LogInfo("Returned all Item Number with PurchasePart");
-                var result = _mapper.Map<IEnumerable<ItemNumberListDto>>(purchasePartItemNo);
+                var result = _mapper.Map<IEnumerable<ItemNoListDto>>(purchasePartItemNo);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ItemNumberList Successfully";
                 serviceResponse.Success = true;

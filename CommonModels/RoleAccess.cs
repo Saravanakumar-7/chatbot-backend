@@ -29,6 +29,9 @@ namespace Entities
         
         [DefaultValue(false)]
         public bool Download { get; set; }
+
+        [DefaultValue(false)]
+        public bool Confirm { get; set; }
         [DefaultValue(false)]
         public bool Upload { get; set; }
 

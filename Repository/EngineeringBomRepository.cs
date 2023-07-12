@@ -281,7 +281,7 @@ namespace Repository
 
         public async Task<int> GetEnggBomId(string ItemNumber)
         {
-            var enggBomId = _tipsMasterDbContext.EnggBoms
+            int enggBomId = _tipsMasterDbContext.EnggBoms
                .Where(e => e.ItemNumber == ItemNumber)
                .Select(e => e.BOMId)
                .FirstOrDefault();

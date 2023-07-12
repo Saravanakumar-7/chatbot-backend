@@ -69,6 +69,15 @@ namespace Tips.Grin.Api.Controllers
             {
                 var GetallGrins = await _repository.GetAllGrin(pagingParameter,searchParams);
 
+                if (GetallGrins == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Grin data not found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Grin data not found in db");
+                    return NotFound(serviceResponse);
+                }
                 var metadata = new
                 {
                     GetallGrins.TotalCount,
@@ -93,7 +102,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Internal server error { ex.Message}{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
