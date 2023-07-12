@@ -261,7 +261,7 @@ namespace Tips.SalesService.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParam)
         {
-            ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
+            ServiceResponse<IEnumerable<SalesOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderReportDto>>();
             try
             {
                 var salesOrderList = await _repository.SearchSalesOrderDate(searchDateParam);
@@ -275,9 +275,25 @@ namespace Tips.SalesService.Api.Controllers
                 //});
 
                 //var mapper = config.CreateMapper();
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<SalesOrderItems, SalesOrderItemsReportDto>()
+                        .ForMember(dest => dest.ScheduleDates, opt => opt.MapFrom(src =>src.ScheduleDates
+                        .Select(scheduleDate => new ScheduleDateReportDto
+                                {
+                                    Id = scheduleDate.Id,
+                                    ItemNumber = src.ItemNumber,
+                                    SalesOrderNumber = src.SalesOrderNumber,
+                                    Date = scheduleDate.Date,
+                                    Quantity = scheduleDate.Quantity
+                                })
+                            )
+                        );
+                });
+                var mapper = config.CreateMapper();
 
-
-                var result = _mapper.Map<IEnumerable<SalesOrderDto>>(salesOrderList);
+                var result = mapper.Map<IEnumerable<SalesOrderReportDto>>(salesOrderList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all SalesOrdersItems";
                 serviceResponse.Success = true;
@@ -298,23 +314,39 @@ namespace Tips.SalesService.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchSalesOrder([FromQuery] SearchParammes searchParams)
         {
-            ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
+            ServiceResponse<IEnumerable<SalesOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderReportDto>>();
             try
             {
                 var salesOrderList = await _repository.SearchSalesOrder(searchParams);
 
                 _logger.LogInfo("Returned all SalesOrders");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<SalesOrderDto, SalesOrder>().ReverseMap()
+                //        .ForMember(dest => dest.SalesOrdersItems, opt => opt.MapFrom(src => src.SalesOrdersItems));
+                //});
+
+                //var mapper = config.CreateMapper();
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<SalesOrderDto, SalesOrder>().ReverseMap()
-                        .ForMember(dest => dest.SalesOrdersItems, opt => opt.MapFrom(src => src.SalesOrdersItems));
+                    cfg.CreateMap<SalesOrderItems, SalesOrderItemsReportDto>()
+                        .ForMember(dest => dest.ScheduleDates, opt => opt.MapFrom(src => src.ScheduleDates
+                        .Select(scheduleDate => new ScheduleDateReportDto
+                        {
+                            Id = scheduleDate.Id,
+                            ItemNumber = src.ItemNumber,
+                            SalesOrderNumber = src.SalesOrderNumber,
+                            Date = scheduleDate.Date,
+                            Quantity = scheduleDate.Quantity
+                        })
+                            )
+                        );
                 });
 
                 var mapper = config.CreateMapper();
-
-
-                var result = mapper.Map<IEnumerable<SalesOrderDto>>(salesOrderList);
+                var result = mapper.Map<IEnumerable<SalesOrderReportDto>>(salesOrderList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all SalesOrdersItems";
                 serviceResponse.Success = true;
@@ -379,23 +411,39 @@ namespace Tips.SalesService.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAllSalesOrderWithItems([FromBody] SalesOrderSearchDto salesOrderSearch)
         {
-            ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
+            ServiceResponse<IEnumerable<SalesOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderReportDto>>();
             try
             {
                 var salesOrderList = await _repository.GetAllSalesOrderWithItems(salesOrderSearch);
 
                 _logger.LogInfo("Returned all SalesOrders");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<SalesOrderDto, SalesOrder>().ReverseMap()
+                //        .ForMember(dest => dest.SalesOrdersItems, opt => opt.MapFrom(src => src.SalesOrdersItems));
+                //});
+
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<SalesOrderDto, SalesOrder>().ReverseMap()
-                        .ForMember(dest => dest.SalesOrdersItems, opt => opt.MapFrom(src => src.SalesOrdersItems));
+                    cfg.CreateMap<SalesOrderItems, SalesOrderItemsReportDto>()
+                        .ForMember(dest => dest.ScheduleDates, opt => opt.MapFrom(src => src.ScheduleDates
+                        .Select(scheduleDate => new ScheduleDateReportDto
+                        {
+                            Id = scheduleDate.Id,
+                            ItemNumber = src.ItemNumber,
+                            SalesOrderNumber = src.SalesOrderNumber,
+                            Date = scheduleDate.Date,
+                            Quantity = scheduleDate.Quantity
+                        })
+                            )
+                        );
                 });
-
                 var mapper = config.CreateMapper();
-
-
-                var result = mapper.Map<IEnumerable<SalesOrderDto>>(salesOrderList);
+                var result = mapper.Map<IEnumerable<SalesOrderReportDto>>(salesOrderList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all SalesOrdersItems";
                 serviceResponse.Success = true;

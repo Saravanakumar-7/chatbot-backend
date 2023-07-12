@@ -80,6 +80,7 @@ namespace Tips.Warehouse.Api.Repository
             inv.CreatedOn <= searchsDateParms.SearchToDate
             )))
             .Include(itm => itm.invoiceChildItems)
+            .Include(ina => ina.InvoiceAdditionalCharges)
             .ToList();
             return invoiceDetails;
         }
@@ -96,7 +97,9 @@ namespace Tips.Warehouse.Api.Repository
                     || po.CompanyName.Contains(searchParames.SearchValue)
                     || po.invoiceChildItems.Any(s => s.FGItemNumber.Contains(searchParames.SearchValue) ||
                     s.DONumber.Contains(searchParames.SearchValue)
-                    || s.Description.Contains(searchParames.SearchValue)));
+                    || s.Description.Contains(searchParames.SearchValue)))
+                        .Include(itm => itm.invoiceChildItems)
+            .Include(ina => ina.InvoiceAdditionalCharges);
                 }
                 return query.ToList();
             }
@@ -112,7 +115,9 @@ namespace Tips.Warehouse.Api.Repository
                     query = query.Where
                     (po => (invoiceSearch.CustomerName.Any() ? invoiceSearch.CustomerName.Contains(po.CustomerName) : true)
                    && (invoiceSearch.InvoiceNumber.Any() ? invoiceSearch.InvoiceNumber.Contains(po.InvoiceNumber) : true)
-                   && (invoiceSearch.CompanyName.Any() ? invoiceSearch.CompanyName.Contains(po.CompanyName) : true));
+                   && (invoiceSearch.CompanyName.Any() ? invoiceSearch.CompanyName.Contains(po.CompanyName) : true))
+                    .Include(itm => itm.invoiceChildItems)
+            .Include(ina => ina.InvoiceAdditionalCharges);
                 }
                 return query.ToList();
             }

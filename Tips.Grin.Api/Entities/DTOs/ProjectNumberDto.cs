@@ -43,4 +43,17 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
+    public class ProjectNumbersReportDto
+    {
+        public int Id { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? GrinNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+
+
+        [Precision(18, 3)]
+        public decimal? ProjectQty { get; set; }
+
+
+    }
 }

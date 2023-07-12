@@ -55,7 +55,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal RejectedQty { get; set; }
         [Precision(13, 3)]
-        public decimal WeightedAverage { get; set; }
+        public decimal? WeightedAverage { get; set; }
         [Required]
         public string UOM { get; set; }
         public string? UOC { get; set; }
@@ -141,7 +141,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal POUnitPrice { get; set; }
 
         [Precision(13, 3)]
-        public decimal WeightedAverage { get; set; }
+        public decimal? WeightedAverage { get; set; }
 
         [Required(ErrorMessage = "UOM is required")]
         public string UOM { get; set; }
@@ -200,7 +200,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
         [Precision(13, 3)]
-        public decimal WeightedAverage { get; set; }
+        public decimal? WeightedAverage { get; set; }
 
         [Required(ErrorMessage = "UOM is required")]
         public string UOM { get; set; }
@@ -337,5 +337,77 @@ namespace Tips.Grin.Api.Entities.DTOs
         //[DefaultValue(false)]
         //public bool IsReachItem { get; set; }
         //public List<DocumentUpload>? FileUpload { get; set; }
+    }
+    public class GrinPartsReportDto
+    {
+        public int Id { get; set; }
+
+        [Required]
+
+        public string? ItemNumber { get; set; }
+        public string? GrinNumber { get; set; }
+        public int GrinPartId { get; set; }
+
+        [Required]
+        [Precision(18, 3)]
+        public decimal? Qty { get; set; }
+
+        [Required]
+        public string ItemDescription { get; set; }
+        public string? PONumber { get; set; }
+
+        [Required]
+        public string MftrItemNumber { get; set; }
+
+        [Required]
+        public string ManufactureBatchNumber { get; set; }
+
+        [Required]
+        [Precision(18, 3)]
+        public decimal UnitPrice { get; set; }
+
+        [Required]
+        [Precision(13, 3)]
+        public decimal POOrderQty { get; set; }
+
+        [Required]
+        [Precision(13, 3)]
+        public decimal POBalancedQty { get; set; }
+
+        [Required]
+        [Precision(18, 3)]
+        public decimal POUnitPrice { get; set; }
+
+        [Precision(13, 3)]
+        public decimal AcceptedQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal RejectedQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? WeightedAverage { get; set; }
+        [Required]
+        public string UOM { get; set; }
+        public string? UOC { get; set; }
+        public DateTime? ExpiryDate { get; set; }
+        public DateTime? ManufactureDate { get; set; }
+
+        public List<DocumentUploadDto> COCUpload { get; set; }
+
+
+        [Precision(13, 3)]
+        public decimal? SGST { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? IGST { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? CGST { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? UTGST { get; set; }
+        
+        public List<ProjectNumbersReportDto>? ProjectNumbers { get; set; }
+
+
     }
 }

@@ -83,7 +83,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchIQCConfirmationDate([FromQuery] SearchDateParames searchDateParam)
         {
-            ServiceResponse<IEnumerable<IQCConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationDto>>();
+            ServiceResponse<IEnumerable<IQCConfirmationReportDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationReportDto>>();
             try
             {
                 //var searchDateParamIQC = await _iQCConfirmationRepository.SearchIQCConfirmationDate(searchDateParam);
@@ -103,7 +103,7 @@ namespace Tips.Grin.Api.Controllers
                 var grinPartDetailsLookup = grinPartDetails.ToDictionary(gp => gp.Id, gp => gp);
 
                 // Use the grinPartDetailsLookup for quick lookups while mapping the data to DTO objects
-                var iqcListDto = iQCList.Select(iqc => new IQCConfirmationDto
+                var iqcListDto = iQCList.Select(iqc => new IQCConfirmationReportDto
                 {
                     // Map IQCConfirmation properties here (assuming properties with the same name exist in the DTO)
                     Id = iqc.Id,
@@ -116,14 +116,14 @@ namespace Tips.Grin.Api.Controllers
                     LastModifiedOn = iqc.LastModifiedOn,
                     // ...
 
-                    IQCConfirmationItems = iqc.IQCConfirmationItems.Select(item => new IQCConfirmationItemsDto
+                    IQCConfirmationItems = iqc.IQCConfirmationItems.Select(item => new IQCConfirmationItemsReportDto
                     {
                         // Map IQCConfirmationItem properties here (assuming properties with the same name exist in the DTO)
                         Id = item.Id,
                         GrinPartId = item.GrinPartId,
                         ItemNumber = item.ItemNumber,
                         ReceivedQty = item.ReceivedQty,
-
+                        GrinNumber = iqc.GrinNumber,
                         MftrItemNumber = grinPartDetailsLookup[item.GrinPartId].MftrItemNumber,
                         PONumber = grinPartDetailsLookup[item.GrinPartId].PONumber,
                         ItemDescription = grinPartDetailsLookup[item.GrinPartId].ItemDescription,
@@ -131,7 +131,7 @@ namespace Tips.Grin.Api.Controllers
                         UOM = grinPartDetailsLookup[item.GrinPartId].UOM,
                         ExpireDate = grinPartDetailsLookup[item.GrinPartId].ExpiryDate,
                         ManufactureDate = grinPartDetailsLookup[item.GrinPartId].ManufactureDate,
-
+  
                     }).ToList(),
                 }).ToList();
 
@@ -155,7 +155,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchIQCConfirmation([FromQuery] SearchParames searchParams)
         {
-            ServiceResponse<IEnumerable<IQCConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationDto>>();
+            ServiceResponse<IEnumerable<IQCConfirmationReportDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationReportDto>>();
             try
             {
                 var iQCList = await _iQCConfirmationRepository.SearchIQCConfirmation(searchParams);
@@ -171,7 +171,7 @@ namespace Tips.Grin.Api.Controllers
                 var grinPartDetailsLookup = grinPartDetails.ToDictionary(gp => gp.Id, gp => gp);
    
                 // Use the grinPartDetailsLookup for quick lookups while mapping the data to DTO objects
-                var iqcListDto = iQCList.Select(iqc => new IQCConfirmationDto
+                var iqcListDto = iQCList.Select(iqc => new IQCConfirmationReportDto
                 {
                     // Map IQCConfirmation properties here (assuming properties with the same name exist in the DTO)
                     Id = iqc.Id,
@@ -184,14 +184,14 @@ namespace Tips.Grin.Api.Controllers
                     LastModifiedOn = iqc.LastModifiedOn,
                     // ...
 
-                    IQCConfirmationItems = iqc.IQCConfirmationItems.Select(item => new IQCConfirmationItemsDto
+                    IQCConfirmationItems = iqc.IQCConfirmationItems.Select(item => new IQCConfirmationItemsReportDto
                     {
                         // Map IQCConfirmationItem properties here (assuming properties with the same name exist in the DTO)
                         Id = item.Id,
                         GrinPartId= item.GrinPartId,
                         ItemNumber = item.ItemNumber,
                         ReceivedQty = item.ReceivedQty,
-                    
+                        GrinNumber = iqc.GrinNumber,
                         MftrItemNumber = grinPartDetailsLookup[item.GrinPartId].MftrItemNumber,
                         PONumber = grinPartDetailsLookup[item.GrinPartId].PONumber,
                         ItemDescription = grinPartDetailsLookup[item.GrinPartId].ItemDescription,
@@ -224,7 +224,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAllIQCConfirmationWithItems([FromBody] IQCConfirmationSearchDto iQCConfirmationSearch)
         {
-            ServiceResponse<IEnumerable<IQCConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationDto>>();
+            ServiceResponse<IEnumerable<IQCConfirmationReportDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationReportDto>>();
             try
             { 
                 var iQCList = await _iQCConfirmationRepository.GetAllIQCConfirmationWithItems(iQCConfirmationSearch);
@@ -240,7 +240,7 @@ namespace Tips.Grin.Api.Controllers
                 var grinPartDetailsLookup = grinPartDetails.ToDictionary(gp => gp.Id, gp => gp);
 
                 // Use the grinPartDetailsLookup for quick lookups while mapping the data to DTO objects
-                var iqcListDto = iQCList.Select(iqc => new IQCConfirmationDto
+                var iqcListDto = iQCList.Select(iqc => new IQCConfirmationReportDto
                 {
                     // Map IQCConfirmation properties here (assuming properties with the same name exist in the DTO)
                     Id = iqc.Id,
@@ -253,14 +253,14 @@ namespace Tips.Grin.Api.Controllers
                     LastModifiedOn = iqc.LastModifiedOn,
                     // ...
 
-                    IQCConfirmationItems = iqc.IQCConfirmationItems.Select(item => new IQCConfirmationItemsDto
+                    IQCConfirmationItems = iqc.IQCConfirmationItems.Select(item => new IQCConfirmationItemsReportDto
                     {
                         // Map IQCConfirmationItem properties here (assuming properties with the same name exist in the DTO)
                         Id = item.Id,
                         GrinPartId = item.GrinPartId,
                         ItemNumber = item.ItemNumber,
                         ReceivedQty = item.ReceivedQty,
-
+                        GrinNumber = iqc.GrinNumber,
                         MftrItemNumber = grinPartDetailsLookup[item.GrinPartId].MftrItemNumber,
                         PONumber = grinPartDetailsLookup[item.GrinPartId].PONumber,
                         ItemDescription = grinPartDetailsLookup[item.GrinPartId].ItemDescription,

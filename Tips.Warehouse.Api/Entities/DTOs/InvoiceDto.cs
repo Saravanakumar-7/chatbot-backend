@@ -86,4 +86,26 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public int SalesAdditionalChargeId { get; set; }
 
     }
+    public class InvoiceReportDto
+    {
+
+        public int Id { get; set; }
+        public string? InvoiceNumber { get; set; }
+        public string? CustomerName { get; set; }
+        public string? DOType { get; set; }
+        public string? CustomerAliasName { get; set; }
+        public string? CustomerId { get; set; }
+        public string? CompanyName { get; set; }
+        public string? Remarks { get; set; }
+        public string? SerialNumber { get; set; }
+        public string? Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+
+        public List<InvoiceChildItemReportDto>? invoiceChildItems { get; set; }
+        public List<InvoiceAdditionalChargesDto>? InvoiceAdditionalCharges { get; set; }
+
+    }
 }

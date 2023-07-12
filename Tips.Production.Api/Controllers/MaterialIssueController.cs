@@ -408,11 +408,36 @@ namespace Tips.Production.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchMaterialIssueDate([FromQuery] SearchDateparames searchDateParam)
         {
-            ServiceResponse<IEnumerable<MaterialIssueDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueDto>>();
+            ServiceResponse<IEnumerable<MaterialIssueReportDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueReportDto>>();
             try
             {
                 var materialIssueDetails = await _materialIssueRepository.SearchMaterialIssueDate(searchDateParam);
-                var result = _mapper.Map<IEnumerable<MaterialIssueDto>>(materialIssueDetails);
+
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<MaterialIssue, MaterialIssueReportDto>()
+                       .ForMember(dest => dest.materialIssueItems, opt => opt.MapFrom(src => src.materialIssueItems
+                       .Select(materialIssueItems => new MaterialIssueItemReportDto
+                       {
+                           Id = materialIssueItems.Id,
+                           ShopOrderNumber = src.ShopOrderNumber,
+                           PartNumber = materialIssueItems.PartNumber,
+                           Description = materialIssueItems.Description,
+                           ProjectNumber = materialIssueItems.ProjectNumber,
+                           PartType = materialIssueItems.PartType,
+                           UOM = materialIssueItems.UOM,
+                           RequiredQty = materialIssueItems.RequiredQty,
+                           //AvailableQty = materialIssue.AvailableQty,
+                           IssuedQty = materialIssueItems.IssuedQty,
+                           Unit = materialIssueItems.Unit,
+                           MaterialIssuedStatus = materialIssueItems.MaterialIssuedStatus
+                       })
+                           )
+                       );
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<MaterialIssueReportDto>>(materialIssueDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all materialIssueDetails";
                 serviceResponse.Success = true;
@@ -432,7 +457,7 @@ namespace Tips.Production.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAllMaterialIssueWithItems([FromBody] MaterialIssueSearchDto materialIssueSearch)
         {
-            ServiceResponse<IEnumerable<MaterialIssueDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueDto>>();
+            ServiceResponse<IEnumerable<MaterialIssueReportDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueReportDto>>();
             try
             {
                 var materialIssueDetails = await _materialIssueRepository.GetAllMaterialIssueWithItems(materialIssueSearch);
@@ -440,14 +465,39 @@ namespace Tips.Production.Api.Controllers
 
 
                 _logger.LogInfo("Returned all materialIssueDetails");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<MaterialIssueDto, MaterialIssue>().ReverseMap()
+                //    .ForMember(dest => dest.materialIssueItems, opt => opt.MapFrom(src => src.materialIssueItems));
+                //});
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<MaterialIssueDto, MaterialIssue>().ReverseMap()
-                    .ForMember(dest => dest.materialIssueItems, opt => opt.MapFrom(src => src.materialIssueItems));
+                    cfg.CreateMap<MaterialIssue, MaterialIssueReportDto>()
+                       .ForMember(dest => dest.materialIssueItems, opt => opt.MapFrom(src => src.materialIssueItems
+                       .Select(materialIssueItems => new MaterialIssueItemReportDto
+                       {
+                           Id = materialIssueItems.Id,
+                           ShopOrderNumber = src.ShopOrderNumber,
+                           PartNumber = materialIssueItems.PartNumber,
+                           Description = materialIssueItems.Description,
+                           ProjectNumber = materialIssueItems.ProjectNumber,
+                           PartType = materialIssueItems.PartType,
+                           UOM = materialIssueItems.UOM,
+                           RequiredQty = materialIssueItems.RequiredQty,
+                           //AvailableQty = materialIssue.AvailableQty,
+                           IssuedQty = materialIssueItems.IssuedQty,
+                           Unit = materialIssueItems.Unit,
+                           MaterialIssuedStatus = materialIssueItems.MaterialIssuedStatus
+                       })
+                           )
+                       );
                 });
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<MaterialIssueDto>>(materialIssueDetails);
+                var result = mapper.Map<IEnumerable<MaterialIssueReportDto>>(materialIssueDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all MaterialIssueDetails";
                 serviceResponse.Success = true;
@@ -468,21 +518,45 @@ namespace Tips.Production.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchMaterialIssue([FromQuery] SearchParamess searchParams)
         {
-            ServiceResponse<IEnumerable<MaterialIssueDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueDto>>();
+            ServiceResponse<IEnumerable<MaterialIssueReportDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueReportDto>>();
             try
             {
                 var materialIssueDetails = await _materialIssueRepository.SearchMaterialIssue(searchParams);
 
                 _logger.LogInfo("Returned all materialIssueDetails");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<MaterialIssueDto, MaterialIssue>().ReverseMap()
+                //    .ForMember(dest => dest.materialIssueItems, opt => opt.MapFrom(src => src.materialIssueItems));
+                //});
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<MaterialIssueDto, MaterialIssue>().ReverseMap()
-                    .ForMember(dest => dest.materialIssueItems, opt => opt.MapFrom(src => src.materialIssueItems));
+                    cfg.CreateMap<MaterialIssue, MaterialIssueReportDto>()
+                       .ForMember(dest => dest.materialIssueItems, opt => opt.MapFrom(src => src.materialIssueItems
+                       .Select(materialIssueItems => new MaterialIssueItemReportDto
+                       {
+                           Id = materialIssueItems.Id,
+                           ShopOrderNumber = src.ShopOrderNumber,
+                           PartNumber = materialIssueItems.PartNumber,
+                           Description = materialIssueItems.Description,
+                           ProjectNumber = materialIssueItems.ProjectNumber,
+                           PartType = materialIssueItems.PartType,
+                           UOM = materialIssueItems.UOM,
+                           RequiredQty = materialIssueItems.RequiredQty,
+                           //AvailableQty = materialIssue.AvailableQty,
+                           IssuedQty = materialIssueItems.IssuedQty,
+                           Unit = materialIssueItems.Unit,
+                           MaterialIssuedStatus = materialIssueItems.MaterialIssuedStatus
+                       })
+                           )
+                       );
                 });
                 var mapper = config.CreateMapper();
-
-                var result = mapper.Map<IEnumerable<MaterialIssueDto>>(materialIssueDetails);
+                var result = mapper.Map<IEnumerable<MaterialIssueReportDto>>(materialIssueDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all MaterialIssueDetails";
                 serviceResponse.Success = true;

@@ -81,12 +81,46 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchInvoiceDate([FromQuery] SearchsDateParms searchDateParam)
         {
-            ServiceResponse<IEnumerable<InvoiceDto>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceDto>>();
+            ServiceResponse<IEnumerable<InvoiceReportDto>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceReportDto>>();
             try
             {
                 var invoicesDate = await _invoiceRepository.SearchInvoiceDate(searchDateParam);
 
-                var result = _mapper.Map<IEnumerable<InvoiceDto>>(invoicesDate);
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<Invoice, InvoiceReportDto>()
+                       .ForMember(dest => dest.invoiceChildItems, opt => opt.MapFrom(src => src.invoiceChildItems
+                       .Select(invoiceChildItem => new InvoiceChildItemReportDto
+                       {
+                           Id = invoiceChildItem.Id,
+                           InvoiceNumber = src.InvoiceNumber,
+                           DONumber = invoiceChildItem.DONumber,
+                           FGItemNumber = invoiceChildItem.FGItemNumber,
+                           Description = invoiceChildItem.Description,
+                           InvoicedQty = invoiceChildItem.InvoicedQty,
+                           PartType = invoiceChildItem.PartType,
+                           UnitPrice = invoiceChildItem.UnitPrice,
+                           UOC = invoiceChildItem.UOC,
+                           UOM = invoiceChildItem.UOM,
+                           TotalValue = invoiceChildItem.TotalValue,
+                           SerialNumber = invoiceChildItem.SerialNumber,
+                           SalesOrderID = invoiceChildItem.SalesOrderID,
+                           SGST = invoiceChildItem.SGST,
+                           IGST = invoiceChildItem.IGST,
+                           CGST = invoiceChildItem.CGST,
+                           UTGST = invoiceChildItem.UTGST,
+                           TotalValueWithTax = invoiceChildItem.TotalValueWithTax,
+                           Discount = invoiceChildItem.Discount,
+                           DiscountType = invoiceChildItem.DiscountType,
+                           BtoDeliveryOrderPartsId = invoiceChildItem.BtoDeliveryOrderPartsId,
+                           InvoiceId = invoiceChildItem.InvoiceId,
+                       })
+                           )
+                       );
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<InvoiceReportDto>>(invoicesDate);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Invoice";
                 serviceResponse.Success = true;
@@ -107,26 +141,55 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchInvoice([FromQuery] SearchParames searchParams)
         {
-            ServiceResponse<IEnumerable<InvoiceDto>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceDto>>();
+            ServiceResponse<IEnumerable<InvoiceReportDto>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceReportDto>>();
             try
             {
                 var invoicesList = await _invoiceRepository.SearchInvoice(searchParams);
 
-
-
                 _logger.LogInfo("Returned all Invoice");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<InvoiceDto, Invoice>().ReverseMap()
+                //    .ForMember(dest => dest.invoiceChildItems, opt => opt.MapFrom(src => src.invoiceChildItems));
+                //});
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<InvoiceDto, Invoice>().ReverseMap()
-                    .ForMember(dest => dest.invoiceChildItems, opt => opt.MapFrom(src => src.invoiceChildItems));
+                    cfg.CreateMap<Invoice, InvoiceReportDto>()
+                       .ForMember(dest => dest.invoiceChildItems, opt => opt.MapFrom(src => src.invoiceChildItems
+                       .Select(invoiceChildItem => new InvoiceChildItemReportDto
+                       {
+                           Id = invoiceChildItem.Id,
+                           InvoiceNumber = src.InvoiceNumber,
+                           DONumber = invoiceChildItem.DONumber,
+                           FGItemNumber = invoiceChildItem.FGItemNumber,
+                           Description = invoiceChildItem.Description,
+                           InvoicedQty = invoiceChildItem.InvoicedQty,
+                           PartType = invoiceChildItem.PartType,
+                           UnitPrice = invoiceChildItem.UnitPrice,
+                           UOC = invoiceChildItem.UOC,
+                           UOM = invoiceChildItem.UOM,
+                           TotalValue = invoiceChildItem.TotalValue,
+                           SerialNumber = invoiceChildItem.SerialNumber,
+                           SalesOrderID = invoiceChildItem.SalesOrderID,
+                           SGST = invoiceChildItem.SGST,
+                           IGST = invoiceChildItem.IGST,
+                           CGST = invoiceChildItem.CGST,
+                           UTGST = invoiceChildItem.UTGST,
+                           TotalValueWithTax = invoiceChildItem.TotalValueWithTax,
+                           Discount = invoiceChildItem.Discount,
+                           DiscountType = invoiceChildItem.DiscountType,
+                           BtoDeliveryOrderPartsId = invoiceChildItem.BtoDeliveryOrderPartsId,
+                           InvoiceId = invoiceChildItem.InvoiceId,
+                       })
+                           )
+                       );
                 });
-
-
-
                 var mapper = config.CreateMapper();
-
-                var result = mapper.Map<IEnumerable<InvoiceDto>>(invoicesList);
+                var result = mapper.Map<IEnumerable<InvoiceReportDto>>(invoicesList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Invoices";
                 serviceResponse.Success = true;
@@ -146,20 +209,55 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAllInvoiceWithItems([FromBody] InvoiceSearchDto invoiceSearchDto)
         {
-            ServiceResponse<IEnumerable<InvoiceDto>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceDto>>();
+            ServiceResponse<IEnumerable<InvoiceReportDto>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceReportDto>>();
             try
             {
                 var invoiceItems = await _invoiceRepository.GetAllInvoiceWithItems(invoiceSearchDto);
 
                 _logger.LogInfo("Returned all Invoices");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<InvoiceDto, Invoice>().ReverseMap()
+                //    .ForMember(dest => dest.invoiceChildItems, opt => opt.MapFrom(src => src.invoiceChildItems));
+                //});
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<InvoiceDto, Invoice>().ReverseMap()
-                    .ForMember(dest => dest.invoiceChildItems, opt => opt.MapFrom(src => src.invoiceChildItems));
+                    cfg.CreateMap<Invoice, InvoiceReportDto>()
+                       .ForMember(dest => dest.invoiceChildItems, opt => opt.MapFrom(src => src.invoiceChildItems
+                       .Select(invoiceChildItem => new InvoiceChildItemReportDto
+                       {
+                           Id = invoiceChildItem.Id,
+                           InvoiceNumber = src.InvoiceNumber,
+                           DONumber = invoiceChildItem.DONumber,
+                           FGItemNumber = invoiceChildItem.FGItemNumber,
+                           Description = invoiceChildItem.Description,
+                           InvoicedQty = invoiceChildItem.InvoicedQty,
+                           PartType = invoiceChildItem.PartType,
+                           UnitPrice = invoiceChildItem.UnitPrice,
+                           UOC = invoiceChildItem.UOC,
+                           UOM = invoiceChildItem.UOM,
+                           TotalValue = invoiceChildItem.TotalValue,
+                           SerialNumber = invoiceChildItem.SerialNumber,
+                           SalesOrderID = invoiceChildItem.SalesOrderID,
+                           SGST = invoiceChildItem.SGST,
+                           IGST = invoiceChildItem.IGST,
+                           CGST = invoiceChildItem.CGST,
+                           UTGST = invoiceChildItem.UTGST,
+                           TotalValueWithTax = invoiceChildItem.TotalValueWithTax,
+                           Discount = invoiceChildItem.Discount,
+                           DiscountType = invoiceChildItem.DiscountType,
+                           BtoDeliveryOrderPartsId = invoiceChildItem.BtoDeliveryOrderPartsId,
+                           InvoiceId = invoiceChildItem.InvoiceId,
+                       })
+                           )
+                       );
                 });
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<InvoiceDto>>(invoiceItems);
+                var result = mapper.Map<IEnumerable<InvoiceReportDto>>(invoiceItems);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Invoice";
                 serviceResponse.Success = true;

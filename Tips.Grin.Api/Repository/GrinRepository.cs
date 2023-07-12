@@ -173,7 +173,10 @@ namespace Tips.Grin.Api.Repository
                    && (grinSearchDto.VendorId.Any() ? grinSearchDto.VendorId.Contains(po.VendorId) : true))
                     .Include(item => item.GrinParts)
                     .ThenInclude(pr => pr.ProjectNumbers)
-                    .Include(o => o.OtherCharges);
+                    .Include(item => item.GrinParts)
+                    .ThenInclude(pr => pr.CoCUpload)
+                    .Include(o => o.OtherCharges)
+                    .Include(item => item.GrinDocuments);
                 }
                 return query.ToList();
             }
@@ -186,7 +189,10 @@ namespace Tips.Grin.Api.Repository
             )))
             .Include(itm => itm.GrinParts)
             .ThenInclude(pr => pr.ProjectNumbers)
+            .Include(item => item.GrinParts)
+                    .ThenInclude(pr => pr.CoCUpload)
                     .Include(o => o.OtherCharges)
+                     .Include(item => item.GrinDocuments)
             .ToList();
             return grinDetails;
         }
@@ -208,7 +214,10 @@ namespace Tips.Grin.Api.Repository
                     || s.PONumber.Contains(searchParames.SearchValue)))
                         .Include(item => item.GrinParts)
                     .ThenInclude(pr => pr.ProjectNumbers)
-                    .Include(o => o.OtherCharges); 
+                    .Include(item => item.GrinParts)
+                    .ThenInclude(pr => pr.CoCUpload)
+                    .Include(o => o.OtherCharges)
+                    .Include(item => item.GrinDocuments); 
                 }
                 return query.ToList();
             }

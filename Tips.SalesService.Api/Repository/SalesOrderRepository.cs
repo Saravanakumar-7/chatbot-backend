@@ -62,7 +62,10 @@ namespace Tips.SalesService.Api.Repository
                         (so => (salesOrderSearch.SalesOrderNumber.Any() ? salesOrderSearch.SalesOrderNumber.Contains(so.SalesOrderNumber) : true)
                         && (salesOrderSearch.ProjectNumber.Any() ? salesOrderSearch.ProjectNumber.Contains(so.ProjectNumber) : true)
                         && (salesOrderSearch.CustomerName.Any() ? salesOrderSearch.CustomerName.Contains(so.CustomerName) : true)
-                        && (salesOrderSearch.SOStatus.Any() ? salesOrderSearch.SOStatus.Contains(so.SOStatus) : true));
+                        && (salesOrderSearch.SOStatus.Any() ? salesOrderSearch.SOStatus.Contains(so.SOStatus) : true))
+                        .Include(itm => itm.SalesOrdersItems)
+                        .ThenInclude(p => p.ScheduleDates)
+                                .Include(p => p.SalesOrderAdditionalCharges);
                 }
                 return query.ToList();
             }
@@ -81,7 +84,10 @@ namespace Tips.SalesService.Api.Repository
                      || inv.PODate.Equals(int.Parse(searchParammes.SearchValue))
                      || inv.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
                      || inv.CustomerId.Equals(int.Parse(searchParammes.SearchValue)))))
-                   .Include(t => t.SalesOrdersItems);
+                   .Include(t => t.SalesOrdersItems)
+                   .ThenInclude(p => p.ScheduleDates)
+                                .Include(p => p.SalesOrderAdditionalCharges);
+
             return PagedList<SalesOrder>.ToPagedList(getAllActiveSalesOrder, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
@@ -115,6 +121,8 @@ namespace Tips.SalesService.Api.Repository
                                 inv.CreatedOn <= searchDateParam.SearchToDate
                                 )))
                              .Include(itm => itm.SalesOrdersItems)
+                              .ThenInclude(p => p.ScheduleDates)
+                                .Include(p => p.SalesOrderAdditionalCharges)
                              .ToList();
             return salesOrderDetails;
         }
@@ -130,7 +138,10 @@ namespace Tips.SalesService.Api.Repository
                 || so.CustomerName.Contains(searchParams.SearchValue) ||
                 so.OrderDate.ToString().Contains(searchParams.SearchValue) ||
                 so.SalesOrdersItems.Any(s => s.ItemNumber.Contains(searchParams.SearchValue) ||
-                s.Description.Contains(searchParams.SearchValue)));
+                s.Description.Contains(searchParams.SearchValue)))
+                        .Include(itm => itm.SalesOrdersItems)
+                        .ThenInclude(p => p.ScheduleDates)
+                                .Include(p => p.SalesOrderAdditionalCharges);
                 }
                 return query.ToList();
             }

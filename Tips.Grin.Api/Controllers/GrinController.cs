@@ -25,6 +25,7 @@ using System.Dynamic;
 using Azure.Core;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.Authorization;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -102,12 +103,72 @@ namespace Tips.Grin.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchGrinsDate([FromQuery] SearchDateParames searchDateParam)
         {
-            ServiceResponse<IEnumerable<GrinDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinDto>>();
+            ServiceResponse<IEnumerable<GrinReportDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinReportDto>>();
             try
             {
                 var searchDateParamList = await _repository.SearchGrinsDate(searchDateParam);
 
-                var result = _mapper.Map<IEnumerable<GrinDto>>(searchDateParamList);
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<Grins, GrinReportDto>()
+                        .ForMember(dest => dest.GrinParts, opt => opt.MapFrom(src => src.GrinParts
+                            .Select(grinParts => new GrinPartsReportDto
+                            {
+                                Id = grinParts.Id,
+                                ItemNumber = grinParts.ItemNumber,
+                                GrinNumber = src.GrinNumber,
+                                GrinPartId = grinParts.Id,
+                                Qty = grinParts.Qty,
+                                ItemDescription = grinParts.ItemDescription,
+                                PONumber = grinParts.PONumber,
+                                MftrItemNumber = grinParts.MftrItemNumber,
+                                ManufactureBatchNumber = grinParts.ManufactureBatchNumber,
+                                UnitPrice = grinParts.UnitPrice,
+                                POOrderQty = grinParts.POOrderQty,
+                                POBalancedQty = grinParts.POBalancedQty,
+                                POUnitPrice = grinParts.POUnitPrice,
+                                AcceptedQty = grinParts.AcceptedQty,
+                                RejectedQty = grinParts.RejectedQty,
+                                WeightedAverage = grinParts.WeightedAverage,
+                                UOM = grinParts.UOM,
+                                UOC = grinParts.UOC,
+                                ExpiryDate = grinParts.ExpiryDate,
+                                ManufactureDate = grinParts.ManufactureDate,
+
+                                COCUpload = grinParts.CoCUpload
+                                    .Select(documentUpload => new DocumentUploadDto
+                                    {
+                                        Id = documentUpload.Id,
+                                        FileName = documentUpload.FileName,
+                                        FileExtension = documentUpload.FileExtension,
+                                        FilePath = documentUpload.FilePath,
+                                        CreatedBy = documentUpload.CreatedBy,
+                                        CreatedOn = documentUpload.CreatedOn,
+                                        LastModifiedBy = documentUpload.LastModifiedBy,
+                                        LastModifiedOn = documentUpload.LastModifiedOn,
+                                    }).ToList(),
+
+                                SGST = grinParts.SGST,
+                                IGST = grinParts.IGST,
+                                CGST = grinParts.CGST,
+                                UTGST = grinParts.UTGST,
+
+                                ProjectNumbers = grinParts.ProjectNumbers
+                                    .Select(projectNumbers => new ProjectNumbersReportDto
+                                    {
+                                        Id = projectNumbers.Id,
+                                        GrinNumber = src.GrinNumber,
+                                        ItemNumber = grinParts.ItemNumber,
+                                        ProjectNumber = projectNumbers.ProjectNumber,
+                                        ProjectQty = projectNumbers.ProjectQty
+                                    }).ToList()
+                            })
+                         ));
+                });
+
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<GrinReportDto>>(searchDateParamList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all SearchGrinsDate";
                 serviceResponse.Success = true;
@@ -127,21 +188,81 @@ namespace Tips.Grin.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchGrins([FromQuery] SearchParames searchParams)
         {
-            ServiceResponse<IEnumerable<GrinDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinDto>>();
+            ServiceResponse<IEnumerable<GrinReportDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinReportDto>>();
             try
             {
                 var grinsList = await _repository.SearchGrins(searchParams);
 
-                _logger.LogInfo("Returned all Grins");
+              _logger.LogInfo("Returned all Grins");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<GrinDto, Grins>().ReverseMap()
+                //    .ForMember(dest => dest.GrinParts, opt => opt.MapFrom(src => src.GrinParts));
+                //});
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<GrinDto, Grins>().ReverseMap()
-                    .ForMember(dest => dest.GrinParts, opt => opt.MapFrom(src => src.GrinParts));
-                });
-                var mapper = config.CreateMapper();
+                    cfg.CreateMap<Grins, GrinReportDto>()
+                        .ForMember(dest => dest.GrinParts, opt => opt.MapFrom(src => src.GrinParts
+                            .Select(grinParts => new GrinPartsReportDto
+                            {
+                                Id = grinParts.Id,
+                                ItemNumber = grinParts.ItemNumber,
+                                GrinNumber = src.GrinNumber,
+                                GrinPartId = grinParts.Id,
+                                Qty = grinParts.Qty,
+                                ItemDescription = grinParts.ItemDescription,
+                                PONumber = grinParts.PONumber,
+                                MftrItemNumber = grinParts.MftrItemNumber,
+                                ManufactureBatchNumber = grinParts.ManufactureBatchNumber,
+                                UnitPrice = grinParts.UnitPrice,
+                                POOrderQty = grinParts.POOrderQty,
+                                POBalancedQty = grinParts.POBalancedQty,
+                                POUnitPrice = grinParts.POUnitPrice,
+                                AcceptedQty = grinParts.AcceptedQty,
+                                RejectedQty = grinParts.RejectedQty,
+                                WeightedAverage = grinParts.WeightedAverage,
+                                UOM = grinParts.UOM,
+                                UOC = grinParts.UOC,
+                                ExpiryDate = grinParts.ExpiryDate,
+                                ManufactureDate = grinParts.ManufactureDate,
 
-                var result = mapper.Map<IEnumerable<GrinDto>>(grinsList);
+                                COCUpload = grinParts.CoCUpload
+                                    .Select(documentUpload => new DocumentUploadDto
+                                    {
+                                        Id = documentUpload.Id,
+                                        FileName = documentUpload.FileName,
+                                        FileExtension = documentUpload.FileExtension,
+                                        FilePath = documentUpload.FilePath,
+                                        CreatedBy = documentUpload.CreatedBy,
+                                        CreatedOn = documentUpload.CreatedOn,
+                                        LastModifiedBy = documentUpload.LastModifiedBy,
+                                        LastModifiedOn = documentUpload.LastModifiedOn,
+                                    }).ToList(),
+
+                                SGST = grinParts.SGST,
+                                IGST = grinParts.IGST,
+                                CGST = grinParts.CGST,
+                                UTGST = grinParts.UTGST,
+
+                                ProjectNumbers = grinParts.ProjectNumbers
+                                    .Select(projectNumbers => new ProjectNumbersReportDto
+                                    {
+                                        Id = projectNumbers.Id,
+                                        GrinNumber = src.GrinNumber,
+                                        ItemNumber = grinParts.ItemNumber,
+                                        ProjectNumber = projectNumbers.ProjectNumber,
+                                        ProjectQty = projectNumbers.ProjectQty
+                                    }).ToList()
+                            })
+                         ));
+                });
+
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<GrinReportDto>>(grinsList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Grins";
                 serviceResponse.Success = true;
@@ -162,22 +283,81 @@ namespace Tips.Grin.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAllGrinsWithItems([FromBody] GrinSearchDto grinSearchDto)
         {
-            ServiceResponse<IEnumerable<GrinDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinDto>>();
+            ServiceResponse<IEnumerable<GrinReportDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinReportDto>>();
             try
             {
                 var grinSearchDtoList = await _repository.GetAllGrinsWithItems(grinSearchDto);
 
-
-
                 _logger.LogInfo("Returned all Grins");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<GrinDto, Grins>().ReverseMap()
+                //    .ForMember(dest => dest.GrinParts, opt => opt.MapFrom(src => src.GrinParts));
+                //});
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<GrinDto, Grins>().ReverseMap()
-                    .ForMember(dest => dest.GrinParts, opt => opt.MapFrom(src => src.GrinParts));
+                    cfg.CreateMap<Grins, GrinReportDto>()
+                        .ForMember(dest => dest.GrinParts, opt => opt.MapFrom(src => src.GrinParts
+                            .Select(grinParts => new GrinPartsReportDto
+                            {
+                                Id = grinParts.Id,
+                                ItemNumber = grinParts.ItemNumber,
+                                GrinNumber = src.GrinNumber,
+                                GrinPartId = grinParts.Id,
+                                Qty = grinParts.Qty,
+                                ItemDescription = grinParts.ItemDescription,
+                                PONumber = grinParts.PONumber,
+                                MftrItemNumber = grinParts.MftrItemNumber,
+                                ManufactureBatchNumber = grinParts.ManufactureBatchNumber,
+                                UnitPrice = grinParts.UnitPrice,
+                                POOrderQty = grinParts.POOrderQty,
+                                POBalancedQty = grinParts.POBalancedQty,
+                                POUnitPrice = grinParts.POUnitPrice,
+                                AcceptedQty = grinParts.AcceptedQty,
+                                RejectedQty = grinParts.RejectedQty,
+                                WeightedAverage = grinParts.WeightedAverage,
+                                UOM = grinParts.UOM,
+                                UOC = grinParts.UOC,
+                                ExpiryDate = grinParts.ExpiryDate,
+                                ManufactureDate = grinParts.ManufactureDate,
+
+                                COCUpload = grinParts.CoCUpload
+                                    .Select(documentUpload => new DocumentUploadDto
+                                    {
+                                        Id = documentUpload.Id,
+                                        FileName = documentUpload.FileName,
+                                        FileExtension = documentUpload.FileExtension,
+                                        FilePath = documentUpload.FilePath,
+                                        CreatedBy = documentUpload.CreatedBy,
+                                        CreatedOn = documentUpload.CreatedOn,
+                                        LastModifiedBy = documentUpload.LastModifiedBy,
+                                        LastModifiedOn = documentUpload.LastModifiedOn,
+                                    }).ToList(),
+
+                                SGST = grinParts.SGST,
+                                IGST = grinParts.IGST,
+                                CGST = grinParts.CGST,
+                                UTGST = grinParts.UTGST,
+
+                                ProjectNumbers = grinParts.ProjectNumbers
+                                    .Select(projectNumbers => new ProjectNumbersReportDto
+                                    {
+                                        Id = projectNumbers.Id,
+                                        GrinNumber = src.GrinNumber,
+                                        ItemNumber = grinParts.ItemNumber,
+                                        ProjectNumber = projectNumbers.ProjectNumber,
+                                        ProjectQty = projectNumbers.ProjectQty
+                                    }).ToList()
+                            })
+                         ));
                 });
+
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<GrinDto>>(grinSearchDtoList);
+                var result = mapper.Map<IEnumerable<GrinReportDto>>(grinSearchDtoList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Grins";
                 serviceResponse.Success = true;

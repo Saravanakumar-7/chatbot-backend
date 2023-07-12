@@ -102,4 +102,40 @@ namespace Tips.Production.Api.Entities.DTOs
         public List<decimal>? TotalSOReleaseQty { get; set; }
 
     }
+    public class ShopOrderReportDto
+    {
+        public int Id { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        public string? Description { get; set; }
+        public ProjectType ProjectType { get; set; }
+        public PartType ItemType { get; set; }
+        public string? ItemNumber { get; set; }
+        public decimal TotalSOReleaseQty { get; set; }
+        public DateTime SOCloseDate { get; set; }
+        public decimal? CanCreateQty { get; set; }
+
+        public decimal WipQty { get; set; }
+
+        public decimal OqcQty { get; set; }
+
+        public decimal ScrapQty { get; set; }
+
+        public OrderStatus FGDoneStatus { get; set; }
+        public bool IsDeleted { get; set; } = false;
+
+        public OrderStatus Status { get; set; }
+
+        public bool IsShortClosed { get; set; }
+        public string? ShortClosedBy { get; set; }
+        public DateTime? ShortClosedOn { get; set; }
+        [Required]
+        public decimal BomRevisionNo { get; set; }
+        public string? Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public List<ShopOrderItemReportDto>? ShopOrderItems { get; set; }
+
+    }
 }

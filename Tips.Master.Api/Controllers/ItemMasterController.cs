@@ -194,13 +194,13 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllPurchasePartItemNoList()
         {
-            ServiceResponse<IEnumerable<ItemNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemNumberListDto>>();
+            ServiceResponse<IEnumerable<ItemNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemNoListDto>>();
 
             try
             {
                 var purchasePartItemNo = await _repository.ItemMasterRepository.GetAllPurchasePartItemNoList();
                 _logger.LogInfo("Returned all Item Number with PurchasePart");
-                var result = _mapper.Map<IEnumerable<ItemNumberListDto>>(purchasePartItemNo);
+                var result = _mapper.Map<IEnumerable<ItemNoListDto>>(purchasePartItemNo);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ItemNumberList Successfully";
                 serviceResponse.Success = true;
@@ -401,12 +401,67 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchItemMasterDate([FromQuery] SearchDateParamess searchDateParam)
         {
-            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+            ServiceResponse<IEnumerable<ItemMasterReportDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterReportDto>>();
             try
             {
                 var itemMasterList = await _repository.ItemMasterRepository.SearchItemMasterDate(searchDateParam);
 
-                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(itemMasterList);
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<ItemMaster, ItemMasterReportDto>()
+                        .ForMember(dest => dest.ItemmasterAlternate, opt => opt.MapFrom(src => src.ItemmasterAlternate
+                        .Select(AlternateSource => new ItemmasterAlternateReportDto
+                        {
+                            Id = AlternateSource.Id,
+                            ItemNumber = src.ItemNumber,
+                            ManufacturerPartNo = AlternateSource.ManufacturerPartNo,
+                            Manufacturer = AlternateSource.Manufacturer,
+                            AlternateSource = AlternateSource.AlternateSource,
+                            IsDefault = AlternateSource.IsDefault,
+
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.ItemMasterWarehouse, opt => opt.MapFrom(src => src.ItemMasterWarehouse
+                        .Select(Warehouse => new ItemMasterWarehouseReportDto
+                        {
+                            Id = Warehouse.Id,
+                            ItemNumber = src.ItemNumber,
+                            WareHouse = Warehouse.WareHouse,
+                            IsActive = Warehouse.IsActive,
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.ItemMasterApprovedVendor, opt => opt.MapFrom(src => src.ItemMasterApprovedVendor
+                        .Select(ApprovedVendor => new ItemMasterApprovedVendorReportDto
+                        {
+                            Id = ApprovedVendor.Id,
+                            ItemNumber = src.ItemNumber,
+                            VendorCode = ApprovedVendor.VendorCode,
+                            VendorName = ApprovedVendor.VendorName,
+                            ShareOfBusiness = ApprovedVendor.ShareOfBusiness,
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.ItemMasterRouting, opt => opt.MapFrom(src => src.ItemMasterRouting
+                        .Select(Routing => new ItemMasterRoutingReportDto
+                        {
+                            Id = Routing.Id,
+                            ItemNumber = src.ItemNumber,
+                            ProcessStep = Routing.ProcessStep,
+                            Process = Routing.ProcessStep,
+                            RoutingDescription = Routing.RoutingDescription,
+                            MachineHours = Routing.MachineHours,
+                            LaborHours = Routing.LaborHours,
+                            IsRoutingActive = Routing.IsRoutingActive,
+                        })
+                            )
+                        );
+                });
+                var mapper = config.CreateMapper();
+
+                var result = mapper.Map<IEnumerable<ItemMasterReportDto>>(itemMasterList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ItemMasters";
                 serviceResponse.Success = true;
@@ -427,25 +482,80 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchItemMaster([FromQuery] SearchParames searchParames)
         {
-            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+            ServiceResponse<IEnumerable<ItemMasterReportDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterReportDto>>();
             try
             {
                 var itemMasterList = await _repository.ItemMasterRepository.SearchItemMaster(searchParames);
 
                 _logger.LogInfo("Returned all ItemMasters");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<ItemMasterDto, ItemMaster>().ReverseMap()
+                //         .ForMember(dest => dest.ItemmasterAlternate, opt => opt.MapFrom(src => src.ItemmasterAlternate))
+                //         .ForMember(dest => dest.ItemMasterApprovedVendor, opt => opt.MapFrom(src => src.ItemMasterApprovedVendor))
+                //          .ForMember(dest => dest.ItemMasterWarehouse, opt => opt.MapFrom(src => src.ItemMasterWarehouse))
+                //           //.ForMember(dest => dest.ItemMasterFileUpload, opt => opt.MapFrom(src => src.ItemMasterFileUpload))
+                //           .ForMember(dest => dest.ItemMasterRouting, opt => opt.MapFrom(src => src.ItemMasterRouting));
+                //});
+
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<ItemMasterDto, ItemMaster>().ReverseMap()
-                         .ForMember(dest => dest.ItemmasterAlternate, opt => opt.MapFrom(src => src.ItemmasterAlternate))
-                         .ForMember(dest => dest.ItemMasterApprovedVendor, opt => opt.MapFrom(src => src.ItemMasterApprovedVendor))
-                          .ForMember(dest => dest.ItemMasterWarehouse, opt => opt.MapFrom(src => src.ItemMasterWarehouse))
-                           //.ForMember(dest => dest.ItemMasterFileUpload, opt => opt.MapFrom(src => src.ItemMasterFileUpload))
-                           .ForMember(dest => dest.ItemMasterRouting, opt => opt.MapFrom(src => src.ItemMasterRouting));
-                });
+                    cfg.CreateMap<ItemMaster, ItemMasterReportDto>()
+                        .ForMember(dest => dest.ItemmasterAlternate, opt => opt.MapFrom(src => src.ItemmasterAlternate
+                        .Select(AlternateSource => new ItemmasterAlternateReportDto
+                        {
+                            Id = AlternateSource.Id,
+                            ItemNumber = src.ItemNumber,
+                            ManufacturerPartNo = AlternateSource.ManufacturerPartNo,
+                            Manufacturer = AlternateSource.Manufacturer,
+                            AlternateSource = AlternateSource.AlternateSource,
+                            IsDefault = AlternateSource.IsDefault,
 
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.ItemMasterWarehouse, opt => opt.MapFrom(src => src.ItemMasterWarehouse
+                        .Select(Warehouse => new ItemMasterWarehouseReportDto
+                        {
+                            Id = Warehouse.Id,
+                            ItemNumber = src.ItemNumber,
+                            WareHouse = Warehouse.WareHouse,
+                            IsActive = Warehouse.IsActive,
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.ItemMasterApprovedVendor, opt => opt.MapFrom(src => src.ItemMasterApprovedVendor
+                        .Select(ApprovedVendor => new ItemMasterApprovedVendorReportDto
+                        {
+                            Id = ApprovedVendor.Id,
+                            ItemNumber = src.ItemNumber,
+                            VendorCode = ApprovedVendor.VendorCode,
+                            VendorName = ApprovedVendor.VendorName,
+                            ShareOfBusiness = ApprovedVendor.ShareOfBusiness,
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.ItemMasterRouting, opt => opt.MapFrom(src => src.ItemMasterRouting
+                        .Select(Routing => new ItemMasterRoutingReportDto
+                        {
+                            Id = Routing.Id,
+                            ItemNumber = src.ItemNumber,
+                            ProcessStep = Routing.ProcessStep,
+                            Process = Routing.ProcessStep,
+                            RoutingDescription = Routing.RoutingDescription,
+                            MachineHours = Routing.MachineHours,
+                            LaborHours = Routing.LaborHours,
+                            IsRoutingActive = Routing.IsRoutingActive,
+                        })
+                            )
+                        );
+                });
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<ItemMasterDto>>(itemMasterList);
+                var result = mapper.Map<IEnumerable<ItemMasterReportDto>>(itemMasterList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ItemMasters";
                 serviceResponse.Success = true;
@@ -466,25 +576,80 @@ namespace Tips.Master.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAllItemMasterWithItems([FromBody] ItemMasterSearchDto itemMasterSearch)
         {
-            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+            ServiceResponse<IEnumerable<ItemMasterReportDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterReportDto>>();
             try
             {
                 var itemMasterList = await _repository.ItemMasterRepository.GetAllItemMasterWithItems(itemMasterSearch);
 
                 _logger.LogInfo("Returned all ItemMasters");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<ItemMasterDto, ItemMaster>().ReverseMap()
+                //        .ForMember(dest => dest.ItemmasterAlternate, opt => opt.MapFrom(src => src.ItemmasterAlternate))
+                //         .ForMember(dest => dest.ItemMasterApprovedVendor, opt => opt.MapFrom(src => src.ItemMasterApprovedVendor))
+                //          .ForMember(dest => dest.ItemMasterWarehouse, opt => opt.MapFrom(src => src.ItemMasterWarehouse))
+                //           //.ForMember(dest => dest.ItemMasterFileUpload, opt => opt.MapFrom(src => src.ItemMasterFileUpload))
+                //           .ForMember(dest => dest.ItemMasterRouting, opt => opt.MapFrom(src => src.ItemMasterRouting));
+                //});
+
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<ItemMasterDto, ItemMaster>().ReverseMap()
-                        .ForMember(dest => dest.ItemmasterAlternate, opt => opt.MapFrom(src => src.ItemmasterAlternate))
-                         .ForMember(dest => dest.ItemMasterApprovedVendor, opt => opt.MapFrom(src => src.ItemMasterApprovedVendor))
-                          .ForMember(dest => dest.ItemMasterWarehouse, opt => opt.MapFrom(src => src.ItemMasterWarehouse))
-                           //.ForMember(dest => dest.ItemMasterFileUpload, opt => opt.MapFrom(src => src.ItemMasterFileUpload))
-                           .ForMember(dest => dest.ItemMasterRouting, opt => opt.MapFrom(src => src.ItemMasterRouting));
-                });
+                    cfg.CreateMap<ItemMaster, ItemMasterReportDto>()
+                        .ForMember(dest => dest.ItemmasterAlternate, opt => opt.MapFrom(src => src.ItemmasterAlternate
+                        .Select(AlternateSource => new ItemmasterAlternateReportDto
+                        {
+                            Id = AlternateSource.Id,
+                            ItemNumber = src.ItemNumber,
+                            ManufacturerPartNo = AlternateSource.ManufacturerPartNo,
+                            Manufacturer = AlternateSource.Manufacturer,
+                            AlternateSource = AlternateSource.AlternateSource,
+                            IsDefault = AlternateSource.IsDefault,
 
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.ItemMasterWarehouse, opt => opt.MapFrom(src => src.ItemMasterWarehouse
+                        .Select(Warehouse => new ItemMasterWarehouseReportDto
+                        {
+                            Id = Warehouse.Id,
+                            ItemNumber = src.ItemNumber,
+                            WareHouse = Warehouse.WareHouse,
+                            IsActive = Warehouse.IsActive,
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.ItemMasterApprovedVendor, opt => opt.MapFrom(src => src.ItemMasterApprovedVendor
+                        .Select(ApprovedVendor => new ItemMasterApprovedVendorReportDto
+                        {
+                            Id = ApprovedVendor.Id,
+                            ItemNumber = src.ItemNumber,
+                            VendorCode = ApprovedVendor.VendorCode,
+                            VendorName = ApprovedVendor.VendorName,
+                            ShareOfBusiness = ApprovedVendor.ShareOfBusiness,
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.ItemMasterRouting, opt => opt.MapFrom(src => src.ItemMasterRouting
+                        .Select(Routing => new ItemMasterRoutingReportDto
+                        {
+                            Id = Routing.Id,
+                            ItemNumber = src.ItemNumber,
+                            ProcessStep = Routing.ProcessStep,
+                            Process = Routing.ProcessStep,
+                            RoutingDescription = Routing.RoutingDescription,
+                            MachineHours = Routing.MachineHours,
+                            LaborHours = Routing.LaborHours,
+                            IsRoutingActive = Routing.IsRoutingActive,
+                        })
+                            )
+                        );
+                });
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<ItemMasterDto>>(itemMasterList);
+                var result = mapper.Map<IEnumerable<ItemMasterReportDto>>(itemMasterList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ItemMasters";
                 serviceResponse.Success = true;

@@ -33,4 +33,14 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 1)]
         public decimal? Quantity { get; set; }
     }
+    public class ScheduleDateReportDto
+    {
+        public int? Id { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public DateTime? Date { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? Quantity { get; set; }
+    }
 }

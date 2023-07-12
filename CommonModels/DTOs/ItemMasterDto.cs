@@ -356,5 +356,115 @@ namespace Entities.DTOs
     {
         public string? ItemNumber { get; set; }
     }
+    public class ItemMasterReportDto
+    {
+        [Key]
+        [Column("ItemMasterId")]
+        public long Id { get; set; }
+        [Required(ErrorMessage = "ItemNumber is required")]
+        [MaxLength(100)]
+        public string? ItemNumber { get; set; }
+        [Required(ErrorMessage = "Description is required")]
+        [MaxLength(500)]
+        public string? Description { get; set; }
+        [DefaultValue(true)]
+        public bool IsActive { get; set; }
+        [DefaultValue(false)]
+        public bool IsObsolete { get; set; }
+        public PartType ItemType { get; set; }
+        [MaxLength(20)]
+        public string? Uom { get; set; }
+        [MaxLength(50)]
+        public string? Commodity { get; set; }
+        [MaxLength(50)]
+        public string? Hsn { get; set; }
+        [MaxLength(100)]
+        public string? MaterialGroup { get; set; }
+        [DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
+        public DateTime? ValidFrom { get; set; }
+        [DisplayFormat(DataFormatString = "{dd-MM-yyyy}")]
+        public DateTime? ValidTo { get; set; }
+        [MaxLength(50)]
+        public string? PurchaseGroup { get; set; }
+        [MaxLength(50)]
+        public string? Department { get; set; }
+        [MaxLength(100)]
+        public string? CustomerPartReference { get; set; }
+        [DefaultValue(true)]
+        public bool IsPRRequired { get; set; }
+        [MaxLength(50)]
+        public string? PoMaterialType { get; set; }
+        [DefaultValue(false)]
+        public bool OpenGrin { get; set; }
+        public bool IsCustomerSuppliedItem { get; set; }
+        public string? DrawingNo { get; set; }
+        public string? DocRet { get; set; }
+        public string? RevNo { get; set; }
+        [DefaultValue(false)]
+        public bool IsCocRequired { get; set; }
+        [DefaultValue(false)]
+        public bool IsRohsItem { get; set; }
+        [DefaultValue(false)]
+        public bool IsShelfLife { get; set; }
+        [DefaultValue(false)]
+        public bool IsReachItem { get; set; }
+
+        public List<ImageUploadDto>? ImageUpload { get; set; }
+
+        public List<FileUploadDto>? FileUpload { get; set; }
+
+        public decimal NetWeight { get; set; }
+        public string? NetUom { get; set; }
+        public decimal GrossWeight { get; set; }
+        public string? GrossUom { get; set; }
+        public decimal Volume { get; set; }
+        public string? VolumeUom { get; set; }
+        public decimal Size { get; set; }
+        public string? FootPrint { get; set; }
+        public decimal Min { get; set; }
+        public decimal Max { get; set; }
+        public string? LeadTime { get; set; }
+        public string? Reorder { get; set; }
+        public string? TwoBin { get; set; }
+        public bool Kanban { get; set; }
+        [DefaultValue(false)]
+        public bool IsEsd { get; set; }
+        [DefaultValue(false)]
+        public bool IsFifo { get; set; }
+        [DefaultValue(false)]
+        public bool IsLifo { get; set; }
+        [DefaultValue(false)]
+        public bool IsCycleCount { get; set; }
+        [DefaultValue(false)]
+        public bool IsHazardousMaterial { get; set; }
+        public string? Expiry { get; set; }
+        public string? InspectionInterval { get; set; }
+        public string? SpecialInstructions { get; set; }
+        public string? ShippingInstruction { get; set; }
+        [DefaultValue(false)]
+        public bool IsIQCRequired { get; set; }
+        public int GrProcessing { get; set; }
+        public string? BatchSize { get; set; }
+        public string? CostCenter { get; set; }
+        public decimal StdCost { get; set; }
+        public string? CostingMethod { get; set; }
+        public bool Valuation { get; set; }
+        public bool Depreciation { get; set; }
+        public bool Pfo { get; set; }
+        public string Unit { get; set; }
+        public string? RemarksToVendor { get; set; }
+
+        public string? CreatedBy { get; set; }
+        [DisplayFormat(DataFormatString = "{dd-MM-yyyy HH:mm:ss}")]
+        public DateTime CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        [DisplayFormat(DataFormatString = "{dd-MM-yyyy HH:mm:ss}")]
+        public DateTime LastModifiedOn { get; set; }
+        public List<ItemmasterAlternateReportDto>? ItemmasterAlternate { get; set; }
+        public List<ItemMasterWarehouseReportDto>? ItemMasterWarehouse { get; set; }
+        public List<ItemMasterApprovedVendorReportDto>? ItemMasterApprovedVendor { get; set; }
+        //public List<ItemMasterFileUploadDto>? ItemMasterFileUpload { get; set; }
+        public List<ItemMasterRoutingReportDto>? ItemMasterRouting { get; set; }
+    }
 
 }

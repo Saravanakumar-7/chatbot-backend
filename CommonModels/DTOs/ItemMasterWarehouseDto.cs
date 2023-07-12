@@ -37,4 +37,14 @@ namespace Entities.DTOs
         public bool IsActive { get; set; }
 
     }
+    public class ItemMasterWarehouseReportDto
+    {
+        [Key]
+        public int Id { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? WareHouse { get; set; }
+        [DefaultValue(true)]
+        public bool IsActive { get; set; }
+      
+    }
 }

@@ -97,7 +97,7 @@ namespace Repository
             using (var context = TipsMasterDbContext)
             {
                 var query = TipsMasterDbContext.ItemMasters.Include("ItemmasterAlternate")
-                    .Include("ItemMasterApprovedVendor").Include("ItemMasterFileUpload").Include("ItemMasterRouting")
+                    .Include("ItemMasterApprovedVendor").Include("ItemMasterRouting")
                     .Include("ItemMasterWarehouse");
                 if (itemMasterSearch != null || (itemMasterSearch.ItemNumber.Any())
                     && itemMasterSearch.ItemType.Any() && itemMasterSearch.Commodity.Any() && itemMasterSearch.MaterialGroup.Any() 
@@ -111,7 +111,12 @@ namespace Repository
                         && (itemMasterSearch.Commodity.Any() ? itemMasterSearch.Commodity.Contains(item.Commodity) : true)
                         && (itemMasterSearch.MaterialGroup.Any() ? itemMasterSearch.MaterialGroup.Contains(item.MaterialGroup) : true)
                         && (itemMasterSearch.PurchaseGroup.Any() ? itemMasterSearch.PurchaseGroup.Contains(item.PurchaseGroup) : true)
-                        && (itemMasterSearch.Department.Any() ? itemMasterSearch.Department.Contains(item.Department) : true));
+                        && (itemMasterSearch.Department.Any() ? itemMasterSearch.Department.Contains(item.Department) : true))
+                        .Include(t => t.ItemmasterAlternate)
+                             .Include(t => t.ItemMasterApprovedVendor)
+                             //.Include(t => t.ItemMasterFileUpload)
+                             .Include(d => d.ItemMasterRouting)
+                             .Include(d => d.ItemMasterWarehouse);
                 }
                 return query.ToList();
             }
@@ -150,14 +155,19 @@ namespace Repository
             using (var context = TipsMasterDbContext)
             {
                 var query = TipsMasterDbContext.ItemMasters.Include("ItemmasterAlternate")
-                    .Include("ItemMasterApprovedVendor").Include("ItemMasterFileUpload").Include("ItemMasterRouting")
+                    .Include("ItemMasterApprovedVendor").Include("ItemMasterRouting")
                     .Include("ItemMasterWarehouse");
                 if (!string.IsNullOrEmpty(searchParames.SearchValue))
                 {
                     query = query.Where(itm => itm.ItemNumber.Contains(searchParames.SearchValue)
                 || itm.Description.Contains(searchParames.SearchValue) ||
                 itm.MaterialGroup.Contains(searchParames.SearchValue) ||
-                itm.Commodity.Contains(searchParames.SearchValue));
+                itm.Commodity.Contains(searchParames.SearchValue))
+                        .Include(t => t.ItemmasterAlternate)
+                             .Include(t => t.ItemMasterApprovedVendor)
+                             //.Include(t => t.ItemMasterFileUpload)
+                             .Include(d => d.ItemMasterRouting)
+                             .Include(d => d.ItemMasterWarehouse);
                 }
                 return query.ToList();
             }

@@ -42,4 +42,20 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
+    public class BinningLocationReportDto
+    {
+        public int Id { get; set; }
+        public string? GrinNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public decimal Qty { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+
+    }
 }

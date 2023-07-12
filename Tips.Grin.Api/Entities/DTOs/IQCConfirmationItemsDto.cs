@@ -50,5 +50,36 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal AcceptedQty { get; set; }
         public decimal RejectedQty { get; set; }
     }
+    public class IQCConfirmationItemsReportDto
+    {
+        public int? Id { get; set; }
+        public string? PONumber { get; set; }
+        public string? GrinNumber { get; set; }
+        public int GrinPartId { get; set; }
+        public string? ItemNumber { get; set; }
+        public string ItemDescription { get; set; }
+        public string MftrItemNumber { get; set; }
+        public List<ProjectNumbersReportDto>? ProjectNumbers { get; set; }
+        public string ManufactureBatchNumber { get; set; }
+
+        [Precision(18, 3)]
+        public decimal UnitPrice { get; set; }
+
+        [Precision(18, 3)]
+        public decimal POOrderedQty { get; set; }
+
+        [Precision(18, 3)]
+        public decimal POBalancedQty { get; set; }
+
+        [Precision(18, 3)]
+        public decimal POUnitPrice { get; set; }
+        public string UOM { get; set; }
+        public DateTime? ExpireDate { get; set; }
+        public DateTime? ManufactureDate { get; set; }
+        public decimal? ReceivedQty { get; set; }
+        public decimal AcceptedQty { get; set; }
+        public decimal RejectedQty { get; set; }
+
+    }
 
 }

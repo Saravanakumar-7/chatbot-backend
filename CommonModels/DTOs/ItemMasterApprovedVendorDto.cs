@@ -38,5 +38,15 @@ namespace Entities.DTOs
         public string? ShareOfBusiness { get; set; }
             
     }
+    public class ItemMasterApprovedVendorReportDto
+    {
+        [Key]
+        public int Id { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? VendorCode { get; set; }
+        public string? VendorName { get; set; }
+        public string? ShareOfBusiness { get; set; }
+      
+    }
 
 }

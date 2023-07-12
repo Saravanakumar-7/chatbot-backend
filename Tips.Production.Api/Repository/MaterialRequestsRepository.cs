@@ -158,7 +158,9 @@ namespace Tips.Production.Api.Repository
                     && (materialRequestSearch.ShopOrderNumber.Any() ? materialRequestSearch.ShopOrderNumber.Contains(po.ShopOrderNumber) : true)
                    // && (materialRequestSearch.FGShopOrderNumber.Any() ? materialRequestSearch.FGShopOrderNumber.Contains(po.FGShopOrderNumber) : true)
                    //   && (materialRequestSearch.SAShopOrderNumber.Any() ? materialRequestSearch.SAShopOrderNumber.Contains(po.SAShopOrderNumber) : true)
-                   && (materialRequestSearch.ProjectNumber.Any() ? materialRequestSearch.ProjectNumber.Contains(po.ProjectNumber) : true));
+                   && (materialRequestSearch.ProjectNumber.Any() ? materialRequestSearch.ProjectNumber.Contains(po.ProjectNumber) : true))
+                    .Include(itm => itm.MaterialRequestItems)
+            .ThenInclude(mr => mr.MRStockDetails);
                 }
                 return (IEnumerable<MaterialRequests>)query.ToList();
             }
@@ -176,7 +178,9 @@ namespace Tips.Production.Api.Repository
                     || po.ShopOrderNumber.Contains(searchParammes.SearchValue)
                     || po.MaterialRequestItems.Any(s => s.PartNumber.Contains(searchParammes.SearchValue) ||
                     s.PartDescription.Contains(searchParammes.SearchValue)
-                    || s.MftrPartNumber.Contains(searchParammes.SearchValue)));
+                    || s.MftrPartNumber.Contains(searchParammes.SearchValue)))
+                        .Include(itm => itm.MaterialRequestItems)
+            .ThenInclude(mr => mr.MRStockDetails);
                 }
                 return query.ToList();
             }
@@ -188,6 +192,7 @@ namespace Tips.Production.Api.Repository
             inv.CreatedOn <= searchDatesParams.SearchToDate
             )))
             .Include(itm => itm.MaterialRequestItems)
+            .ThenInclude(mr => mr.MRStockDetails)
             .ToList();
             return materialIssueDetails;
         }

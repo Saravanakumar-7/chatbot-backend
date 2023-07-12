@@ -679,12 +679,42 @@ namespace Tips.Purchase.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchPurchaseOrderDate([FromQuery] SearchDatesParams searchDateParam)
         {
-            ServiceResponse<IEnumerable<PurchaseOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderDto>>();
+            ServiceResponse<IEnumerable<PurchaseOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderReportDto>>();
             try
             {
                 var purchaseOrderList = await _repository.SearchPurchaseOrderDate(searchDateParam);
 
-                var result = _mapper.Map<IEnumerable<PurchaseOrderDto>>(purchaseOrderList);
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<PurchaseOrder, PurchaseOrderReportDto>();
+                    cfg.CreateMap<PoItem, PoItemsReportDto>()
+                        .ForMember(dest => dest.POAddprojects, opt => opt.MapFrom(src => src.POAddprojects
+                        .Select(PoAddProject => new PoAddProjectReportDto
+                        {
+                            Id = PoAddProject.Id,
+                            PONumber = src.PONumber,
+                            ItemNumber = src.ItemNumber,
+                            ProjectNumber = PoAddProject.ProjectNumber,
+                            ProjectQty = PoAddProject.ProjectQty
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.POAddDeliverySchedules, opt => opt.MapFrom(src => src.POAddDeliverySchedules
+                        .Select(PoAddDeliverySchedule => new PoAddDeliveryScheduleReportDto
+                        {
+                            Id = PoAddDeliverySchedule.Id,
+                            PONumber = src.PONumber,
+                            ItemNumber = src.ItemNumber,
+                            PODeliveryDate = PoAddDeliverySchedule.PODeliveryDate,
+                            PODeliveryQty = PoAddDeliverySchedule.PODeliveryQty
+                        })
+                            )
+                        );
+                });
+                var mapper = config.CreateMapper();
+
+                var result = mapper.Map<IEnumerable<PurchaseOrderReportDto>>(purchaseOrderList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PurchaseOrderItems";
                 serviceResponse.Success = true;
@@ -705,21 +735,51 @@ namespace Tips.Purchase.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAllPurchaseOrderWithItems([FromBody] PurchaseOrderSearchDto purchaseOrderSearch)
         {
-            ServiceResponse<IEnumerable<PurchaseOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderDto>>();
+            ServiceResponse<IEnumerable<PurchaseOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderReportDto>>();
             try
             {
                 var purchaseOrderList = await _repository.GetAllPurchaseOrderWithItems(purchaseOrderSearch);
 
                 _logger.LogInfo("Returned all PurhaseOrders");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<PurchaseOrderDto, PurchaseOrder>().ReverseMap()
+                //    .ForMember(dest => dest.POItems, opt => opt.MapFrom(src => src.POItems));
+                //});
+
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<PurchaseOrderDto, PurchaseOrder>().ReverseMap()
-                    .ForMember(dest => dest.POItems, opt => opt.MapFrom(src => src.POItems));
+                    cfg.CreateMap<PurchaseOrder, PurchaseOrderReportDto>();
+                    cfg.CreateMap<PoItem, PoItemsReportDto>()
+                        .ForMember(dest => dest.POAddprojects, opt => opt.MapFrom(src => src.POAddprojects
+                        .Select(PoAddProject => new PoAddProjectReportDto
+                        {
+                            Id = PoAddProject.Id,
+                            PONumber = src.PONumber,
+                            ItemNumber = src.ItemNumber,
+                            ProjectNumber = PoAddProject.ProjectNumber,
+                            ProjectQty = PoAddProject.ProjectQty
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.POAddDeliverySchedules, opt => opt.MapFrom(src => src.POAddDeliverySchedules
+                        .Select(PoAddDeliverySchedule => new PoAddDeliveryScheduleReportDto
+                        {
+                            Id = PoAddDeliverySchedule.Id,
+                            PONumber = src.PONumber,
+                            ItemNumber = src.ItemNumber,
+                            PODeliveryDate = PoAddDeliverySchedule.PODeliveryDate,
+                            PODeliveryQty = PoAddDeliverySchedule.PODeliveryQty
+                        })
+                            )
+                        );
                 });
-
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<PurchaseOrderDto>>(purchaseOrderList);
+                var result = mapper.Map<IEnumerable<PurchaseOrderReportDto>>(purchaseOrderList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PurchaseOrderItems";
                 serviceResponse.Success = true;
@@ -740,20 +800,50 @@ namespace Tips.Purchase.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchPurchaseOrder([FromQuery] SearchParamess searchParams)
         {
-            ServiceResponse<IEnumerable<PurchaseOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderDto>>();
+            ServiceResponse<IEnumerable<PurchaseOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderReportDto>>();
             try
             {
                 var purchaseOrderList = await _repository.SearchPurchaseOrder(searchParams);
                 _logger.LogInfo("Returned all PurchaseOrders");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<PurchaseOrderDto, PurchaseOrder>().ReverseMap()
+                //    .ForMember(dest => dest.POItems, opt => opt.MapFrom(src => src.POItems));
+                //});
+
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<PurchaseOrderDto, PurchaseOrder>().ReverseMap()
-                    .ForMember(dest => dest.POItems, opt => opt.MapFrom(src => src.POItems));
+                    cfg.CreateMap<PurchaseOrder, PurchaseOrderReportDto>();
+                    cfg.CreateMap<PoItem, PoItemsReportDto>()
+                        .ForMember(dest => dest.POAddprojects, opt => opt.MapFrom(src => src.POAddprojects
+                        .Select(PoAddProject => new PoAddProjectReportDto
+                        {
+                            Id = PoAddProject.Id,
+                            PONumber = src.PONumber,
+                            ItemNumber = src.ItemNumber,
+                            ProjectNumber = PoAddProject.ProjectNumber,
+                            ProjectQty = PoAddProject.ProjectQty
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.POAddDeliverySchedules, opt => opt.MapFrom(src => src.POAddDeliverySchedules
+                        .Select(PoAddDeliverySchedule => new PoAddDeliveryScheduleReportDto
+                        {
+                            Id = PoAddDeliverySchedule.Id,
+                            PONumber = src.PONumber,
+                            ItemNumber = src.ItemNumber,
+                            PODeliveryDate = PoAddDeliverySchedule.PODeliveryDate,
+                            PODeliveryQty = PoAddDeliverySchedule.PODeliveryQty
+                        })
+                            )
+                        );
                 });
-
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<PurchaseOrderDto>>(purchaseOrderList);
+                var result = mapper.Map<IEnumerable<PurchaseOrderReportDto>>(purchaseOrderList);
 
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PurchaseOrderItems";

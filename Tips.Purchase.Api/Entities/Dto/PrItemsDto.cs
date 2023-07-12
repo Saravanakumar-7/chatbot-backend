@@ -52,5 +52,22 @@ namespace Tips.Purchase.Api.Entities.Dto
         public List<PrAddDeliveryScheduleUpdateDto>? PrAddDeliverySchedulesDtoUpdateList { get; set; }
         public List<PrSpecialInstructionUpdateDto>? prSpecialInstructionsUpdateList { get; set; }
     }
+    public class PrItemsReportDto
+    {
+        public int Id { get; set; }
+        public string? PrNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? MftrItemNumber { get; set; }
+        public string? Description { get; set; }
+        public string? UOM { get; set; }
+        public PartType PartType { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? Qty { get; set; }
+
+        public List<PrAddProjectReportDto>? prAddprojectsDtoList { get; set; }
+        public List<PrAddDeliveryScheduleReportDto>? prAddDeliverySchedulesDtoList { get; set; }
+        public List<PrSpecialInstructionDto>? prSpecialInstructionsDtoList { get; set; }
+    }
 
 }

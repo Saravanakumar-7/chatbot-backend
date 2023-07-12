@@ -149,11 +149,41 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchBTODeliveryOrderDate([FromQuery] SearchsDateParms searchDateParam)
         {
-            ServiceResponse<IEnumerable<BTODeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderDto>>();
+            ServiceResponse<IEnumerable<BTODeliveryOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderReportDto>>();
             try
             {
                 var bTODeliveryOrders = await _repository.SearchBTODeliveryOrderDate(searchDateParam);
-                var result = _mapper.Map<IEnumerable<BTODeliveryOrderDto>>(bTODeliveryOrders);
+
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<BTODeliveryOrder, BTODeliveryOrderReportDto>()
+                       .ForMember(dest => dest.bTODeliveryOrderItems, opt => opt.MapFrom(src => src.bTODeliveryOrderItems
+                       .Select(bTODeliveryOrderItems => new BTODeliveryOrderItemsReportDto
+                       {
+                           Id = bTODeliveryOrderItems.Id,
+                           BTONumber = src.BTONumber,
+                           FGItemNumber = bTODeliveryOrderItems.FGItemNumber,
+                           SalesOrderId = bTODeliveryOrderItems.SalesOrderId,
+                           Description = bTODeliveryOrderItems.Description,
+                           BalanceDoQty = bTODeliveryOrderItems.BalanceDoQty,
+                           InvoicedQty = bTODeliveryOrderItems.InvoicedQty,
+                           UnitPrice = bTODeliveryOrderItems.UnitPrice,
+                           UOC = bTODeliveryOrderItems.UOC,
+                           UOM = bTODeliveryOrderItems.UOM,
+                           FGOrderQty = bTODeliveryOrderItems.FGOrderQty,
+                           OrderBalanceQty = bTODeliveryOrderItems.OrderBalanceQty,
+                           FGStock = bTODeliveryOrderItems.FGStock,
+                           Discount = bTODeliveryOrderItems.Discount,
+                           NetValue = bTODeliveryOrderItems.NetValue,
+                           DispatchQty = bTODeliveryOrderItems.DispatchQty,
+                           SerialNo = bTODeliveryOrderItems.SerialNo,
+                       })
+                           )
+                       );
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<BTODeliveryOrderReportDto>>(bTODeliveryOrders);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all BTODeliveryOrders";
                 serviceResponse.Success = true;
@@ -173,20 +203,50 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchBTODeliveryOrder([FromQuery] SearchParames searchParams)
         {
-            ServiceResponse<IEnumerable<BTODeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderDto>>();
+            ServiceResponse<IEnumerable<BTODeliveryOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderReportDto>>();
             try
             {
                 var btoDeliveyOrderList = await _repository.SearchBTODeliveryOrder(searchParams);
 
                 _logger.LogInfo("Returned all BTODeliveryOrder");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<BTODeliveryOrder, BTODeliveryOrderDto>().ReverseMap()
+                //    .ForMember(dest => dest.bTODeliveryOrderItems, opt => opt.MapFrom(src => src.bTODeliveryOrderItems));
+                //});
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<BTODeliveryOrder, BTODeliveryOrderDto>().ReverseMap()
-                    .ForMember(dest => dest.bTODeliveryOrderItems, opt => opt.MapFrom(src => src.bTODeliveryOrderItems));
+                    cfg.CreateMap<BTODeliveryOrder, BTODeliveryOrderReportDto>()
+                       .ForMember(dest => dest.bTODeliveryOrderItems, opt => opt.MapFrom(src => src.bTODeliveryOrderItems
+                       .Select(bTODeliveryOrderItems => new BTODeliveryOrderItemsReportDto
+                       {
+                           Id = bTODeliveryOrderItems.Id,
+                           BTONumber = src.BTONumber,
+                           FGItemNumber = bTODeliveryOrderItems.FGItemNumber,
+                           SalesOrderId = bTODeliveryOrderItems.SalesOrderId,
+                           Description = bTODeliveryOrderItems.Description,
+                           BalanceDoQty = bTODeliveryOrderItems.BalanceDoQty,
+                           InvoicedQty = bTODeliveryOrderItems.InvoicedQty,
+                           UnitPrice = bTODeliveryOrderItems.UnitPrice,
+                           UOC = bTODeliveryOrderItems.UOC,
+                           UOM = bTODeliveryOrderItems.UOM,
+                           FGOrderQty = bTODeliveryOrderItems.FGOrderQty,
+                           OrderBalanceQty = bTODeliveryOrderItems.OrderBalanceQty,
+                           FGStock = bTODeliveryOrderItems.FGStock,
+                           Discount = bTODeliveryOrderItems.Discount,
+                           NetValue = bTODeliveryOrderItems.NetValue,
+                           DispatchQty = bTODeliveryOrderItems.DispatchQty,
+                           SerialNo = bTODeliveryOrderItems.SerialNo,
+                       })
+                           )
+                       );
                 });
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<BTODeliveryOrderDto>>(btoDeliveyOrderList);
+                var result = mapper.Map<IEnumerable<BTODeliveryOrderReportDto>>(btoDeliveyOrderList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all BTODeliveryOrder";
                 serviceResponse.Success = true;
@@ -207,20 +267,50 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAllBTODeliveryOrderWithItems([FromBody] BTODeliveryOrderSearchDto bTODeliveryOrderSearch)
         {
-            ServiceResponse<IEnumerable<BTODeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderDto>>();
+            ServiceResponse<IEnumerable<BTODeliveryOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderReportDto>>();
             try
             {
                 var bTODeliveryOrders = await _repository.GetAllBTODeliveryOrderWithItems(bTODeliveryOrderSearch);
                 _logger.LogInfo("Returned all bTODeliveryOrders");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<BTODeliveryOrderDto, BTODeliveryOrder>().ReverseMap()
+                //    .ForMember(dest => dest.bTODeliveryOrderItems, opt => opt.MapFrom(src => src.bTODeliveryOrderItems));
+                //});
+
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<BTODeliveryOrderDto, BTODeliveryOrder>().ReverseMap()
-                    .ForMember(dest => dest.bTODeliveryOrderItems, opt => opt.MapFrom(src => src.bTODeliveryOrderItems));
+                    cfg.CreateMap<BTODeliveryOrder, BTODeliveryOrderReportDto>()
+                       .ForMember(dest => dest.bTODeliveryOrderItems, opt => opt.MapFrom(src => src.bTODeliveryOrderItems
+                       .Select(bTODeliveryOrderItems => new BTODeliveryOrderItemsReportDto
+                       {
+                           Id = bTODeliveryOrderItems.Id,
+                           BTONumber = src.BTONumber,
+                           FGItemNumber = bTODeliveryOrderItems.FGItemNumber,
+                           SalesOrderId = bTODeliveryOrderItems.SalesOrderId,
+                           Description = bTODeliveryOrderItems.Description,
+                           BalanceDoQty = bTODeliveryOrderItems.BalanceDoQty,
+                           InvoicedQty = bTODeliveryOrderItems.InvoicedQty,
+                           UnitPrice = bTODeliveryOrderItems.UnitPrice,
+                           UOC = bTODeliveryOrderItems.UOC,
+                           UOM = bTODeliveryOrderItems.UOM,
+                           FGOrderQty = bTODeliveryOrderItems.FGOrderQty,
+                           OrderBalanceQty = bTODeliveryOrderItems.OrderBalanceQty,
+                           FGStock = bTODeliveryOrderItems.FGStock,
+                           Discount = bTODeliveryOrderItems.Discount,
+                           NetValue = bTODeliveryOrderItems.NetValue,
+                           DispatchQty = bTODeliveryOrderItems.DispatchQty,
+                           SerialNo = bTODeliveryOrderItems.SerialNo,
+                       })
+                           )
+                       );
                 });
-
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<BTODeliveryOrderDto>>(bTODeliveryOrders);
+                var result = mapper.Map<IEnumerable<BTODeliveryOrderReportDto>>(bTODeliveryOrders);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all bTODeliveryOrders";
                 serviceResponse.Success = true;

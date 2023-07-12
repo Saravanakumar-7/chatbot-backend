@@ -172,12 +172,58 @@ namespace Tips.Purchase.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchPurchaseRequisitionDate([FromQuery] SearchDatesParams searchDateParam)
         {
-            ServiceResponse<IEnumerable<PurchaseRequisitionDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionDto>>();
+            ServiceResponse<IEnumerable<PurchaseRequisitionReportDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionReportDto>>();
             try
             {
                 var purchaseRequisitionList = await _repository.SearchPurchaseRequisitionDate(searchDateParam);
 
-                var result = _mapper.Map<IEnumerable<PurchaseRequisitionDto>>(purchaseRequisitionList);
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+
+                    cfg.CreateMap<PurchaseRequisition, PurchaseRequisitionReportDto>()
+                        .ForMember(dest => dest.PrItemsDtoList, opt => opt.MapFrom(src => src.PrItemsDtoList
+                            .Select(prItem => new PrItemsReportDto
+                            {
+                                PrNumber = src.PrNumber,
+                                ItemNumber = prItem.ItemNumber,
+                                MftrItemNumber = prItem.MftrItemNumber,
+                                Description = prItem.Description,
+                                UOM = prItem.UOM,
+                                PartType = prItem.PartType,
+                                Qty = prItem.Qty,
+                                prAddprojectsDtoList = prItem.prAddprojectsDtoList
+                                    .Select(prAddProject => new PrAddProjectReportDto
+                                    {
+                                        Id = prItem.Id,
+                                        PrNumber = src.PrNumber,
+                                        ItemNumber = prItem.ItemNumber,
+                                        ProjectNumber = prAddProject.ProjectNumber,
+                                        ProjectQty = prAddProject.ProjectQty
+                                    }).ToList(),
+                                prAddDeliverySchedulesDtoList = prItem.prAddDeliverySchedulesDtoList
+                                    .Select(prAddDeliverySchedule => new PrAddDeliveryScheduleReportDto
+                                    {
+                                        Id = prAddDeliverySchedule.Id,
+                                        PrNumber = src.PrNumber,
+                                        ItemNumber = prItem.ItemNumber,
+                                        PrDeliveryDate = prAddDeliverySchedule.PrDeliveryDate,
+                                        PrDeliveryQty = prAddDeliverySchedule.PrDeliveryQty
+                                    }).ToList(),
+                                 prSpecialInstructionsDtoList = prItem.prSpecialInstructionsDtoList
+                                    .Select(prSpecialInstruction => new PrSpecialInstructionDto
+                                    {
+                                        Id = prSpecialInstruction.Id,
+                                        SpecialInstruction = prSpecialInstruction.SpecialInstruction
+                                    }).ToList()
+                            })
+                         ));
+                });
+
+                var mapper = config.CreateMapper();
+
+
+                var result = mapper.Map<IEnumerable<PurchaseRequisitionReportDto>>(purchaseRequisitionList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PurchaseRequisitionItems";
                 serviceResponse.Success = true;
@@ -198,20 +244,65 @@ namespace Tips.Purchase.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchPurchaseRequisition([FromQuery] SearchParamess searchParams)
         {
-            ServiceResponse<IEnumerable<PurchaseRequisitionDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionDto>>();
+            ServiceResponse<IEnumerable<PurchaseRequisitionReportDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionReportDto>>();
             try
             {
                 var purchaseRequisitionList = await _repository.SearchPurchaseRequisition(searchParams);
 
                 _logger.LogInfo("Returned all purchaseRequisition");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<PurchaseRequisitionDto, PurchaseRequisition>().ReverseMap()
+                //    .ForMember(dest => dest.PrItemsDtoList, opt => opt.MapFrom(src => src.PrItemsDtoList));
+                //});
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<PurchaseRequisitionDto, PurchaseRequisition>().ReverseMap()
-                    .ForMember(dest => dest.PrItemsDtoList, opt => opt.MapFrom(src => src.PrItemsDtoList));
+
+                    cfg.CreateMap<PurchaseRequisition, PurchaseRequisitionReportDto>()
+                        .ForMember(dest => dest.PrItemsDtoList, opt => opt.MapFrom(src => src.PrItemsDtoList
+                            .Select(prItem => new PrItemsReportDto
+                            {
+                                PrNumber = src.PrNumber,
+                                ItemNumber = prItem.ItemNumber,
+                                MftrItemNumber = prItem.MftrItemNumber,
+                                Description = prItem.Description,
+                                UOM = prItem.UOM,
+                                PartType = prItem.PartType,
+                                Qty = prItem.Qty,
+                                prAddprojectsDtoList = prItem.prAddprojectsDtoList
+                                    .Select(prAddProject => new PrAddProjectReportDto
+                                    {
+                                        Id = prAddProject.Id,
+                                        PrNumber = src.PrNumber,
+                                        ItemNumber = prItem.ItemNumber,
+                                        ProjectNumber = prAddProject.ProjectNumber,
+                                        ProjectQty = prAddProject.ProjectQty
+                                    }).ToList(),
+                                prAddDeliverySchedulesDtoList = prItem.prAddDeliverySchedulesDtoList
+                                    .Select(prAddDeliverySchedule => new PrAddDeliveryScheduleReportDto
+                                    {
+                                        Id = prAddDeliverySchedule.Id,
+                                        PrNumber = src.PrNumber,
+                                        ItemNumber = prItem.ItemNumber,
+                                        PrDeliveryDate = prAddDeliverySchedule.PrDeliveryDate,
+                                        PrDeliveryQty = prAddDeliverySchedule.PrDeliveryQty
+                                    }).ToList(),
+                                prSpecialInstructionsDtoList = prItem.prSpecialInstructionsDtoList
+                                    .Select(prSpecialInstruction => new PrSpecialInstructionDto
+                                    {
+                                        Id = prSpecialInstruction.Id,
+                                        SpecialInstruction = prSpecialInstruction.SpecialInstruction
+                                    }).ToList()
+                            })
+                         ));
                 });
+
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<PurchaseRequisitionDto>>(purchaseRequisitionList);
+                var result = mapper.Map<IEnumerable<PurchaseRequisitionReportDto>>(purchaseRequisitionList);
 
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PurchaseRequisitions";
@@ -233,21 +324,65 @@ namespace Tips.Purchase.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAllPurchaseRequisitionWithItems([FromBody] PurchaseRequisitionSearchDto purchaseRequisitionSearch)
         {
-            ServiceResponse<IEnumerable<PurchaseRequisitionDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionDto>>();
+            ServiceResponse<IEnumerable<PurchaseRequisitionReportDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionReportDto>>();
             try
             {
                 var purchaseRequisitionList = await _repository.GetAllPurchaseRequisitionWithItems(purchaseRequisitionSearch);
 
                 _logger.LogInfo("Returned all PurchaseRequisition");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<PurchaseRequisitionDto, PurchaseRequisition>().ReverseMap()
+                //    .ForMember(dest => dest.PrItemsDtoList, opt => opt.MapFrom(src => src.PrItemsDtoList));
+                //});
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<PurchaseRequisitionDto, PurchaseRequisition>().ReverseMap()
-                    .ForMember(dest => dest.PrItemsDtoList, opt => opt.MapFrom(src => src.PrItemsDtoList));
-                });
-                var mapper = config.CreateMapper();
 
-                var result = mapper.Map<IEnumerable<PurchaseRequisitionDto>>(purchaseRequisitionList);
+                    cfg.CreateMap<PurchaseRequisition, PurchaseRequisitionReportDto>()
+                        .ForMember(dest => dest.PrItemsDtoList, opt => opt.MapFrom(src => src.PrItemsDtoList
+                            .Select(prItem => new PrItemsReportDto
+                            {
+                                PrNumber = src.PrNumber,
+                                ItemNumber = prItem.ItemNumber,
+                                MftrItemNumber = prItem.MftrItemNumber,
+                                Description = prItem.Description,
+                                UOM = prItem.UOM,
+                                PartType = prItem.PartType,
+                                Qty = prItem.Qty,
+                                prAddprojectsDtoList = prItem.prAddprojectsDtoList
+                                    .Select(prAddProject => new PrAddProjectReportDto
+                                    {
+                                        Id = prItem.Id,
+                                        PrNumber = src.PrNumber,
+                                        ItemNumber = prItem.ItemNumber,
+                                        ProjectNumber = prAddProject.ProjectNumber,
+                                        ProjectQty = prAddProject.ProjectQty
+                                    }).ToList(),
+                                prAddDeliverySchedulesDtoList = prItem.prAddDeliverySchedulesDtoList
+                                    .Select(prAddDeliverySchedule => new PrAddDeliveryScheduleReportDto
+                                    {
+                                        Id = prAddDeliverySchedule.Id,
+                                        PrNumber = src.PrNumber,
+                                        ItemNumber = prItem.ItemNumber,
+                                        PrDeliveryDate = prAddDeliverySchedule.PrDeliveryDate,
+                                        PrDeliveryQty = prAddDeliverySchedule.PrDeliveryQty
+                                    }).ToList(),
+                                prSpecialInstructionsDtoList = prItem.prSpecialInstructionsDtoList
+                                    .Select(prSpecialInstruction => new PrSpecialInstructionDto
+                                    {
+                                        Id = prSpecialInstruction.Id,
+                                        SpecialInstruction = prSpecialInstruction.SpecialInstruction
+                                    }).ToList()
+                            })
+                         ));
+                });
+
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<PurchaseRequisitionReportDto>>(purchaseRequisitionList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PurchaseRequisition";
                 serviceResponse.Success = true;

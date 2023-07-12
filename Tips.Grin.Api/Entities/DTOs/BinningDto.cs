@@ -123,4 +123,44 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ShopOrderNo { get; set; }
 
     }
+    public class BinningReportDto
+    {
+        public int Id { get; set; }
+        public string? GrinNumber { get; set; }
+        [Required]
+        public string VendorName { get; set; }
+
+        [Required]
+        public string VendorId { get; set; }
+
+        [Required]
+        public string InvoiceNumber { get; set; }
+
+        public decimal? InvoiceValue { get; set; }
+
+        public DateTime? InvoiceDate { get; set; }
+
+        public string? AWBNumber1 { get; set; }
+
+        public DateTime? AWBDate1 { get; set; }
+
+        public string? AWBNumber2 { get; set; }
+
+        public DateTime? AWBDate2 { get; set; }
+
+        public string? BENumber { get; set; }
+
+        public DateTime? BEDate { get; set; }
+
+        public decimal? TotalInvoiceValue { get; set; }
+        public string Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+
+
+        public List<BinningItemsReportDto>? BinningItems { get; set; }
+
+    }
 }

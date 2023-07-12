@@ -124,7 +124,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchBinningDate([FromQuery] SearchDateParames searchDateParam)
         {
-            ServiceResponse<IEnumerable<BinningDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningDto>>();
+            ServiceResponse<IEnumerable<BinningReportDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningReportDto>>();
             try
             {
                 var binningList = await _binningRepository.SearchBinningDate(searchDateParam);
@@ -140,7 +140,7 @@ namespace Tips.Grin.Api.Controllers
                 var grinPartDetailsLookup = grinPartDetails.ToDictionary(gp => gp.Id, gp => gp);
 
                 // Use the grinPartDetailsLookup for quick lookups while mapping the data to DTO objects
-                var binningListDto = binningList.Select(bin => new BinningDto
+                var binningListDto = binningList.Select(bin => new BinningReportDto
                 {
                     // Map Binning properties here (assuming properties with the same name exist in the DTO)
                     Id = bin.Id,
@@ -152,12 +152,12 @@ namespace Tips.Grin.Api.Controllers
                     LastModifiedOn = bin.LastModifiedOn,
                     // ...
 
-                    BinningItems = bin.BinningItems.Select(item => new BinningItemsDto
+                    BinningItems = bin.BinningItems.Select(item => new BinningItemsReportDto
                     {
                         //Map BinningItem properties here (assuming properties with the same name exist in the DTO)
                         Id = item.Id,
                         ItemNumber = item.ItemNumber,
-
+                        GrinNumber = bin.GrinNumber,
 
                         ReceivedQty = grinPartDetailsLookup[item.GrinPartId].Qty,
                         MftrItemNumber = grinPartDetailsLookup[item.GrinPartId].MftrItemNumber,
@@ -174,8 +174,10 @@ namespace Tips.Grin.Api.Controllers
                         AcceptedQty = grinPartDetailsLookup[item.GrinPartId].AcceptedQty,
                         RejectedQty = grinPartDetailsLookup[item.GrinPartId].RejectedQty,
 
-                        binningLocations = item.binningLocations.Select(loc => new BinningLocationDto
+                        binningLocations = item.binningLocations.Select(loc => new BinningLocationReportDto
                         {
+                            GrinNumber = bin.GrinNumber,
+                            ItemNumber = item.ItemNumber,
                             Warehouse = loc.Warehouse,
                             Location = loc.Location,
                             Qty = loc.Qty,
@@ -211,7 +213,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchBinning([FromQuery] SearchParames searchParams)
         {
-            ServiceResponse<IEnumerable<BinningDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningDto>>();
+            ServiceResponse<IEnumerable<BinningReportDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningReportDto>>();
             try
             {
                 var binningList = await _binningRepository.SearchBinning(searchParams);
@@ -227,7 +229,7 @@ namespace Tips.Grin.Api.Controllers
                 var grinPartDetailsLookup = grinPartDetails.ToDictionary(gp => gp.Id, gp => gp);
 
                 // Use the grinPartDetailsLookup for quick lookups while mapping the data to DTO objects
-                var binningListDto = binningList.Select(bin => new BinningDto
+                var binningListDto = binningList.Select(bin => new BinningReportDto
                 {
                     // Map Binning properties here (assuming properties with the same name exist in the DTO)
                     Id = bin.Id,
@@ -239,12 +241,12 @@ namespace Tips.Grin.Api.Controllers
                     LastModifiedOn = bin.LastModifiedOn,
                     // ...
 
-                    BinningItems = bin.BinningItems.Select(item => new BinningItemsDto
+                    BinningItems = bin.BinningItems.Select(item => new BinningItemsReportDto
                     {
                         //Map BinningItem properties here (assuming properties with the same name exist in the DTO)
                         Id = item.Id,
                         ItemNumber = item.ItemNumber,
-
+                        GrinNumber = bin.GrinNumber,
 
                         ReceivedQty = grinPartDetailsLookup[item.GrinPartId].Qty,
                         MftrItemNumber = grinPartDetailsLookup[item.GrinPartId].MftrItemNumber,
@@ -261,8 +263,10 @@ namespace Tips.Grin.Api.Controllers
                         AcceptedQty = grinPartDetailsLookup[item.GrinPartId].AcceptedQty,
                         RejectedQty = grinPartDetailsLookup[item.GrinPartId].RejectedQty,
 
-                        binningLocations = item.binningLocations.Select(loc => new BinningLocationDto
+                        binningLocations = item.binningLocations.Select(loc => new BinningLocationReportDto
                         {
+                            GrinNumber = bin.GrinNumber,
+                            ItemNumber = item.ItemNumber,
                             Warehouse = loc.Warehouse,
                             Location = loc.Location,
                             Qty = loc.Qty,
@@ -296,7 +300,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAllBinningWithItems([FromBody] BinningSearchDto binningSearchDto)
         {
-            ServiceResponse<IEnumerable<BinningDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningDto>>();
+            ServiceResponse<IEnumerable<BinningReportDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningReportDto>>();
             try
             {
                 var binningList = await _binningRepository.GetAllBinningWithItems(binningSearchDto);
@@ -312,7 +316,7 @@ namespace Tips.Grin.Api.Controllers
                 var grinPartDetailsLookup = grinPartDetails.ToDictionary(gp => gp.Id, gp => gp);
 
                 // Use the grinPartDetailsLookup for quick lookups while mapping the data to DTO objects
-                var binningListDto = binningList.Select(bin => new BinningDto
+                var binningListDto = binningList.Select(bin => new BinningReportDto
                 {
                     // Map Binning properties here (assuming properties with the same name exist in the DTO)
                     Id = bin.Id,
@@ -324,12 +328,12 @@ namespace Tips.Grin.Api.Controllers
                     LastModifiedOn = bin.LastModifiedOn,
                     // ...
 
-                    BinningItems = bin.BinningItems.Select(item => new BinningItemsDto
+                    BinningItems = bin.BinningItems.Select(item => new BinningItemsReportDto
                     {
                         //Map BinningItem properties here (assuming properties with the same name exist in the DTO)
                         Id = item.Id,
                         ItemNumber = item.ItemNumber,
-                       
+                        GrinNumber = bin.GrinNumber,
                         ReceivedQty = grinPartDetailsLookup[item.GrinPartId].Qty,
                         MftrItemNumber = grinPartDetailsLookup[item.GrinPartId].MftrItemNumber,
                         PONumber = grinPartDetailsLookup[item.GrinPartId].PONumber,
@@ -345,8 +349,10 @@ namespace Tips.Grin.Api.Controllers
                         AcceptedQty = grinPartDetailsLookup[item.GrinPartId].AcceptedQty,
                         RejectedQty = grinPartDetailsLookup[item.GrinPartId].RejectedQty,
 
-                        binningLocations = item.binningLocations.Select(loc => new BinningLocationDto
+                        binningLocations = item.binningLocations.Select(loc => new BinningLocationReportDto
                         {
+                            GrinNumber = bin.GrinNumber,
+                            ItemNumber = item.ItemNumber,
                             Warehouse = loc.Warehouse,
                             Location = loc.Location,
                             Qty = loc.Qty,

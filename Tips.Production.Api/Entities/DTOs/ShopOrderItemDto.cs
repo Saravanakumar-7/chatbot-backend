@@ -59,4 +59,22 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal? RequiredQty { get; set; }
 
     }
+    public class ShopOrderItemReportDto
+    {
+        public int Id { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        public string? FGItemNumber { get; set; }
+
+        public string? Description { get; set; }
+
+        public string? ProjectNumber { get; set; }
+
+        public string? SalesOrderNumber { get; set; }
+
+        public decimal? OpenSalesOrderQty { get; set; }
+
+        public decimal? ReleaseQty { get; set; }
+        public decimal? RequiredQty { get; set; }
+
+    }
 }

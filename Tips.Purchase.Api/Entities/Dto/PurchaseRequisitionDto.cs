@@ -128,4 +128,41 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public int? RevisionNumber { get; set; }
 
     }
+    public class PurchaseRequisitionReportDto
+    {
+        public int Id { get; set; }
+
+        public string? PrNumber { get; set; }
+
+        public DateTime? PrDate { get; set; }
+
+        public int? RevisionNumber { get; set; }
+
+        public string? ProcurementType { get; set; }
+
+        public string? Purpose { get; set; }
+
+        public List<DocumentUploadDto>? PrFiles { get; set; }
+
+        public string? DeliveryTerms { get; set; }
+        public bool PrApprovalI { get; set; }
+        public bool PrApprovalII { get; set; }
+        public string? PaymentTerms { get; set; }
+
+        public string? ShippingMode { get; set; }
+
+
+        public string? RetentionPeriod { get; set; }
+
+        public string? SpecialTermsConditions { get; set; }
+
+        public string? Unit { get; set; }
+
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+
+        public List<PrItemsReportDto>? PrItemsDtoList { get; set; }
+    }
 }

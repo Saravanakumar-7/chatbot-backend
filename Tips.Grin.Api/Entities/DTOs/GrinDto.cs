@@ -297,5 +297,67 @@ namespace Tips.Grin.Api.Entities.DTOs
         public List<OtherChargesDto>? OtherCharges { get; set; }
 
     }
+    public class GrinReportDto
+    {
+        public int Id { get; set; }
+        public string? GrinNumber { get; set; }
+
+        //[Required]
+        //public string PONumber { get; set; }
+
+        [Required]
+        public string VendorName { get; set; }
+
+        [Required]
+        public string VendorId { get; set; }
+
+        [Required]
+        public string InvoiceNumber { get; set; }
+
+        public decimal? InvoiceValue { get; set; }
+
+        public DateTime? InvoiceDate { get; set; }
+
+        public string? AWBNumber1 { get; set; }
+
+        public DateTime? AWBDate1 { get; set; }
+
+        public string? AWBNumber2 { get; set; }
+
+        public DateTime? AWBDate2 { get; set; }
+
+        public string? BENumber { get; set; }
+
+        public DateTime? BEDate { get; set; }
+
+        public decimal? TotalInvoiceValue { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Insurance { get; set; }
+        [Precision(13, 3)]
+        public decimal? LoadingorUnLoading { get; set; }
+        public DateTime? GateEntryDate { get; set; }
+        [Precision(13, 3)]
+        public decimal? CurrencyConversion { get; set; }
+        [Precision(13, 3)]
+        public decimal? Transport { get; set; }
+        [Precision(13, 3)]
+        public decimal? BECurrencyValue { get; set; }
+        public List<DocumentUploadDto>? GrinDocuments { get; set; }
+
+        //public string? GrinDocuments { get; set; }
+
+        public string Unit { get; set; }
+
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+
+        public List<GrinPartsReportDto>? GrinParts { get; set; }
+        public List<OtherChargesDto>? OtherCharges { get; set; }
+
+    }
 
 }

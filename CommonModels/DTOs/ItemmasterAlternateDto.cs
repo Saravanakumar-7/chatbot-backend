@@ -54,4 +54,19 @@ namespace Entities.DTOs
         public bool IsDefault { get; set; }
           
     }
+    public class ItemmasterAlternateReportDto
+    {
+        [Key]
+        public int Id { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ManufacturerPartNo { get; set; }
+        public string? Manufacturer { get; set; }
+
+        [DefaultValue(false)]
+        public bool AlternateSource { get; set; }
+
+        [DefaultValue(false)]
+        public bool IsDefault { get; set; }
+        
+    }
 }

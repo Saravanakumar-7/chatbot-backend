@@ -27,4 +27,15 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public decimal PODeliveryQty { get; set; }
        
     }
+    public class PoAddDeliveryScheduleReportDto
+    {
+        public int Id { get; set; }
+        public string? PONumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public DateTime PODeliveryDate { get; set; }
+
+        [Precision(13, 3)]
+        public decimal PODeliveryQty { get; set; }
+
+    }
 }

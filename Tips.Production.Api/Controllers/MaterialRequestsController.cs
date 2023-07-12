@@ -14,6 +14,7 @@ using System.Net.Http;
 using System.Text;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 using Entities.Migrations;
+using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -608,19 +609,50 @@ namespace Tips.Production.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchMaterialRequests([FromQuery] SearchParamess searchParams)
         {
-            ServiceResponse<IEnumerable<MaterialRequestsDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestsDto>>();
+            ServiceResponse<IEnumerable<MaterialRequestsReportDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestsReportDto>>();
             try
             {
                 var MaterialRequestsDetails = await _materialRequestRepository.SearchMaterialRequests(searchParams);
                 _logger.LogInfo("Returned all MaterialRequestsDetails");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<MaterialRequestsDto, MaterialRequests>().ReverseMap()
+                //    .ForMember(dest => dest.MaterialRequestItems, opt => opt.MapFrom(src => src.MaterialRequestItems));
+                //});
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<MaterialRequestsDto, MaterialRequests>().ReverseMap()
-                    .ForMember(dest => dest.MaterialRequestItems, opt => opt.MapFrom(src => src.MaterialRequestItems));
+                    cfg.CreateMap<MaterialRequests, MaterialRequestsReportDto>()
+                       .ForMember(dest => dest.MaterialRequestItems, opt => opt.MapFrom(src => src.MaterialRequestItems
+                       .Select(materialRequestItems => new MaterialRequestItemsReportDto
+                       {
+                           Id = materialRequestItems.Id,
+                           MRNumber = src.MRNumber,
+                           PartNumber = materialRequestItems.PartNumber,
+                           PartDescription = materialRequestItems.PartDescription,
+                           PartType = materialRequestItems.PartType,
+                           Stock = materialRequestItems.Stock,
+                           IssuedQty = materialRequestItems.IssuedQty,
+                           IssueStatus = materialRequestItems.IssueStatus,
+                           RequiredQty = materialRequestItems.RequiredQty,
+                           MRStockDetails = materialRequestItems.MRStockDetails
+                           .Select(mrStockDetails => new MRStockDetailsDto
+                           {
+                               Id = mrStockDetails.Id,
+                               Warehouse = mrStockDetails.Warehouse,
+                               Location = mrStockDetails.Location,
+                               Qty = mrStockDetails.Qty,
+                               LocationStock = mrStockDetails.LocationStock,
+                           }).ToList()
+                       })
+                           )
+                       );
                 });
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<MaterialRequestsDto>>(MaterialRequestsDetails);
+                var result = mapper.Map<IEnumerable<MaterialRequestsReportDto>>(MaterialRequestsDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all MaterialRequestsDetails";
                 serviceResponse.Success = true;
@@ -641,20 +673,51 @@ namespace Tips.Production.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAllMaterialRequestsWithItems([FromBody] MaterialRequestSearchDto materialRequestSearch)
         {
-            ServiceResponse<IEnumerable<MaterialRequestsDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestsDto>>();
+            ServiceResponse<IEnumerable<MaterialRequestsReportDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestsReportDto>>();
             try
             {
                 var materialRequestDetails = await _materialRequestRepository.GetAllMaterialRequestsWithItems(materialRequestSearch);
 
                 _logger.LogInfo("Returned all materialRequestDetails");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<MaterialRequestsDto, MaterialRequests>().ReverseMap()
+                //    .ForMember(dest => dest.MaterialRequestItems, opt => opt.MapFrom(src => src.MaterialRequestItems));
+                //});
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<MaterialRequestsDto, MaterialRequests>().ReverseMap()
-                    .ForMember(dest => dest.MaterialRequestItems, opt => opt.MapFrom(src => src.MaterialRequestItems));
+                    cfg.CreateMap<MaterialRequests, MaterialRequestsReportDto>()
+                       .ForMember(dest => dest.MaterialRequestItems, opt => opt.MapFrom(src => src.MaterialRequestItems
+                       .Select(materialRequestItems => new MaterialRequestItemsReportDto
+                       {
+                           Id = materialRequestItems.Id,
+                           MRNumber = src.MRNumber,
+                           PartNumber = materialRequestItems.PartNumber,
+                           PartDescription = materialRequestItems.PartDescription,
+                           PartType = materialRequestItems.PartType,
+                           Stock = materialRequestItems.Stock,
+                           IssuedQty = materialRequestItems.IssuedQty,
+                           IssueStatus = materialRequestItems.IssueStatus,
+                           RequiredQty = materialRequestItems.RequiredQty,
+                           MRStockDetails = materialRequestItems.MRStockDetails
+                           .Select(mrStockDetails => new MRStockDetailsDto
+                           {
+                               Id = mrStockDetails.Id,
+                               Warehouse = mrStockDetails.Warehouse,
+                               Location = mrStockDetails.Location,
+                               Qty = mrStockDetails.Qty,
+                               LocationStock = mrStockDetails.LocationStock,
+                           }).ToList()
+                       })
+                           )
+                       );
                 });
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<MaterialRequestsDto>>(materialRequestDetails);
+                var result = mapper.Map<IEnumerable<MaterialRequestsReportDto>>(materialRequestDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all MaterialRequestsDetails";
                 serviceResponse.Success = true;
@@ -674,11 +737,42 @@ namespace Tips.Production.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchMaterialRequestsDate([FromQuery] SearchDateparames searchDateParam)
         {
-            ServiceResponse<IEnumerable<MaterialRequestsDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestsDto>>();
+            ServiceResponse<IEnumerable<MaterialRequestsReportDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestsReportDto>>();
             try
             {
                 var materialRequestDetails = await _materialRequestRepository.SearchMaterialRequestsDate(searchDateParam);
-                var result = _mapper.Map<IEnumerable<MaterialRequestsDto>>(materialRequestDetails);
+
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<MaterialRequests, MaterialRequestsReportDto>()
+                       .ForMember(dest => dest.MaterialRequestItems, opt => opt.MapFrom(src => src.MaterialRequestItems
+                       .Select(materialRequestItems => new MaterialRequestItemsReportDto
+                       {
+                           Id = materialRequestItems.Id,
+                           MRNumber = src.MRNumber,
+                           PartNumber = materialRequestItems.PartNumber,
+                           PartDescription = materialRequestItems.PartDescription,
+                           PartType = materialRequestItems.PartType,
+                           Stock = materialRequestItems.Stock,
+                           IssuedQty = materialRequestItems.IssuedQty,
+                           IssueStatus = materialRequestItems.IssueStatus,
+                           RequiredQty = materialRequestItems.RequiredQty,
+                           MRStockDetails = materialRequestItems.MRStockDetails
+                           .Select(mrStockDetails => new MRStockDetailsDto
+                           {
+                               Id = mrStockDetails.Id,
+                               Warehouse = mrStockDetails.Warehouse,
+                               Location = mrStockDetails.Location,
+                               Qty = mrStockDetails.Qty,
+                               LocationStock = mrStockDetails.LocationStock,
+                           }).ToList()
+                       })
+                           )
+                       );
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<MaterialRequestsReportDto>>(materialRequestDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all materialRequestDetails";
                 serviceResponse.Success = true;

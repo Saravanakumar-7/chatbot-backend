@@ -64,5 +64,19 @@ namespace Entities.DTOs
 
 
     }
+    public class ItemMasterRoutingReportDto
+    {
+        [Key]
+        public int Id { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProcessStep { get; set; }
+        public string? Process { get; set; }
+        public string? RoutingDescription { get; set; }
+        public string? MachineHours { get; set; }
+        public string? LaborHours { get; set; }
+        [DefaultValue(false)]
+        public bool IsRoutingActive { get; set; }
+       
+    }
 
 }

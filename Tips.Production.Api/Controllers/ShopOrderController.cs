@@ -79,11 +79,34 @@ namespace Tips.Production.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchShopOrderDate([FromQuery] SearchDateparames searchDateParam)
         {
-            ServiceResponse<IEnumerable<ShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderDto>>();
+            ServiceResponse<IEnumerable<ShopOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderReportDto>>();
             try
             {
                 var shopOrderDetails = await _shopOrderRepository.SearchShopOrderDate(searchDateParam);
-                var result = _mapper.Map<IEnumerable<ShopOrderDto>>(shopOrderDetails);
+
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<ShopOrder, ShopOrderReportDto>()
+                       .ForMember(dest => dest.ShopOrderItems, opt => opt.MapFrom(src => src.ShopOrderItems
+                       .Select(shopOrderItem => new ShopOrderItemReportDto
+                       {
+                           Id = shopOrderItem.Id,
+                           ShopOrderNumber = src.ShopOrderNumber,
+                           FGItemNumber = shopOrderItem.FGItemNumber,
+                           Description = shopOrderItem.Description,
+                           ProjectNumber = shopOrderItem.ProjectNumber,
+                           SalesOrderNumber = shopOrderItem.SalesOrderNumber,
+                           OpenSalesOrderQty = shopOrderItem.OpenSalesOrderQty,
+                           ReleaseQty = shopOrderItem.ReleaseQty,
+                           RequiredQty = shopOrderItem.RequiredQty,
+                       })
+                           )
+                       );
+                });
+                var mapper = config.CreateMapper();
+
+                var result = mapper.Map<IEnumerable<ShopOrderReportDto>>(shopOrderDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all shopOrderDetails";
                 serviceResponse.Success = true;
@@ -103,20 +126,42 @@ namespace Tips.Production.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAllShopOrderWithItems([FromBody] ShopOrderSearchDto shopOrderSearch)
         {
-            ServiceResponse<IEnumerable<ShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderDto>>();
+            ServiceResponse<IEnumerable<ShopOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderReportDto>>();
             try
             {
                 var ShopOrderDetails = await _shopOrderRepository.GetAllShopOrderWithItems(shopOrderSearch);
 
                 _logger.LogInfo("Returned all ShopOrderDetails");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<ShopOrderDto, ShopOrder>().ReverseMap()
+                //    .ForMember(dest => dest.ShopOrderItems, opt => opt.MapFrom(src => src.ShopOrderItems));
+                //});
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<ShopOrderDto, ShopOrder>().ReverseMap()
-                    .ForMember(dest => dest.ShopOrderItems, opt => opt.MapFrom(src => src.ShopOrderItems));
+                    cfg.CreateMap<ShopOrder, ShopOrderReportDto>()
+                       .ForMember(dest => dest.ShopOrderItems, opt => opt.MapFrom(src => src.ShopOrderItems
+                       .Select(shopOrderItem => new ShopOrderItemReportDto
+                       {
+                           Id = shopOrderItem.Id,
+                           ShopOrderNumber = src.ShopOrderNumber,
+                           FGItemNumber = shopOrderItem.FGItemNumber,
+                           Description = shopOrderItem.Description,
+                           ProjectNumber = shopOrderItem.ProjectNumber,
+                           SalesOrderNumber = shopOrderItem.SalesOrderNumber,
+                           OpenSalesOrderQty = shopOrderItem.OpenSalesOrderQty,
+                           ReleaseQty = shopOrderItem.ReleaseQty,
+                           RequiredQty = shopOrderItem.RequiredQty,
+                       })
+                           )
+                       );
                 });
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<ShopOrderDto>>(ShopOrderDetails);
+                var result = mapper.Map<IEnumerable<ShopOrderReportDto>>(ShopOrderDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ShopOrderDetails";
                 serviceResponse.Success = true;
@@ -136,21 +181,42 @@ namespace Tips.Production.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchShopOrder([FromQuery] SearchParamess searchParams)
         {
-            ServiceResponse<IEnumerable<ShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderDto>>();
+            ServiceResponse<IEnumerable<ShopOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderReportDto>>();
             try
             {
                 var shopOrderDetails = await _shopOrderRepository.SearchShopOrder(searchParams);
 
                 _logger.LogInfo("Returned all ShopOrderDetails");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<ShopOrderDto, ShopOrder>().ReverseMap()
+                //    .ForMember(dest => dest.ShopOrderItems, opt => opt.MapFrom(src => src.ShopOrderItems));
+                //});
+                //var mapper = config.CreateMapper();
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<ShopOrderDto, ShopOrder>().ReverseMap()
-                    .ForMember(dest => dest.ShopOrderItems, opt => opt.MapFrom(src => src.ShopOrderItems));
+                    cfg.CreateMap<ShopOrder, ShopOrderReportDto>()
+                       .ForMember(dest => dest.ShopOrderItems, opt => opt.MapFrom(src => src.ShopOrderItems
+                       .Select(shopOrderItem => new ShopOrderItemReportDto
+                       {
+                           Id = shopOrderItem.Id,
+                           ShopOrderNumber = src.ShopOrderNumber,
+                           FGItemNumber = shopOrderItem.FGItemNumber,
+                           Description = shopOrderItem.Description,
+                           ProjectNumber = shopOrderItem.ProjectNumber,
+                           SalesOrderNumber = shopOrderItem.SalesOrderNumber,
+                           OpenSalesOrderQty = shopOrderItem.OpenSalesOrderQty,
+                           ReleaseQty = shopOrderItem.ReleaseQty,
+                           RequiredQty = shopOrderItem.RequiredQty,
+                       })
+                           )
+                       );
                 });
                 var mapper = config.CreateMapper();
-
-                var result = mapper.Map<IEnumerable<ShopOrderDto>>(shopOrderDetails);
+                var result = mapper.Map<IEnumerable<ShopOrderReportDto>>(shopOrderDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ShopOrderDetails";
                 serviceResponse.Success = true;
