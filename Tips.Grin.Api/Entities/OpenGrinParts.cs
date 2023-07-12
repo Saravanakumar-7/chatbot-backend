@@ -7,7 +7,7 @@ namespace Tips.Grin.Api.Entities
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
-        [Precision(13, 3)]
+        
         public int ItemType { get; set; }
         public string? UOM { get; set; }
         [Precision(18, 3)]

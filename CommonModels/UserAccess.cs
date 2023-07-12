@@ -33,6 +33,9 @@ namespace Entities
         public bool Upload { get; set; }
 
         [DefaultValue(false)]
+        public bool Confirm { get; set; }
+
+        [DefaultValue(false)]
         public bool ApprovalI { get; set; }
 
         [DefaultValue(false)]
