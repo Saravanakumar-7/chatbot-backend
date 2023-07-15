@@ -70,7 +70,6 @@ namespace Repository
              || inv.Commodity.Contains(searchParams.SearchValue) || inv.MaterialGroup.Contains(searchParams.SearchValue))))
                           .Include(t => t.ItemmasterAlternate)
                          .Include(t => t.ItemMasterApprovedVendor)
-                         //.Include(t => t.ItemMasterFileUpload)
                           .Include(d => d.ItemMasterRouting)
                           .Include(d => d.ItemMasterWarehouse);
 
