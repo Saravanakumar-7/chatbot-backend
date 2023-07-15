@@ -484,7 +484,7 @@ namespace Tips.Grin.Api.Controllers
                         var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                         dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                         dynamic inventoryObject = inventoryObjectData.data;
-                        inventoryObject.balance_Quantity = iQCDto[i].AcceptedQty;
+                        inventoryObject.Balance_Quantity = iQCDto[i].AcceptedQty;
                         inventoryObject.Warehouse = "IQC";
                         inventoryObject.Location = "IQC";
                         inventoryObject.ReferenceIDFrom = "GRIN";

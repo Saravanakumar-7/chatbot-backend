@@ -5,6 +5,214 @@
   "Routes": [
     // Tips Master Service
     {
+      "UpstreamPathTemplate": "/tips/AdditionalCharges/GetAdditionalCharges",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/AdditionalCharges/GetAdditionalCharges",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/AdditionalCharges/GetAdditionalChargesById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/AdditionalCharges/GetAdditionalChargesById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/AdditionalCharges/CreateAdditionalCharges",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/AdditionalCharges/CreateAdditionalCharges",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/AdditionalCharges/GetAllActiveAdditionalCharges",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/AdditionalCharges/GetAllActiveAdditionalCharges",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/AdditionalCharges/UpdateAdditionalCharges/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/AdditionalCharges/UpdateAdditionalCharges/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/AdditionalCharges/DeleteAdditionalCharges/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/AdditionalCharges/DeleteAdditionalCharges/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/AdditionalCharges/ActivateAdditionalCharges/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/AdditionalCharges/ActivateAdditionalCharges/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/AdditionalCharges/DeactivateAdditionalCharges/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/AdditionalCharges/DeactivateAdditionalCharges/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Login/GenerateUserToken",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/Login/GenerateUserToken",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //Architecture
+    {
+      "UpstreamPathTemplate": "/tips/Architecture/GetArchitecture",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Architecture/GetArchitecture",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Architecture/GetArchitectureById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Architecture/GetArchitectureById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Architecture/CreateArchitecture",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/Architecture/CreateArchitecture",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Architecture/GetAllActiveArchitecture",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Architecture/GetAllActiveArchitecture",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Architecture/UpdateArchitecture/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Architecture/UpdateArchitecture/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Architecture/DeleteArchitecture/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/Architecture/DeleteArchitecture/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Architecture/ActivateArchitecture/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Architecture/ActivateArchitecture/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Architecture/DeactivateArchitecture/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Architecture/DeactivateArchitecture/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
       "UpstreamPathTemplate": "/tips/Bank/GetAllBankDetails",
       "UpstreamHttpMethod": [ "Get" ],
       "DownstreamPathTemplate": "/api/Bank/GetAllBankDetails",
@@ -100,7 +308,1557 @@
         }
       ]
     },
+    //role 
+    {
+      "UpstreamPathTemplate": "/tips/Role/GetAllActiveRoles",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Role/GetAllActiveRoles",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Role/GetAllRoles",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Role/GetRoles",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Role/GetRoleById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Role/GetRoleById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Role/CreateRole",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/Role/CreateRole",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Role/UpdateRole/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Role/UpdateRole/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Role/DeleteRole/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/Role/DeleteRole/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //pmccon
+    {
+      "UpstreamPathTemplate": "/tips/PmcContractor/GetAllPmcContractor",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PmcContractor/GetAllPmcContractor",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/PmcContractor/GetAllActivePmcContractor",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PmcContractor/GetAllActivePmcContractor",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/PmcContractor/GetPmcContractorById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PmcContractor/GetPmcContractorById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/PmcContractor/CreatePmcContractor",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/PmcContractor/CreatePmcContractor",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/PmcContractor/UpdatePmcContractor/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/PmcContractor/UpdatePmcContractor/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/PmcContractor/DeletePmcContractor/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/PmcContractor/DeletePmcContractor/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/PmcContractor/ActivatePmcContractor/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/PmcContractor/ActivatePmcContractor/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/PmcContractor/DeactivatePmcContractor/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/PmcContractor/DeactivatePmcContractor/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
 
+    //bhk
+
+    {
+      "UpstreamPathTemplate": "/tips/BHK/GetAllBHK",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/BHK/GetAllBHK",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/BHK/GetBHKById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/BHK/GetBHKById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/BHK/CreateBHK",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/BHK/CreateBHK",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/BHK/UpdateBHK/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/BHK/UpdateBHK/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/BHK/DeleteBHK/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/BHK/DeleteBHK/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/BHK/ActivateBHK/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/BHK/ActivateBHK/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/BHK/DeactivateBHK/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/BHK/DeactivateBHK/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //OrderType
+
+    {
+      "UpstreamPathTemplate": "/tips/OrderType/GetAllOrderType",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OrderType/GetAllOrderType",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OrderType/GetAllActiveOrderType",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OrderType/GetAllActiveOrderType",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OrderType/GetOrderTypeById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OrderType/GetOrderTypeById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OrderType/CreateOrderType",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/OrderType/CreateOrderType",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OrderType/UpdateOrderType/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/OrderType/UpdateOrderType/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OrderType/UpdateOrderType?id={id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/OrderType/UpdateOrderType?id={id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OrderType/DeleteOrderType/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/OrderType/DeleteOrderType/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OrderType/ActivateOrderType/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/OrderType/ActivateOrderType/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OrderType/DeactivateOrderType/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/OrderType/DeactivateOrderType/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //othercharges
+
+    {
+      "UpstreamPathTemplate": "/tips/OtherCharges/GetAllOtherCharges",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OtherCharges/GetAllOtherCharges",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OtherCharges/GetAllActiveOtherCharges",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OtherCharges/GetAllActiveOtherCharges",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OtherCharges/GetOtherChargesById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OtherCharges/GetOtherChargesById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OtherCharges/CreateOtherCharges",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/OtherCharges/CreateOtherCharges",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OtherCharges/UpdateOtherCharges/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/OtherCharges/UpdateOtherCharges/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OtherCharges/DeleteOtherCharges/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/OtherCharges/DeleteOtherCharges/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OtherCharges/ActivateOtherCharges/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/OtherCharges/ActivateOtherCharges/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OtherCharges/DeactivateOtherCharges/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/OtherCharges/DeactivateOtherCharges/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //projectname
+
+    {
+      "UpstreamPathTemplate": "/tips/ProjectName/GetAllProjectName",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ProjectName/GetAllProjectName",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/ProjectName/GetAllActiveProjectName",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ProjectName/GetAllActiveProjectName",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/ProjectName/GetProjectNameById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ProjectName/GetProjectNameById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/ProjectName/CreateProjectName",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/ProjectName/CreateProjectName",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/ProjectName/UpdateProjectName/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/ProjectName/UpdateProjectName/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/ProjectName/DeleteProjectName/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/ProjectName/DeleteProjectName/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/ProjectName/ActivateProjectName/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/ProjectName/ActivateProjectName/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/ProjectName/DeactivateProjectName/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/ProjectName/DeactivateProjectName/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //registration
+
+    {
+      "UpstreamPathTemplate": "/tips/RegistrationForm/GetAllRegistrationForm",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/RegistrationForm/GetAllRegistrationForm",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/RegistrationForm/GetAllActiveRegistrationForm",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/RegistrationForm/GetAllActiveRegistrationForm",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/RegistrationForm/GetAllActiveRegistrationFormList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/RegistrationForm/GetAllActiveRegistrationFormList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/RegistrationForm/GetRegistrationFormByUserNameandPassword?username={username}&password={password}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/RegistrationForm/GetRegistrationFormByUserNameandPassword?username={username}&password={password}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/RegistrationForm/GetRegistrationFormById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/RegistrationForm/GetRegistrationFormById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/RegistrationForm/CreateRegistrationForm",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/RegistrationForm/CreateRegistrationForm",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/RegistrationForm/UpdateRegistrationForm/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/RegistrationForm/UpdateRegistrationForm/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/RegistrationForm/DeleteRegistrationForm/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/RegistrationForm/DeleteRegistrationForm/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //SFT
+    {
+      "UpstreamPathTemplate": "/tips/SFT/GetAllSFT",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SFT/GetAllSFT",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/SFT/GetAllActiveSFT",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SFT/GetAllActiveSFT",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/SFT/GetSFTById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SFT/GetSFTById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/SFT/CreateSFT",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/SFT/CreateSFT",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/SFT/UpdateSFT/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/SFT/UpdateSFT/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/SFT/DeleteSFT/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/SFT/DeleteSFT/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/SFT/ActivateSFT/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/SFT/ActivateSFT/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/SFT/DeactivateSFT/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/SFT/DeactivateSFT/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //Unit
+
+    {
+      "UpstreamPathTemplate": "/tips/Unit/GetAllUnit",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Unit/GetAllUnit",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Unit/GetAllActiveUnit",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Unit/GetAllActiveUnit",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Unit/GetUnitById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Unit/GetUnitById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Unit/CreateUnit",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/Unit/CreateUnit",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Unit/UpdateUnit/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Unit/UpdateUnit/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Unit/DeleteUnit/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/Unit/DeleteUnit/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Unit/ActivateUnit/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Unit/ActivateUnit/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Unit/DeActivateUnit/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Unit/DeActivateUnit/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //state
+
+    {
+      "UpstreamPathTemplate": "/tips/State/GetAllState",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/State/GetAllState",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/State/GetAllActiveState",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/State/GetAllActiveState",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/State/GetStateById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/State/GetStateById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/State/CreateState",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/State/CreateState",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/State/UpdateState/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/State/UpdateState/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/State/DeleteState/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/State/DeleteState/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/State/ActivateState/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/State/ActivateState/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/State/DeactivateState/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/State/DeactivateState/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //stageOfconstruction
+
+    {
+      "UpstreamPathTemplate": "/tips/StageOfConstruction/GetAllStageOfConstruction",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/StageOfConstruction/GetAllStageOfConstruction",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/StageOfConstruction/GetAllActiveStageOfConstruction",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/StageOfConstruction/GetAllActiveStageOfConstruction",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/StageOfConstruction/GetStageOfConstructionById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/StageOfConstruction/GetStageOfConstructionById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/StageOfConstruction/CreateStageOfConstruction",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/StageOfConstruction/CreateStageOfConstruction",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/StageOfConstruction/UpdateStageOfConstruction/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/StageOfConstruction/UpdateStageOfConstruction/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/StageOfConstruction/DeleteStageOfConstruction/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/StageOfConstruction/DeleteStageOfConstruction/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/StageOfConstruction/ActivateStageOfConstruction/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/StageOfConstruction/ActivateStageOfConstruction/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/StageOfConstruction/DeactivateStageOfConstruction/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/StageOfConstruction/DeactivateStageOfConstruction/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //issing stock
+
+    {
+      "UpstreamPathTemplate": "/tips/IssingStock/GetAllIssingStock",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/IssingStock/GetAllIssingStock",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/IssingStock/GetAllActiveIssingStock",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/IssingStock/GetAllActiveIssingStock",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/IssingStock/GetIssingStockById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/IssingStock/GetIssingStockById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/IssingStock/CreateIssingStock",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/IssingStock/CreateIssingStock",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/IssingStock/UpdateIssingStock/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/IssingStock/UpdateIssingStock/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/IssingStock/DeleteIssingStock/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/IssingStock/DeleteIssingStock/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/IssingStock/ActivateIssingStock/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/IssingStock/ActivateIssingStock/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/IssingStock/DeactivateIssingStock/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/IssingStock/DeactivateIssingStock/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //companyCategory
+    {
+      "UpstreamPathTemplate": "/tips/CompanyCategory/GetAllCompanyCategory",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/CompanyCategory/GetAllCompanyCategory",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CompanyCategory/GetAllActiveCompanyCategory",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/CompanyCategory/GetAllActiveCompanyCategory",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CompanyCategory/GetCompanyCategoryById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/CompanyCategory/GetCompanyCategoryById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CompanyCategory/CreateCompanyCategory",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/CompanyCategory/CreateCompanyCategory",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CompanyCategory/UpdateCompanyCategory/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/CompanyCategory/UpdateCompanyCategory/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CompanyCategory/DeleteCompanyCategory/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/CompanyCategory/DeleteCompanyCategory/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CompanyCategory/ActivateCompanyCategory/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/CompanyCategory/ActivateCompanyCategory/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CompanyCategory/DeactivateCompanyCategory/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/CompanyCategory/DeactivateCompanyCategory/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //customer Category
+    {
+      "UpstreamPathTemplate": "/tips/CustomerCategory/GetAllCustomerCategory",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/CustomerCategory/GetAllCustomerCategory",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CustomerCategory/GetAllActiveCustomerCategory",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/CustomerCategory/GetAllActiveCustomerCategory",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CustomerCategory/GetCustomerCategoryById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/CustomerCategory/GetCustomerCategoryById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CustomerCategory/CreateCustomerCategory",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/CustomerCategory/CreateCustomerCategory",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CustomerCategory/UpdateCustomerCategory/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/CustomerCategory/UpdateCustomerCategory/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CustomerCategory/DeleteCustomerCategory/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/CustomerCategory/DeleteCustomerCategory/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CustomerCategory/ActivateCustomerCategory/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/CustomerCategory/ActivateCustomerCategory/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CustomerCategory/DeactivateCustomerCategory/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/CustomerCategory/DeactivateCustomerCategory/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //company master
+    {
+      "UpstreamPathTemplate": "/tips/CompanyMaster/GetAllCompanyMaster",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/CompanyMaster/GetAllCompanyMaster",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CompanyMaster/GetAllActiveCompanyIdNameList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/CompanyMaster/GetAllActiveCompanyIdNameList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CompanyMaster/GetAllCompanyIdNameList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/CompanyMaster/GetAllCompanyIdNameList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CompanyMaster/GetCompanyMasterById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/CompanyMaster/GetCompanyMasterById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CompanyMaster/CreateCompanyMaster",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/CompanyMaster/CreateCompanyMaster",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CompanyMaster/UpdateCompanyMaster/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/CompanyMaster/UpdateCompanyMaster/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CompanyMaster/DeleteCompanyMaster/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/CompanyMaster/DeleteCompanyMaster/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CompanyMaster/ActivateCompanyMaster/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/CompanyMaster/ActivateCompanyMaster/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/CompanyMaster/DeactivateCompanyMaster/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/CompanyMaster/DeactivateCompanyMaster/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //city
+
+    {
+      "UpstreamPathTemplate": "/tips/City/GetAllCity",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/City/GetAllCity",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/City/GetAllActiveCity",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/City/GetAllActiveCity",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/City/GetCityById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/City/GetCityById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/City/CreateCity",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/City/CreateCity",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/City/UpdateCity/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/City/UpdateCity/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/City/DeleteCity/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/City/DeleteCity/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/City/ActivateCity/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/City/ActivateCity/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/City/DeactivateCity/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/City/DeactivateCity/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
     {
       "UpstreamPathTemplate": "/tips/AuditFrequency/GetAllAuditFrequencies",
       "UpstreamHttpMethod": [ "Get" ],
@@ -397,6 +2155,18 @@
         }
       ]
     },
+    {
+      "UpstreamPathTemplate": "/tips/Category/GetAllActivateCategory",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Category/GetAllActivateCategory",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
 
     {
       "UpstreamPathTemplate": "/tips/Commodity/GetAllCommodity",
@@ -494,78 +2264,7 @@
         }
       ]
     },
-    {
-      "UpstreamPathTemplate": "/tips/CompanyMaster/GetAllCompanyMaster",
-      "UpstreamHttpMethod": [ "Get" ],
-      "DownstreamPathTemplate": "/api/CompanyMaster/GetAllCompanyMaster",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7016
-        }
-      ]
-    },
-    {
-      "UpstreamPathTemplate": "/tips/CompanyMaster/GetCompanyMasterById/{id}",
-      "UpstreamHttpMethod": [ "Get" ],
-      "DownstreamPathTemplate": "/api/CompanyMaster/GetCompanyMasterById/{id}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7016
-        }
-      ]
-    },
-    {
-      "UpstreamPathTemplate": "/tips/CompanyMaster/CreateCompanyMaster",
-      "UpstreamHttpMethod": [ "Post" ],
-      "DownstreamPathTemplate": "/api/CompanyMaster/CreateCompanyMaster",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7016
-        }
-      ]
-    },
-    {
-      "UpstreamPathTemplate": "/tips/CompanyMaster/UpdateCompanyMaster/{id}",
-      "UpstreamHttpMethod": [ "Put" ],
-      "DownstreamPathTemplate": "/api/CompanyMaster/UpdateCompanyMaster/{id}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7016
-        }
-      ]
-    },
-    {
-      "UpstreamPathTemplate": "/tips/CompanyMaster/DeleteCompanyMaster/{id}",
-      "UpstreamHttpMethod": [ "Delete" ],
-      "DownstreamPathTemplate": "/api/CompanyMaster/DeleteCompanyMaster/{id}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7016
-        }
-      ]
-    },
-    {
-      "UpstreamPathTemplate": "/tips/CompanyMaster/GetAllActiveCompanyIdNameList",
-      "UpstreamHttpMethod": [ "Get" ],
-      "DownstreamPathTemplate": "/api/CompanyMaster/GetAllActiveCompanyIdNameList",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7016
-        }
-      ]
-    },
+
     {
       "UpstreamPathTemplate": "/tips/CostCenter/GetAllCostCenters",
       "UpstreamHttpMethod": [ "Get" ],
@@ -1391,12 +3090,36 @@
         }
       ]
     },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/CoverageEnggBomChildDetails",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/CoverageEnggBomChildDetails",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
 
 
     {
       "UpstreamPathTemplate": "/tips/EngineeringBOM/GetEnggBomById/{id}",
       "UpstreamHttpMethod": [ "Get" ],
       "DownstreamPathTemplate": "/api/EngineeringBOM/GetEnggBomById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetEnggBomByItemNoAndRevNo?itemNumber={itemNumber}&revisionNumber={revisionNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetEnggBomByItemNoAndRevNo?itemNumber={itemNumber}&revisionNumber={revisionNumber}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -1508,10 +3231,61 @@
         }
       ]
     },
+
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetAllCostingBom",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetAllCostingBom",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetAllCostingBomById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetAllCostingBomById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
     {
       "UpstreamPathTemplate": "/tips/EngineeringBOM/CreateReleaseCostBom",
       "UpstreamHttpMethod": [ "Post" ],
       "DownstreamPathTemplate": "/api/EngineeringBOM/CreateReleaseCostBom",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //aravind
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetAllEnggBOMItemNumber",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetAllEnggBOMItemNumber",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetFGBomItemsChildDetails",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetFGBomItemsChildDetails",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -1668,6 +3442,162 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetProductionBomById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetProductionBomById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetProductionBomByItemAndBomVersionNo?itemNumber={itemNumber}&bomVersionNo={bomVersionNo}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetProductionBomByItemAndBomVersionNo?itemNumber={itemNumber}&bomVersionNo={bomVersionNo}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetAllEnggBomFGItemNoListByItemNumber?itemNumber={itemNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetAllEnggBomFGItemNoListByItemNumber?itemNumber={itemNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetAllEnggBomChildFGItemNoListByItemNumber?childItemNumber={childItemNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetAllEnggBomChildFGItemNoListByItemNumber?childItemNumber={childItemNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetAllEnggBomItemNumberVersionlist",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetAllEnggBomItemNumberVersionlist",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetAllReleaseCostBomItemNumberVersionList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetAllReleaseCostBomItemNumberVersionList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetAllReleaseProductBomItemNumberVersionList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetAllReleaseProductBomItemNumberVersionList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetAllEnggBomRevisionNumberList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetAllEnggBomRevisionNumberList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetAllCostingBomRevisionNumberList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetAllCostingBomRevisionNumberList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetAllProductionBomRevisionNumberList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetAllProductionBomRevisionNumberList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetAllProductionBomFGListByItemNumber",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetAllProductionBomFGListByItemNumber",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetAllProductionBomSAListByItemNumber",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetAllProductionBomSAListByItemNumber",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/GetAllProductionBom",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/GetAllProductionBom",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/tips/EngineeringBOM/CreateEnggCustomField",
       "UpstreamHttpMethod": [ "Post" ],
       "DownstreamPathTemplate": "/api/EngineeringBOM/CreateEnggCustomField",
@@ -1692,7 +3622,18 @@
       ]
     },
 
-
+    {
+      "UpstreamPathTemplate": "/tips/EngineeringBOM/Delete/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/EngineeringBOM/Delete/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
 
     {
       "UpstreamPathTemplate": "/tips/EngineeringBOM/DeleteEnggCustomField/{id}",
@@ -2035,6 +3976,18 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/tips/ItemMaster/GetAllPurchasePartItemNoList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ItemMaster/GetAllPurchasePartItemNoList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/tips/ItemMaster/GetAllFGItems",
       "UpstreamHttpMethod": [ "Get" ],
       "DownstreamPathTemplate": "/api/ItemMaster/GetAllFGItems",
@@ -2050,6 +4003,68 @@
       "UpstreamPathTemplate": "/tips/ItemMaster/GetAllSAItems",
       "UpstreamHttpMethod": [ "Get" ],
       "DownstreamPathTemplate": "/api/ItemMaster/GetAllSAItems",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/ItemMaster/SearchItemMaster?SearchValue={SearchValue}&SearchintValue={SearchintValue}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ItemMaster/SearchItemMaster?SearchValue={SearchValue}&SearchintValue={SearchintValue}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/ItemMaster/SearchItemMasterDate?SearchFromDate={SearchFromDate}&SearchToDate={SearchToDate}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ItemMaster/SearchItemMasterDate?SearchFromDate={SearchFromDate}&SearchToDate={SearchToDate}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/ItemMaster/GetItemMasterDetailsForMNRByItemNo?ItemNumber={ItemNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/tips/ItemMaster/GetItemMasterDetailsForMNRByItemNo?ItemNumber={ItemNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/ItemMaster/GetItemMasterByItemNumber?ItemNumber={ItemNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ItemMaster/GetItemMasterByItemNumber?ItemNumber={ItemNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/ItemMaster/GetAllSAPurchasePartItems",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ItemMaster/GetAllSAPurchasePartItems",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -2107,7 +4122,30 @@
         }
       ]
     },
-
+    {
+      "UpstreamPathTemplate": "/tips/ItemMaster/GetAllItemMasterWithItems",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/ItemMaster/GetAllItemMasterWithItems",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/ItemMaster/GetAllItemMasterIdNoList",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/ItemMaster/GetAllItemMasterIdNoList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
     {
       "UpstreamPathTemplate": "/tips/ItemMaster/CreateItemMaster",
       "UpstreamHttpMethod": [ "Post" ],
@@ -2355,6 +4393,214 @@
       "UpstreamPathTemplate": "/tips/Lead/GetLeadById/{id}",
       "UpstreamHttpMethod": [ "Get" ],
       "DownstreamPathTemplate": "/api/Lead/GetLeadById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //leadwebsite
+    {
+      "UpstreamPathTemplate": "/tips/LeadWebsite/ActivateLeadWebsite/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/LeadWebsite/ActivateLeadWebsite/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/LeadWebsite/DeActivateLeadWebsite/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/LeadWebsite/DeActivateLeadWebsite/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/LeadWebsite/CreateLeadWebsite",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/LeadWebsite/CreateLeadWebsite",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/LeadWebsite/UpdateLeadWebsite/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/LeadWebsite/UpdateLeadWebsite/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/LeadWebsite/DeleteLeadWebsite/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/LeadWebsite/DeleteLeadWebsite/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/LeadWebsite/GetAllLeadWebsite",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/LeadWebsite/GetAllLeadWebsite",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/LeadWebsite/GetAllActiveLeadWebsite",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/LeadWebsite/GetAllActiveLeadWebsite",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/LeadWebsite/GetLeadWebsiteById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/LeadWebsite/GetLeadWebsiteById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //lightiningdesigner
+    {
+      "UpstreamPathTemplate": "/tips/LightningDesigner/ActivateLightningDesigner/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/LightningDesigner/ActivateLightningDesigner/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/LightningDesigner/DeactivateLightningDesigner/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/LightningDesigner/DeactivateLightningDesigner/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/LightningDesigner/CreateLightningDesigner",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/LightningDesigner/CreateLightningDesigner",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/LightningDesigner/UpdateLightningDesigner/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/LightningDesigner/UpdateLightningDesigner/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/LightningDesigner/DeleteLightningDesigner/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/LightningDesigner/DeleteLightningDesigner/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/LightningDesigner/GetAllLightningDesigners",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/LightningDesigner/GetAllLightningDesigners",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/LightningDesigner/GetAllActiveLightningDesigners",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/LightningDesigner/GetAllActiveLightningDesigners",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/LightningDesigner/GetLightningDesignerById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/LightningDesigner/GetLightningDesignerById/{id}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -4760,6 +7006,110 @@
         }
       ]
     },
+    //sourcedetails
+    {
+      "UpstreamPathTemplate": "/tips/SourceDetails/GetAllSourceDetails",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SourceDetails/GetAllSourceDetails",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/SourceDetails/GetAllActiveSourceDetails",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SourceDetails/GetAllActiveSourceDetails",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/SourceDetails/GetSourceDetailsById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SourceDetails/GetSourceDetailsById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/SourceDetails/CreateSourceDetails",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/SourceDetails/CreateSourceDetails",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/SourceDetails/UpdateSourceDetails/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/SourceDetails/UpdateSourceDetails/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/SourceDetails/DeleteSourceDetails/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/SourceDetails/DeleteSourceDetails/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/SourceDetails/ActivateSourceDetails/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/SourceDetails/ActivateSourceDetails/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/SourceDetails/DeactivateSourceDetails/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/SourceDetails/DeactivateSourceDetails/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
     {
       "UpstreamPathTemplate": "/tips/Source/GetAllSources",
       "UpstreamHttpMethod": [ "Get" ],
@@ -4958,6 +7308,110 @@
       "UpstreamPathTemplate": "/tips/TypeOfCompany/DeactivateTypeOfCompany/{id}",
       "UpstreamHttpMethod": [ "Put" ],
       "DownstreamPathTemplate": "/api/TypeOfCompany/DeactivateTypeOfCompany/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //typeofhome
+    {
+      "UpstreamPathTemplate": "/tips/TypeOfHome/GetAllTypeOfHome",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/TypeOfHome/GetAllTypeOfHome",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/TypeOfHome/GetAllActiveTypeOfHome",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/TypeOfHome/GetAllActiveTypeOfHome",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/TypeOfHome/GetTypeOfHomeById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/TypeOfHome/GetTypeOfHomeById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/TypeOfHome/CreateTypeOfHome",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/TypeOfHome/CreateTypeOfHome",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/TypeOfHome/UpdateTypeOfHome/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/TypeOfHome/UpdateTypeOfHome/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/TypeOfHome/DeleteTypeOfHome/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/TypeOfHome/DeleteTypeOfHome/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/TypeOfHome/ActivateTypeOfHome/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/TypeOfHome/ActivateTypeOfHome/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/TypeOfHome/DeactivateTypeOfHome/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/TypeOfHome/DeactivateTypeOfHome/{id}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -5245,6 +7699,202 @@
         }
       ]
     },
+
+    //useraccess
+    {
+      "UpstreamPathTemplate": "/tips/UserAccess/GetAllUserAccess",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/UserAccess/GetAllUserAccess",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/UserAccess/GetAllActiveUserAccess",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/UserAccess/GetAllActiveUserAccess",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/UserAccess/GetUserAccessById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/UserAccess/GetUserAccessById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/UserAccess/GetRoleAccessByRoleId/{roleId}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/UserAccess/GetRoleAccessByRoleId/{roleId}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/UserAccess/GetUserAccessByUserId/{userId}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/UserAccess/GetUserAccessByUserId/{userId}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/UserAccess/CreateUserAccess",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/UserAccess/CreateUserAccess",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/UserAccess/UpdateUserAccess/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/UserAccess/UpdateUserAccess/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/UserAccess/DeleteUserAccess/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/UserAccess/DeleteUserAccess/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    //roleaccess
+    {
+      "UpstreamPathTemplate": "/tips/RoleAccess/GetAllRoleAccess",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/RoleAccess/GetAllRoleAccess",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/RoleAccess/GetAllActiveRoleAccess",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/RoleAccess/GetAllActiveRoleAccess",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/RoleAccess/GetRoleAccessById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/RoleAccess/GetRoleAccessById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/RoleAccess/GetRoleAccessByRoleId/{roleId}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/RoleAccess/GetRoleAccessByRoleId/{roleId}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/RoleAccess/CreateRoleAccess",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/RoleAccess/CreateRoleAccess",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/RoleAccess/UpdateRoleAccess/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/RoleAccess/UpdateRoleAccess/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/RoleAccess/DeleteRoleAccess/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/RoleAccess/DeleteRoleAccess/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+
+
     {
       "UpstreamPathTemplate": "/tips/ValuesUom/GetAllActiveVolumeUoms",
       "UpstreamHttpMethod": [ "Get" ],
@@ -5439,6 +8089,30 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/tips/Vendor/ActivateVendorMaster/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Vendor/ActivateVendorMaster/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Vendor/DeactivateVendorMaster/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Vendor/DeactivateVendorMaster/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/tips/Vendor/CreateVendorMaster",
       "UpstreamHttpMethod": [ "Post" ],
       "DownstreamPathTemplate": "/api/Vendor/CreateVendorMaster",
@@ -5493,6 +8167,18 @@
       "UpstreamPathTemplate": "/tips/Vendor/GetAllActiveVendorNameList",
       "UpstreamHttpMethod": [ "Get" ],
       "DownstreamPathTemplate": "/api/Vendor/GetAllActiveVendorNameList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7016
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Vendor/GetAllVendorNameList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Vendor/GetAllVendorNameList",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -5847,7 +8533,7 @@
           "Port": 7095
         }
       ]
-    }, 
+    },
 
     {
       "UpstreamPathTemplate": "/tips/Rfq/GetAllActiveRfqNumberList",
@@ -6161,18 +8847,7 @@
         }
       ]
     },
-    {
-      "UpstreamPathTemplate": "/tips/Rfq/UpdateRfqEnggItemUnRelease/{id}",
-      "UpstreamHttpMethod": [ "Put" ],
-      "DownstreamPathTemplate": "/api/Rfq/UpdateRfqEnggItemUnRelease/{id}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7095
-        }
-      ]
-    },
+     
     {
       "UpstreamPathTemplate": "/tips/Rfq/UpdateRfqRfqCustomerSupportItemUnRelease/{id}",
       "UpstreamHttpMethod": [ "Put" ],
@@ -8749,6 +11424,18 @@
         }
       ]
     },
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseRequisition/GetAllPurchaseRequisitionWithItems",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/PurchaseRequisition/GetAllPurchaseRequisitionWithItems",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
 
 
     {
@@ -8777,9 +11464,81 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/tips/PurchaseRequisition/UpdatePRUploadDocument?prNumber={prNumber}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/PurchaseRequisition/UpdatePRUploadDocument?prNumber={prNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseRequisition/GetAllPurchaseRequisitionNameList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PurchaseRequisition/GetAllPurchaseRequisitionNameList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseRequisition/SearchPurchaseRequisition?SearchValue={SearchValue}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PurchaseRequisition/SearchPurchaseRequisition?SearchValue={SearchValue}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseRequisition/SearchPurchaseRequisitionDate?SearchFromDate={SearchFromDate}&SearchToDate={SearchToDate}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PurchaseRequisition/SearchPurchaseRequisitionDate?SearchFromDate={SearchFromDate}&SearchToDate={SearchToDate}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/tips/PurchaseRequisition/GetAllActivePurchaseRequisitionNameList",
       "UpstreamHttpMethod": [ "Get" ],
       "DownstreamPathTemplate": "/api/PurchaseRequisition/GetAllActivePurchaseRequisitionNameList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseRequisition/GetPurchaseRequisitionByPRNoAndRevNo?prNumber={prNumber}&revisionNumber={revisionNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PurchaseRequisition/GetPurchaseRequisitionByPRNoAndRevNo?prNumber={prNumber}&revisionNumber={revisionNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseRequisition/GetAllRevisionNumberListByPRNumber/{PRNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PurchaseRequisition/GetAllRevisionNumberListByPRNumber/{PRNumber}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -8836,7 +11595,30 @@
         }
       ]
     },
-
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseRequisition/DownloadFile?Filename={Filename}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PurchaseRequisition/DownloadFile?Filename={Filename}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseRequisition/GetDownloadUrlDetail?prNumber={prNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PurchaseRequisition/GetDownloadUrlDetail?prNumber={prNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
     // WareHouse Api
 
     {
@@ -9417,6 +12199,1694 @@
         }
       ]
     },
+    //boya purchase,production,grin
+    {
+      "UpstreamPathTemplate": "/tips/MaterialIssue/GetMaterialIssueByShopOrderNo/{shopOrderNo}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/MaterialIssue/GetMaterialIssueByShopOrderNo/{shopOrderNo}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialIssue/SearchMaterialIssueDate/{SearchFromDate},{SearchToDate}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialIssue/SearchMaterialIssueDate/{SearchFromDate},{SearchToDate}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialIssue/GetAllMaterialIssueWithItems",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialIssue/GetAllMaterialIssueWithItems",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialIssue/SearchMaterialIssue",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialIssue/SearchMaterialIssue",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialIssue/GetAllMaterialIssueIdNameList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialIssue/GetAllMaterialIssueIdNameList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialRequests/GetAllMaterialRequest",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialRequests/GetAllMaterialRequest",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialRequests/GetAllMRStatusOpen",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialRequests/GetAllMRStatusOpen",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialRequests/GetAllMRStatusClose",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialRequests/GetAllMRStatusClose",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialRequests/GetMaterialRequestById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialRequests/GetMaterialRequestById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialRequests/CreateMaterialRequest",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/MaterialRequests/CreateMaterialRequest",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialRequests/UpdateMaterialRequest/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/MaterialRequests/UpdateMaterialRequest/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialRequests/IssueMaterialRequest/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialRequests/IssueMaterialRequest/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialRequests/DeleteMaterialRequest/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/MaterialRequests/DeleteMaterialRequest/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialRequests/GetAllOpenMRIdNoList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialRequests/GetAllOpenMRIdNoList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialRequests/GetMaterialReqByMRNumber/{MRnumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialRequests/GetMaterialReqByMRNumber/{MRnumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialRequests/SearchMaterialRequests",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialRequests/SearchMaterialRequests",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialRequests/SearchMaterialRequestsDate/{SearchFromDate},{SearchToDate}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialRequests/SearchMaterialRequestsDate/{SearchFromDate},{SearchToDate}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialRequests/GetAllMaterialRequestsWithItems",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialRequests/GetAllMaterialRequestsWithItems",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialReturnNote/GetAllMRNStatusOpen",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialReturnNote/GetAllMRNStatusOpen",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialReturnNote/GetAllMRNStatusClose",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialReturnNote/GetAllMRNStatusClose",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialReturnNote/ReturnMaterialReturnNote",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/MaterialReturnNote/ReturnMaterialReturnNote",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialReturnNote/GetAllMaterialReturnNoteIdNameList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialReturnNote/GetAllMaterialReturnNoteIdNameList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialReturnNote/SearchMaterialReturnNote",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialReturnNote/SearchMaterialReturnNote",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialReturnNote/GetAllMaterialReturnNoteWithItems",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialReturnNote/GetAllMaterialReturnNoteWithItems",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/MaterialReturnNote/SearchMaterialReturnNoteDate/{SearchFromDate},{SearchToDate}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/MaterialReturnNote/SearchMaterialReturnNoteDate/{SearchFromDate},{SearchToDate}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/OQC/GetAllOQC",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OQC/GetAllOQC",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OQC/GetOQCById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OQC/GetOQCById/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/OQC/CreateOQC",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/OQC/CreateOQC",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/OQC/UpdateOQC/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/OQC/UpdateOQC/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/OQC/DeleteOQC/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/OQC/DeleteOQC/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/OQC/GetShopOrderConfirmationItemNoByFGItemType",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OQC/GetShopOrderConfirmationItemNoByFGItemType",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/OQC/GetShopOrderConfirmationItemNoBySAItemType",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OQC/GetShopOrderConfirmationItemNoBySAItemType",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/OQC/GetShopOrderConfirmationDetailsByItemNo/{itemNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OQC/GetShopOrderConfirmationDetailsByItemNo/{itemNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/OQC/GetAllOQCWithItems",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OQC/GetAllOQCWithItems",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/OQC/GetAllOQCIdNameList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OQC/GetAllOQCIdNameList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/OQC/SearchOQCDate/{SearchFromDate},{SearchToDate}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OQC/SearchOQCDate/{SearchFromDate},{SearchToDate}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/OQC/SearchOQC",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OQC/SearchOQC",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+
+    {
+      "UpstreamPathTemplate": "/tips/ShopOrder/SearchShopOrderDate/{SearchFromDate},{SearchToDate}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ShopOrder/SearchShopOrderDate/{SearchFromDate},{SearchToDate}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/ShopOrder/GetAllShopOrderWithItems",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ShopOrder/GetAllShopOrderWithItems",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/ShopOrder/SearchShopOrder",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ShopOrder/SearchShopOrder",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/ShopOrder/GetAllFGShopOrderNoList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ShopOrder/GetAllFGShopOrderNoList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/ShopOrder/GetAllSAShopOrderNoList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ShopOrder/GetAllSAShopOrderNoList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/ShopOrder/GetAllShopOrderNoListByProjectNo/{projectNo}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ShopOrder/GetAllShopOrderNoListByProjectNo/{projectNo}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/ShopOrder/GetAllActiveShopOrderNoList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ShopOrder/GetAllActiveShopOrderNoList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/ShopOrder/GetAllShopOrderIdNameList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ShopOrder/GetAllShopOrderIdNameList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/ShopOrder/ShortCloseShopOrder/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ShopOrder/ShortCloseShopOrder/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/ShopOrderConfirmation/GetShopOrderItemNoByFGItemType",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ShopOrderConfirmation/GetShopOrderItemNoByFGItemType",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/ShopOrderConfirmation/GetShopOrderItemNoBySAItemType",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ShopOrderConfirmation/GetShopOrderItemNoBySAItemType",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/ShopOrderConfirmation/GetShopOrderDetailsByItemNo/{itemNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ShopOrderConfirmation/GetShopOrderDetailsByItemNo/{itemNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Binning/SearchBinningDate/{SearchFromDate},{SearchToDate}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Binning/SearchBinningDate/{SearchFromDate},{SearchToDate}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Binning/SearchBinning",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Binning/SearchBinning",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Binning/GetAllBinningWithItems",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Binning/GetAllBinningWithItems",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/Binning/GetAllActiveBinningNameList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Binning/GetAllActiveBinningNameList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7027
+        }
+      ]
+    },
+
+
+
+    {
+      "UpstreamPathTemplate": "/tips/Grin/SearchGrinsDate/{SearchFromDate},{SearchToDate}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Grin/SearchGrinsDate/{SearchFromDate},{SearchToDate}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Grin/SearchGrins",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Grin/SearchGrins",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Grin/GetAllGrinsWithItems",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Grin/GetAllGrinsWithItems",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Grin/DownloadFile",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Grin/DownloadFile",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Grin/GetGrinDownloadUrlDetails",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Grin/GetGrinDownloadUrlDetails",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Grin/GetGrinPartsDownloadUrlDetails",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Grin/GetGrinPartsDownloadUrlDetails",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Grin/UpdateGrinUploadDocument",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/Grin/UpdateGrinUploadDocument",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Grin/UpdateGrinPartsUploadDocument",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/Grin/UpdateGrinPartsUploadDocument",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Grin/DeleteGrinCoCUploadDocument/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/Grin/DeleteGrinCoCUploadDocument/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Grin/DeleteGrinUploadDocument/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/Grin/DeleteGrinUploadDocument/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Grin/DeleteGrinParts/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/Grin/DeleteGrinParts/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Grin/UpdateGrinParts/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Grin/UpdateGrinParts/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    }, 
+    {
+      "UpstreamPathTemplate": "/tips/Grin/GetAllGrinNumberForIqc",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Grin/GetAllGrinNumberForIqc",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Grin/GetAllGrinNumberForBinning",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Grin/GetAllGrinNumberForBinning",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Grin/GetAllParts",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Grin/GetAllParts",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/IQCConfirmation/SearchIQCConfirmationDate/{SearchFromDate},{SearchToDate}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/IQCConfirmation/SearchIQCConfirmationDate/{SearchFromDate},{SearchToDate}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/IQCConfirmation/SearchIQCConfirmation",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/IQCConfirmation/SearchIQCConfirmation",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/IQCConfirmation/GetAllIQCConfirmationWithItems",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/IQCConfirmation/GetAllIQCConfirmationWithItems",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/IQCConfirmation/GetAllActiveIQCConfirmationNameList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/IQCConfirmation/GetAllActiveIQCConfirmationNameList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/OpenGrin/GetAllOpenGrinDetails",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OpenGrin/GetAllOpenGrinDetails",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/OpenGrin/CreateOpenGrin",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/OpenGrin/CreateOpenGrin",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/OpenGrin/UpdateOpenGrin/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/OpenGrin/UpdateOpenGrin/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/OpenGrin/DeleteOpenGrin/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/OpenGrin/DeleteOpenGrin/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/OpenGrin/GetOpenGrinDetailsbyId/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/OpenGrin/GetOpenGrinDetailsbyId/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7174
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseOrder/GetAllPurchaseOrderNameList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PurchaseOrder/GetAllPurchaseOrderNameList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseOrder/GetAllRevisionNumberListByPoNumber/{PONumber}", // d
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PurchaseOrder/GetAllRevisionNumberListByPoNumber/{PONumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseOrder/GetPRNumberandQtyListByItemNumber/{itemNumber}", // d
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PurchaseOrder/GetPRNumberandQtyListByItemNumber/{itemNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseOrder/SearchPurchaseOrderDate/{SearchFromDate},{SearchToDate}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PurchaseOrder/SearchPurchaseOrderDate/{SearchFromDate},{SearchToDate}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseOrder/SearchPurchaseOrder",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PurchaseOrder/SearchPurchaseOrder",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseOrder/GetAllPurchaseOrderWithItems",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PurchaseOrder/GetAllPurchaseOrderWithItems",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseOrder/UpdatePOUploadDocument",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/PurchaseOrder/UpdatePOUploadDocument",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseOrder/DeletePOUploadDocument",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/api/PurchaseOrder/DeletePOUploadDocument",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/PurchaseOrder/GetDownloadUrlDetails",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/PurchaseOrder/GetDownloadUrlDetails",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ]
+    },    
+
+
+    {
+      "UpstreamPathTemplate": "/tips/LocationTransfer/SearchLocationTransferDate/{SearchFromDate},{SearchToDate}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/LocationTransfer/SearchLocationTransferDate/{SearchFromDate},{SearchToDate}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/LocationTransfer/SearchLocationTransfer/{SearchValue}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/LocationTransfer/SearchLocationTransfer/{SearchValue}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/LocationTransfer/GetAllLocationTransferWithItems",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/LocationTransfer/GetAllLocationTransferWithItems",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/LocationTransfer/GetAllLocationTransferIdNameList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/LocationTransfer/GetAllLocationTransferIdNameList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/Quote/GetAllRfqEnggDetailsByRfqNo/{rfqNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Quote/GetAllRfqEnggDetailsByRfqNo/{rfqNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+    //boya sales
+    {
+      "UpstreamPathTemplate": "/tips/ForeCast/GetAllActiveForecastCsItemsByForecastNo/{ForeCastNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ForeCast/GetAllActiveForecastCsItemsByForecastNo/{ForeCastNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/ForeCast/GetAllForecastNumberList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ForeCast/GetAllForecastNumberList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+
+
+    {
+      "UpstreamPathTemplate": "/tips/ForeCast/GetAllActiveForecastNumberListByCustomerId/{CustomerId}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ForeCast/GetAllActiveForecastNumberListByCustomerId/{CustomerId}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/ForeCast/GetAllActiveForeCastNumberList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ForeCast/GetAllActiveForeCastNumberList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/ForeCast/GetRevNumberByForecastNumberList/{forecast}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ForeCast/GetRevNumberByForecastNumberList/{forecast}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/ForeCast/GetForecastDeatailsByForecastNoAndRevNo/{forecast},{revisionNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ForeCast/GetForecastDeatailsByForecastNoAndRevNo/{forecast},{revisionNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/ForeCast/GetForecastCsLatestRevNoByForecastnumber/{forecast}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ForeCast/GetForecastCsLatestRevNoByForecastnumber/{forecast}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/ForeCast/GetAllForecastCustomGroupList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ForeCast/GetAllForecastCustomGroupList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/ForeCast/GetForecastCustomFieldByCustomGroup/{CustomGroup}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ForeCast/GetForecastCustomFieldByCustomGroup/{CustomGroup}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/ForeCast/GetAllActiveLatestForeCastNumbers",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ForeCast/GetAllActiveLatestForeCastNumbers",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+
+
+
+
+    {
+      "UpstreamPathTemplate": "/tips/ItemPriceList/GetItemPriceListByPriceListName/{priceListName} ",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/ItemPriceList/GetItemPriceListByPriceListName/{priceListName}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+     
+
+
+
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/GetAllRfqNumberList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Rfq/GetAllRfqNumberList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/GetFGBomChildItemDetails/{RfqNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Rfq/GetFGBomChildItemDetails/{RfqNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/GetRfqCsandForecastCsDetailListByItemNumber/{ItemNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Rfq/GetRfqCsandForecastCsDetailListByItemNumber/{ItemNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/GetRfqEnggByRfqNoAndRevNo/{RfqNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Rfq/GetRfqEnggByRfqNoAndRevNo/{RfqNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/GetRfqEnggLatestRevNoByRfqnumber/{RfqNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Rfq/GetRfqEnggLatestRevNoByRfqnumber/{RfqNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/GetRfqCsByRfqNoAndRevNo/{RfqNumber},{revisionNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Rfq/GetRfqCsByRfqNoAndRevNo/{RfqNumber},{revisionNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/GetRfqCsLatestRevNoByRfqnumber/{RfqNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Rfq/GetRfqCsLatestRevNoByRfqnumber/{RfqNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/UpdateRfqEnggItemRelease/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Rfq/UpdateRfqEnggItemRelease/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/UpdateRfqEnggItemUnRelease/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Rfq/UpdateRfqEnggItemUnRelease/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/UpdateRfqCustomerSupportItemUnRelease/{id}",
+      "UpstreamHttpMethod": [ "Put" ],
+      "DownstreamPathTemplate": "/api/Rfq/UpdateRfqCustomerSupportItemUnRelease/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/GetAllCustomGroupList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Rfq/GetAllCustomGroupList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/Rfq/GetRfqCustomFieldByCustomGroup/{customGroup}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/Rfq/GetAllCustomGroupList/{customGroup}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/SalesOrder/SearchSalesOrderDate/{SearchFromDate},{SearchToDate}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SalesOrder/SearchSalesOrderDate/{SearchFromDate},{SearchToDate}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+
+
+    {
+      "UpstreamPathTemplate": "/tips/SalesOrder/SearchSalesOrder/{SearchValue}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SalesOrder/SearchSalesOrder/{SearchValue}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/SalesOrder/GetAllSalesOrderWithItems",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SalesOrder/GetAllSalesOrderWithItems",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/SalesOrder/SearchSalesOrderItem/{SearchValue}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SalesOrder/SearchSalesOrderItem/{SearchValue}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/SalesOrder/GetSalesOrderTotalBySalesOrderId/{salesOrderid}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SalesOrder/GetSalesOrderTotalBySalesOrderId/{salesOrderid}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/SalesOrder/AdditionalChargeUpdateFromInvoice",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SalesOrder/AdditionalChargeUpdateFromInvoice",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamPathTemplate": "/tips/SalesOrder/GetFGSalesOrderDetailsByItemNo/{itemNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SalesOrder/GetFGSalesOrderDetailsByItemNo/{itemNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+
+
+    {
+      "UpstreamPathTemplate": "/tips/SalesOrder/GetSASalesOrderDetailsByItemNo/{itemNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SalesOrder/GetSASalesOrderDetailsByItemNo/{itemNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+
+
+    {
+      "UpstreamPathTemplate": "/tips/SalesOrder/GetAllActiveSalesOrderIdNameList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SalesOrder/GetAllActiveSalesOrderIdNameList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/SalesOrder/GetAllSalesOrderIdNameList",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SalesOrder/GetAllSalesOrderIdNameList",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+
+
+    {
+      "UpstreamPathTemplate": "/tips/SalesOrder/ActivateSalesOrderApprovalStatus/{salesOrderNumber}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SalesOrder/ActivateSalesOrderApprovalStatus/{salesOrderNumber}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
+
+    {
+      "UpstreamPathTemplate": "/tips/SalesOrder/ActivateSalesOrderConfirmStatus/{salesOrderNumber},{confirmDate}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/api/SalesOrder/ActivateSalesOrderConfirmStatus/{salesOrderNumber},{confirmDate}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7095
+        }
+      ]
+    },
     {
       "UpstreamPathTemplate": "/tips/ReturnInvoice/GetAllReturnInvoice",
       "UpstreamHttpMethod": [ "Get" ],
@@ -9429,6 +13899,7 @@
         }
       ]
     }
+
 
 
   ]
