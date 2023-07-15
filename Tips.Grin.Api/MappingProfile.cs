@@ -28,10 +28,12 @@ namespace Tips.Grin.Api
             CreateMap<IQCConfirmation, IQCConfirmationDto>().ReverseMap();
             CreateMap<IQCConfirmation, IQCConfirmationPostDto>().ReverseMap();
             CreateMap<IQCConfirmation, IQCConfirmationUpdateDto>().ReverseMap();
+            CreateMap<IQCConfirmation, IQCConfirmationSaveDto>().ReverseMap();
 
             CreateMap<IQCConfirmationItems, IQCConfirmationItemsDto>().ReverseMap();
             CreateMap<IQCConfirmationItems, IQCConfirmationItemsPostDto>().ReverseMap();
             CreateMap<IQCConfirmationItems, IQCConfirmationItemsUpdateDto>().ReverseMap();
+            CreateMap<IQCConfirmationItems, IQCConfirmationItemsSaveDto>().ReverseMap();
 
             CreateMap<Binning, BinningDto>().ReverseMap();
             CreateMap<Binning, BinningPostDto>().ReverseMap();

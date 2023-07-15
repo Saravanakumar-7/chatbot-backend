@@ -4,6 +4,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.Dynamic;
 using System.IO;
@@ -124,6 +125,7 @@ namespace Tips.Grin.Api.Controllers
                         ItemNumber = item.ItemNumber,
                         ReceivedQty = item.ReceivedQty,
                         GrinNumber = iqc.GrinNumber,
+                        Remarks = item.Remarks,
                         MftrItemNumber = grinPartDetailsLookup[item.GrinPartId].MftrItemNumber,
                         PONumber = grinPartDetailsLookup[item.GrinPartId].PONumber,
                         ItemDescription = grinPartDetailsLookup[item.GrinPartId].ItemDescription,
@@ -192,6 +194,7 @@ namespace Tips.Grin.Api.Controllers
                         ItemNumber = item.ItemNumber,
                         ReceivedQty = item.ReceivedQty,
                         GrinNumber = iqc.GrinNumber,
+                        Remarks = item.Remarks,
                         MftrItemNumber = grinPartDetailsLookup[item.GrinPartId].MftrItemNumber,
                         PONumber = grinPartDetailsLookup[item.GrinPartId].PONumber,
                         ItemDescription = grinPartDetailsLookup[item.GrinPartId].ItemDescription,
@@ -261,6 +264,7 @@ namespace Tips.Grin.Api.Controllers
                         ItemNumber = item.ItemNumber,
                         ReceivedQty = item.ReceivedQty,
                         GrinNumber = iqc.GrinNumber,
+                        Remarks = item.Remarks,
                         MftrItemNumber = grinPartDetailsLookup[item.GrinPartId].MftrItemNumber,
                         PONumber = grinPartDetailsLookup[item.GrinPartId].PONumber,
                         ItemDescription = grinPartDetailsLookup[item.GrinPartId].ItemDescription,
@@ -749,6 +753,81 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetAllActiveIQCConfirmationIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateIQCConfirmationItems([FromBody] IQCConfirmationSaveDto iqcConfirmationSaveDto)
+        {
+            ServiceResponse<IQCConfirmationSaveDto> serviceResponse = new ServiceResponse<IQCConfirmationSaveDto>();
+
+            try
+            {
+                if (iqcConfirmationSaveDto is null)
+                {
+                    _logger.LogError("Create IQCConfirmation object sent from the client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Create IQCConfirmation object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid Create IQCConfirmation object sent from the client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Create IQCConfirmation object sent from the client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                var iqcConfirmation = _mapper.Map<IQCConfirmation>(iqcConfirmationSaveDto);
+
+                var grinNumber = iqcConfirmation.GrinNumber;
+                var existingIqcConfirmation = await _iQCConfirmationRepository.GetIqcDetailsbyGrinNo(grinNumber);
+
+                if (existingIqcConfirmation != null)
+                {
+
+                    var iqcConfirmationItemsDto = iqcConfirmationSaveDto.IQCConfirmationItemsPostDtos;
+                    var iqcConfirmationItems = _mapper.Map<IQCConfirmationItems>(iqcConfirmationItemsDto);
+                    iqcConfirmationItems.IQCConfirmationId = existingIqcConfirmation.Id;
+
+                    await _iQCConfirmationItemsRepository.Create(iqcConfirmationItems);
+                    _iQCConfirmationItemsRepository.SaveAsync();
+
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "IQCConfirmationItems Created Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                }
+                else
+                {
+
+                    var iqcConfirmationItemsDto = iqcConfirmationSaveDto.IQCConfirmationItemsPostDtos;
+                    var iqcConfirmationItems = _mapper.Map<IQCConfirmationItems>(iqcConfirmationItemsDto);
+
+                    iqcConfirmation.IQCConfirmationItems = new List<IQCConfirmationItems> { iqcConfirmationItems };
+                    await _iQCConfirmationRepository.Create(iqcConfirmation);
+                    _iQCConfirmationRepository.SaveAsync();
+
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "IQCConfirmation and IQCConfirmationItems Created Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                }
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateIQCConfirmationItems action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

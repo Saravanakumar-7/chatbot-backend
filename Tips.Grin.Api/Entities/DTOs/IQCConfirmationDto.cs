@@ -127,4 +127,13 @@ namespace Tips.Grin.Api.Entities.DTOs
         public List<IQCConfirmationItemsReportDto>? IQCConfirmationItems { get; set; }
 
     }
+    public class IQCConfirmationSaveDto
+    {
+        public string? GrinNumber { get; set; }
+        public int GrinId { get; set; }
+        public string Unit { get; set; }
+
+        public IQCConfirmationItemsSaveDto? IQCConfirmationItemsPostDtos { get; set; }
+
+    }
 }

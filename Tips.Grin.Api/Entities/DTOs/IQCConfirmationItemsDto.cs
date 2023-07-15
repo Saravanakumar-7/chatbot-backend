@@ -30,6 +30,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? ReceivedQty { get; set; }
         public decimal AcceptedQty { get; set; }
         public decimal RejectedQty { get; set; }
+        public string? Remarks { get; set; }
 
     }
 
@@ -40,6 +41,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal ReceivedQty { get; set; }
         public decimal AcceptedQty { get; set; }
         public decimal RejectedQty { get; set; }
+        public string? Remarks { get; set; }
     }
     public class IQCConfirmationItemsUpdateDto
     {
@@ -49,6 +51,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal ReceivedQty { get; set; }
         public decimal AcceptedQty { get; set; }
         public decimal RejectedQty { get; set; }
+        public string? Remarks { get; set; }
     }
     public class IQCConfirmationItemsReportDto
     {
@@ -79,7 +82,16 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? ReceivedQty { get; set; }
         public decimal AcceptedQty { get; set; }
         public decimal RejectedQty { get; set; }
+        public string? Remarks { get; set; }
 
     }
-
+    public class IQCConfirmationItemsSaveDto
+    {
+        public string? ItemNumber { get; set; }
+        public int GrinPartId { get; set; }
+        public decimal ReceivedQty { get; set; }
+        public decimal AcceptedQty { get; set; }
+        public decimal RejectedQty { get; set; }
+        public string? Remarks { get; set; }
+    }
 }
