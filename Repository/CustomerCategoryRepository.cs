@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -41,17 +42,20 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<CustomerCategory>> GetAllActiveCustomerCategory()
+        public async Task<IEnumerable<CustomerCategory>> GetAllActiveCustomerCategory([FromQuery] SearchParames searchParams)
         {
-            var allActivecustomerCategory = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return allActivecustomerCategory;
+            var customerCategoryDetails = FindAll()
+                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerCategoryName.Contains(searchParams.SearchValue) ||
+                                     inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return customerCategoryDetails;
         }
 
-        public async Task<IEnumerable<CustomerCategory>> GetAllCustomerCategory()
+        public async Task<IEnumerable<CustomerCategory>> GetAllCustomerCategory([FromQuery] SearchParames searchParams)
         {
-            var allCustomerCategories = await FindAll().ToListAsync();
-
-            return allCustomerCategories;
+            var customerCategoryDetails = FindAll()
+                               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerCategoryName.Contains(searchParams.SearchValue) ||
+                                      inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return customerCategoryDetails;
         }
 
         public async Task<CustomerCategory> GetCustomerCategoryById(int id)

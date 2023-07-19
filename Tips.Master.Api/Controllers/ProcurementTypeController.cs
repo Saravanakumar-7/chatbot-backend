@@ -25,13 +25,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<ProcurementTypeController>
         [HttpGet]
-        public async Task<IActionResult> GetAllProcurementType()
+        public async Task<IActionResult> GetAllProcurementType([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ProcurementTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<ProcurementTypeDto>>();
 
             try
             {
-                var procurementTypeList = await _repository.ProcurementTypeRepository.GetAllProcurementType();
+                var procurementTypeList = await _repository.ProcurementTypeRepository.GetAllProcurementType(searchParams);
                 _logger.LogInfo("Returned all ProcurementTypes");
                 var result = _mapper.Map<IEnumerable<ProcurementTypeDto>>(procurementTypeList);
                 serviceResponse.Data = result;
@@ -52,13 +52,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveProcurementTypes()
+        public async Task<IActionResult> GetAllActiveProcurementTypes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ProcurementTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<ProcurementTypeDto>>();
 
             try
             {
-                var ProcurementType = await _repository.ProcurementTypeRepository.GetAllActiveProcurementType();
+                var ProcurementType = await _repository.ProcurementTypeRepository.GetAllActiveProcurementType(searchParams);
                 _logger.LogInfo("Returned all ProcurementTypes");
                 var result = _mapper.Map<IEnumerable<ProcurementTypeDto>>(ProcurementType);
                 serviceResponse.Data = result;

@@ -46,16 +46,22 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Language>> GetAllActiveLanguages()
+        public async Task<IEnumerable<Language>> GetAllActiveLanguages([FromQuery] SearchParames searchParams)
         {
-            var languageDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var languageDetails = FindAll()
+                                   .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LanguageName.Contains(searchParams.SearchValue) ||
+                                  inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return languageDetails;
         }
 
 
-        public async Task<IEnumerable<Language>> GetAllLanguages()
+        public async Task<IEnumerable<Language>> GetAllLanguages([FromQuery] SearchParames searchParams)
         {
-            var languageDetails = await FindAll().ToListAsync();
+            var languageDetails = FindAll()
+                                   .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LanguageName.Contains(searchParams.SearchValue) ||
+                                  inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return languageDetails;
         }
 

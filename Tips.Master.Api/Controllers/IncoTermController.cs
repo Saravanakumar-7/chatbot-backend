@@ -29,13 +29,13 @@ namespace Tips.Master.Api.Controllers
         }
  
         [HttpGet]
-        public async Task<IActionResult> GetAllIncoTerms()
+        public async Task<IActionResult> GetAllIncoTerms([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<IncoTermDto>> serviceResponse = new ServiceResponse<IEnumerable<IncoTermDto>>();
 
             try
             {
-                var incoTerms = await _repository.IncoTermRepository.GetAllIncoTerm();
+                var incoTerms = await _repository.IncoTermRepository.GetAllIncoTerm(searchParams);
 
                 _logger.LogInfo("Returned all Inco Term");
                 var result = _mapper.Map<IEnumerable<IncoTermDto>>(incoTerms);
@@ -57,13 +57,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveIncoTerms()
+        public async Task<IActionResult> GetAllActiveIncoTerms([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<IncoTermDto>> serviceResponse = new ServiceResponse<IEnumerable<IncoTermDto>>();
 
             try
             {
-                var incoTerms = await _repository.IncoTermRepository.GetAllActiveIncoTerm();
+                var incoTerms = await _repository.IncoTermRepository.GetAllActiveIncoTerm(searchParams);
                 _logger.LogInfo("Returned all IncoTerms");
                 var result = _mapper.Map<IEnumerable<IncoTermDto>>(incoTerms);
                 serviceResponse.Data = result;

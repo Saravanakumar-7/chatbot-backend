@@ -135,9 +135,23 @@ namespace Tips.Master.Api.Controllers
                 var Contacts = _mapper.Map<IEnumerable<CompanyContacts>>(companyMasterDtoPost.CompanyContacts);
                 var Bankings = _mapper.Map<IEnumerable<CompanyBanking>>(companyMasterDtoPost.CompanyBankings);
                 var Addresses = _mapper.Map<IEnumerable<CompanyAddresses>>(companyMasterDtoPost.CompanyAddresses);
+                var Approval = _mapper.Map<IEnumerable<CompanyApproval>>(companyMasterDtoPost.CompanyApprovals);
                 var CompanymasterHeadCount = _mapper.Map<IEnumerable<CompanyMasterHeadCounting>>(companyMasterDtoPost.CompanyMasterHeadCountings);
 
-              
+                // Multi-file upload for each CompanyApproval
+                var companyfileuploadpostdto = companyMasterDtoPost.CompanyApprovals;
+                var CompId = CompanyMaster.CompanyId;
+                if (companyfileuploadpostdto != null)
+                {
+                    for (int i = 0; i < companyfileuploadpostdto.Count; i++)
+                    {
+                        if (companyfileuploadpostdto[i].Upload != null && companyfileuploadpostdto[i].Upload.Count > 0)
+                        {
+                            var companyFileUploadDtoList = new List<CompanyFileUpload>();
+                            CoCDocumentSave(companyfileuploadpostdto, CompanyMaster, CompId.ToString(), i, companyFileUploadDtoList);
+                        }
+                    }
+                }
 
                 await _repository.CompanyMasterRepository.CreateCompanyMaster(CompanyMaster);
                 _repository.SaveAsync();
@@ -156,6 +170,41 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
+            }
+        }
+        private void CoCDocumentSave(List<CompanyApprovalPostDto> companyApprovalPostDto, CompanyMaster companyMaster, string CompId, int i, List<CompanyFileUpload> companyFileUploadDtoList)
+        {
+            var companyfiles = companyApprovalPostDto[i].Upload;
+            foreach (var companyfile in companyfiles)
+            {
+                var fileContent = companyfile.FileByte;
+                string fileName = companyfile.FileName + "." + companyfile.FileExtension;
+                string FileExt = Path.GetExtension(fileName).ToUpper();
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "CompanyFileUpload",/* guid.ToString() + "_" +*/ fileName);
+                using (MemoryStream ms = new MemoryStream(fileContent))
+                {
+                    ms.Position = 0;
+                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                    {
+                        ms.WriteTo(fileStream);
+                    }
+                    var uploadedFile = new CompanyFileUpload
+                    {
+                        FileName = fileName,
+                        FileExtension = FileExt,
+                        FilePath = filePath,
+                        ParentId = CompId,
+                        DocumentFrom = "CompanyApprovalFiles",
+                    };
+                    _repository.CompanyFileUploadRepository.CreateCompanyFileUpload(uploadedFile);
+                    _repository.SaveAsync();
+                    if (uploadedFile != null)
+                    {
+                        CompanyFileUpload CompanyFileDetails = _mapper.Map<CompanyFileUpload>(uploadedFile);
+                        companyFileUploadDtoList.Add(CompanyFileDetails);
+                    }
+                }
+                companyMaster.CompanyApprovals[i].Upload = companyFileUploadDtoList;
             }
         }
 
@@ -200,6 +249,7 @@ namespace Tips.Master.Api.Controllers
                 var Contacts = _mapper.Map<IEnumerable<CompanyContacts>>(companyMasterDtoUpdate.CompanyContacts);
                 var Bankings = _mapper.Map<IEnumerable<CompanyBanking>>(companyMasterDtoUpdate.CompanyBankings);
                 var CompanymasterHeadCounting = _mapper.Map<IEnumerable<CompanyMasterHeadCounting>>(companyMasterDtoUpdate.CompanyMasterHeadCountings);
+                var Approval = _mapper.Map<IEnumerable<CompanyApproval>>(companyMasterDtoUpdate.CompanyApprovals); 
 
                 var companyMaster = _mapper.Map(companyMasterDtoUpdate, updateCompanyMaster);
 
@@ -208,6 +258,7 @@ namespace Tips.Master.Api.Controllers
                 companyMaster.CompanyContacts = Contacts.ToList();
                 companyMaster.CompanyBankings = Bankings.ToList();
                 companyMaster.CompanyMasterHeadCountings = CompanymasterHeadCounting.ToList();
+                companyMaster.CompanyApprovals = Approval.ToList();
 
                 string result = await _repository.CompanyMasterRepository.UpdateCompanyMaster(companyMaster);
                 _logger.LogInfo(result);

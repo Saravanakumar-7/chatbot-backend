@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -44,19 +45,20 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<PriceList>> GetAllActivePriceLists()
+        public async Task<IEnumerable<PriceList>> GetAllActivePriceLists([FromQuery] SearchParames searchParams)
         {
-
-            var AllActivePriceList= await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActivePriceList;
+            var priceListDetails = FindAll()
+                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Pricelist.Contains(searchParams.SearchValue) ||
+                              inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return priceListDetails;
         }
 
-        public async Task<IEnumerable<PriceList>> GetAllPriceLists()
+        public async Task<IEnumerable<PriceList>> GetAllPriceLists([FromQuery] SearchParames searchParams)
         {
-
-            var GetallPriceList = await FindAll().ToListAsync();
-
-            return GetallPriceList;
+            var priceListDetails = FindAll()
+                            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Pricelist.Contains(searchParams.SearchValue) ||
+                                 inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return priceListDetails;
         }
 
         public async Task<PriceList> GetPriceListById(int id)

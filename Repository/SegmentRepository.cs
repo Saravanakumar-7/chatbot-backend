@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -44,16 +45,20 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Segment>> GetAllActiveSegment()
+        public async Task<IEnumerable<Segment>> GetAllActiveSegment([FromQuery] SearchParames searchParams)
         {
-            var AllActiveSegmentList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return AllActiveSegmentList;
+            var segmentDetails = FindAll()
+                                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.SegmentName.Contains(searchParams.SearchValue) ||
+                                 inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return segmentDetails;
         }
 
-        public async Task<IEnumerable<Segment>> GetAllSegment()
+        public async Task<IEnumerable<Segment>> GetAllSegment([FromQuery] SearchParames searchParams)
         {
-            var GetallsegmentList = await FindAll().ToListAsync();
-            return GetallsegmentList;
+            var segmentDetails = FindAll()
+                                        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.SegmentName.Contains(searchParams.SearchValue) ||
+                                  inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return segmentDetails;
         }
 
         public async Task<Segment> GetSegmentById(int id)

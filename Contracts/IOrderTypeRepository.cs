@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface IOrderTypeRepository : IRepositoryBase<OrderType>
     {
-        Task<IEnumerable<OrderType>> GetAllOrderType();
+        Task<IEnumerable<OrderType>> GetAllOrderType(SearchParames searchParams);
         Task<OrderType> GetOrderTypeById(int id);
-        Task<IEnumerable<OrderType>> GetAllActiveOrderType();
+        Task<IEnumerable<OrderType>> GetAllActiveOrderType(SearchParames searchParams);
         Task<int?> CreateOrderType(OrderType orderType);
         Task<string> UpdateOrderType(OrderType orderType);
         Task<string> DeleteOrderType(OrderType orderType);

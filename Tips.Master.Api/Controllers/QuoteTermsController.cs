@@ -24,12 +24,12 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<QuoteTermsController>
         [HttpGet]
-        public async Task<IActionResult> GetAllQuoteTerms()
+        public async Task<IActionResult> GetAllQuoteTerms([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<QuoteTermsDto>> serviceResponse = new ServiceResponse<IEnumerable<QuoteTermsDto>>();
             try
             {
-                var quoteTermsList = await _repository.QuoteTermsRepository.GetAllQuoteTerms();
+                var quoteTermsList = await _repository.QuoteTermsRepository.GetAllQuoteTerms(searchParams);
                 _logger.LogInfo("Returned all QuoteTerms");
                 var result = _mapper.Map<IEnumerable<QuoteTermsDto>>(quoteTermsList);
                 serviceResponse.Data = result;

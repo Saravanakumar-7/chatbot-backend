@@ -27,13 +27,13 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<AuditFrequencyController>
         [HttpGet]
-        public async Task<IActionResult> GetAllAuditFrequencies()
+        public async Task<IActionResult> GetAllAuditFrequencies([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<AuditFrequencyDto>> serviceResponse = new ServiceResponse<IEnumerable<AuditFrequencyDto>>();
             try
             {
 
-                var GetallAuditFrequencies = await _repository.AuditFrequencyRepository.GetAllAuditFrequencies();
+                var GetallAuditFrequencies = await _repository.AuditFrequencyRepository.GetAllAuditFrequencies(searchParams);
 
                 _logger.LogInfo("Returned all AuditFrequencies");
                 var result = _mapper.Map<IEnumerable<AuditFrequencyDto>>(GetallAuditFrequencies);
@@ -57,13 +57,13 @@ namespace Tips.Master.Api.Controllers
 
         [HttpGet]
 
-        public async Task<IActionResult> GetAllActiveAuditFrequencies()
+        public async Task<IActionResult> GetAllActiveAuditFrequencies([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<AuditFrequencyDto>> serviceResponse = new ServiceResponse<IEnumerable<AuditFrequencyDto>>();
 
             try
             {
-                var AllActiveAuditFrequencies = await _repository.AuditFrequencyRepository.GetAllActiveAuditFrequencies();
+                var AllActiveAuditFrequencies = await _repository.AuditFrequencyRepository.GetAllActiveAuditFrequencies(searchParams);
                 _logger.LogInfo("Returned all AuditFrequencies");
                 var result = _mapper.Map<IEnumerable<AuditFrequencyDto>>(AllActiveAuditFrequencies);
                 serviceResponse.Data = result;

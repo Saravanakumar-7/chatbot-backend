@@ -46,16 +46,21 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<CostCenter>> GetAllActiveCostCenters()
+        public async Task<IEnumerable<CostCenter>> GetAllActiveCostCenters([FromQuery] SearchParames searchParams)
         {
-            var costCenterDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var costCenterDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CostCenterName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return costCenterDetails;
         }
 
-        public async Task<IEnumerable<CostCenter>> GetAllCostCenters()
+        public async Task<IEnumerable<CostCenter>> GetAllCostCenters([FromQuery] SearchParames searchParams)
         {
+            var costCenterDetails = FindAll()
+                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CostCenterName.Contains(searchParams.SearchValue) ||
+                      inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
-            var costCenterDetails = await FindAll().ToListAsync();
             return costCenterDetails;
         }
 

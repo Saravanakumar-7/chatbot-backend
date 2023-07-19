@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MySqlX.XDevAPI.Common;
 
@@ -41,15 +42,19 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<UOM>> GetAllActiveUOM()
+        public async Task<IEnumerable<UOM>> GetAllActiveUOM([FromQuery] SearchParames searchParams)
         {
-            var AllActiveUom = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return AllActiveUom;
+            var uomDetails = FindAll()
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.UOMName.Contains(searchParams.SearchValue) ||
+           inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return uomDetails;
         }
-        public async Task<IEnumerable<UOM>> GetAllUOM()
+        public async Task<IEnumerable<UOM>> GetAllUOM([FromQuery] SearchParames searchParams)
         {
-            var GetallUom = await FindAll().ToListAsync();
-            return GetallUom;
+            var uomDetails = FindAll()
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.UOMName.Contains(searchParams.SearchValue) ||
+           inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return uomDetails;
         }
 
         public async Task<UOM> GetUOMById(int id)

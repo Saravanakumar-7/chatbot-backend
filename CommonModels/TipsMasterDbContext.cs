@@ -151,7 +151,10 @@ namespace Entities
         public DbSet<CustomerCategory> CustomerCategories { get; set; }
         public DbSet<CompanyCategory> CompanyCategories { get; set; }
         public DbSet<OtherCharges> OtherCharges { get; set; }
-
+        public DbSet<CompanyApproval> CompanyApprovals { get; set; }
+        public DbSet<CompanyFileUpload> CompanyFileUploads { get; set; }
+        public DbSet<NoOfRoom> NoOfRooms { get; set; }
+        public DbSet<TypeOfRoom> TypeOfRooms { get; set; }
 
     }
 }

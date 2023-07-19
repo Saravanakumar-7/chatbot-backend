@@ -26,13 +26,13 @@ namespace Tips.Master.Api.Controllers
         }
  
         [HttpGet]
-        public async Task<IActionResult> GetAllCostingMethods()
+        public async Task<IActionResult> GetAllCostingMethods([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CostingMethodDto>> serviceResponse = new ServiceResponse<IEnumerable<CostingMethodDto>>();
             try
             {
 
-                var GetallCostingMethod = await _repository.CostingMethodRepository.GetAllCostingMethods();
+                var GetallCostingMethod = await _repository.CostingMethodRepository.GetAllCostingMethods(searchParams);
 
                 _logger.LogInfo("Returned all CostingMethods");
                 var result = _mapper.Map<IEnumerable<CostingMethodDto>>(GetallCostingMethod);
@@ -54,13 +54,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCostingMethods()
+        public async Task<IActionResult> GetAllActiveCostingMethods([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CostingMethodDto>> serviceResponse = new ServiceResponse<IEnumerable<CostingMethodDto>>();
 
             try
             {
-                var AllActiveCostingMethods = await _repository.CostingMethodRepository.GetAllActiveCostingMethods();
+                var AllActiveCostingMethods = await _repository.CostingMethodRepository.GetAllActiveCostingMethods(searchParams);
                 _logger.LogInfo("Returned all CostingMethods");
                 var result = _mapper.Map<IEnumerable<CostingMethodDto>>(AllActiveCostingMethods);
                 serviceResponse.Data = result;

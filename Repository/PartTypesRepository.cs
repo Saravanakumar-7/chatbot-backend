@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -43,17 +44,22 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<PartTypes>> GetAllActivePartTypes()
+        public async Task<IEnumerable<PartTypes>> GetAllActivePartTypes([FromQuery] SearchParames searchParams)
         {
-            var AllActivePartTypes = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActivePartTypes;
+            var partTypeDetails = FindAll()
+          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PartTypeName.Contains(searchParams.SearchValue) ||
+         inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
+            return partTypeDetails;
         }
 
-        public async Task<IEnumerable<PartTypes>> GetAllPartTypes()
+        public async Task<IEnumerable<PartTypes>> GetAllPartTypes([FromQuery] SearchParames searchParams)
         {
-            var GetallPartTypes = await FindAll().ToListAsync();
+            var partTypeDetails = FindAll()
+          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PartTypeName.Contains(searchParams.SearchValue) ||
+         inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallPartTypes;
+            return partTypeDetails;
         }
 
         public async Task<PartTypes> GetPartTypesById(int id)

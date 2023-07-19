@@ -27,13 +27,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<PackingInstructionController>
         [HttpGet]
-        public async Task<IActionResult> GetAllPackingInstructions()
+        public async Task<IActionResult> GetAllPackingInstructions(SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PackingInstructionDto>> serviceResponse = new ServiceResponse<IEnumerable<PackingInstructionDto>>();
             try
             {
 
-                var packingInstructionList = await _repository.PackingInstructionRepository.GetAllPackingInstruction();
+                var packingInstructionList = await _repository.PackingInstructionRepository.GetAllPackingInstruction(searchParams);
 
                 _logger.LogInfo("Returned all PackingInstructions");
                 var result = _mapper.Map<IEnumerable<PackingInstructionDto>>(packingInstructionList);
@@ -56,13 +56,13 @@ namespace Tips.Master.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActivePackingInstructions()
+        public async Task<IActionResult> GetAllActivePackingInstructions(SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PackingInstructionDto>> serviceResponse = new ServiceResponse<IEnumerable<PackingInstructionDto>>();
 
             try
             {
-                var PackingInstructionList = await _repository.PackingInstructionRepository.GetAllActivePackingInstruction();
+                var PackingInstructionList = await _repository.PackingInstructionRepository.GetAllActivePackingInstruction(searchParams);
                 _logger.LogInfo("Returned all PackingInstructions");
                 var result = _mapper.Map<IEnumerable<PackingInstructionDto>>(PackingInstructionList);
                 serviceResponse.Data = result;

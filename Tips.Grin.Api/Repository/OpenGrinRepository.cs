@@ -53,9 +53,24 @@ namespace Tips.Grin.Api.Repository
         {
             var openGrinDetailsById = await _tipsGrinDbContext.OpenGrin.Where(x => x.Id == id)
                                .Include(t => t.OpenGrinParts)
+                               .ThenInclude(o=>o.OpenGrinDetails)
                             .FirstOrDefaultAsync();
 
             return openGrinDetailsById;
+        }
+        public async Task<OpenGrinParts> GetOpenGrinPartsbyId(int id)
+        {
+            var openGrinPartDetailsById = await _tipsGrinDbContext.OpenGrinParts.Where(x => x.Id == id)
+                            .FirstOrDefaultAsync();
+
+            return openGrinPartDetailsById;
+        }
+        public async Task<OpenGrinDetails> GetOpenGrinPartDetailsbyId(int id)
+        {
+            var openGrinPartDetailsById = await _tipsGrinDbContext.OpenGrinDetails.Where(x => x.Id == id)
+                            .FirstOrDefaultAsync();
+
+            return openGrinPartDetailsById;
         }
 
         public async Task<string> UpdateOpenGrin(OpenGrin openGrin)

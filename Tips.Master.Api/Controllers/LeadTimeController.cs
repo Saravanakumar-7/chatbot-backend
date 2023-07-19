@@ -26,13 +26,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<LeadTimeController>
         [HttpGet]
-        public async Task<IActionResult> GetAllLeadTimes()
+        public async Task<IActionResult> GetAllLeadTimes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LeadTimeDto>> serviceResponse = new ServiceResponse<IEnumerable<LeadTimeDto>>();
 
             try
             {
-                var LeadTimeList = await _repository.leadTimeRepository.GetAllLeadTime();
+                var LeadTimeList = await _repository.leadTimeRepository.GetAllLeadTime(searchParams);
 
                 _logger.LogInfo("Returned all LeadTimes");
                 var result = _mapper.Map<IEnumerable<LeadTimeDto>>(LeadTimeList);
@@ -54,13 +54,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveLeadTimes()
+        public async Task<IActionResult> GetAllActiveLeadTimes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LeadTimeDto>> serviceResponse = new ServiceResponse<IEnumerable<LeadTimeDto>>();
 
             try
             {
-                var LeadTimes = await _repository.leadTimeRepository.GetAllActiveLeadTime();
+                var LeadTimes = await _repository.leadTimeRepository.GetAllActiveLeadTime(searchParams);
                 _logger.LogInfo("Returned all LeadTimes");
                 var result = _mapper.Map<IEnumerable<LeadTimeDto>>(LeadTimes);
                 serviceResponse.Data = result;

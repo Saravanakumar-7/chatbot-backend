@@ -44,15 +44,21 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<BasisOfApproval>> GetAllBasisOfApproval()
+        public async Task<IEnumerable<BasisOfApproval>> GetAllBasisOfApproval([FromQuery] SearchParames searchParams)
         {
-            var basisOfApprovalDetails = await FindAll().ToListAsync();
+            var basisOfApprovalDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BasisOfApprovalName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return basisOfApprovalDetails;
         }
 
-        public async Task<IEnumerable<BasisOfApproval>> GetAllActiveBasisOfApproval()
+        public async Task<IEnumerable<BasisOfApproval>> GetAllActiveBasisOfApproval([FromQuery] SearchParames searchParams)
         {
-            var basisOfApprovalDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var basisOfApprovalDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BasisOfApprovalName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return basisOfApprovalDetails;
         }
 

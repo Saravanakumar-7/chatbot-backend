@@ -10,11 +10,11 @@ namespace Contracts
 {
     public interface IAuditFrequencyRepository : IRepositoryBase<AuditFrequency>
     {
-        Task<IEnumerable<AuditFrequency>> GetAllAuditFrequencies();
+        Task<IEnumerable<AuditFrequency>> GetAllAuditFrequencies(SearchParames searchParams);
 
 
         Task<AuditFrequency> GetAuditFrequenyById(int id);
-        Task<IEnumerable<AuditFrequency>> GetAllActiveAuditFrequencies();
+        Task<IEnumerable<AuditFrequency>> GetAllActiveAuditFrequencies(SearchParames searchParams);
 
         Task<int?> CreateAuditFrequency(AuditFrequency auditFrequency);
         Task<string> UpdateAuditFrequency(AuditFrequency auditFrequency);

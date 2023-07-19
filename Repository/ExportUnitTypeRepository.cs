@@ -45,17 +45,19 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<ExportUnitType>> GetAllActiveExportUnitTypes()
+        public async Task<IEnumerable<ExportUnitType>> GetAllActiveExportUnitTypes([FromQuery] SearchParames searchParams)
         {
-
-            var exportUnitDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var exportUnitDetails = FindAll()
+                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ExportUnitTypeName.Contains(searchParams.SearchValue) ||
+                        inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return exportUnitDetails;
         }
 
-        public async Task<IEnumerable<ExportUnitType>> GetAllExportUnitTypes()
+        public async Task<IEnumerable<ExportUnitType>> GetAllExportUnitTypes([FromQuery] SearchParames searchParams)
         {
-
-            var exportUnitDetails = await FindAll().ToListAsync();
+            var exportUnitDetails = FindAll()
+                                          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ExportUnitTypeName.Contains(searchParams.SearchValue) ||
+                                    inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return exportUnitDetails;
         }
 

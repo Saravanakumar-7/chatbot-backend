@@ -26,13 +26,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<MaterialTypeController>
         [HttpGet]
-        public async Task<IActionResult> GetAllMaterialType()
+        public async Task<IActionResult> GetAllMaterialType([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<MaterialTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialTypeDto>>();
 
             try
             {
-                var materialTypeList = await _repository.MaterialTypeRepository.GetAllMaterialType();
+                var materialTypeList = await _repository.MaterialTypeRepository.GetAllMaterialType(searchParams);
 
                 _logger.LogInfo("Returned all MaterialTypes");
                 var result = _mapper.Map<IEnumerable<MaterialTypeDto>>(materialTypeList);
@@ -54,13 +54,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveMaterialTypes()
+        public async Task<IActionResult> GetAllActiveMaterialTypes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<MaterialTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialTypeDto>>();
 
             try
             {
-                var MaterialTypes = await _repository.MaterialTypeRepository.GetAllActiveMaterialType();
+                var MaterialTypes = await _repository.MaterialTypeRepository.GetAllActiveMaterialType(searchParams);
                 _logger.LogInfo("Returned all MaterialTypes");
                 var result = _mapper.Map<IEnumerable<MaterialTypeDto>>(MaterialTypes);
                 serviceResponse.Data = result;

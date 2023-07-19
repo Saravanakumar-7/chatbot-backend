@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface IScopeOfSupplyRepository : IRepositoryBase<ScopeOfSupply>
     {
-        Task<IEnumerable<ScopeOfSupply>> GetAllScopeOfSupply();
+        Task<IEnumerable<ScopeOfSupply>> GetAllScopeOfSupply(SearchParames searchParams);
         Task<ScopeOfSupply> GetScopeOfSupplyById(int id);
-        Task<IEnumerable<ScopeOfSupply>> GetAllActiveScopeOfSupply();
+        Task<IEnumerable<ScopeOfSupply>> GetAllActiveScopeOfSupply(SearchParames searchParams);
         Task<int?> CreateScopeOfSupply(ScopeOfSupply scopeOfSupply);
         Task<string> UpdateScopeOfSupply(ScopeOfSupply scopeOfSupply);
         Task<string> DeleteScopeOfSupply(ScopeOfSupply scopeOfSupply);

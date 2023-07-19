@@ -9,6 +9,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? CustomerId { get; set; }
         public string? Remarks { get; set; }
         public string? ReturnedBy { get; set; }
+        public string? ReceiptRefNo { get; set; }
+        public bool CustomerSupplied { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -22,6 +24,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? CustomerId { get; set; }
         public string? Remarks { get; set; }
         public string? ReturnedBy { get; set; }
+        public string? ReceiptRefNo { get; set; }
+        public bool CustomerSupplied { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -30,11 +34,13 @@ namespace Tips.Grin.Api.Entities.DTOs
     }
     public class OpenGrinUpdateDto
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerId { get; set; }
         public string? Remarks { get; set; }
         public string? ReturnedBy { get; set; }
+        public string? ReceiptRefNo { get; set; }
+        public bool CustomerSupplied { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

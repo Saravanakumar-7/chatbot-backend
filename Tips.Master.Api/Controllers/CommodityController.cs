@@ -26,13 +26,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<CommodityController>
         [HttpGet]
-        public async Task<IActionResult> GetAllCommodity()
+        public async Task<IActionResult> GetAllCommodity([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CommodityDto>> serviceResponse = new ServiceResponse<IEnumerable<CommodityDto>>();
 
             try
             {
-                var GetallCommodity = await _repository.CommodityRepository.GetAllCommodity();
+                var GetallCommodity = await _repository.CommodityRepository.GetAllCommodity(searchParams);
 
                 _logger.LogInfo("Returned all Commodity");
                 var result = _mapper.Map<IEnumerable<CommodityDto>>(GetallCommodity);
@@ -54,13 +54,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCommoditys()
+        public async Task<IActionResult> GetAllActiveCommoditys([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CommodityDto>> serviceResponse = new ServiceResponse<IEnumerable<CommodityDto>>();
 
             try
             {
-                var AllActiveCommodity = await _repository.CommodityRepository.GetAllActiveCommodity();
+                var AllActiveCommodity = await _repository.CommodityRepository.GetAllActiveCommodity(searchParams);
                 _logger.LogInfo("Returned all Commodity");
                 var result = _mapper.Map<IEnumerable<CommodityDto>>(AllActiveCommodity);
                 serviceResponse.Data = result;

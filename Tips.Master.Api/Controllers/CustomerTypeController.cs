@@ -29,13 +29,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<CustomerTypeController>
         [HttpGet]
-        public async Task<IActionResult> GetAllCustomerTypes()
+        public async Task<IActionResult> GetAllCustomerTypes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CustomerTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerTypeDto>>();
             try
             {
 
-                var customerTypeList = await _repository.CustomerTypeRepository.GetAllCustomerTypes();
+                var customerTypeList = await _repository.CustomerTypeRepository.GetAllCustomerTypes(searchParams);
 
                 _logger.LogInfo("Returned all customerTypes");
                 var result = _mapper.Map<IEnumerable<CustomerTypeDto>>(customerTypeList);
@@ -59,13 +59,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<CustomerTypeController>
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCustomerTypes()
+        public async Task<IActionResult> GetAllActiveCustomerTypes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CustomerTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerTypeDto>>();
 
             try
             {
-                var customerTypeList = await _repository.CustomerTypeRepository.GetAllActiveCustomerTypes();
+                var customerTypeList = await _repository.CustomerTypeRepository.GetAllActiveCustomerTypes(searchParams);
                 _logger.LogInfo("Returned all customerTypes");
                 var result = _mapper.Map<IEnumerable<CustomerTypeDto>>(customerTypeList);
                 serviceResponse.Data = result;

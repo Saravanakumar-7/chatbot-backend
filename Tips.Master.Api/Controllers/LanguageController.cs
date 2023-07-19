@@ -26,13 +26,13 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<LanguageController>
         [HttpGet]
-        public async Task<IActionResult> GetAllLanguages()
+        public async Task<IActionResult> GetAllLanguages([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LanguageDto>> serviceResponse = new ServiceResponse<IEnumerable<LanguageDto>>();
             try
             {
 
-                var LanguageList = await _repository.LanguageRepository.GetAllLanguages();
+                var LanguageList = await _repository.LanguageRepository.GetAllLanguages(searchParams);
 
                 _logger.LogInfo("Returned all Languages");
                 var result = _mapper.Map<IEnumerable<LanguageDto>>(LanguageList);
@@ -54,13 +54,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveLanguages()
+        public async Task<IActionResult> GetAllActiveLanguages([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LanguageDto>> serviceResponse = new ServiceResponse<IEnumerable<LanguageDto>>();
 
             try
             {
-                var Languages = await _repository.LanguageRepository.GetAllActiveLanguages();
+                var Languages = await _repository.LanguageRepository.GetAllActiveLanguages(searchParams);
                 _logger.LogInfo("Returned all Languages");
                 var result = _mapper.Map<IEnumerable<LanguageDto>>(Languages);
                 serviceResponse.Data = result;

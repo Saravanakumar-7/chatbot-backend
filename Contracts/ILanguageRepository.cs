@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface ILanguageRepository : IRepositoryBase<Language>
     {
-        Task<IEnumerable<Language>> GetAllLanguages();
+        Task<IEnumerable<Language>> GetAllLanguages(SearchParames searchParams);
         Task<Language> GetLanguageById(int id);
-        Task<IEnumerable<Language>> GetAllActiveLanguages();
+        Task<IEnumerable<Language>> GetAllActiveLanguages(SearchParames searchParams);
         Task<int?> CreateLanguage(Language language);
         Task<string> UpdateLanguage(Language language);
         Task<string> DeleteLanguage(Language language);

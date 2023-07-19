@@ -25,13 +25,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<AdditionalChargesController>
         [HttpGet]
-        public async Task<IActionResult> GetAllAdditionalCharges()
+        public async Task<IActionResult> GetAllAdditionalCharges([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<AdditionalChargesDto>> serviceResponse = new ServiceResponse<IEnumerable<AdditionalChargesDto>>();
 
             try
             {
-                var additionalChargesList = await _repository.AdditionalChargesRepository.GetAllAdditionalCharges();
+                var additionalChargesList = await _repository.AdditionalChargesRepository.GetAllAdditionalCharges(searchParams);
                 _logger.LogInfo("Returned all AdditionalCharges");
                 var result = _mapper.Map<IEnumerable<AdditionalChargesDto>>(additionalChargesList);
                 serviceResponse.Data = result;
@@ -52,13 +52,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveAdditionalCharges()
+        public async Task<IActionResult> GetAllActiveAdditionalCharges([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<AdditionalChargesDto>> serviceResponse = new ServiceResponse<IEnumerable<AdditionalChargesDto>>();
 
             try
             {
-                var additionalChargesList = await _repository.AdditionalChargesRepository.GetAllActiveAdditionalCharges();
+                var additionalChargesList = await _repository.AdditionalChargesRepository.GetAllActiveAdditionalCharges(searchParams);
                 _logger.LogInfo("Returned all AdditionalCharges");
                 var result = _mapper.Map<IEnumerable<AdditionalChargesDto>>(additionalChargesList);
                 serviceResponse.Data = result;

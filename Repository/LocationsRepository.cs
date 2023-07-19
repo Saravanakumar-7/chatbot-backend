@@ -47,19 +47,20 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Locations>> GetAllActiveLocations()
+        public async Task<IEnumerable<Locations>> GetAllActiveLocations([FromQuery] SearchParames searchParams)
         {
-            var LocationsDetails =await FindAll().Where(x=>x.ActiveStatus == true).ToListAsync();
-
-
+            var LocationsDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LocationName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            
             return LocationsDetails;
         }
 
-        public async Task<IEnumerable<Locations>> GetAllLocations()
+        public async Task<IEnumerable<Locations>> GetAllLocations([FromQuery] SearchParames searchParams)
         {
-
-            var LocationsDetails = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
-               
+            var LocationsDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LocationName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
             return LocationsDetails;
         }

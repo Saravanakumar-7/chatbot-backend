@@ -29,13 +29,13 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<BasisOfApprovalController>
         [HttpGet]
-        public async Task<IActionResult> GetAllBasisOfApproval()
+        public async Task<IActionResult> GetAllBasisOfApproval([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<BasisOfApprovalDto>> serviceResponse = new ServiceResponse<IEnumerable<BasisOfApprovalDto>>();
 
             try
             {
-                var basisOfApprovals = await _repository.BasisOfApprovalRepository.GetAllBasisOfApproval();
+                var basisOfApprovals = await _repository.BasisOfApprovalRepository.GetAllBasisOfApproval(searchParams);
 
                 _logger.LogInfo("Returned all BasisOfApproval");
                 var result = _mapper.Map<IEnumerable<BasisOfApprovalDto>>(basisOfApprovals);
@@ -57,13 +57,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveBasisOfApprovals()
+        public async Task<IActionResult> GetAllActiveBasisOfApprovals([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<BasisOfApprovalDto>> serviceResponse = new ServiceResponse<IEnumerable<BasisOfApprovalDto>>();
 
             try
             {
-                var basisOfApprovals = await _repository.BasisOfApprovalRepository.GetAllBasisOfApproval();
+                var basisOfApprovals = await _repository.BasisOfApprovalRepository.GetAllBasisOfApproval(searchParams);
                 _logger.LogInfo("Returned all BasisOfApproval");
                 var result = _mapper.Map<IEnumerable<BasisOfApprovalDto>>(basisOfApprovals);
                 serviceResponse.Data = result;

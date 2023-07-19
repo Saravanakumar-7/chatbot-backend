@@ -24,13 +24,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllOrderType()
+        public async Task<IActionResult> GetAllOrderType([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<OrderTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<OrderTypeDto>>();
 
             try
             {
-                var orderTypeDetails = await _repository.OrderTypeRepository.GetAllOrderType();
+                var orderTypeDetails = await _repository.OrderTypeRepository.GetAllOrderType(searchParams);
                 _logger.LogInfo("Returned all OrderType");
                 var result = _mapper.Map<IEnumerable<OrderTypeDto>>(orderTypeDetails);
                 serviceResponse.Data = result;
@@ -51,13 +51,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveOrderType()
+        public async Task<IActionResult> GetAllActiveOrderType([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<OrderTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<OrderTypeDto>>();
 
             try
             {
-                var orderTypeDetails = await _repository.OrderTypeRepository.GetAllActiveOrderType();
+                var orderTypeDetails = await _repository.OrderTypeRepository.GetAllActiveOrderType(searchParams);
                 _logger.LogInfo("Returned all OrderType");
                 var result = _mapper.Map<IEnumerable<OrderTypeDto>>(orderTypeDetails);
                 serviceResponse.Data = result;

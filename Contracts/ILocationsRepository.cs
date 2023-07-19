@@ -11,9 +11,9 @@ namespace Contracts
 {
     public interface ILocationsRepository : IRepositoryBase<Locations>
     {
-        Task<IEnumerable<Locations>> GetAllLocations();
+        Task<IEnumerable<Locations>> GetAllLocations(SearchParames searchParams);
         Task<Locations> GetLocationsById(int id);
-        Task<IEnumerable<Locations>> GetAllActiveLocations();
+        Task<IEnumerable<Locations>> GetAllActiveLocations(SearchParames searchParams);
         Task<int?> CreateLocations(Locations locations);
         Task<string> UpdateLocations(Locations locations);
         Task<string> DeleteLocations(Locations locations);

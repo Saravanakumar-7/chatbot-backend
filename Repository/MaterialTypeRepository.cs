@@ -46,16 +46,22 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<MaterialType>> GetAllActiveMaterialType()
+        public async Task<IEnumerable<MaterialType>> GetAllActiveMaterialType([FromQuery] SearchParames searchParams)
         {
-            var materialTypeDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var materialTypeDetails = FindAll()
+         .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.MaterialTypeName.Contains(searchParams.SearchValue) ||
+        inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return materialTypeDetails;
         }
 
 
-        public async Task<IEnumerable<MaterialType>> GetAllMaterialType()
+        public async Task<IEnumerable<MaterialType>> GetAllMaterialType([FromQuery] SearchParames searchParams)
         {
-            var materialTypeDetails = await FindAll().ToListAsync();
+            var materialTypeDetails = FindAll()
+         .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.MaterialTypeName.Contains(searchParams.SearchValue) ||
+        inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return materialTypeDetails;
         }
 

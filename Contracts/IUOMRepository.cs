@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface IUOMRepository : IRepositoryBase<UOM>
     {
-        Task<IEnumerable<UOM>> GetAllUOM();
+        Task<IEnumerable<UOM>> GetAllUOM(SearchParames searchParams);
         Task<UOM> GetUOMById(int id);
-        Task<IEnumerable<UOM>> GetAllActiveUOM();
+        Task<IEnumerable<UOM>> GetAllActiveUOM(SearchParames searchParams);
         Task<int?> CreateUOM(UOM uom);
         Task<string> UpdateUOM(UOM uom);
         Task<string> DeleteUOM(UOM uom);

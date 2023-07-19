@@ -472,6 +472,22 @@ namespace Tips.Master.Api
             CreateMap<OtherCharges, OtherChargesDto>().ReverseMap();
             CreateMap<OtherCharges, OtherChargesPostDto>().ReverseMap();
             CreateMap<OtherCharges, OtherChargesUpdateDto>().ReverseMap();
+
+            CreateMap<CompanyApproval, CompanyApprovalDto>().ReverseMap();
+            CreateMap<CompanyApproval, CompanyApprovalPostDto>().ReverseMap();
+            CreateMap<CompanyApproval, CompanyApprovalUpdateDto>().ReverseMap();
+
+            CreateMap<CompanyFileUpload, CompanyFileUploadDto>().ReverseMap();
+            CreateMap<CompanyFileUpload, CompanyFileUploadPostDto>().ReverseMap();
+            CreateMap<CompanyFileUpload, CompanyFileUploadUpdateDto>().ReverseMap();
+
+            CreateMap<NoOfRoom, NoOfRoomDto>().ReverseMap();
+            CreateMap<NoOfRoom, NoOfRoomPostDto>().ReverseMap();
+            CreateMap<NoOfRoom, NoOfRoomUpdateDto>().ReverseMap();
+
+            CreateMap<TypeOfRoom, TypeOfRoomDto>().ReverseMap();
+            CreateMap<TypeOfRoom, TypeOfRoomPostDto>().ReverseMap();
+            CreateMap<TypeOfRoom, TypeOfRoomUpdateDto>().ReverseMap();
         }
     }
 }

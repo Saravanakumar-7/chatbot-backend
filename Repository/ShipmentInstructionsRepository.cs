@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -44,16 +45,20 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<ShipmentInstructions>> GetAllActiveShipmentInstructions()
+        public async Task<IEnumerable<ShipmentInstructions>> GetAllActiveShipmentInstructions([FromQuery] SearchParames searchParams)
         {
-            var AllActiveShipmentInstructions= await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return AllActiveShipmentInstructions;
+            var shipmentInstructionDetails = FindAll()
+                                        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ShipmentInstructionsName.Contains(searchParams.SearchValue) ||
+                                  inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return shipmentInstructionDetails;
         }
 
-        public async Task<IEnumerable<ShipmentInstructions>> GetAllShipmentInstructions()
+        public async Task<IEnumerable<ShipmentInstructions>> GetAllShipmentInstructions([FromQuery] SearchParames searchParams)
         {
-            var GetallshipmentInstructions = await FindAll().ToListAsync();
-            return GetallshipmentInstructions;
+            var shipmentInstructionDetails = FindAll()
+                                        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ShipmentInstructionsName.Contains(searchParams.SearchValue) ||
+                                  inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return shipmentInstructionDetails;
         }
 
         public async Task<ShipmentInstructions> GetShipmentInstructionsById(int id)

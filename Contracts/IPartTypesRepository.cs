@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface IPartTypesRepository
     {
-        Task<IEnumerable<PartTypes>> GetAllPartTypes();
+        Task<IEnumerable<PartTypes>> GetAllPartTypes(SearchParames searchParams);
         Task<PartTypes> GetPartTypesById(int id);
-        Task<IEnumerable<PartTypes>> GetAllActivePartTypes();
+        Task<IEnumerable<PartTypes>> GetAllActivePartTypes(SearchParames searchParams);
         Task<int?> CreatePartTypes(PartTypes partTypes);
         Task<string> UpdatePartTypes(PartTypes partTypes);
         Task<string> DeletePartTypes(PartTypes partTypes);

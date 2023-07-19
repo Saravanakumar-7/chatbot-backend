@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -43,16 +44,20 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<QuoteTerms>> GetAllActiveQuoteTerms()
+        public async Task<IEnumerable<QuoteTerms>> GetAllActiveQuoteTerms([FromQuery] SearchParames searchParams)
         {
-            var AllActiveQuoteTerms = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return AllActiveQuoteTerms;
+            var quoteTermDetails = FindAll()
+                                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.QuoteTermsName.Contains(searchParams.SearchValue) ||
+                                 inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return quoteTermDetails;
         }
 
-        public async Task<IEnumerable<QuoteTerms>> GetAllQuoteTerms()
+        public async Task<IEnumerable<QuoteTerms>> GetAllQuoteTerms([FromQuery] SearchParames searchParams)
         {
-            var GetallQuoteTerms= await FindAll().ToListAsync();
-            return GetallQuoteTerms;
+            var quoteTermDetails = FindAll()
+                                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.QuoteTermsName.Contains(searchParams.SearchValue) ||
+                                inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return quoteTermDetails;
         }
 
         public async Task<QuoteTerms> GetQuoteTermsById(int id)

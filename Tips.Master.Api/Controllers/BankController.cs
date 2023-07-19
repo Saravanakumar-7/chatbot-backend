@@ -31,13 +31,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<BankController>
         [HttpGet]
-        public async Task<IActionResult> GetAllBankDetails()
+        public async Task<IActionResult> GetAllBankDetails([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<BankDto>> serviceResponse = new ServiceResponse<IEnumerable<BankDto>>();
 
             try
             {
-                var GetallBanks = await _repository.BankRepository.GetAllActiveBank();
+                var GetallBanks = await _repository.BankRepository.GetAllActiveBank(searchParams);
 
                 _logger.LogInfo("Returned all Bank");
                 var result = _mapper.Map<IEnumerable<BankDto>>(GetallBanks);
@@ -59,13 +59,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveBankDetails()
+        public async Task<IActionResult> GetAllActiveBankDetails([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<BankDto>> serviceResponse = new ServiceResponse<IEnumerable<BankDto>>();
 
             try
             {
-                var allActiveBanks = await _repository.BankRepository.GetAllActiveBank();
+                var allActiveBanks = await _repository.BankRepository.GetAllActiveBank(searchParams);
                 _logger.LogInfo("Returned all Banks");
                 var result = _mapper.Map<IEnumerable<BankDto>>(allActiveBanks);
                 serviceResponse.Data = result;

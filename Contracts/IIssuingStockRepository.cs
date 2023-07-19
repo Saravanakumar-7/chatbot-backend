@@ -14,7 +14,7 @@ namespace Contracts
         Task<string> UpdateIssuingStock(IssuingStock issuingStock);
         Task<string> DeleteIssuingStock(IssuingStock issuingStock);
         Task<IssuingStock> GetIssuingStockById(int id);
-        Task<IEnumerable<IssuingStock>> GetAllActiveIssuingStock();
-        Task<IEnumerable<IssuingStock>> GetAllIssuingStock();
+        Task<IEnumerable<IssuingStock>> GetAllActiveIssuingStock(SearchParames searchParams);
+        Task<IEnumerable<IssuingStock>> GetAllIssuingStock(SearchParames searchParams);
     }
 }

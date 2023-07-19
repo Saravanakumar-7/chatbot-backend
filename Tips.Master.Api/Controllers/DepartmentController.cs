@@ -28,13 +28,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<DepartmentController>
         [HttpGet]
-        public async Task<IActionResult> GetAllDepartment()
+        public async Task<IActionResult> GetAllDepartment([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<DepartmentDto>> serviceResponse = new ServiceResponse<IEnumerable<DepartmentDto>>();
 
             try
             {
-                var departments = await _repository.DepartmentRepository.GetAllDepartment();
+                var departments = await _repository.DepartmentRepository.GetAllDepartment(searchParams);
 
                 _logger.LogInfo("Returned all Department");
                 var result = _mapper.Map<IEnumerable<DepartmentDto>>(departments);
@@ -56,13 +56,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveDepartments()
+        public async Task<IActionResult> GetAllActiveDepartments([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<DepartmentDto>> serviceResponse = new ServiceResponse<IEnumerable<DepartmentDto>>();
 
             try
             {
-                var departments = await _repository.DepartmentRepository.GetAllActiveDepartment();
+                var departments = await _repository.DepartmentRepository.GetAllActiveDepartment(searchParams);
                 _logger.LogInfo("Returned all departments");
                 var result = _mapper.Map<IEnumerable<DepartmentDto>>(departments);
                 serviceResponse.Data = result;

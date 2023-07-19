@@ -11,5 +11,7 @@ namespace Tips.Grin.Api.Contracts
         Task<OpenGrin> GetOpenGrinDetailsbyId(int id);
         Task<OpenGrin> CreateOpenGrin(OpenGrin openGrin);
         Task<string> DeleteOpenGrin(OpenGrin openGrin);
+        Task<OpenGrinDetails> GetOpenGrinPartDetailsbyId(int id);
+        Task<OpenGrinParts> GetOpenGrinPartsbyId(int id);
     }
 }

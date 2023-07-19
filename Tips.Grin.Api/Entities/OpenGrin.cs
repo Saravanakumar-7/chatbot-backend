@@ -7,6 +7,8 @@
         public string? CustomerId { get; set; }
         public string? Remarks { get; set; }
         public string? ReturnedBy { get; set; }
+        public string? ReceiptRefNo { get; set; }
+        public bool CustomerSupplied { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

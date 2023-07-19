@@ -44,19 +44,22 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Bank>> GetAllActiveBank()
+        public async Task<IEnumerable<Bank>> GetAllActiveBank([FromQuery] SearchParames searchParams)
         {
-            var getAllAActiveBanks = FindAll().ToList();
-            
-            return getAllAActiveBanks;
+            var bankDetails = FindAll()
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BankName.Contains(searchParams.SearchValue) ||
+           inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
+            return bankDetails;
         }
 
-        public async Task<IEnumerable<Bank>> GetAllBank()
+        public async Task<IEnumerable<Bank>> GetAllBank([FromQuery] SearchParames searchParams)
         {
-            var getAllBanksDetails = FindAll().OrderByDescending(x => x.Id).ToList();
+            var bankDetails = FindAll()
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BankName.Contains(searchParams.SearchValue) ||
+           inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
-
-            return getAllBanksDetails;
+            return bankDetails;
         }
 
 

@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface IDeliveryTermRepository : IRepositoryBase<DeliveryTerm>
     {
-        Task<IEnumerable<DeliveryTerm>> GetAllDeliveryTerms();
+        Task<IEnumerable<DeliveryTerm>> GetAllDeliveryTerms(SearchParames searchParams);
         Task<DeliveryTerm> GetDeliveryTermById(int id);
-        Task<IEnumerable<DeliveryTerm>> GetAllActiveDeliveryTerms();
+        Task<IEnumerable<DeliveryTerm>> GetAllActiveDeliveryTerms(SearchParames searchParams);
         Task<int?> CreateDeliveryTerm(DeliveryTerm deliveryTerm);
         Task<string> UpdateDeliveryTerm(DeliveryTerm deliveryTerm);
         Task<string> DeleteDeliveryTerm(DeliveryTerm deliveryTerm);

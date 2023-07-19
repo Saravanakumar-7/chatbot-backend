@@ -46,17 +46,19 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<PackingInstruction>> GetAllActivePackingInstruction()
+        public async Task<IEnumerable<PackingInstruction>> GetAllActivePackingInstruction([FromQuery] SearchParames searchParams)
         {
-
-            var packingInstructionDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var packingInstructionDetails = FindAll()
+                                         .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PackingInstructionsName.Contains(searchParams.SearchValue) ||
+                                   inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return packingInstructionDetails;
         }
 
-        public async Task<IEnumerable<PackingInstruction>> GetAllPackingInstruction()
+        public async Task<IEnumerable<PackingInstruction>> GetAllPackingInstruction([FromQuery] SearchParames searchParams)
         {
-
-            var packingInstructionDetails = await FindAll().ToListAsync();
+            var packingInstructionDetails = FindAll()
+                                         .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PackingInstructionsName.Contains(searchParams.SearchValue) ||
+                                   inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return packingInstructionDetails;
         }
 

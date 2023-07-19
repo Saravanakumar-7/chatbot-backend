@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface ICompanyCategoryRepository : IRepositoryBase<CompanyCategory>
     {
-        Task<IEnumerable<CompanyCategory>> GetAllCompanyCategory();
+        Task<IEnumerable<CompanyCategory>> GetAllCompanyCategory(SearchParames searchParams);
         Task<CompanyCategory> GetCompanyCategoryById(int id);
-        Task<IEnumerable<CompanyCategory>> GetAllActiveCompanyCategory();
+        Task<IEnumerable<CompanyCategory>> GetAllActiveCompanyCategory(SearchParames searchParams);
         Task<int?> CreateCompanyCategory(CompanyCategory companyCategory);
         Task<string> UpdateCompanyCategory(CompanyCategory companyCategory);
         Task<string> DeleteCompanyCategory(CompanyCategory companyCategory);

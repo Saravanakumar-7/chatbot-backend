@@ -26,13 +26,13 @@ namespace Tips.Master.Api.Controllers
         }
  
         [HttpGet]
-        public async Task<IActionResult> GetAllExportUnitTypes()
+        public async Task<IActionResult> GetAllExportUnitTypes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ExportUnitTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<ExportUnitTypeDto>>();
             try
             {
 
-                var ExportUnitTypeList = await _repository.ExportUnitTypeRepository.GetAllExportUnitTypes();
+                var ExportUnitTypeList = await _repository.ExportUnitTypeRepository.GetAllExportUnitTypes(searchParams);
 
                 _logger.LogInfo("Returned all ExportUnitTypeList");
                 var result = _mapper.Map<IEnumerable<ExportUnitTypeDto>>(ExportUnitTypeList);
@@ -54,13 +54,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveExportUnitTypes()
+        public async Task<IActionResult> GetAllActiveExportUnitTypes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ExportUnitTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<ExportUnitTypeDto>>();
 
             try
             {
-                var ExportUnitTypes = await _repository.ExportUnitTypeRepository.GetAllActiveExportUnitTypes();
+                var ExportUnitTypes = await _repository.ExportUnitTypeRepository.GetAllActiveExportUnitTypes(searchParams);
                 _logger.LogInfo("Returned all ExportUnitTypes");
                 var result = _mapper.Map<IEnumerable<ExportUnitTypeDto>>(ExportUnitTypes);
                 serviceResponse.Data = result;

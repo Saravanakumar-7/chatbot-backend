@@ -29,13 +29,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<UOMController>
         [HttpGet]
-        public async Task<IActionResult> GetAllUOM()
+        public async Task<IActionResult> GetAllUOM([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<UOMDto>> serviceResponse = new ServiceResponse<IEnumerable<UOMDto>>();
 
             try
             {
-                var UOMList = await _repository.UOMRepository.GetAllUOM();
+                var UOMList = await _repository.UOMRepository.GetAllUOM(searchParams);
                 _logger.LogInfo("Returned all UOM");
                 var result = _mapper.Map<IEnumerable<UOMDto>>(UOMList);
                 serviceResponse.Data = result;
@@ -56,13 +56,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveUOMs()
+        public async Task<IActionResult> GetAllActiveUOMs([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<UOMDto>> serviceResponse = new ServiceResponse<IEnumerable<UOMDto>>();
 
             try
             {
-                var UOMList = await _repository.UOMRepository.GetAllActiveUOM();
+                var UOMList = await _repository.UOMRepository.GetAllActiveUOM(searchParams);
                 _logger.LogInfo("Returned all UOM");
                 var result = _mapper.Map<IEnumerable<UOMDto>>(UOMList);
                 serviceResponse.Data = result;

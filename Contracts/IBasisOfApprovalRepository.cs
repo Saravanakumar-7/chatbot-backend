@@ -10,9 +10,9 @@ namespace Contracts
 {
     public interface IBasisOfApprovalRepository : IRepositoryBase<BasisOfApproval>
     {
-        Task<IEnumerable<BasisOfApproval>> GetAllBasisOfApproval();
+        Task<IEnumerable<BasisOfApproval>> GetAllBasisOfApproval(SearchParames searchParams);
         Task<BasisOfApproval> GetBasisOfApprovalById(int id);
-        Task<IEnumerable<BasisOfApproval>> GetAllActiveBasisOfApproval();
+        Task<IEnumerable<BasisOfApproval>> GetAllActiveBasisOfApproval(SearchParames searchParams);
         Task<int?> CreateBasisOfApproval(BasisOfApproval basisOfApproval);
         Task<string> UpdateBasisOfApproval(BasisOfApproval basisOfApproval);
         Task<string> DeleteBasisOfApproval(BasisOfApproval basisOfApproval);

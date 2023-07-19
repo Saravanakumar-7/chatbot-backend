@@ -43,17 +43,22 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<DeliveryTerm>> GetAllActiveDeliveryTerms()
+        public async Task<IEnumerable<DeliveryTerm>> GetAllActiveDeliveryTerms([FromQuery] SearchParames searchParams)
         {
-            var deliveryTermDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var deliveryTermDetails = FindAll()
+          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DeliveryTermName.Contains(searchParams.SearchValue) ||
+         inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return deliveryTermDetails;
 
         }
 
-        public async Task<IEnumerable<DeliveryTerm>> GetAllDeliveryTerms()
+        public async Task<IEnumerable<DeliveryTerm>> GetAllDeliveryTerms([FromQuery] SearchParames searchParams)
         {
+            var deliveryTermDetails = FindAll()
+                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DeliveryTermName.Contains(searchParams.SearchValue) ||
+                     inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
-            var deliveryTermDetails = await FindAll().ToListAsync();
             return deliveryTermDetails;
 
         }

@@ -139,6 +139,7 @@ namespace Entities
         public List<CompanyContacts>? CompanyContacts { get; set; }
         public List<CompanyBanking>? CompanyBankings { get; set; }
         public List<CompanyMasterHeadCounting>? CompanyMasterHeadCountings { get; set; }
+        public List<CompanyApproval>? CompanyApprovals { get; set; }
 
 
     }

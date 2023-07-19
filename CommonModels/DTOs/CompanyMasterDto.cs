@@ -140,6 +140,7 @@ namespace Entities.DTOs
         public List<CompanyContactsDto>? CompanyContacts { get; set; }
         public List<CompanyBankingDto>? CompanyBankings { get; set; }
         public List<CompanyMasterHeadCountingDto>? CompanyMasterHeadCountings { get; set; }
+        public List<CompanyApprovalDto>? CompanyApprovals { get; set; }
 
     }
 
@@ -269,6 +270,7 @@ namespace Entities.DTOs
         public List<CompanyContactsDtoPost>? CompanyContacts { get; set; }
         public List<CompanyBankingDtoPost>? CompanyBankings { get; set; }
         public List<CompanyMasterHeadCountingDtoPost>? CompanyMasterHeadCountings { get; set; }
+        public List<CompanyApprovalPostDto>? CompanyApprovals { get; set; }
 
     }
 
@@ -406,6 +408,7 @@ namespace Entities.DTOs
         public List<CompanyContactsDtoUpdate>? CompanyContacts { get; set; }
         public List<CompanyBankingDtoUpdate>? CompanyBankings { get; set; }
         public List<CompanyMasterHeadCountingDtoUpdate>? CompanyMasterHeadCountings { get; set; }
+        public List<CompanyApprovalUpdateDto>? CompanyApprovals { get; set; }
 
     }
 

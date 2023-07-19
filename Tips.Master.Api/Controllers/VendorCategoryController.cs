@@ -27,13 +27,13 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<VendorCategoryController>
         [HttpGet]
-        public async Task<IActionResult> GetAllVendorCategory()
+        public async Task<IActionResult> GetAllVendorCategory([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<VendorCategory>> serviceResponse = new ServiceResponse<IEnumerable<VendorCategory>>();
 
             try
             {
-                var vendorCategories = await _repository.VendorCategoryRepository.GetAllVendorCategory();
+                var vendorCategories = await _repository.VendorCategoryRepository.GetAllVendorCategory(searchParams);
                 _logger.LogInfo("Returned all VendorCategory");
                 var result = _mapper.Map<IEnumerable<VendorCategory>>(vendorCategories);
                 serviceResponse.Data = result;
@@ -54,13 +54,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveVendorCatefories()
+        public async Task<IActionResult> GetAllActiveVendorCatefories([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<VendorCategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<VendorCategoryDto>>();
 
             try
             {
-                var vendorCategories = await _repository.VendorCategoryRepository.GetAllActiveVendorCategory();
+                var vendorCategories = await _repository.VendorCategoryRepository.GetAllActiveVendorCategory(searchParams);
                 _logger.LogInfo("Returned all VendorCategory");
                 var result = _mapper.Map<IEnumerable<VendorCategoryDto>>(vendorCategories);
                 serviceResponse.Data = result;

@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -45,18 +46,20 @@ namespace Repository
             return result;
         }      
 
-        public async Task<IEnumerable<TypeOfCompany>> GetAllActiveTypeofCompanies()
+        public async Task<IEnumerable<TypeOfCompany>> GetAllActiveTypeofCompanies([FromQuery] SearchParames searchParams)
         {
-            var AllActiveTypeOfCompanyList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveTypeOfCompanyList;
+            var typeOfCompanyDetails = FindAll()
+                               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.TypeOfCompanyName.Contains(searchParams.SearchValue) ||
+                         inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return typeOfCompanyDetails;
         }
 
-        public async Task<IEnumerable<TypeOfCompany>> GetAllTypeOfCompanies()
+        public async Task<IEnumerable<TypeOfCompany>> GetAllTypeOfCompanies([FromQuery] SearchParames searchParams)
         {
-
-            var GetallTypeOfCompany = await FindAll().ToListAsync();
-
-            return GetallTypeOfCompany;
+            var typeOfCompanyDetails = FindAll()
+                                           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.TypeOfCompanyName.Contains(searchParams.SearchValue) ||
+                                     inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return typeOfCompanyDetails;
         }
 
         public async Task<TypeOfCompany> GetTypeOfCompanyById(int id)

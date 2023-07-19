@@ -27,13 +27,13 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<TypeOfCompanyController>
         [HttpGet]
-        public async Task<IActionResult> GetAllTypeOfCompanies()
+        public async Task<IActionResult> GetAllTypeOfCompanies([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<TypeOfCompanyDto>> serviceResponse = new ServiceResponse<IEnumerable<TypeOfCompanyDto>>();
             try
             {
 
-                var TypeOfCompanyList = await _repository.TypeOfCompanyRepository.GetAllTypeOfCompanies();
+                var TypeOfCompanyList = await _repository.TypeOfCompanyRepository.GetAllTypeOfCompanies(searchParams);
                 _logger.LogInfo("Returned all TypeofCompanies");
                 var result = _mapper.Map<IEnumerable<TypeOfCompanyDto>>(TypeOfCompanyList);
                 serviceResponse.Data = result;
@@ -54,13 +54,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveTypeofCompanies()
+        public async Task<IActionResult> GetAllActiveTypeofCompanies([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<TypeOfCompanyDto>> serviceResponse = new ServiceResponse<IEnumerable<TypeOfCompanyDto>>();
 
             try
             {
-                var TypeOfCompanyList = await _repository.TypeOfCompanyRepository.GetAllActiveTypeofCompanies();
+                var TypeOfCompanyList = await _repository.TypeOfCompanyRepository.GetAllActiveTypeofCompanies(searchParams);
                 _logger.LogInfo("Returned all TypeofCompanies");
                 var result = _mapper.Map<IEnumerable<TypeOfCompanyDto>>(TypeOfCompanyList);
                 serviceResponse.Data = result;

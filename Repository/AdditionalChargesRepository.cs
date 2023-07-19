@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -48,16 +49,20 @@ namespace Repository
             return additionalChargesbyId;
         }
 
-        public async Task<IEnumerable<AdditionalCharges>> GetAllActiveAdditionalCharges()
+        public async Task<IEnumerable<AdditionalCharges>> GetAllActiveAdditionalCharges([FromQuery] SearchParames searchParams)
         {
-            var additionalChargesActiveDetails = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            var additionalChargesActiveDetails = FindAll()
+                               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.AdditionalChargesLabelName.Contains(searchParams.SearchValue) ||
+                                      inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return additionalChargesActiveDetails;
         }
 
-        public async Task<IEnumerable<AdditionalCharges>> GetAllAdditionalCharges()
+        public async Task<IEnumerable<AdditionalCharges>> GetAllAdditionalCharges([FromQuery] SearchParames searchParams)
         {
-            var additionalChargesDetails = await FindAll().ToListAsync();
-            return additionalChargesDetails;
+            var additionalChargesActiveDetails = FindAll()
+                               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.AdditionalChargesLabelName.Contains(searchParams.SearchValue) ||
+                                      inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return additionalChargesActiveDetails;
         }
 
         public async Task<string> UpdateAdditionalCharges(AdditionalCharges additionalCharges)

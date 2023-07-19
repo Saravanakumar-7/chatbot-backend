@@ -44,15 +44,21 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<CostingMethod>> GetAllActiveCostingMethods()
+        public async Task<IEnumerable<CostingMethod>> GetAllActiveCostingMethods([FromQuery] SearchParames searchParams)
         {
-            var costingMethodDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var costingMethodDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CostingMethodName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return costingMethodDetails;
         }
 
-        public async Task<IEnumerable<CostingMethod>> GetAllCostingMethods()
+        public async Task<IEnumerable<CostingMethod>> GetAllCostingMethods([FromQuery] SearchParames searchParams)
         {
-            var costingMethodDetails = await FindAll().ToListAsync();
+            var costingMethodDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CostingMethodName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return costingMethodDetails;
         }
 

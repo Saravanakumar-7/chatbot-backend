@@ -44,15 +44,20 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Commodity>> GetAllActiveCommodity()
+        public async Task<IEnumerable<Commodity>> GetAllActiveCommodity([FromQuery] SearchParames searchParams)
         {
-            var commodityDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var commodityDetails = FindAll()
+          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CommodityType.Contains(searchParams.SearchValue) ||
+         inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return commodityDetails;
         }
 
-        public async Task<IEnumerable<Commodity>> GetAllCommodity()
+        public async Task<IEnumerable<Commodity>> GetAllCommodity([FromQuery] SearchParames searchParams)
         {
-            var commodityDetails = await FindAll().ToListAsync();
+            var commodityDetails = FindAll()
+          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CommodityType.Contains(searchParams.SearchValue) ||
+         inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            
             return commodityDetails;
         }
 

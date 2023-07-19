@@ -119,10 +119,47 @@ namespace Repository
         private ICompanyCategoryRepository? _companyCategoryRepository;
         private ICustomerCategoryRepository? _customerCategoryRepository;
         private IOtherChargesRepository? _otherChargesRepository;
+        private ICompanyFileUploadRepository _companyFileUploadRepo;
+        private INoOfRoomRepository? _noOfRoomRepo;
+        private ITypeOfRoomRepository? _typeOfRoomRepo;
+
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
             _httpContextAccessor = httpContextAccessor;
+        }
+        public ITypeOfRoomRepository TypeOfRoomRepository
+        {
+            get
+            {
+                if (_typeOfRoomRepo == null)
+                {
+                    _typeOfRoomRepo = new TypeOfRoomRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _typeOfRoomRepo;
+            }
+        }
+        public INoOfRoomRepository NoOfRoomRepository
+        {
+            get
+            {
+                if (_noOfRoomRepo == null)
+                {
+                    _noOfRoomRepo = new NoOfRoomRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _noOfRoomRepo;
+            }
+        }
+        public ICompanyFileUploadRepository CompanyFileUploadRepository
+        {
+            get
+            {
+                if (_companyFileUploadRepo == null)
+                {
+                    _companyFileUploadRepo = new CompanyFileUploadRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _companyFileUploadRepo;
+            }
         }
         public IOtherChargesRepository OtherChargesRepository
         {
@@ -1213,7 +1250,7 @@ namespace Repository
 
         public ICustomerRelatedCustomerRepository CustomerRelatedCustomerRepository => throw new NotImplementedException();
 
-
+        public ICompanyApprovalRepository CompanyApprovalRepository => throw new NotImplementedException();
         //public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
 
         //add new

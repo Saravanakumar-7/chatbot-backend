@@ -99,6 +99,7 @@ namespace Tips.Grin.Api.Controllers
                         foreach (var openGrinDetails in OpenGrinDetailsById.OpenGrinParts)
                         {
                             OpenGrinPartsDto openGrinPartsDtos = _mapper.Map<OpenGrinPartsDto>(openGrinDetails);
+                            openGrinPartsDtos.OpenGrinDetails = _mapper.Map<List<OpenGrinDetailsDto>>(openGrinDetails.OpenGrinDetails);
                             OpenGrinPartsList.Add(openGrinPartsDtos);
                         }
                     }
@@ -156,6 +157,7 @@ namespace Tips.Grin.Api.Controllers
                     for (int i = 0; i < openGrinPartsDto.Count; i++)
                     {
                         OpenGrinParts openGrinPartsDetails = _mapper.Map<OpenGrinParts>(openGrinPartsDto[i]);
+                        openGrinPartsDetails.OpenGrinDetails = _mapper.Map<List<OpenGrinDetails>>(openGrinPartsDto[i].OpenGrinDetails);
                         openGrinPartsDtoList.Add(openGrinPartsDetails);
                       
                     }
@@ -172,28 +174,31 @@ namespace Tips.Grin.Api.Controllers
                 {
                     foreach (var openGrinParts in openGrinPartsDtoList)
                     {
-                        OGInventoryDtoPost inventory = new OGInventoryDtoPost();
+                        foreach (var openGrinDetail in openGrinParts.OpenGrinDetails)
+                        {
+                            OGInventoryDtoPost inventory = new OGInventoryDtoPost();
 
-                        inventory.PartNumber = openGrinParts.ItemNumber;
-                        inventory.MftrPartNumber = openGrinParts.ItemNumber;
-                        inventory.Description = openGrinParts.Description;
-                        inventory.ProjectNumber = "project";
-                        inventory.Balance_Quantity = openGrinParts.Qty;
-                        inventory.UOM = openGrinParts.UOM;
-                        inventory.Warehouse = openGrinParts.Warehouse;
-                        inventory.Location = openGrinParts.Location;
-                        inventory.GrinNo = "";
-                        inventory.GrinPartId = 0;
-                        inventory.PartType = "PurchasePart"; // we have to take parttype from grinparts model;
-                        inventory.GrinMaterialType = "";
-                        inventory.ReferenceID = Convert.ToString(openGrinParts.Id);
-                        inventory.ReferenceIDFrom = "OpenGrin";
-                        inventory.ShopOrderNo = "";
+                            inventory.PartNumber = openGrinParts.ItemNumber;
+                            inventory.MftrPartNumber = openGrinParts.ItemNumber;
+                            inventory.Description = openGrinParts.Description;
+                            inventory.ProjectNumber = "project";
+                            inventory.Balance_Quantity = openGrinParts.Qty;
+                            inventory.UOM = openGrinParts.UOM;
+                            inventory.Warehouse = openGrinDetail.Warehouse;
+                            inventory.Location = openGrinDetail.Location;
+                            inventory.GrinNo = "";
+                            inventory.GrinPartId = 0;
+                            inventory.PartType = "PurchasePart"; // we have to take parttype from grinparts model;
+                            inventory.GrinMaterialType = "";
+                            inventory.ReferenceID = Convert.ToString(openGrinParts.Id);
+                            inventory.ReferenceIDFrom = "OpenGrin";
+                            inventory.ShopOrderNo = "";
 
 
-                        var json = JsonConvert.SerializeObject(inventory);
-                        var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+                            var json = JsonConvert.SerializeObject(inventory);
+                            var data = new StringContent(json, Encoding.UTF8, "application/json");
+                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+                        }
                     }
                 }
 
@@ -258,8 +263,9 @@ namespace Tips.Grin.Api.Controllers
                 {
                     for (int i = 0; i < openGrinPartsDto.Count; i++)
                     {
-                        OpenGrinParts OpenGrinPartsDetails = _mapper.Map<OpenGrinParts>(openGrinPartsDto[i]);
-                        openGrinPartsDtoList.Add(OpenGrinPartsDetails);
+                        OpenGrinParts openGrinPartsDetails = _mapper.Map<OpenGrinParts>(openGrinPartsDto[i]);
+                        openGrinPartsDetails.OpenGrinDetails = _mapper.Map<List<OpenGrinDetails>>(openGrinPartsDto[i].OpenGrinDetails);
+                        openGrinPartsDtoList.Add(openGrinPartsDetails);
                     }
                 }
                 var updateOpenGrin = _mapper.Map(openGrinUpdateDto, openGrinDetailById);

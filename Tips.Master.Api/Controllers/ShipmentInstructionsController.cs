@@ -25,12 +25,12 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<ShipmentInstructionsController>
         [HttpGet]
-        public async Task<IActionResult> GetAllShipmentInstructions()
+        public async Task<IActionResult> GetAllShipmentInstructions(SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ShipmentInstructionsDto>> serviceResponse = new ServiceResponse<IEnumerable<ShipmentInstructionsDto>>();
             try
             {
-                var shipmentInstructionsList = await _repository.ShipmentInstructionsRepository.GetAllShipmentInstructions();
+                var shipmentInstructionsList = await _repository.ShipmentInstructionsRepository.GetAllShipmentInstructions(searchParams);
                 _logger.LogInfo("Returned all ShipmentInstructions");
                 var result = _mapper.Map<IEnumerable<ShipmentInstructionsDto>>(shipmentInstructionsList);
                 serviceResponse.Data = result;

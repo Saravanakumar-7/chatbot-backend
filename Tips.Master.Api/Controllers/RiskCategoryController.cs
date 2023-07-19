@@ -24,12 +24,12 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<RiskCategoryController>
         [HttpGet]
-        public async Task<IActionResult> GetAllRiskCategory()
+        public async Task<IActionResult> GetAllRiskCategory([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<RiskCategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<RiskCategoryDto>>();
             try
             {
-                var riskCategoryList = await _repository.RiskCategoryRepository.GetAllRiskCategory();
+                var riskCategoryList = await _repository.RiskCategoryRepository.GetAllRiskCategory(searchParams);
                 _logger.LogInfo("Returned all RiskCategory");
                 var result = _mapper.Map<IEnumerable<RiskCategoryDto>>(riskCategoryList);
                 serviceResponse.Data = result;

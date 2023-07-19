@@ -45,15 +45,21 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<IncoTerm>> GetAllActiveIncoTerm()
+        public async Task<IEnumerable<IncoTerm>> GetAllActiveIncoTerm([FromQuery] SearchParames searchParams)
         {
-            var incoTermDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var incoTermDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.IncoTermName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return incoTermDetails;
         }
 
-        public async Task<IEnumerable<IncoTerm>> GetAllIncoTerm()
+        public async Task<IEnumerable<IncoTerm>> GetAllIncoTerm([FromQuery] SearchParames searchParams)
         {
-            var incoTermDetails = await FindAll().ToListAsync();
+            var incoTermDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.IncoTermName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return incoTermDetails;
         }
 

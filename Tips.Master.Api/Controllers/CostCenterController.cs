@@ -26,13 +26,13 @@ namespace Tips.Master.Api.Controllers
         }
 
          [HttpGet]
-        public async Task<IActionResult> GetAllCostCenters()
+        public async Task<IActionResult> GetAllCostCenters([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CostCenterDto>> serviceResponse = new ServiceResponse<IEnumerable<CostCenterDto>>();
             try
             {
 
-                var GetallCostCenters = await _repository.CostCenterRepository.GetAllCostCenters();
+                var GetallCostCenters = await _repository.CostCenterRepository.GetAllCostCenters(searchParams);
 
                 _logger.LogInfo("Returned all CostCenters");
                 var result = _mapper.Map<IEnumerable<CostCenterDto>>(GetallCostCenters);
@@ -55,13 +55,13 @@ namespace Tips.Master.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCostCenters()
+        public async Task<IActionResult> GetAllActiveCostCenters([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CostCenterDto>> serviceResponse = new ServiceResponse<IEnumerable<CostCenterDto>>();
 
             try
             {
-                var AllActiveCostCenters = await _repository.CostCenterRepository.GetAllActiveCostCenters();
+                var AllActiveCostCenters = await _repository.CostCenterRepository.GetAllActiveCostCenters(searchParams);
                 _logger.LogInfo("Returned all CostCenters");
                 var result = _mapper.Map<IEnumerable<CostCenterDto>>(AllActiveCostCenters);
                 serviceResponse.Data = result;

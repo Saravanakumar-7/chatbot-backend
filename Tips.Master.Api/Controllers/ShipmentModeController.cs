@@ -25,13 +25,13 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<ShipmentModeController>
         [HttpGet]
-        public async Task<IActionResult> GetAllShipmentModes()
+        public async Task<IActionResult> GetAllShipmentModes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ShipmentModeDto>> serviceResponse = new ServiceResponse<IEnumerable<ShipmentModeDto>>();
             try
             {
 
-                var ShipmentMode = await _repository.ShipmentModeRepository.GetAllShipmentModes();
+                var ShipmentMode = await _repository.ShipmentModeRepository.GetAllShipmentModes(searchParams);
                 _logger.LogInfo("Returned all ShipmentModes");
                 var result = _mapper.Map<IEnumerable<ShipmentModeDto>>(ShipmentMode);
                 serviceResponse.Data = result;
@@ -52,13 +52,13 @@ namespace Tips.Master.Api.Controllers
         }
         [HttpGet]
 
-        public async Task<IActionResult> GetAllActiveShipmentMode()
+        public async Task<IActionResult> GetAllActiveShipmentMode([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ShipmentModeDto>> serviceResponse = new ServiceResponse<IEnumerable<ShipmentModeDto>>();
 
             try
             {
-                var ShipmentMode = await _repository.ShipmentModeRepository.GetAllActiveShipmentModes();
+                var ShipmentMode = await _repository.ShipmentModeRepository.GetAllActiveShipmentModes(searchParams);
                 _logger.LogInfo("Returned all AuditFrequencies");
                 var result = _mapper.Map<IEnumerable<ShipmentModeDto>>(ShipmentMode);
                 serviceResponse.Data = result;

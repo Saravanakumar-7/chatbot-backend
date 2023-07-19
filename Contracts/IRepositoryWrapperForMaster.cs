@@ -141,7 +141,10 @@ namespace Contracts
         IVendorRelatedVendorRepository VendorRelatedVendorRepository { get; }
         ICustomerRelatedCustomerRepository CustomerRelatedCustomerRepository { get; }
         IOtherChargesRepository OtherChargesRepository { get; }
-
+        ICompanyApprovalRepository CompanyApprovalRepository { get; }
+        ICompanyFileUploadRepository CompanyFileUploadRepository { get; }
+        INoOfRoomRepository NoOfRoomRepository { get; }
+        ITypeOfRoomRepository TypeOfRoomRepository { get; }
         void SaveAsync();
     }
 }

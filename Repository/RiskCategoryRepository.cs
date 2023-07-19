@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -43,17 +44,20 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<RiskCategory>> GetAllActiveRiskCategory()
+        public async Task<IEnumerable<RiskCategory>> GetAllActiveRiskCategory([FromQuery] SearchParames searchParams)
         {
-            var AllActiveRiskCategory = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return AllActiveRiskCategory;
+            var riskCategoryDetails = FindAll()
+                                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.RiskCategoryName.Contains(searchParams.SearchValue) ||
+                                 inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return riskCategoryDetails;
         }
 
-        public async Task<IEnumerable<RiskCategory>> GetAllRiskCategory()
+        public async Task<IEnumerable<RiskCategory>> GetAllRiskCategory([FromQuery] SearchParames searchParams)
         {
-
-            var GetallRiskCategory = await FindAll().ToListAsync();
-            return GetallRiskCategory;
+            var riskCategoryDetails = FindAll()
+                                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.RiskCategoryName.Contains(searchParams.SearchValue) ||
+                                 inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return riskCategoryDetails;
         }
 
         public async Task<RiskCategory> GetRiskCategoryById(int id)

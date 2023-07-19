@@ -82,6 +82,10 @@ namespace Tips.Grin.Api
             CreateMap<OtherCharges, OtherChargesDto>().ReverseMap();
             CreateMap<OtherCharges, OtherChargesPostDto>().ReverseMap();
             CreateMap<OtherCharges, OtherChargesUpdateDto>().ReverseMap();
+
+            CreateMap<OpenGrinDetails, OpenGrinDetailsDto>().ReverseMap();
+            CreateMap<OpenGrinDetails, OpenGrinDetailsPostDto>().ReverseMap();
+            CreateMap<OpenGrinDetails, OpenGrinDetailsUpdateDto>().ReverseMap();
         }
     }
 }

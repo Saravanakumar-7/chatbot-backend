@@ -26,24 +26,14 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<DemoStatusController>
         [HttpGet]
-        public async Task<IActionResult> GetAllArchitectures([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllArchitectures([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ArchitectureDto>> serviceResponse = new ServiceResponse<IEnumerable<ArchitectureDto>>();
             try
             {
 
-                var architectList = await _repository.ArchitectureRepository.GetAllArchitectures(pagingParameter, searchParams);
+                var architectList = await _repository.ArchitectureRepository.GetAllArchitectures(searchParams);
 
-                var metadata = new
-                {
-                    architectList.TotalCount,
-                    architectList.PageSize,
-                    architectList.CurrentPage,
-                    architectList.HasNext,
-                    architectList.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all BHK");
                 var result = _mapper.Map<IEnumerable<ArchitectureDto>>(architectList);
                 serviceResponse.Data = result;
@@ -93,13 +83,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveArchitectures([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveArchitectures([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ArchitectureDto>> serviceResponse = new ServiceResponse<IEnumerable<ArchitectureDto>>();
 
             try
             {
-                var architectList = await _repository.ArchitectureRepository.GetAllActiveArchitectures(pagingParameter, searchParams);
+                var architectList = await _repository.ArchitectureRepository.GetAllActiveArchitectures(searchParams);
                 _logger.LogInfo("Returned all architectList");
                 var result = _mapper.Map<IEnumerable<ArchitectureDto>>(architectList);
                 serviceResponse.Data = result;

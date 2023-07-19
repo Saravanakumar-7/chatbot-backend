@@ -46,16 +46,19 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<NatureOfRelationship>> GetAllActiveNatureOfRelationships()
+        public async Task<IEnumerable<NatureOfRelationship>> GetAllActiveNatureOfRelationships([FromQuery] SearchParames searchParams)
         {
-
-            var natureOfRelationshipDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var natureOfRelationshipDetails = FindAll()
+                                   .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.NatureOfRelationshipName.Contains(searchParams.SearchValue) ||
+                                  inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return natureOfRelationshipDetails;
         }
 
-        public async Task<IEnumerable<NatureOfRelationship>> GetAllNatureOfRelationships()
+        public async Task<IEnumerable<NatureOfRelationship>> GetAllNatureOfRelationships([FromQuery] SearchParames searchParams)
         {
-            var natureOfRelationshipDetails = await FindAll().ToListAsync();
+            var natureOfRelationshipDetails = FindAll()
+                                   .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.NatureOfRelationshipName.Contains(searchParams.SearchValue) ||
+                                  inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return natureOfRelationshipDetails;
         }
 

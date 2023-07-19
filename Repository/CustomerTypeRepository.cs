@@ -46,15 +46,21 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<CustomerType>> GetAllActiveCustomerTypes()
+        public async Task<IEnumerable<CustomerType>> GetAllActiveCustomerTypes([FromQuery] SearchParames searchParams)
         {
-            var customerTypeDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var customerTypeDetails = FindAll()
+          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerTypeName.Contains(searchParams.SearchValue) ||
+         inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return customerTypeDetails;
         }
 
-        public async Task<IEnumerable<CustomerType>> GetAllCustomerTypes()
+        public async Task<IEnumerable<CustomerType>> GetAllCustomerTypes([FromQuery] SearchParames searchParams)
         {
-            var customerTypeDetails = await FindAll().ToListAsync();
+            var customerTypeDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerTypeName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return customerTypeDetails;
         }
 

@@ -26,13 +26,13 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<GST_PercentageController>
         [HttpGet]
-        public async Task<IActionResult> GetAllGST_Percentages()
+        public async Task<IActionResult> GetAllGST_Percentages([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<GST_PercentageDto>> serviceResponse = new ServiceResponse<IEnumerable<GST_PercentageDto>>();
             try
             {
 
-                var GST_PercentageList = await _repository.GST_PercentageRepository.GetAllGST_Percentages();
+                var GST_PercentageList = await _repository.GST_PercentageRepository.GetAllGST_Percentages(searchParams);
 
                 _logger.LogInfo("Returned all GST_Percentages");
                 var result = _mapper.Map<IEnumerable<GST_PercentageDto>>(GST_PercentageList);
@@ -55,13 +55,13 @@ namespace Tips.Master.Api.Controllers
 
         [HttpGet]
 
-        public async Task<IActionResult> GetAllActiveGST_Percentages()
+        public async Task<IActionResult> GetAllActiveGST_Percentages([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<GST_PercentageDto>> serviceResponse = new ServiceResponse<IEnumerable<GST_PercentageDto>>();
 
             try
             {
-                var GST_Percentage = await _repository.GST_PercentageRepository.GetAllActiveGST_Percentages();
+                var GST_Percentage = await _repository.GST_PercentageRepository.GetAllActiveGST_Percentages(searchParams);
                 _logger.LogInfo("Returned all GST_Percentages");
                 var result = _mapper.Map<IEnumerable<GST_PercentageDto>>(GST_Percentage);
                 serviceResponse.Data = result;

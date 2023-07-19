@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -43,16 +44,22 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<ProcurementType>> GetAllActiveProcurementType()
+        public async Task<IEnumerable<ProcurementType>> GetAllActiveProcurementType([FromQuery] SearchParames searchParams)
         {
-            var AllActiveProcurementTypes = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveProcurementTypes;
+            var procurementTypeDetails = FindAll()
+         .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProcurementName.Contains(searchParams.SearchValue) ||
+        inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
+            return procurementTypeDetails;
         }
 
-        public async Task<IEnumerable<ProcurementType>> GetAllProcurementType()
+        public async Task<IEnumerable<ProcurementType>> GetAllProcurementType([FromQuery] SearchParames searchParams)
         {
-            var GetallProcurementTypes = await FindAll().ToListAsync();
-            return GetallProcurementTypes;
+            var procurementTypeDetails = FindAll()
+        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProcurementName.Contains(searchParams.SearchValue) ||
+       inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
+            return procurementTypeDetails;
         }
 
         public async Task<ProcurementType> GetProcurementTypeById(int id)

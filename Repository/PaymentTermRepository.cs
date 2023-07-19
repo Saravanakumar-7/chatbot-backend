@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -45,19 +46,20 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<PaymentTerm>> GetAllActivepaymentTerms()
+        public async Task<IEnumerable<PaymentTerm>> GetAllActivepaymentTerms([FromQuery] SearchParames searchParams)
         {
-
-            var AllActivePaymentTerms = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActivePaymentTerms;
+            var paymentTermDetails = FindAll()
+                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PaymentTerms.Contains(searchParams.SearchValue) ||
+                        inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return paymentTermDetails;
         }
 
-        public async Task<IEnumerable<PaymentTerm>> GetAllpaymentTerms()
+        public async Task<IEnumerable<PaymentTerm>> GetAllpaymentTerms([FromQuery] SearchParames searchParams)
         {
-
-            var GetallPaymentTerms = await FindAll().ToListAsync();
-
-            return GetallPaymentTerms;
+            var paymentTermDetails = FindAll()
+                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PaymentTerms.Contains(searchParams.SearchValue) ||
+                        inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return paymentTermDetails;
         }
 
         public async Task<PaymentTerm> GetpaymentTermById(int id)

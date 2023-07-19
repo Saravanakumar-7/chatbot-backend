@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -43,16 +44,20 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Warehouse>> GetAllActiveWarehouse()
+        public async Task<IEnumerable<Warehouse>> GetAllActiveWarehouse([FromQuery] SearchParames searchParams)
         {
-            var AllActiveWarehouseList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return AllActiveWarehouseList;
+            var warehouseDetails = FindAll()
+                                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.WarehouseName.Contains(searchParams.SearchValue) ||
+                                inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return warehouseDetails;
         }
 
-        public async Task<IEnumerable<Warehouse>> GetAllWarehouse()
+        public async Task<IEnumerable<Warehouse>> GetAllWarehouse([FromQuery] SearchParames searchParams)
         {
-            var GetallWarehouses = await FindAll().ToListAsync();
-            return GetallWarehouses;
+            var warehouseDetails = FindAll()
+                                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.WarehouseName.Contains(searchParams.SearchValue) ||
+                                inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return warehouseDetails;
         }
 
         public async Task<Warehouse> GetWarehouseById(int id)

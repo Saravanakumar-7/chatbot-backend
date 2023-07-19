@@ -43,15 +43,19 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Category>> GetAllActiveCategory()
+        public async Task<IEnumerable<Category>> GetAllActiveCategory([FromQuery] SearchParames searchParams)
         {
-            var categoryDetails = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            var categoryDetails = FindAll()
+                                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CategoryName.Contains(searchParams.SearchValue) ||
+                                 inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return categoryDetails;
         }
 
-        public async Task<IEnumerable<Category>> GetAllCategory()
+        public async Task<IEnumerable<Category>> GetAllCategory([FromQuery] SearchParames searchParams)
         {
-            var categoryDetails = await FindAll().ToListAsync();
+            var categoryDetails = FindAll()
+                                        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CategoryName.Contains(searchParams.SearchValue) ||
+                                  inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return categoryDetails;
         }
 

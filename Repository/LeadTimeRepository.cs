@@ -44,15 +44,21 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<LeadTime>> GetAllActiveLeadTime()
+        public async Task<IEnumerable<LeadTime>> GetAllActiveLeadTime([FromQuery] SearchParames searchParams)
         {
-            var leadTimeDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var leadTimeDetails = FindAll()
+        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Days.Contains(searchParams.SearchValue) ||
+       inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return leadTimeDetails;
         }
 
-        public async Task<IEnumerable<LeadTime>> GetAllLeadTime()
+        public async Task<IEnumerable<LeadTime>> GetAllLeadTime([FromQuery] SearchParames searchParams)
         {
-            var leadTimeDetails = await FindAll().ToListAsync();
+            var leadTimeDetails = FindAll()
+        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Days.Contains(searchParams.SearchValue) ||
+       inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return leadTimeDetails;
         }
 

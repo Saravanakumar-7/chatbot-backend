@@ -2,6 +2,7 @@
 using Entities;
 using Entities.Migrations;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -44,17 +45,22 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<ScopeOfSupply>> GetAllActiveScopeOfSupply()
+        public async Task<IEnumerable<ScopeOfSupply>> GetAllActiveScopeOfSupply([FromQuery] SearchParames searchParams)
         {
-            var AllActiveScopeOfSupplies = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveScopeOfSupplies;
+            var scopeOfSuppliesDetials = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ScopeOfSupplyName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
+            return scopeOfSuppliesDetials;
         }
 
-        public async Task<IEnumerable<ScopeOfSupply>> GetAllScopeOfSupply()
+        public async Task<IEnumerable<ScopeOfSupply>> GetAllScopeOfSupply([FromQuery] SearchParames searchParams)
         {
-            var GetallScopeOfSupplies = await FindAll().ToListAsync();
+            var scopeOfSuppliesDetials = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ScopeOfSupplyName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallScopeOfSupplies;
+            return scopeOfSuppliesDetials;
         }
 
         public async Task<ScopeOfSupply> GetScopeOfSupplyById(int id)

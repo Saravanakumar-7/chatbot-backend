@@ -26,13 +26,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<LocationsController>
         [HttpGet]
-        public async Task<IActionResult> GetAllLocations()
+        public async Task<IActionResult> GetAllLocations([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LocationsDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationsDto>>();
 
             try
             {
-                var LocationsList = await _repository.LocationsRepository.GetAllLocations();
+                var LocationsList = await _repository.LocationsRepository.GetAllLocations(searchParams);
            
                 _logger.LogInfo("Returned all Locations");
                 var result = _mapper.Map<IEnumerable<LocationsDto>>(LocationsList);
@@ -53,13 +53,13 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveLocations()
+        public async Task<IActionResult> GetAllActiveLocations([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LocationsDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationsDto>>();
 
             try
             {
-                var locations = await _repository.LocationsRepository.GetAllActiveLocations();
+                var locations = await _repository.LocationsRepository.GetAllActiveLocations(searchParams);
                 _logger.LogInfo("Returned all departments");
                 var result = _mapper.Map<IEnumerable<LocationsDto>>(locations);
                 serviceResponse.Data = result;

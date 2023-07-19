@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -44,17 +45,20 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Process>> GetAllActiveProcesses()
+        public async Task<IEnumerable<Process>> GetAllActiveProcesses([FromQuery] SearchParames searchParams)
         {
-            var AllActiveProcessList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveProcessList;
+            var processDetails = FindAll()
+                             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProcessName.Contains(searchParams.SearchValue) ||
+                                    inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return processDetails;
         }
 
-        public async Task<IEnumerable<Process>> GetAllProcesses()
+        public async Task<IEnumerable<Process>> GetAllProcesses([FromQuery] SearchParames searchParams)
         {
-            var GetallProcessList = await FindAll().ToListAsync();
-
-            return GetallProcessList;
+            var processDetails = FindAll()
+                            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProcessName.Contains(searchParams.SearchValue) ||
+                                   inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return processDetails;
         }
 
         public async Task<Process> GetProcessById(int id)

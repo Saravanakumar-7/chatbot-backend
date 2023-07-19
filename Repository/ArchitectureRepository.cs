@@ -38,20 +38,20 @@ namespace Repository
             string result = $"architecture details of {architecture.Id} is deleted successfully!";
             return result;
         }
-        public async Task<PagedList<Architectures>> GetAllActiveArchitectures([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<Architectures>> GetAllActiveArchitectures([FromQuery] SearchParames searchParams)
         {
             var getAllArchitectures = FindAll()
              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ArchitectName.Contains(searchParams.SearchValue) ||
             inv.MobileNumber.Contains(searchParams.SearchValue) || inv.FirmName.Contains(searchParams.SearchValue))));
-            return PagedList<Architectures>.ToPagedList(getAllArchitectures, pagingParameter.PageNumber, pagingParameter.PageSize);
+            return getAllArchitectures;
         }
-        public async Task<PagedList<Architectures>> GetAllArchitectures([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<Architectures>> GetAllArchitectures([FromQuery] SearchParames searchParams)
         {
             var getAllArchitectDetails = FindAll().OrderByDescending(x => x.Id)
               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ArchitectName.Contains(searchParams.SearchValue) ||
                  inv.MobileNumber.Contains(searchParams.SearchValue) || inv.FirmName.Contains(searchParams.SearchValue))));
 
-            return PagedList<Architectures>.ToPagedList(getAllArchitectDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            return getAllArchitectDetails;
         }
 
         public async Task<IEnumerable<Architectures>> GetAllArchitecturesDetails()

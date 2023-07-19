@@ -24,12 +24,12 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<WarehouseController>
         [HttpGet]
-        public async Task<IActionResult> GetAllWarehouse()
+        public async Task<IActionResult> GetAllWarehouse([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<WarehouseDto>> serviceResponse = new ServiceResponse<IEnumerable<WarehouseDto>>();
             try
             {
-                var warehouseList = await _repository.WarehouseRepository.GetAllWarehouse();
+                var warehouseList = await _repository.WarehouseRepository.GetAllWarehouse(searchParams);
                 _logger.LogInfo("Returned all Warehouse");
                 var result = _mapper.Map<IEnumerable<WarehouseDto>>(warehouseList);
                 serviceResponse.Data = result;

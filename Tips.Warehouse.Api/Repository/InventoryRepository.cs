@@ -184,7 +184,12 @@ namespace Tips.Warehouse.Api.Repository
                 var query = _tipsWarehouseDbContext.Inventory.AsQueryable();
 
                 // Check if inventoryBalQty object is not null
-                if (inventoryDetailsBalQty != null)
+                if (inventoryDetailsBalQty == null || (inventoryDetailsBalQty.PartNumber.Count == 0 && inventoryDetailsBalQty.Warehouse.Count == 0 && inventoryDetailsBalQty.Location.Count == 0 && inventoryDetailsBalQty.ProjectNumber.Count == 0))
+                {
+                    query = FindAll().OrderByDescending(x => x.Id);
+
+                }
+                else
                 {
                     // Apply filtering based on the inventoryBalQty properties if they are not null
                     if (inventoryDetailsBalQty.PartNumber != null && inventoryDetailsBalQty.PartNumber.Any())
@@ -336,7 +341,12 @@ namespace Tips.Warehouse.Api.Repository
                 var query = _tipsWarehouseDbContext.Inventory.AsQueryable();
 
                 // Check if inventoryBalQty object is not null
-                if (inventoryBalQty != null)
+                if (inventoryBalQty == null || (inventoryBalQty.PartNumber.Count == 0 && inventoryBalQty.Warehouse.Count == 0 && inventoryBalQty.Location.Count == 0))
+                {
+                    query = FindAll().OrderByDescending(x => x.Id);
+
+                }
+                else
                 {
                     // Apply filtering based on the inventoryBalQty properties if they are not null
                     if (inventoryBalQty.PartNumber != null && inventoryBalQty.PartNumber.Any())

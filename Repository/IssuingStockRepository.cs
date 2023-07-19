@@ -9,6 +9,7 @@ using System.Security.Claims;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Repository
 {
@@ -43,15 +44,19 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<IssuingStock>> GetAllActiveIssuingStock()
+        public async Task<IEnumerable<IssuingStock>> GetAllActiveIssuingStock([FromQuery] SearchParames searchParams)
         {
-            var issuingStockDetails = await FindAll().Where(x => x.IsActive == true).ToListAsync();
+            var issuingStockDetails = FindAll()
+                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.IssuingStockName.Contains(searchParams.SearchValue) ||
+                                     inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return issuingStockDetails;
         }
 
-        public async Task<IEnumerable<IssuingStock>> GetAllIssuingStock()
+        public async Task<IEnumerable<IssuingStock>> GetAllIssuingStock([FromQuery] SearchParames searchParams)
         {
-            var issuingStockDetails = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
+            var issuingStockDetails = FindAll()
+                               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.IssuingStockName.Contains(searchParams.SearchValue) ||
+                                      inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return issuingStockDetails;
         }
 

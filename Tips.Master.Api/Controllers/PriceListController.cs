@@ -25,13 +25,13 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<PriceListController>
         [HttpGet]
-        public async Task<IActionResult> GetAllPriceLists()
+        public async Task<IActionResult> GetAllPriceLists([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PriceListDto>> serviceResponse = new ServiceResponse<IEnumerable<PriceListDto>>();
             try
             {
 
-                var PriceList = await _repository.PriceListRepository.GetAllPriceLists();
+                var PriceList = await _repository.PriceListRepository.GetAllPriceLists(searchParams);
                 _logger.LogInfo("Returned all PriceLists");
                 var result = _mapper.Map<IEnumerable<PriceListDto>>(PriceList);
                 serviceResponse.Data = result;
@@ -52,13 +52,13 @@ namespace Tips.Master.Api.Controllers
         }
         [HttpGet]
 
-        public async Task<IActionResult> GetAllActivePriceLists()
+        public async Task<IActionResult> GetAllActivePriceLists([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PriceListDto>> serviceResponse = new ServiceResponse<IEnumerable<PriceListDto>>();
 
             try
             {
-                var PriceList = await _repository.PriceListRepository.GetAllActivePriceLists();
+                var PriceList = await _repository.PriceListRepository.GetAllActivePriceLists(searchParams);
                 _logger.LogInfo("Returned all PriceLists");
                 var result = _mapper.Map<IEnumerable<PriceListDto>>(PriceList);
                 serviceResponse.Data = result;

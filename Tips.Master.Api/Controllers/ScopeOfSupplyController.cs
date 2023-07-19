@@ -28,13 +28,13 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<ScopeOfSupplyController>
         [HttpGet]
-        public async Task<IActionResult> GetAllScopeOfSupply()
+        public async Task<IActionResult> GetAllScopeOfSupply([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ScopeOfSupplyDto>> serviceResponse = new ServiceResponse<IEnumerable<ScopeOfSupplyDto>>();
 
             try
             {
-                var scopeOfSupplies = await _repository.ScopeOfSupplyRepository.GetAllScopeOfSupply();
+                var scopeOfSupplies = await _repository.ScopeOfSupplyRepository.GetAllScopeOfSupply(searchParams);
                 _logger.LogInfo("Returned all ScopeOfSupply");
                 var result = _mapper.Map<IEnumerable<ScopeOfSupplyDto>>(scopeOfSupplies);
                 serviceResponse.Data = result;
@@ -55,13 +55,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveScopeOfSupply()
+        public async Task<IActionResult> GetAllActiveScopeOfSupply([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ScopeOfSupplyDto>> serviceResponse = new ServiceResponse<IEnumerable<ScopeOfSupplyDto>>();
 
             try
             {
-                var scopeOfSupplies = await _repository.ScopeOfSupplyRepository.GetAllActiveScopeOfSupply();
+                var scopeOfSupplies = await _repository.ScopeOfSupplyRepository.GetAllActiveScopeOfSupply(searchParams);
                 _logger.LogInfo("Returned all ScopeOfSupply");
                 var result = _mapper.Map<IEnumerable<ScopeOfSupplyDto>>(scopeOfSupplies);
                 serviceResponse.Data = result;

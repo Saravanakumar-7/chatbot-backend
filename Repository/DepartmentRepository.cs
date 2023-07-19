@@ -45,15 +45,21 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Department>> GetAllActiveDepartment()
+        public async Task<IEnumerable<Department>> GetAllActiveDepartment([FromQuery] SearchParames searchParams)
         {
-            var departmentDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var departmentDetails = FindAll()
+          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DepartmentName.Contains(searchParams.SearchValue) ||
+         inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return departmentDetails;
         }
 
-        public async Task<IEnumerable<Department>> GetAllDepartment()
+        public async Task<IEnumerable<Department>> GetAllDepartment([FromQuery] SearchParames searchParams)
         {
-            var departmentDetails = await FindAll().ToListAsync();
+            var departmentDetails = FindAll()
+         .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DepartmentName.Contains(searchParams.SearchValue) ||
+        inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
             return departmentDetails;
         }
 

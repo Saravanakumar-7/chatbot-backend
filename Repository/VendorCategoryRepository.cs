@@ -2,6 +2,7 @@
 using Entities;
 using Entities.Migrations;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -45,17 +46,22 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<VendorCategory>> GetAllActiveVendorCategory()
+        public async Task<IEnumerable<VendorCategory>> GetAllActiveVendorCategory([FromQuery] SearchParames searchParams)
         {
-            var AllActiveVendorCategories = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveVendorCategories;
+            var vendorCategoriesDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorCategoryName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
+            return vendorCategoriesDetails;
         }
 
-        public async Task<IEnumerable<VendorCategory>> GetAllVendorCategory()
+        public async Task<IEnumerable<VendorCategory>> GetAllVendorCategory([FromQuery] SearchParames searchParams)
         {
-            var GetallVendorCategories = await FindAll().ToListAsync();
+            var vendorCategoriesDetails = FindAll()
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorCategoryName.Contains(searchParams.SearchValue) ||
+           inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallVendorCategories;
+            return vendorCategoriesDetails;
         }
 
         public async Task<VendorCategory> GetVendorCategoryById(int id)

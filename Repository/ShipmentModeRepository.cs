@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -44,18 +45,20 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<ShipmentMode>> GetAllActiveShipmentModes()
+        public async Task<IEnumerable<ShipmentMode>> GetAllActiveShipmentModes([FromQuery] SearchParames searchParams)
         {
-
-            var AllActiveShipmentModes = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveShipmentModes;
+            var shipmentModeDetails = FindAll()
+                             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ShipmentModeName.Contains(searchParams.SearchValue) ||
+                                    inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return shipmentModeDetails;
         }
 
-        public async Task<IEnumerable<ShipmentMode>> GetAllShipmentModes()
+        public async Task<IEnumerable<ShipmentMode>> GetAllShipmentModes([FromQuery] SearchParames searchParams)
         {
-            var GetallShipmentModes = await FindAll().ToListAsync();
-
-            return GetallShipmentModes;
+            var shipmentModeDetails = FindAll()
+                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ShipmentModeName.Contains(searchParams.SearchValue) ||
+                                     inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return shipmentModeDetails;
         }
 
         public async Task<ShipmentMode> GetShipmentModeById(int id)

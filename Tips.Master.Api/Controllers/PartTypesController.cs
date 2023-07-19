@@ -25,13 +25,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<PartTypeController>
         [HttpGet]
-        public async Task<IActionResult> GetAllPartTypes()
+        public async Task<IActionResult> GetAllPartTypes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PartTypesDto>> serviceResponse = new ServiceResponse<IEnumerable<PartTypesDto>>();
             try
             {
 
-                var PartTypeList = await _repository.partTypesRepository.GetAllPartTypes();
+                var PartTypeList = await _repository.partTypesRepository.GetAllPartTypes(searchParams);
                 _logger.LogInfo("Returned all PartTypes");
                 var result = _mapper.Map<IEnumerable<PartTypesDto>>(PartTypeList);
                 serviceResponse.Data = result;
@@ -51,13 +51,13 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllActivePartTypes()
+        public async Task<IActionResult> GetAllActivePartTypes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PartTypesDto>> serviceResponse = new ServiceResponse<IEnumerable<PartTypesDto>>();
 
             try
             {
-                var PartTypes = await _repository.partTypesRepository.GetAllActivePartTypes();
+                var PartTypes = await _repository.partTypesRepository.GetAllActivePartTypes(searchParams);
                 _logger.LogInfo("Returned all PartTypes");
                 var result = _mapper.Map<IEnumerable<PartTypesDto>>(PartTypes);
                 serviceResponse.Data = result;

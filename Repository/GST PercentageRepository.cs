@@ -45,15 +45,19 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<GST_Percentage>> GetAllActiveGST_Percentages()
+        public async Task<IEnumerable<GST_Percentage>> GetAllActiveGST_Percentages([FromQuery] SearchParames searchParams)
         {
-            var gstPercentageDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            var gstPercentageDetails = FindAll()
+                                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GSTPercentage.Contains(searchParams.SearchValue) ||
+                                inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return gstPercentageDetails;
         }
 
-        public async Task<IEnumerable<GST_Percentage>> GetAllGST_Percentages()
+        public async Task<IEnumerable<GST_Percentage>> GetAllGST_Percentages([FromQuery] SearchParames searchParams)
         {
-            var gstPercentageDetails = await FindAll().ToListAsync();
+            var gstPercentageDetails = FindAll()
+                                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GSTPercentage.Contains(searchParams.SearchValue) ||
+                                inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return gstPercentageDetails;
         }
         public async Task<GST_Percentage> GetGST_PercentageById(int id)

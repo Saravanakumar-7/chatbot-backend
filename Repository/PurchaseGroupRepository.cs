@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -44,17 +45,22 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<PurchaseGroup>> GetAllActivePurchaseGroups()
+        public async Task<IEnumerable<PurchaseGroup>> GetAllActivePurchaseGroups([FromQuery] SearchParames searchParams)
         {
-            var AllActivepurchaseGroups = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActivepurchaseGroups;
+            var purchaseGroupDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PurchaseGroupName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
+            return purchaseGroupDetails;
         }
 
-        public async Task<IEnumerable<PurchaseGroup>> GetAllPurchaseGroups()
+        public async Task<IEnumerable<PurchaseGroup>> GetAllPurchaseGroups([FromQuery] SearchParames searchParams)
         {
-            var GetallPurchaseGroups = await FindAll().ToListAsync();
+            var purchaseGroupDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PurchaseGroupName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
-            return GetallPurchaseGroups;
+            return purchaseGroupDetails;
         }
       
 

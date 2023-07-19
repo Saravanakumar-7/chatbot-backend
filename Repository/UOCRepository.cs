@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -43,16 +44,20 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<UOC>> GetAllActiveUOC()
+        public async Task<IEnumerable<UOC>> GetAllActiveUOC([FromQuery] SearchParames searchParams)
         {
-            var AllActiveUoc = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return AllActiveUoc;
+            var uocDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.UOCType.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return uocDetails;
         }
 
-        public async Task<IEnumerable<UOC>> GetAllUOC()
+        public async Task<IEnumerable<UOC>> GetAllUOC([FromQuery] SearchParames searchParams)
         {
-            var GetallUoc = await FindAll().ToListAsync();
-            return GetallUoc;
+            var uocDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.UOCType.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return uocDetails;
         }
 
         public async Task<UOC> GetUOCById(int id)

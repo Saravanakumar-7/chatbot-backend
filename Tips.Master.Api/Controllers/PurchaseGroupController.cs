@@ -25,13 +25,13 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<PurchaseGroupController>
         [HttpGet]
-        public async Task<IActionResult> GetAllPurchaseGroups()
+        public async Task<IActionResult> GetAllPurchaseGroups([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PurchaseGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseGroupDto>>();
             try
             {
 
-                var PurchaseGroupList = await _repository.PurchaseGroupRepository.GetAllPurchaseGroups();
+                var PurchaseGroupList = await _repository.PurchaseGroupRepository.GetAllPurchaseGroups(searchParams);
                 _logger.LogInfo("Returned all PurchaseGroups");
                 var result = _mapper.Map<IEnumerable<PurchaseGroupDto>>(PurchaseGroupList);
                 serviceResponse.Data = result;
@@ -52,13 +52,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActivePurchaseGroups()
+        public async Task<IActionResult> GetAllActivePurchaseGroups([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PurchaseGroupDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseGroupDto>>();
 
             try
             {
-                var PurchaseGroups = await _repository.PurchaseGroupRepository.GetAllActivePurchaseGroups();
+                var PurchaseGroups = await _repository.PurchaseGroupRepository.GetAllActivePurchaseGroups(searchParams);
                 _logger.LogInfo("Returned all PurchaseGroups");
                 var result = _mapper.Map<IEnumerable<PurchaseGroupDto>>(PurchaseGroups);
                 serviceResponse.Data = result;

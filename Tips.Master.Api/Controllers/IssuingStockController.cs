@@ -24,13 +24,13 @@ namespace Tips.Master.Api.Controllers
         // GET: api/<DemoStatusController>
 
         [HttpGet]
-        public async Task<IActionResult> GetAllIssuingStock()
+        public async Task<IActionResult> GetAllIssuingStock([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<IssuingStockDto>> serviceResponse = new ServiceResponse<IEnumerable<IssuingStockDto>>();
             try
             {
 
-                var IssuingStockDetails = await _repository.IssuingStockRepository.GetAllIssuingStock();
+                var IssuingStockDetails = await _repository.IssuingStockRepository.GetAllIssuingStock(searchParams);
 
 
                 _logger.LogInfo("Returned all IssuingStockDetails");
@@ -55,13 +55,13 @@ namespace Tips.Master.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveIssuingStock()
+        public async Task<IActionResult> GetAllActiveIssuingStock([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<IssuingStockDto>> serviceResponse = new ServiceResponse<IEnumerable<IssuingStockDto>>();
 
             try
             {
-                var IssuingStockDetails = await _repository.IssuingStockRepository.GetAllActiveIssuingStock();
+                var IssuingStockDetails = await _repository.IssuingStockRepository.GetAllActiveIssuingStock(searchParams);
                 _logger.LogInfo("Returned all IssuingStockDetails");
                 var result = _mapper.Map<IEnumerable<IssuingStockDto>>(IssuingStockDetails);
                 serviceResponse.Data = result;

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -44,15 +45,19 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<OrderType>> GetAllActiveOrderType()
+        public async Task<IEnumerable<OrderType>> GetAllActiveOrderType([FromQuery] SearchParames searchParams)
         {
-            var orderTypeDetails = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            var orderTypeDetails = FindAll()
+                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.OrderTypeName.Contains(searchParams.SearchValue) ||
+                                     inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return orderTypeDetails;
         }
 
-        public async Task<IEnumerable<OrderType>> GetAllOrderType()
+        public async Task<IEnumerable<OrderType>> GetAllOrderType([FromQuery] SearchParames searchParams)
         {
-            var orderTypeDetails = await FindAll().ToListAsync();
+            var orderTypeDetails = FindAll()
+                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.OrderTypeName.Contains(searchParams.SearchValue) ||
+                                     inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return orderTypeDetails;
         }
         public async Task<OrderType> GetDefaultOrderType(int id)

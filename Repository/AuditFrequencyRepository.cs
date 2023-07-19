@@ -46,17 +46,21 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<AuditFrequency>> GetAllActiveAuditFrequencies()
+        public async Task<IEnumerable<AuditFrequency>> GetAllActiveAuditFrequencies([FromQuery] SearchParames searchParams)
         {
+            var auditFrequencyDetails = FindAll()
+                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.AuditFrequencyName.Contains(searchParams.SearchValue) ||
+                      inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
-            var auditFrequencyDetails = await FindByCondition(x => x.IsActive == true).ToListAsync();
             return auditFrequencyDetails;
         }
 
-        public async Task<IEnumerable<AuditFrequency>> GetAllAuditFrequencies()
+        public async Task<IEnumerable<AuditFrequency>> GetAllAuditFrequencies([FromQuery] SearchParames searchParams)
         {
+            var auditFrequencyDetails = FindAll()
+                                  .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.AuditFrequencyName.Contains(searchParams.SearchValue) ||
+                                 inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
-            var auditFrequencyDetails = await FindAll().ToListAsync();
             return auditFrequencyDetails;
         }
 

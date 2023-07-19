@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface IProcurementTypeRepository
     {
-        Task<IEnumerable<ProcurementType>> GetAllProcurementType();
+        Task<IEnumerable<ProcurementType>> GetAllProcurementType(SearchParames searchParams);
         Task<ProcurementType> GetProcurementTypeById(int id);
-        Task<IEnumerable<ProcurementType>> GetAllActiveProcurementType();
+        Task<IEnumerable<ProcurementType>> GetAllActiveProcurementType(SearchParames searchParams);
         Task<int?> CreateProcurementType(ProcurementType ProcurementType);
         Task<string> UpdateProcurementType(ProcurementType ProcurementType);
         Task<string> DeleteProcurementType(ProcurementType ProcurementType);

@@ -27,13 +27,13 @@ namespace Tips.Master.Api.Controllers
         }
       
         [HttpGet]
-        public async Task<IActionResult> GetAllCustomerCategory()
+        public async Task<IActionResult> GetAllCustomerCategory([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CustomerCategory>> serviceResponse = new ServiceResponse<IEnumerable<CustomerCategory>>();
 
             try
             {
-                var customerCategories = await _repository.CustomerCategoryRepository.GetAllCustomerCategory();
+                var customerCategories = await _repository.CustomerCategoryRepository.GetAllCustomerCategory(searchParams);
                 _logger.LogInfo("Returned all customerCategories");
                 var result = _mapper.Map<IEnumerable<CustomerCategory>>(customerCategories);
                 serviceResponse.Data = result;
@@ -54,13 +54,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCustomerCategory()
+        public async Task<IActionResult> GetAllActiveCustomerCategory([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CustomerCategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerCategoryDto>>();
 
             try
             {
-                var customerCategories = await _repository.CustomerCategoryRepository.GetAllActiveCustomerCategory();
+                var customerCategories = await _repository.CustomerCategoryRepository.GetAllActiveCustomerCategory(searchParams);
                 _logger.LogInfo("Returned all companyCategories");
                 var result = _mapper.Map<IEnumerable<CustomerCategoryDto>>(customerCategories);
                 serviceResponse.Data = result;

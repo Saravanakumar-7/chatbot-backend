@@ -25,13 +25,13 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<PreferredFreightForwarderController>
         [HttpGet]
-        public async Task<IActionResult> GetAllPreferredFreightForwarders()
+        public async Task<IActionResult> GetAllPreferredFreightForwarders([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PreferredFreightForwarderDto>> serviceResponse = new ServiceResponse<IEnumerable<PreferredFreightForwarderDto>>();
             try
             {
 
-                var PreferredFreightForwarderList = await _repository.PreferredFreightForwarderRepository.GetAllPreferredFreightForwarders();
+                var PreferredFreightForwarderList = await _repository.PreferredFreightForwarderRepository.GetAllPreferredFreightForwarders(searchParams);
                 _logger.LogInfo("Returned all PaymentTermList");
                 var result = _mapper.Map<IEnumerable<PreferredFreightForwarderDto>>(PreferredFreightForwarderList);
                 serviceResponse.Data = result;
@@ -52,13 +52,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActivePreferredFreightForwarders()
+        public async Task<IActionResult> GetAllActivePreferredFreightForwarders([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PreferredFreightForwarderDto>> serviceResponse = new ServiceResponse<IEnumerable<PreferredFreightForwarderDto>>();
 
             try
             {
-                var PreferredFreightForwarders = await _repository.PreferredFreightForwarderRepository.GetAllPreferredFreightForwarders();
+                var PreferredFreightForwarders = await _repository.PreferredFreightForwarderRepository.GetAllPreferredFreightForwarders(searchParams);
                 _logger.LogInfo("Returned all PreferredFreightForwarders");
                 var result = _mapper.Map<IEnumerable<PreferredFreightForwarderDto>>(PreferredFreightForwarders);
                 serviceResponse.Data = result;

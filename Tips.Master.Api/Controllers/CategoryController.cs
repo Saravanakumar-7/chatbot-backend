@@ -25,12 +25,12 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<CategoryController>
         [HttpGet]
-        public async Task<IActionResult> GetAllCategory()
+        public async Task<IActionResult> GetAllCategory(SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<CategoryDto>>();
             try
             {
-                var GetallCategoryList = await _repository.CategoryRepository.GetAllCategory();
+                var GetallCategoryList = await _repository.CategoryRepository.GetAllCategory(searchParams);
 
                 _logger.LogInfo("Returned all Category");
                 var result = _mapper.Map<IEnumerable<CategoryDto>>(GetallCategoryList);
@@ -53,12 +53,12 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCategory()
+        public async Task<IActionResult> GetAllActiveCategory(SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<CategoryDto>>();
             try
             {
-                var GetallCategoryList = await _repository.CategoryRepository.GetAllActiveCategory();
+                var GetallCategoryList = await _repository.CategoryRepository.GetAllActiveCategory(searchParams);
 
                 _logger.LogInfo("Returned all Active Category");
                 var result = _mapper.Map<IEnumerable<CategoryDto>>(GetallCategoryList);

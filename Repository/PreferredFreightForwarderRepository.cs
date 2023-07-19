@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -44,18 +45,20 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<PreferredFreightForwarder>> GetAllActivePreferredFreightForwarders()
+        public async Task<IEnumerable<PreferredFreightForwarder>> GetAllActivePreferredFreightForwarders([FromQuery] SearchParames searchParams)
         {
-
-            var AllActivePreferredFreightForwarder = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActivePreferredFreightForwarder;
+            var preferredFreightForwarderDetails = FindAll()
+                                          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PreferredFreightforwarder.Contains(searchParams.SearchValue) ||
+                                    inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return preferredFreightForwarderDetails;
         }
 
-        public async Task<IEnumerable<PreferredFreightForwarder>> GetAllPreferredFreightForwarders()
+        public async Task<IEnumerable<PreferredFreightForwarder>> GetAllPreferredFreightForwarders([FromQuery] SearchParames searchParams)
         {
-            var GetallPreferredFreightForwarderlist = await FindAll().ToListAsync();
-
-            return GetallPreferredFreightForwarderlist;
+            var preferredFreightForwarderDetails = FindAll()
+                                           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PreferredFreightforwarder.Contains(searchParams.SearchValue) ||
+                                     inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return preferredFreightForwarderDetails;
         }
 
         public async Task<PreferredFreightForwarder> GetPreferredFreightForwarderById(int id)

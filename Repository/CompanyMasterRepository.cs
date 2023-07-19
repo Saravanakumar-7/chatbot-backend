@@ -90,6 +90,7 @@ namespace Repository
             .Include(t => t.CompanyAddresses)
             .Include(x => x.CompanyContacts)
             .Include(m => m.CompanyBankings)
+            .Include(s => s.CompanyApprovals)
             .Include(v => v.CompanyMasterHeadCountings).ToListAsync();
             return allActiveCompanyMasters;
         }
@@ -103,7 +104,8 @@ namespace Repository
              .Include(t => t.CompanyAddresses)
              .Include(t => t.CompanyBankings)
              .Include(t => t.CompanyContacts)
-              .Include(d => d.CompanyMasterHeadCountings);
+              .Include(d => d.CompanyMasterHeadCountings)
+              .Include(x => x.CompanyApprovals);
 
             return PagedList<CompanyMaster>.ToPagedList(companymasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
@@ -116,6 +118,7 @@ namespace Repository
                                 .Include(x => x.CompanyContacts)
                                 .Include(m => m.CompanyBankings)
                                 .Include(v => v.CompanyMasterHeadCountings)
+                                .Include(x => x.CompanyApprovals)
                                 .FirstOrDefaultAsync();
 
             return getCompanyMasterById;
