@@ -209,7 +209,8 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class GrinInventoryDto
     { 
         public string PartNumber { get; set; }
-         
+        public string? LotNumber { get; set; }
+
         public string MftrPartNumber { get; set; }
 
         

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers.Text;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
@@ -29,13 +30,14 @@ namespace Tips.Purchase.Api.Controllers
     {
         private IPurchaseOrderRepository _repository;
         private IPoItemsRepository _poItemsRepository;
+        private IPoConfirmationDateHistoryRepository _poConfirmationDateHistoryRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IDocumentUploadRepository _documentUploadRepository;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
 
 
-        public PurchaseOrderController(IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper)
+        public PurchaseOrderController(IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _poItemsRepository = poItemsRepository;
@@ -43,6 +45,7 @@ namespace Tips.Purchase.Api.Controllers
             _mapper = mapper;
             _documentUploadRepository = documentUploadRepository;
             _webHostEnvironment = webHostEnvironment;
+            _poConfirmationDateHistoryRepository = poConfirmationDateHistoryRepository;
         }
 
         [HttpGet]
@@ -143,6 +146,7 @@ namespace Tips.Purchase.Api.Controllers
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
                             poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
                             poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
+                            poItemDtos.POConfirmationDates = _mapper.Map<List<PoConfirmationDateDto>>(poItemDetails.POConfirmationDates);
                             poItemDtos.PrDetails = _mapper.Map<List<PrDetailsDto>>(poItemDetails.PrDetails);
                             poItemDtoList.Add(poItemDtos);
                         }
@@ -275,6 +279,7 @@ namespace Tips.Purchase.Api.Controllers
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
                             poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
                             poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
+                            poItemDtos.POConfirmationDates = _mapper.Map<List<PoConfirmationDateDto>>(poItemDetails.POConfirmationDates);
                             poItemDtos.PrDetails = _mapper.Map<List<PrDetailsDto>>(poItemDetails.PrDetails);
                             poItemDtoList.Add(poItemDtos);
                         }
@@ -358,6 +363,7 @@ namespace Tips.Purchase.Api.Controllers
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
                             poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
                             poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
+                            poItemDtos.POConfirmationDates = _mapper.Map<List<PoConfirmationDateDto>>(poItemDetails.POConfirmationDates);
                             poItemDtos.PrDetails = _mapper.Map<List<PrDetailsDto>>(poItemDetails.PrDetails);
                             poItemDtoList.Add(poItemDtos);
                         }
@@ -617,6 +623,7 @@ namespace Tips.Purchase.Api.Controllers
                         poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
                         poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                        poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
                         poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
                         poItemDtoList.Add(poItemDetails);
                     }
@@ -627,6 +634,29 @@ namespace Tips.Purchase.Api.Controllers
                 purchaseOrderDetails.PoIncoTerms = poIncoTermList.ToList();
                 await _repository.CreatePurchaseOrder(purchaseOrderDetails);
                 _repository.SaveAsync();
+
+                foreach (var poItems in poItemDtoList)
+                {
+                    if (poItems.POConfirmationDates != null)
+                    {
+                        foreach (var poConfirmationDate in poItems.POConfirmationDates)
+                        {
+                            PoConfirmationDateHistory poConfirmationDateHistory = new PoConfirmationDateHistory();
+                            poConfirmationDateHistory.ConfirmationDate = poConfirmationDate.ConfirmationDate;
+                            poConfirmationDateHistory.Qty = poConfirmationDate.Qty;
+                            //poConfirmationDateHistory.CreatedBy = "Admin";
+                            //poConfirmationDateHistory.CreatedOn = DateTime.Now;
+                            //poConfirmationDateHistory.LastModifiedBy = "Admin";
+                            //poConfirmationDateHistory.LastModifiedOn = DateTime.Now;
+
+                            var poConfirmationDateHistoryDetails = _mapper.Map<PoConfirmationDateHistory>(poConfirmationDateHistory);
+
+                            await _poConfirmationDateHistoryRepository.CreatePoConfirmationDateHistory(poConfirmationDateHistoryDetails);
+                            _poConfirmationDateHistoryRepository.SaveAsync();
+                        }
+                    }
+                }
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = " PurchaseOrder Successfully Created";
                 serviceResponse.Success = true;
@@ -1114,6 +1144,7 @@ namespace Tips.Purchase.Api.Controllers
                         poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
                         poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                        poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
                         poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
                         poItemDtoList.Add(poItemDetails);
                     }
@@ -1152,8 +1183,8 @@ namespace Tips.Purchase.Api.Controllers
                 decimal dispatchedQty = item.Qty;
 
                 foreach (var poItem in poItems)
-                { 
-
+                {
+                    poItem.ReceivedQty = item.Qty;
                     if (poItem.BalanceQty >= dispatchedQty)
                     {
                         if (poItem.BalanceQty == dispatchedQty)

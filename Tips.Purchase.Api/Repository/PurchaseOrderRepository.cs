@@ -113,6 +113,8 @@ namespace Tips.Purchase.Api.Repository
                     .Include(itm => itm.POItems)
                     .ThenInclude(po => po.POSpecialInstructions)
                      .Include(itm => itm.POItems)
+                    .ThenInclude(po => po.POConfirmationDates)
+                     .Include(itm => itm.POItems)
                     .ThenInclude(po => po.PrDetails)
                     .Include(itm => itm.PoIncoTerms);
                 }
@@ -152,6 +154,8 @@ namespace Tips.Purchase.Api.Repository
                     .ThenInclude(po => po.POAddDeliverySchedules)
                     .Include(itm => itm.POItems)
                     .ThenInclude(po => po.POSpecialInstructions)
+                    .Include(itm => itm.POItems)
+                    .ThenInclude(po => po.POConfirmationDates)
                     .Include(itm => itm.POItems)
                     .ThenInclude(po => po.PrDetails)
                     .Include(itm => itm.PoIncoTerms);
@@ -196,6 +200,8 @@ namespace Tips.Purchase.Api.Repository
             .ThenInclude(po => po.POAddDeliverySchedules)
             .Include(itm => itm.POItems)
             .ThenInclude(po => po.POSpecialInstructions)
+            .Include(itm => itm.POItems)
+            .ThenInclude(po => po.POConfirmationDates)
             .Include(itm => itm.POItems)
              .ThenInclude(po => po.PrDetails)
              .Include(itm => itm.PoIncoTerms)
@@ -264,6 +270,8 @@ namespace Tips.Purchase.Api.Repository
                                 .ThenInclude(i => i.POAddDeliverySchedules)
                                 .Include(itm => itm.POItems)
                                 .ThenInclude(po => po.POSpecialInstructions)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.POConfirmationDates)
                                 .Include(itm => itm.POItems)
                                 .ThenInclude(po => po.PrDetails)
                                 .Include(itm => itm.PoIncoTerms);
@@ -360,6 +368,8 @@ namespace Tips.Purchase.Api.Repository
                                .Include(itm => itm.POItems)
                                .ThenInclude(po => po.POSpecialInstructions)
                                .Include(itm => itm.POItems)
+                               .ThenInclude(po => po.POConfirmationDates)
+                               .Include(itm => itm.POItems)
                                 .ThenInclude(po => po.PrDetails)
                                 .Include(itm => itm.PoIncoTerms);
 
@@ -377,6 +387,8 @@ namespace Tips.Purchase.Api.Repository
                                 .ThenInclude(i => i.POAddDeliverySchedules)
                                 .Include(itm => itm.POItems)
                                 .ThenInclude(po => po.POSpecialInstructions)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.POConfirmationDates)
                                 .Include(itm => itm.POItems)
                                  .ThenInclude(po => po.PrDetails)
                                  .Include(itm => itm.PoIncoTerms)
@@ -398,6 +410,8 @@ namespace Tips.Purchase.Api.Repository
                                 .Include(itm => itm.POItems)
                                 .ThenInclude(po => po.POSpecialInstructions)
                                 .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.POConfirmationDates)
+                                .Include(itm => itm.POItems)
                                 .ThenInclude(po => po.PrDetails)
                                 .Include(itm => itm.PoIncoTerms)
                                 .FirstOrDefaultAsync();
@@ -417,6 +431,8 @@ namespace Tips.Purchase.Api.Repository
                                 .ThenInclude(i => i.POAddDeliverySchedules)
                                 .Include(itm => itm.POItems)
                                 .ThenInclude(po => po.POSpecialInstructions)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.POConfirmationDates)
                                 .Include(itm => itm.POItems)
                                 .ThenInclude(po => po.PrDetails)
                                 .Include(itm => itm.PoIncoTerms)

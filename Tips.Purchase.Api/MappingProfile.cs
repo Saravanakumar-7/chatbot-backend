@@ -79,6 +79,10 @@ namespace Tips.Purchase.Api
             CreateMap<PoIncoTerm, PoIncoTermPostDto>().ReverseMap();
             CreateMap<PoIncoTerm, PoIncoTermUpdateDto>().ReverseMap();
 
+            CreateMap<PoConfirmationDate, PoConfirmationDateDto>().ReverseMap();
+            CreateMap<PoConfirmationDate, PoConfirmationDatePostDto>().ReverseMap();
+            CreateMap<PoConfirmationDate, PoConfirmationDateUpdateDto>().ReverseMap();
+
         }
     }
 }

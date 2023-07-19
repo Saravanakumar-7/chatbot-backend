@@ -19,6 +19,7 @@ namespace Tips.Grin.Api.Entities
         [Required]
 
         public string? ItemNumber { get; set; }
+        public string? LotNumber { get; set; }
 
         [Required]
         [Precision(18, 3)]

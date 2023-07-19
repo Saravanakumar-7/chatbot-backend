@@ -17,6 +17,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Required]
 
         public string? ItemNumber { get; set; }
+        public string? LotNumber { get; set; }
         public int GrinPartId { get; set; }  
 
         [Required]
@@ -240,6 +241,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Required]
 
         public string? ItemNumber { get; set; }
+        public string? LotNumber { get; set; }
         public int GrinPartId { get; set; }
 
         [Required]
@@ -345,6 +347,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Required]
 
         public string? ItemNumber { get; set; }
+        public string? LotNumber { get; set; }
         public string? GrinNumber { get; set; }
         public int GrinPartId { get; set; }
 

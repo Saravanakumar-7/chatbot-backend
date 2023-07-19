@@ -19,6 +19,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         [Precision(13, 3)]
         public decimal Qty { get; set; }
         public decimal BalanceQty { get; set; }
+        public decimal ReceivedQty { get; set; }
         public PartType? PartType { get; set; }
         public string? SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
@@ -38,6 +39,7 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         public List<PoAddProjectDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleDto>? POAddDeliverySchedules { get; set; }
+        public List<PoConfirmationDateDto>? POConfirmationDates { get; set; }
         public List<PoSpecialInstructionDto>? POSpecialInstructions { get; set; }
         public List<PrDetailsDto>? PrDetails { get; set; }
 
@@ -72,6 +74,7 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         public List<PoAddProjectPostDto>? POAddprojects { get; set; }
         public List<PoAddDeliverySchedulePostDto>? POAddDeliverySchedules { get; set; }
+        public List<PoConfirmationDatePostDto>? POConfirmationDates { get; set; }
         public List<PoSpecialInstructionPostDto>? POSpecialInstructions { get; set; }
         public List<PrDetailsPostDto>? PrDetails { get; set; }
 
@@ -106,6 +109,7 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         public List<PoAddProjectUpdateDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleUpdateDto>? POAddDeliverySchedules { get; set; }
+        public List<PoConfirmationDateUpdateDto>? POConfirmationDates { get; set; }
         public List<PoSpecialInstructionUpdateDto>? POSpecialInstructions { get; set; }
         public List<PrDetailsUpdateDto>? PrDetails { get; set; }
 
@@ -164,6 +168,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         [Precision(13, 3)]
         public decimal Qty { get; set; }
         public decimal BalanceQty { get; set; }
+        public decimal ReceivedQty { get; set; }
         public PartType? PartType { get; set; }
         public string? SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
@@ -183,6 +188,7 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         public List<PoAddProjectReportDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleReportDto>? POAddDeliverySchedules { get; set; }
+        public List<PoConfirmationDateDto>? POConfirmationDates { get; set; }
         public List<PoSpecialInstructionDto>? POSpecialInstructions { get; set; }
         public List<PrDetailsDto>? PrDetails { get; set; }
 
