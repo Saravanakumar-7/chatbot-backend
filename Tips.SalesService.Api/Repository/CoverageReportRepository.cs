@@ -8,6 +8,7 @@ using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
+using Tips.SalesService.Api.Entities.Enum;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -17,6 +18,22 @@ namespace Tips.SalesService.Api.Repository
         public CoverageReportRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+        }
+        public async Task<List<SalesOrder>> GetAllForecastSalesOrderDetails()
+        {
+            var salesOrderDetails = await _tipsSalesServiceDbContext.SalesOrders
+               .Where(x => x.SalesOrderStatus == SalesOrderStatus.Forecast)
+               .ToListAsync();
+
+            return salesOrderDetails;
+        }
+        public async Task<List<SalesOrderItems>> GetAllSalesOrderItemDetails(int salesorderId)
+        {
+            var salesOrderItemDetails = await _tipsSalesServiceDbContext.SalesOrdersItems
+               .Where(x => x.SalesOrderId == salesorderId && x.StatusEnum != OrderStatus.Closed)
+               .ToListAsync();
+
+            return salesOrderItemDetails;
         }
 
         public async Task<IEnumerable<CoverageReportDto>> GetAllSalesOrderDetails()

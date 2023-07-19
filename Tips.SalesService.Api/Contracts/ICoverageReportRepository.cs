@@ -8,6 +8,8 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface ICoverageReportRepository : IRepositoryBase<CoverageReport>
     {
+        Task<List<SalesOrder>> GetAllForecastSalesOrderDetails();
+        Task<List<SalesOrderItems>> GetAllSalesOrderItemDetails(int salesorderId);
         Task<IEnumerable<CoverageReportDto>> GetAllSalesOrderDetails();
 
     }
