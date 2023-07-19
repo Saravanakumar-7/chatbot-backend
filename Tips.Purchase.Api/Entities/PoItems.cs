@@ -21,6 +21,7 @@ namespace Tips.Purchase.Api.Entities
         public string? PONumber { get; set; }
 
         public decimal BalanceQty { get; set; }
+        public decimal ReceivedQty { get; set; }
 
         public PartType? PartType { get; set; }
         public string? SpecialInstruction { get; set; }
@@ -53,6 +54,7 @@ namespace Tips.Purchase.Api.Entities
         public List<PoAddProject>? POAddprojects { get; set; }
         public List<PoAddDeliverySchedule>? POAddDeliverySchedules { get; set; }
         public List<PoSpecialInstruction>? POSpecialInstructions { get; set; }
+        public List<PoConfirmationDate>? POConfirmationDates { get; set; }
         public List<PrDetails>? PrDetails { get; set; }
 
     }

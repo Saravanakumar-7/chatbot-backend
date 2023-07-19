@@ -28,6 +28,8 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<POBreakDown> POBreakDowns { get; set; }
         public DbSet<PrDetails> PrDetails { get; set; }
         public DbSet<PoIncoTerm> PoIncoTerms { get; set; }
+        public DbSet<PoConfirmationDate> PoConfirmationDates { get; set; }
+        public DbSet<PoConfirmationDateHistory> PoConfirmationDateHistories { get; set; }
 
     }
 }

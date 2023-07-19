@@ -8,6 +8,7 @@ namespace Tips.Warehouse.Api.Entities
         [Key]
         public int Id { get; set; }
         public string PartNumber { get; set; }
+        public string? LotNumber { get; set; }
         public string MftrPartNumber { get; set; }
         public string Description { get; set; }
         public string ProjectNumber { get; set; }

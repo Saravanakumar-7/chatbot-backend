@@ -126,6 +126,7 @@ namespace Tips.Grin.Api.Controllers
                             {
                                 Id = grinParts.Id,
                                 ItemNumber = grinParts.ItemNumber,
+                                LotNumber = grinParts.LotNumber,
                                 GrinNumber = src.GrinNumber,
                                 GrinPartId = grinParts.Id,
                                 Qty = grinParts.Qty,
@@ -220,6 +221,7 @@ namespace Tips.Grin.Api.Controllers
                             {
                                 Id = grinParts.Id,
                                 ItemNumber = grinParts.ItemNumber,
+                                LotNumber = grinParts.LotNumber,
                                 GrinNumber = src.GrinNumber,
                                 GrinPartId = grinParts.Id,
                                 Qty = grinParts.Qty,
@@ -315,6 +317,7 @@ namespace Tips.Grin.Api.Controllers
                             {
                                 Id = grinParts.Id,
                                 ItemNumber = grinParts.ItemNumber,
+                                LotNumber = grinParts.LotNumber,
                                 GrinNumber = src.GrinNumber,
                                 GrinPartId = grinParts.Id,
                                 Qty = grinParts.Qty,
@@ -602,6 +605,7 @@ namespace Tips.Grin.Api.Controllers
                             var weightageCost = grinParts.UnitPrice + finalCost;
                             total = 0;
                             grinParts.WeightedAverage = weightageCost;
+                            grinParts.LotNumber = grinNo + grinParts.Id;
                             grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
                             grinPartsList.Add(grinParts);
 
@@ -645,6 +649,7 @@ namespace Tips.Grin.Api.Controllers
                         {
                             GrinInventoryDto grinInventoryDto = new GrinInventoryDto();
                             grinInventoryDto.PartNumber = parts.ItemNumber;
+                            grinInventoryDto.LotNumber = parts.LotNumber;
                             grinInventoryDto.MftrPartNumber = parts.MftrItemNumber;
                             grinInventoryDto.Description = parts.ItemDescription;
                             grinInventoryDto.ProjectNumber = project.ProjectNumber;
