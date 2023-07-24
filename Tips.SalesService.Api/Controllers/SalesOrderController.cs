@@ -1009,6 +1009,19 @@ namespace Tips.SalesService.Api.Controllers
             _salesOrderItemsRepository.SaveAsync();
             return Ok();
         }
+        //Update shoporder Qty in salesorder while create shoporder
+        [HttpPost]
+        public async Task<IActionResult> UpdateShopOrderQty(string salesOrderNumber,string projectNumber, string itemNumber,decimal releaseQty)
+        { 
+            IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderBySalesOrderNoandItemNo(salesOrderNumber, itemNumber , projectNumber);
+            var orderItem = salesOrderItems.FirstOrDefault();
+
+            orderItem.ShopOrderQty += releaseQty;
+            await _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+            _salesOrderItemsRepository.SaveAsync();
+             
+            return Ok();
+        }
 
         //Update Invoiced Value and DispatchQty Using Invoice 
         [HttpPost]

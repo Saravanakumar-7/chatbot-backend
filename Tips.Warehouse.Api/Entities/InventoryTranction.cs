@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Warehouse.Api.Entities
@@ -11,7 +12,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? PartNumber { get; set; }
          
         public string? MftrPartNumber { get; set; }
-         
+        public PartType ItemType { get; set; }
         public string? Description { get; set; }
          
         public string? ProjectNumber { get; set; }

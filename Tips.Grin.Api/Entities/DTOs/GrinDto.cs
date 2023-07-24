@@ -1,4 +1,5 @@
 ﻿using Entities.DTOs;
+using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -225,7 +226,7 @@ namespace Tips.Grin.Api.Entities.DTOs
          public string? Location { get; set; }
         public string? GrinNo { get; set; }
         public int? GrinPartId { get; set; }
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
         public string? GrinMaterialType { get; set; }
          public string? ReferenceID { get; set; }
         public string? ReferenceIDFrom { get; set; }
@@ -235,6 +236,8 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class GrinNoForIqcAndBinning
     {
         public string? GrinNumber { get; set; }
+        public int GrinId { get; set; }
+
     }
     public class GrinItemMasterEnggDto
     {

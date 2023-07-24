@@ -48,7 +48,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllBinningDetails([FromQuery] PagingParameter pagingParameter ,[FromQuery] SearchParams searchParams)
         {
-            ServiceResponse<IEnumerable<BinningDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningDto>>();
+            ServiceResponse<IEnumerable<GrinAndBinningDetailsDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinAndBinningDetailsDto>>();
 
             try
             {
@@ -65,7 +65,7 @@ namespace Tips.Grin.Api.Controllers
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all Binnings");
-                var result = _mapper.Map<IEnumerable<BinningDto>>(getAllBinnings);
+                var result = _mapper.Map<IEnumerable<GrinAndBinningDetailsDto>>(getAllBinnings);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Binnings";
                 serviceResponse.Success = true;
@@ -580,7 +580,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryObjectNew.Location = location.Location;
                                 inventoryObjectNew.GrinNo = binningDetail.GrinNumber;
                                 inventoryObjectNew.GrinPartId = grinId;
-                                inventoryObjectNew.PartType = "PurchasePart"; // we have to take parttype from grinparts model;
+                                inventoryObjectNew.PartType = grinPartsDetails.ItemType; // we have to take parttype from grinparts model;
                                 inventoryObjectNew.ReferenceID = Convert.ToString(grinId);
                                 inventoryObjectNew.ReferenceIDFrom = "GRIN";
 

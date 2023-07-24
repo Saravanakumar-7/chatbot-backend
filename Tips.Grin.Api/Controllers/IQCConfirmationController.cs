@@ -476,26 +476,53 @@ namespace Tips.Grin.Api.Controllers
                     iQCItemList.Add(iQCConfirmationItems);
 
                     //Inventory Update Code
-                    foreach ( var projectNo in grinPartsDetails.ProjectNumbers)
+                    foreach (var projectNo in grinPartsDetails.ProjectNumbers)
                     {
                         var grinNo = iQCCreate.GrinNumber;
                         var grinPartsId = projectNo.GrinPartsId;
                         var itemNo = iQCDto[i].ItemNumber;
                         var projectNos = projectNo.ProjectNumber;
-                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], 
+                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
                             "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", grinNo, "&GrinPartsId=",
                             grinPartsId, "&ItemNumber=", itemNo, "&ProjectNumber=", projectNos));
                         var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                         dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                         dynamic inventoryObject = inventoryObjectData.data;
-                        inventoryObject.Balance_Quantity = iQCDto[i].AcceptedQty;
-                        inventoryObject.Warehouse = "IQC";
-                        inventoryObject.Location = "IQC";
-                        inventoryObject.ReferenceIDFrom = "GRIN";
+                        decimal balanceQty = inventoryObject.balance_Quantity;
+
+                        if (inventoryObject.balance_Quantity <= iQCDto[i].AcceptedQty && inventoryObject.balance_Quantity !=0)
+                        {
+                            inventoryObject.Warehouse = "IQC";
+                            inventoryObject.Location = "IQC";
+                            inventoryObject.ReferenceIDFrom = "GRIN";
+                            iQCDto[i].AcceptedQty -= balanceQty;
+                         }
+                        if(inventoryObject.balance_Quantity >= iQCDto[i].AcceptedQty)
+                        {
+                            if (iQCDto[i].AcceptedQty == 0)
+                            {
+                                inventoryObject.balance_Quantity = iQCDto[i].AcceptedQty;
+                                //inventoryObject.isStockAvailable = false;
+                                inventoryObject.Warehouse = "IQC";
+                                inventoryObject.Location = "IQC";
+                                inventoryObject.ReferenceIDFrom = "GRIN";
+                                iQCDto[i].AcceptedQty = 0;
+                            }
+                            else
+                            {
+                                inventoryObject.balance_Quantity = iQCDto[i].AcceptedQty;
+                                //inventoryObject.Balance_Quantity = 0;
+                                inventoryObject.Warehouse = "IQC";
+                                inventoryObject.Location = "IQC";
+                                inventoryObject.ReferenceIDFrom = "GRIN";
+                                iQCDto[i].AcceptedQty = 0;
+                            }
+                            
+                        }       
 
                         var json = JsonConvert.SerializeObject(inventoryObject);
                         var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"], 
+                        var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
                             "UpdateInventory?id=", inventoryObject.id), data);
                     }
 

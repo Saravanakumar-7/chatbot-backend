@@ -35,16 +35,58 @@ namespace Tips.Grin.Api.Repository
             var result = await Create(binning);
             return result;
         }
-        public async Task<PagedList<Binning>> GetAllBinningDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        //public async Task<PagedList<Binning>> GetAllBinningDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        //{
+        public async Task<PagedList<GrinAndBinningDetailsDto>> GetAllBinningDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
+            var grinDetails = from e in _tipsGrinDbContext.Grins
+                              join d in _tipsGrinDbContext.Binnings on e.GrinNumber equals d.GrinNumber into dept
+                              from Binnings in dept.DefaultIfEmpty()
+                              select new GrinAndBinningDetailsDto
+                              {
+                                  GrinNumber = e.GrinNumber,
+                                  InvoiceNumber = e.InvoiceNumber,
+                                  VendorName = e.VendorName,
+                                  LastModifiedOn = Binnings.LastModifiedOn,
+                                  LastModifiedBy = Binnings.LastModifiedBy
 
-            var getAllBinningDetails = FindAll()
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue))));
-                 
-                return PagedList<Binning>.ToPagedList(getAllBinningDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+                              };
 
+            if (!string.IsNullOrWhiteSpace(searchParams.SearchValue))
+            {
+                string searchTerm = searchParams.SearchValue.Trim();
 
+                grinDetails = grinDetails.Where(dto =>
+                    dto.GrinNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    dto.InvoiceNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    dto.VendorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                );
+            }
+
+            return PagedList<GrinAndBinningDetailsDto>.ToPagedList(grinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        //public async Task<PagedList<GrinAndBinningDetailsDto>> GetAllBinningDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        //{
+
+
+        //    var grinDetails = from e in _tipsGrinDbContext.Grins
+        //                      join d in _tipsGrinDbContext.Binnings on e.GrinNumber equals d.GrinNumber into dept
+        //                      from Binnings in dept.DefaultIfEmpty()
+        //                      select new GrinAndBinningDetailsDto
+        //                      {
+        //                          GrinNumber = e.GrinNumber,
+        //                          InvoiceNumber = e.InvoiceNumber,
+        //                          VendorName = e.VendorName
+        //                      };
+
+        //    return PagedList<GrinAndBinningDetailsDto>.ToPagedList(grinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //    //var getAllBinningDetails = FindAll()
+        //    //   .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue))));
+
+        //    //   return PagedList<Binning>.ToPagedList(getAllBinningDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+
+        //}
         public async Task<IEnumerable<Binning>> GetBinningDetailsByGrinNo(string grinNo)
         {
             var binningDetailsByGrinNo = await FindByCondition(x => x.GrinNumber == grinNo).ToListAsync();

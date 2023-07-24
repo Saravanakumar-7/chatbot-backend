@@ -289,7 +289,7 @@ namespace Tips.Warehouse.Api.Controllers
                             inventory.Location = "FG";
                             inventory.GrinNo = returnOpenDeliveryOrderParts.ODONumber;
                             inventory.GrinPartId = 0;
-                            inventory.PartType = "";
+                            //inventory.PartType = "";
                             inventory.GrinMaterialType = "";
                             inventory.ReferenceID = returnOpenDeliveryOrderParts.ODONumber;
                             inventory.ReferenceIDFrom = "From BTO Delivery Order";

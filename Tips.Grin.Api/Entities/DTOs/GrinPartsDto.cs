@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,7 +19,9 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public string? ItemNumber { get; set; }
         public string? LotNumber { get; set; }
-        public int GrinPartId { get; set; }  
+        public int GrinPartId { get; set; }
+
+        public PartType ItemType { get; set; }
 
         [Required]
         [Precision(18, 3)]
@@ -114,7 +117,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
 
         [Precision(18, 3)]
-        public decimal? Qty { get; set; } 
+        public decimal? Qty { get; set; }
+        public PartType ItemType { get; set; }
 
         [Required(ErrorMessage = "MftrItemNumber is required")]
         public string MftrItemNumber { get; set; }
@@ -172,6 +176,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? PONumber { get; set; }
 
         public string? ItemNumber { get; set; }
+        public PartType ItemType { get; set; }
 
         [Precision(18, 3)]
         public decimal? Qty { get; set; }
@@ -301,7 +306,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? UTGST { get; set; }
-        [NotMapped]
+         
         public string? DrawingNo { get; set; }
         [NotMapped]
         public string? DocRet { get; set; }

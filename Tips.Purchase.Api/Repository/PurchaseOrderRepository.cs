@@ -339,7 +339,7 @@ namespace Tips.Purchase.Api.Repository
 
 
             IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalIINameList = await _tipsPurchaseDbContext.PurchaseOrders
-            .Where(x => x.POApprovalII == false && x.IsDeleted == false && x.IsModified == false)
+            .Where(x => x.POApprovalII == false && x.POApprovalI == true && x.IsDeleted == false && x.IsModified == false)
             .GroupBy(x => x.PONumber)
             .Select(g => new PurchaseOrderIdNameListDto()
             {
@@ -354,24 +354,46 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<PagedList<PurchaseOrder>> GetAllPurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
+            var purchaseOrderDetails = FindAll()
+    .Where(inv => (
+        string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
+        inv.VendorName.Contains(searchParams.SearchValue) ||
+        inv.PONumber.Contains(searchParams.SearchValue) ||
+        inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue)) ||
+        inv.PODate.Equals(int.Parse(searchParams.SearchValue))
+    ))
+    .OrderByDescending(on => on.Id)
+    .Include(o => o.POFiles)
+    .Include(t => t.POItems)
+        .ThenInclude(x => x.POAddprojects)
+    .Include(m => m.POItems)
+        .ThenInclude(i => i.POAddDeliverySchedules)
+    .Include(itm => itm.POItems)
+        .ThenInclude(po => po.POSpecialInstructions)
+    .Include(itm => itm.POItems)
+        .ThenInclude(po => po.POConfirmationDates)
+    .Include(itm => itm.POItems)
+        .ThenInclude(po => po.PrDetails)
+    .Include(itm => itm.PoIncoTerms);
 
-            var purchaseOrderDetails = FindAll().OrderByDescending(on => on.Id)
+            //var purchaseOrderDetails = FindAll().OrderByDescending(on => on.Id)
 
-               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue)
-               || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
-               || inv.PODate.Equals(int.Parse(searchParams.SearchValue)))))
-                                .Include(o => o.POFiles)
-                               .Include(t => t.POItems)
-                               .ThenInclude(x => x.POAddprojects)
-                               .Include(m => m.POItems)
-                               .ThenInclude(i => i.POAddDeliverySchedules)
-                               .Include(itm => itm.POItems)
-                               .ThenInclude(po => po.POSpecialInstructions)
-                               .Include(itm => itm.POItems)
-                               .ThenInclude(po => po.POConfirmationDates)
-                               .Include(itm => itm.POItems)
-                                .ThenInclude(po => po.PrDetails)
-                                .Include(itm => itm.PoIncoTerms);
+            //   .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue)
+            //   || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
+            //   || inv.PODate.Equals(int.Parse(searchParams.SearchValue)))))
+            //                    .Include(o => o.POFiles)
+            //                   .Include(t => t.POItems)                               
+            //                   .Include(t => t.POItems)
+            //                   .ThenInclude(x => x.POAddprojects)
+            //                   .Include(m => m.POItems)
+            //                   .ThenInclude(i => i.POAddDeliverySchedules)
+            //                   .Include(itm => itm.POItems)
+            //                   .ThenInclude(po => po.POSpecialInstructions)
+            //                   .Include(itm => itm.POItems)
+            //                   .ThenInclude(po => po.POConfirmationDates)
+            //                   .Include(itm => itm.POItems)
+            //                    .ThenInclude(po => po.PrDetails)
+            //                    .Include(itm => itm.PoIncoTerms);
 
             return PagedList<PurchaseOrder>.ToPagedList(purchaseOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
@@ -485,7 +507,7 @@ namespace Tips.Purchase.Api.Repository
             Status[] status = { Status.Open, Status.PartiallyClosed };
 
             IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
-                           .Where(x => x.VendorId == vendorId && status.Contains(x.Status)).Select(x => new PurchaseOrderIdNameListDto()
+                           .Where(x => x.VendorId == vendorId && status.Contains(x.Status) && x.POApprovalII == true).Select(x => new PurchaseOrderIdNameListDto()
                            {
                                Id = x.Id,
                                PONumber = x.PONumber

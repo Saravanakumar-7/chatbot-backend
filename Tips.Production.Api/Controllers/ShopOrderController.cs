@@ -11,6 +11,7 @@ using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
+using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 
 namespace Tips.Production.Api.Controllers
 {
@@ -406,7 +407,14 @@ namespace Tips.Production.Api.Controllers
                     for (int i = 0; i < shopOrderDto.Count; i++)
                     {
                         ShopOrderItem shopOrderItemDetail = _mapper.Map<ShopOrderItem>(shopOrderDto[i]);
+
+                        var salesObjectResult = await _httpClient.GetAsync(string.Concat(_config["SalesOrderAPI"],
+                             "UpdateShopOrderQty?", "salesOrderNumber=", shopOrderDto[i].SalesOrderNumber,
+                             "projectNumber=", shopOrderDto[i].ProjectNumber,"&itemNumber=",
+                              shopOrderDto[i].FGItemNumber, "&releaseQty=", shopOrderDto[i].ReleaseQty));
+
                         ShoporderItemList.Add(shopOrderItemDetail);
+
                     }
                 }
                 shopOrder.ShopOrderItems = ShoporderItemList;
@@ -430,6 +438,7 @@ namespace Tips.Production.Api.Controllers
                 await _shopOrderRepository.CreateShopOrder(shopOrder);
 
                 _shopOrderRepository.SaveAsync();
+                 
 
                 // After Shop Order Creation Material Issue also should be created.
                 await CreateMaterialIssueDetails(shopOrder);

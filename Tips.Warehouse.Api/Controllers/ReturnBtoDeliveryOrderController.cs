@@ -330,7 +330,7 @@ namespace Tips.Warehouse.Api.Controllers
                             inventory.Location = "FG";
                             inventory.GrinNo= returnBtoDeliveryOrderItems.BTONumber;
                             inventory.GrinPartId = 0;
-                            inventory.PartType = "";
+                            //inventory.PartType = "";
                             inventory.GrinMaterialType = "";
                             inventory.ReferenceID = returnBtoDeliveryOrderItems.BTONumber;
                             inventory.ReferenceIDFrom = "From BTO Delivery Order";

@@ -393,7 +393,7 @@ namespace Tips.Warehouse.Api.Controllers
                             inventory.Location = openDeliveryOrderItemsDtoList[i].Location;
                             inventory.GrinNo = openDeliveryorder.OpenDONumber;
                             inventory.GrinPartId = 0;
-                            inventory.PartType = "";
+                            inventory.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
                             inventory.GrinMaterialType = "";
                             inventory.ReferenceID = openDeliveryorder.OpenDONumber;
                             inventory.ReferenceIDFrom = "Create Open Delivery Order";
@@ -420,6 +420,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTranction.Unit = "Bangalore";
                         inventoryTranction.CreatedBy = "Admin";
                         inventoryTranction.LastModifiedBy = "Admin";
+                        inventoryTranction.ItemType = openDeliveryOrderItemsDtoList[i].ItemType;
                         inventoryTranction.LastModifiedOn = DateTime.Now;
                         inventoryTranction.ModifiedStatus = false;
                         inventoryTranction.From_Location = openDeliveryOrderItemsDtoList[i].Location;
