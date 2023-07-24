@@ -449,7 +449,7 @@ namespace Tips.Grin.Api.Controllers
                     var grinPartId = iQCDto[i].GrinPartId;
                    
                     var grinPartsDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinPartId);
-                    if (iQCDto[i].GrinPartId != grinPartsDetails.Id)
+                    if (grinPartsDetails != null)
                     {
                         _logger.LogError($"Invalid Grin Part Id {grinPartId}");
                         serviceResponse.Data = null;
@@ -476,6 +476,7 @@ namespace Tips.Grin.Api.Controllers
                     iQCItemList.Add(iQCConfirmationItems);
 
                     //Inventory Update Code
+                    decimal acceptedQty = iQCDto[i].AcceptedQty;
                     foreach (var projectNo in grinPartsDetails.ProjectNumbers)
                     {
                         var grinNo = iQCCreate.GrinNumber;
@@ -488,42 +489,43 @@ namespace Tips.Grin.Api.Controllers
                         var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                         dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                         dynamic inventoryObject = inventoryObjectData.data;
-                        decimal balanceQty = inventoryObject.balance_Quantity;
-
-                        if (inventoryObject.balance_Quantity <= iQCDto[i].AcceptedQty && inventoryObject.balance_Quantity !=0)
+                        if(inventoryObject !=null)
                         {
-                            inventoryObject.Warehouse = "IQC";
-                            inventoryObject.Location = "IQC";
-                            inventoryObject.ReferenceIDFrom = "GRIN";
-                            iQCDto[i].AcceptedQty -= balanceQty;
-                         }
-                        if(inventoryObject.balance_Quantity >= iQCDto[i].AcceptedQty)
-                        {
-                            if (iQCDto[i].AcceptedQty == 0)
-                            {
-                                inventoryObject.balance_Quantity = iQCDto[i].AcceptedQty;
-                                //inventoryObject.isStockAvailable = false;
-                                inventoryObject.Warehouse = "IQC";
-                                inventoryObject.Location = "IQC";
-                                inventoryObject.ReferenceIDFrom = "GRIN";
-                                iQCDto[i].AcceptedQty = 0;
-                            }
-                            else
-                            {
-                                inventoryObject.balance_Quantity = iQCDto[i].AcceptedQty;
-                                //inventoryObject.Balance_Quantity = 0;
-                                inventoryObject.Warehouse = "IQC";
-                                inventoryObject.Location = "IQC";
-                                inventoryObject.ReferenceIDFrom = "GRIN";
-                                iQCDto[i].AcceptedQty = 0;
-                            }
+                            decimal balanceQty = inventoryObject.balance_Quantity;
                             
-                        }       
+                            if (inventoryObject.balance_Quantity <= acceptedQty && inventoryObject.balance_Quantity != 0)
+                            {
+                                inventoryObject.warehouse = "IQC";
+                                inventoryObject.location = "IQC";
+                                inventoryObject.referenceIDFrom = "GRIN";
+                                acceptedQty -= balanceQty;
+                                
+                            }
+                            else if (inventoryObject.balance_Quantity > acceptedQty)
+                            {
+                                if (acceptedQty == 0)
+                                {
+                                    inventoryObject.balance_Quantity = acceptedQty;
+                                    inventoryObject.warehouse = "IQC";
+                                    inventoryObject.location = "IQC";
+                                    inventoryObject.referenceIDFrom = "GRIN";
+                                    inventoryObject.isStockAvailable = false;
+                                }
+                                else
+                                {
+                                    inventoryObject.balance_Quantity = acceptedQty;
+                                    inventoryObject.warehouse = "IQC";
+                                    inventoryObject.location = "IQC";
+                                    inventoryObject.referenceIDFrom = "GRIN";
+                                    acceptedQty = 0;
+                                }
+                            }
 
-                        var json = JsonConvert.SerializeObject(inventoryObject);
-                        var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
-                            "UpdateInventory?id=", inventoryObject.id), data);
+                            var json = JsonConvert.SerializeObject(inventoryObject);
+                            var data = new StringContent(json, Encoding.UTF8, "application/json");
+                            var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
+                                "UpdateInventory?id=", inventoryObject.id), data);
+                        }      
                     }
 
                     ////update accepted qty and rejected qty in grin model

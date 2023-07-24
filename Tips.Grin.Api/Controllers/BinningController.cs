@@ -546,8 +546,8 @@ namespace Tips.Grin.Api.Controllers
                             if (j == 0)
                             {
                                 var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                              "GetInventoryDetailsByGrinNo?", "GrinNo=", binningDetail.GrinNumber, "&ItemNumber=",
-                               binningsItemsDto[i].ItemNumber, "&ProjectNumber=", location.ProjectNumber));
+                              "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", binningDetail.GrinNumber, "GrinPartsId=", binningsItemsDto[i].GrinPartId, 
+                              "&ItemNumber=",binningsItemsDto[i].ItemNumber, "&ProjectNumber=", location.ProjectNumber));
 
                                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
@@ -555,9 +555,7 @@ namespace Tips.Grin.Api.Controllers
 
                                 inventoryObject.balance_Quantity = location.Qty;
                                 inventoryObject.warehouse = location.Warehouse;
-                                inventoryObject.projectNumbers = location.ProjectNumber;
                                 inventoryObject.location = location.Location;
-                                inventoryObject.isStockAvailable = true;
                                 var json = JsonConvert.SerializeObject(inventoryObject);
                                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                                 var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
