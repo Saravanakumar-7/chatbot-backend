@@ -132,9 +132,9 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<OpenDeliveryOrder> GetOpenDeliveryOrderById(int id)
         {
-            var getOpenDeliveryOrderDetailsById = await _tipsWarehouseDbContext.OpenDeliveryOrders.Where(x => x.Id == id)
+            var getOpenDeliveryOrderDetailsById = await _tipsWarehouseDbContext.OpenDeliveryOrders
+                                .Where(x => x.Id == id)
                                .Include(x => x.OpenDeliveryOrderParts)
-
                                .FirstOrDefaultAsync();
 
             return getOpenDeliveryOrderDetailsById;

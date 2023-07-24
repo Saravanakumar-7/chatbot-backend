@@ -21,7 +21,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string Unit { get; set; }
         public string? GrinNo { get; set; }
         public int? GrinPartId { get; set; }
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
         public string? GrinMaterialType { get; set; } = "Bought Out";
         public string? ReferenceID { get; set; }
         public string? ReferenceIDFrom { get; set; }
@@ -56,7 +56,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? Location { get; set; }
         public string? GrinNo { get; set; }
         public int? GrinPartId { get; set; }
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
         public string? GrinMaterialType { get; set; }
         [Required]
         public string? ReferenceID { get; set; }
@@ -84,7 +84,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? Location { get; set; }
         public string? GrinNo { get; set; }
         public int? GrinPartId { get; set; }
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
         public string? GrinMaterialType { get; set; } = "Bought Out";
         public string? ReferenceID { get; set; }
         public string? ReferenceIDFrom { get; set; }
@@ -106,7 +106,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? UOM { get; set; }
         public string Warehouse { get; set; }
         public string? Location { get; set; }
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
 
 
     }

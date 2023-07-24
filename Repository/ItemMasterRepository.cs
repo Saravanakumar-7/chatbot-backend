@@ -61,20 +61,77 @@ namespace Repository
             .ToListAsync();
             return allActiveCompanyMasters;
         }
-
-        public async Task<PagedList<ItemMaster>> GetAllItemMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<PagedList<ItemMaster>> GetAllItemMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)     // inv.ItemNumber.Contains(searchParams.SearchValue)
         {
-            var itemmasterDetails = FindAll().OrderByDescending(x => x.Id)
-                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-             inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue))
-             || inv.Commodity.Contains(searchParams.SearchValue) || inv.MaterialGroup.Contains(searchParams.SearchValue))))
-                          .Include(t => t.ItemmasterAlternate)
-                         .Include(t => t.ItemMasterApprovedVendor)
-                          .Include(d => d.ItemMasterRouting)
-                          .Include(d => d.ItemMasterWarehouse);
+            int searchValueInt;
+            bool isSearchValueInt = int.TryParse(searchParams.SearchValue, out searchValueInt);
 
-            return PagedList<ItemMaster>.ToPagedList(itemmasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var itemMasterDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv =>
+                    (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
+                    inv.ItemNumber.Contains(searchParams.SearchValue) ||
+                    inv.Description.Contains(searchParams.SearchValue) ||
+                     inv.Commodity.Contains(searchParams.SearchValue) ||
+                     inv.MaterialGroup.Contains(searchParams.SearchValue)))
+                //(Enum.TryParse(searchParams.SearchValue, out Ite itemType) && inv.ItemType == itemType)))
+
+                .Include(x => x.ItemmasterAlternate)
+                .Include(M => M.ItemMasterWarehouse)
+                .Include(M => M.ItemMasterApprovedVendor)
+                .Include(M => M.ItemMasterRouting);
+
+
+
+
+            return PagedList<ItemMaster>.ToPagedList(itemMasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        //    public async Task<PagedList<ItemMaster>> GetAllItemMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //    {
+        //    int? searchValueAsInt = null;
+        //    if (!string.IsNullOrWhiteSpace(searchParams.SearchValue) && int.TryParse(searchParams.SearchValue, out int intValue))
+        //    {
+        //        searchValueAsInt = intValue;
+        //    }
+
+        //    // Start with the query for itemmasters
+        //    var query = FindAll().AsQueryable();
+
+        //    // Apply filtering
+        //    if (!string.IsNullOrWhiteSpace(searchParams.SearchValue))
+        //    {
+        //        query = query.Where(inv =>
+        //            inv.ItemNumber.Contains(searchParams.SearchValue) ||
+        //            inv.Description.Contains(searchParams.SearchValue) ||
+        //            (searchValueAsInt != null && inv.ItemType.Equals(searchValueAsInt)) ||
+        //            inv.Commodity.Contains(searchParams.SearchValue) ||
+        //            inv.MaterialGroup.Contains(searchParams.SearchValue)
+        //        );
+        //    }
+
+        //    // Apply ordering
+        //    query = query.OrderByDescending(x => x.Id);
+
+        //    // Include related entities
+        //    query = query
+        //        .Include(t => t.ItemmasterAlternate)
+        //        .Include(t => t.ItemMasterApprovedVendor)
+        //        .Include(d => d.ItemMasterRouting)
+        //        .Include(d => d.ItemMasterWarehouse);
+
+        //    // Execute the query and return the paged list
+        //    return PagedList<ItemMaster>.ToPagedList(query, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+        //    //var itemmasterDetails = FindAll().OrderByDescending(x => x.Id)
+        //    //     .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
+        //    // inv.Description.Contains(searchParams.SearchValue) || inv.ItemType.Equals(int.Parse(searchParams.SearchValue))
+        //    // || inv.Commodity.Contains(searchParams.SearchValue) || inv.MaterialGroup.Contains(searchParams.SearchValue))))
+        //    //              .Include(t => t.ItemmasterAlternate)
+        //    //             .Include(t => t.ItemMasterApprovedVendor)
+        //    //              .Include(d => d.ItemMasterRouting)
+        //    //              .Include(d => d.ItemMasterWarehouse);
+
+        //    //return PagedList<ItemMaster>.ToPagedList(itemmasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
 
         public async Task<IEnumerable<ItemMaster>> SearchItemMasterDate([FromQuery] SearchDateParamess searchDateParam)
         {

@@ -21,7 +21,7 @@ namespace Tips.Warehouse.Api.Entities
         public string Location { get; set; }
         public decimal LocationStock { get; set; }
         public decimal DispatchQty { get; set; }
-        public string Remarks { get; set; }
+        public string? Remarks { get; set; }
         public string? SerialNo { get; set; }
         public bool IsActive { get; set; } = true;
         public string? CreatedBy { get; set; }

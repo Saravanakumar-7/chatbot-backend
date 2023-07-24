@@ -17,6 +17,8 @@ using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
 using System.Data.SqlClient;
 using System.Linq;
+using Entities.Enums;
+
 namespace Tips.Warehouse.Api.Repository
 {
     public class InventoryRepository : RepositoryBase<Inventory>, IInventoryRepository
@@ -492,19 +494,42 @@ namespace Tips.Warehouse.Api.Repository
             string result = $"NaterialIssue details of {inventory.Id} is deleted successfully!";
             return result;
         }
+       public async Task<PagedList<Inventory>> GetAllInventory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+         {
+            var query = FindAll();
+            if (!string.IsNullOrWhiteSpace(searchParams.SearchValue))
+            {
+                string searchTerm = searchParams.SearchValue.Trim();
 
-        public async Task<PagedList<Inventory>> GetAllInventory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
-        {
-            var getAllInventory = FindAll().OrderByDescending(x => x.Id)
-                   .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProjectNumber.Contains(searchParams.SearchValue) ||
-                   inv.PartNumber.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue)
-                   || inv.MftrPartNumber.Contains(searchParams.SearchValue) || inv.Warehouse.Contains(searchParams.SearchValue) || inv.PartType.Contains(searchParams.SearchValue)
-                   || inv.Location.Contains(searchParams.SearchValue))));
+                query = query.Where(inv =>
+                    inv.ProjectNumber.Contains(searchTerm) ||
+                    inv.PartNumber.Contains(searchTerm) ||
+                    inv.Description.Contains(searchTerm) ||
+                    inv.MftrPartNumber.Contains(searchTerm) ||
+                    inv.Warehouse.Contains(searchTerm) ||
+                    inv.PartType.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    inv.Location.Contains(searchTerm)
+                );
+            }
 
-            return PagedList<Inventory>.ToPagedList(getAllInventory, pagingParameter.PageNumber, pagingParameter.PageSize);
-           
+            var sortedQuery = query.OrderByDescending(x => x.Id);
 
+            return PagedList<Inventory>.ToPagedList(sortedQuery, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
+        //public async Task<PagedList<Inventory>> GetAllInventory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        //{
+        //    var getAllInventory = FindAll().OrderByDescending(x => x.Id)
+        //           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProjectNumber.Contains(searchParams.SearchValue) ||
+        //           inv.PartNumber.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue)
+        //           || inv.MftrPartNumber.Contains(searchParams.SearchValue) || inv.Warehouse.Contains(searchParams.SearchValue) 
+        //           || inv.PartType.Contains(searchParams.SearchValue)
+        //           || inv.Location.Contains(searchParams.SearchValue))));
+
+        //    return PagedList<Inventory>.ToPagedList(getAllInventory, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+
+        //}
 
         public async Task<Inventory> GetInventoryDetailsByGrinNo(string GrinNo, string ItemNumber, string ProjectNumber)
         {
@@ -555,13 +580,14 @@ namespace Tips.Warehouse.Api.Repository
             return inventoryDetail;
         }
 
-        public async Task<Inventory> GetInventoryDetailsByItemNoandPartType(string ItemNumber, string PartType)
-        {
-            var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == ItemNumber && x.PartType == PartType && x.IsStockAvailable == true)
-                          .FirstOrDefaultAsync();
+        //public async Task<Inventory> GetInventoryDetailsByItemNoandPartType(string ItemNumber, int PartType)
+        //{
+        //    var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == ItemNumber 
+        //    && x.PartType == PartType && x.IsStockAvailable == true)
+        //                  .FirstOrDefaultAsync();
 
-            return inventoryDetail;
-        }
+        //    return inventoryDetail;
+        //}
 
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandPartTypes(string ItemNumber)
         {
@@ -648,11 +674,19 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<Inventory> GetInventoryFGDetailsByItemNumber(string ItemNumber)
         {
-            var partTypes = new string[] { "FG", "TG","FRU" };
+            //var partTypes = new string[] { "FG", "TG","FRU" };
           
+            //var getSalesOrderDetailsBy = await _tipsWarehouseDbContext.Inventory
+            //     .Where(x => x.PartNumber == ItemNumber && partTypes.Contains(x.PartType) && x.IsStockAvailable == true)
+            //              .FirstOrDefaultAsync();
+
+            //return getSalesOrderDetailsBy;
+
+            var partTypes = new PartType[] { PartType.FG, PartType.TG, PartType.FRU };
+
             var getSalesOrderDetailsBy = await _tipsWarehouseDbContext.Inventory
-                 .Where(x => x.PartNumber == ItemNumber && partTypes.Contains(x.PartType) && x.IsStockAvailable == true)
-                          .FirstOrDefaultAsync();
+                .Where(x => x.PartNumber == ItemNumber && partTypes.Contains(x.PartType) && x.IsStockAvailable)
+                .FirstOrDefaultAsync();
 
             return getSalesOrderDetailsBy;
         }

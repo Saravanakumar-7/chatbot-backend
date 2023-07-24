@@ -21,6 +21,8 @@ namespace Tips.Purchase.Api.Entities
         public string? PONumber { get; set; }
 
         public decimal BalanceQty { get; set; }
+
+        [Precision(13, 3)]
         public decimal ReceivedQty { get; set; }
 
         public PartType? PartType { get; set; }

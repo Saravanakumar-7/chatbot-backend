@@ -220,7 +220,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<rfqEnggItemDetailsForQuoteDto>> GetAllRfqEnggDetailsByRfqNo(string rfqNumber)
         {
-
+           
             //    var rfqEnggId = await _tipsSalesServiceDbContext.RfqEnggs
             //      .Where(x => x.RFQNumber == rfqNumber)
             //        .OrderByDescending(x => x.RevisionNumber)
@@ -300,6 +300,12 @@ namespace Tips.SalesService.Api.Repository
 
                 foreach (var rfqItem in items)
                 {
+
+                    //var itemPriceList = _tipsSalesServiceDbContext.ReleaseLps
+                    //    .Where(d => d.RLpItemNo == rfqItem.ItemNumber)
+                    //    .OrderByDescending(d => d.CreatedOn)
+                    //    .FirstOrDefault();
+
                     var itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
                         .Where(d => d.ItemNumber == rfqItem.ItemNumber)
                         .OrderByDescending(d => d.CreatedOn)

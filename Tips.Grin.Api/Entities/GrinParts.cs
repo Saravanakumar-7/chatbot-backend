@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,8 @@ namespace Tips.Grin.Api.Entities
 
         public string? ItemNumber { get; set; }
         public string? LotNumber { get; set; }
+
+        public PartType ItemType { get; set; }
 
         [Required]
         [Precision(18, 3)]

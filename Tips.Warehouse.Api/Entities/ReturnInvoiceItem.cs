@@ -18,7 +18,7 @@ namespace Tips.Warehouse.Api.Entities
 
         public string? UOM{ get; set; }
 
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
 
 
         [Precision(13, 3)]

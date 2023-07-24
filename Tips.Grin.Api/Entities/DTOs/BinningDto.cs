@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities;
+using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Grin.Api.Entities.DTOs
@@ -114,7 +116,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? Location { get; set; }
         public string? GrinNo { get; set; }
         public int? GrinPartId { get; set; }
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
         public string? GrinMaterialType { get; set; }
         [Required]
         public string? ReferenceID { get; set; }
@@ -161,6 +163,15 @@ namespace Tips.Grin.Api.Entities.DTOs
 
 
         public List<BinningItemsReportDto>? BinningItems { get; set; }
+
+    }
+    public class GrinAndBinningDetailsDto
+    {
+        public string? GrinNumber { get; set; }
+        public string VendorName { get; set; }
+        public string InvoiceNumber { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
 
     }
 }

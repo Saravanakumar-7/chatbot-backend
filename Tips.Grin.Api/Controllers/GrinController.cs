@@ -26,6 +26,7 @@ using Azure.Core;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.Authorization;
 using static Org.BouncyCastle.Math.EC.ECCurve;
+using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -420,25 +421,30 @@ namespace Tips.Grin.Api.Controllers
                         GrinPartsItemMasterEnggDto grinPartsItemMasterEnggDto = _mapper.Map<GrinPartsItemMasterEnggDto>(GrinpartsDetails);
                         grinPartsItemMasterEnggDto.ProjectNumbers = _mapper.Map<List<ProjectNumbersDto>>(GrinpartsDetails.ProjectNumbers);
 
-                        // Add ItemMasterEnggDetails in GrinParts
-                        var ItemNumber = grinPartsItemMasterEnggDto.ItemNumber;
+                        //Add ItemMasterEnggDetails in GrinParts
+                       var ItemNumber = grinPartsItemMasterEnggDto.ItemNumber;
                         var itemMasterDetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
                             "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
 
                         var inventoryObjectString = await itemMasterDetails.Content.ReadAsStringAsync();
                         dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        dynamic inventoryObject = inventoryObjectData;
+                        //dynamic inventoryObject = new List<dynamic>();
+                        dynamic inventoryObject = inventoryObjectData.data;
+                        //inventoryObject = inventoryObjectData;
+                        //foreach (var item in inventoryObject)
+                        //{
+                            grinPartsItemMasterEnggDto.DrawingNo = inventoryObject.drawingNo;
+                            grinPartsItemMasterEnggDto.DocRet = inventoryObject.docRet;
+                            grinPartsItemMasterEnggDto.RevNo = inventoryObject.revNo;
+                            grinPartsItemMasterEnggDto.IsCocRequired = inventoryObject.isCocRequired;
+                            grinPartsItemMasterEnggDto.IsRohsItem = inventoryObject.isRohsItem;
+                            grinPartsItemMasterEnggDto.IsShelfLife = inventoryObject.isShelfLife;
+                            grinPartsItemMasterEnggDto.IsReachItem = inventoryObject.isReachItem;
+                            grinPartsItemMasterEnggDto.FileUpload = inventoryObject.fileUpload.ToObject<List<DocumentUpload>>();
 
-                        grinPartsItemMasterEnggDto.DrawingNo = inventoryObject.drawingNo;
-                        grinPartsItemMasterEnggDto.DocRet = inventoryObject.docRet;
-                        grinPartsItemMasterEnggDto.RevNo = inventoryObject.revNo;
-                        grinPartsItemMasterEnggDto.IsCocRequired = inventoryObject.isCocRequired;
-                        grinPartsItemMasterEnggDto.IsRohsItem = inventoryObject.isRohsItem;
-                        grinPartsItemMasterEnggDto.IsShelfLife = inventoryObject.isShelfLife;
-                        grinPartsItemMasterEnggDto.IsReachItem = inventoryObject.isReachItem;
-                        grinPartsItemMasterEnggDto.FileUpload = inventoryObject.fileUpload.ToObject<List<DocumentUpload>>();
+                            grinPartsItemMasterEnggList.Add(grinPartsItemMasterEnggDto);
+                        //}
 
-                        grinPartsItemMasterEnggList.Add(grinPartsItemMasterEnggDto);                       
                     }
 
                     grinItemMasterEnggDto.GrinParts = grinPartsItemMasterEnggList;
@@ -515,8 +521,9 @@ namespace Tips.Grin.Api.Controllers
                 grins.GrinNumber = grinNo;
 
                 var grinPartsDto = grinPostDto.GrinParts;
-                
-                var grinPartsList = new List<GrinParts>();
+
+                List<GrinParts> grinPartsList  = new List<GrinParts>();
+                //var grinPartsList = new List<GrinParts>();
                 var grinDocumentUploadDtoList = new List<DocumentUpload>();
                 var grinPartsDocumentUploadDtoList = new List<DocumentUpload>();
 
@@ -598,6 +605,14 @@ namespace Tips.Grin.Api.Controllers
                     {
                         for (int i = 0; i < grinPartsDto.Count; i++)
                         {
+                            //get itemtype from itemmaster model
+                            //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
+                            // "GetItemMasterByItemNumber?", "&ItemNumber=",grinPartsDto[i].ItemNumber));
+
+                            //var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                            //dynamic itemmasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                            //dynamic itemMasterObject = itemmasterObjectData.data;
+
                             GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
                             total = grinParts.Qty * grinParts.UnitPrice;
                             var Cost = totalGrinCost * total / sumOfTotal;
@@ -605,10 +620,32 @@ namespace Tips.Grin.Api.Controllers
                             var weightageCost = grinParts.UnitPrice + finalCost;
                             total = 0;
                             grinParts.WeightedAverage = weightageCost;
+                            grinParts.LotNumber = grinNo + grinParts.Id;
+                            grinParts.ItemType = grinPartsDto[i].ItemType;
                             grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
                             grinPartsList.Add(grinParts);
 
                         }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < grinPartsDto.Count; i++)
+                        {
+                            GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
+                            //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
+                            //"GetItemMasterByItemNumber?", "ItemNumber=", grinParts.ItemNumber));
+
+                            //var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                            //dynamic itemmasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                            ////dynamic itemMasterObject = itemmasterObjectData.data;
+
+                            grinParts.LotNumber = grinNo + grinParts.Id;
+                            grinParts.ItemType = grinPartsDto[i].ItemType;
+                            grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
+                            grinPartsList.Add(grinParts);
+
+                        }
+
                     }
                 }
                 grins.GrinParts = grinPartsList;
@@ -638,16 +675,7 @@ namespace Tips.Grin.Api.Controllers
                 await _repository.CreateGrin(grins);
                 _repository.SaveAsync();
 
-                if (grins.GrinParts != null)
-                {
-                    foreach (var grinPart in grins.GrinParts)
-                    {
-                        var grinPartsId = await _grinPartsRepository.GetGrinPartsById(grinPart.Id);
-                        grinPartsId.LotNumber = grinNo + grinPartsId.Id;
-                        await _grinPartsRepository.UpdateGrinQty(grinPartsId);
-                        _grinPartsRepository.SaveAsync();
-                    }
-                }
+
 
                 foreach (var parts in grinPartsList)
                 {
@@ -667,7 +695,7 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryDto.Location = "GRIN";
                             grinInventoryDto.GrinNo = grinNo;
                             grinInventoryDto.GrinPartId = parts.Id;
-                            grinInventoryDto.PartType = "PurchasePart";  //We need to check this
+                            grinInventoryDto.PartType = parts.ItemType;  //We need to check this
                             grinInventoryDto.ReferenceID = Convert.ToString(parts.Id);
                             grinInventoryDto.ReferenceIDFrom = "GRIN";
                             grinInventoryDto.GrinMaterialType = "";

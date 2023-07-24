@@ -485,7 +485,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryPost.IsStockAvailable = true;
                         inventoryPost.Warehouse = Location.Warehouse;
                         inventoryPost.Location = Location.Location;
-                        inventoryPost.PartType = "";
+                        //inventoryPost.PartType = ;
                         inventoryPost.ReferenceID = "0";
                         inventoryPost.ReferenceIDFrom = "MaterialReturnNote";
                         await _inventoryRepository.CreateInventory(inventoryPost);
@@ -927,7 +927,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventory.Description = inventoryObject.Description;
                         inventory.ReferenceIDFrom = inventoryUpdateDtoForMRN.MRNNumber;
                         inventory.ReferenceID = inventoryUpdateDtoForMRN.MRNNumber;
-                        inventory.PartType = "";
+                        //inventory.PartType = "";
                         inventory.UOM = inventoryObject.Uom;
                     }
                 }

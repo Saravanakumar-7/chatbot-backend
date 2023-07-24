@@ -139,6 +139,7 @@ namespace Tips.Grin.Api.Repository
                                 .Select(x => new GrinNoForIqcAndBinning()
                                 {
                                     GrinNumber = x.GrinNumber,
+                                    GrinId = x.Id
                                 })
                               .ToListAsync();
 
@@ -152,6 +153,7 @@ namespace Tips.Grin.Api.Repository
                                 .Select(x => new GrinNoForIqcAndBinning()
                                 {
                                     GrinNumber = x.GrinNumber,
+                                    GrinId = x.Id
                                 })
                               .ToListAsync();
 
@@ -258,10 +260,10 @@ namespace Tips.Grin.Api.Repository
         public async Task<Grins> GetGrinByGrinNo(string grinNumber)
         {
             var grinDetailsbyGrin = await _tipsGrinDbContext.Grins.Where(x => x.GrinNumber == grinNumber)
-                                    
-              .Include(t => t.GrinParts)
-              
-                               .FirstOrDefaultAsync();
+
+        .Include(t => t.GrinParts)
+
+        .FirstOrDefaultAsync();
 
             return grinDetailsbyGrin;
         }
