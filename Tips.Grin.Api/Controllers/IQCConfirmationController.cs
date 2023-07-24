@@ -815,42 +815,173 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 var iqcConfirmation = _mapper.Map<IQCConfirmation>(iqcConfirmationSaveDto);
-
+                var iqcConfirmationItemsDto = iqcConfirmationSaveDto.IQCConfirmationItemsPostDtos;
+                var iqcConfirmationItems = _mapper.Map<IQCConfirmationItems>(iqcConfirmationItemsDto);
                 var grinNumber = iqcConfirmation.GrinNumber;
                 var existingIqcConfirmation = await _iQCConfirmationRepository.GetIqcDetailsbyGrinNo(grinNumber);
 
                 if (existingIqcConfirmation != null)
                 {
-
-                    var iqcConfirmationItemsDto = iqcConfirmationSaveDto.IQCConfirmationItemsPostDtos;
-                    var iqcConfirmationItems = _mapper.Map<IQCConfirmationItems>(iqcConfirmationItemsDto);
                     iqcConfirmationItems.IQCConfirmationId = existingIqcConfirmation.Id;
+
+                    var grinPartId = iqcConfirmationItemsDto.GrinPartId;
+                    var grinPartsDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinPartId);
+                    if (iqcConfirmationItemsDto.GrinPartId != grinPartsDetails.Id)
+                    {
+                        _logger.LogError($"Invalid Grin Part Id {grinPartId}");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"Invalid Grin Part Id {grinPartId}";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                        return BadRequest(serviceResponse);
+                    }
+                    if (grinPartsDetails.Qty <= (iqcConfirmationItems.AcceptedQty + iqcConfirmationItems.RejectedQty))
+                    {
+                        grinPartsDetails.AcceptedQty = iqcConfirmationItems.AcceptedQty;
+                        grinPartsDetails.RejectedQty = iqcConfirmationItems.RejectedQty;
+                        _grinPartsRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError("Grinpart Quantity should not be lesser than accepted + rejected Quantity .");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Grinpart Quantity should not be lesser than accepted + rejected Quantity ";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                        return BadRequest(serviceResponse);
+                    }
 
                     await _iQCConfirmationItemsRepository.Create(iqcConfirmationItems);
                     _iQCConfirmationItemsRepository.SaveAsync();
+
+                    //Inventory Update Code
+                    var grinPartsId = iqcConfirmationItemsDto.GrinPartId;
+                    var grinPartsDetail = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinPartsId);
+                    foreach (var projectNo in grinPartsDetail.ProjectNumbers)
+                    {
+                        var grinNo = iqcConfirmation.GrinNumber;
+                        var grinPartsIds = projectNo.GrinPartsId;
+                        var itemNo = iqcConfirmationItemsDto.ItemNumber;
+                        var projectNos = projectNo.ProjectNumber;
+                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                            "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", grinNo, "&GrinPartsId=",
+                            grinPartsId, "&ItemNumber=", itemNo, "&ProjectNumber=", projectNos));
+                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        dynamic inventoryObject = inventoryObjectData.data;
+                        inventoryObject.Balance_Quantity = iqcConfirmationItemsDto.AcceptedQty;
+                        inventoryObject.Warehouse = "IQC";
+                        inventoryObject.Location = "IQC";
+                        inventoryObject.ReferenceIDFrom = "GRIN";
+
+                        var json = JsonConvert.SerializeObject(inventoryObject);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
+                            "UpdateInventory?id=", inventoryObject.id), data);
+                    }
+
+
+                    ////update accepted qty and rejected qty in grin model
+
+                    var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iqcConfirmationItems.GrinPartId, iqcConfirmationItems.AcceptedQty.ToString(), iqcConfirmationItems.RejectedQty.ToString());
+
+                    var iQCCreates = _mapper.Map<GrinParts>(updatedGrinPartsQty);
+
+                    string result = await _grinPartsRepository.UpdateGrinQty(iQCCreates);
+
+                    _grinPartsRepository.SaveAsync();
 
                     serviceResponse.Data = null;
                     serviceResponse.Message = "IQCConfirmationItems Created Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
                 else
                 {
-
-                    var iqcConfirmationItemsDto = iqcConfirmationSaveDto.IQCConfirmationItemsPostDtos;
-                    var iqcConfirmationItems = _mapper.Map<IQCConfirmationItems>(iqcConfirmationItemsDto);
-
+                    var grinPartId = iqcConfirmationItemsDto.GrinPartId;
+                    var grinPartsDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinPartId);
+                    if (iqcConfirmationItemsDto.GrinPartId != grinPartsDetails.Id)
+                    {
+                        _logger.LogError($"Invalid Grin Part Id {grinPartId}");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"Invalid Grin Part Id {grinPartId}";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                        return BadRequest(serviceResponse);
+                    }
+                    if (grinPartsDetails.Qty <= (iqcConfirmationItems.AcceptedQty + iqcConfirmationItems.RejectedQty))
+                    {
+                        grinPartsDetails.AcceptedQty = iqcConfirmationItems.AcceptedQty;
+                        grinPartsDetails.RejectedQty = iqcConfirmationItems.RejectedQty;
+                        _grinPartsRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError("Grinpart Quantity should not be lesser than accepted + rejected Quantity .");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Grinpart Quantity should not be lesser than accepted + rejected Quantity ";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                        return BadRequest(serviceResponse);
+                    }
+                   
                     iqcConfirmation.IQCConfirmationItems = new List<IQCConfirmationItems> { iqcConfirmationItems };
+                    iqcConfirmation.IsIqcCompleted = true;
                     await _iQCConfirmationRepository.Create(iqcConfirmation);
                     _iQCConfirmationRepository.SaveAsync();
+
+                    //Inventory Update Code
+                    var grinPartsId = iqcConfirmationItemsDto.GrinPartId;
+                    var grinPartsDetail = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinPartsId);
+                    foreach (var projectNo in grinPartsDetail.ProjectNumbers)
+                    {
+                        var grinNo = iqcConfirmation.GrinNumber;
+                        var grinPartsIds = projectNo.GrinPartsId;
+                        var itemNo = iqcConfirmationItemsDto.ItemNumber;
+                        var projectNos = projectNo.ProjectNumber;
+                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                            "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", grinNo, "&GrinPartsId=",
+                            grinPartsId, "&ItemNumber=", itemNo, "&ProjectNumber=", projectNos));
+                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        dynamic inventoryObject = inventoryObjectData.data;
+                        inventoryObject.Balance_Quantity = iqcConfirmationItemsDto.AcceptedQty;
+                        inventoryObject.Warehouse = "IQC";
+                        inventoryObject.Location = "IQC";
+                        inventoryObject.ReferenceIDFrom = "GRIN";
+
+                        var json = JsonConvert.SerializeObject(inventoryObject);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
+                            "UpdateInventory?id=", inventoryObject.id), data);
+                    }
+
+
+                    ////update accepted qty and rejected qty in grin model
+
+                    var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iqcConfirmationItems.GrinPartId, iqcConfirmationItems.AcceptedQty.ToString(), iqcConfirmationItems.RejectedQty.ToString());
+
+                    var iQCCreates = _mapper.Map<GrinParts>(updatedGrinPartsQty);
+
+                    string result = await _grinPartsRepository.UpdateGrinQty(iQCCreates);
+
+                    _grinPartsRepository.SaveAsync();
+
+                    //Updating IQC Status in Grin
+                    var grinNumbers = iqcConfirmation.GrinNumber;
+                    var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNumbers);
+                    grinDetails.IsIqcCompleted = true;
+                    await _grinRepository.UpdateGrin(grinDetails);
+                    _grinRepository.SaveAsync();
 
                     serviceResponse.Data = null;
                     serviceResponse.Message = "IQCConfirmation and IQCConfirmationItems Created Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
 
-                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {

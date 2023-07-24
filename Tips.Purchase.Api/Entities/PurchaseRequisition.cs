@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Entities
 {
@@ -55,6 +56,8 @@ namespace Tips.Purchase.Api.Entities
         public DateTime PrApprovedIIDate { get; set; }         
         public bool IsDeleted { get; set; } = false;
         public bool IsModified { get; set; } = false;
+        [DefaultValue(0)]
+        public PrStatus PrStatus { get; set; }
         public string? Unit { get; set; }
 
         public string? CreatedBy { get; set; }

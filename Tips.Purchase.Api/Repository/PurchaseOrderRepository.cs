@@ -11,6 +11,7 @@ using Tips.Purchase.Api.Contracts;
 using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.Dto;
 using Tips.Purchase.Api.Entities.DTOs;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Repository
 {
@@ -173,12 +174,20 @@ namespace Tips.Purchase.Api.Repository
 
             return revNoListbyPONumber;
         }
+        public async Task<PurchaseRequisition> GetPrDetailsByPrNumber(string prNumber)
+        {
+            var prDetails = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PrNumber == prNumber)
+                .FirstOrDefaultAsync();
+
+            return prDetails;
+        }
         public async Task<IEnumerable<PRNoandQtyListDto>> GetPRNumberandQtyListByItemNumber(string itemNumber)
         {
             
                      var Join = from pri in _tipsPurchaseDbContext.PrItems
-                                where pri.ItemNumber == itemNumber 
+                                where pri.ItemNumber == itemNumber
                                 join pr in _tipsPurchaseDbContext.PurchaseRequisitions on pri.PurchaseRequistionId equals pr.Id
+                                where pr.PrApprovalI == true && pr.PrApprovalII == true
                                 select new PRNoandQtyListDto
                                 {
                                     PRNumber =pr.PrNumber,
