@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http;
+using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
@@ -408,10 +409,16 @@ namespace Tips.Production.Api.Controllers
                     {
                         ShopOrderItem shopOrderItemDetail = _mapper.Map<ShopOrderItem>(shopOrderDto[i]);
 
-                        var salesObjectResult = await _httpClient.GetAsync(string.Concat(_config["SalesOrderAPI"],
-                             "UpdateShopOrderQty?", "salesOrderNumber=", shopOrderDto[i].SalesOrderNumber,
-                             "projectNumber=", shopOrderDto[i].ProjectNumber,"&itemNumber=",
-                              shopOrderDto[i].FGItemNumber, "&releaseQty=", shopOrderDto[i].ReleaseQty));
+                        //var salesObjectResult = await _httpClient.GetAsync(string.Concat(_config["SalesOrderAPI"],
+                        //     "UpdateShopOrderQty?", "salesOrderNumber=", shopOrderDto[i].SalesOrderNumber,
+                        //     "projectNumber=", shopOrderDto[i].ProjectNumber,"&itemNumber=",
+                        //      shopOrderDto[i].FGItemNumber, "&releaseQty=", shopOrderDto[i].ReleaseQty));
+
+                        var shopOrderDetail = _mapper.Map<UpdateSalesOrderQtyDto>(shopOrderDto[i]);
+
+                        var jsons = JsonConvert.SerializeObject(shopOrderDetail);
+                        var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                        var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateShopOrderQty?"), datas);
 
                         ShoporderItemList.Add(shopOrderItemDetail);
 

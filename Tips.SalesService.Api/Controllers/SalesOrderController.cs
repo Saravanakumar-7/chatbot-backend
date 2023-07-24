@@ -1011,16 +1011,18 @@ namespace Tips.SalesService.Api.Controllers
         }
         //Update shoporder Qty in salesorder while create shoporder
         [HttpPost]
-        public async Task<IActionResult> UpdateShopOrderQty(string salesOrderNumber,string projectNumber, string itemNumber,decimal releaseQty)
-        { 
-            IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderBySalesOrderNoandItemNo(salesOrderNumber, itemNumber , projectNumber);
-            var orderItem = salesOrderItems.FirstOrDefault();
+        public async Task<IActionResult> UpdateShopOrderQty([FromBody] ShopOrderReleaseQtyDto shopOrderReleaseQtyDto)
+        {
+          
+                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderBySalesOrderNoandItemNo(shopOrderReleaseQtyDto.SalesOrderNumber
+                                                                                             ,shopOrderReleaseQtyDto.FGItemNumber, shopOrderReleaseQtyDto.ProjectNumber);
+                var orderItem = salesOrderItems.FirstOrDefault();
 
-            orderItem.ShopOrderQty += releaseQty;
-            await _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
-            _salesOrderItemsRepository.SaveAsync();
-             
-            return Ok();
+                orderItem.ShopOrderQty += shopOrderReleaseQtyDto.ReleaseQty;
+                await _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+            
+             _salesOrderItemsRepository.SaveAsync();
+             return Ok();
         }
 
         //Update Invoiced Value and DispatchQty Using Invoice 

@@ -14,11 +14,11 @@ namespace Tips.Production.Api
             CreateMap<ShopOrder, ShopOrderPostDto>().ReverseMap();
             CreateMap<ShopOrder, ShopOrderUpdateDto>().ReverseMap();
             CreateMap<ShopOrder, ListOfShopOrderDto>().ReverseMap();
-
-
+            
             CreateMap<ShopOrderItem, ShopOrderItemDto>().ReverseMap();
             CreateMap<ShopOrderItem, ShopOrderItemPostDto>().ReverseMap();
             CreateMap<ShopOrderItem, ShopOrderItemUpdateDto>().ReverseMap();
+            CreateMap<ShopOrderItemPostDto, UpdateSalesOrderQtyDto>().ReverseMap();
 
             CreateMap<ShopOrderConfirmation, ShopOrderConfirmationDto>().ReverseMap();
             CreateMap<ShopOrderConfirmation, ShopOrderConfirmationPostDto>().ReverseMap();

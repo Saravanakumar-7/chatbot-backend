@@ -222,6 +222,15 @@ namespace Tips.SalesService.Api.Entities.Dto
         public List<ProjectSODetailDto>? ProjectSODetails { get; set; }
 
     }
+
+    public class ShopOrderReleaseQtyDto
+    {
+        public string? FGItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public decimal ReleaseQty { get; set; }
+
+    }
     public class ItemDetailsForShopOrderDto
     {
         public string ItemNumber { get; set; }

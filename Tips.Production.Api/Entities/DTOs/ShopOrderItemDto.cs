@@ -77,4 +77,16 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal? RequiredQty { get; set; }
 
     }
+    public class UpdateSalesOrderQtyDto
+    {
+        [Required]
+        public string? FGItemNumber { get; set; }
+        [Required]
+        public string? ProjectNumber { get; set; }
+        [Required]
+        public string? SalesOrderNumber { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? ReleaseQty { get; set; }
+    }
 }

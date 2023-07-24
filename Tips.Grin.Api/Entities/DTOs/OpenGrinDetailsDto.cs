@@ -5,16 +5,19 @@
         public int Id { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
+        public decimal Qty { get; set; }
     }
     public class OpenGrinDetailsPostDto
     {
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
+        public decimal Qty { get; set; }
     }
     public class OpenGrinDetailsUpdateDto
     {
         //public int Id { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
+        public decimal Qty { get; set; }
     }
 }
