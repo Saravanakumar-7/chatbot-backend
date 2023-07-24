@@ -6,6 +6,7 @@ using Contracts;
 using Tips.Purchase.Api.Entities.DTOs;
 using Tips.Purchase.Api.Entities.Dto;
 using Microsoft.AspNetCore.Mvc;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Contracts
 {
@@ -38,5 +39,6 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrder([FromQuery] SearchParamess searchParammes);
         Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrderDate([FromQuery] SearchDatesParams searchDatesParams);
         Task<IEnumerable<PurchaseOrderRevNoListDto>> GetAllRevisionNumberListByPoNumber(string poNumber);
+        Task<PurchaseRequisition> GetPrDetailsByPrNumber(string prNumber);
     }
 }

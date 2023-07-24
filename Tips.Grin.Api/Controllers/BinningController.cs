@@ -103,12 +103,22 @@ namespace Tips.Grin.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Binning Details with id: {grinNo}");
-                    var result = _mapper.Map<IEnumerable<BinningDto>>(binningDetailsByGrinNo);
-                    serviceResponse.Data = result;
+                    
+                     var binningDto = _mapper.Map<IEnumerable<BinningDto>>(binningDetailsByGrinNo);
+                    var binningDto1 = new List<BinningDto>();
+                    foreach (var binningDtos in binningDto)
+                    {
+                        var grinDetails = await _grinRepository.GetGrinByGrinNo(binningDtos.GrinNumber);
+                        binningDtos.VendorName = grinDetails.VendorName;
+                        binningDtos.InvoiceNumber = grinDetails.InvoiceNumber;
+                        binningDto1.Add(binningDtos);
+                    }
+                   
+                    serviceResponse.Data = binningDto1;
                     serviceResponse.Message = "Success";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(binningDto1);
                 }
             }
             catch (Exception ex)

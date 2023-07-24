@@ -605,7 +605,6 @@ namespace Tips.Grin.Api.Controllers
                             var weightageCost = grinParts.UnitPrice + finalCost;
                             total = 0;
                             grinParts.WeightedAverage = weightageCost;
-                            grinParts.LotNumber = grinNo + grinParts.Id;
                             grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
                             grinPartsList.Add(grinParts);
 
@@ -639,7 +638,16 @@ namespace Tips.Grin.Api.Controllers
                 await _repository.CreateGrin(grins);
                 _repository.SaveAsync();
 
-
+                if (grins.GrinParts != null)
+                {
+                    foreach (var grinPart in grins.GrinParts)
+                    {
+                        var grinPartsId = await _grinPartsRepository.GetGrinPartsById(grinPart.Id);
+                        grinPartsId.LotNumber = grinNo + grinPartsId.Id;
+                        await _grinPartsRepository.UpdateGrinQty(grinPartsId);
+                        _grinPartsRepository.SaveAsync();
+                    }
+                }
 
                 foreach (var parts in grinPartsList)
                 {

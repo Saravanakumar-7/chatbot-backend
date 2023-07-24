@@ -21,6 +21,7 @@ using Tips.Purchase.Api.Contracts;
 using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.Dto;
 using Tips.Purchase.Api.Entities.DTOs;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Controllers
 {
@@ -30,6 +31,7 @@ namespace Tips.Purchase.Api.Controllers
     {
         private IPurchaseOrderRepository _repository;
         private IPoItemsRepository _poItemsRepository;
+        private IPurchaseRequisitionRepository _purchaseRequisitionRepository;
         private IPoConfirmationDateHistoryRepository _poConfirmationDateHistoryRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
@@ -37,10 +39,11 @@ namespace Tips.Purchase.Api.Controllers
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
 
 
-        public PurchaseOrderController(IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper)
+        public PurchaseOrderController(IPurchaseRequisitionRepository purchaseRequisitionRepository,IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _poItemsRepository = poItemsRepository;
+            _purchaseRequisitionRepository = purchaseRequisitionRepository;
             _logger = logger;
             _mapper = mapper;
             _documentUploadRepository = documentUploadRepository;
@@ -635,6 +638,7 @@ namespace Tips.Purchase.Api.Controllers
                 await _repository.CreatePurchaseOrder(purchaseOrderDetails);
                 _repository.SaveAsync();
 
+                //Adding data in PoConfirmationDateHistory
                 foreach (var poItems in poItemDtoList)
                 {
                     if (poItems.POConfirmationDates != null)
@@ -644,16 +648,24 @@ namespace Tips.Purchase.Api.Controllers
                             PoConfirmationDateHistory poConfirmationDateHistory = new PoConfirmationDateHistory();
                             poConfirmationDateHistory.ConfirmationDate = poConfirmationDate.ConfirmationDate;
                             poConfirmationDateHistory.Qty = poConfirmationDate.Qty;
-                            //poConfirmationDateHistory.CreatedBy = "Admin";
-                            //poConfirmationDateHistory.CreatedOn = DateTime.Now;
-                            //poConfirmationDateHistory.LastModifiedBy = "Admin";
-                            //poConfirmationDateHistory.LastModifiedOn = DateTime.Now;
-
+                      
                             var poConfirmationDateHistoryDetails = _mapper.Map<PoConfirmationDateHistory>(poConfirmationDateHistory);
 
                             await _poConfirmationDateHistoryRepository.CreatePoConfirmationDateHistory(poConfirmationDateHistoryDetails);
                             _poConfirmationDateHistoryRepository.SaveAsync();
                         }
+                    }
+                }
+
+                //Changing Status in Pr
+                foreach (var poItems in poItemDtoList)
+                {
+                    foreach(var prDetails in poItems.PrDetails)
+                    {
+                        var prDetail = await _repository.GetPrDetailsByPrNumber(prDetails.PRNumber);
+                        prDetail.PrStatus = PrStatus.Closed;
+                        await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
+                        _purchaseRequisitionRepository.SaveAsync();
                     }
                 }
 
