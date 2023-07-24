@@ -855,6 +855,7 @@ namespace Tips.Grin.Api.Controllers
                     _iQCConfirmationItemsRepository.SaveAsync();
 
                     //Inventory Update Code
+                    decimal acceptedQty = iqcConfirmationItemsDto.AcceptedQty;
                     var grinPartsId = iqcConfirmationItemsDto.GrinPartId;
                     var grinPartsDetail = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinPartsId);
                     foreach (var projectNo in grinPartsDetail.ProjectNumbers)
@@ -869,12 +870,39 @@ namespace Tips.Grin.Api.Controllers
                         var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                         dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                         dynamic inventoryObject = inventoryObjectData.data;
-                        inventoryObject.Balance_Quantity = iqcConfirmationItemsDto.AcceptedQty;
-                        inventoryObject.Warehouse = "IQC";
-                        inventoryObject.Location = "IQC";
-                        inventoryObject.ReferenceIDFrom = "GRIN";
+                        if (inventoryObject != null)
+                        {
+                            decimal balanceQty = inventoryObject.balance_Quantity;
 
-                        var json = JsonConvert.SerializeObject(inventoryObject);
+                            if (inventoryObject.balance_Quantity <= acceptedQty && inventoryObject.balance_Quantity != 0)
+                            {
+                                inventoryObject.warehouse = "IQC";
+                                inventoryObject.location = "IQC";
+                                inventoryObject.referenceIDFrom = "GRIN";
+                                acceptedQty -= balanceQty;
+
+                            }
+                            else if (inventoryObject.balance_Quantity > acceptedQty)
+                            {
+                                if (acceptedQty == 0)
+                                {
+                                    inventoryObject.balance_Quantity = acceptedQty;
+                                    inventoryObject.warehouse = "IQC";
+                                    inventoryObject.location = "IQC";
+                                    inventoryObject.referenceIDFrom = "GRIN";
+                                    inventoryObject.isStockAvailable = false;
+                                }
+                                else
+                                {
+                                    inventoryObject.balance_Quantity = acceptedQty;
+                                    inventoryObject.warehouse = "IQC";
+                                    inventoryObject.location = "IQC";
+                                    inventoryObject.referenceIDFrom = "GRIN";
+                                    acceptedQty = 0;
+                                }
+                            }
+                        }
+                            var json = JsonConvert.SerializeObject(inventoryObject);
                         var data = new StringContent(json, Encoding.UTF8, "application/json");
                         var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
                             "UpdateInventory?id=", inventoryObject.id), data);
@@ -931,8 +959,9 @@ namespace Tips.Grin.Api.Controllers
                     await _iQCConfirmationRepository.Create(iqcConfirmation);
                     _iQCConfirmationRepository.SaveAsync();
 
-                    //Inventory Update Code
-                    var grinPartsId = iqcConfirmationItemsDto.GrinPartId;
+                        //Inventory Update Code
+                        decimal acceptedQty = iqcConfirmationItemsDto.AcceptedQty;
+                      var grinPartsId = iqcConfirmationItemsDto.GrinPartId;
                     var grinPartsDetail = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinPartsId);
                     foreach (var projectNo in grinPartsDetail.ProjectNumbers)
                     {
@@ -946,12 +975,39 @@ namespace Tips.Grin.Api.Controllers
                         var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                         dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                         dynamic inventoryObject = inventoryObjectData.data;
-                        inventoryObject.Balance_Quantity = iqcConfirmationItemsDto.AcceptedQty;
-                        inventoryObject.Warehouse = "IQC";
-                        inventoryObject.Location = "IQC";
-                        inventoryObject.ReferenceIDFrom = "GRIN";
+                        if (inventoryObject != null)
+                        {
+                            decimal balanceQty = inventoryObject.balance_Quantity;
 
-                        var json = JsonConvert.SerializeObject(inventoryObject);
+                            if (inventoryObject.balance_Quantity <= acceptedQty && inventoryObject.balance_Quantity != 0)
+                            {
+                                inventoryObject.warehouse = "IQC";
+                                inventoryObject.location = "IQC";
+                                inventoryObject.referenceIDFrom = "GRIN";
+                                acceptedQty -= balanceQty;
+
+                            }
+                            else if (inventoryObject.balance_Quantity > acceptedQty)
+                            {
+                                if (acceptedQty == 0)
+                                {
+                                    inventoryObject.balance_Quantity = acceptedQty;
+                                    inventoryObject.warehouse = "IQC";
+                                    inventoryObject.location = "IQC";
+                                    inventoryObject.referenceIDFrom = "GRIN";
+                                    inventoryObject.isStockAvailable = false;
+                                }
+                                else
+                                {
+                                    inventoryObject.balance_Quantity = acceptedQty;
+                                    inventoryObject.warehouse = "IQC";
+                                    inventoryObject.location = "IQC";
+                                    inventoryObject.referenceIDFrom = "GRIN";
+                                    acceptedQty = 0;
+                                }
+                            }
+                        }
+                                var json = JsonConvert.SerializeObject(inventoryObject);
                         var data = new StringContent(json, Encoding.UTF8, "application/json");
                         var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
                             "UpdateInventory?id=", inventoryObject.id), data);
