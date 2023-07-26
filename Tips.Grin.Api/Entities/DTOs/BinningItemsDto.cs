@@ -166,4 +166,11 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public List<BinningLocationReportDto>? binningLocations { get; set; }
     }
+    public class BinningItemsSaveDto
+    {
+        public string? ItemNumber { get; set; }
+        public int GrinPartId { get; set; }
+
+        public List<BinningLocationSaveDto>? BinningLocations { get; set; }
+    }
 }

@@ -58,4 +58,15 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
     }
+    public class BinningLocationSaveDto
+    {
+        public string? ProjectNumber { get; set; }
+
+        public string? Warehouse { get; set; }
+
+        public string? Location { get; set; }
+
+        public decimal Qty { get; set; }
+
+    }
 }

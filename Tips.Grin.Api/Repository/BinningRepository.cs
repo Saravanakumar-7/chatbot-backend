@@ -92,6 +92,14 @@ namespace Tips.Grin.Api.Repository
             var binningDetailsByGrinNo = await FindByCondition(x => x.GrinNumber == grinNo).ToListAsync();
             return binningDetailsByGrinNo;
         }
+        public async Task<Binning> GetExistingBinningDetailsByGrinNo(string grinNo)
+        {
+            var binningDetailsByGrinNo = await _tipsGrinDbContext.Binnings.Where(x => x.GrinNumber == grinNo)
+                                        .Include(x=>x.BinningItems)
+                                         .ThenInclude(l=>l.binningLocations)
+                                         .FirstOrDefaultAsync();
+            return binningDetailsByGrinNo;
+        }
 
         public async Task<IEnumerable<Binning>> GetAllBinningWithItems(BinningSearchDto binningSearchDto)
         {

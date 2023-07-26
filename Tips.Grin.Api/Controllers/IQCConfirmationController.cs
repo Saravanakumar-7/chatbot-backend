@@ -1025,8 +1025,8 @@ namespace Tips.Grin.Api.Controllers
                     _grinPartsRepository.SaveAsync();
 
                     //Updating IQC Status in Grin
-                    var grinNumbers = iqcConfirmation.GrinNumber;
-                    var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNumbers);
+                    var grinNum = iqcConfirmation.GrinNumber;
+                    var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNum);
                     grinDetails.IsIqcCompleted = true;
                     await _grinRepository.UpdateGrin(grinDetails);
                     _grinRepository.SaveAsync();
