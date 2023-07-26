@@ -37,16 +37,22 @@ namespace Tips.Grin.Api
 
             CreateMap<Binning, BinningDto>().ReverseMap();
             CreateMap<Binning, BinningPostDto>().ReverseMap();
-            CreateMap<Binning, BinningUpdateDto>().ReverseMap(); 
+            CreateMap<Binning, BinningUpdateDto>().ReverseMap();
+            //CreateMap<Binning, BinningSaveDto>().ReverseMap();
 
+            CreateMap<BinningSaveDto, Binning>();
+            CreateMap<BinningItemsSaveDto, BinningItems>();
+            CreateMap<BinningLocationSaveDto, BinningLocation>();
 
             CreateMap<BinningLocation, BinningLocationDto>().ReverseMap();
             CreateMap<BinningLocation, BinningLocationPostDto>().ReverseMap();
             CreateMap<BinningLocation, BinningLocationUpdateDto>().ReverseMap();
+            //CreateMap<BinningLocation, BinningLocationSaveDto>().ReverseMap();
 
             CreateMap<BinningItems, BinningItemsDto>().ReverseMap();
             CreateMap<BinningItems, BinningItemsPostDto>().ReverseMap();
             CreateMap<BinningItems, BinningItemsUpdateDto>().ReverseMap();
+            //CreateMap<BinningItems, BinningItemsSaveDto>().ReverseMap();
 
             CreateMap<DocumentUpload, DocumentUploadDto>().ReverseMap();
             CreateMap<DocumentUpload, DocumentUploadPostDto>().ReverseMap();

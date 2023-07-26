@@ -174,4 +174,10 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
     }
+    public class BinningSaveDto
+    {
+        public string? GrinNumber { get; set; }
+
+        public List<BinningItemsSaveDto>? BinningItems { get; set; }
+    }
 }
