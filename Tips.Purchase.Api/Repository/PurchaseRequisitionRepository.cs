@@ -300,7 +300,7 @@ namespace Tips.Purchase.Api.Repository
             //                    PrNumber = x.PrNumber,
             //                }).ToListAsync();
             IEnumerable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIINameList = await _tipsPurchaseDbContext.PurchaseRequisitions
-            .Where(x => x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false)
+            .Where(x => x.PrApprovalI == true  && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false)
             .GroupBy(x => x.PrNumber)
             .Select(pr => new PurchaseRequisitionIdNameListDto()
             {
