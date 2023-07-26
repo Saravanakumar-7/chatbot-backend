@@ -39,7 +39,25 @@ namespace Tips.Grin.Api.Repository
             string result = $"OpenGrin details of {openGrin.Id} is deleted successfully!";
             return result;
         }
+        public async Task<string> GenerateOpenGrinNumber()
+        {
+            using var transaction = await _tipsGrinDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
 
+            try
+            {
+                var poNumberEntity = await _tipsGrinDbContext.OpenGrinNumbers.SingleAsync();
+                poNumberEntity.CurrentValue += 1;
+                _tipsGrinDbContext.Update(poNumberEntity);
+                await _tipsGrinDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"OpenGrin-{poNumberEntity.CurrentValue:D5}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
         public async Task<PagedList<OpenGrin>> GetAllOpenGrinDetails(PagingParameter pagingParameter, SearchParams searchParams)
         {
             var openGrinDetails = FindAll()

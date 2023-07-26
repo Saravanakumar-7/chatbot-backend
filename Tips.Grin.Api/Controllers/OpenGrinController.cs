@@ -151,6 +151,7 @@ namespace Tips.Grin.Api.Controllers
                 var openGrinPartsDto = openGrinPostDto.OpenGrinPartsDtos;
                 var openGrinPartsDtoList = new List<OpenGrinParts>();
 
+             
                 string openGrinPartsId = "";
                 if (openGrinPartsDto != null)
                 {
@@ -164,9 +165,20 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 openGrinDetails.OpenGrinParts = openGrinPartsDtoList;
-                await _openGrinRepository.CreateOpenGrin(openGrinDetails);
-                _openGrinRepository.SaveAsync();
 
+                //generate 
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
+                var dateFormat = days + months + years;
+                var openGrinNumber = await _openGrinRepository.GenerateOpenGrinNumber();
+                openGrinDetails.OpenGrinNumber = dateFormat + openGrinNumber;
+
+
+                await _openGrinRepository.CreateOpenGrin(openGrinDetails);
+                    _openGrinRepository.SaveAsync();
+                
 
                 //Create OpenGrin To Inventory
 
@@ -181,14 +193,15 @@ namespace Tips.Grin.Api.Controllers
                             inventory.PartNumber = openGrinParts.ItemNumber;
                             inventory.MftrPartNumber = openGrinParts.ItemNumber;
                             inventory.Description = openGrinParts.Description;
-                            inventory.ProjectNumber = "project";
+                            inventory.ProjectNumber = openGrinParts.ReferenceSONumber;
                             inventory.Balance_Quantity = openGrinParts.Qty;
+                            inventory.IsStockAvailable = true;
                             inventory.UOM = openGrinParts.UOM;
                             inventory.Warehouse = openGrinDetail.Warehouse;
                             inventory.Location = openGrinDetail.Location;
-                            inventory.GrinNo = "";
+                            inventory.GrinNo = openGrinDetails.OpenGrinNumber;
                             inventory.GrinPartId = 0;
-                            inventory.PartType = "PurchasePart"; // we have to take parttype from grinparts model;
+                            inventory.PartType = openGrinParts.ItemType; // we have to take parttype from grinparts model;
                             inventory.GrinMaterialType = "";
                             inventory.ReferenceID = Convert.ToString(openGrinParts.Id);
                             inventory.ReferenceIDFrom = "OpenGrin";

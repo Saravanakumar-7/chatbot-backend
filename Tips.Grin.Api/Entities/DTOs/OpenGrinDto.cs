@@ -1,10 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Entities;
+using Entities.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Grin.Api.Entities.DTOs
 {
     public class OpenGrinDto
     {
-        public int Id { get; set; }
+        public int Id { get; set; }        
+        public string? OpenGrinNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerId { get; set; }
         public string? Remarks { get; set; }
@@ -51,6 +54,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         [Required]
         public string PartNumber { get; set; }
+        public string? LotNumber { get; set; }
 
         [Required]
         public string MftrPartNumber { get; set; }
@@ -64,6 +68,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal Balance_Quantity { get; set; }
         [Required]
         public string? UOM { get; set; }
+        public bool IsStockAvailable { get; set; }
+        public string Unit { get; set; }
 
         [Required]
         public string? Warehouse { get; set; }
@@ -71,7 +77,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? Location { get; set; }
         public string? GrinNo { get; set; }
         public int? GrinPartId { get; set; }
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
         public string? GrinMaterialType { get; set; }
         [Required]
         public string? ReferenceID { get; set; }

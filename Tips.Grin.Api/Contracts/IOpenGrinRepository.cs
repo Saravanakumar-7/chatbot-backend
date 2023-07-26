@@ -9,6 +9,7 @@ namespace Tips.Grin.Api.Contracts
         Task<PagedList<OpenGrin>> GetAllOpenGrinDetails(PagingParameter pagingParameter, SearchParams searchParams);
         Task<string> UpdateOpenGrin(OpenGrin openGrin);
         Task<OpenGrin> GetOpenGrinDetailsbyId(int id);
+        Task<string> GenerateOpenGrinNumber();
         Task<OpenGrin> CreateOpenGrin(OpenGrin openGrin);
         Task<string> DeleteOpenGrin(OpenGrin openGrin);
         Task<OpenGrinDetails> GetOpenGrinPartDetailsbyId(int id);

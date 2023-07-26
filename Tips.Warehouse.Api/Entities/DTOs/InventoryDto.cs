@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -62,7 +63,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ReferenceID { get; set; }
         [Required]
         public string? ReferenceIDFrom { get; set; }
-        public string? ShopOrderNo { get; set; }
+        public string? ShopOrderNo { get; set; } 
 
     }
     public class InventoryDtoUpdate
@@ -229,6 +230,42 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ProjectNumber { get; set; }
 
         public decimal LocationStock { get; set; }
+
+    }
+    public class OGInventoryDtoPost
+    {
+        [Required]
+        public string PartNumber { get; set; }
+        public string? LotNumber { get; set; }
+
+        [Required]
+        public string MftrPartNumber { get; set; }
+
+        [Required]
+        public string Description { get; set; }
+
+        [Required]
+        public string ProjectNumber { get; set; }
+        [Required]
+        public decimal Balance_Quantity { get; set; }
+        [Required]
+        public string? UOM { get; set; }
+        public bool IsStockAvailable { get; set; }
+        public string Unit { get; set; }
+
+        [Required]
+        public string? Warehouse { get; set; }
+        [Required]
+        public string? Location { get; set; }
+        public string? GrinNo { get; set; }
+        public int? GrinPartId { get; set; }
+        public PartType PartType { get; set; }
+        public string? GrinMaterialType { get; set; }
+        [Required]
+        public string? ReferenceID { get; set; }
+        [Required]
+        public string? ReferenceIDFrom { get; set; }
+        public string? ShopOrderNo { get; set; }
 
     }
 }

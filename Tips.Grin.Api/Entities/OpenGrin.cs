@@ -4,6 +4,8 @@
     {
         public int Id { get; set; }
         public string? CustomerName { get; set; }
+        public string? OpenGrinNumber { get; set; }
+
         public string? CustomerId { get; set; }
         public string? Remarks { get; set; }
         public string? ReturnedBy { get; set; }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Grin.Api.Entities.DTOs
 {
@@ -8,7 +9,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
         public bool Returnable { get; set; }
-        public int ItemType { get; set; }
+        public PartType ItemType { get; set; }
         public string? UOM { get; set; }
         [Precision(18, 3)]
         public decimal Qty { get; set; }
@@ -22,7 +23,7 @@ namespace Tips.Grin.Api.Entities.DTOs
             public string? ItemNumber { get; set; }
             public string? Description { get; set; }
             public bool Returnable { get; set; }
-            public int ItemType { get; set; }
+            public PartType ItemType { get; set; }
             public string? UOM { get; set; }
             [Precision(18, 3)]
             public decimal Qty { get; set; }
@@ -37,7 +38,7 @@ namespace Tips.Grin.Api.Entities.DTOs
             public string? ItemNumber { get; set; }
             public string? Description { get; set; }
             public bool Returnable { get; set; }
-            public int ItemType { get; set; }
+            public PartType ItemType { get; set; }
             public string? UOM { get; set; }
             [Precision(18, 3)]
             public decimal Qty { get; set; }
