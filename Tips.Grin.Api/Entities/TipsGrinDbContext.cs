@@ -27,6 +27,8 @@ namespace Tips.Grin.Api.Entities
         public DbSet<OpenGrin> OpenGrin { get; set; }
         public DbSet<OpenGrinParts> OpenGrinParts { get; set; }
         public DbSet<OtherCharges> OtherCharges { get; set; }
+        public DbSet<OpenGrinNumber> OpenGrinNumbers { get; set; }
+
         public DbSet<OpenGrinDetails> OpenGrinDetails { get; set; }
 
     }

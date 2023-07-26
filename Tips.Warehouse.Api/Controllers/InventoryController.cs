@@ -751,7 +751,7 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
+ 
         [HttpPost]
         public async Task<IActionResult> CreateInventory([FromBody] InventoryDtoPost inventoryDtoPost)
         {
@@ -778,7 +778,7 @@ namespace Tips.Warehouse.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var createInvetory = _mapper.Map<Inventory>(inventoryDtoPost);
-
+                createInvetory.IsStockAvailable = true;
                 _inventoryRepository.CreateInventory(createInvetory);
                 _inventoryRepository.SaveAsync();
                 serviceResponse.Data = null;

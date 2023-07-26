@@ -132,6 +132,20 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        //private async Task<List<EnggChildItem>> GetEnggChildItemsRecursivelyAsync(int parentId)
+        //{
+        //    var childItems = new List<EnggChildItem>();
+        //    var directChildItems = await _context.EnggChildItems.Where(eci => eci.ParentId == parentId).ToListAsync();
+        //    childItems.AddRange(directChildItems);
+
+        //    foreach (var directChildItem in directChildItems)
+        //    {
+        //        var indirectChildItems = await GetEnggChildItemsRecursivelyAsync(directChildItem.Id);
+        //        childItems.AddRange(indirectChildItems);
+        //    }
+
+        //    return childItems;
+        //}
 
         [HttpGet]
         public async Task<IActionResult> GetCoverageReport()
