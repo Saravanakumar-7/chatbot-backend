@@ -353,29 +353,39 @@ namespace Tips.Production.Api.Controllers
                         existingItem.RequiredQty = updatedItem.RequiredQty;
                         existingItem.Unit = updatedItem.Unit;
                         existingItem.MaterialIssuedStatus = updatedItem.MaterialIssuedStatus;
-                        // Update existing item properties
+                        
                         existingItem.IssuedQty += updatedItem.NewIssueQty;
-
-                        // Update inventory
+                        existingItem.MaterialIssuedStatus = updatedItem.MaterialIssuedStatus;
+                        var projectNo = existingItem.ProjectNumber;
+                        
                         var partnumber = updatedItem.PartNumber;
-                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                            "GetInventoryDetailsByItemNo?", "&itemNumber=", partnumber));
-                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        dynamic inventoryObject = inventoryObjectData.data;
-                        inventoryObject.balance_Quantity -= updatedItem.NewIssueQty;
-                        if (inventoryObject.balance_Quantity == 0)
-                        {
-                            inventoryObject.isStockAvailable = false;
-                        }
+                        //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                        //    "GetInventoryDetailsByItemNoandProjectNo?", "&ItemNumber=", partnumber, "&ProjectNo=", projectNo));
+                        //var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                        //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        //dynamic inventoryObject = inventoryObjectData.data;
+                        //inventoryObject.balance_Quantity -= updatedItem.NewIssueQty;
 
-                        var json = JsonConvert.SerializeObject(inventoryObject);
+                        //if (inventoryObject.balance_Quantity <= 0)
+                        //{
+                        //    inventoryObject.isStockAvailable = false;
+                        //}
+
+                        //var json = JsonConvert.SerializeObject(inventoryObject);
+                        //var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        //var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
+                        //    "UpdateInventory?id=", Convert.ToInt32(inventoryObject.id)), data);
+                        InventoryDtoForMaterialIssue inventoryDtoForIssue = new InventoryDtoForMaterialIssue();
+                        inventoryDtoForIssue.PartNumber = partnumber;
+                        inventoryDtoForIssue.ProjectNumber = projectNo;
+                        inventoryDtoForIssue.IssueQty = updatedItem.NewIssueQty;
+                        var json = JsonConvert.SerializeObject(inventoryDtoForIssue);
                         var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
-                            "UpdateInventory?id=", Convert.ToInt32(inventoryObject.id)), data);
+                        var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnMaterialIssue"), data);
+
 
                         // Update the remaining properties of the material issue item
-                        existingItem.MaterialIssuedStatus = updatedItem.MaterialIssuedStatus;
+                       
                         // ... Update other properties as needed
 
                         //var matertialIssueItem = _mapper.Map(allMaterialIssueItems, updatedItem);

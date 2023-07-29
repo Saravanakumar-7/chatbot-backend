@@ -61,8 +61,8 @@ namespace Tips.Grin.Api.Repository
         public async Task<PagedList<OpenGrin>> GetAllOpenGrinDetails(PagingParameter pagingParameter, SearchParams searchParams)
         {
             var openGrinDetails = FindAll()
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
-                || inv.CustomerId.Contains(searchParams.SearchValue))));
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.SenderName.Contains(searchParams.SearchValue)
+                || inv.SenderId.Contains(searchParams.SearchValue))));
 
             return PagedList<OpenGrin>.ToPagedList(openGrinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }

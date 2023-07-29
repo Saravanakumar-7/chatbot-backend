@@ -91,4 +91,12 @@ namespace Tips.Production.Api.Entities.DTOs
 
     }
 
+
+    public class InventoryDtoForMaterialIssue
+    {
+        public string PartNumber { get; set; }
+        public string ProjectNumber { get; set; }
+        public decimal IssueQty { get; set; }
+
+    }
 }

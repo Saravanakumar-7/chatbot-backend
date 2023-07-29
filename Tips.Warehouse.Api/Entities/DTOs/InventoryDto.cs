@@ -268,4 +268,13 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ShopOrderNo { get; set; }
 
     }
+
+    public class InventoryDtoForMaterialIssue
+    {
+        public string PartNumber { get; set; }
+        public string ProjectNumber { get; set; }
+        public decimal IssueQty { get; set; }
+
+    }
+
 }

@@ -37,100 +37,100 @@ namespace Tips.SalesService.Api.Controllers
             _coverageRepository = coverageReportRepository;
         }
         //test aravind
-        public async Task<List<CoverageReport>> GenerateCoverageReportAsync()
-        {
-            var coverageReports = new Dictionary<string, CoverageReport>();
+        //public async Task<List<CoverageReport>> GenerateCoverageReportAsync()
+        //{
+        //    var coverageReports = new Dictionary<string, CoverageReport>();
 
-            // Get all sales orders where status is 'Forecast'
-            var salesOrders = await _coverageRepository.GetAllForecastSalesOrderDetails();
+        //    // Get all sales orders where status is 'Forecast'
+        //    var salesOrders = await _coverageRepository.GetAllForecastSalesOrderDetails();
 
 
-            foreach (var salesOrder in salesOrders)
-            {
-                int salesOrderId = salesOrder.Id;
-                // Get the sales order items for the current sales order
-                var salesOrderItems = await _coverageRepository.GetAllSalesOrderItemDetails(salesOrderId);
+        //    foreach (var salesOrder in salesOrders)
+        //    {
+        //        int salesOrderId = salesOrder.Id;
+        //        // Get the sales order items for the current sales order
+        //        var salesOrderItems = await _coverageRepository.GetAllSalesOrderItemDetails(salesOrderId);
 
-                foreach (var salesOrderItem in salesOrderItems)
-                {
-                    // Get the BOM for the current sales order item recursively and calculate required quantities
-                    await GetBomAndCalculateRequiredQuantitiesRecursivelyAsync(salesOrderItem.ItemNumber, salesOrderItem.BalanceQty, coverageReports);
-                }
-            }
+        //        foreach (var salesOrderItem in salesOrderItems)
+        //        {
+        //            // Get the BOM for the current sales order item recursively and calculate required quantities
+        //            await GetBomAndCalculateRequiredQuantitiesRecursivelyAsync(salesOrderItem.ItemNumber, salesOrderItem.BalanceQty, coverageReports);
+        //        }
+        //    }
 
-            // At this point, 'coverageReports' will have the coverage report for each item number
-            return coverageReports.Values.ToList();
-        }
+        //    // At this point, 'coverageReports' will have the coverage report for each item number
+        //    return coverageReports.Values.ToList();
+        //}
 
-        private async Task GetBomAndCalculateRequiredQuantitiesRecursivelyAsync(string itemNumber, decimal requiredQtyMultiplier, Dictionary<string, CoverageReport> coverageReports)
-        {
-            // Get the BOM for the current item
-            //var enggBoms = await _context.EnggBoms
-            //    .Where(eb => eb.ItemNumber == itemNumber)
-            //    .ToListAsync();
-            var enggBomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
-                            "GetEnggBomByFgPartNumber?", "&fgPartNumber=", itemNumber));
+        //private async Task GetBomAndCalculateRequiredQuantitiesRecursivelyAsync(string itemNumber, decimal requiredQtyMultiplier, Dictionary<string, CoverageReport> coverageReports)
+        //{
+        //    // Get the BOM for the current item
+        //    //var enggBoms = await _context.EnggBoms
+        //    //    .Where(eb => eb.ItemNumber == itemNumber)
+        //    //    .ToListAsync();
+        //    var enggBomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
+        //                    "GetEnggBomByFgPartNumber?", "&fgPartNumber=", itemNumber));
 
-            var enggBomObjectString = await enggBomDetails.Content.ReadAsStringAsync();
-            dynamic enggBomObjectData = JsonConvert.DeserializeObject(enggBomObjectString);
-            dynamic enggBomObject = enggBomObjectData.data;
+        //    var enggBomObjectString = await enggBomDetails.Content.ReadAsStringAsync();
+        //    dynamic enggBomObjectData = JsonConvert.DeserializeObject(enggBomObjectString);
+        //    dynamic enggBomObject = enggBomObjectData.data;
 
-            foreach (var enggBom in enggBomObject)
-            {
-                // Get all the child items recursively
-                var enggChildItems = await GetEnggChildItemsRecursivelyAsync(enggBom.Id);
+        //    foreach (var enggBom in enggBomObject)
+        //    {
+        //        // Get all the child items recursively
+        //        var enggChildItems = await GetEnggChildItemsRecursivelyAsync(enggBom.Id);
 
-                foreach (var childItem in enggChildItems)
-                {
-                    var totalRequiredQty = requiredQtyMultiplier * childItem.RequiredQty;
+        //        foreach (var childItem in enggChildItems)
+        //        {
+        //            var totalRequiredQty = requiredQtyMultiplier * childItem.RequiredQty;
 
-                    // Check if the coverage report for this item number already exists
-                    if (!coverageReports.TryGetValue(childItem.ItemNumber, out var coverageReport))
-                    {
-                        coverageReport = new CoverageReport
-                        {
-                            ItemNumber = childItem.ItemNumber
-                        };
-                        coverageReports[childItem.ItemNumber] = coverageReport;
-                    }
+        //            // Check if the coverage report for this item number already exists
+        //            if (!coverageReports.TryGetValue(childItem.ItemNumber, out var coverageReport))
+        //            {
+        //                coverageReport = new CoverageReport
+        //                {
+        //                    ItemNumber = childItem.ItemNumber
+        //                };
+        //                coverageReports[childItem.ItemNumber] = coverageReport;
+        //            }
 
-                    coverageReport.TotalRequiredQty += totalRequiredQty;
+        //            coverageReport.TotalRequiredQty += totalRequiredQty;
 
-                    // Get the inventory for the current child item
-                    //var inventory = await _context.Inventory
-                    //    .FirstOrDefaultAsync(i => i.ItemNumber == childItem.ItemNumber && i.IsStockAvailable);
+        //            // Get the inventory for the current child item
+        //            //var inventory = await _context.Inventory
+        //            //    .FirstOrDefaultAsync(i => i.ItemNumber == childItem.ItemNumber && i.IsStockAvailable);
 
-                    var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                              "GetInventoryDetailsByItemNo?", "ItemNumber=", childItem.ItemNumber));
+        //            var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+        //                      "GetInventoryDetailsByItemNo?", "ItemNumber=", childItem.ItemNumber));
 
-                    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                    dynamic inventoryObject = inventoryObjectData.data;
+        //            var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+        //            dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+        //            dynamic inventoryObject = inventoryObjectData.data;
 
-                    if (inventoryObject != null)
-                    {
-                        coverageReport.InventoryQty += inventoryObject.Qty;
-                    }
+        //            if (inventoryObject != null)
+        //            {
+        //                coverageReport.InventoryQty += inventoryObject.Qty;
+        //            }
 
-                    // Get the open purchase order items for the current child item
-                    var openPoItems = await _context.PoItems
-                        .Include(pi => pi.PurchaseOrder)
-                        .Where(pi => pi.ItemNumber == childItem.ItemNumber &&
-                                     (pi.PurchaseOrder.Status == "Open" || pi.PurchaseOrder.Status == "Partially Closed"))
-                        .ToListAsync();
-                    coverageReport.OpenPOQty += openPoItems.Sum(pi => pi.Qty);
+        //            // Get the open purchase order items for the current child item
+        //            var openPoItems = await _context.PoItems
+        //                .Include(pi => pi.PurchaseOrder)
+        //                .Where(pi => pi.ItemNumber == childItem.ItemNumber &&
+        //                             (pi.PurchaseOrder.Status == "Open" || pi.PurchaseOrder.Status == "Partially Closed"))
+        //                .ToListAsync();
+        //            coverageReport.OpenPOQty += openPoItems.Sum(pi => pi.Qty);
 
-                    // Calculate the balance quantity to order
-                    coverageReport.BalanceQtyToOrder = coverageReport.TotalRequiredQty - (coverageReport.InventoryQty + coverageReport.OpenPOQty);
+        //            // Calculate the balance quantity to order
+        //            coverageReport.BalanceQtyToOrder = coverageReport.TotalRequiredQty - (coverageReport.InventoryQty + coverageReport.OpenPOQty);
 
-                    // If the part type is 'SA', continue the recursion
-                    if (enggBom.PartType == "SA")
-                    {
-                        await GetBomAndCalculateRequiredQuantitiesRecursivelyAsync(childItem.ItemNumber, totalRequiredQty, coverageReports);
-                    }
-                }
-            }
-        }
+        //            // If the part type is 'SA', continue the recursion
+        //            if (enggBom.PartType == "SA")
+        //            {
+        //                await GetBomAndCalculateRequiredQuantitiesRecursivelyAsync(childItem.ItemNumber, totalRequiredQty, coverageReports);
+        //            }
+        //        }
+        //    }
+        //}
 
         //private async Task<List<EnggChildItem>> GetEnggChildItemsRecursivelyAsync(int parentId)
         //{
