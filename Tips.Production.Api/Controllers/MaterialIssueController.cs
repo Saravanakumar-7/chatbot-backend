@@ -379,6 +379,7 @@ namespace Tips.Production.Api.Controllers
                         inventoryDtoForIssue.PartNumber = partnumber;
                         inventoryDtoForIssue.ProjectNumber = projectNo;
                         inventoryDtoForIssue.IssueQty = updatedItem.NewIssueQty;
+                        inventoryDtoForIssue.ShopOrderNumber = materialIssueUpdateDto.ShopOrderNumber;
                         var json = JsonConvert.SerializeObject(inventoryDtoForIssue);
                         var data = new StringContent(json, Encoding.UTF8, "application/json");
                         var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnMaterialIssue"), data);

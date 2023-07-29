@@ -26,18 +26,21 @@ namespace Tips.Warehouse.Api.Controllers
     public class InventoryController : ControllerBase
     {
         private IInventoryRepository _inventoryRepository;
+        private IMaterialIssueTrackerRepository _materialIssueTrackerRepository ;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public InventoryController(IConfiguration config, HttpClient httpClient, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
+        public InventoryController(IConfiguration config, HttpClient httpClient, IInventoryRepository inventoryRepository,
+            ILoggerManager logger, IMapper mapper, IMaterialIssueTrackerRepository materialIssueTrackerRepository)
         {
             _inventoryRepository = inventoryRepository;
             _logger = logger;
             _mapper = mapper;
             _httpClient = httpClient;
             _config = config;
+            _materialIssueTrackerRepository = materialIssueTrackerRepository;
         }
 
 
@@ -427,26 +430,55 @@ namespace Tips.Warehouse.Api.Controllers
                 for (int i = 0; i < inventoryDetails.Count; i++)
                 {
                     decimal balanceqty = inventoryDetails[i].Balance_Quantity;
+                    decimal lotNoWiseIssuedQty = 0;
                     if (inventoryDetails[i].Balance_Quantity <= issueQty)
                     {
                         
                         inventoryDetails[i].Balance_Quantity = 0;
                         inventoryDetails[i].IsStockAvailable = false;
+                        lotNoWiseIssuedQty = balanceqty;
                         issueQty -= balanceqty;
+                        balanceqty = 0;
                     }
                     else
                     {
                         inventoryDetails[i].Balance_Quantity -= issueQty;
+                        lotNoWiseIssuedQty = issueQty;
                         issueQty = 0;
                     }
-                    if(issueQty <= 0)
+                    
+                    string result = await _inventoryRepository.UpdateInventory(inventoryDetails[i]);
+
+                    /*********************************** Add data to Material Issue Tracker *************************/
+                    string shopOrderNumber = dtoForMaterialIssue.ShopOrderNumber;
+                    MaterialIssueTracker shopOrderMaterialIssueTracker = new MaterialIssueTracker
+                    {
+                        ShopOrderNumber = shopOrderNumber,
+                        PartNumber = inventoryDetails[i].PartNumber,
+                        LotNumber = inventoryDetails[i].LotNumber,
+                        MftrPartNumber = inventoryDetails[i].MftrPartNumber,
+                        Description = inventoryDetails[i].Description,
+                        ProjectNumber = inventoryDetails[i].ProjectNumber,
+                        IssuedQty = lotNoWiseIssuedQty,
+                        ConvertedToFgQty =0,
+                        UOM = inventoryDetails[i].UOM,
+                        Warehouse= inventoryDetails[i].Warehouse,
+                        Location = inventoryDetails[i].Location,
+                        Unit = inventoryDetails[i].Unit,
+                        PartType = inventoryDetails[i].PartType
+                    };
+                    int transactionId = await _materialIssueTrackerRepository.AddDataToMaterialIssueTracker(shopOrderMaterialIssueTracker);
+
+                    /*********************************** End of Add data to Material Issue Tracker *************************/
+
+                    if (issueQty <= 0)
                     {
                         break;
                     }
-                    string result = await _inventoryRepository.UpdateInventory(inventoryDetails[i]);
                 }
 
                 _inventoryRepository.SaveAsync();
+                _materialIssueTrackerRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Updated Successfully";
                 serviceResponse.Success = true;
@@ -464,6 +496,8 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        
 
 
         [HttpGet]
