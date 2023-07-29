@@ -294,7 +294,16 @@ namespace Repository
                .Select(e => e.ItemNumber)
                 .ToListAsync();
             return enggBomIds;
-        } 
+        }
+
+        //public async Task<IEnumerable<EnggChildItem>> GeEnggBomChildByEnggBomId(int enggBomId)
+        //{
+        //    var enggBomIds = await _tipsMasterDbContext.EnggChildItems
+        //       .Where(e => e.EnggBomId == enggBomId)
+        //       .Include(x=>x.EnggAlternates)
+        //        .ToListAsync();
+        //    return enggBomIds;
+        //}
 
         //end test2
 

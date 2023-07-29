@@ -594,6 +594,17 @@ namespace Tips.Purchase.Api.Repository
             return getPODetailsByPONOandItemNo;
         }
 
+        //public async Task<IEnumerable<PoItem>> GetPODetailsByItemNo(string ItemNumber)
+        //{
+        //    var podetails = await _tipsPurchaseDbContext.PurchaseOrders.Where(x=>x.Status == Status.Open).Select(x=>x.Id).ToListAsync();
+
+        //    var getPODetailsItemNo = await _tipsPurchaseDbContexts.PoItems
+        //         .Where(x => x.ItemNumber == ItemNumber && podetails.Contains(x.PurchaseOrderId))
+        //                  .ToListAsync();
+
+        //    return getPODetailsItemNo;
+        //}
+
         //get count po item for particular po number
 
         public async Task<int?> GetPODetailsByPONumber(string PONumber)

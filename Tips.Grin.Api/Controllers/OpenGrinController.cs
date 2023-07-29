@@ -70,6 +70,100 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchOpenGrinDate([FromQuery] SearchDateParames searchDateParam)
+        {
+            ServiceResponse<IEnumerable<OpenGrinDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinDto>>();
+            try
+            {
+                var openGrinDetials = await _openGrinRepository.SearchOpenGrinDate(searchDateParam);
+                var result = _mapper.Map<IEnumerable<OpenGrinDto>>(openGrinDetials);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all OpenGrin";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchOpenGrin([FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<OpenGrinDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinDto>>();
+            try
+            {
+                var openGrinDetails = await _openGrinRepository.SearchOpenGrin(searchParams);
+
+                _logger.LogInfo("Returned all OpenGrin");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<OpenGrin, OpenGrinDto>().ReverseMap()
+                    .ForMember(dest => dest.OpenGrinParts, opt => opt.MapFrom(src => src.OpenGrinParts));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<OpenGrinDto>>(openGrinDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all OpenGrin";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllOpenGrinWithItems([FromBody] OpenGrinSearchDto openGrinSearchDto)
+        {
+            ServiceResponse<IEnumerable<OpenGrinDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinDto>>();
+            try
+            {
+                var openGrinDetails = await _openGrinRepository.GetAllOpenGrinWithItems(openGrinSearchDto);
+
+                _logger.LogInfo("Returned all OpenGrin");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<OpenGrin, OpenGrinDto>().ReverseMap()
+                    .ForMember(dest => dest.OpenGrinParts, opt => opt.MapFrom(src => src.OpenGrinParts));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<OpenGrinDto>>(openGrinDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all OpenGrinWithItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOpenGrinDetailsbyId(int id)
         {
@@ -104,7 +198,7 @@ namespace Tips.Grin.Api.Controllers
                         }
                     }
 
-                    openGrinDto.OpenGrinPartsDtos = OpenGrinPartsList;
+                    openGrinDto.OpenGrinParts = OpenGrinPartsList;
                     serviceResponse.Data = openGrinDto;
                     serviceResponse.Message = $"Returned OpenGrinbyId Successfully";
                     serviceResponse.Success = true;
@@ -148,7 +242,7 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 var openGrinDetails = _mapper.Map<OpenGrin>(openGrinPostDto);
-                var openGrinPartsDto = openGrinPostDto.OpenGrinPartsDtos;
+                var openGrinPartsDto = openGrinPostDto.OpenGrinParts;
                 var openGrinPartsDtoList = new List<OpenGrinParts>();
 
              
@@ -269,7 +363,7 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 var openGrinDetails = _mapper.Map<OpenGrin>(openGrinUpdateDto);
-                var openGrinPartsDto = openGrinUpdateDto.OpenGrinPartsDtos;
+                var openGrinPartsDto = openGrinUpdateDto.OpenGrinParts;
                 var openGrinPartsDtoList = new List<OpenGrinParts>();
 
                 if (openGrinPartsDto != null)

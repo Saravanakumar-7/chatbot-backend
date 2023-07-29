@@ -19,7 +19,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<OpenGrinPartsDto> OpenGrinPartsDtos { get; set; }
+        public List<OpenGrinPartsDto> OpenGrinParts { get; set; }
     }
     public class OpenGrinPostDto
     {
@@ -33,7 +33,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<OpenGrinPartsPostDto> OpenGrinPartsDtos { get; set; }
+        public List<OpenGrinPartsPostDto> OpenGrinParts { get; set; }
     }
     public class OpenGrinUpdateDto
     {
@@ -48,7 +48,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<OpenGrinPartsUpdateDto> OpenGrinPartsDtos { get; set; }
+        public List<OpenGrinPartsUpdateDto> OpenGrinParts { get; set; }
     }
     public class OGInventoryDtoPost
     {
@@ -84,6 +84,14 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Required]
         public string? ReferenceIDFrom { get; set; }
         public string? ShopOrderNo { get; set; }
+
+    }
+    public class OpenGrinSearchDto
+    {
+        public List<string>? OpenGrinNumber { get; set; }
+        public List<string>? CustomerName { get; set; }
+        public List<string>? ReturnedBy { get; set; }
+        public List<string>? ReceiptRefNo { get; set; }
 
     }
 }

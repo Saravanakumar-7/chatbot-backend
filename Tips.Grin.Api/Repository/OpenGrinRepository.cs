@@ -1,10 +1,12 @@
 ﻿using Entities;
 using Entities.Helper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
+using Tips.Grin.Api.Entities.DTOs;
 
 namespace Tips.Grin.Api.Repository
 {
@@ -65,6 +67,59 @@ namespace Tips.Grin.Api.Repository
                 || inv.CustomerId.Contains(searchParams.SearchValue))));
 
             return PagedList<OpenGrin>.ToPagedList(openGrinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        public async Task<IEnumerable<OpenGrin>> GetAllOpenGrinWithItems(OpenGrinSearchDto openGrinSearchDto)
+        {
+            using (var context = _tipsGrinDbContext)
+            {
+                var query = _tipsGrinDbContext.OpenGrin.Include("OpenGrinParts");
+                if (openGrinSearchDto != null || (openGrinSearchDto.OpenGrinNumber.Any())
+               && openGrinSearchDto.CustomerName.Any() && openGrinSearchDto.ReturnedBy.Any() && openGrinSearchDto.ReceiptRefNo.Any())
+                {
+                    query = query.Where
+                    (og => (openGrinSearchDto.OpenGrinNumber.Any() ? openGrinSearchDto.OpenGrinNumber.Contains(og.OpenGrinNumber) : true)
+                   && (openGrinSearchDto.CustomerName.Any() ? openGrinSearchDto.CustomerName.Contains(og.CustomerName) : true)
+                   && (openGrinSearchDto.ReturnedBy.Any() ? openGrinSearchDto.ReturnedBy.Contains(og.ReturnedBy) : true)
+                   && (openGrinSearchDto.ReceiptRefNo.Any() ? openGrinSearchDto.ReceiptRefNo.Contains(og.ReceiptRefNo) : true))
+                    .Include(item => item.OpenGrinParts)
+                    .ThenInclude(op => op.OpenGrinDetails);
+                }
+                return query.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<OpenGrin>> SearchOpenGrin([FromQuery] SearchParames searchParames)
+        {
+            using (var context = _tipsGrinDbContext)
+            {
+                var query = _tipsGrinDbContext.OpenGrin.Include("OpenGrinParts");
+                if (!string.IsNullOrEmpty(Convert.ToString(searchParames.SearchValue)))
+                {
+                    query = query.Where(og => og.OpenGrinNumber.Contains(searchParames.SearchValue)
+                    || og.CustomerName.Contains(searchParames.SearchValue)
+                    || og.CustomerId.Contains(searchParames.SearchValue)
+                    || og.ReceiptRefNo.Contains(searchParames.SearchValue)
+                    || og.ReturnedBy.Contains(searchParames.SearchValue)
+                    || og.Remarks.Contains(searchParames.SearchValue))
+                        .Include(item => item.OpenGrinParts)
+                    .ThenInclude(op => op.OpenGrinDetails);
+                }
+                return query.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<OpenGrin>> SearchOpenGrinDate([FromQuery] SearchDateParames searchParames)
+        {
+            var openGrinDetails = _tipsGrinDbContext.OpenGrin
+            .Where(inv => ((inv.CreatedOn >= searchParames.SearchFromDate &&
+            inv.CreatedOn <= searchParames.SearchToDate
+            )))
+            .Include(itm => itm.OpenGrinParts)
+            .ThenInclude(op => op.OpenGrinDetails)
+            .ToList();
+            
+            return openGrinDetails;
         }
 
         public async Task<OpenGrin> GetOpenGrinDetailsbyId(int id)

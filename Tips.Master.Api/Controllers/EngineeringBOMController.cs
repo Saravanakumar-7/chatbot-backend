@@ -161,9 +161,47 @@ namespace Tips.Master.Api.Controllers
             return allChildItems;
         }
 
+        //CoverageReport
+        //[HttpGet("{id}")]
+        //public async Task<IActionResult> GeEnggBomChildByEnggBomId(int EnggBomId)
+        //{
+        //    ServiceResponse<EnggChildItem> serviceResponse = new ServiceResponse<EnggChildItem>();
 
+        //    try
+        //    {
+        //        var enggChildDetails = await _enggBomRepository.GeEnggBomChildByEnggBomId(EnggBomId);
 
-        
+        //        if (enggChildDetails == null)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"EnggBomChildDetials hasn't been found in db.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            _logger.LogError($"EnggBomChildDetials with EnggBomId: {EnggBomId}, hasn't been found in db.");
+        //            return Ok(serviceResponse);
+        //        }
+        //        else
+        //        {
+        //            _logger.LogInfo($"Returned EnggBomChildDetials with EnggBomId: {EnggBomId}");
+        //            var result = _mapper.Map<EnggChildItem>(enggChildDetails);
+        //            serviceResponse.Data = result;
+        //            serviceResponse.Message = $"Returned EnggBomChildDetials";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(serviceResponse);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside GeEnggBomChildByEnggBomId action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Something went wrong. Please try again!";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
 
         // GET api/<EngineeringBOMController>/5
         [HttpGet("{id}")]

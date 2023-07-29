@@ -225,6 +225,32 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        //CoverageReport
+        //[HttpGet]
+        //public async Task<IActionResult> GetPODetailsByItemNo(string ItemNumber)
+        //{
+        //    ServiceResponse<IEnumerable<PoItem>> serviceResponse = new ServiceResponse<IEnumerable<PoItem>>();
+        //    try
+        //    {
+        //        var poItemDetails = await _poItemsRepository.GetPODetailsByItemNo(ItemNumber);
+        //        var result = _mapper.Map<IEnumerable<PoItem>>(poItemDetails);
+        //        serviceResponse.Data = result;
+        //        serviceResponse.Message = "Returned all PoDetails";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong inside GetPODetailsByItemNo action";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
         [HttpGet]
         public async Task<IActionResult> GetPurchaseOrderByPoNoAndRevNo(string PONumber,int revisionNumber)
         {
