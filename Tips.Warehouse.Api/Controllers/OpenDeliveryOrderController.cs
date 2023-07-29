@@ -420,7 +420,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTranction.Unit = "Bangalore";
                         inventoryTranction.CreatedBy = "Admin";
                         inventoryTranction.LastModifiedBy = "Admin";
-                        inventoryTranction.ItemType = openDeliveryOrderItemsDtoList[i].ItemType;
+                        inventoryTranction.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
                         inventoryTranction.LastModifiedOn = DateTime.Now;
                         inventoryTranction.ModifiedStatus = false;
                         inventoryTranction.From_Location = openDeliveryOrderItemsDtoList[i].Location;

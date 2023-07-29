@@ -711,7 +711,42 @@ namespace Tips.Grin.Api.Controllers
                             var json = JsonConvert.SerializeObject(grinInventoryDto);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data); 
+                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+
+                        }
+                    }
+                }
+
+                //Add in InventoryTranction
+                foreach (var parts in grinPartsList)
+                {
+                    if (parts.ProjectNumbers != null)
+                    {
+                        foreach (var project in parts.ProjectNumbers)
+                        {
+                            GrinInventoryTranctionDto grinInventoryTranctionDto = new GrinInventoryTranctionDto();
+                            grinInventoryTranctionDto.PartNumber = parts.ItemNumber;
+                            grinInventoryTranctionDto.LotNumber = parts.LotNumber;
+                            grinInventoryTranctionDto.MftrPartNumber = parts.MftrItemNumber;
+                            grinInventoryTranctionDto.Description = parts.ItemDescription;
+                            grinInventoryTranctionDto.ProjectNumber = project.ProjectNumber;
+                            grinInventoryTranctionDto.Issued_Quantity = Convert.ToDecimal(project.ProjectQty);
+                            grinInventoryTranctionDto.UOM = parts.UOM;
+                            grinInventoryTranctionDto.Warehouse = "GRIN";
+                            grinInventoryTranctionDto.From_Location = "GRIN";
+                            grinInventoryTranctionDto.TO_Location = "GRIN";
+                            grinInventoryTranctionDto.GrinNo = grinNo;
+                            grinInventoryTranctionDto.GrinPartId = parts.Id;
+                            grinInventoryTranctionDto.PartType = parts.ItemType;  //We need to check this
+                            grinInventoryTranctionDto.ReferenceID = Convert.ToString(parts.Id);
+                            grinInventoryTranctionDto.ReferenceIDFrom = "GRIN";
+                            grinInventoryTranctionDto.GrinMaterialType = "";
+                            grinInventoryTranctionDto.ShopOrderNo = "";
+
+                            var json = JsonConvert.SerializeObject(grinInventoryTranctionDto);
+                            var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data);
 
                         }
                     }
