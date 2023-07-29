@@ -97,18 +97,12 @@ namespace Repository
         public async Task<PagedList<EnggBom>> GetAllEnggBOM([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-
             var enggBomDetails = FindAll().OrderByDescending(x => x.BOMId)
                           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
                              inv.ItemType.Equals( int.Parse(searchParams.SearchValue)) || inv.ItemDescription.Contains(searchParams.SearchValue))))
                                 .Include(t => t.EnggChildItems)
-
-                               .ThenInclude(t => t.EnggAlternates)
-                         .Include(t => t.NREConsumable);
-
-                
-
-
+                               .ThenInclude(t => t.EnggAlternates) 
+                               .Include(t => t.NREConsumable);  
 
             return PagedList<EnggBom>.ToPagedList(enggBomDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
@@ -668,8 +662,8 @@ namespace Repository
         public async Task<EnggBom> GetProductionBomByItemAndBomVersionNo(string itemNumber , decimal bomVersionNo)
         {
             var productionBomDetails = await _tipsMasterDbContext.EnggBoms
-                                  .Where(x => x.ItemNumber == itemNumber && x.RevisionNumber == bomVersionNo)
-                                  .Include(x => x.EnggChildItems)
+                                  .Where(x => x.ItemNumber == itemNumber && x.RevisionNumber == bomVersionNo && x.IsActive == true)
+                                  .Include(x => x.EnggChildItems.Where(c=>c.IsActive == true))
                                   .Include(x => x.NREConsumable)
                                   .FirstOrDefaultAsync();
 

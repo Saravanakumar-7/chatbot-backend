@@ -573,13 +573,22 @@ namespace Tips.Warehouse.Api.Repository
 
             return getInventoryDetailsByItemAndLoc;
         }
-        public async Task<Inventory> GetInventoryDetailsByItemNo(string ItemNumber)
+        //public async Task<Inventory> GetInventoryDetailsByItemNo(string ItemNumber)
+        //{
+        //    var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x =>x.PartNumber == ItemNumber && x.IsStockAvailable == true)
+        //                  .FirstOrDefaultAsync();
+
+        //    return inventoryDetail;
+        //}
+        public async Task<List<Inventory>> GetInventoryDetailsByItemNoandProjectNo(string ItemNumber, string ProjectNo)
         {
-            var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x =>x.PartNumber == ItemNumber && x.IsStockAvailable == true)
-                          .FirstOrDefaultAsync();
+            var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == ItemNumber 
+            && x.IsStockAvailable == true && x.ProjectNumber == ProjectNo)
+                          .ToListAsync();
 
             return inventoryDetail;
         }
+
 
         //public async Task<Inventory> GetInventoryDetailsByItemNoandPartType(string ItemNumber, int PartType)
         //{

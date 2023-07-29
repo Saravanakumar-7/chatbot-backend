@@ -367,12 +367,12 @@ namespace Tips.Warehouse.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetInventoryDetailsByItemNo(string itemNumber)
+        public async Task<IActionResult> GetInventoryDetailsByItemNo(string itemNumber, string projectNo)
         {
             ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
             try
             {
-                var InventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNo(itemNumber);
+                var InventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNoandProjectNo(itemNumber, projectNo);
                 if (InventoryDetails == null)
                 {
                     serviceResponse.Data = null;
@@ -403,6 +403,69 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateInventoryOnMaterialIssue(InventoryDtoForMaterialIssue dtoForMaterialIssue)
+        {
+            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+            try
+            {
+                var inventoryDetails = await _inventoryRepository
+                        .GetInventoryDetailsByItemNoandProjectNo(dtoForMaterialIssue.PartNumber, dtoForMaterialIssue.ProjectNumber);
+
+                if (inventoryDetails == null || inventoryDetails.Count==0)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory Details hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with itemNumber: {dtoForMaterialIssue.PartNumber}, is invalid");
+                    return Ok(serviceResponse);
+                }
+
+                decimal issueQty = dtoForMaterialIssue.IssueQty;
+                for (int i = 0; i < inventoryDetails.Count; i++)
+                {
+                    decimal balanceqty = inventoryDetails[i].Balance_Quantity;
+                    if (inventoryDetails[i].Balance_Quantity <= issueQty)
+                    {
+                        
+                        inventoryDetails[i].Balance_Quantity = 0;
+                        inventoryDetails[i].IsStockAvailable = false;
+                        issueQty -= balanceqty;
+                    }
+                    else
+                    {
+                        inventoryDetails[i].Balance_Quantity -= issueQty;
+                        issueQty = 0;
+                    }
+                    if(issueQty <= 0)
+                    {
+                        break;
+                    }
+                    string result = await _inventoryRepository.UpdateInventory(inventoryDetails[i]);
+                }
+
+                _inventoryRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> GetInventoryDetailsWithInventoryStock(string itemNumber,string warehouse,string location, string projectNumber)
         {

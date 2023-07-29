@@ -85,18 +85,7 @@ namespace Tips.SalesService.Api.Controllers
         //            var totalRequiredQty = requiredQtyMultiplier * childItem.RequiredQty;
 
         //            // Check if the coverage report for this item number already exists
-        //            //if (!coverageReports.TryGetValue(childItem.ItemNumber, out var coverageReport))
-        //            //{
-        //            //    coverageReport = new CoverageReport
-        //            //    {
-        //            //        ItemNumber = childItem.ItemNumber
-        //            //    };
-        //            //    coverageReports[childItem.ItemNumber] = coverageReport;
-        //            //}
-        //            CoverageReport coverageReport;
-
-        //            // Check if the coverage report for this item number already exists
-        //            if (!coverageReports.TryGetValue(childItem.ItemNumber, out coverageReport))
+        //            if (!coverageReports.TryGetValue(childItem.ItemNumber, out var coverageReport))
         //            {
         //                coverageReport = new CoverageReport
         //                {
@@ -104,7 +93,6 @@ namespace Tips.SalesService.Api.Controllers
         //                };
         //                coverageReports[childItem.ItemNumber] = coverageReport;
         //            }
-
 
         //            coverageReport.TotalRequiredQty += totalRequiredQty;
 
@@ -125,20 +113,12 @@ namespace Tips.SalesService.Api.Controllers
         //            }
 
         //            // Get the open purchase order items for the current child item
-        //            //var openPoItems = await _context.PoItems
-        //            //    .Include(pi => pi.PurchaseOrder)
-        //            //    .Where(pi => pi.ItemNumber == childItem.ItemNumber &&
-        //            //                 (pi.PurchaseOrder.Status == "Open" || pi.PurchaseOrder.Status == "Partially Closed"))
-        //            //    .ToListAsync();
-
-        //            var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
-        //                     "GetPODetailsByItemNo?", "ItemNumber=", childItem.ItemNumber));
-
-        //            var purchaseObjectString = await purchaseObjectResult.Content.ReadAsStringAsync();
-        //            dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectString);
-        //            dynamic purchaseObject = inventoryObjectData.data;
-
-        //            coverageReport.OpenPOQty += purchaseObject.Sum(purchaseObject.Qty);
+        //            var openPoItems = await _context.PoItems
+        //                .Include(pi => pi.PurchaseOrder)
+        //                .Where(pi => pi.ItemNumber == childItem.ItemNumber &&
+        //                             (pi.PurchaseOrder.Status == "Open" || pi.PurchaseOrder.Status == "Partially Closed"))
+        //                .ToListAsync();
+        //            coverageReport.OpenPOQty += openPoItems.Sum(pi => pi.Qty);
 
         //            // Calculate the balance quantity to order
         //            coverageReport.BalanceQtyToOrder = coverageReport.TotalRequiredQty - (coverageReport.InventoryQty + coverageReport.OpenPOQty);
@@ -155,18 +135,10 @@ namespace Tips.SalesService.Api.Controllers
         //private async Task<List<EnggChildItem>> GetEnggChildItemsRecursivelyAsync(int parentId)
         //{
         //    var childItems = new List<EnggChildItem>();
-        //    //var directChildItems = await _context.EnggChildItems.Where(eci => eci.ParentId == parentId).ToListAsync();
+        //    var directChildItems = await _context.EnggChildItems.Where(eci => eci.ParentId == parentId).ToListAsync();
+        //    childItems.AddRange(directChildItems);
 
-        //    var enggBomChildDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
-        //                   "GeEnggBomChildByEnggBomId?", "EnggBomId=", parentId));
-
-        //    var enggBomChildObjectString = await enggBomChildDetails.Content.ReadAsStringAsync();
-        //    dynamic enggBomChildObjectData = JsonConvert.DeserializeObject(enggBomChildObjectString);
-        //    dynamic enggBomChildObject = enggBomChildObjectData.data;
-
-        //    childItems.AddRange(enggBomChildObject);
-
-        //    foreach (var directChildItem in enggBomChildObject)
+        //    foreach (var directChildItem in directChildItems)
         //    {
         //        var indirectChildItems = await GetEnggChildItemsRecursivelyAsync(directChildItem.Id);
         //        childItems.AddRange(indirectChildItems);

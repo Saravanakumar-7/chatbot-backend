@@ -1009,7 +1009,7 @@ namespace Tips.SalesService.Api.Controllers
             _salesOrderItemsRepository.SaveAsync();
             return Ok();
         }
-        //Update shoporder Qty in salesorder while create shoporder
+        //Update shoporder Qty in salesorder while create shoporderUpdateShopOrderQty
         [HttpPost]
         public async Task<IActionResult> UpdateShopOrderQty([FromBody] ShopOrderReleaseQtyDto shopOrderReleaseQtyDto)
         {
@@ -1156,9 +1156,10 @@ namespace Tips.SalesService.Api.Controllers
 
                 var projectSODetails = await _repository.GetProjectDetailsByItemNo(itemNumber);
                 foreach (var project in projectSODetails)
-                {
-                    project.SalesOrderQtyDetails = await _repository.GetSalesOrderQtyDetailsByItemNo(itemNumber, project.ProjectNumber);
-                }
+                { 
+                        project.SalesOrderQtyDetails = await _repository.GetSalesOrderQtyDetailsByItemNo(itemNumber, project.ProjectNumber);
+                    
+                    }
                 itemDetailsDto.ProjectSODetails = projectSODetails;
 
                 serviceResponse.Data = itemDetailsDto;
