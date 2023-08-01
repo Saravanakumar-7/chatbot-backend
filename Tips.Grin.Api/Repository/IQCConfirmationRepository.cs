@@ -170,6 +170,11 @@ namespace Tips.Grin.Api.Repository
             var GetAllIQCConfirmationItems = await _tipsGrinDbContext.IQCConfirmationItems.ToListAsync();
             return GetAllIQCConfirmationItems;
         }
+        public async Task<int?> CreateIqcItem(IQCConfirmationItems iQCConfirmationItems)
+        {
+            var result = await Create(iQCConfirmationItems);
+            return result.Id;
+        }
     }
 }
 

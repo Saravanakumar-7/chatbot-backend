@@ -8,6 +8,6 @@ namespace Tips.Grin.Api.Contracts
     public interface IIQCConfirmationItemsRepository : IRepositoryBase<IQCConfirmationItems>
     {
         Task<IEnumerable<IQCConfirmationItems>> GetAllIQCConfirmationItems();
-
+        Task<int?> CreateIqcItem(IQCConfirmationItems iQCConfirmationItems);
     }
 }

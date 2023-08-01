@@ -937,65 +937,65 @@ namespace Tips.Grin.Api.Controllers
                     }
 
                     // InventoryTranction Update Code
-                    if (binningsItemsDto != null)
-                    {
-                        for (int i = 0; i < binningsItemsDto.Count; i++)
-                        {
-                            var binningLocations = binningsItemsDto[i].BinningLocations;
+                    //if (binningsItemsDto != null)
+                    //{
+                    //    for (int i = 0; i < binningsItemsDto.Count; i++)
+                    //    {
+                    //        var binningLocations = binningsItemsDto[i].BinningLocations;
 
-                            int j = 0;
+                    //        int j = 0;
 
-                            foreach (var location in binningLocations)
-                            {
-                                if (j == 0)
-                                {
-                                    var inventoryTranctionObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryTranctionAPI"],
-                                  "GetInventoryTranctionDetailsByGrinNoandGrinId?", "GrinNo=", binningDetail.GrinNumber, "&GrinPartsId=", binningsItemsDto[i].GrinPartId,
-                                  "&ItemNumber=", binningsItemsDto[i].ItemNumber, "&ProjectNumber=", location.ProjectNumber));
+                    //        foreach (var location in binningLocations)
+                    //        {
+                    //            if (j == 0)
+                    //            {
+                    //                var inventoryTranctionObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryTranctionAPI"],
+                    //              "GetInventoryTranctionDetailsByGrinNoandGrinId?", "GrinNo=", binningDetail.GrinNumber, "&GrinPartsId=", binningsItemsDto[i].GrinPartId,
+                    //              "&ItemNumber=", binningsItemsDto[i].ItemNumber, "&ProjectNumber=", location.ProjectNumber));
 
-                                    var inventoryTranctionObjectString = await inventoryTranctionObjectResult.Content.ReadAsStringAsync();
-                                    dynamic inventoryTranctionObjectData = JsonConvert.DeserializeObject(inventoryTranctionObjectString);
-                                    dynamic inventoryTranctionObject = inventoryTranctionObjectData.data;
+                    //                var inventoryTranctionObjectString = await inventoryTranctionObjectResult.Content.ReadAsStringAsync();
+                    //                dynamic inventoryTranctionObjectData = JsonConvert.DeserializeObject(inventoryTranctionObjectString);
+                    //                dynamic inventoryTranctionObject = inventoryTranctionObjectData.data;
 
-                                    inventoryTranctionObject.issued_Quantity = location.Qty;
-                                    inventoryTranctionObject.warehouse = location.Warehouse;
-                                    inventoryTranctionObject.from_Location = location.Location;
-                                    inventoryTranctionObject.tO_Location = location.Location;
-                                    var json = JsonConvert.SerializeObject(inventoryTranctionObject);
-                                    var data = new StringContent(json, Encoding.UTF8, "application/json");
-                                    var response = await _httpClient.PutAsync(string.Concat(_config["InventoryTranctionAPI"],
-                                        "UpdateInventoryTranction?id=", inventoryTranctionObject.id), data);
-                                    j++;
-                                }
-                                else
-                                {
+                    //                inventoryTranctionObject.issued_Quantity = location.Qty;
+                    //                inventoryTranctionObject.warehouse = location.Warehouse;
+                    //                inventoryTranctionObject.from_Location = location.Location;
+                    //                inventoryTranctionObject.tO_Location = location.Location;
+                    //                var json = JsonConvert.SerializeObject(inventoryTranctionObject);
+                    //                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    //                var response = await _httpClient.PutAsync(string.Concat(_config["InventoryTranctionAPI"],
+                    //                    "UpdateInventoryTranction?id=", inventoryTranctionObject.id), data);
+                    //                j++;
+                    //            }
+                    //            else
+                    //            {
 
-                                    var grinId = binningsItemsDto[i].GrinPartId;
-                                    var grinPartsDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinId);
-                                    BinningInventoryTranctionDto inventoryTranctionObjectNew = new BinningInventoryTranctionDto();
-                                    inventoryTranctionObjectNew.PartNumber = binningsItemsDto[i].ItemNumber;
-                                    inventoryTranctionObjectNew.MftrPartNumber = grinPartsDetails.MftrItemNumber;
-                                    inventoryTranctionObjectNew.Description = grinPartsDetails.ItemDescription;
-                                    inventoryTranctionObjectNew.ProjectNumber = location.ProjectNumber;
-                                    inventoryTranctionObjectNew.Issued_Quantity = location.Qty;
-                                    inventoryTranctionObjectNew.UOM = grinPartsDetails.UOM;
-                                    inventoryTranctionObjectNew.Warehouse = location.Warehouse;
-                                    inventoryTranctionObjectNew.From_Location = location.Location;
-                                    inventoryTranctionObjectNew.TO_Location = location.Location;
-                                    inventoryTranctionObjectNew.GrinNo = binningDetail.GrinNumber;
-                                    inventoryTranctionObjectNew.GrinPartId = grinId;
-                                    inventoryTranctionObjectNew.PartType = grinPartsDetails.ItemType; // we have to take parttype from grinparts model;
-                                    inventoryTranctionObjectNew.ReferenceID = Convert.ToString(grinId);
-                                    inventoryTranctionObjectNew.ReferenceIDFrom = "GRIN";
+                    //                var grinId = binningsItemsDto[i].GrinPartId;
+                    //                var grinPartsDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinId);
+                    //                BinningInventoryTranctionDto inventoryTranctionObjectNew = new BinningInventoryTranctionDto();
+                    //                inventoryTranctionObjectNew.PartNumber = binningsItemsDto[i].ItemNumber;
+                    //                inventoryTranctionObjectNew.MftrPartNumber = grinPartsDetails.MftrItemNumber;
+                    //                inventoryTranctionObjectNew.Description = grinPartsDetails.ItemDescription;
+                    //                inventoryTranctionObjectNew.ProjectNumber = location.ProjectNumber;
+                    //                inventoryTranctionObjectNew.Issued_Quantity = location.Qty;
+                    //                inventoryTranctionObjectNew.UOM = grinPartsDetails.UOM;
+                    //                inventoryTranctionObjectNew.Warehouse = location.Warehouse;
+                    //                inventoryTranctionObjectNew.From_Location = location.Location;
+                    //                inventoryTranctionObjectNew.TO_Location = location.Location;
+                    //                inventoryTranctionObjectNew.GrinNo = binningDetail.GrinNumber;
+                    //                inventoryTranctionObjectNew.GrinPartId = grinId;
+                    //                inventoryTranctionObjectNew.PartType = grinPartsDetails.ItemType; // we have to take parttype from grinparts model;
+                    //                inventoryTranctionObjectNew.ReferenceID = Convert.ToString(grinId);
+                    //                inventoryTranctionObjectNew.ReferenceIDFrom = "GRIN";
 
-                                    var json = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
-                                    var data = new StringContent(json, Encoding.UTF8, "application/json");
-                                    var response = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data);
+                    //                var json = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
+                    //                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    //                var response = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data);
 
-                                }
-                            }
-                        }
-                    }
+                    //            }
+                    //        }
+                    //    }
+                    //}
                     serviceResponse.Data = null;
                     serviceResponse.Message = "BinningItems Created Successfully";
                     serviceResponse.Success = true;
