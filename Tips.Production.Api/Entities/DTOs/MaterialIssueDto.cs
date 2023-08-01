@@ -89,4 +89,24 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public List<MaterialIssueItemReportDto> materialIssueItems { get; set; }
     }
+    public class MaterialIssuesDto
+    {
+        public int Id { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        public DateTime? ShopOrderDate { get; set; }
+        public string? ItemNumber { get; set; }
+        public ProjectType ProjectType { get; set; }
+        public string? ProjectNumber { get; set; }
+        public PartType ItemType { get; set; }
+        [Precision(13, 3)]
+        public decimal? ShopOrderQty { get; set; }
+        public string? Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public IssuedStatus MaterialIssuedStatus { get; set; }
+
+        public List<MaterialIssueItemsDto> materialIssueItems { get; set; }
+    }
 }

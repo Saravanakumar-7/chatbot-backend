@@ -125,6 +125,35 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ShopOrderNo { get; set; }
 
     }
+
+    public class BinningInventoryTranctionDto
+    {
+        public string PartNumber { get; set; }
+        public string? LotNumber { get; set; }
+
+        public string MftrPartNumber { get; set; }
+
+
+        public string Description { get; set; }
+
+
+        public string ProjectNumber { get; set; }
+        public decimal Issued_Quantity { get; set; }
+        public string? UOM { get; set; }
+
+        public string? Warehouse { get; set; }
+        public string? From_Location { get; set; }
+        public string? TO_Location { get; set; }
+        public string? GrinNo { get; set; }
+        public int? GrinPartId { get; set; }
+        public PartType PartType { get; set; }
+        public string? GrinMaterialType { get; set; }
+        public string? ReferenceID { get; set; }
+        public string? ReferenceIDFrom { get; set; }
+        public string? ShopOrderNo { get; set; }
+
+    }
+
     public class BinningReportDto
     {
         public int Id { get; set; }
