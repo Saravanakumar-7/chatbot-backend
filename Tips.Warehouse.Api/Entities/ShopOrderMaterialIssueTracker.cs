@@ -1,8 +1,9 @@
 ﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Warehouse.Api.Entities
 {
-    public class MaterialIssueTracker
+    public class ShopOrderMaterialIssueTracker
     {
         public int Id { get; set; }
         public string ShopOrderNumber { get; set; }
@@ -11,7 +12,9 @@ namespace Tips.Warehouse.Api.Entities
         public string MftrPartNumber { get; set; }
         public string Description { get; set; }
         public string ProjectNumber { get; set; }
+        [Precision(13,3)]
         public decimal IssuedQty { get; set; }
+        [Precision(13, 3)]
         public decimal ConvertedToFgQty { get; set; }
         public string? UOM { get; set; }
         public string Warehouse { get; set; }

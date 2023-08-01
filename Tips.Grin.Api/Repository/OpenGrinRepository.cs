@@ -79,7 +79,7 @@ namespace Tips.Grin.Api.Repository
                 {
                     query = query.Where
                     (og => (openGrinSearchDto.OpenGrinNumber.Any() ? openGrinSearchDto.OpenGrinNumber.Contains(og.OpenGrinNumber) : true)
-                   && (openGrinSearchDto.CustomerName.Any() ? openGrinSearchDto.CustomerName.Contains(og.CustomerName) : true)
+                   && (openGrinSearchDto.CustomerName.Any() ? openGrinSearchDto.CustomerName.Contains(og.SenderName) : true)
                    && (openGrinSearchDto.ReturnedBy.Any() ? openGrinSearchDto.ReturnedBy.Contains(og.ReturnedBy) : true)
                    && (openGrinSearchDto.ReceiptRefNo.Any() ? openGrinSearchDto.ReceiptRefNo.Contains(og.ReceiptRefNo) : true))
                     .Include(item => item.OpenGrinParts)
@@ -97,8 +97,8 @@ namespace Tips.Grin.Api.Repository
                 if (!string.IsNullOrEmpty(Convert.ToString(searchParames.SearchValue)))
                 {
                     query = query.Where(og => og.OpenGrinNumber.Contains(searchParames.SearchValue)
-                    || og.CustomerName.Contains(searchParames.SearchValue)
-                    || og.CustomerId.Contains(searchParames.SearchValue)
+                    || og.SenderName.Contains(searchParames.SearchValue)
+                    || og.SenderId.Contains(searchParames.SearchValue)
                     || og.ReceiptRefNo.Contains(searchParames.SearchValue)
                     || og.ReturnedBy.Contains(searchParames.SearchValue)
                     || og.Remarks.Contains(searchParames.SearchValue))

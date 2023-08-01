@@ -154,6 +154,16 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? PONumber { get; set; }
 
     }
+    public class OpenPurchaseOrderDto
+    {
+        public string? ItemNumber { get; set; }
+        public decimal BalanceQty { get; set; }
+        public decimal Qty { get; set; }
+        public string? PONumber { get; set; }
+
+    }
+
+    
     public class PoItemsReportDto
     {
         public int Id { get; set; }

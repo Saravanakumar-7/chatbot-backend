@@ -18,6 +18,8 @@ namespace Tips.SalesService.Api.Entities
         public string Description { get; set; }
         public decimal ForecastQty { get; set; }
         public decimal FGStock { get; set; }
+        public decimal BalanceQtyToOrder { get; set; }        
+        public decimal OpenPOQty { get; set; }        
 
         public decimal BalanceForcastQty { get; set; }
         public string Child { get; set; }

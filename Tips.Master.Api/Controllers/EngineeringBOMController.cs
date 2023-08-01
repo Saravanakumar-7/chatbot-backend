@@ -932,6 +932,46 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //by passing bom id get enggbom chid items
+        [HttpGet]
+        public async Task<IActionResult> GetEnggChildItemNumberByEnggbom(int bomId)
+        {
+            ServiceResponse<List<EnggChildItem>> serviceResponse = new ServiceResponse<List<EnggChildItem>>();
+            try
+            {
+                var enggBomDetailsById = await _enggBomRepository.GetEnggChildItemNumberByEnggbom(bomId);
+
+                if (enggBomDetailsById == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"enggBomDetailsById hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"enggBomDetailsById with id: {bomId}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned enggBomDetailsById with id: {bomId}");
+                    var result = _mapper.Map<List<EnggChildItem>>(enggBomDetailsById);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = $"Returned enggBomDetailsById Successfully.";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside enggBomDetailsById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCostingBomById(int id)

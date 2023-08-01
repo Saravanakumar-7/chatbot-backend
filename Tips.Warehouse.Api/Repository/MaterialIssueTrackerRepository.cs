@@ -5,7 +5,7 @@ using Tips.Warehouse.Api.Entities;
 
 namespace Tips.Warehouse.Api.Repository
 {
-    public class MaterialIssueTrackerRepository : RepositoryBase<MaterialIssueTracker>,IMaterialIssueTrackerRepository
+    public class MaterialIssueTrackerRepository : RepositoryBase<ShopOrderMaterialIssueTracker>,IMaterialIssueTrackerRepository
     {
         private readonly string _connectionString;
         private readonly MySqlConnection _connection;
@@ -14,7 +14,7 @@ namespace Tips.Warehouse.Api.Repository
             _connection = connection;
         }
 
-        public async Task<int> AddDataToMaterialIssueTracker(MaterialIssueTracker shopOrderMaterialIssue)
+        public async Task<int> AddDataToMaterialIssueTracker(ShopOrderMaterialIssueTracker shopOrderMaterialIssue)
         {
             shopOrderMaterialIssue.CreatedBy = "Admin";
             shopOrderMaterialIssue.CreatedOn = DateTime.Now;

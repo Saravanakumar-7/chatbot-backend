@@ -170,13 +170,17 @@ namespace Tips.Production.Api.Controllers
                             var partnumber = materialIssueDetailById.materialIssueItems[i].PartNumber;
                             var projectnumber = materialIssueDetailById.materialIssueItems[i].ProjectNumber;
                             var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                              "GetInventoryDetailsByItemAndProjectNo?", "itemNumber=", partnumber, "&projectNumber=", projectnumber));
+                              "GetInventoryStockByItemAndProjectNo?", "itemNumber=", partnumber, "&projectNumber=", projectnumber));
                             if (inventoryObjectResult != null && inventoryObjectResult.StatusCode == HttpStatusCode.OK)
                             {
                                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                 dynamic inventoryObject = inventoryObjectData.data;
-                                balanceQty = inventoryObject.balance_Quantity;
+                                balanceQty = 0;
+                                if (inventoryObject != null)
+                                {
+                                    balanceQty = inventoryObject[0].balanceQty;
+                                }
                             }
                             materialIssueDetails.materialIssueItems[i].AvailableQty = balanceQty;
                         }
@@ -357,7 +361,7 @@ namespace Tips.Production.Api.Controllers
                         existingItem.IssuedQty += updatedItem.NewIssueQty;
                         existingItem.MaterialIssuedStatus = updatedItem.MaterialIssuedStatus;
                         var projectNo = existingItem.ProjectNumber;
-                        
+                        decimal IssueQty = updatedItem.NewIssueQty;
                         var partnumber = updatedItem.PartNumber;
                         //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
                         //    "GetInventoryDetailsByItemNoandProjectNo?", "&ItemNumber=", partnumber, "&ProjectNo=", projectNo));
@@ -378,7 +382,7 @@ namespace Tips.Production.Api.Controllers
                         InventoryDtoForMaterialIssue inventoryDtoForIssue = new InventoryDtoForMaterialIssue();
                         inventoryDtoForIssue.PartNumber = partnumber;
                         inventoryDtoForIssue.ProjectNumber = projectNo;
-                        inventoryDtoForIssue.IssueQty = updatedItem.NewIssueQty;
+                        inventoryDtoForIssue.IssueQty = IssueQty;
                         inventoryDtoForIssue.ShopOrderNumber = materialIssueUpdateDto.ShopOrderNumber;
                         var json = JsonConvert.SerializeObject(inventoryDtoForIssue);
                         var data = new StringContent(json, Encoding.UTF8, "application/json");
