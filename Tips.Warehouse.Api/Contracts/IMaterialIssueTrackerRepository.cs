@@ -2,8 +2,8 @@
 
 namespace Tips.Warehouse.Api.Contracts
 {
-    public interface IMaterialIssueTrackerRepository : IRepositoryBase<MaterialIssueTracker>
+    public interface IMaterialIssueTrackerRepository : IRepositoryBase<ShopOrderMaterialIssueTracker>
     {
-        Task<int> AddDataToMaterialIssueTracker(MaterialIssueTracker materialIssueTracker);
+        Task<int> AddDataToMaterialIssueTracker(ShopOrderMaterialIssueTracker materialIssueTracker);
     }
 }

@@ -34,5 +34,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal TotalChildReqQty { get; set; }
 
     }
+    public class OpenPurchaseOrderDto
+    {
+        public string? ItemNumber { get; set; }
+        public decimal BalanceQty { get; set; }
+        public decimal Qty { get; set; }
+        public string? PONumber { get; set; }
+
+    }
 
 }

@@ -588,7 +588,13 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryDetail;
         }
-
+        public async Task<List<Inventory>> GetInventoryByItemNo(string itemNumber)
+        {
+            var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == itemNumber
+            && x.IsStockAvailable == true )
+                          .ToListAsync();
+            return inventoryDetail;
+        } 
 
         //public async Task<Inventory> GetInventoryDetailsByItemNoandPartType(string ItemNumber, int PartType)
         //{
@@ -620,10 +626,26 @@ namespace Tips.Warehouse.Api.Repository
         {
             var inventoryDetailsByProjectNo = await _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber && x.IsStockAvailable == true)
                           .FirstOrDefaultAsync();
-
             return inventoryDetailsByProjectNo;
         }
-        
+
+        public async Task<List<InventoryBalanceQtyMaterialIssue>> GetInventoryStockByItemAndProjectNo(string itemNumber, string projectNumber)
+        {
+
+            List<InventoryBalanceQtyMaterialIssue> result = await _tipsWarehouseDbContext.Inventory
+                   .Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber && x.IsStockAvailable == true)
+                   .GroupBy(l => new { l.PartNumber, l.ProjectNumber })
+                   .Select(group => new InventoryBalanceQtyMaterialIssue
+                   {
+                       PartNumber = group.Key.PartNumber, 
+                       BalanceQty = group.Sum(c => c.Balance_Quantity),
+                       ProjectNumber = group.Key.ProjectNumber
+                   }).ToListAsync();
+
+            return result;
+        }
+         
+
 
         public async Task<Inventory> GetInventoryDetailsByItemNoProjectNoUnitWarehouseAndLocation(string itemNumber, string projectNumber,string unit,string warehouse,string location)
         {
