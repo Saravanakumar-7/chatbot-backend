@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Entities.Enums;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {
@@ -9,6 +10,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Display(Name = "Part Number")]
         public string? PartNumber { get; set; }
+        public string? LotNumber { get; set; }
 
         [Display(Name = "Mftr Part Number")]
         public string? MftrPartNumber { get; set; }
@@ -21,8 +23,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ProjectNumber { get; set; }
 
         [Display(Name = "Issued Quantity")]
-        [Precision(13, 3)]
-        public decimal? Issued_Quantity { get; set; }
+        [Precision(18, 2)]
+        public decimal Issued_Quantity { get; set; }
 
         [Display(Name = "UOM")]
         public string? UOM { get; set; }
@@ -55,6 +57,12 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? GrinMaterialType { get; set; } = "Bought Out";
 
         public string? Remarks { get; set; }
+        public bool IsStockAvailable { get; set; }
+        public string Warehouse { get; set; }
+        public string? GrinNo { get; set; }
+        public int? GrinPartId { get; set; }
+        public PartType PartType { get; set; }
+        public string? shopOrderNo { get; set; }
 
         [StringLength(100), Display(Name = "Created By")]
         public string? CreatedBy { get; set; }
@@ -88,8 +96,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ProjectNumber { get; set; }
 
         [Display(Name = "Issued Quantity")]
-        [Precision(13, 3)]
-        public decimal? Issued_Quantity { get; set; }
+        [Precision(18, 2)]
+        public decimal Issued_Quantity { get; set; }
 
         [Display(Name = "UOM")]
         public string? UOM { get; set; }
@@ -119,6 +127,12 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? GrinMaterialType { get; set; } = "Bought Out";
 
         public string? Remarks { get; set; }
+        public bool IsStockAvailable { get; set; }
+        public string Warehouse { get; set; }
+        public string? GrinNo { get; set; }
+        public int? GrinPartId { get; set; }
+        public PartType PartType { get; set; }
+        public string? shopOrderNo { get; set; }
 
     }
 
@@ -140,8 +154,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ProjectNumber { get; set; }
 
         [Display(Name = "Issued Quantity")]
-        [Precision(13, 3)]
-        public decimal? Issued_Quantity { get; set; }
+        [Precision(18, 2)]
+        public decimal Issued_Quantity { get; set; }
 
         [Display(Name = "UOM")]
         public string? UOM { get; set; }
@@ -174,8 +188,14 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? GrinMaterialType { get; set; } = "Bought Out";
 
         public string? Remarks { get; set; }
+        public bool IsStockAvailable { get; set; }
+        public string Warehouse { get; set; }
+        public string? GrinNo { get; set; }
+        public int? GrinPartId { get; set; }
+        public PartType PartType { get; set; }
+        public string? shopOrderNo { get; set; }
 
-      
+
     }
      
 }

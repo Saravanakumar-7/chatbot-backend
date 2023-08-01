@@ -75,11 +75,11 @@ namespace Tips.Grin.Api.Repository
             {
                 var query = _tipsGrinDbContext.OpenGrin.Include("OpenGrinParts");
                 if (openGrinSearchDto != null || (openGrinSearchDto.OpenGrinNumber.Any())
-               && openGrinSearchDto.CustomerName.Any() && openGrinSearchDto.ReturnedBy.Any() && openGrinSearchDto.ReceiptRefNo.Any())
+               && openGrinSearchDto.SenderName.Any() && openGrinSearchDto.ReturnedBy.Any() && openGrinSearchDto.ReceiptRefNo.Any())
                 {
                     query = query.Where
                     (og => (openGrinSearchDto.OpenGrinNumber.Any() ? openGrinSearchDto.OpenGrinNumber.Contains(og.OpenGrinNumber) : true)
-                   && (openGrinSearchDto.CustomerName.Any() ? openGrinSearchDto.CustomerName.Contains(og.SenderName) : true)
+                   && (openGrinSearchDto.SenderName.Any() ? openGrinSearchDto.SenderName.Contains(og.SenderName) : true)
                    && (openGrinSearchDto.ReturnedBy.Any() ? openGrinSearchDto.ReturnedBy.Contains(og.ReturnedBy) : true)
                    && (openGrinSearchDto.ReceiptRefNo.Any() ? openGrinSearchDto.ReceiptRefNo.Contains(og.ReceiptRefNo) : true))
                     .Include(item => item.OpenGrinParts)

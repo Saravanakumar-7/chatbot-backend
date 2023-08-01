@@ -89,7 +89,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class OpenGrinSearchDto
     {
         public List<string>? OpenGrinNumber { get; set; }
-        public List<string>? CustomerName { get; set; }
+        public List<string>? SenderName { get; set; }
         public List<string>? ReturnedBy { get; set; }
         public List<string>? ReceiptRefNo { get; set; }
 
