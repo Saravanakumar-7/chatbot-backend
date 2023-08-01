@@ -547,6 +547,32 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRfqEnggandForecastCsDetailListByItemNumber(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<string>> serviceResponse = new ServiceResponse<IEnumerable<string>>();
+            try
+            {
+                var rfqEnggandForecastCsByItemNo = await _itemRepository.GetRfqEnggandForecastCsDetailListByItemNumber(itemNumber);
+                //var result = _mapper.Map<IEnumerable<RfqCsandForecastCsprojectNumber>>(rfqCsandForecastCsByItemNo);
+                serviceResponse.Data = rfqEnggandForecastCsByItemNo;
+                serviceResponse.Message = "Returned all RfqEnggandForecastCsDetailList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqEnggandForecastCsDetailListByItemNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet("{RfqNumber}")]
         public async Task<IActionResult> GetAllActiveRfqCustomerSupportItemsByRfqNumber(string RfqNumber)
         {

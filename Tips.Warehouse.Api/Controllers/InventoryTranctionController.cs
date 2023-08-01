@@ -106,8 +106,50 @@ namespace Tips.Warehouse.Api.Controllers
                 }
             }
 
-            // POST api/<InventoryTranctionController>
-            [HttpPost]
+
+        [HttpGet]
+        public async Task<IActionResult> GetInventoryTranctionDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId,
+                                                                                                string ItemNumber, string ProjectNumber)
+        {
+            ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
+            try
+            {
+                var inventoryTranctionDetailsByGrinNoandGrinId = await _inventoryTranctionRepository.GetInventoryTranctionDetailsByGrinNoandGrinId
+                                                                                                (GrinNo, GrinPartsId, ItemNumber, ProjectNumber);
+                if (inventoryTranctionDetailsByGrinNoandGrinId == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventoryTranction with id: {GrinNo}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with id: {GrinNo}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned InventoryTranction with id: {GrinNo}");
+                    var result = _mapper.Map<InventoryTranctionDto>(inventoryTranctionDetailsByGrinNoandGrinId);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned InventoryTranction Details Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetInventoryTranctionDetailsByGrinNoandGrinId action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        // POST api/<InventoryTranctionController>
+        [HttpPost]
             public IActionResult CreateInventoryTranction([FromBody] InventoryTranctionDtoPost inventoryTranctionDtoPost)
             {
                 ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
@@ -155,7 +197,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
 
             // PUT api/<InventoryTranctionController>/5
-            [HttpPut("{id}")]
+            [HttpPut]
             public async Task<IActionResult> UpdateInventoryTranction(int id, [FromBody] InventoryTranctionDtoUpdate inventoryTranctionDtoUpdate)
             {
                 ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();

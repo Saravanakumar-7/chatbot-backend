@@ -196,6 +196,50 @@ namespace Tips.SalesService.Api.Repository
             return rfqAndForecastNumbers;
 
         }
+        public async Task<IEnumerable<string>> GetRfqEnggandForecastCsDetailListByItemNumber(string itemNumber)
+        {
+            var rfqEnggId = _tipsSalesServiceDbContext.RfqEnggItems
+                        .Where(r => r.ItemNumber == itemNumber)
+                            .Select(r => r.RfqEnggId)
+                             .Distinct()
+                             .ToList();
+
+            var rfqNumber = _tipsSalesServiceDbContext.RfqEnggs
+                        .Where(x => rfqEnggId.Contains(x.Id))
+                        .Select(r => r.RFQNumber)
+                        .Distinct()
+                        .ToList();
+
+            var forecastNumber = _tipsSalesServiceDbContext.foreCastCustomerSupportItems
+                .Where(r => r.ItemNumber == itemNumber)
+                .Select(r => r.ForecastNumber)
+                .Distinct()
+                .ToList();
+
+            // Null checks to handle empty lists
+            if (rfqNumber == null)
+                rfqNumber = new List<string>();
+
+            if (forecastNumber == null)
+                forecastNumber = new List<string>();
+
+            var rfqAndForecastNumbers = rfqNumber.Union(forecastNumber).ToList();
+            //var rfqNumber = _tipsSalesServiceDbContext.RfqCustomerSupportItems
+            //                 .Where(r => r.ItemNumber == itemNumber)
+            //                 .Select(r=> r.RfqNumber)
+            //                 .Distinct()
+            //                 .ToList();
+
+            //var forecastNumber = _tipsSalesServiceDbContext.foreCastCustomerSupportItems
+            //                        .Where(r => r.ItemNumber == itemNumber)
+            //                        .Select(r => r.ForecastNumber)
+            //                        .Distinct()
+            //                        .ToList();
+            //var rfqAndForecastNumbers = rfqNumber.Concat(forecastNumber);
+
+            return rfqAndForecastNumbers;
+
+        }
         public async Task<string> ActivateRfqCustomerSupportItemById(RfqCustomerSupportItems rfqCustomerSupportItems)
         {
             rfqCustomerSupportItems.LastModifiedBy = "Admin";

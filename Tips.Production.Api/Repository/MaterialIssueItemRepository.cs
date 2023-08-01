@@ -22,6 +22,16 @@ namespace Tips.Production.Api.Repository
 
             return materialIssueItemDetail;
         }
+        public async Task<List<string>> GetMaterialIssueItemProjectNumbersById(int id)
+        {
+            var materialIssueItemProjectNumbers = await _tipsProductionDbContext.MaterialIssueItems
+                                                .Where(x => x.MaterialIssueId == id)
+                                                .Select(m => m.ProjectNumber)
+                                                .Distinct()
+                                                .ToListAsync();
+
+            return materialIssueItemProjectNumbers;
+        }
 
         public async Task<string> UpdateMaterialIssueItem(MaterialIssueItem materialIssueItem)
         {

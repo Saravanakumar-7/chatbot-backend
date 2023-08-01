@@ -52,6 +52,9 @@ namespace Tips.Production.Api
             CreateMap<MaterialIssueItem, MaterialIssueItemPostDto>().ReverseMap();
             CreateMap<MaterialIssueItem, MaterialIssueItemUpdateDto>().ReverseMap();
 
+            CreateMap<MaterialIssue, MaterialIssuesDto>().ReverseMap();
+            CreateMap<MaterialIssueItem, MaterialIssueItemsDto>().ReverseMap();
+
             CreateMap<MaterialReturnNote, MaterialReturnNoteDto>().ReverseMap();
             CreateMap<MaterialReturnNote, MaterialReturnNotePostDto>().ReverseMap();
             CreateMap<MaterialReturnNote, MaterialReturnNoteUpdateDto>().ReverseMap();

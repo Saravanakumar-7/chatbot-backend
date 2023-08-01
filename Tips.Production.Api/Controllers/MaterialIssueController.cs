@@ -119,7 +119,7 @@ namespace Tips.Production.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMaterialIssueById(int id)
         {
-            ServiceResponse<MaterialIssueDto> serviceResponse = new ServiceResponse<MaterialIssueDto>();
+            ServiceResponse<MaterialIssuesDto> serviceResponse = new ServiceResponse<MaterialIssuesDto>();
 
             try
             {
@@ -140,7 +140,12 @@ namespace Tips.Production.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    var materialIssueDetails = _mapper.Map<MaterialIssueDto>(materialIssueDetailById);
+                    var materialIssueDetails = _mapper.Map<MaterialIssuesDto>(materialIssueDetailById);
+                    List<string> MaterialIssueItemProjectNumbers = await _materialIssueItemRepository.GetMaterialIssueItemProjectNumbersById(materialIssueDetailById.Id);
+                    if (MaterialIssueItemProjectNumbers.Count > 0)
+                    {
+                        materialIssueDetails.ProjectNumber = string.Join(",", MaterialIssueItemProjectNumbers);
+                    }
 
                     if (serverKey == "keus")
                     {

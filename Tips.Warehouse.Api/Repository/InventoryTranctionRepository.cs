@@ -51,6 +51,16 @@ namespace Tips.Warehouse.Api.Repository
             return getInventoryTranctionById;
         }
 
+        public async Task<InventoryTranction> GetInventoryTranctionDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber)
+        {
+            var inventoryTranctionDetailsById = await _tipsWarehouseDbContext.InventoryTranctions.Where(x => x.GrinNo == GrinNo &&
+                                        x.GrinPartId == GrinPartsId && x.PartNumber == ItemNumber &&
+                                        x.ProjectNumber == ProjectNumber && x.IsStockAvailable == true)
+                          .FirstOrDefaultAsync();
+
+            return inventoryTranctionDetailsById;
+        }
+
         public async Task<string> UpdateInventoryTraction(InventoryTranction inventoryTranction)
         {
             inventoryTranction.LastModifiedBy = "Admin";

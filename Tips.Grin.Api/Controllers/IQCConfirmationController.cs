@@ -528,6 +528,61 @@ namespace Tips.Grin.Api.Controllers
                         }      
                     }
 
+                    //InventoryTranction Update Code
+                    foreach (var projectNo in grinPartsDetails.ProjectNumbers)
+                    {
+                        var grinNo = iQCCreate.GrinNumber;
+                        var grinPartsId = projectNo.GrinPartsId;
+                        var itemNo = iQCDto[i].ItemNumber;
+                        var projectNos = projectNo.ProjectNumber;
+                        var inventoryTranctionObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryTranctionAPI"],
+                            "GetInventoryTranctionDetailsByGrinNoandGrinId?", "GrinNo=", grinNo, "&GrinPartsId=",
+                            grinPartsId, "&ItemNumber=", itemNo, "&ProjectNumber=", projectNos));
+                        var inventoryTranctionObjectString = await inventoryTranctionObjectResult.Content.ReadAsStringAsync();
+                        dynamic inventoryTranctionObjectData = JsonConvert.DeserializeObject(inventoryTranctionObjectString);
+                        dynamic inventoryTranctionObject = inventoryTranctionObjectData.data;
+                        if (inventoryTranctionObject != null)
+                        {
+                            decimal balanceQty = inventoryTranctionObject.issued_Quantity;
+
+                            if (inventoryTranctionObject.issued_Quantity <= acceptedQty && inventoryTranctionObject.issued_Quantity != 0)
+                            {
+                                inventoryTranctionObject.warehouse = "IQC";
+                                inventoryTranctionObject.from_Location = "IQC";
+                                inventoryTranctionObject.tO_Location = "IQC";
+                                inventoryTranctionObject.referenceIDFrom = "GRIN";
+                                acceptedQty -= balanceQty;
+
+                            }
+                            else if (inventoryTranctionObject.issued_Quantity > acceptedQty)
+                            {
+                                if (acceptedQty == 0)
+                                {
+                                    inventoryTranctionObject.issued_Quantity = acceptedQty;
+                                    inventoryTranctionObject.warehouse = "IQC";
+                                    inventoryTranctionObject.from_Location = "IQC";
+                                    inventoryTranctionObject.tO_Location = "IQC";
+                                    inventoryTranctionObject.referenceIDFrom = "GRIN";
+                                    inventoryTranctionObject.isStockAvailable = false;
+                                }
+                                else
+                                {
+                                    inventoryTranctionObject.issued_Quantity = acceptedQty;
+                                    inventoryTranctionObject.warehouse = "IQC";
+                                    inventoryTranctionObject.from_Location = "IQC";
+                                    inventoryTranctionObject.tO_Location = "IQC";
+                                    inventoryTranctionObject.referenceIDFrom = "GRIN";
+                                    acceptedQty = 0;
+                                }
+                            }
+
+                            var json = JsonConvert.SerializeObject(inventoryTranctionObject);
+                            var data = new StringContent(json, Encoding.UTF8, "application/json");
+                            var response = await _httpClient.PutAsync(string.Concat(_config["InventoryTranctionAPI"],
+                                "UpdateInventoryTranction?id=", inventoryTranctionObject.id), data);
+                        }
+                    }
+
                     ////update accepted qty and rejected qty in grin model
 
                     var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iQCConfirmationItems.GrinPartId, iQCConfirmationItems.AcceptedQty.ToString(), iQCConfirmationItems.RejectedQty.ToString());
@@ -908,6 +963,60 @@ namespace Tips.Grin.Api.Controllers
                             "UpdateInventory?id=", inventoryObject.id), data);
                     }
 
+                    //InventoryTranction Update Code
+                    foreach (var projectNo in grinPartsDetails.ProjectNumbers)
+                    {
+                        var grinNo = iqcConfirmation.GrinNumber;
+                        var grinPartsIds = projectNo.GrinPartsId;
+                        var itemNo = iqcConfirmationItemsDto.ItemNumber;
+                        var projectNos = projectNo.ProjectNumber;
+                        var inventoryTranctionObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryTranctionAPI"],
+                            "GetInventoryTranctionDetailsByGrinNoandGrinId?", "GrinNo=", grinNo, "&GrinPartsId=",
+                            grinPartsId, "&ItemNumber=", itemNo, "&ProjectNumber=", projectNos));
+                        var inventoryTranctionObjectString = await inventoryTranctionObjectResult.Content.ReadAsStringAsync();
+                        dynamic inventoryTranctionObjectData = JsonConvert.DeserializeObject(inventoryTranctionObjectString);
+                        dynamic inventoryTranctionObject = inventoryTranctionObjectData.data;
+                        if (inventoryTranctionObject != null)
+                        {
+                            decimal balanceQty = inventoryTranctionObject.issued_Quantity;
+
+                            if (inventoryTranctionObject.issued_Quantity <= acceptedQty && inventoryTranctionObject.issued_Quantity != 0)
+                            {
+                                inventoryTranctionObject.warehouse = "IQC";
+                                inventoryTranctionObject.from_Location = "IQC";
+                                inventoryTranctionObject.tO_Location = "IQC";
+                                inventoryTranctionObject.referenceIDFrom = "GRIN";
+                                acceptedQty -= balanceQty;
+
+                            }
+                            else if (inventoryTranctionObject.issued_Quantity > acceptedQty)
+                            {
+                                if (acceptedQty == 0)
+                                {
+                                    inventoryTranctionObject.issued_Quantity = acceptedQty;
+                                    inventoryTranctionObject.warehouse = "IQC";
+                                    inventoryTranctionObject.from_Location = "IQC";
+                                    inventoryTranctionObject.tO_Location = "IQC";
+                                    inventoryTranctionObject.referenceIDFrom = "GRIN";
+                                    inventoryTranctionObject.isStockAvailable = false;
+                                }
+                                else
+                                {
+                                    inventoryTranctionObject.issued_Quantity = acceptedQty;
+                                    inventoryTranctionObject.warehouse = "IQC";
+                                    inventoryTranctionObject.from_Location = "IQC";
+                                    inventoryTranctionObject.tO_Location = "IQC";
+                                    inventoryTranctionObject.referenceIDFrom = "GRIN";
+                                    acceptedQty = 0;
+                                }
+                            }
+
+                            var json = JsonConvert.SerializeObject(inventoryTranctionObject);
+                            var data = new StringContent(json, Encoding.UTF8, "application/json");
+                            var response = await _httpClient.PutAsync(string.Concat(_config["InventoryTranctionAPI"],
+                                "UpdateInventoryTranction?id=", inventoryTranctionObject.id), data);
+                        }
+                    }
 
                     ////update accepted qty and rejected qty in grin model
 
@@ -1013,6 +1122,60 @@ namespace Tips.Grin.Api.Controllers
                             "UpdateInventory?id=", inventoryObject.id), data);
                     }
 
+                    //InventoryTranction Update Code
+                    foreach (var projectNo in grinPartsDetails.ProjectNumbers)
+                    {
+                        var grinNo = iqcConfirmation.GrinNumber;
+                        var grinPartsIds = projectNo.GrinPartsId;
+                        var itemNo = iqcConfirmationItemsDto.ItemNumber;
+                        var projectNos = projectNo.ProjectNumber;
+                        var inventoryTranctionObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryTranctionAPI"],
+                            "GetInventoryTranctionDetailsByGrinNoandGrinId?", "GrinNo=", grinNo, "&GrinPartsId=",
+                            grinPartsId, "&ItemNumber=", itemNo, "&ProjectNumber=", projectNos));
+                        var inventoryTranctionObjectString = await inventoryTranctionObjectResult.Content.ReadAsStringAsync();
+                        dynamic inventoryTranctionObjectData = JsonConvert.DeserializeObject(inventoryTranctionObjectString);
+                        dynamic inventoryTranctionObject = inventoryTranctionObjectData.data;
+                        if (inventoryTranctionObject != null)
+                        {
+                            decimal balanceQty = inventoryTranctionObject.issued_Quantity;
+
+                            if (inventoryTranctionObject.issued_Quantity <= acceptedQty && inventoryTranctionObject.issued_Quantity != 0)
+                            {
+                                inventoryTranctionObject.warehouse = "IQC";
+                                inventoryTranctionObject.from_Location = "IQC";
+                                inventoryTranctionObject.tO_Location = "IQC";
+                                inventoryTranctionObject.referenceIDFrom = "GRIN";
+                                acceptedQty -= balanceQty;
+
+                            }
+                            else if (inventoryTranctionObject.issued_Quantity > acceptedQty)
+                            {
+                                if (acceptedQty == 0)
+                                {
+                                    inventoryTranctionObject.issued_Quantity = acceptedQty;
+                                    inventoryTranctionObject.warehouse = "IQC";
+                                    inventoryTranctionObject.from_Location = "IQC";
+                                    inventoryTranctionObject.tO_Location = "IQC";
+                                    inventoryTranctionObject.referenceIDFrom = "GRIN";
+                                    inventoryTranctionObject.isStockAvailable = false;
+                                }
+                                else
+                                {
+                                    inventoryTranctionObject.issued_Quantity = acceptedQty;
+                                    inventoryTranctionObject.warehouse = "IQC";
+                                    inventoryTranctionObject.from_Location = "IQC";
+                                    inventoryTranctionObject.tO_Location = "IQC";
+                                    inventoryTranctionObject.referenceIDFrom = "GRIN";
+                                    acceptedQty = 0;
+                                }
+                            }
+
+                            var json = JsonConvert.SerializeObject(inventoryTranctionObject);
+                            var data = new StringContent(json, Encoding.UTF8, "application/json");
+                            var response = await _httpClient.PutAsync(string.Concat(_config["InventoryTranctionAPI"],
+                                "UpdateInventoryTranction?id=", inventoryTranctionObject.id), data);
+                        }
+                    }
 
                     ////update accepted qty and rejected qty in grin model
 

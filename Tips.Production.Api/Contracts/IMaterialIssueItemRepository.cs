@@ -6,5 +6,6 @@ namespace Tips.Production.Api.Contracts
     {
         Task<IEnumerable<MaterialIssueItem>> GetMaterialIssueItemById(int id);
         Task<string> UpdateMaterialIssueItem(MaterialIssueItem materialIssueItem);
+        Task<List<string>> GetMaterialIssueItemProjectNumbersById(int id);
     }
 }

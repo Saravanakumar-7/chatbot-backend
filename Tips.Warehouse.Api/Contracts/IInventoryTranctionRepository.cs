@@ -13,7 +13,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<InventoryTranction> CreateInventoryTransaction(InventoryTranction inventoryTranction);
         Task<string> UpdateInventoryTraction(InventoryTranction inventoryTranction);
         Task<string> DeleteInventoryTranction(InventoryTranction inventoryTranction);
-
+        Task<InventoryTranction> GetInventoryTranctionDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber);
         Task<InventoryTranction> GetInventoryTranctionById(int id);
     }
 }
