@@ -36,7 +36,18 @@ namespace Tips.SalesService.Api.Controllers
             _config = config;
             _coverageRepository = coverageReportRepository;
         }
-        //test aravind
+
+
+        //[HttpGet]
+        //public async Task<List<CoverageReport>> GenerateCoverageSOReport()
+        //{
+
+
+        //}
+
+
+        //test consumption report
+        [HttpGet]
         public async Task<List<CoverageReport>> GenerateCoverageReportAsync()
         {
             var coverageReports = new Dictionary<string, CoverageReport>();
@@ -60,12 +71,14 @@ namespace Tips.SalesService.Api.Controllers
 
             // At this point, 'coverageReports' will have the coverage report for each item number
             return coverageReports.Values.ToList();
-        }
+        }      
 
+
+            [HttpGet]
         private async Task GetBomAndCalculateRequiredQuantitiesRecursivelyAsync(string itemNumber, decimal requiredQtyMultiplier, Dictionary<string, CoverageReport> coverageReports)
         { 
             var enggBomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
-                            "GetEnggBomByFgPartNumber?", "&fgPartNumber=", itemNumber));
+                            "GetLatestEnggBomVersionDetailByIemNumber?", "&fgPartNumber=", itemNumber));
 
             var enggBomObjectString = await enggBomDetails.Content.ReadAsStringAsync();
             dynamic enggBomObjectData = JsonConvert.DeserializeObject(enggBomObjectString);
@@ -145,6 +158,7 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet]
         private async Task<List<EnggChildItem>> GetEnggChildItemsRecursivelyAsync(int parentId)
         {
             var childItems = new List<EnggChildItem>();

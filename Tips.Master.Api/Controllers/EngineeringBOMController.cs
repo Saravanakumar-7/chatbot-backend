@@ -315,13 +315,15 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet("{fgPartNumber}")]
-        public async Task<IActionResult> GetEnggBomByFgPartNumber(string fgPartNumber)
+        public async Task<IActionResult> GetLatestEnggBomVersionDetailByItemNumber(string fgPartNumber)
         {
             ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
 
             try
             {
-                var bom = await _repository.EnggBomRepository.GetEnggBomByFgPartNumber(fgPartNumber);
+                decimal revisionNo = await _releaseProductBomRepository.GetLatestProductionBomByItemNumber(fgPartNumber);
+
+                var bom = await _repository.EnggBomRepository.GetLatestEnggBomVersionDetailByItemNumber(fgPartNumber, revisionNo);
                 if (bom == null)
                 {
                     serviceResponse.Data = null;

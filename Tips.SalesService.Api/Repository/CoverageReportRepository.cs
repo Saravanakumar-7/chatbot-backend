@@ -22,7 +22,9 @@ namespace Tips.SalesService.Api.Repository
         public async Task<List<SalesOrder>> GetAllForecastSalesOrderDetails()
         {
             var salesOrderDetails = await _tipsSalesServiceDbContext.SalesOrders
-               .Where(x => x.SalesOrderStatus == SalesOrderStatus.Forecast)
+               .Where(x => x.SalesOrderStatus != SalesOrderStatus.RetailSalesOrder && 
+               x.SOStatus != OrderStatus.Closed /*&& x.ApproveStatus == true && x.ConfirmStatus = true*/ 
+               && x.IsShortClosed == false)
                .ToListAsync();
 
             return salesOrderDetails;
