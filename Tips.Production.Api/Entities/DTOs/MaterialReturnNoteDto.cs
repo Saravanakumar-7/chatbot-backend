@@ -61,6 +61,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public List<MRNInventoryUpdateDto> MRNDetails { get; set; }
     }
 
+
     public class MRNInventoryUpdateDto
     {
         public string? Warehouse { get; set; }

@@ -205,6 +205,7 @@ namespace Tips.Production.Api.Repository
                              .FirstOrDefaultAsync();
             return shopOrderDetailById;
         }
+        //Get shop order item by 
 
         public async Task<string> UpdateShopOrder(ShopOrder shopOrder)
         {
