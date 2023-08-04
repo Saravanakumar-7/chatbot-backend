@@ -217,5 +217,13 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
         // Get all ForeCastEngg 
+
+
+        [HttpGet]
+        private async Task<List<EnggChildItem>> GenerateFGCoverageReport()
+        {
+
+        }
+
     }
 }

@@ -376,7 +376,7 @@ namespace Tips.Warehouse.Api.Controllers
                                 getInventoryFGDetailsByItemnumber.IsStockAvailable = false;
                             }
 
-                            _inventoryRepository.Update(getInventoryFGDetailsByItemnumber);
+                            _inventoryRepository.UpdateInventory(getInventoryFGDetailsByItemnumber);
                             _inventoryRepository.SaveAsync();
                         }
                         else

@@ -717,7 +717,7 @@ namespace Tips.Warehouse.Api.Repository
             var partTypes = new PartType[] { PartType.FG, PartType.TG, PartType.FRU };
 
             var getSalesOrderDetailsBy = await _tipsWarehouseDbContext.Inventory
-                .Where(x => x.PartNumber == ItemNumber && partTypes.Contains(x.PartType) && x.IsStockAvailable)
+                .Where(x => x.PartNumber == ItemNumber && partTypes.Contains(x.PartType) && x.IsStockAvailable && x.Balance_Quantity>0)
                 .FirstOrDefaultAsync();
 
             return getSalesOrderDetailsBy;

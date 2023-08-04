@@ -1109,5 +1109,29 @@ namespace Tips.Warehouse.Api.Controllers
             return Ok();
         }
 
+        [HttpGet("{itemNumber}")]
+        public async Task<ActionResult<decimal>> GetStockAvailable(string itemNumber)
+        {
+            var inventoryServiceResponse = new ServiceResponse<decimal>();
+
+            try
+            {
+                var stockAvailable = await _inventoryRepository.GetTotalStockAvailable(itemNumber);
+
+                inventoryServiceResponse.Data = stockAvailable;
+                inventoryServiceResponse.Message = "Retrieved stock available quantity";
+                inventoryServiceResponse.Success = true;
+
+                return Ok(inventoryServiceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                inventoryServiceResponse.Success = false;
+                inventoryServiceResponse.Message = "Error getting stock available";
+                return StatusCode(500, inventoryServiceResponse);
+            }
+        }
+
     }
 }
