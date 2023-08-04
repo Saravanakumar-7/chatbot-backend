@@ -35,6 +35,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<bool> IsFullyReleasedRfqCs(string rfqNumber, decimal revNumber);
         Task<bool> IsNotYetReleasedRfqCs(string rfqNumber, decimal revNumber);
         Task<IEnumerable<string>> GetRfqCsandForecastCsDetailListByItemNumber(string itemNumber);
+        Task<IEnumerable<string>> GetRfqEnggandForecastCsProjectList();
 
         Task<IEnumerable<string>> GetRfqEnggandForecastCsDetailListByItemNumber(string itemNumber);
 

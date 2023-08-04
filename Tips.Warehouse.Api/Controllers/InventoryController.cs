@@ -483,6 +483,46 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        //consumption report by itemnumber
+        [HttpGet]
+        public async Task<IActionResult> GetConsumptionInventoryByItemNo(string itemNumber)
+        {
+            ServiceResponse<ConsumptionInventoryDto> serviceResponse = new ServiceResponse<ConsumptionInventoryDto>();
+            try
+            {
+                var InventoryDetails = await _inventoryRepository.GetConsumptionInventoryByItemNo(itemNumber);
+                if (InventoryDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory Details hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with itemNumber: {itemNumber}, is invalid");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with Itemnumber: {itemNumber}");
+                    var result = _mapper.Map<ConsumptionInventoryDto>(InventoryDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned InventoryDetails with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> UpdateInventoryOnMaterialIssue(InventoryDtoForMaterialIssue dtoForMaterialIssue)
         {

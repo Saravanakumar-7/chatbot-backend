@@ -315,7 +315,15 @@ namespace Tips.Warehouse.Api.Controllers
                             break;
                         }
                     }
-                } 
+                }
+                else
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Inventory hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "locationTransfer Successfully Created";
                 serviceResponse.Success = true;
@@ -485,6 +493,45 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProjectLocWareFromInventoryByItemNo(string itemNumber)
+        {
+            ServiceResponse<List<LocationTransferFromDto>> serviceResponse = new ServiceResponse<List<LocationTransferFromDto>>();
+            try
+            {
+                var InventoryDetails = await _locationTransferRepository.GetProjectLocWareFromInventoryByItemNo(itemNumber);
+                if (InventoryDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory Location,Project,Warehouse Details hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with itemNumber: {itemNumber}, is invalid");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory Location,Project,Warehouse with Itemnumber: {itemNumber}");
+                    var result = _mapper.Map<List<LocationTransferFromDto>>(InventoryDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned InventoryDetails with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllLocationTransferIdNameList()

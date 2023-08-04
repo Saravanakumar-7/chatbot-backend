@@ -279,6 +279,13 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
     }
 
+    public class ConsumptionInventoryDto
+    {
+        public string PartNumber { get; set; }
+       public decimal Balance_Quantity { get; set; }
+
+    }
+
     public class InventoryBalanceQtyMaterialIssue
     {
         public string PartNumber { get; set; }

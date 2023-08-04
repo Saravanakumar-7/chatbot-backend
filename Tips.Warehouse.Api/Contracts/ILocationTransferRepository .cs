@@ -13,7 +13,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<string> DeleteLocationTransfer(LocationTransfer locationTransfer);
         Task<PagedList<LocationTransfer>> GetAllLocationTransfer(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<LocationTransfer> GetLocationTransferById(int id);
-
+        Task<List<LocationTransferFromDto>> GetProjectLocWareFromInventoryByItemNo(string itemNumber); 
         Task<IEnumerable<LocationTransfer>> SearchLocationTransfer([FromQuery] SearchParammes searchParammes);
         Task<IEnumerable<LocationTransfer>> SearchLocationTransferDate([FromQuery] SearchDateParam searchDatesParams);
         Task<IEnumerable<LocationTransfer>> GetAllLocationTransferWithItems(LocationTransferSearchDto locationTransferSearchDto);

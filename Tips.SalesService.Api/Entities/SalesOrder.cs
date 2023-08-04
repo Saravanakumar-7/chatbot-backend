@@ -25,7 +25,7 @@ namespace Tips.SalesService.Api.Entities
         public int? RevisionNumber { get; set; }
         public SalesOrderStatus SalesOrderStatus { get; set; }
 
-        public OrderStatus SOStatus { get; set; } = 0;
+        public OrderStatus SOStatus { get; set; }
         public string? ProductType { get; set; }
         public string? TypeOfSolution { get; set; }
        

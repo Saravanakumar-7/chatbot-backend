@@ -10,6 +10,7 @@ namespace Tips.SalesService.Api.Contracts
     {
         Task<List<SalesOrder>> GetAllForecastSalesOrderDetails();
         Task<List<SalesOrderItems>> GetAllSalesOrderItemDetails(int salesorderId);
+        Task<List<SalesOrderItems>> GetAllSalesOrderFGOrTGItemDetails();
         Task<IEnumerable<CoverageReportDto>> GetAllSalesOrderDetails();
 
     }

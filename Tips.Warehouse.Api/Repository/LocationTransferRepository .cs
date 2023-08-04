@@ -106,6 +106,47 @@ namespace Tips.Warehouse.Api.Repository
             return locationTransferDetails;
         }
 
+        //public async Task<LocationTransferFromDto> GetProjectLocWareFromInventoryByItemNo(string itemNumber)
+        //{
+        //    var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == itemNumber
+        //    && x.IsStockAvailable == true)
+        //                  .ToListAsync();
+        //    return inventoryDetail;
+        //}
+        public async Task<List<LocationTransferFromDto>> GetProjectLocWareFromInventoryByItemNo(string itemNumber)
+        {
+            var inventoryDetails = await _tipsWarehouseDbContext.Inventory
+                .Where(x => x.PartNumber == itemNumber && x.IsStockAvailable)
+                .GroupBy(x => new { x.ProjectNumber, x.Location, x.Warehouse })
+                .Select(group => new LocationTransferFromDto
+                {
+                    FromProject = group.Key.ProjectNumber,
+                    FromLocation = group.Key.Location,
+                    FromWarehouse = group.Key.Warehouse,
+                    AvailableStock = group.Sum(x => x.Balance_Quantity)
+                })
+                .ToListAsync();
+
+            return inventoryDetails;
+        }
+         
+
+        //public async Task<List<LocationTransferFromDto>> GetProjectLocWareFromInventoryByItemNo(string itemNumber)
+        //{
+        //    var inventoryDetails = await _tipsWarehouseDbContext.Inventory
+        //        .Where(x => x.PartNumber == itemNumber && x.IsStockAvailable)
+        //        .Select(x => new LocationTransferFromDto
+        //        {
+        //            FromProject = x.ProjectNumber ,
+        //            FromLocation = x.Location ,
+        //            FromWarehouse = x.Warehouse
+        //        })
+        //        .ToListAsync();
+
+        //    // Assuming you only want to return the first item from the list, if there are multiple matching entries
+        //    return inventoryDetails;
+        //}
+
         public async Task<IEnumerable<LocationTransfer>> GetAllLocationTransferWithItems(LocationTransferSearchDto locationTransferSearchDto)
         {
             using (var context = _tipsWarehouseDbContext)

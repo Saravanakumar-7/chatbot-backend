@@ -306,4 +306,10 @@ namespace Tips.SalesService.Api.Entities.Dto
         public List<ScheduleDateReportDto>? ScheduleDates { get; set; }
 
     }
+    public class SalesOrderFGandBalanceQty
+    {
+        public string? FGItemNumber { get; set; }
+        public decimal Balance_Qty { get; set; } 
+
+    }
 }

@@ -38,6 +38,15 @@ namespace Tips.SalesService.Api.Repository
             return salesOrderItemDetails;
         }
 
+        //get salesOrder Items FG level report
+        public async Task<List<SalesOrderItems>> GetAllSalesOrderFGOrTGItemDetails()
+        {
+            var salesOrderDetails = await _tipsSalesServiceDbContext.SalesOrdersItems
+               .Where(x => x.StatusEnum != OrderStatus.Closed)
+               .ToListAsync();
+            return salesOrderDetails;
+        }
+
         public async Task<IEnumerable<CoverageReportDto>> GetAllSalesOrderDetails()
         {
             List<CoverageReportDto> result = await (from k in (

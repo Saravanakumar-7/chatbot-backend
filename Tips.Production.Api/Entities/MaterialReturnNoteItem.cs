@@ -13,14 +13,14 @@ namespace Tips.Production.Api.Entities
         public string? MftrPartNumber { get; set; }
         public PartType PartType { get; set; }
         [Precision(13, 3)]
-        public decimal ReturnQty { get; set; }
-        public List<MRNWarehouseDetails> MRNWarehouseList { get; set; }
+        public decimal ReturnQty { get; set; }        
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public int? MaterialReturnNoteId { get; set; }
-        public MaterialReturnNote? MaterialReturnNote { get; set; } 
+        public MaterialReturnNote? MaterialReturnNote { get; set; }
+        public List<MRNWarehouseDetails> MRNWarehouseList { get; set; }
 
     }
 }

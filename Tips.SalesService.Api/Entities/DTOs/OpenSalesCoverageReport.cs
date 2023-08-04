@@ -12,7 +12,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class OpenSalesCoverageReport
     {
         public string? FGOrTGPartNumber { get; set; }
-        public decimal? SOOpenQty { get; set; }
+        public decimal? OpenSOQty { get; set; }
         public decimal? Stock { get; set; }
         public decimal? OpenPoQty { get; set; }
         public decimal? BalanceToOrder { get; set; }

@@ -411,20 +411,12 @@ namespace Tips.SalesService.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAllSalesOrderWithItems([FromBody] SalesOrderSearchDto salesOrderSearch)
         {
-            ServiceResponse<IEnumerable<SalesOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderReportDto>>();
+            ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
             try
             {
                 var salesOrderList = await _repository.GetAllSalesOrderWithItems(salesOrderSearch);
 
-                _logger.LogInfo("Returned all SalesOrders");
-                //var config = new MapperConfiguration(cfg =>
-                //{
-                //    cfg.AddProfile<MappingProfile>();
-                //    cfg.CreateMap<SalesOrderDto, SalesOrder>().ReverseMap()
-                //        .ForMember(dest => dest.SalesOrdersItems, opt => opt.MapFrom(src => src.SalesOrdersItems));
-                //});
-
-                //var mapper = config.CreateMapper();
+                _logger.LogInfo("Returned all SalesOrders"); 
 
                 var config = new MapperConfiguration(cfg =>
                 {
@@ -443,7 +435,7 @@ namespace Tips.SalesService.Api.Controllers
                         );
                 });
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<SalesOrderReportDto>>(salesOrderList);
+                var result = mapper.Map<IEnumerable<SalesOrderDto>>(salesOrderList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all SalesOrdersItems";
                 serviceResponse.Success = true;
