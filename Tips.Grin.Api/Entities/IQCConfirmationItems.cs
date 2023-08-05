@@ -17,6 +17,8 @@ namespace Tips.Grin.Api.Entities
         [Precision(13, 3)]
         public decimal RejectedQty { get; set; }
         public string? Remarks { get; set; }
+        public bool IsIqcCompleted { get; set; }
+        public bool IsBinningCompleted { get; set; }
         public int IQCConfirmationId { get; set; }
         public IQCConfirmation? IQCConfirmation { get; set; }
 

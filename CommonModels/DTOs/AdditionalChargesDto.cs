@@ -12,11 +12,11 @@ namespace Entities.DTOs
 
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
-        public int? AddtionalChargesValueAmount { get; set; }
-        public int? IGST { get; set; }
-        public int? CGST { get; set; }
-        public int? UTGST { get; set; }
-        public int? SGST { get; set; }
+        public decimal? AddtionalChargesValueAmount { get; set; }
+        public decimal? IGST { get; set; }
+        public decimal CGST { get; set; }
+        public decimal? UTGST { get; set; }
+        public decimal? SGST { get; set; }
 
         public bool ActiveStatus { get; set; } = true;
         public string? Description { get; set; }
@@ -33,15 +33,15 @@ namespace Entities.DTOs
     {
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
-        public int? AddtionalChargesValueAmount { get; set; }
+        public decimal? AddtionalChargesValueAmount { get; set; }
 
         public bool ActiveStatus { get; set; } = true;
         public string? Description { get; set; }
         public string? Remarks { get; set; }
-        public int? IGST { get; set; }
-        public int? CGST { get; set; }
-        public int? UTGST { get; set; }
-        public int? SGST { get; set; }
+        public decimal? IGST { get; set; }
+        public decimal? CGST { get; set; }
+        public decimal? UTGST { get; set; }
+        public decimal? SGST { get; set; }
     }
     public class AdditionalChargesUpdateDto
     {
@@ -49,14 +49,14 @@ namespace Entities.DTOs
 
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
-        public int? AddtionalChargesValueAmount { get; set; }
-        public int? IGST { get; set; }
-        public int? CGST { get; set; }
+        public decimal? AddtionalChargesValueAmount { get; set; }
+        public decimal? IGST { get; set; }
+        public decimal? CGST { get; set; }
 
         public bool ActiveStatus { get; set; } = true;
 
-        public int? UTGST { get; set; }
-        public int? SGST { get; set; }
+        public decimal? UTGST { get; set; }
+        public decimal? SGST { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public string Unit { get; set; }

@@ -37,7 +37,8 @@ namespace Tips.Grin.Api.Entities
 
         [Required]
         public string ManufactureBatchNumber { get; set; }
-
+        public bool IsIqcCompleted { get; set; }
+        public bool IsBinningCompleted { get; set; }
         [Required]
         [Precision(18,3)]
         public decimal UnitPrice { get; set; }

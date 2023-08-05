@@ -99,7 +99,7 @@ namespace Repository
 
             var enggBomDetails = FindAll().OrderByDescending(x => x.BOMId)
                           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-                             inv.ItemType.Equals( int.Parse(searchParams.SearchValue)) || inv.ItemDescription.Contains(searchParams.SearchValue))))
+                             /*inv.ItemType.Equals(int.Parse(searchParams.SearchValue)) ||*/ inv.ItemDescription.Contains(searchParams.SearchValue))))
                                 .Include(t => t.EnggChildItems)
                                .ThenInclude(t => t.EnggAlternates) 
                                .Include(t => t.NREConsumable);  

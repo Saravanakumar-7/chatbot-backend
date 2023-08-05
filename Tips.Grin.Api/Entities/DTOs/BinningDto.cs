@@ -133,7 +133,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public string MftrPartNumber { get; set; }
 
-
+        public bool IsStockAvailable { get; set; }
         public string Description { get; set; }
 
 

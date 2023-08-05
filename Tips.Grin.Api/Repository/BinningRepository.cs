@@ -100,6 +100,12 @@ namespace Tips.Grin.Api.Repository
                                          .FirstOrDefaultAsync();
             return binningDetailsByGrinNo;
         }
+        public async Task<Binning> GetBinningDetailsByGrinNumber(string grinNumber)
+        {
+            var binningDetailsByGrinNo = await _tipsGrinDbContext.Binnings.Where(x => x.GrinNumber == grinNumber)
+                                         .FirstOrDefaultAsync();
+            return binningDetailsByGrinNo;
+        }
 
         public async Task<IEnumerable<Binning>> GetAllBinningWithItems(BinningSearchDto binningSearchDto)
         {
@@ -219,6 +225,13 @@ namespace Tips.Grin.Api.Repository
 
         //    return PagedList<BinningItems>.ToPagedList(getAllBinningItems, pagingParameter.PageNumber, pagingParameter.PageSize);
         //}
+
+        public async Task<BinningItems> CreateBinningItems(BinningItems binningItems)
+        {
+
+            var result = await Create(binningItems);
+            return result;
+        }
 
         public async Task<IEnumerable<BinningItems>> GetAllBinningItems()
         {

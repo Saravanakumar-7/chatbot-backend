@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
@@ -18,8 +19,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ToLocation { get; set; }
         public string? FromWarehouse { get; set; }
         public string? ToWarehouse { get; set; }
-        public string? FromPartType { get; set; }
-        public string? ToPartType { get; set; }
+        public PartType FromPartType { get; set; }
+        public PartType ToPartType { get; set; }
         public string? FromProjectNumber { get; set; }
         public string? ToProjectNumber { get; set; }
 
@@ -56,8 +57,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ToLocation { get; set; }
         public string? FromWarehouse { get; set; }
         public string? ToWarehouse { get; set; }
-        public string? FromPartType { get; set; }
-        public string? ToPartType { get; set; }
+        public PartType FromPartType { get; set; }
+        public PartType ToPartType { get; set; }
         public string? FromProjectNumber { get; set; }
         public string? ToProjectNumber { get; set; }
 
@@ -94,8 +95,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ToLocation { get; set; }
         public string? FromWarehouse { get; set; }
         public string? ToWarehouse { get; set; }
-        public string? FromPartType { get; set; }
-        public string? ToPartType { get; set; }
+        public PartType FromPartType { get; set; }
+        public PartType ToPartType { get; set; }
         public string? FromProjectNumber { get; set; }
         public string? ToProjectNumber { get; set; }
 

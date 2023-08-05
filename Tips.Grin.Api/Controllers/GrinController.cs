@@ -742,6 +742,7 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryTranctionDto.ReferenceIDFrom = "GRIN";
                             grinInventoryTranctionDto.GrinMaterialType = "";
                             grinInventoryTranctionDto.ShopOrderNo = "";
+                            grinInventoryTranctionDto.IsStockAvailable = true;
 
                             var json = JsonConvert.SerializeObject(grinInventoryTranctionDto);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");

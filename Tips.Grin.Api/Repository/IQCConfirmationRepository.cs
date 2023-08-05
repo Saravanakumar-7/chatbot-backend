@@ -175,6 +175,18 @@ namespace Tips.Grin.Api.Repository
             var result = await Create(iQCConfirmationItems);
             return result.Id;
         }
+        public async Task<IQCConfirmationItems> GetIQCConfirmationItemsDetailsbyGrinPartId(int GrinPartId)
+        {
+            var grinPartsDetails = await _tipsGrinDbContext.IQCConfirmationItems.Where(x => x.GrinPartId == GrinPartId)
+                .FirstOrDefaultAsync();
+            return grinPartsDetails;
+        }
+        public async Task<string> UpdateIqcItems(IQCConfirmationItems iqcConfirmationItems)
+        {
+            Update(iqcConfirmationItems);
+            string result = $"IQCItems details of {iqcConfirmationItems.Id} is updated successfully!";
+            return result;
+        }
     }
 }
 

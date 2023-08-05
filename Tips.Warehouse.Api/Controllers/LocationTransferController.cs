@@ -270,10 +270,10 @@ namespace Tips.Warehouse.Api.Controllers
                             inventoryItem.ProjectNumber = toProjectNumber;
                             inventoryItem.MftrPartNumber = toPartNumber;
                             inventoryItem.Description = itemData.description; 
-                            inventoryItem.UOM = itemData?.MftrPartNumber;
+                            inventoryItem.UOM = itemData.uom;
                             inventoryItem.Warehouse = toWarehouse;
                             inventoryItem.Location = toLocation;
-                            inventoryItem.PartType = itemData?.PartType;
+                            inventoryItem.PartType = itemData.itemType;
                             inventoryItem.ReferenceID = Convert.ToString(createLocationTransfer.Id);
                             inventoryItem.ReferenceIDFrom = "LocationTransfer";
                             await _inventoryRepository.UpdateInventory(inventoryItem);
@@ -302,7 +302,7 @@ namespace Tips.Warehouse.Api.Controllers
                             inventoryPost.IsStockAvailable = true;
                             inventoryPost.Warehouse = toWarehouse;
                             inventoryPost.Location = toLocation;
-                            inventoryPost.PartType = itemData?.PartType;
+                            inventoryPost.PartType = itemData.itemType;
                             inventoryPost.ReferenceID = Convert.ToString(createLocationTransfer.Id);
                             inventoryPost.ReferenceIDFrom = "LocationTransfer";
                             await _inventoryRepository.CreateInventory(inventoryPost);

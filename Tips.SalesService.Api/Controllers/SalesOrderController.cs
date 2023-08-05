@@ -331,6 +331,7 @@ namespace Tips.SalesService.Api.Controllers
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<SalesOrder, SalesOrderReportDto>();
                     cfg.CreateMap<SalesOrderItems, SalesOrderItemsReportDto>()
                         .ForMember(dest => dest.ScheduleDates, opt => opt.MapFrom(src => src.ScheduleDates
                         .Select(scheduleDate => new ScheduleDateReportDto

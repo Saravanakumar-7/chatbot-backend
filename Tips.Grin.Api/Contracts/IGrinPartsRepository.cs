@@ -21,6 +21,9 @@ namespace Tips.Grin.Api.Contracts
         Task<GrinParts> GetGrinPartsDetailsbyGrinPartId(int GrinPartId);
         Task<string> DeleteGrinParts(GrinParts grinParts);
         Task<IEnumerable<GrinParts>> GetGrinPartsDetailsByGrinPartIds(List<int> grinPartIds);
+        Task<GrinParts> GetGrinPartsByItemNo(string itemNumber);
+        Task<int?> GetGrinPartsIqcStatusCount(int grinId);
+        Task<int?> GetGrinPartsBinningStatusCount(int grinId);
     }
 }
 
