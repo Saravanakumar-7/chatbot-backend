@@ -15,6 +15,7 @@ namespace Contracts
         Task<EnggBom> GetEnggBomById(int id);
         Task<EnggBom> GetEnggBomByItemNoAndRevNo(string itemNumber,decimal revisionNumber);
         Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber);
+        Task<EnggBom> GetLatestEnggBomVersionDetailByItemNumber(string fgPartNumber, decimal revisionNo);
         Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom);
         Task<IEnumerable<EnggBom>> GetAllActiveEnggBom();
         Task<int?> CreateEnggBom(EnggBom enggBom);

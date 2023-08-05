@@ -117,8 +117,7 @@ namespace Repository
             return getAllEnggBomItems;
 
         }
-
-        //aravind
+         
         public async Task<List<EnggBomFGItemNumberWithQtyDto>> GetFGBomItemsChildDetails(List<string> itemNumberList)
         {
             var itemIdNoList = await TipsMasterDbContext.EnggBoms
@@ -337,10 +336,18 @@ namespace Repository
         public async Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber)
         {
             var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber)                              
-                                .Include(m => m.NREConsumable)
-                                .Include(t => t.EnggChildItems)
-                                .ThenInclude(x => x.EnggAlternates)
-                              .FirstOrDefaultAsync();
+                                               .Include(t => t.EnggChildItems)
+                                             .FirstOrDefaultAsync();
+
+            return EnggBomDetailsbyId;
+        }
+        //aravind
+        public async Task<EnggBom> GetLatestEnggBomVersionDetailByItemNumber(string fgPartNumber, decimal revisionNo)
+        {
+            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber 
+                                    && x.RevisionNumber == revisionNo)
+                                    .Include(t => t.EnggChildItems)
+                                    .FirstOrDefaultAsync();
 
             return EnggBomDetailsbyId;
         }
@@ -685,6 +692,16 @@ namespace Repository
                                   .FirstOrDefaultAsync();
 
             return productionBomDetail;
+        }
+
+        public async Task<decimal> GetLatestProductionBomByItemNumber(string itemNumber)
+        {
+
+            decimal maxRevisionNumber = await _tipsMasterDbContext.ProductionBoms
+    .Where(x => x.ItemNumber == itemNumber)
+    .MaxAsync(x => x.ReleaseVersion);
+
+            return maxRevisionNumber;
         }
 
         public async Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber)

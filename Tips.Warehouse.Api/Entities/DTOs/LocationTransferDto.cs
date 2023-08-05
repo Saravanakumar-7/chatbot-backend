@@ -122,6 +122,15 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public List<string> ToLocation { get; set; }
     }
 
+    public class LocationTransferFromDto
+    {
+        public string? FromProject { get; set; }
+        public string? FromLocation { get; set; }
+        public string? FromWarehouse { get; set; }
+        public decimal? AvailableStock { get; set; }
+
+    }
+
     public class InventoryPostDto
     {
         [Required]

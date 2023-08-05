@@ -594,7 +594,22 @@ namespace Tips.Warehouse.Api.Repository
             && x.IsStockAvailable == true )
                           .ToListAsync();
             return inventoryDetail;
-        } 
+        }
+
+        public async Task<ConsumptionInventoryDto> GetConsumptionInventoryByItemNo(string itemNumber)
+        {
+            var inventoryDetails = await _tipsWarehouseDbContext.Inventory
+            .Where(x => x.PartNumber == itemNumber && x.IsStockAvailable == true)
+            .GroupBy(x => x.PartNumber)  
+            .Select(group => new ConsumptionInventoryDto
+            {
+                PartNumber = group.Key,
+                Balance_Quantity = group.Sum(x => x.Balance_Quantity) // Calculate the sum of quantities
+            })
+            .FirstOrDefaultAsync();
+
+            return inventoryDetails;
+        }
 
         //public async Task<Inventory> GetInventoryDetailsByItemNoandPartType(string ItemNumber, int PartType)
         //{
@@ -621,6 +636,8 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryDetail;
         }
+
+
 
         public async Task<Inventory> GetInventoryDetailsByItemAndProjectNo(string itemNumber, string projectNumber)
         {

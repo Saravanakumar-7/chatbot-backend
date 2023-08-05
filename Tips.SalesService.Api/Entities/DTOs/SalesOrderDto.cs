@@ -25,7 +25,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
-        public OrderStatus SOStatus { get; set; } = 0;
+        public OrderStatus? SOStatus { get; set; }
         public SalesOrderStatus SalesOrderStatus { get; set; }
 
         //PO Details
@@ -202,6 +202,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
     public class SalesOrderSearchDto
     {
+        //public string? ProjectNumber { get; set; }
+        //public string? SalesOrderNumber { get; set; }
+        //public string? CustomerName { get; set; }
+        //public OrderStatus? SOStatus { get; set; }
         public List<string>? ProjectNumber { get; set; }
         public List<string>? SalesOrderNumber { get; set; }
         public List<string>? CustomerName { get; set; }
@@ -226,7 +230,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
-        public OrderStatus SOStatus { get; set; } = 0;
+        //aravind
+        public OrderStatus SOStatus { get; set; }
         public SalesOrderStatus SalesOrderStatus { get; set; }
 
         //PO Details
@@ -278,8 +283,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
-        public List<SalesOrderItemsReportDto>? SalesOrdersItems { get; set; }
-        public List<SalesOrderAdditionalChargesDto>? SalesOrderAdditionalCharges { get; set; }
+        public List<SalesOrderItemsDto>? SalesOrdersItems { get; set; }
+        public List<SalesOrderAdditionalChargesDto>? SalesOrderAdditionalCharges { get; set; } 
     }
 }

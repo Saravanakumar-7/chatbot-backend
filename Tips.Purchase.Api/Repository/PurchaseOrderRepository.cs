@@ -181,7 +181,6 @@ namespace Tips.Purchase.Api.Repository
 
             return prDetails;
         }
-
          
         public async Task<IEnumerable<PRNoandQtyListDto>> GetPRNumberandQtyListByItemNumber(string itemNumber)
         {
@@ -595,6 +594,8 @@ namespace Tips.Purchase.Api.Repository
 
             return getPODetailsByPONOandItemNo;
         }
+        //aravind
+        
 
         //public async Task<IEnumerable<PoItem>> GetPODetailsByItemNo(string ItemNumber)
         //{
@@ -615,20 +616,32 @@ namespace Tips.Purchase.Api.Repository
 
             return getPODetailsByPONO;
         }
+        //get tg po details
 
-        public async Task<List<OpenPurchaseOrderDto>> GetOpenPODetailsByItem(string itemNumber)
+        public async Task<List<OpenPurchaseOrderDto>> GetOpenPOTGDetailsByItem(string itemNumber)
         {
 
-            //List<OpenPurchaseOrderDto> result = await _tipsPurchaseDbContext.PoItems
-            //        _tipsPurchaseDbContext.PoItems
-            //       .Where(x => x.ItemNumber == itemNumber)
-            //       .GroupBy(l => new { l.ItemNumber, l.PONumber })
-            //       .Select(group => new OpenPurchaseOrderDto
-            //       {
-            //           ItemNumber = group.Key.ItemNumber,
-            //           BalanceQty = group.Sum(c => c.BalanceQty),
-            //           PONumber = group.Key.PONumber
-            //       }).ToListAsync();
+            List<OpenPurchaseOrderDto> result = await _tipsPurchaseDbContext.PoItems
+    .Join(_tipsPurchaseDbContext.PurchaseOrders,
+        poItem => poItem.PONumber,
+        purchaseOrder => purchaseOrder.PONumber,
+        (poItem, purchaseOrder) => new { PoItem = poItem, PurchaseOrder = purchaseOrder })
+    .Where(joinResult => joinResult.PoItem.ItemNumber == itemNumber 
+    && joinResult.PurchaseOrder.Status != Status.Closed && (int)joinResult.PoItem.PartType == (int)PartType.TG)
+    .GroupBy(joinResult => new { joinResult.PoItem.ItemNumber, joinResult.PoItem.PONumber })
+    .Select(group => new OpenPurchaseOrderDto
+    {
+        ItemNumber = group.Key.ItemNumber,
+        BalanceQty = group.Sum(c => c.PoItem.BalanceQty),
+        PONumber = group.Key.PONumber
+    }).ToListAsync();
+
+      return result;
+
+        }
+
+        public async Task<List<OpenPurchaseOrderDto>> GetOpenPODetailsByItem(string itemNumber)
+        {            
 
             List<OpenPurchaseOrderDto> result = await _tipsPurchaseDbContext.PoItems
     .Join(_tipsPurchaseDbContext.PurchaseOrders,
