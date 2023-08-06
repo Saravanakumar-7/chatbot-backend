@@ -1110,13 +1110,13 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet("{itemNumber}")]
-        public async Task<ActionResult<decimal>> GetStockAvailable(string itemNumber)
+        public async Task<ActionResult<decimal>> GetTotalStockOfItemNumber(string itemNumber)
         {
             var inventoryServiceResponse = new ServiceResponse<decimal>();
 
             try
             {
-                var stockAvailable = await _inventoryRepository.GetTotalStockAvailable(itemNumber);
+                decimal stockAvailable = await _inventoryRepository.GetTotalStockOfItemNumber(itemNumber);
 
                 inventoryServiceResponse.Data = stockAvailable;
                 inventoryServiceResponse.Message = "Retrieved stock available quantity";
@@ -1127,6 +1127,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Something went wrong inside DeleteInventory action: {ex.Message}");
                 inventoryServiceResponse.Success = false;
                 inventoryServiceResponse.Message = "Error getting stock available";
                 return StatusCode(500, inventoryServiceResponse);

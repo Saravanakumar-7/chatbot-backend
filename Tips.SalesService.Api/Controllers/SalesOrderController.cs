@@ -15,6 +15,7 @@ using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
+using Tips.SalesService.Api.Repository;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.SalesService.Api.Controllers
@@ -1266,6 +1267,7 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpPut]
         public async Task<IActionResult> ActivateSalesOrderConfirmStatus(string salesOrderNumber,DateTime confirmDate)
         {
@@ -1305,9 +1307,32 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet("{itemNumber}")]
+        public async Task<ActionResult<decimal>> GetOpenSalesOrderQuantityByItemNumber(string itemNumber)
+        {
+            var salesOrderServiceResponse = new ServiceResponse<decimal>();
+
+            try
+            {
+                var openSalesOrderQty = await _repository.GetOpenSalesOrderQuantityByItemNumber(itemNumber);
+
+                salesOrderServiceResponse.Data = openSalesOrderQty;
+                salesOrderServiceResponse.Message = "Retrieved open sales order quantity";
+                salesOrderServiceResponse.Success = true;
+
+                return Ok(salesOrderServiceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ActivateSalesOrderConfirmStatus action: {ex.Message}");
+                salesOrderServiceResponse.Success = false;
+                salesOrderServiceResponse.Message = "Error getting open sales order quantity";
+                return StatusCode(500, salesOrderServiceResponse);
+            }
+        }
+
     }
-
-
 }
 
 

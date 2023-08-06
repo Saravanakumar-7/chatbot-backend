@@ -13,6 +13,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<string> UpdatePOOrderItem(PoItem poItem);
         Task<int?> GetPODetailsByPONumber(string PONumber);
         Task<List<OpenPurchaseOrderDto>> GetOpenPODetailsByItem(string itemNumber);
+        
         //Task<IEnumerable<PoItem>> GetPODetailsByItemNo(string ItemNumber);
 
     }

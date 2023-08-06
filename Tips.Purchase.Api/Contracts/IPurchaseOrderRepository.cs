@@ -40,5 +40,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrderDate([FromQuery] SearchDatesParams searchDatesParams);
         Task<IEnumerable<PurchaseOrderRevNoListDto>> GetAllRevisionNumberListByPoNumber(string poNumber);
         Task<PurchaseRequisition> GetPrDetailsByPrNumber(string prNumber);
+
+        Task<decimal> GetOpenPoQuantityByItemNumber(string itemNumber);
     }
 }

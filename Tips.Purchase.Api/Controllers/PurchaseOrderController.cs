@@ -22,6 +22,7 @@ using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.Dto;
 using Tips.Purchase.Api.Entities.DTOs;
 using Tips.Purchase.Api.Entities.Enums;
+using Tips.Purchase.Api.Repository;
 
 namespace Tips.Purchase.Api.Controllers
 {
@@ -1654,6 +1655,32 @@ namespace Tips.Purchase.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        [HttpGet("{itemNumber}")]
+        public async Task<ActionResult<decimal>> GetOpenPoQuantityByItemNumber(string itemNumber)
+        {
+            var purchaseOrderServiceResponse = new ServiceResponse<decimal>();
+
+            try
+            {
+                var openPoQty = await _repository.GetOpenPoQuantityByItemNumber(itemNumber);
+
+                purchaseOrderServiceResponse.Data = openPoQty;
+                purchaseOrderServiceResponse.Message = "Retrieved open PO quantity";
+                purchaseOrderServiceResponse.Success = true;
+
+                return Ok(purchaseOrderServiceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetOpenPoQuantityByItemNumber action: {ex.Message}");
+                purchaseOrderServiceResponse.Success = false;
+                purchaseOrderServiceResponse.Message = "Error getting open PO quantity";
+                return StatusCode(500, purchaseOrderServiceResponse);
             }
         }
     }

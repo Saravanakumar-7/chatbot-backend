@@ -344,6 +344,13 @@ namespace Tips.SalesService.Api.Repository
                      return salesOrderQtyDtos;
         }
 
+        public async Task<decimal> GetOpenSalesOrderQuantityByItemNumber(string itemNumber)
+        {
+            return await _tipsSalesServiceDbContext.SalesOrdersItems
+            .Where(soi => soi.ItemNumber == itemNumber && soi.StatusEnum != OrderStatus.Closed
+                && soi.SalesOrder.IsShortClosed ==false)
+            .SumAsync(soi => soi.BalanceQty);
+        }
     }
     public class SalesOrderItemRepository : RepositoryBase<SalesOrderItems>, ISalesOrderItemsRepository
     {

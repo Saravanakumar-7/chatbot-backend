@@ -780,5 +780,16 @@ namespace Tips.Warehouse.Api.Repository
         //    return getInventoryDetails;
         //}
 
+
+
+        public async Task<decimal> GetTotalStockOfItemNumber(string itemNumber)
+        {
+            var locationNames = new string[] { "Rework","Scrap"};
+            return await _tipsWarehouseDbContext.Inventory
+        .Where(i => i.PartNumber == itemNumber && i.IsStockAvailable == true && i.Balance_Quantity >0
+                && !locationNames.Contains(i.Location))
+        .SumAsync(i => i.Balance_Quantity);
+        }
+
     }
 }
