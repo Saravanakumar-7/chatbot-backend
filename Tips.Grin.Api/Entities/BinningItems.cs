@@ -14,8 +14,8 @@ namespace Tips.Grin.Api.Entities
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
 
-        public int GrinPartId { get; set; } 
-        
+        public int GrinPartId { get; set; }
+        public bool IsBinningCompleted { get; set; }
         public int BinningId { get; set; }
         public Binning? Binning { get; set; }
 

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
+using Entities.Enums;
 
 namespace Tips.Grin.Api.Entities.DTOs
 {
@@ -133,6 +134,33 @@ namespace Tips.Grin.Api.Entities.DTOs
         public int GrinId { get; set; }
 
         public IQCConfirmationItemsSaveDto? IQCConfirmationItemsPostDtos { get; set; }
+
+    }
+    public class IQCInventoryTranctionDto
+    {
+        public string PartNumber { get; set; }
+        public string? LotNumber { get; set; }
+
+        public string MftrPartNumber { get; set; }
+
+        public bool IsStockAvailable { get; set; }
+        public string Description { get; set; }
+
+
+        public string ProjectNumber { get; set; }
+        public decimal Issued_Quantity { get; set; }
+        public string? UOM { get; set; }
+
+        public string? Warehouse { get; set; }
+        public string? From_Location { get; set; }
+        public string? TO_Location { get; set; }
+        public string? GrinNo { get; set; }
+        public int? GrinPartId { get; set; }
+        public PartType PartType { get; set; }
+        public string? GrinMaterialType { get; set; }
+        public string? ReferenceID { get; set; }
+        public string? ReferenceIDFrom { get; set; }
+        public string? ShopOrderNo { get; set; }
 
     }
 }

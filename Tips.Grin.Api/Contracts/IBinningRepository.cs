@@ -20,6 +20,7 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<Binning>> SearchBinning([FromQuery] SearchParames searchParames);
         Task<IEnumerable<Binning>> SearchBinningDate([FromQuery] SearchDateParames searchParames);
         Task<Binning> GetExistingBinningDetailsByGrinNo(string grinNo);
+        Task<Binning> GetBinningDetailsByGrinNumber(string grinNumber);
         public void SaveAsync();
     }
 }

@@ -54,7 +54,15 @@ namespace Tips.Grin.Api.Repository
 
             return grinPartsDetailsbyId;
         }
+        public async Task<GrinParts> GetGrinPartsByItemNo(string itemNumber)
+        {
+            var grinPartsDetailsbyItemNo = await _tipsGrinDbContext.GrinParts.Where(x => x.ItemNumber == itemNumber)
 
+               .Include(d => d.ProjectNumbers)
+                               .FirstOrDefaultAsync();
+
+            return grinPartsDetailsbyItemNo;
+        }
         public async Task<GrinParts> DeleteGrinPartsById(int id)
         {
             var grinPartsDetailsbyId = await _tipsGrinDbContext.GrinParts.Where(x => x.Id == id)
@@ -97,7 +105,18 @@ namespace Tips.Grin.Api.Repository
             string result = $"GrinParts Detail {grinParts.Id} is updated successfully!";
             return result;
         }
+        public async Task<int?> GetGrinPartsIqcStatusCount(int grinId)
+        {
+            var grinPartsIqcStatusCount = _tipsGrinDbContext.GrinParts.Where(x => x.GrinsId == grinId && x.IsIqcCompleted == false).Count();
 
+            return grinPartsIqcStatusCount;
+        }
+        public async Task<int?> GetGrinPartsBinningStatusCount(int grinId)
+        {
+            var grinPartsBinningStatusCount = _tipsGrinDbContext.GrinParts.Where(x => x.GrinsId == grinId && x.IsBinningCompleted == false).Count();
+
+            return grinPartsBinningStatusCount;
+        }
 
         //pass grinparts id and get the details
 

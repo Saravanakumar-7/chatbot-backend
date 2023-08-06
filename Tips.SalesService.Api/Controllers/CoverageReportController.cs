@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.DTOs;
+using Tips.SalesService.Api.Repository;
 
 
 namespace Tips.SalesService.Api.Controllers
@@ -21,13 +22,15 @@ namespace Tips.SalesService.Api.Controllers
     public class CoverageReportController : ControllerBase
     {
         private ICollectionTrackerRepository _repository;
+        private ISalesOrderItemsRepository _salesOrderItemsRepository;
         private ICoverageReportRepository _coverageRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public CoverageReportController(ICollectionTrackerRepository repository, HttpClient httpClient, IConfiguration config,ICoverageReportRepository coverageReportRepository, ILoggerManager logger, IMapper mapper)
+
+        public CoverageReportController(ICollectionTrackerRepository repository, ISalesOrderItemsRepository salesOrderItemsRepository, HttpClient httpClient, IConfiguration config,ICoverageReportRepository coverageReportRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
@@ -35,15 +38,63 @@ namespace Tips.SalesService.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _coverageRepository = coverageReportRepository;
+            _salesOrderItemsRepository = salesOrderItemsRepository;
+
         }
 
+        //get consumption report in FG Level
+        [HttpGet]
+        public async Task<List<OpenSalesCoverageReport>> GenerateCoverageFGLevelReport()
+        {
+            var salesOrders = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGItemDetails();
+            List<OpenSalesCoverageReport> openSalesCoverageReports = new List<OpenSalesCoverageReport>();
 
-        //[HttpGet]
-        //public async Task<List<CoverageReport>> GenerateCoverageSOReport()
-        //{
+            foreach (var salesOrderItem in salesOrders)
+            {
 
+                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                              "GetConsumptionInventoryByItemNo?", "itemNumber=", salesOrderItem.FGItemNumber));
 
-        //}
+                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                dynamic inventoryObject = inventoryObjectData.data;
+                if (inventoryObject != null)
+                {
+                    OpenSalesCoverageReport coverageReport = new OpenSalesCoverageReport
+                    {
+                        FGOrTGPartNumber = salesOrderItem.FGItemNumber
+                    };
+
+                    foreach (var inventory in inventoryObject)
+                    {
+                        coverageReport.Stock = coverageReport.Stock + inventoryObject.balance_Quantity;
+                    }
+
+                    coverageReport.OpenSOQty = salesOrderItem.Balance_Qty - coverageReport.Stock;
+
+                    var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
+                                  "GetAllOpenTGPoDetails?", "itemNumber=", salesOrderItem.FGItemNumber));
+
+                    if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
+                    {
+                        var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
+                        dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
+                        dynamic purchaseObject = purchaseObjectData.data;
+                        if (purchaseObject != null)
+                        {
+                            foreach (var purchase in purchaseObject)
+                            {
+                                coverageReport.OpenPoQty = coverageReport.OpenPoQty + purchase.balanceQty;
+                            }
+                        }
+                    }
+                    coverageReport.BalanceToOrder = coverageReport.OpenSOQty - (coverageReport.Stock - coverageReport.OpenPoQty);
+                    openSalesCoverageReports.Add(coverageReport);
+                }
+            }
+            return openSalesCoverageReports;
+
+        }
 
 
         //test consumption report

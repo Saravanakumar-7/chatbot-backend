@@ -398,8 +398,7 @@ namespace Tips.Production.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var shopOrder = _mapper.Map<ShopOrder>(shopOrderPostDto);
-                var shopOrderDto = shopOrderPostDto.ShopOrderItems;
-
+                var shopOrderDto = shopOrderPostDto.ShopOrderItems; 
 
 
                 var ShoporderItemList = new List<ShopOrderItem>();

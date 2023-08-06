@@ -1,5 +1,6 @@
 ﻿using AutoMapper.Internal;
 using Entities;
+using Entities.DTOs;
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,32 @@ namespace Tips.SalesService.Api.Repository
             string result = $"SalesOrder details of {salesOrder.Id} is deleted successfully!";
             return result;
         }
+        //public async Task<IEnumerable<SalesOrder>> GetAllSalesOrderWithItems(SalesOrderSearchDto salesOrderSearch)
+        // {
+        //     using (var context = _tipsSalesServiceDbContext)
+        //     {
+        //         var query = _tipsSalesServiceDbContext.SalesOrders.Include("SalesOrdersItems");
+
+        //         if (salesOrderSearch != null &&
+        //             (salesOrderSearch.SalesOrderNumber.Any() ||
+        //              salesOrderSearch.ProjectNumber.Any() ||
+        //              salesOrderSearch.CustomerName.Any() ||
+        //              salesOrderSearch.SOStatus.Any()))
+        //         {
+        //             query = query.Where(so =>
+        //                 (salesOrderSearch.SalesOrderNumber.Any() ? salesOrderSearch.SalesOrderNumber.Contains(so.SalesOrderNumber) : true)
+        //                 && (salesOrderSearch.ProjectNumber.Any() ? salesOrderSearch.ProjectNumber.Contains(so.ProjectNumber) : true)
+        //                 && (salesOrderSearch.CustomerName.Any() ? salesOrderSearch.CustomerName.Contains(so.CustomerName) : true)
+        //                 && (salesOrderSearch.SOStatus.Any() ? salesOrderSearch.SOStatus.Contains(so.SOStatus.ToString()) : true))
+        //                 .Include(itm => itm.SalesOrdersItems)
+        //                 .ThenInclude(p => p.ScheduleDates)
+        //                 .Include(p => p.SalesOrderAdditionalCharges);
+        //         }
+
+        //         return query.ToList();
+        //     }
+
+        // }
         public async Task<IEnumerable<SalesOrder>> GetAllSalesOrderWithItems(SalesOrderSearchDto salesOrderSearch)
         {
             using (var context = _tipsSalesServiceDbContext)
@@ -63,7 +90,8 @@ namespace Tips.SalesService.Api.Repository
                         (so => (salesOrderSearch.SalesOrderNumber.Any() ? salesOrderSearch.SalesOrderNumber.Contains(so.SalesOrderNumber) : true)
                         && (salesOrderSearch.ProjectNumber.Any() ? salesOrderSearch.ProjectNumber.Contains(so.ProjectNumber) : true)
                         && (salesOrderSearch.CustomerName.Any() ? salesOrderSearch.CustomerName.Contains(so.CustomerName) : true)
-                        && (salesOrderSearch.SOStatus.Any() ? salesOrderSearch.SOStatus.Contains(so.SOStatus) : true))
+                        && (salesOrderSearch.SOStatus.Any() ? salesOrderSearch.SOStatus.Contains(so.SOStatus) : true)
+                        )
                         .Include(itm => itm.SalesOrdersItems)
                         .ThenInclude(p => p.ScheduleDates)
                                 .Include(p => p.SalesOrderAdditionalCharges);
@@ -98,22 +126,24 @@ namespace Tips.SalesService.Api.Repository
             bool isSearchValueInt = int.TryParse(searchParammes.SearchValue, out searchValueInt);
 
             var salesOrderDetails = FindAll().OrderByDescending(x => x.Id)
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue)
-                     || inv.SalesOrderNumber.Contains(searchParammes.SearchValue)
-                     || inv.ProjectNumber.Contains(searchParammes.SearchValue)
-                     || inv.OrderType.Contains(searchParammes.SearchValue)
-                     || inv.CustomerName.Contains(searchParammes.SearchValue)
-                     || inv.OrderDate.ToString().Contains(searchParammes.SearchValue)
-                     || inv.ReceivedDate.ToString().Contains(searchParammes.SearchValue)
-                     || inv.PODate.ToString().Contains(searchParammes.SearchValue)
-                     || (!isSearchValueInt || inv.RevisionNumber == searchValueInt)
-                     || inv.CustomerId.Contains(searchParammes.SearchValue))))
-                   .Include(t => t.SalesOrdersItems)
-                   .ThenInclude(p => p.ScheduleDates)
-                   .Include(p => p.SalesOrderAdditionalCharges);
-             
+                .Where(inv => (string.IsNullOrWhiteSpace(searchParammes.SearchValue)
+                               || inv.SalesOrderNumber.Contains(searchParammes.SearchValue)
+                               || inv.ProjectNumber.Contains(searchParammes.SearchValue)
+                               || inv.OrderType.Contains(searchParammes.SearchValue)
+                               || inv.CustomerName.Contains(searchParammes.SearchValue)
+                               || inv.OrderDate.ToString().Contains(searchParammes.SearchValue)
+                               || inv.ReceivedDate.ToString().Contains(searchParammes.SearchValue)
+                               || inv.PODate.ToString().Contains(searchParammes.SearchValue)
+                               || (!isSearchValueInt || inv.RevisionNumber == searchValueInt)
+                               || inv.CustomerId.Contains(searchParammes.SearchValue))
+                               // Add this condition to filter by SalesOrderNumber
+                               && (string.IsNullOrEmpty(searchParammes.SearchValue) || inv.SalesOrderNumber == searchParammes.SearchValue))
+                .Include(t => t.SalesOrdersItems)
+                .ThenInclude(p => p.ScheduleDates)
+                .Include(p => p.SalesOrderAdditionalCharges);
+
             return PagedList<SalesOrder>.ToPagedList(salesOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-             
+
         }
         public async Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParam)
         {
@@ -406,6 +436,22 @@ namespace Tips.SalesService.Api.Repository
                      )))
                       .ToListAsync();
             return getSalesOrderItemDetails;
+        }
+
+        public async Task<List<SalesOrderFGandBalanceQty>> GetAllSalesOrderFGOrTGItemDetails()
+        {
+
+            List<SalesOrderFGandBalanceQty> result = _tipsSalesServiceDbContexts.SalesOrdersItems
+                  .Where(x => x.StatusEnum != OrderStatus.Closed)
+                  .GroupBy(l => new { l.ItemNumber })
+                  .Select(group => new SalesOrderFGandBalanceQty
+                  {
+                      FGItemNumber = group.Key.ItemNumber,
+                      Balance_Qty = group.Sum(c => c.BalanceQty)
+                  }).ToList();
+
+            return result;
+             
         }
         //update shoporderQty
         public async Task<IEnumerable<SalesOrderItems>> UpdateShopOrderBySalesOrderNoandItemNo(string salesOrderNumber, string itemNumber,string projectNumber)

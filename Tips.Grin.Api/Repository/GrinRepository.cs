@@ -57,6 +57,19 @@ namespace Tips.Grin.Api.Repository
             return getGrinNumberAutoIncrementCount;
         }
 
+        public async Task<int?> GetGrinIqcStatusCount(string grinNo)
+        {
+            var grinIqcStatusCount = _tipsGrinDbContext.Grins.Where(x => x.GrinNumber == grinNo && x.IsIqcCompleted == true).Count();
+
+            return grinIqcStatusCount;
+        }
+        public async Task<int?> GetGrinbinningStatusCount(string grinNo)
+        {
+            var grinBinningStatusCount = _tipsGrinDbContext.Grins.Where(x => x.GrinNumber == grinNo && x.IsBinningCompleted == true).Count();
+
+            return grinBinningStatusCount;
+        }
+
         public async Task<string> GenerateGrinNumber()
         {
             using var transaction = await _tipsGrinDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);

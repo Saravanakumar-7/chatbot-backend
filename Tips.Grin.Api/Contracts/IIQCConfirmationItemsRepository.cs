@@ -9,5 +9,7 @@ namespace Tips.Grin.Api.Contracts
     {
         Task<IEnumerable<IQCConfirmationItems>> GetAllIQCConfirmationItems();
         Task<int?> CreateIqcItem(IQCConfirmationItems iQCConfirmationItems);
+        Task<IQCConfirmationItems> GetIQCConfirmationItemsDetailsbyGrinPartId(int GrinPartId);
+        Task<string> UpdateIqcItems(IQCConfirmationItems iqcConfirmationItems);
     }
 }

@@ -53,6 +53,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+
         [HttpGet]
         public async Task<IActionResult> GetAllActiveCostingMethods([FromQuery] SearchParames searchParams)
         {

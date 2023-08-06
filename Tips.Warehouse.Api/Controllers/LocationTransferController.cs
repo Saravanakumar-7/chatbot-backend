@@ -258,6 +258,7 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogInfo("getitemmasterdata" + Convert.ToString(itemDetailFromItemmaster));
                 var itemDetail = await itemDetailFromItemmaster.Content.ReadAsStringAsync();
                 dynamic itemData = JsonConvert.DeserializeObject(itemDetail);
+                dynamic itemObject = itemData.data;
 
                 var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber);
                 if (inventoryDetails != null)
@@ -269,11 +270,11 @@ namespace Tips.Warehouse.Api.Controllers
                             inventoryItem.PartNumber = toPartNumber;
                             inventoryItem.ProjectNumber = toProjectNumber;
                             inventoryItem.MftrPartNumber = toPartNumber;
-                            inventoryItem.Description = itemData.description; 
-                            inventoryItem.UOM = itemData?.MftrPartNumber;
+                            inventoryItem.Description = itemObject.description; 
+                            inventoryItem.UOM = itemObject.uom;
                             inventoryItem.Warehouse = toWarehouse;
                             inventoryItem.Location = toLocation;
-                            inventoryItem.PartType = itemData?.PartType;
+                            inventoryItem.PartType = itemObject.itemType;
                             inventoryItem.ReferenceID = Convert.ToString(createLocationTransfer.Id);
                             inventoryItem.ReferenceIDFrom = "LocationTransfer";
                             await _inventoryRepository.UpdateInventory(inventoryItem);
@@ -291,18 +292,18 @@ namespace Tips.Warehouse.Api.Controllers
                             inventoryPost.PartNumber = toPartNumber;
                             inventoryPost.MftrPartNumber = toPartNumber;
                             inventoryPost.ProjectNumber = toProjectNumber;
-                            inventoryPost.Description = itemData.description;
+                            inventoryPost.Description = itemObject.description;
                             inventoryPost.Balance_Quantity = transferQty;
-                            inventoryPost.UOM = itemData?.uom;
+                            inventoryPost.UOM = itemObject?.uom;
                             inventoryPost.GrinMaterialType = "";
                             inventoryPost.shopOrderNo = "";
-                            inventoryPost.Unit = itemData?.unit;
+                            inventoryPost.Unit = itemObject?.unit;
                             inventoryPost.GrinNo = "";
                             inventoryPost.GrinPartId = 0;
                             inventoryPost.IsStockAvailable = true;
                             inventoryPost.Warehouse = toWarehouse;
                             inventoryPost.Location = toLocation;
-                            inventoryPost.PartType = itemData?.PartType;
+                            inventoryPost.PartType = itemObject.itemType;
                             inventoryPost.ReferenceID = Convert.ToString(createLocationTransfer.Id);
                             inventoryPost.ReferenceIDFrom = "LocationTransfer";
                             await _inventoryRepository.CreateInventory(inventoryPost);
@@ -315,7 +316,15 @@ namespace Tips.Warehouse.Api.Controllers
                             break;
                         }
                     }
-                } 
+                }
+                else
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Inventory hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "locationTransfer Successfully Created";
                 serviceResponse.Success = true;
@@ -485,6 +494,45 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProjectLocWareFromInventoryByItemNo(string itemNumber)
+        {
+            ServiceResponse<List<LocationTransferFromDto>> serviceResponse = new ServiceResponse<List<LocationTransferFromDto>>();
+            try
+            {
+                var InventoryDetails = await _locationTransferRepository.GetProjectLocWareFromInventoryByItemNo(itemNumber);
+                if (InventoryDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory Location,Project,Warehouse Details hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with itemNumber: {itemNumber}, is invalid");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory Location,Project,Warehouse with Itemnumber: {itemNumber}");
+                    var result = _mapper.Map<List<LocationTransferFromDto>>(InventoryDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned InventoryDetails with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllLocationTransferIdNameList()
