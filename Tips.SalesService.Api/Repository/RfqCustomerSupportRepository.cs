@@ -16,6 +16,7 @@ using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Crypto.Macs;
 using Tips.SalesService.Api.Entities.Dto;
+using AutoMapper;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -469,11 +470,11 @@ namespace Tips.SalesService.Api.Repository
     public class RfqRepository : RepositoryBase<Rfq>, IRfqRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-
-        public RfqRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private IMapper _mapper;
+        public RfqRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IMapper mapper) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
-
+            _mapper = mapper;
         }
         public async Task<Rfq> RfqSourcingByRfqNumbers(string RfqNumber)
         {
@@ -790,6 +791,52 @@ namespace Tips.SalesService.Api.Repository
 
             rfq.RevisionNumber = (getOldRevisionNumber + 1);
             var result = await Create(rfq);
+
+            //updating the connected tables
+            var updatecs = await _tipsSalesServiceDbContext.RfqCustomerSupports
+               .Where(x => x.RfqNumber == rfq.RfqNumber && x.RevisionNumber == getOldRevisionNumber)
+               .Include(x => x.RfqCustomerSupportItems).ThenInclude(x => x.RfqCSDeliverySchedule)
+               .Include(x => x.RfqCustomerSupportNotes)
+           .ToListAsync();
+
+            if (updatecs != null)
+            {
+                var updatedcsdetails = _mapper.Map<List<RfqCustomerSupport>>(updatecs);
+                foreach (var detail in updatedcsdetails)
+                {
+                    detail.RevisionNumber = rfq.RevisionNumber;
+                    if (detail.RfqCustomerSupportItems != null)
+                    {
+                        foreach (var itemdetail in detail.RfqCustomerSupportItems)
+                        {
+                            itemdetail.RfqCustomerSupportId = detail.Id;
+                            if (itemdetail.RfqCSDeliverySchedule != null)
+                            {
+                                foreach (var itemdelydetail in itemdetail.RfqCSDeliverySchedule)
+                                {
+                                    itemdelydetail.RfqCustomerSupportItemsId = itemdetail.Id;
+                                    itemdelydetail.Id = 0;
+                                    _tipsSalesServiceDbContext.RfqCSDeliverySchedules.Add(itemdelydetail);
+                                }
+                            }
+                            itemdetail.Id = 0;
+                            _tipsSalesServiceDbContext.RfqCustomerSupportItems.Add(itemdetail);
+                        }
+                    }
+                    if (detail.RfqCustomerSupportNotes != null)
+                    {
+                        foreach (var notedetail in detail.RfqCustomerSupportNotes)
+                        {
+                            notedetail.RfqCustomerSupportId = detail.Id;
+                            notedetail.Id = 0;
+                            _tipsSalesServiceDbContext.RfqCustomerSupportNotes.Add(notedetail);
+                        }
+                    }
+                    detail.Id = 0;
+                    _tipsSalesServiceDbContext.RfqCustomerSupports.Add(detail);
+                }
+                await _tipsSalesServiceDbContext.SaveChangesAsync();
+            }
             return result;
 
         }
