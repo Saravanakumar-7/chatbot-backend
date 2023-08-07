@@ -677,8 +677,17 @@ namespace Tips.Warehouse.Api.Controllers
         {
             foreach (var materialReturnQty in updateInventoryBalanceQty) 
             {
+                var itemNumber = materialReturnQty.PartNumber;
+                var projectNo = materialReturnQty.ProjectNumber;
                 foreach (var Location in materialReturnQty.MRNDetails)
                 {
+                    var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
+                                                                                "GetItemMasterDetailsForMNRByItemNo?", "&ItemNumber=", itemNumber));
+                    var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                    dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                    dynamic itemMasterObject = itemMasterObjectData.data;
+
+
                     IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNoandLocationandwarehouse(materialReturnQty.PartNumber, Location.Location, Location.Warehouse);
                     var inventoryItem = inventories.FirstOrDefault();
                     if (inventoryItem == null)
@@ -686,10 +695,10 @@ namespace Tips.Warehouse.Api.Controllers
                         Inventory inventoryPost = new Inventory();
                         inventoryPost.PartNumber = materialReturnQty.PartNumber;
                         inventoryPost.MftrPartNumber = materialReturnQty.PartNumber;
-                        inventoryPost.ProjectNumber = "Project";
-                        inventoryPost.Description = "";
+                        inventoryPost.ProjectNumber = projectNo;
+                        inventoryPost.Description = itemMasterObject.Description;
                         inventoryPost.Balance_Quantity = Location.Qty;
-                        inventoryPost.UOM = "";
+                        inventoryPost.UOM = itemMasterObject.Uom;
                         inventoryPost.GrinMaterialType = "";
                         inventoryPost.shopOrderNo = "";
                         inventoryPost.Unit = "";

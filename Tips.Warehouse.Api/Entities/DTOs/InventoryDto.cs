@@ -208,6 +208,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class MRNUpdateInventoryBalanceQty
     {
         public string? PartNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+
         public List<MRNInventoryUpdateDto> MRNDetails { get; set; }
     }
 

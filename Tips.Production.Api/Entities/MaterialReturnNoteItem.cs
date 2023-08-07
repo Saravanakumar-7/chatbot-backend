@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using Entities.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tips.Production.Api.Entities
 {
@@ -11,6 +12,9 @@ namespace Tips.Production.Api.Entities
         public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
         public string? MftrPartNumber { get; set; }
+        [NotMapped]
+        public string? ProjectNumber { get; set; }
+
         public PartType PartType { get; set; }
         [Precision(13, 3)]
         public decimal ReturnQty { get; set; }        
