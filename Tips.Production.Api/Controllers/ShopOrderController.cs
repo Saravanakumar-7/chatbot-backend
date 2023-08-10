@@ -697,6 +697,49 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+
+        [HttpGet("salesOrderNo")]
+        public async Task<IActionResult> GetShopOrderNoListBySalesOrderNo(string salesOrderNo,string itemNumber)
+        {
+            ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
+
+            try
+            {
+                var shopOrderNoList = await _shopOrderRepository.GetShopOrderNoListBySalesOrderNo(salesOrderNo,itemNumber);
+                if (shopOrderNoList == null)
+                {
+                    _logger.LogError($"ShopOrder with id: {salesOrderNo}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ShopOrder with salesOrderNo hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned ShopOrder Number List with id: {salesOrderNo}");
+                    //var result = _mapper.Map<ShopOrderDto>(shopOrderBySalesOrderNo);
+                    //serviceResponse.Data = shopOrderNoList;
+                    //serviceResponse.Message = "ShopOrderBySalesOrderNo Successfully Returned";
+                    //serviceResponse.Success = true;
+                    //serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(shopOrderNoList);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetShopOrderNoListBySalesOrderNo for SalesOrderNo {salesOrderNo} action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+
+
         [HttpGet("shopOrderNo")]
         public async Task<IActionResult> GetShopOrderByShopOrderNo(string shopOrderNo)
         {

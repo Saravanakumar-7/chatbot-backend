@@ -79,8 +79,8 @@ namespace Tips.SalesService.Api.Controllers
                     var revNO = getAllRfq[i].RevisionNumber;
 
                     var rfqCsCount = await _itemRepository.GetRfqCustomerSupportItemByRfqNumber(rfq,revNO);
-                    if (getAllRfq[i].isSourcingAvailable == true)
-                    {
+                    //if (getAllRfq[i].isSourcingAvailable == true)
+                    //{
 
                         var isFullyReleased = await _itemRepository.IsFullyReleasedRfqEngg(rfq, revNO);
                         var isNotYetReleased = await _itemRepository.IsNotYetReleasedRfqEngg(rfq, revNO);
@@ -134,7 +134,7 @@ namespace Tips.SalesService.Api.Controllers
                         //{
                         //    getAllRfq[i].EnggComplete = EnggStatus.EnggNotYetCompleted;
                         //}
-                    }
+                    //}
                     
                     var isFullyReleasedCs = await _itemRepository.IsFullyReleasedRfqCs(rfq, revNO);
                     var isNotYetReleasedCs = await _itemRepository.IsNotYetReleasedRfqCs(rfq, revNO);

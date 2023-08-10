@@ -1,11 +1,13 @@
 ﻿using System.Net;
 using System.Net.Http;
+using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
 using Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Mysqlx.Crud;
 using Newtonsoft.Json;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
@@ -20,8 +22,9 @@ namespace Tips.Production.Api.Controllers
     {
         private IShopOrderConfirmationRepository _shopOrderConfirmationRepository;
        private IShopOrderRepository _shopOrderRepo;
-
         private ILoggerManager _logger;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config; 
         private IMapper _mapper;
 
         public ShopOrderConfirmationController(IShopOrderConfirmationRepository shopOrderConfirmationRepository,
@@ -139,15 +142,56 @@ namespace Tips.Production.Api.Controllers
                 
                 var shopOrderConfirmation = _mapper.Map<ShopOrderConfirmation>(shopOrderConfirmationPostDto);
                 var shopOrderNumber = shopOrderConfirmation.ShopOrderNumber;
-                var shopOrderDetails = await _shopOrderRepo.GetShopOrderDetailsByShopOrderNo(shopOrderNumber);
-                shopOrderDetails.WipQty = shopOrderDetails.WipQty + shopOrderConfirmation.WipConfirmedQty;
-                //if(shopOrderDetails.TotalSOReleaseQty == shopOrderDetails.WipQty)
-                //{
-                //    shopOrderDetails.Status = OrderStatus.Closed;
-                //}
-                _shopOrderRepo.SaveAsync();
+                var shopOrderDetail = await _shopOrderRepo.GetShopOrderDetailsByShopOrderNo(shopOrderNumber);
+                shopOrderDetail.WipQty = shopOrderDetail.WipQty + shopOrderConfirmation.WipConfirmedQty;
+
+                await _shopOrderRepo.UpdateShopOrder(shopOrderDetail);               
                 await _shopOrderConfirmationRepository.CreateShopOrderConfirmation(shopOrderConfirmation);
-                _shopOrderConfirmationRepository.SaveAsync();
+
+
+                //update Inventory Code
+
+                if (shopOrderConfirmationPostDto != null && shopOrderConfirmationPostDto.shopOrderItemConfirmations != null)
+                {
+                    var json1 = JsonConvert.SerializeObject(shopOrderConfirmationPostDto.shopOrderItemConfirmations);
+                    var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
+
+                    if (_httpClient != null && _config["InventoryAPI"] != null)
+                    {
+                        var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnShopOrderConfirmation"), data1);
+                        // Handle the response as needed
+                    }
+                    else
+                    {
+                        // Handle the case where _httpClient or _config["InventoryAPI"] is null
+                    }
+                }
+
+
+
+                var json = JsonConvert.SerializeObject(shopOrderConfirmationPostDto.shopOrderItemConfirmations);
+               var data = new StringContent(json, Encoding.UTF8, "application/json");
+               var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnShopOrderConfirmation"), data);
+                
+                var inventoryResponceString = await response.Content.ReadAsStringAsync();
+                dynamic inventoryResponceData = JsonConvert.DeserializeObject(inventoryResponceString);
+                dynamic inventoryObject = inventoryResponceData.data;
+                if(inventoryObject.StatusCode == HttpStatusCode.OK)
+                {
+                    _shopOrderRepo.SaveAsync();
+                    _shopOrderConfirmationRepository.SaveAsync();
+                }
+                else
+                {
+                _logger.LogError($"Something went wrong inside CreateShopOrderConfirmation inside http inventory action UpdateInventoryOnShopOrderConfirmation action");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+                }
+
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ShopOrderConfirmation Successfully Created";
                 serviceResponse.Success = true;

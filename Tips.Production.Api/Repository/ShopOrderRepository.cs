@@ -225,6 +225,17 @@ namespace Tips.Production.Api.Repository
             return shopOrderBySalesOrderNo;
         }
 
+        public async Task<List<string>> GetShopOrderNoListBySalesOrderNo(string salesOrderNo,string itemNumber)
+        {
+            var shopOrderNoList = await _tipsProductionDbContext.ShopOrderItems
+                .Where(x => x.SalesOrderNumber == salesOrderNo && x.FGItemNumber == itemNumber)
+                .Select(i => i.ShopOrder.ShopOrderNumber)
+                .ToListAsync();
+            return shopOrderNoList;
+        }
+
+
+
         public async Task<ShopOrder> GetShopOrderByShopOrderNo(string shopOrderNo)
         {
             var shopOrderByShopOrderNo = await _tipsProductionDbContext.ShopOrders

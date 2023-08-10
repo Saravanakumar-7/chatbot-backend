@@ -17,6 +17,7 @@ namespace Tips.Production.Api.Contracts
         Task<string> UpdateShopOrder(ShopOrder shopOrder);
         Task<ShopOrder> GetShopOrderDetailsByShopOrderNo(string shopOrderNo);
         Task<ShopOrder> GetShopOrderBySalesOrderNo(string salesOrderNo);
+        Task<List<string>> GetShopOrderNoListBySalesOrderNo(string salesOrderNo, string itemNumber);
         Task<ShopOrder> GetShopOrderByShopOrderNo(string shopOrderNo);
         Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByItemType(string itemType);
         Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFGNo(string fGNumber);

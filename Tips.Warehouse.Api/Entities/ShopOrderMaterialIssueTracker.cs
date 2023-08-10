@@ -19,6 +19,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? UOM { get; set; }
         public string Warehouse { get; set; }
         public string? Location { get; set; }
+        public string? DataFrom { get; set; }
         public string Unit { get; set; }
         public PartType PartType { get; set; }
         public string? CreatedBy { get; set; }
