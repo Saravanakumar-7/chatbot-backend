@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities
 {
@@ -24,6 +25,7 @@ namespace Tips.Production.Api.Entities
 
         [Precision(13, 3)]
         public decimal? RequiredQty { get; set; }
+        public OrderStatus Status { get; set; }
         public int ShopOrderId { get; set; }
         public ShopOrder ShopOrder { get; set; }
 

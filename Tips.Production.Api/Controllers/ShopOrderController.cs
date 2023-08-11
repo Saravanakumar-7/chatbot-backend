@@ -21,13 +21,14 @@ namespace Tips.Production.Api.Controllers
     public class ShopOrderController : ControllerBase
     {
         private IShopOrderRepository _shopOrderRepository;
+        private IShopOrderItemRepository _shopOrderItemRepository;
         private ILoggerManager _logger;
         private IMapper _mapper; 
         private IMaterialIssueRepository _materialIssueRepository;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public ShopOrderController(IShopOrderRepository shopOrderRepository, 
+        public ShopOrderController(IShopOrderItemRepository shopOrderItemRepository, IShopOrderRepository shopOrderRepository, 
             IMaterialIssueRepository materialIssueRepository, ILoggerManager logger,
             IMapper mapper, IConfiguration config, HttpClient httpClient)
         {
@@ -35,6 +36,7 @@ namespace Tips.Production.Api.Controllers
             _shopOrderRepository = shopOrderRepository;
             _mapper = mapper;
             _materialIssueRepository = materialIssueRepository;
+            _shopOrderItemRepository = shopOrderItemRepository;
             _httpClient = httpClient;
             _config = config;
         }
@@ -964,6 +966,60 @@ namespace Tips.Production.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside ShortCloseShopOrder action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> ShortCloseShopOrderItemSatusByShopOrderItemId(int soItemId)
+        {
+            ServiceResponse<ShopOrderItemDto> serviceResponse = new ServiceResponse<ShopOrderItemDto>();
+
+            try
+            {
+                var soItemDetailBySOItemId = await _shopOrderItemRepository.GetShopOrderItemById(soItemId);
+                if (soItemDetailBySOItemId == null)
+                {
+                    _logger.LogError($"ShopOrderItems with soItemId: {soItemId}, hasn't been found.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ShopOrderItems with soItemId hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+                soItemDetailBySOItemId.Status = OrderStatus.ShortClose;
+                string result = await _shopOrderItemRepository.UpdateShopOrderItem(soItemDetailBySOItemId);
+                _shopOrderItemRepository.SaveAsync();
+
+                //Update PendingShopOrderConfirmationQty in SalesOrder Table
+
+                var ShopOrderDetails = await _shopOrderRepository.GetShopOrderById(soItemDetailBySOItemId.ShopOrderId);
+                var pendingSoConfirmationQty = ShopOrderDetails.TotalSOReleaseQty - ShopOrderDetails.WipQty;
+
+                UpdateShopOrderQtyDto updateShopOrderQtyDto = new UpdateShopOrderQtyDto();
+                updateShopOrderQtyDto.FGItemNumber = soItemDetailBySOItemId.FGItemNumber;
+                updateShopOrderQtyDto.ProjectNumber = soItemDetailBySOItemId.ProjectNumber;
+                updateShopOrderQtyDto.SalesOrderNumber = soItemDetailBySOItemId.SalesOrderNumber;
+                updateShopOrderQtyDto.PendingSoConfirmationQty = pendingSoConfirmationQty;
+
+                var jsons = JsonConvert.SerializeObject(updateShopOrderQtyDto);
+                var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdatePendingShopOrderQty?"), datas);
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "ShopOrderItems Status have been closed";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ShortCloseShopOrderItemSatusByShopOrderItemId action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;

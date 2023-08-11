@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Entities
 {
@@ -49,6 +50,7 @@ namespace Tips.Purchase.Api.Entities
         public bool IsShortClosed { get; set; }
         public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }
+        public PoStatus PoStatus { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

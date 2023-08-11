@@ -505,6 +505,21 @@ namespace Tips.SalesService.Api.Repository
             string result = $"SalesOrderItem of Detail {salesOrderItems.Id} is updated successfully!";
             return result;
         }
+        public async Task<SalesOrderItems> CloseSOItemSatusBySOItemId(int soItemId)
+        {
+            var soItemDetailBySOItemId = await _tipsSalesServiceDbContexts.SalesOrdersItems.Where(x => x.Id == soItemId)
+
+                                .FirstOrDefaultAsync();
+
+            return soItemDetailBySOItemId;
+        }
+        public async Task<int?> GetSOItemOpenStatusCount(int soId)
+        {
+            var soItemStatusCount = _tipsSalesServiceDbContexts.SalesOrdersItems
+                                        .Where(x => x.SalesOrderId == soId && x.StatusEnum == OrderStatus.Open).Count();
+
+            return soItemStatusCount;
+        }
     }
 
 

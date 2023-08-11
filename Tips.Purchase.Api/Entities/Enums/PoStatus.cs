@@ -1,6 +1,6 @@
-﻿namespace Tips.Production.Api.Entities.Enums
+﻿namespace Tips.Purchase.Api.Entities.Enums
 {
-    public enum OrderStatus
+    public enum PoStatus
     {
         Open,
         PartiallyClosed,

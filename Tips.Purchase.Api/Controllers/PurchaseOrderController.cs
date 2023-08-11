@@ -739,9 +739,12 @@ namespace Tips.Purchase.Api.Controllers
                     foreach(var prDetails in poItems.PrDetails)
                     {
                         var prDetail = await _repository.GetPrDetailsByPrNumber(prDetails.PRNumber);
-                        prDetail.PrStatus = PrStatus.Closed;
-                        await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
-                        _purchaseRequisitionRepository.SaveAsync();
+                        if (prDetail != null)
+                        {
+                            prDetail.PrStatus = PrStatus.Closed;
+                            await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
+                            _purchaseRequisitionRepository.SaveAsync();
+                        }
                     }
                 }
 
@@ -1674,6 +1677,57 @@ namespace Tips.Purchase.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside Purchaseorderclosed action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ShortClosePoItemSatusByPoItemId(int poItemId)
+        {
+            ServiceResponse<PoItemsDto> serviceResponse = new ServiceResponse<PoItemsDto>();
+
+            try
+            {
+                var poItemDetailByPoItemId = await _poItemsRepository.ClosePoItemSatusByPoItemId(poItemId);
+                if (poItemDetailByPoItemId == null)
+                {
+                    _logger.LogError($"PoItem with poItemId: {poItemId}, hasn't been found.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PoItem with poItemId hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+                poItemDetailByPoItemId.PoStatus = PoStatus.ShortClose;
+                string result = await _poItemsRepository.UpdatePOOrderItem(poItemDetailByPoItemId);
+                _poItemsRepository.SaveAsync();
+
+                //Update PurchaseOrder Table Status
+                var poItemOpenStatuscount = await _poItemsRepository.GetPoItemOpenStatusCount(poItemDetailByPoItemId.PurchaseOrderId);
+
+                if (poItemOpenStatuscount == 0)
+                {
+                    var poDetails = await _repository.GetPurchaseOrderById(poItemDetailByPoItemId.PurchaseOrderId);
+                    poDetails.PoStatus = PoStatus.ShortClose;
+                    await _repository.UpdatePurchaseOrder(poDetails);
+                    _repository.SaveAsync();
+                }
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "PoItem Status have been closed";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ChangePoItemSatusByPoItemId action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;

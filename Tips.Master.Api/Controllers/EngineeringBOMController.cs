@@ -261,6 +261,60 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetEnggBomByFgPartNumber(string itemNumber)
+        {
+            ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
+
+            try
+            {
+                var bomDetail = await _repository.EnggBomRepository.GetEnggBomByFgPartNumber(itemNumber);
+
+                if (bomDetail == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Engineering Bom with itemNumber: {itemNumber}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"Engineering Bom with id: {itemNumber}, hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Engineering Bom with itemNumber: {itemNumber}");
+                    EnggBomDto enggBomDto = _mapper.Map<EnggBomDto>(bomDetail);
+                    List<EnggChildItemDto> childItemsDtos = new List<EnggChildItemDto>();
+                    enggBomDto.BomNREConsumableDto = _mapper.Map<List<BomNREConsumableDto>>(bomDetail.NREConsumable);
+
+                    if (bomDetail.EnggChildItems != null)
+                    {
+                        foreach (var itemDetails in bomDetail.EnggChildItems)
+                        {
+                            EnggChildItemDto enggChildItemDto = _mapper.Map<EnggChildItemDto>(itemDetails);
+                            enggChildItemDto.EnggAlternatesDtos = _mapper.Map<List<EnggAlternatesDto>>(itemDetails.EnggAlternates);
+                            childItemsDtos.Add(enggChildItemDto);
+                        }
+                    }
+                    enggBomDto.EnggChildItemDtos = childItemsDtos;
+                    serviceResponse.Data = enggBomDto;
+                    serviceResponse.Message = $"Returned Engineering Bom";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetEnggBomByFgPartNumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetEnggBomByItemNoAndRevNo(string itemNumber,decimal revisionNumber)
         {
             ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();

@@ -15,6 +15,7 @@ using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
+using Tips.SalesService.Api.Entities.Enum;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.SalesService.Api.Controllers
@@ -1018,6 +1019,22 @@ namespace Tips.SalesService.Api.Controllers
              return Ok();
         }
 
+        //Update Pending shoporder Qty in salesorder
+        [HttpPost]
+        public async Task<IActionResult> UpdatePendingShopOrderQty([FromBody] UpdatePendingShopOrderConfirmationQtyDto updatePendingShopOrderConfirmationQtyDto)
+        {
+
+            IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderBySalesOrderNoandItemNo(updatePendingShopOrderConfirmationQtyDto.SalesOrderNumber
+                                                                                             , updatePendingShopOrderConfirmationQtyDto.FGItemNumber, updatePendingShopOrderConfirmationQtyDto.ProjectNumber);
+            var orderItem = salesOrderItems.FirstOrDefault();
+
+            orderItem.ShopOrderQty -= updatePendingShopOrderConfirmationQtyDto.PendingSoConfirmationQty;
+            await _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+
+            _salesOrderItemsRepository.SaveAsync();
+            return Ok();
+        }
+
         //Update Invoiced Value and DispatchQty Using Invoice 
         [HttpPost]
         public async Task<IActionResult> AdditionalChargeUpdateFromInvoice([FromBody] List<SoAdditionalChargeUpdateDto> soAdditionalChargeUpdateDto)
@@ -1297,7 +1314,56 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> ShortCloseSOItemSatusBySOItemId(int soItemId)
+        {
+            ServiceResponse<SalesOrderItemsDto> serviceResponse = new ServiceResponse<SalesOrderItemsDto>();
 
+            try
+            {
+                var soItemDetailBySOItemId = await _salesOrderItemsRepository.CloseSOItemSatusBySOItemId(soItemId);
+                if (soItemDetailBySOItemId == null)
+                {
+                    _logger.LogError($"SalesOrderItems with soItemId: {soItemId}, hasn't been found.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderItems with soItemId hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+                soItemDetailBySOItemId.StatusEnum = OrderStatus.ShortClose;
+                string result = await _salesOrderItemsRepository.UpdateSalesOrderItem(soItemDetailBySOItemId);
+                _salesOrderItemsRepository.SaveAsync();
+
+                //Update SalesOrder Table Status
+                var soItemOpenStatuscount = await _salesOrderItemsRepository.GetSOItemOpenStatusCount(soItemDetailBySOItemId.SalesOrderId);
+
+                if (soItemOpenStatuscount == 0)
+                {
+                    var salesOrderDetails = await _repository.GetSalesOrderById(soItemDetailBySOItemId.SalesOrderId);
+                    salesOrderDetails.SOStatus = OrderStatus.ShortClose;
+                    await _repository.UpdateSalesOrder(salesOrderDetails);
+                    _repository.SaveAsync();
+                }
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "SalesOrderItems Status have been closed";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CloseSOItemSatusBySOItemId action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 
 

@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Tips.SalesService.Api.Entities.Enum;
 
 namespace Tips.SalesService.Api.Entities
 {
@@ -50,7 +51,7 @@ namespace Tips.SalesService.Api.Entities
         public decimal? IGST { get; set; }
         public DateTime RequestedDate { get; set; }
         public string? PriceList { get; set; }
-        public string? Remarks { get; set; }       
+        public string? Remarks { get; set; }
         public int SalesOrderId { get; set; }
         public SalesOrder? SalesOrder { get; set; } 
         public List<ScheduleDate>? ScheduleDates { get; set; }
