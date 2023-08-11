@@ -119,7 +119,6 @@ namespace Entities
         public string? Upload { get; set; }
         public string? ShippingMode { get; set; }
         public bool ReAudit { get; set; } = true;
-
         public string? AuditFrequency { get; set; }
         public bool IsActive { get; set; } = true;
         public string? Unit { get; set; }
