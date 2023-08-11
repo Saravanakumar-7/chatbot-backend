@@ -11,6 +11,9 @@ namespace Tips.Warehouse.Api.Entities
         public string? LotNumber { get; set; }
         public string MftrPartNumber { get; set; }
         public string Description { get; set; }
+
+        //public string MRNumber { get; set; }
+
         public string ProjectNumber { get; set; }
         [Precision(13,3)]
         public decimal IssuedQty { get; set; }

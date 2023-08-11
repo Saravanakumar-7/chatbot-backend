@@ -118,7 +118,7 @@ namespace Tips.Warehouse.Api.Controllers
                     };
 
                     await _materialIssueTrackerRepository.CreateMaterialIssueTracker(shopOrderMaterialIssueTracker);
-                    _materialIssueTrackerRepository.SaveAsync();
+                    _materialIssueTrackerRepository.SaveAsync(); 
                 } 
                  
                 serviceResponse.Data = null;
