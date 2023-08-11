@@ -28,12 +28,14 @@ namespace Tips.Production.Api.Controllers
         private IMapper _mapper;
 
         public ShopOrderConfirmationController(IShopOrderConfirmationRepository shopOrderConfirmationRepository,
-            ILoggerManager logger, IMapper mapper, IShopOrderRepository shopOrderRepository)
+            ILoggerManager logger, IMapper mapper, IShopOrderRepository shopOrderRepository, HttpClient httpClient, IConfiguration config)
         {
             _logger = logger;
             _shopOrderConfirmationRepository = shopOrderConfirmationRepository;
             _shopOrderRepo = shopOrderRepository;
             _mapper = mapper;
+            _httpClient = httpClient;
+            _config = config;
         }
 
        [HttpGet]
