@@ -13,6 +13,7 @@ using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.Production.Api.Controllers
 {
@@ -28,7 +29,7 @@ namespace Tips.Production.Api.Controllers
         private IMapper _mapper;
 
         public ShopOrderConfirmationController(IShopOrderConfirmationRepository shopOrderConfirmationRepository,
-            ILoggerManager logger, IMapper mapper, IShopOrderRepository shopOrderRepository, HttpClient httpClient, IConfiguration config)
+            ILoggerManager logger, IMapper mapper, IShopOrderRepository shopOrderRepository, IConfiguration config, HttpClient httpClient)
         {
             _logger = logger;
             _shopOrderConfirmationRepository = shopOrderConfirmationRepository;
@@ -151,30 +152,14 @@ namespace Tips.Production.Api.Controllers
                 await _shopOrderConfirmationRepository.CreateShopOrderConfirmation(shopOrderConfirmation);
 
 
-                //update Inventory Code
-
-                if (shopOrderConfirmationPostDto != null && shopOrderConfirmationPostDto.shopOrderItemConfirmations != null)
-                {
-                    var json1 = JsonConvert.SerializeObject(shopOrderConfirmationPostDto.shopOrderItemConfirmations);
-                    var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
-
-                    if (_httpClient != null && _config["InventoryAPI"] != null)
-                    {
-                        var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnShopOrderConfirmation"), data1);
-                        // Handle the response as needed
-                    }
-                    else
-                    {
-                        // Handle the case where _httpClient or _config["InventoryAPI"] is null
-                    }
-                }
-
+                //update Inventory Code                          
 
 
                 var json = JsonConvert.SerializeObject(shopOrderConfirmationPostDto.shopOrderItemConfirmations);
                var data = new StringContent(json, Encoding.UTF8, "application/json");
                var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnShopOrderConfirmation"), data);
-                
+                 
+
                 var inventoryResponceString = await response.Content.ReadAsStringAsync();
                 dynamic inventoryResponceData = JsonConvert.DeserializeObject(inventoryResponceString);
                 dynamic inventoryObject = inventoryResponceData.data;

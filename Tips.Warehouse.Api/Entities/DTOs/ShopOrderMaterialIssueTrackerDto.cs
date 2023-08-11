@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {
@@ -23,6 +24,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal IssueQty { get; set; }
         public string? DataFrom { get; set; }
         public string ShopOrderNumber { get; set; }
+        public string Description { get; set; }
+        public string MftrPartNumber { get; set; }
+        public PartType PartType { get; set; }
 
     }
 }
