@@ -89,6 +89,9 @@ namespace Tips.Production.Api
             CreateMap<MaterialReturnNoteItem, MRNUpdateInventoryBalanceQty>().ReverseMap();
             CreateMap<MRNWarehouseDetails, MRNUpdateInventoryBalanceQty>().ReverseMap();
 
+            CreateMap<InventoryDtoForShopOrderConfirmation, ShopOrderItemConfirmationDto>().ReverseMap();
+
+            
 
 
 

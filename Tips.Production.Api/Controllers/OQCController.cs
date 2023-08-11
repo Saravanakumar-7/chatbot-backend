@@ -244,91 +244,134 @@ namespace Tips.Production.Api.Controllers
                 await _oQCRepository.CreateOQC(oQCCreate);
                 _oQCRepository.SaveAsync();
 
+                var shopOrderDetails = await _shopOrderRepo.GetShopOrderByShopOrderNo(oQCPostDto.ShopOrderNumber);
+                var shopOrderItemDetail = shopOrderDetails?.ShopOrderItems?.FirstOrDefault();
+                var projectNo = shopOrderItemDetail?.ProjectNumber;
                 if (oQCCreate.ItemType == PartType.SA) //sa
                 {
                     var ItemNumber = oQCCreate.ItemNumber;
-                    var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
+                    var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
                             "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
-                    _logger.LogInfo("getitemmasterdata"+ Convert.ToString(inventoryObjectResult));
-                    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                    _logger.LogInfo("getitemmasterdata"+ Convert.ToString(itemMasterObjectResult));
+                    var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                    dynamic itemMatserObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                    dynamic itemMasterTranctionObject = itemMatserObjectData.data;
                     InventoryPostDto inventory = new InventoryPostDto();
 
-                    inventory.PartNumber = inventoryObjectData.itemNumber;
-                    inventory.MftrPartNumber = inventoryObjectData.itemNumber;
-                    inventory.Description = inventoryObjectData.description;
-                    inventory.ProjectNumber = "project";
+                    inventory.PartNumber = itemMasterTranctionObject.itemNumber;
+                    inventory.MftrPartNumber = itemMasterTranctionObject.itemNumber;
+                    inventory.Description = itemMasterTranctionObject.description;
+                    inventory.ProjectNumber = projectNo;
                     inventory.Balance_Quantity = oQCCreate.AcceptedQty;
-                    inventory.UOM = inventoryObjectData.uom;
+                    inventory.UOM = itemMasterTranctionObject.uom;
                     inventory.Warehouse = "SA";
                     inventory.Location = "SA";
                     inventory.GrinNo = "";
                     inventory.GrinMaterialType = "";
-                    inventory.GrinPartId = 0;
-                    inventory.PartType = inventoryObjectData.itemType; // we have to take parttype from grinparts model;
+                    inventory.GrinPartId = oQCCreate.Id;
+                    inventory.PartType = oQCCreate.ItemType; // we have to take parttype from grinparts model;
                     inventory.ReferenceID = oQCCreate.Id.ToString();
                     inventory.ReferenceIDFrom = "Final OQC";
                     inventory.ShopOrderNo = oQCCreate.ShopOrderNumber;
+                    
 
-                    //if (inventoryObject.Balance_Quantity > 0)
-                    //{
-                    //    inventoryObject.IsStockAvailable = true;
-                    //}
-                    //else
-                    //{
-                    //    inventoryObject.IsStockAvailable = false;
-                    //}
+                    
                     _logger.LogInfo("getitemmasterdata" + Convert.ToString(inventory));
                     var json = JsonConvert.SerializeObject(inventory);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
                     var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
 
-                    //var json = JsonConvert.SerializeObject(inventory);
-                    //var data = new StringContent(json, Encoding.UTF8, "application/json");                     
-                    //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
 
+                    InventoryPostDto inventory1 = new InventoryPostDto();
+
+                    inventory1.PartNumber = itemMasterTranctionObject.itemNumber;
+                    inventory1.MftrPartNumber = itemMasterTranctionObject.itemNumber;
+                    inventory1.Description = itemMasterTranctionObject.description;
+                    inventory1.ProjectNumber = projectNo;
+                    inventory1.Balance_Quantity = oQCCreate.RejectedQty;
+                    inventory1.UOM = itemMasterTranctionObject.uom;
+                    inventory1.Warehouse = "Scrap";
+                    inventory1.Location = "Reject";
+                    inventory1.GrinNo = "";
+                    inventory1.GrinMaterialType = "";
+                    inventory1.GrinPartId = oQCCreate.Id;
+                    inventory1.PartType = oQCCreate.ItemType; // we have to take parttype from grinparts model;
+                    inventory1.ReferenceID = oQCCreate.Id.ToString() + "-R";
+                    inventory1.ReferenceIDFrom = "Final OQC";
+                    inventory1.ShopOrderNo = oQCCreate.ShopOrderNumber;
+
+                    _logger.LogInfo("getitemmasterdata" + Convert.ToString(inventory1));
+                    var json1 = JsonConvert.SerializeObject(inventory1);
+                    var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
+                    var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
+
+                   
                 }
                 else
                 {
                     var ItemNumber = oQCCreate.ItemNumber;
-                    var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
+                    var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
                             "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
 
-                    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                    InventoryPostDto inventory = new InventoryPostDto();
+                    var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                    dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                    dynamic itemMasterTranctionObject = itemMasterObjectData.data;
 
-                    inventory.PartNumber = inventoryObjectData.itemNumber;
-                    inventory.MftrPartNumber = inventoryObjectData.itemNumber;
-                    inventory.Description = inventoryObjectData.description;
-                    inventory.ProjectNumber = "project";
+                    InventoryPostDto inventory = new InventoryPostDto();
+                    var ItemNo = itemMasterTranctionObject.itemNumber;
+                    var Desc = itemMasterTranctionObject.description;
+                    var uom = itemMasterTranctionObject.uom;
+                    inventory.PartNumber = ItemNo;
+                    inventory.MftrPartNumber = ItemNo;
+                    inventory.Description = Desc;
+                    inventory.ProjectNumber = projectNo;
                     inventory.Balance_Quantity = oQCCreate.AcceptedQty;
-                    inventory.UOM = inventoryObjectData.uom;
+                    inventory.UOM = uom;
                     inventory.Warehouse = "FG";
                     inventory.Location = "FG";
                     inventory.GrinNo = "";
-                    inventory.GrinMaterialType = "";
-                    inventory.GrinPartId = 0;
-                    inventory.PartType = inventoryObjectData.itemType; // we have to take parttype from grinparts model;
+                    //inventory.GrinMaterialType = "";
+                    inventory.GrinPartId = oQCCreate.Id;
+                    inventory.PartType = oQCCreate.ItemType; // we have to take parttype from grinparts model;
                     inventory.ReferenceID = oQCCreate.Id.ToString();
                     inventory.ReferenceIDFrom = "Final OQC";
                     inventory.ShopOrderNo = oQCCreate.ShopOrderNumber;
 
-                    //if (inventoryObject.Balance_Quantity > 0)
-                    //{
-                    //    inventoryObject.IsStockAvailable = true;
-                    //}
-                    //else
-                    //{
-                    //    inventoryObject.IsStockAvailable = false;
-                    //}
                     var json = JsonConvert.SerializeObject(inventory);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
                     var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
 
+
                     //var json = JsonConvert.SerializeObject(inventory);
-                    //var data = new StringContent(json, Encoding.UTF8, "application/json");                     
+                    //var data = new StringContent(json, Encoding.UTF8, "application/json");
                     //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+
+
+                    // For Rejected Item Store
+                    InventoryPostDto inventory1 = new InventoryPostDto();
+
+                    inventory1.PartNumber = ItemNo;
+                    inventory1.MftrPartNumber = ItemNo;
+                    inventory1.Description = Desc;
+                    inventory1.ProjectNumber = projectNo;
+                    inventory1.Balance_Quantity = oQCCreate.RejectedQty;
+                    inventory1.UOM = uom;
+                    inventory1.Warehouse = "Scrap";
+                    inventory1.Location = "Reject";
+                    inventory1.GrinNo = "";
+                    inventory1.GrinMaterialType = "";
+                    inventory1.GrinPartId = oQCCreate.Id;
+                    inventory1.PartType = oQCCreate.ItemType; // we have to take parttype from grinparts model;
+                    inventory1.ReferenceID = oQCCreate.Id.ToString() + "-R";
+                    inventory1.ReferenceIDFrom = "Final OQC";
+                    inventory1.ShopOrderNo = oQCCreate.ShopOrderNumber;
+
+                    _logger.LogInfo("getitemmasterdata" + Convert.ToString(inventory1));
+                    var json1 = JsonConvert.SerializeObject(inventory1);
+                    var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
+                    var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
+
+
                 }
                 _logger.LogInfo("aftergettingdata");
 

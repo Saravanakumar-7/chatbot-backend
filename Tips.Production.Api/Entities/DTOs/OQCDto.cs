@@ -118,7 +118,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? Location { get; set; }
         public string? GrinNo { get; set; }
         public int? GrinPartId { get; set; }
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
         public string? GrinMaterialType { get; set; }
         [Required]
         public string? ReferenceID { get; set; }

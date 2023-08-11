@@ -116,7 +116,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<List<LocationTransferFromDto>> GetProjectLocWareFromInventoryByItemNo(string itemNumber)
         {
             var inventoryDetails = await _tipsWarehouseDbContext.Inventory
-                .Where(x => x.PartNumber == itemNumber && x.IsStockAvailable)
+                .Where(x => x.PartNumber == itemNumber && x.IsStockAvailable == true)
                 .GroupBy(x => new { x.ProjectNumber, x.Location, x.Warehouse })
                 .Select(group => new LocationTransferFromDto
                 {

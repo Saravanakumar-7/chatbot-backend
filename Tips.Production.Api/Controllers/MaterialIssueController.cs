@@ -347,6 +347,8 @@ namespace Tips.Production.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                 var allMaterialIssueItems = await _materialIssueItemRepository.GetMaterialIssueItemById(id);
+                //List<InventoryDtoForMaterialIssue> inventoryDtoForIssue = new List<InventoryDtoForMaterialIssue>();
+
 
                 foreach (var updatedItem in materialIssueUpdateDto.MaterialIssueItems)
                 {
@@ -367,26 +369,11 @@ namespace Tips.Production.Api.Controllers
                         existingItem.MaterialIssuedStatus = updatedItem.MaterialIssuedStatus;
                         var projectNo = existingItem.ProjectNumber;
                         decimal IssueQty = updatedItem.NewIssueQty;
-                        var partnumber = updatedItem.PartNumber;
-                        //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                        //    "GetInventoryDetailsByItemNoandProjectNo?", "&ItemNumber=", partnumber, "&ProjectNo=", projectNo));
-                        //var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                        //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        //dynamic inventoryObject = inventoryObjectData.data;
-                        //inventoryObject.balance_Quantity -= updatedItem.NewIssueQty;
-
-                        //if (inventoryObject.balance_Quantity <= 0)
-                        //{
-                        //    inventoryObject.isStockAvailable = false;
-                        //}
-
-                        //var json = JsonConvert.SerializeObject(inventoryObject);
-                        //var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        //var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
-                        //    "UpdateInventory?id=", Convert.ToInt32(inventoryObject.id)), data);
+                        var partnumber = updatedItem.PartNumber; 
                         InventoryDtoForMaterialIssue inventoryDtoForIssue = new InventoryDtoForMaterialIssue();
                         inventoryDtoForIssue.PartNumber = partnumber;
                         inventoryDtoForIssue.ProjectNumber = projectNo;
+                        inventoryDtoForIssue.DataFrom = "ShopOrder";
                         inventoryDtoForIssue.IssueQty = IssueQty;
                         inventoryDtoForIssue.ShopOrderNumber = materialIssueUpdateDto.ShopOrderNumber;
                         var json = JsonConvert.SerializeObject(inventoryDtoForIssue);

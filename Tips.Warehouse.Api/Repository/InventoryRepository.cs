@@ -49,10 +49,7 @@ namespace Tips.Warehouse.Api.Repository
 
                 // Retrieve the filtered inventory items
                 var inventoryItems = await query.ToListAsync();
-
-                // Group the inventory items by PartNumber using LINQ's GroupBy
-                //var groupedItems = inventoryItems.GroupBy(inv => inv.PartNumber)
-                //    .ToDictionary(g => g.Key, g => g.ToList());
+                 
                 var groupedItems = new Dictionary<string, List<Inventory>>();
                 foreach (var item in inventoryItems)
                 {
@@ -73,62 +70,9 @@ namespace Tips.Warehouse.Api.Repository
                     var firstItem = group.Value.First();
                     firstItem.Balance_Quantity = sum;
 
-                }
-                //    foreach (var group in groupedItems.Values)
-                //{
-                //    var sum = group.Sum(inv => inv.Balance_Quantity);
-                //    var firstItem = group.First();
-                //    firstItem.Balance_Quantity = sum;
-                //}
-
-                // Return the updated first items from each group
+                } 
                 return groupedItems.Values.Select(group => group.First());
-            }
-            //using (var context = _tipsWarehouseDbContext)
-            //{
-            //    var query = _tipsWarehouseDbContext.Inventory.AsQueryable();
-
-            //    // Check if inventoryBalQty object is not null
-            //    if (InventoryItemNo != null)
-            //    {
-            //        // Apply filtering based on the inventoryBalQty properties if they are not null
-            //        if (InventoryItemNo.PartNumber != null && InventoryItemNo.PartNumber.Any())
-            //        {
-            //            query = query.Where(inv => InventoryItemNo.PartNumber.Contains(inv.PartNumber));
-            //        }
-            //    }
-
-            //    // Retrieve the filtered inventory items
-            //    var inventoryItems = await query.ToListAsync();
-
-            //    // Group the inventory items by PartNumber using a for loop
-            //    var groupedItems = new Dictionary<string, List<Inventory>>();
-            //    foreach (var item in inventoryItems)
-            //    {
-            //        var key = item.PartNumber;
-            //        if (!groupedItems.ContainsKey(key))
-            //        {
-            //            groupedItems[key] = new List<Inventory> { item };
-            //        }
-            //        else
-            //        {
-            //            groupedItems[key].Add(item);
-            //        }
-            //    }
-
-
-            //    // Calculate the sum of Balance_Quantity for each group and update the first item in the group
-            //    foreach (var group in groupedItems)
-            //    {
-            //        var sum = group.Value.Sum(inv => inv.Balance_Quantity);
-            //        var firstItem = group.Value.First();
-            //        firstItem.Balance_Quantity = sum;
-
-            //    }
-
-            //    // Return the updated first items from each group
-            //    return groupedItems.Values.Select(group => group.First());
-       // }
+            } 
         }
 
 
@@ -140,45 +84,7 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
 
-        }
-
-
-        //public async Task<IEnumerable<ConsumptionReport>> ExecuteStoredProcedure(string? itemNumber, string? salesOrderNumber)
-        //{
-        //    //var parameter1 = new MySqlParameter("@ItemNumber", MySqlDbType.VarString)
-        //    //{
-        //    //    Value = itemNumber
-        //    //};
-
-        //    //var parameter2 = new MySqlParameter("@SalesOrderNumber", MySqlDbType.VarString)
-        //    //{
-        //    //    Value = salesOrderNumber
-        //    //};
-
-        //    //var result = _tipsWarehouseDbContext.Set<ConsumptionReport>()
-        //    //    .FromSqlRaw("CALL ProductDemand_Vs_AvailableStock_With_Parameter(@ItemNumber, @SalesOrderNumber);", parameter1, parameter2)
-        //    //    .ToList<ConsumptionReport>(); 
-        //    string convertedItemNumber = string.IsNullOrEmpty(itemNumber) ? null : itemNumber;
-        //    string convertedSalesOrderNumber = string.IsNullOrEmpty(salesOrderNumber) ? null : salesOrderNumber;
-
-        //    var parameter1 = new MySqlParameter("@ItemNumber", MySqlDbType.VarString)
-        //    {
-        //        Value = convertedItemNumber != null ? (object)convertedItemNumber : DBNull.Value
-        //    };
-
-        //    var parameter2 = new MySqlParameter("@SalesOrderNumber", MySqlDbType.VarString)
-        //    {
-        //        Value = convertedSalesOrderNumber != null ? (object)convertedSalesOrderNumber : DBNull.Value
-        //    };
-
-        //    var result = _tipsWarehouseDbContext.Set<ConsumptionReport>()
-        //        .FromSqlRaw("CALL ProductDemand_Vs_AvailableStock_With_Parameter(@ItemNumber, @SalesOrderNumber);", parameter1, parameter2)
-        //        .ToList<ConsumptionReport>();
-
-
-        //    return result;
-
-        //}
+        } 
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfBalQty(InventoryDetailsBalQty inventoryDetailsBalQty)
         {
             using (var context = _tipsWarehouseDbContext)
@@ -274,67 +180,7 @@ namespace Tips.Warehouse.Api.Repository
                         .SelectMany(warehouseGroup => warehouseGroup.Values
                             .SelectMany(locationGroup => locationGroup.Values
                                 .Select(projectGroup => projectGroup.First()))));
-            }
-
-
-            //using (var context = _tipsWarehouseDbContext)
-            //{
-            //    var query = _tipsWarehouseDbContext.Inventory.AsQueryable();
-
-            //    // Check if inventoryBalQty object is not null
-            //    if (inventoryDetailsBalQty != null)
-            //    {
-            //        // Apply filtering based on the inventoryBalQty properties if they are not null
-            //        if (inventoryDetailsBalQty.PartNumber != null && inventoryDetailsBalQty.PartNumber.Any())
-            //        {
-            //            query = query.Where(inv => inventoryDetailsBalQty.PartNumber.Contains(inv.PartNumber));
-            //        }
-
-            //        if (inventoryDetailsBalQty.Warehouse != null && inventoryDetailsBalQty.Warehouse.Any())
-            //        {
-            //            query = query.Where(inv => inventoryDetailsBalQty.Warehouse.Contains(inv.Warehouse));
-            //        }
-
-            //        if (inventoryDetailsBalQty.Location != null && inventoryDetailsBalQty.Location.Any())
-            //        {
-            //            query = query.Where(inv => inventoryDetailsBalQty.Location.Contains(inv.Location));
-            //        }
-            //        if (inventoryDetailsBalQty.ProjectNumber != null && inventoryDetailsBalQty.ProjectNumber.Any())
-            //        {
-            //            query = query.Where(inv => inventoryDetailsBalQty.ProjectNumber.Contains(inv.ProjectNumber));
-            //        }
-            //    }
-
-            //    // Retrieve the filtered inventory items
-            //    var inventoryItems = await query.ToListAsync();
-
-            //    // Group the inventory items by PartNumber, Warehouse, Location and ProjectNumber using a for loop
-            //    var groupedItems = new Dictionary<string, List<Inventory>>();
-            //    foreach (var item in inventoryItems)
-            //    {
-            //        var key = item.PartNumber;
-            //        if (!groupedItems.ContainsKey(key))
-            //        {
-            //            groupedItems[key] = new List<Inventory> { item };
-            //        }
-            //        else
-            //        {
-            //            groupedItems[key].Add(item);
-            //        }
-            //    }
-
-            //    // Calculate the sum of Balance_Quantity for each group and update the first item in the group
-            //    foreach (var group in groupedItems)
-            //    {
-            //        var sum = group.Value.Sum(inv => inv.Balance_Quantity);
-            //        var firstItem = group.Value.First();
-            //        firstItem.Balance_Quantity = sum;
-
-            //    }
-
-            //    // Return the updated first items from each group
-            //    return groupedItems.Values.Select(group => group.First());
-            //}
+            }             
         }
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfStock(InventoryBalQty inventoryBalQty)
         {
@@ -398,12 +244,14 @@ namespace Tips.Warehouse.Api.Repository
                 return groupedItems.Values.Select(group => group.First());
             }
         }
-         
-        //public async Task<IEnumerable<ConsumptionDto>> ExecuteYourStoredProcedure(string itemNumber, string salesOrderNumber)
-        //{
-           
-        //}
 
+        public async Task<decimal> GetStockDetailsForAllLocationWarehouseByItemNo(string ItemNumber)
+        {
+            var inventoryDetail = _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true)
+                          .Sum(x => x.Balance_Quantity);
+
+            return inventoryDetail;
+        }
         public async Task<IEnumerable<Inventory>> GetAllInventoryWithItems(InventorySearchDto inventorySearch)
         {
             using (var context = _tipsWarehouseDbContext)
@@ -516,20 +364,7 @@ namespace Tips.Warehouse.Api.Repository
 
             return PagedList<Inventory>.ToPagedList(sortedQuery, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-
-        //public async Task<PagedList<Inventory>> GetAllInventory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
-        //{
-        //    var getAllInventory = FindAll().OrderByDescending(x => x.Id)
-        //           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProjectNumber.Contains(searchParams.SearchValue) ||
-        //           inv.PartNumber.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue)
-        //           || inv.MftrPartNumber.Contains(searchParams.SearchValue) || inv.Warehouse.Contains(searchParams.SearchValue) 
-        //           || inv.PartType.Contains(searchParams.SearchValue)
-        //           || inv.Location.Contains(searchParams.SearchValue))));
-
-        //    return PagedList<Inventory>.ToPagedList(getAllInventory, pagingParameter.PageNumber, pagingParameter.PageSize);
-
-
-        //}
+         
 
         public async Task<Inventory> GetInventoryDetailsByGrinNo(string GrinNo, string ItemNumber, string ProjectNumber)
         {
@@ -572,22 +407,27 @@ namespace Tips.Warehouse.Api.Repository
                 .Where(x => x.PartNumber == ItemNumber && x.Location == Location && x.Warehouse == Warehouse && x.IsStockAvailable == true).FirstOrDefaultAsync();
 
             return getInventoryDetailsByItemAndLoc;
-        }
-        //public async Task<Inventory> GetInventoryDetailsByItemNo(string ItemNumber)
-        //{
-        //    var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x =>x.PartNumber == ItemNumber && x.IsStockAvailable == true)
-        //                  .FirstOrDefaultAsync();
-
-        //    return inventoryDetail;
-        //}
+        } 
         public async Task<List<Inventory>> GetInventoryDetailsByItemNoandProjectNo(string ItemNumber, string ProjectNo)
         {
+            
             var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == ItemNumber 
-            && x.IsStockAvailable == true && x.ProjectNumber == ProjectNo)
+            && x.IsStockAvailable == true && x.ProjectNumber == ProjectNo && x.Location != "Reject" )
                           .ToListAsync();
 
             return inventoryDetail;
         }
+
+        //Get Inventory WIP from location and warehouse
+        public async Task<List<Inventory>> GetWIPInventoryDetailsByItemNo(string ItemNumber, string ShopOrderNumber)
+        {
+            var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == ItemNumber
+            && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.shopOrderNo == ShopOrderNumber)
+                          .ToListAsync();
+            return inventoryDetail;
+        }
+
+
         public async Task<List<Inventory>> GetInventoryByItemNo(string itemNumber)
         {
             var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == itemNumber
@@ -610,16 +450,7 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryDetails;
         }
-
-        //public async Task<Inventory> GetInventoryDetailsByItemNoandPartType(string ItemNumber, int PartType)
-        //{
-        //    var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == ItemNumber 
-        //    && x.PartType == PartType && x.IsStockAvailable == true)
-        //                  .FirstOrDefaultAsync();
-
-        //    return inventoryDetail;
-        //}
-
+         
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandPartTypes(string ItemNumber)
         {
             var inventoryDetail = await _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == ItemNumber  && x.IsStockAvailable == true)
@@ -629,14 +460,24 @@ namespace Tips.Warehouse.Api.Repository
         }
 
 
-        public async Task<decimal> GetStockDetailsForAllLocationWarehouseByItemNo(string ItemNumber)
+        public async Task<decimal> GetStockQtyForRetailSalesOrderItem(string ItemNumber)
         {
-            var inventoryDetail = _tipsWarehouseDbContext.Inventory.Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true)
+            var inventoryDetail = _tipsWarehouseDbContext.Inventory
+                .Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true)
                           .Sum(x=>x.Balance_Quantity);
 
             return inventoryDetail;
         }
 
+
+        public async Task<decimal> GetStockQtyForBtpSalesOrderItem(string ItemNumber,List<string> shopOrderNumbers)
+        {
+            var inventoryDetail = _tipsWarehouseDbContext.Inventory
+                .Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true && shopOrderNumbers.Contains(x.shopOrderNo))
+                          .Sum(x => x.Balance_Quantity);
+
+            return inventoryDetail;
+        }
 
 
         public async Task<Inventory> GetInventoryDetailsByItemAndProjectNo(string itemNumber, string projectNumber)
@@ -722,14 +563,7 @@ namespace Tips.Warehouse.Api.Repository
         //get inventory details from fg partnumber
 
         public async Task<Inventory> GetInventoryFGDetailsByItemNumber(string ItemNumber)
-        {
-            //var partTypes = new string[] { "FG", "TG","FRU" };
-          
-            //var getSalesOrderDetailsBy = await _tipsWarehouseDbContext.Inventory
-            //     .Where(x => x.PartNumber == ItemNumber && partTypes.Contains(x.PartType) && x.IsStockAvailable == true)
-            //              .FirstOrDefaultAsync();
-
-            //return getSalesOrderDetailsBy;
+        { 
 
             var partTypes = new PartType[] { PartType.FG, PartType.TG, PartType.FRU };
 
@@ -767,35 +601,7 @@ namespace Tips.Warehouse.Api.Repository
                               .ToListAsync();
 
             return getBtoNumberList;
-        }
-
-        //public async Task<Inventory> UpdateInventoryBalanceQty(string partNumber, string Qty)
-        //{
-        //    var getInventoryDetails = await _tipsWarehouseDbContext.Inventory
-        //            .Where(x => x.PartNumber == partNumber)
-        //                  .FirstOrDefaultAsync();
-        //    decimal Quantity = Convert.ToDecimal(Qty);
-        //    if (getInventoryDetails != null)
-        //    {
-        //        if (Quantity != 0 && getInventoryDetails.Balance_Quantity >= Quantity)
-        //        {
-        //            getInventoryDetails.Balance_Quantity = getInventoryDetails.Balance_Quantity - Quantity;
-        //            Quantity = 0;
-        //            if (getInventoryDetails.Balance_Quantity == 0)
-        //            {
-        //                getInventoryDetails.IsStockAvailable = false;
-        //            }
-        //        }
-        //        if (Quantity != 0 && getInventoryDetails.Balance_Quantity < Quantity)
-        //        {
-        //            Quantity = Quantity - getInventoryDetails.Balance_Quantity;
-        //            getInventoryDetails.Balance_Quantity = 0;
-        //            getInventoryDetails.IsStockAvailable = false;
-        //        }
-        //        Update(getInventoryDetails);
-        //    }
-        //    return getInventoryDetails;
-        //}
+        } 
 
     }
 }

@@ -22,6 +22,8 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<MaterialRequests>> GetAllMaterialRequestsWithItems(MaterialRequestSearchDto materialRequestSearch);
         Task<IEnumerable<MaterialRequests>> SearchMaterialRequests([FromQuery] SearchParamess searchParammes);
         Task<IEnumerable<MaterialRequests>> SearchMaterialRequestsDate([FromQuery] SearchDateparames searchDatesParams);
+
+        Task<MaterialRequests> GetMaterialReqByShopOrderNumber(string ShopOrderNo);
         public void SaveAsync();
     }
 }
