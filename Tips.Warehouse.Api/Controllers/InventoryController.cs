@@ -624,7 +624,7 @@ namespace Tips.Warehouse.Api.Controllers
                         serviceResponse.Message = $"Inventory Details hasn't been found";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                        _logger.LogError($"Inventory with itemNumber: {item.PartNumber}, is invalid");
+                        _logger.LogError($"Inventory with itemNumber: {item.PartNumber}, is not available");
                         return Ok(serviceResponse);
                     }
 
@@ -693,7 +693,7 @@ namespace Tips.Warehouse.Api.Controllers
             // Retrieve the existing entry from the repository based on the ShopOrderNumber, PartNumber, and LotNumber
 
             List<ShopOrderMaterialIssueTracker> materialIssueTrackerList = await _materialIssueTrackerRepository
-                                .GetDetailsByShopOrderNOItemNoLotNo(inventoryDetail.shopOrderNo, inventoryDetail.PartNumber, inventoryDetail.LotNumber);
+                                .GetDetailsByShopOrderNOItemNoLotNo(inventoryDetail.PartNumber, inventoryDetail.shopOrderNo,  inventoryDetail.LotNumber);
 
             if (materialIssueTrackerList != null || materialIssueTrackerList.Count > 0)
             {

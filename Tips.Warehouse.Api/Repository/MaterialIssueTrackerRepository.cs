@@ -15,7 +15,14 @@ namespace Tips.Warehouse.Api.Repository
         {
             _connection = connection;
         }
-
+        public async Task<long?> CreateMaterialIssueTracker(ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker)
+        {
+            var date = DateTime.Now;
+            shopOrderMaterialIssueTracker.CreatedBy = "Admin";
+            shopOrderMaterialIssueTracker.CreatedOn = date.Date;  
+            var result = await Create(shopOrderMaterialIssueTracker);
+            return result.Id;
+        }
         public async Task<int> AddDataToMaterialIssueTracker(ShopOrderMaterialIssueTracker shopOrderMaterialIssue)
         {
             shopOrderMaterialIssue.CreatedBy = "Admin";

@@ -72,56 +72,72 @@ namespace Tips.Warehouse.Api.Controllers
 
         //Add material request data to material issue tracker
 
-        //[HttpPost]
-        //public async Task<IActionResult> CreateMaterialRequestOnSOMaterialIssueTracker(List<ShopOrderDtoForMaterialRequest> dtoForMaterialRequest)
-        //{
-        //    ServiceResponse<ShopOrderDtoForMaterialRequest> serviceResponse = new ServiceResponse<ShopOrderDtoForMaterialRequest>();
-        //    try
-        //    {
-        //        if (dtoForMaterialRequest == null)
-        //        {
-        //            _logger.LogError("MaterialRequest object sent from client is null.");
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = "Invoice object is null";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-        //            return BadRequest(serviceResponse);
-        //        }
-        //        if (!ModelState.IsValid)
-        //        {
-        //            _logger.LogError("Invalid MaterialRequest object sent from client.");
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = "Invalid model object";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-        //            return BadRequest(serviceResponse);
-        //        }
+        [HttpPost]
+        public async Task<IActionResult> CreateMaterialRequestOnSOMaterialIssueTracker(List<ShopOrderDtoForMaterialRequest> dtoForMaterialRequest)
+        {
+            ServiceResponse<ShopOrderDtoForMaterialRequest> serviceResponse = new ServiceResponse<ShopOrderDtoForMaterialRequest>();
+            try
+            {
+                if (dtoForMaterialRequest == null)
+                {
+                    _logger.LogError("MaterialRequest object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invoice object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid MaterialRequest object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
 
-        //        for (int i = 0; i < dtoForMaterialRequest.Count; i++)
-        //        {
-        //            ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = new ShopOrderMaterialIssueTracker
-        //            {
-        //                ShopOrderNumber = dtoForMaterialRequest[i].ShopOrderNumber,
-        //                PartNumber = dtoForMaterialRequest[i].PartNumber,
-        //                //LotNumber = inventoryDetail.LotNumber,
-        //                //MftrPartNumber = inventoryDetail.MftrPartNumber, --need to add
-        //                Description = inventoryDetail.Description,
-        //                ProjectNumber = dtoForMaterialRequest[i].ProjectNumber,
-        //                IssuedQty = dtoForMaterialRequest[i].IssueQty,
-        //                ConvertedToFgQty = 0,
-        //                //UOM = inventoryDetail.UOM,
-        //                //Warehouse = inventoryDetail.Warehouse,
-        //                //Location = inventoryDetail.Location,
-        //                //Unit = inventoryDetail.Unit,
-        //                PartType = inventoryDetail.PartType,
-        //                DataFrom = "MR"
-        //            };
+                for (int i = 0; i < dtoForMaterialRequest.Count; i++)
+                {
+                    ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = new ShopOrderMaterialIssueTracker
+                    {
+                        ShopOrderNumber = dtoForMaterialRequest[i].ShopOrderNumber,
+                        PartNumber = dtoForMaterialRequest[i].PartNumber,
+                        LotNumber = "",
+                        MftrPartNumber = dtoForMaterialRequest[i].MftrPartNumber,
+                        Description = dtoForMaterialRequest[i].Description,
+                        ProjectNumber = dtoForMaterialRequest[i].ProjectNumber,
+                        IssuedQty = dtoForMaterialRequest[i].IssueQty,
+                        ConvertedToFgQty = 0,
+                        UOM = "",
+                        Warehouse = "",
+                        Location = "",
+                        Unit = "",
+                        PartType = dtoForMaterialRequest[i].PartType,
+                        DataFrom = "MR"
+                    };
 
-        //        }
+                    await _materialIssueTrackerRepository.CreateMaterialIssueTracker(shopOrderMaterialIssueTracker);
+                    _materialIssueTrackerRepository.SaveAsync();
+                }
+                 
+                serviceResponse.Data = null;
+                serviceResponse.Message = "CreateMaterialIssueTracker Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("GetInvoiceById", serviceResponse);
 
-        //    }
-        //    catch(Exception ex) { }
-        //}
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateMaterialIssueTracker action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
 
 

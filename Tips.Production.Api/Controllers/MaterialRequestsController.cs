@@ -489,7 +489,10 @@ namespace Tips.Production.Api.Controllers
                         ProjectNumber = projectNo,
                         DataFrom = "MR",
                         IssueQty = materialItemDetail.IssuedQty,
-                        ShopOrderNumber = shopOrderNumber
+                        ShopOrderNumber = shopOrderNumber,
+                        MftrPartNumber = materialItemDetail.MftrPartNumber,
+                        Description= materialItemDetail.PartDescription,
+                        PartType = materialItemDetail.PartType
                     };
                     inventoryDtos.Add(inventoryDtoForMaterialRequest);
 
