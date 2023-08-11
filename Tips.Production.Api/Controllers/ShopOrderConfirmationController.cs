@@ -157,13 +157,12 @@ namespace Tips.Production.Api.Controllers
 
                 var json = JsonConvert.SerializeObject(shopOrderConfirmationPostDto.shopOrderItemConfirmations);
                var data = new StringContent(json, Encoding.UTF8, "application/json");
-               var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnShopOrderConfirmation"), data);
-                 
+               var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnShopOrderConfirmation"), data);                 
 
-                var inventoryResponceString = await response.Content.ReadAsStringAsync();
-                dynamic inventoryResponceData = JsonConvert.DeserializeObject(inventoryResponceString);
-                dynamic inventoryObject = inventoryResponceData.data;
-                if(inventoryObject.StatusCode == HttpStatusCode.OK)
+                //var inventoryResponceString = await response.Content.ReadAsStringAsync();
+                //dynamic inventoryResponceData = JsonConvert.DeserializeObject(inventoryResponceString);
+                //dynamic inventoryObject = inventoryResponceData.data;
+                if(response.StatusCode == HttpStatusCode.OK)
                 {
                     _shopOrderRepo.SaveAsync();
                     _shopOrderConfirmationRepository.SaveAsync();

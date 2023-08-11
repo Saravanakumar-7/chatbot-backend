@@ -492,7 +492,8 @@ namespace Tips.Production.Api.Controllers
                         ShopOrderNumber = shopOrderNumber,
                         MftrPartNumber = materialItemDetail.MftrPartNumber,
                         Description= materialItemDetail.PartDescription,
-                        PartType = materialItemDetail.PartType
+                        PartType = materialItemDetail.PartType,
+
                     };
                     inventoryDtos.Add(inventoryDtoForMaterialRequest);
 

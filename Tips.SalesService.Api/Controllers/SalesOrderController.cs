@@ -1047,8 +1047,8 @@ namespace Tips.SalesService.Api.Controllers
         public async Task<IActionResult> UpdatePendingShopOrderQty([FromBody] UpdatePendingShopOrderConfirmationQtyDto updatePendingShopOrderConfirmationQtyDto)
         {
 
-            IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderBySalesOrderNoandItemNo(updatePendingShopOrderConfirmationQtyDto.SalesOrderNumber
-                                                                                             , updatePendingShopOrderConfirmationQtyDto.FGItemNumber, updatePendingShopOrderConfirmationQtyDto.ProjectNumber);
+            IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderBySalesOrderNoandItemNo(updatePendingShopOrderConfirmationQtyDto.SalesOrderNumber, updatePendingShopOrderConfirmationQtyDto.FGItemNumber, updatePendingShopOrderConfirmationQtyDto.ProjectNumber);
+
             var orderItem = salesOrderItems.FirstOrDefault();
 
             orderItem.ShopOrderQty -= updatePendingShopOrderConfirmationQtyDto.PendingSoConfirmationQty;
@@ -1366,6 +1366,13 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     var salesOrderDetails = await _repository.GetSalesOrderById(soItemDetailBySOItemId.SalesOrderId);
                     salesOrderDetails.SOStatus = OrderStatus.ShortClose;
+                    await _repository.UpdateSalesOrder(salesOrderDetails);
+                    _repository.SaveAsync();
+                }
+                else
+                {
+                    var salesOrderDetails = await _repository.GetSalesOrderById(soItemDetailBySOItemId.SalesOrderId);
+                    salesOrderDetails.SOStatus = OrderStatus.PartiallyClosed;
                     await _repository.UpdateSalesOrder(salesOrderDetails);
                     _repository.SaveAsync();
                 }

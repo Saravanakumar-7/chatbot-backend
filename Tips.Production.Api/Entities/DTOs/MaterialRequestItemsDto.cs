@@ -108,8 +108,6 @@ namespace Tips.Production.Api.Entities.DTOs
         public string Description { get; set; }
         public string MftrPartNumber { get; set; }
         public PartType PartType { get; set; }
-
-
     }
 
     public class MaterialRequestItemsReportDto

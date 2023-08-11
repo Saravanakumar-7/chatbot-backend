@@ -1717,6 +1717,13 @@ namespace Tips.Purchase.Api.Controllers
                     await _repository.UpdatePurchaseOrder(poDetails);
                     _repository.SaveAsync();
                 }
+                else
+                {
+                    var poDetails = await _repository.GetPurchaseOrderById(poItemDetailByPoItemId.PurchaseOrderId);
+                    poDetails.PoStatus = PoStatus.PartiallyClosed;
+                    await _repository.UpdatePurchaseOrder(poDetails);
+                    _repository.SaveAsync();
+                }
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "PoItem Status have been closed";
