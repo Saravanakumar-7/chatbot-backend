@@ -679,14 +679,14 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 var itemNumber = materialReturnQty.PartNumber;
                 var projectNo = materialReturnQty.ProjectNumber;
+                var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
+                                                                                "GetItemMasterDetailsForMNRByItemNo?", "&ItemNumber=", itemNumber));
+                var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                dynamic itemMasterObject = itemMasterObjectData.data;
+
                 foreach (var Location in materialReturnQty.MRNDetails)
                 {
-                    var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
-                                                                                "GetItemMasterDetailsForMNRByItemNo?", "&ItemNumber=", itemNumber));
-                    var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                    dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                    dynamic itemMasterObject = itemMasterObjectData.data;
-
 
                     IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNoandLocationandwarehouse(materialReturnQty.PartNumber, Location.Location, Location.Warehouse);
                     var inventoryItem = inventories.FirstOrDefault();
