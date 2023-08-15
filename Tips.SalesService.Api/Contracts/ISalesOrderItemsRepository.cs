@@ -15,7 +15,8 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<SalesOrderItems>> GetSalesOrderDetailsByIdandItemNo(string ItemNumber, int SalesOrderId);
         Task<List<SalesOrderFGandBalanceQty>> GetAllSalesOrderFGOrTGItemDetails();
         Task<string> UpdateSalesOrderItem(SalesOrderItems salesOrderItems);
-
         Task<IEnumerable<ListOfProjectNoDto>> GetprojectNoByItemNo(string itemNo);
+        Task<SalesOrderItems> CloseSOItemSatusBySOItemId(int soItemId);
+        Task<int?> GetSOItemOpenStatusCount(int soId);
     }
 }

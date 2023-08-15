@@ -97,6 +97,19 @@ namespace Tips.Production.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal LocationStock { get; set; }
     }
+
+    public class InventoryDtoForMaterialRequest
+    {
+        public string PartNumber { get; set; }
+        public string ProjectNumber { get; set; }
+        public decimal? IssueQty { get; set; }
+        public string? DataFrom { get; set; }
+        public string ShopOrderNumber { get; set; }
+        public string Description { get; set; }
+        public string MftrPartNumber { get; set; }
+        public PartType PartType { get; set; }
+    }
+
     public class MaterialRequestItemsReportDto
     {
         public int Id { get; set; }

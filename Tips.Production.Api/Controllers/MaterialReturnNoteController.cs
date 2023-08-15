@@ -409,6 +409,7 @@ namespace Tips.Production.Api.Controllers
                     for (int i = 0; i < materialReturnNotesItemDto.Count; i++)
                     {
                         MaterialReturnNoteItem materialReturnNoteItem = _mapper.Map<MaterialReturnNoteItem>(materialReturnNotesItemDto[i]);
+                        materialReturnNoteItem.ProjectNumber = materialReturnNoteUpdateDto.ProjectNumber;
                         materialReturnNoteItem.MRNWarehouseList = _mapper.Map<List<MRNWarehouseDetails>>(materialReturnNotesItemDto[i].MRNWarehouseList);
 
                         materialReturnNoteItemList.Add(materialReturnNoteItem);
@@ -416,11 +417,11 @@ namespace Tips.Production.Api.Controllers
                     }
                 }
 
-               
                 var mapperConfiguration = new MapperConfiguration(cfg =>
                 {
                     cfg.CreateMap<MaterialReturnNoteItem, MRNUpdateInventoryBalanceQty>()
                         .ForMember(dest => dest.PartNumber, opt => opt.MapFrom(src => src.PartNumber))
+                        .ForMember(dest => dest.ProjectNumber, opt => opt.MapFrom(src => src.ProjectNumber))
                         .ForMember(dest => dest.MRNDetails, opt => opt.MapFrom(src => src.MRNWarehouseList.Select(detail => new MRNInventoryUpdateDto
                         {
                             Warehouse = detail.Warehouse,
@@ -430,10 +431,22 @@ namespace Tips.Production.Api.Controllers
                         }).ToList()));
                 });
 
+                //var mapperConfiguration = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.CreateMap<MaterialReturnNoteItem, MRNUpdateInventoryBalanceQty>()
+                //        .ForMember(dest => dest.PartNumber, opt => opt.MapFrom(src => src.PartNumber))
+                //        .ForMember(dest => dest.MRNDetails, opt => opt.MapFrom(src => src.MRNWarehouseList.Select(detail => new MRNInventoryUpdateDto
+                //        {
+                //            Warehouse = detail.Warehouse,
+                //            Location = detail.Location,
+                //            Qty = detail.Qty,
+                //            LocationStock = detail.LocationStock,
+                //        }).ToList()));
+                //});
+
                 var mapper = mapperConfiguration.CreateMapper();
                 var materialReturnNoteDetails = materialReturnNoteItemList.Select(item => mapper.Map<MRNUpdateInventoryBalanceQty>(item)).ToList();
-
-                var json = JsonConvert.SerializeObject(materialReturnNoteDetails);
+                 var json = JsonConvert.SerializeObject(materialReturnNoteDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialReturnNoteInventoryBalanceQty"), data);
 

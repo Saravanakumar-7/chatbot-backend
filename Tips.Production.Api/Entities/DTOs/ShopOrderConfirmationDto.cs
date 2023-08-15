@@ -37,10 +37,10 @@ namespace Tips.Production.Api.Entities.DTOs
 
     public class ShopOrderConfirmationPostDto
     {
+        [Required] 
+        public string ShopOrderNumber { get; set; }
         [Required]
-        [MaxLength(100)]
-        public string? ShopOrderNumber { get; set; }
-        public string? ItemNumber { get; set; }
+        public string ItemNumber { get; set; }
         public string? Description { get; set; }
         [Required]
         public PartType ItemType { get; set; }
@@ -50,7 +50,11 @@ namespace Tips.Production.Api.Entities.DTOs
         [Required]
         [Precision(13, 3)]
         public decimal WipConfirmedQty { get; set; }
+
+        public List<ShopOrderItemConfirmationDto> shopOrderItemConfirmations { get; set; }
+
         
+
     }
 
     public class ShopOrderConfirmationUpdateDto
@@ -87,5 +91,18 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal WipQty { get; set; }
         public decimal OqcQty { get; set; }
 
+    } 
+    public class InventoryDtoForShopOrderConfirmation
+    { 
+
+        public string? PartNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
+
+        [Precision(13, 3)]
+        public decimal NewConvertedToFgQty { get; set; }
+        public string? DataFrom { get; set; }
+        public string? MRNumber { get; set; }
+
     }
+
 }

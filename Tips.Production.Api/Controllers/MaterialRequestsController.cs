@@ -15,6 +15,7 @@ using System.Text;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 using Entities.Migrations;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
+using Mysqlx.Crud;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -209,6 +210,56 @@ namespace Tips.Production.Api.Controllers
 
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetMaterialReqByShopOrderNumber(string ShopOrderNo)
+        {
+            ServiceResponse<MaterialRequestsDto> serviceResponse = new ServiceResponse<MaterialRequestsDto>();
+
+            try
+            {
+                var getSObySONo = await _materialRequestRepository.GetMaterialReqByShopOrderNumber(ShopOrderNo);
+
+                if (getSObySONo == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Get MaterialRequest Details By ShopOrderNo with id: {ShopOrderNo}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Get MaterialRequest Details By ShopOrderNo with shoporderNo: {ShopOrderNo}, hasn't been found.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Get MaterialRequest Details By ShopOrderNo with shoporderNo: {ShopOrderNo}");
+
+                    MaterialRequestsDto materialRequestDto = _mapper.Map<MaterialRequestsDto>(getSObySONo);
+
+                    List<MaterialRequestItemsDto> materialRequestItemDtos = new List<MaterialRequestItemsDto>();
+                    foreach (var materialReqbyMRNo in getSObySONo.MaterialRequestItems)
+                    {
+                        MaterialRequestItemsDto materialRequestItemDto = _mapper.Map<MaterialRequestItemsDto>(materialReqbyMRNo);
+                        materialRequestItemDto.MRStockDetails = _mapper.Map<List<MRStockDetailsDto>>(materialReqbyMRNo.MRStockDetails);
+
+                        materialRequestItemDtos.Add(materialRequestItemDto);
+                    }
+                    materialRequestDto.MaterialRequestItems = materialRequestItemDtos;
+                    serviceResponse.Data = materialRequestDto;
+                    serviceResponse.Message = $"Returned Get MaterialRequest Details By ShopOrderNo with ShopOrderNo: {ShopOrderNo}";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetMRDetailsByShopOrderNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> CreateMaterialRequest([FromBody] MaterialRequestsPostDto materialRequestPostDto)
         {
@@ -307,7 +358,6 @@ namespace Tips.Production.Api.Controllers
         {
              ServiceResponse<MaterialRequestUpdateDto> serviceResponse = new ServiceResponse<MaterialRequestUpdateDto>();
 
-
             try
             {
                 if (materialRequestUpdateDto is null)
@@ -375,6 +425,7 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        
 
 
         [HttpPut("{id}")]
@@ -418,15 +469,50 @@ namespace Tips.Production.Api.Controllers
                 var materialReqItemDto = materialRequestUpdateDto.MaterialRequestItems;
 
                 var materialReqItemList = new List<MaterialRequestItems>();
+                var shopOrderNumber = materialRequestUpdateDto.ShopOrderNumber;
+                var projectNo = materialRequestUpdateDto.ProjectNumber;
 
+                List<InventoryDtoForMaterialRequest> inventoryDtos = new List<InventoryDtoForMaterialRequest>();
+
+                
                 for (int i = 0; i < materialReqItemDto.Count; i++)
                 {
                     MaterialRequestItems materialItemDetail = _mapper.Map<MaterialRequestItems>(materialReqItemDto[i]);
-                    materialItemDetail.MRStockDetails = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
-
+                    var mrStockDetails = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
+                    materialItemDetail.MRStockDetails = mrStockDetails;
+                    materialItemDetail.IssuedQty = mrStockDetails.Select(x=> x.Qty).Sum();
                     materialReqItemList.Add(materialItemDetail);
-                     
+                    //add material request data to somaterialissue tracker
+                    InventoryDtoForMaterialRequest inventoryDtoForMaterialRequest = new InventoryDtoForMaterialRequest
+                    {
+                        PartNumber = materialItemDetail.PartNumber,
+                        ProjectNumber = projectNo,
+                        DataFrom = "MR",
+                        IssueQty = materialItemDetail.IssuedQty,
+                        ShopOrderNumber = shopOrderNumber,
+                        MftrPartNumber = materialItemDetail.MftrPartNumber,
+                        Description= materialItemDetail.PartDescription,
+                        PartType = materialItemDetail.PartType,
+
+                    };
+                    inventoryDtos.Add(inventoryDtoForMaterialRequest);
+
                 }
+
+                var jsons = JsonConvert.SerializeObject(inventoryDtos);
+                var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateMaterialRequestOnSOMaterialIssueTracker"), datas);
+
+                //InventoryDtoForMaterialRequest inventoryDtoForMaterialRequest = new InventoryDtoForMaterialRequest();
+                //inventoryDtoForMaterialRequest.PartNumber = materialItemDetail.PartNumber;
+                //inventoryDtoForMaterialRequest.ProjectNumber = projectNo;
+                //inventoryDtoForMaterialRequest.DataFrom = "MR";
+                //inventoryDtoForMaterialRequest.IssueQty = materialItemDetail.IssuedQty;
+                //inventoryDtoForMaterialRequest.ShopOrderNumber = shopOrderNumber;
+                //var json1 = JsonConvert.SerializeObject(inventoryDtoForMaterialRequest);
+
+                //var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
+                //var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnMaterialIssue"), data1);
 
                 //var materialRequestDetails = _mapper.Map<List<UpdateInventoryBalanceQty>>(materialReqItemList);
 
@@ -461,6 +547,9 @@ namespace Tips.Production.Api.Controllers
                 updateMaterialReqquest.MrStatus = MaterialStatus.close;
                 string result = await _materialRequestRepository.UpdateMaterialRequest(updateMaterialReq);
                 _materialRequestRepository.SaveAsync();
+
+
+
 
                 //update balance qty and Return qty in Inventory table
 

@@ -208,6 +208,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class MRNUpdateInventoryBalanceQty
     {
         public string? PartNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+
         public List<MRNInventoryUpdateDto> MRNDetails { get; set; }
     }
 
@@ -268,6 +270,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ShopOrderNo { get; set; }
 
     }
+    
 
     public class InventoryDtoForMaterialIssue
     {
@@ -277,6 +280,16 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         
         public string ShopOrderNumber { get; set; }
 
+    }
+ 
+    public class InventoryDtoForShopOrderConfirmation
+    {
+        public string? PartNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
+
+        public decimal NewConvertedToFgQty { get; set; }
+        public string? DataFrom { get; set; }
+        public string? MRNumber { get; set; }
     }
 
     public class ConsumptionInventoryDto

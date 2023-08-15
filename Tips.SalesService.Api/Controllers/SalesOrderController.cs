@@ -15,7 +15,7 @@ using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
-using Tips.SalesService.Api.Repository;
+using Tips.SalesService.Api.Entities.Enum;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.SalesService.Api.Controllers
@@ -122,22 +122,45 @@ namespace Tips.SalesService.Api.Controllers
                             salesAdditionalChargesList.Add(additionalChargesDetails);
                         }
                     }
-                    
-                    foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
+                    string salesOrderNo = salesOrderDto.SalesOrderNumber;
+                    SalesOrderStatus salesOrderStatus = salesOrderDto.SalesOrderStatus;
+
+
+
+                    List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x=> x.ItemNumber).Distinct().ToList();
+
+                    if (itemNumberList != null)
                     {
-                        SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
-                        salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
-                        var SalesItemNo = salesOrderItemsDtos.ItemNumber;
-                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?", "ItemNumber=", SalesItemNo));
-                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        dynamic inventoryObject = inventoryObjectData;
-                        // Convert double to decimal
-                        decimal availableStock = Convert.ToDecimal(inventoryObject);
-                        salesOrderItemsDtos.AvailableStock = availableStock;
- 
-                        salesOrderItemsDtoList.Add(salesOrderItemsDtos);
+                        var json = JsonConvert.SerializeObject(itemNumberList);
+                        var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        var inventoryQtyResponse = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"],
+                            "GetAvailableStockQtyForSalesOrderItems?salesOrderNo=",salesOrderNo,"&salesOrderStatus=", salesOrderStatus), data);
+
+                        var inventoryItemQtyDetails = await inventoryQtyResponse.Content.ReadAsStringAsync();
+                        dynamic inventoryTranctionObjectData = JsonConvert.DeserializeObject(inventoryItemQtyDetails);
+                        Dictionary<string, decimal> inventoryItemWithStockDetails = (Dictionary<string,decimal>)inventoryTranctionObjectData.data;
+
+                        foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
+                        {
+                            SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
+                            salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
+                            string itemNumber = salesOrderItemsDtos.ItemNumber;
+                            if (inventoryItemWithStockDetails.ContainsKey(itemNumber))
+                            {
+                                salesOrderItemsDtos.AvailableStock = inventoryItemWithStockDetails[itemNumber];
+                            }
+                            else
+                            {
+                                salesOrderItemsDtos.AvailableStock = 0;
+                            }
+                            
+
+                            salesOrderItemsDtoList.Add(salesOrderItemsDtos);
+                        }
                     }
+
+
+                    
 
                     salesOrderDto.SalesOrdersItems = salesOrderItemsDtoList;
                     salesOrderDto.SalesOrderAdditionalCharges = salesAdditionalChargesList;
@@ -1019,6 +1042,22 @@ namespace Tips.SalesService.Api.Controllers
              return Ok();
         }
 
+        //Update Pending shoporder Qty in salesorder
+        [HttpPost]
+        public async Task<IActionResult> UpdatePendingShopOrderQty([FromBody] UpdatePendingShopOrderConfirmationQtyDto updatePendingShopOrderConfirmationQtyDto)
+        {
+
+            IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderBySalesOrderNoandItemNo(updatePendingShopOrderConfirmationQtyDto.SalesOrderNumber, updatePendingShopOrderConfirmationQtyDto.FGItemNumber, updatePendingShopOrderConfirmationQtyDto.ProjectNumber);
+
+            var orderItem = salesOrderItems.FirstOrDefault();
+
+            orderItem.ShopOrderQty -= updatePendingShopOrderConfirmationQtyDto.PendingSoConfirmationQty;
+            await _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+
+            _salesOrderItemsRepository.SaveAsync();
+            return Ok();
+        }
+
         //Update Invoiced Value and DispatchQty Using Invoice 
         [HttpPost]
         public async Task<IActionResult> AdditionalChargeUpdateFromInvoice([FromBody] List<SoAdditionalChargeUpdateDto> soAdditionalChargeUpdateDto)
@@ -1260,7 +1299,6 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpPut]
         public async Task<IActionResult> ActivateSalesOrderConfirmStatus(string salesOrderNumber,DateTime confirmDate)
         {
@@ -1299,66 +1337,66 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
-        [HttpGet("{itemNumber}")]
-        public async Task<ActionResult<decimal>> GetOpenSalesOrderQuantityByItemNumber(string itemNumber)
-        {
-            var salesOrderServiceResponse = new ServiceResponse<decimal>();
-
-            try
-            {
-                var openSalesOrderQty = await _repository.GetOpenSalesOrderQuantityByItemNumber(itemNumber);
-
-                salesOrderServiceResponse.Data = openSalesOrderQty;
-                salesOrderServiceResponse.Message = "Retrieved open sales order quantity";
-                salesOrderServiceResponse.Success = true;
-
-                return Ok(salesOrderServiceResponse);
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Something went wrong inside ActivateSalesOrderConfirmStatus action: {ex.Message}");
-                salesOrderServiceResponse.Success = false;
-                salesOrderServiceResponse.Message = "Error getting open sales order quantity";
-                return StatusCode(500, salesOrderServiceResponse);
-            }
-        }
-
-        
         [HttpGet]
-        public async Task<IActionResult> GetOpenSalesOrderQuantityByItemNumber()
+        public async Task<IActionResult> ShortCloseSOItemSatusBySOItemId(int soItemId)
         {
-            ServiceResponse<IEnumerable<OpenSalesOrderQuantityDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenSalesOrderQuantityDto>>();
+            ServiceResponse<SalesOrderItemsDto> serviceResponse = new ServiceResponse<SalesOrderItemsDto>();
+
             try
             {
-                var listOfOpenSalesOrderQuantity = await _repository.GetOpenSalesOrderQuantityByItemNumber();
+                var soItemDetailBySOItemId = await _salesOrderItemsRepository.CloseSOItemSatusBySOItemId(soItemId);
+                if (soItemDetailBySOItemId == null)
+                {
+                    _logger.LogError($"SalesOrderItems with soItemId: {soItemId}, hasn't been found.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderItems with soItemId hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
 
-                // write a Http get method to access the EnggBomsItems from Tips.Master.Service.API get GetEnggBomItemsByItemNumber only ItemNumber and Quantity of the EnggChildITmes Model   and then map it to the OpenSalesOrderQuantityDto Model and then return the result
-                //??
+                soItemDetailBySOItemId.StatusEnum = OrderStatus.ShortClose;
+                string result = await _salesOrderItemsRepository.UpdateSalesOrderItem(soItemDetailBySOItemId);
+                _salesOrderItemsRepository.SaveAsync();
 
+                //Update SalesOrder Table Status
+                var soItemOpenStatuscount = await _salesOrderItemsRepository.GetSOItemOpenStatusCount(soItemDetailBySOItemId.SalesOrderId);
 
+                if (soItemOpenStatuscount == 0)
+                {
+                    var salesOrderDetails = await _repository.GetSalesOrderById(soItemDetailBySOItemId.SalesOrderId);
+                    salesOrderDetails.SOStatus = OrderStatus.ShortClose;
+                    await _repository.UpdateSalesOrder(salesOrderDetails);
+                    _repository.SaveAsync();
+                }
+                else
+                {
+                    var salesOrderDetails = await _repository.GetSalesOrderById(soItemDetailBySOItemId.SalesOrderId);
+                    salesOrderDetails.SOStatus = OrderStatus.PartiallyClosed;
+                    await _repository.UpdateSalesOrder(salesOrderDetails);
+                    _repository.SaveAsync();
+                }
 
-
-                var result = _mapper.Map<IEnumerable<OpenSalesOrderQuantityDto>>(listOfOpenSalesOrderQuantity);
-                serviceResponse.Data = result;
-                serviceResponse.Message = "Returned All OpenSalesOrderQuantity";
+                serviceResponse.Data = null;
+                serviceResponse.Message = "SalesOrderItems Status have been closed";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
+
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Something went wrong inside CloseSOItemSatusBySOItemId action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetOpenSalesOrderQuantityByItemNumber action: {ex.Message}";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
+    }
 
-        
+
 }
 
 

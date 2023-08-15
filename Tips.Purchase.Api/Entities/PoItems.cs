@@ -1,7 +1,7 @@
-﻿using Entities.Enums;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using Tips.Purchase.Api.Entities.DTOs;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Entities
 {
@@ -49,7 +49,7 @@ namespace Tips.Purchase.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+        public PoStatus PoStatus { get; set; }
         public int PurchaseOrderId { get; set; }
         public PurchaseOrder? PurchaseOrder { get; set; }
 

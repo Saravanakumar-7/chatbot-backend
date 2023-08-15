@@ -316,6 +316,84 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpPost]
+
+        public async Task<IActionResult> GetAvailableStockQtyForSalesOrderItems([FromQuery] string salesOrderNo, [FromQuery] int salesOrderStatus ,[FromBody]List<string> itemNumberList)
+        {
+            ServiceResponse<Dictionary<string, decimal>> serviceResponse = new ServiceResponse<Dictionary<string, decimal>>();
+            try
+            {
+                Dictionary<string, decimal> ItemNoWithQtyDict = new Dictionary<string, decimal>();
+
+                if (itemNumberList == null)
+                {
+                    _logger.LogError($"ItemNumber list for for SO NO {salesOrderNo} is null in Inventory Controller - GetAvailableStockQtyForSalesOrderItems");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ItemNumber list for SO NO {salesOrderNo} is null in Inventory Controller - GetAvailableStockQtyForSalesOrderItems";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return Ok(serviceResponse);
+                }
+
+                ItemNoWithQtyDict =  await GetItemNumberWiseQuantityDict(salesOrderNo, salesOrderStatus, itemNumberList);
+
+                if (ItemNoWithQtyDict == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory Details hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"For given item number there is no inventory available");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"For given itemnumber there is no inventory available");
+                    //var result = InventoryDetails;
+                    //serviceResponse.Data = result;
+                    //serviceResponse.Message = "Returned InventoryDetails with id Successfully";
+                    //serviceResponse.Success = true;
+                    //serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(ItemNoWithQtyDict);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        private async Task<Dictionary<string, decimal>> GetItemNumberWiseQuantityDict(string salesOrderNo, int salesOrderStatus, List<string> itemNumberList)
+        {
+            Dictionary<string, decimal> ItemNoWithQtyDict = new Dictionary<string, decimal>();
+            foreach (var itemNo in itemNumberList)
+            {
+                // Get Work Order (Shop Order) number list by passing Sales OrderNumber
+                var shopOrderNumberListResponse = await _httpClient.GetAsync(string.Concat(_config["ProductionAPI"],
+                         "GetShopOrderNoListBySalesOrderNo?", "SalesOrderNO=", salesOrderNo, "&itemNumber=", itemNo));
+
+                var shopOrderNumberListString = await shopOrderNumberListResponse.Content.ReadAsStringAsync();
+                dynamic shopOrderNumberListData = JsonConvert.DeserializeObject(shopOrderNumberListString);
+                List<string> shopOrderNumberList = (List<string>)shopOrderNumberListData.data;
+                if (salesOrderStatus == 0) // Retail SO
+                {
+                    decimal itemQty = await _inventoryRepository.GetStockQtyForRetailSalesOrderItem(itemNo);
+                    ItemNoWithQtyDict.Add(itemNo, itemQty);
+                }
+                else if (salesOrderStatus == 1) // Built to Print SO
+                {
+                    decimal itemQty = await _inventoryRepository.GetStockQtyForBtpSalesOrderItem(itemNo, shopOrderNumberList);
+                    ItemNoWithQtyDict.Add(itemNo, itemQty);
+                }
+            }
+            return ItemNoWithQtyDict;
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetStockDetailsForAllLocationWarehouseByItemNo(string itemNumber)
         {
@@ -410,7 +488,7 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetInventoryDetailsByItemNo(string itemNumber, string projectNo)
         {
-            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+            ServiceResponse<List<InventoryDto>> serviceResponse = new ServiceResponse<List<InventoryDto>>();
             try
             {
                 var InventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNoandProjectNo(itemNumber, projectNo);
@@ -426,7 +504,7 @@ namespace Tips.Warehouse.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Inventory with Itemnumber: {itemNumber}");
-                    var result = _mapper.Map<InventoryDto>(InventoryDetails);
+                    var result = _mapper.Map<List<InventoryDto>>(InventoryDetails);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned InventoryDetails with id Successfully";
                     serviceResponse.Success = true;
@@ -444,6 +522,11 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+
+
+
 
         [HttpGet]
         public async Task<IActionResult> GetInventoryByItemNo(string itemNumber)
@@ -522,6 +605,127 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        //update inventory on shoporder confirmation 
+        [HttpPost]
+        public async Task<IActionResult> UpdateInventoryOnShopOrderConfirmation(List<InventoryDtoForShopOrderConfirmation> dtoForShopOrderConfirmation)
+        {
+            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+            try
+            {
+                foreach (var item in dtoForShopOrderConfirmation)
+                {
+
+                    var inventoryDetails = await _inventoryRepository
+                        .GetWIPInventoryDetailsByItemNo(item.PartNumber, item.ShopOrderNumber);
+
+                    if (inventoryDetails == null || inventoryDetails.Count == 0)
+                    {
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"Inventory Details hasn't been found";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        _logger.LogError($"Inventory with itemNumber: {item.PartNumber}, is not available");
+                        return Ok(serviceResponse);
+                    }
+
+                    //decimal producedQty = dtoForShopOrderConfirmation.WipConfirmedQty;
+                    decimal producedQty = item.NewConvertedToFgQty;
+                    for (int i = 0; i < inventoryDetails.Count; i++)
+                    {
+                        decimal balanceqty = inventoryDetails[i].Balance_Quantity;
+                        decimal lotNoWiseProducedQty = 0;
+                        if (inventoryDetails[i].Balance_Quantity <= producedQty)
+                        {
+                            inventoryDetails[i].Balance_Quantity = 0;
+                            inventoryDetails[i].IsStockAvailable = false;
+                            lotNoWiseProducedQty = balanceqty;
+                            /** Dont Change the Position of IssuedQty and BalanceQty Code in this Method .it should be always last ***********************/
+                            producedQty -= balanceqty;
+                            balanceqty = 0;
+                        }
+                        else
+                        {
+                            inventoryDetails[i].Balance_Quantity -= producedQty;
+                            lotNoWiseProducedQty = producedQty;
+
+                            /******* Dont Change the Position of IssuedQty and BalanceQty 
+                             * Code in this Method. it should be always last ***********************/
+
+                            producedQty = 0;
+                        }
+
+                        string result = await _inventoryRepository.UpdateInventory(inventoryDetails[i]);
+
+                        /*********************************** Update data to Material Issue Tracker *************************/
+                        await UpdateDataToMaterialIssueTracker(item, inventoryDetails[i]);
+                        /*********************************** End of Add data to Material Issue Tracker *************************/
+
+                        if (producedQty <= 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                    _inventoryRepository.SaveAsync();
+                    _materialIssueTrackerRepository.SaveAsync();
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Updated Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        private async Task UpdateDataToMaterialIssueTracker(InventoryDtoForShopOrderConfirmation item, Inventory inventoryDetail)
+        {
+            // Retrieve the existing entry from the repository based on the ShopOrderNumber, PartNumber, and LotNumber
+
+            List<ShopOrderMaterialIssueTracker> materialIssueTrackerList = await _materialIssueTrackerRepository
+                                .GetDetailsByShopOrderNOItemNoLotNo(inventoryDetail.PartNumber, inventoryDetail.shopOrderNo,  inventoryDetail.LotNumber);
+
+            if (materialIssueTrackerList != null || materialIssueTrackerList.Count > 0)
+            {
+                decimal newConvertedToFgQty = item.NewConvertedToFgQty;
+
+                foreach (var materialIssueTrack in materialIssueTrackerList)
+                {
+                    decimal balanceqtyToConvert = (materialIssueTrack.IssuedQty - materialIssueTrack.ConvertedToFgQty);
+                    if (balanceqtyToConvert <= newConvertedToFgQty)
+                    {
+                        materialIssueTrack.ConvertedToFgQty += newConvertedToFgQty;
+                        newConvertedToFgQty -= balanceqtyToConvert;
+                        balanceqtyToConvert = 0;
+                    }
+                    else
+                    {
+                        materialIssueTrack.ConvertedToFgQty += newConvertedToFgQty;
+                        newConvertedToFgQty = 0;
+                    }
+
+                    await _materialIssueTrackerRepository.UpdateMaterialIssueTracker(materialIssueTrack);
+                    if (newConvertedToFgQty <= 0)
+                    {
+                        break;
+                    }
+                }
+ 
+            }
+        }
+
+
+            //update Material issue tracker consumed Qty
 
         [HttpPost]
         public async Task<IActionResult> UpdateInventoryOnMaterialIssue(InventoryDtoForMaterialIssue dtoForMaterialIssue)
@@ -542,52 +746,47 @@ namespace Tips.Warehouse.Api.Controllers
                     return Ok(serviceResponse);
                 }
 
-                decimal issueQty = dtoForMaterialIssue.IssueQty;
+                decimal issuedQty = dtoForMaterialIssue.IssueQty;
                 for (int i = 0; i < inventoryDetails.Count; i++)
                 {
                     decimal balanceqty = inventoryDetails[i].Balance_Quantity;
                     decimal lotNoWiseIssuedQty = 0;
-                    if (inventoryDetails[i].Balance_Quantity <= issueQty)
+                    if (inventoryDetails[i].Balance_Quantity <= issuedQty)
                     {
-                        
-                        inventoryDetails[i].Balance_Quantity = 0;
-                        inventoryDetails[i].IsStockAvailable = false;
+
+                        inventoryDetails[i].Warehouse = "WIP";
+                        inventoryDetails[i].Location = "WIP";
+                        inventoryDetails[i].IsStockAvailable = true;
                         lotNoWiseIssuedQty = balanceqty;
-                        issueQty -= balanceqty;
+                        /** Dont Change the Position of IssuedQty and BalanceQty Code in this Method .it should be always last ***********************/
+                        issuedQty -= balanceqty;
                         balanceqty = 0;
                     }
                     else
                     {
-                        inventoryDetails[i].Balance_Quantity -= issueQty;
-                        lotNoWiseIssuedQty = issueQty;
-                        issueQty = 0;
+                        inventoryDetails[i].Balance_Quantity -= issuedQty;
+                        lotNoWiseIssuedQty = issuedQty;
+                        string shopOrderNumber = dtoForMaterialIssue.ShopOrderNumber;
+                        Inventory wipInventory = InsertWipDetailsInInventoryWhenIssuedQtyIsMore(inventoryDetails[i], issuedQty, shopOrderNumber);
+
+                        
+                        await _inventoryRepository.CreateInventory(wipInventory);
+
+                        /******* Dont Change the Position of IssuedQty and BalanceQty 
+                         * Code in this Method. it should be always last ***********************/
+
+                        issuedQty = 0;
                     }
-                    
+
                     string result = await _inventoryRepository.UpdateInventory(inventoryDetails[i]);
 
                     /*********************************** Add data to Material Issue Tracker *************************/
-                    string shopOrderNumber = dtoForMaterialIssue.ShopOrderNumber;
-                    ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = new ShopOrderMaterialIssueTracker
-                    {
-                        ShopOrderNumber = shopOrderNumber,
-                        PartNumber = inventoryDetails[i].PartNumber,
-                        LotNumber = inventoryDetails[i].LotNumber,
-                        MftrPartNumber = inventoryDetails[i].MftrPartNumber,
-                        Description = inventoryDetails[i].Description,
-                        ProjectNumber = inventoryDetails[i].ProjectNumber,
-                        IssuedQty = lotNoWiseIssuedQty,
-                        ConvertedToFgQty =0,
-                        UOM = inventoryDetails[i].UOM,
-                        Warehouse= inventoryDetails[i].Warehouse,
-                        Location = inventoryDetails[i].Location,
-                        Unit = inventoryDetails[i].Unit,
-                        PartType = inventoryDetails[i].PartType
-                    };
+                    ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = InsertDataToMaterialIssueTracker(dtoForMaterialIssue, inventoryDetails[i], lotNoWiseIssuedQty);
                     int transactionId = await _materialIssueTrackerRepository.AddDataToMaterialIssueTracker(shopOrderMaterialIssueTracker);
 
                     /*********************************** End of Add data to Material Issue Tracker *************************/
 
-                    if (issueQty <= 0)
+                    if (issuedQty <= 0)
                     {
                         break;
                     }
@@ -613,7 +812,44 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        
+        private static ShopOrderMaterialIssueTracker InsertDataToMaterialIssueTracker(InventoryDtoForMaterialIssue dtoForMaterialIssue, Inventory inventoryDetail, decimal lotNoWiseIssuedQty)
+        {
+            string shopOrderNumber = dtoForMaterialIssue.ShopOrderNumber;
+            ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = new ShopOrderMaterialIssueTracker
+            {
+                ShopOrderNumber = shopOrderNumber,
+                PartNumber = inventoryDetail.PartNumber,
+                LotNumber = inventoryDetail.LotNumber,
+                MftrPartNumber = inventoryDetail.MftrPartNumber,
+                Description = inventoryDetail.Description,
+                ProjectNumber = inventoryDetail.ProjectNumber,
+                IssuedQty = lotNoWiseIssuedQty,
+                ConvertedToFgQty = 0,
+                UOM = inventoryDetail.UOM,
+                Warehouse = inventoryDetail.Warehouse,
+                Location = inventoryDetail.Location,
+                Unit = inventoryDetail.Unit,
+                PartType = inventoryDetail.PartType,
+                DataFrom = "ShopOrder"
+            };
+            return shopOrderMaterialIssueTracker;
+        }
+
+       
+
+
+        private Inventory InsertWipDetailsInInventoryWhenIssuedQtyIsMore(Inventory inventoryDetail, decimal issueQty,string shopOrderNumber)
+        {
+            Inventory wipInventory = _mapper.Map<Inventory>(inventoryDetail);
+
+            wipInventory.Balance_Quantity = issueQty;
+            wipInventory.Warehouse = "WIP";
+            wipInventory.Description = "WIP";
+            wipInventory.ReferenceIDFrom = "Shop Order";
+            wipInventory.shopOrderNo = shopOrderNumber;
+            return wipInventory;
+        }
+
 
 
         [HttpGet]
@@ -662,10 +898,31 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 foreach (var Location in materialIssueQty.MRNWarehouseList)
                 {
+                    decimal issuedQty = Location.Qty;
                     IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNoandLocationandwarehouse(materialIssueQty.PartNumber, Location.Location, Location.Warehouse);
-                    var inventoryItem = inventories.FirstOrDefault();
-                    inventoryItem.Balance_Quantity = inventoryItem.Balance_Quantity - Location.Qty;
-                    await _inventoryRepository.UpdateInventory(inventoryItem);
+                    foreach (var invItem in inventories)
+                    {
+                        decimal stock = invItem.Balance_Quantity;
+                        if(stock <= issuedQty)
+                        {
+
+                            invItem.Balance_Quantity = 0;
+                            invItem.IsStockAvailable = false;
+                            issuedQty -= stock;
+                            
+                        }
+                        else
+                        {
+                            invItem.Balance_Quantity -= issuedQty;
+                            issuedQty =0 ;
+                        }
+                        await _inventoryRepository.UpdateInventory(invItem);
+                        if(issuedQty <= 0)
+                        {
+                            break;
+                        }
+                    }
+                   
                 }
             }
             _inventoryRepository.SaveAsync();
@@ -677,8 +934,17 @@ namespace Tips.Warehouse.Api.Controllers
         {
             foreach (var materialReturnQty in updateInventoryBalanceQty) 
             {
+                var itemNumber = materialReturnQty.PartNumber;
+                var projectNo = materialReturnQty.ProjectNumber;
+                var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
+                                                                                "GetItemMasterDetailsForMNRByItemNo?", "&ItemNumber=", itemNumber));
+                var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                dynamic itemMasterObject = itemMasterObjectData.data;
+
                 foreach (var Location in materialReturnQty.MRNDetails)
                 {
+
                     IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNoandLocationandwarehouse(materialReturnQty.PartNumber, Location.Location, Location.Warehouse);
                     var inventoryItem = inventories.FirstOrDefault();
                     if (inventoryItem == null)
@@ -686,10 +952,10 @@ namespace Tips.Warehouse.Api.Controllers
                         Inventory inventoryPost = new Inventory();
                         inventoryPost.PartNumber = materialReturnQty.PartNumber;
                         inventoryPost.MftrPartNumber = materialReturnQty.PartNumber;
-                        inventoryPost.ProjectNumber = "Project";
-                        inventoryPost.Description = "";
+                        inventoryPost.ProjectNumber = projectNo;
+                        inventoryPost.Description = itemMasterObject.Description;
                         inventoryPost.Balance_Quantity = Location.Qty;
-                        inventoryPost.UOM = "";
+                        inventoryPost.UOM = itemMasterObject.Uom;
                         inventoryPost.GrinMaterialType = "";
                         inventoryPost.shopOrderNo = "";
                         inventoryPost.Unit = "";

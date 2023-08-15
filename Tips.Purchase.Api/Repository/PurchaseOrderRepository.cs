@@ -634,7 +634,7 @@ namespace Tips.Purchase.Api.Repository
         poItem => poItem.PONumber,
         purchaseOrder => purchaseOrder.PONumber,
         (poItem, purchaseOrder) => new { PoItem = poItem, PurchaseOrder = purchaseOrder })
-    .Where(joinResult => joinResult.PoItem.ItemNumber == itemNumber 
+    .Where(joinResult => joinResult.PoItem.ItemNumber == itemNumber
     && joinResult.PurchaseOrder.Status != Status.Closed && (int)joinResult.PoItem.PartType == (int)PartType.TG)
     .GroupBy(joinResult => new { joinResult.PoItem.ItemNumber, joinResult.PoItem.PONumber })
     .Select(group => new OpenPurchaseOrderDto
@@ -644,7 +644,7 @@ namespace Tips.Purchase.Api.Repository
         PONumber = group.Key.PONumber
     }).ToListAsync();
 
-      return result;
+            return result;
 
         }
 
@@ -668,8 +668,21 @@ namespace Tips.Purchase.Api.Repository
             return result;
              
         }
+        public async Task<PoItem> ClosePoItemSatusByPoItemId(int poItemId)
+        {
+            var poItemDetailByPoItemId = await _tipsPurchaseDbContext.PoItems.Where(x => x.Id == poItemId)
 
+                                .FirstOrDefaultAsync();
 
+            return poItemDetailByPoItemId;
+        }
+        public async Task<int?> GetPoItemOpenStatusCount(int poId)
+        {
+            var poItemStatusCount = _tipsPurchaseDbContext.PoItems
+                                        .Where(x => x.PurchaseOrderId == poId && x.PoStatus == PoStatus.Open).Count();
+
+            return poItemStatusCount;
+        }
         public async Task<string> UpdatePOOrderItem(PoItem poItem)
         {
             Update(poItem);

@@ -310,8 +310,10 @@ namespace Repository
 
         public async Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber)
         {
-            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber)                              
-                                               .Include(t => t.EnggChildItems)
+            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber)                                             
+                                .Include(t => t.EnggChildItems)
+                                .ThenInclude(x => x.EnggAlternates)
+                                .Include(m => m.NREConsumable)
                                              .FirstOrDefaultAsync();
 
             return EnggBomDetailsbyId;
