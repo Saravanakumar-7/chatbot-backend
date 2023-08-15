@@ -1264,7 +1264,7 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<IEnumerable<EnggBomFGItemNumber>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomFGItemNumber>>();
             try
             {
-                var enggBomChildFGItemNoDetails = await _enggBomRepository.GetFgItemsList(childItemNumber);
+                var enggBomChildFGItemNoDetails = await _enggBomRepository.GetAllFgItemNumberListBySaItemNumber(childItemNumber);
                 if (enggBomChildFGItemNoDetails == null)
                 {
                     serviceResponse.Data = null;

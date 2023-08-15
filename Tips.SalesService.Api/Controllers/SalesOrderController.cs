@@ -1325,7 +1325,40 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-    }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetOpenSalesOrderQuantityByItemNumber()
+        {
+            ServiceResponse<IEnumerable<OpenSalesOrderQuantityDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenSalesOrderQuantityDto>>();
+            try
+            {
+                var listOfOpenSalesOrderQuantity = await _repository.GetOpenSalesOrderQuantityByItemNumber();
+
+                // write a Http get method to access the EnggBomsItems from Tips.Master.Service.API get GetEnggBomItemsByItemNumber only ItemNumber and Quantity of the EnggChildITmes Model   and then map it to the OpenSalesOrderQuantityDto Model and then return the result
+                //??
+
+
+
+
+                var result = _mapper.Map<IEnumerable<OpenSalesOrderQuantityDto>>(listOfOpenSalesOrderQuantity);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All OpenSalesOrderQuantity";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetOpenSalesOrderQuantityByItemNumber action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        
 }
 
 
