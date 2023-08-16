@@ -6,8 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.IdentityModel.Tokens;
 using MySql.EntityFrameworkCore.Extensions;
+using Microsoft.Extensions.Configuration;
+
 //using MySql.EntityFrameworkCore.Extensions;
 using Repository;
+using System.Configuration;
 using System.Text;
 
 namespace Tips.Master.Api.Extensions
@@ -32,25 +35,29 @@ namespace Tips.Master.Api.Extensions
             {
 
             });
+
         }
 
         public static void ConfigureLoggerService(this IServiceCollection services)
         {
             services.AddSingleton<ILoggerManager, LoggerManager>();
-        }
 
-        public static void ConfigureMSSqlContext(this IServiceCollection services, IConfiguration config)
-        {
-            var connectionString = config["MSSqlconnection:connectionString"];
-            services.AddDbContext<TipsMasterDbContext>(o => o.UseSqlServer(connectionString));
 
         }
+        //public static void ConfigureMSSqlContext(this IServiceCollection services, IConfiguration config)
+        //{
+        //    var connectionString = config["MSSqlconnection:connectionString"];
+        //    services.AddDbContext<TipsMasterDbContext>(o => o.UseSqlServer(connectionString));
+
+        //} 
+
 
         public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
         {
 
             var connectionString = config["MySqlconnection:connectionString"];
             services.AddDbContext<TipsMasterDbContext>(o => o.UseMySQL(connectionString));
+
         }
 
         public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices
@@ -108,6 +115,8 @@ namespace Tips.Master.Api.Extensions
         public static void ConfigureRepositoryWrapper(this IServiceCollection services)
         {
             services.AddScoped<IRepositoryWrapperForMaster, RepositoryWrapperForMaster>();
+
+
         }
     }
 }

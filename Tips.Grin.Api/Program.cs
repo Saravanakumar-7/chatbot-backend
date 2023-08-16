@@ -1,4 +1,8 @@
 using Contracts;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore.Internal;
+using NLog;
+using Contracts;
 using LoggerService;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
@@ -17,10 +21,15 @@ LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nl
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
-builder.Services.ConfigureMSSqlContext(builder.Configuration);
-//builder.Services.ConfigureMySqlContext(builder.Configuration);
+//builder.Services.ConfigureMSSqlContext(builder.Configuration);
+builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
-builder.Services.AuthenticateByJwtToken(builder.Configuration);
+//builder.Services.AuthenticateByJwtToken(builder.Configuration);
+
+var key = builder.Configuration["Jwt:key"];
+builder.Services.ConfigureJwtToken(builder.Configuration);
+//builder.Services.AddTransient<IJwtAuth, Auth>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -33,6 +42,8 @@ builder.Services.AddScoped<IBinningRepository, BinningRepository>();
 builder.Services.AddScoped<IReturnGrinRepository, ReturnGrinRepository>();
 builder.Services.AddScoped<IBinningItemsRepository, BinningItemsRepository>();
 builder.Services.AddScoped<IGrinPartsRepository, GrinPartsRepository>();
+builder.Services.AddScoped<IOpenGrinRepository, OpenGrinRepository>();
+
 builder.Services.AddScoped<IIQCConfirmationItemsRepository, IQCConfirmationItemsRepository>();
 //builder.Services.AddScoped<IReturnGrinDocumentUploadRepository, ReturnGrinDocumentUpload>();
 builder.Services.AddControllersWithViews()
@@ -41,14 +52,15 @@ builder.Services.AddControllersWithViews()
 
 builder.Services.AddScoped<IDocumentUploadRepository, UploadDocumentRepository>();
 builder.Services.AddHttpClient();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI();
 //}
 
 app.UseHttpsRedirection();
@@ -62,11 +74,12 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 
 app.UseCors("CorsPolicy");
 
-app.UseRouting();
+app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseRouting();
 
 app.MapControllers();
 
 app.Run();
-

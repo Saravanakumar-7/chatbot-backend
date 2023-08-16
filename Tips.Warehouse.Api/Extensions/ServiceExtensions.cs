@@ -35,11 +35,11 @@ namespace Tips.Warehouse.Api.Extensions
             services.AddSingleton<ILoggerManager, LoggerManager>();
         }
 
-        public static void ConfigureMSSqlContext(this IServiceCollection services, IConfiguration config)
-        {
-            var connectionString = config["MSSqlconnection:connectionString"];
-            services.AddDbContext<TipsWarehouseDbContext>(o => o.UseSqlServer(connectionString));
-        }
+        //public static void ConfigureMSSqlContext(this IServiceCollection services, IConfiguration config)
+        //{
+        //    var connectionString = config["MSSqlconnection:connectionString"];
+        //    services.AddDbContext<TipsWarehouseDbContext>(o => o.UseSqlServer(connectionString));
+        //}
 
         public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
         {
