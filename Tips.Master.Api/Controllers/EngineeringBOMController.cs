@@ -261,7 +261,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEnggBomByFgPartNumber(string itemNumber)
+        public async Task<IActionResult> GetEnggBomByPartNumber(string itemNumber)
         {
             ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
 

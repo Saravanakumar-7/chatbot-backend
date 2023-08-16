@@ -486,7 +486,7 @@ namespace Tips.Production.Api.Controllers
                     InventoryDtoForMaterialRequest inventoryDtoForMaterialRequest = new InventoryDtoForMaterialRequest
                     {
                         PartNumber = materialItemDetail.PartNumber,
-                        ProjectNumber = projectNo,
+                        ProjectNumber = projectNo, 
                         DataFrom = "MR",
                         IssueQty = materialItemDetail.IssuedQty,
                         ShopOrderNumber = shopOrderNumber,

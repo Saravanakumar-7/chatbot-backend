@@ -106,7 +106,8 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? DataFrom { get; set; }
         public string ShopOrderNumber { get; set; }
         public string Description { get; set; }
-        public string MftrPartNumber { get; set; }
+        public string MftrPartNumber { get; set; } 
+
         public PartType PartType { get; set; }
     }
 
