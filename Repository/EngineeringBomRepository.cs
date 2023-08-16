@@ -346,12 +346,19 @@ namespace Repository
         //aravind
         public async Task<EnggBom> GetLatestEnggBomVersionDetailByItemNumber(string fgPartNumber, decimal revisionNo)
         {
-            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber 
-                                    && x.RevisionNumber == revisionNo)
-                                    .Include(t => t.EnggChildItems)
-                                    .FirstOrDefaultAsync();
+            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms
+           .Where(x => x.ItemNumber == fgPartNumber && x.RevisionNumber == revisionNo)
+            .Select(x => new
+            {
+                EnggBom = x,
+                ActiveEnggChildItems = x.EnggChildItems.Where(ec => ec.IsActive)
+            })
+            .FirstOrDefaultAsync();
 
-            return EnggBomDetailsbyId;
+            EnggBomDetailsbyId.EnggBom.EnggChildItems = EnggBomDetailsbyId.ActiveEnggChildItems.ToList();
+
+            return EnggBomDetailsbyId.EnggBom;
+
         }
 
         public async Task<EnggBom> GetEnggBomById(int id)

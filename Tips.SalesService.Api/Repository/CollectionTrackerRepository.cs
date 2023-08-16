@@ -26,6 +26,52 @@ namespace Tips.SalesService.Api.Repository
             return result.Id;
         }
 
+        public async Task<IEnumerable<CollectionTracker>> GetAllCollectionTrackerWithItems(CollectionTrackerSearchDto collectionTrackerSearch)
+        {
+            using (var context = _tipsSalesServiceDbContext)
+            {
+                var query = _tipsSalesServiceDbContext.CollectionTrackers.AsQueryable();
+                if (collectionTrackerSearch != null || (collectionTrackerSearch.CustomerId.Any())
+                 && collectionTrackerSearch.CustomerName.Any() && collectionTrackerSearch.Remarks.Any())
+
+                {
+                    query = query.Where
+                    (inv => (collectionTrackerSearch.CustomerId.Any() ? collectionTrackerSearch.CustomerId.Contains(inv.CustomerId) : true)
+                   && (collectionTrackerSearch.CustomerName.Any() ? collectionTrackerSearch.CustomerName.Contains(inv.CustomerName) : true)
+                   && (collectionTrackerSearch.Remarks.Any() ? collectionTrackerSearch.Remarks.Contains(inv.Remarks) : true))
+                    .Include(x=>x.SOBreakDown);
+                }
+                return query.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<CollectionTracker>> SearchCollectionTrackerDate([FromQuery] SearchDateParam searchDateParam)
+        {
+            var collectionTrackerDetails = _tipsSalesServiceDbContext.CollectionTrackers
+            .Where(inv => ((inv.CreatedOn >= searchDateParam.SearchFromDate &&
+            inv.CreatedOn <= searchDateParam.SearchToDate
+            )))
+            .Include(x => x.SOBreakDown)
+            .ToList();
+            return collectionTrackerDetails;
+        }
+
+        public async Task<IEnumerable<CollectionTracker>> SearchCollectionTracker([FromQuery] SearchParammes searchParammes)
+        {
+            using (var context = _tipsSalesServiceDbContext)
+            {
+                var query = _tipsSalesServiceDbContext.CollectionTrackers.AsQueryable();
+                if (!string.IsNullOrEmpty(searchParammes.SearchValue))
+                {
+                    query = query.Where(inv => inv.CustomerId.Contains(searchParammes.SearchValue)
+                    || inv.CustomerName.Contains(searchParammes.SearchValue)
+                    || inv.Remarks.Contains(searchParammes.SearchValue))
+                        .Include(x => x.SOBreakDown);
+                }
+                return query.ToList();
+            }
+        }
+
         public async Task<string> DeleteCollectionTracker(CollectionTracker collectionTracker)
         {
             Delete(collectionTracker);

@@ -493,6 +493,7 @@ namespace Tips.Production.Api.Controllers
                         MftrPartNumber = materialItemDetail.MftrPartNumber,
                         Description= materialItemDetail.PartDescription,
                         PartType = materialItemDetail.PartType,
+                        MRNumber = materialRequestUpdateDto.MRNumber
 
                     };
                     inventoryDtos.Add(inventoryDtoForMaterialRequest);
@@ -501,7 +502,7 @@ namespace Tips.Production.Api.Controllers
 
                 var jsons = JsonConvert.SerializeObject(inventoryDtos);
                 var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateMaterialRequestOnSOMaterialIssueTracker"), datas);
+                var responses = await _httpClient.PostAsync(string.Concat(_config["SOMaterialIssueTrackerAPI"],"CreateMaterialRequestOnSOMaterialIssueTracker"), datas);
 
                 //InventoryDtoForMaterialRequest inventoryDtoForMaterialRequest = new InventoryDtoForMaterialRequest();
                 //inventoryDtoForMaterialRequest.PartNumber = materialItemDetail.PartNumber;

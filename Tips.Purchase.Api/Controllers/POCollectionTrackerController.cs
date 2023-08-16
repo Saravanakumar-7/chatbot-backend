@@ -140,6 +140,98 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchPOCollectionTrackerDate([FromQuery] SearchDatesParams searchDatesParams)
+        {
+            ServiceResponse<IEnumerable<POCollectionTrackerDto>> serviceResponse = new ServiceResponse<IEnumerable<POCollectionTrackerDto>>();
+            try
+            {
+                var poCollectionTrackerDetails = await _repository.SearchPOCollectionTrackerDate(searchDatesParams);
+                var result = _mapper.Map<IEnumerable<POCollectionTrackerDto>>(poCollectionTrackerDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all POCollectionTracker By Date";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchPOCollectionTracker([FromQuery] SearchParamess searchParamess)
+        {
+            ServiceResponse<IEnumerable<POCollectionTrackerDto>> serviceResponse = new ServiceResponse<IEnumerable<POCollectionTrackerDto>>();
+            try
+            {
+                var poCollectionTrackerDetails = await _repository.SearchPOCollectionTracker(searchParamess);
+
+                _logger.LogInfo("Returned all POCollectionTracker");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<POCollectionTracker, POCollectionTrackerDto>().ReverseMap();
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<POCollectionTrackerDto>>(poCollectionTrackerDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all POCollectionTrackerDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllPOCollectionTrackerWithItems([FromBody] POCollectionTrackerSearchDto poCollectionTrackerSearch)
+        {
+            ServiceResponse<IEnumerable<POCollectionTrackerDto>> serviceResponse = new ServiceResponse<IEnumerable<POCollectionTrackerDto>>();
+            try
+            {
+                var poCollectionTrackerDetails = await _repository.GetAllPOCollectionTrackerWithItems(poCollectionTrackerSearch);
+
+                _logger.LogInfo("Returned all POCollectionTracker");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<POCollectionTracker, POCollectionTrackerDto>().ReverseMap();
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<POCollectionTrackerDto>>(poCollectionTrackerDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all POCollectionTrackerDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreatePOCollectionTracker([FromBody] POCollectionTrackerPostDto pocollectionTrackerPostDto)
         {

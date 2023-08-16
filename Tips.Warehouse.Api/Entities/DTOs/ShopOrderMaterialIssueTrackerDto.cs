@@ -7,7 +7,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public string ShopOrderNumber { get; set; }
         public string Description { get; set; }
-
+        public string MRNumber { get; set; }
         public string PartNumber { get; set; }
         [Precision(13, 3)]
         public decimal IssuedQty { get; set; }
@@ -21,6 +21,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public string PartNumber { get; set; }
         public string ProjectNumber { get; set; }
+        public string MRNumber { get; set; }
         public decimal IssueQty { get; set; }
         public string? DataFrom { get; set; }
         public string ShopOrderNumber { get; set; }

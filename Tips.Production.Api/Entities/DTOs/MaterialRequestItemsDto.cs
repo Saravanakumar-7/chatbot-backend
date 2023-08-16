@@ -30,7 +30,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
-        //public string? MftrPartNumber { get; set; }
+        public string? MftrPartNumber { get; set; }
         public PartType PartType { get; set; } 
 
         [Precision(13, 3)]
@@ -53,7 +53,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? IssuedQty { get; set; }
-        //public string? MftrPartNumber { get; set; }
+        public string? MftrPartNumber { get; set; }
         public PartType PartType { get; set; }
         public string? Stock { get; set; }
         
@@ -102,7 +102,8 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         public string PartNumber { get; set; }
         public string ProjectNumber { get; set; }
-        public decimal? IssueQty { get; set; }
+        public string MRNumber { get; set; }
+        public decimal IssueQty { get; set; }
         public string? DataFrom { get; set; }
         public string ShopOrderNumber { get; set; }
         public string Description { get; set; }

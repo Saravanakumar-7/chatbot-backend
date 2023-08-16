@@ -364,7 +364,14 @@ namespace Tips.Warehouse.Api.Repository
 
             return PagedList<Inventory>.ToPagedList(sortedQuery, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-         
+        public async Task<Inventory> GetInventoryDetailsByItemNoandProjectNoandShopOrderNo(string ItemNumber, string ProjectNumber,string shopOrderNo)
+        {
+            var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventory.Where(x =>x.PartNumber == ItemNumber && x.ProjectNumber == ProjectNumber && x.shopOrderNo == shopOrderNo)
+
+                          .FirstOrDefaultAsync();
+
+            return getInventoryDetailsById;
+        }
 
         public async Task<Inventory> GetInventoryDetailsByGrinNo(string GrinNo, string ItemNumber, string ProjectNumber)
         {

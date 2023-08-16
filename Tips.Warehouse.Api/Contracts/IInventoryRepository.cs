@@ -56,6 +56,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<List<Inventory>> GetWIPInventoryDetailsByItemNo(string ItemNumber, string ShopOrderNumber);
         Task<decimal> GetStockQtyForBtpSalesOrderItem(string ItemNumber, List<string> shopOrderNumbers);
         Task<decimal> GetStockQtyForRetailSalesOrderItem(string ItemNumber);
+        Task<Inventory> GetInventoryDetailsByItemNoandProjectNoandShopOrderNo(string ItemNumber, string ProjectNumber, string shopOrderNo);
 
 
     }

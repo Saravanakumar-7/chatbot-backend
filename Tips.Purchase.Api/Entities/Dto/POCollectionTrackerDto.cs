@@ -73,4 +73,10 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public decimal? PendingValue { get; set; }
         public decimal AmountRecieved { get; set; }
     }
+    public class POCollectionTrackerSearchDto
+    {
+        public List<string> VendorId { get; set; }
+        public List<string> VendorName { get; set; }
+        public List<string>? Remarks { get; set; }
+    }
 }

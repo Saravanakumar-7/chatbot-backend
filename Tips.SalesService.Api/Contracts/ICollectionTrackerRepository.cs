@@ -15,5 +15,8 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> UpdateCollectionTracker(CollectionTracker collectionTracker);
         Task<string> DeleteCollectionTracker(CollectionTracker collectionTracker);
         Task<List<OpenSalesOrderDetailsDto>> GetOpenSODetailsByCustomerId(string customerId);
+        Task<IEnumerable<CollectionTracker>> SearchCollectionTracker([FromQuery] SearchParammes searchParammes);
+        Task<IEnumerable<CollectionTracker>> SearchCollectionTrackerDate([FromQuery] SearchDateParam searchDateParam);
+        Task<IEnumerable<CollectionTracker>> GetAllCollectionTrackerWithItems(CollectionTrackerSearchDto collectionTrackerSearch);
     }
 }

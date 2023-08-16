@@ -66,5 +66,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? PendingValue { get; set; }
         public decimal AmountRecieved { get; set; }
     }
+    public class CollectionTrackerSearchDto
+    {
+        public List<string> CustomerId { get; set; }
+        public List<string> CustomerName { get; set; }
+        public List<string>? Remarks { get; set; }
+    }
 
 }

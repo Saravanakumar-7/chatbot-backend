@@ -55,7 +55,7 @@ namespace Tips.Production.Api.Entities.DTOs
         //public string? FGItemNumber { get; set; }
         public PartType ShopOrderType { get; set; }
         public string? ShopOrderNumber { get; set; }
-        
+        public string MRNumber { get; set; }
         public string Unit { get; set; }
 
 

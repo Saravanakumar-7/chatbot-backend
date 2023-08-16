@@ -145,6 +145,97 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SearchCollectionTrackerDate([FromQuery] SearchDateParam searchDateParam)
+        {
+            ServiceResponse<IEnumerable<CollectionTrackerDto>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerDto>>();
+            try
+            {
+                var collectionTrackerDetails = await _repository.SearchCollectionTrackerDate(searchDateParam);
+                var result = _mapper.Map<IEnumerable<CollectionTrackerDto>>(collectionTrackerDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all CollectionTracker By Date";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchCollectionTracker([FromQuery] SearchParammes searchParammes)
+        {
+            ServiceResponse<IEnumerable<CollectionTrackerDto>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerDto>>();
+            try
+            {
+                var collectionTrackerDetails = await _repository.SearchCollectionTracker(searchParammes);
+
+                _logger.LogInfo("Returned all CollectionTracker");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<CollectionTracker, CollectionTrackerDto>().ReverseMap();
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<CollectionTrackerDto>>(collectionTrackerDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all CollectionTrackerDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllCollectionTrackerWithItems([FromBody] CollectionTrackerSearchDto collectionTrackerSearch)
+        {
+            ServiceResponse<IEnumerable<CollectionTrackerDto>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerDto>>();
+            try
+            {
+                var collectionTrackerDetails = await _repository.GetAllCollectionTrackerWithItems(collectionTrackerSearch);
+
+                _logger.LogInfo("Returned all CollectionTracker");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<CollectionTracker, CollectionTrackerDto>().ReverseMap();
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<CollectionTrackerDto>>(collectionTrackerDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all CollectionTrackerDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateCollectionTracker([FromBody] CollectionTrackerPostDto collectionTrackerPostDto)
         {

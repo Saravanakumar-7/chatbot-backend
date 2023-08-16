@@ -31,6 +31,52 @@ namespace Tips.Purchase.Api.Repository
             return result.Id;
         }
 
+        public async Task<IEnumerable<POCollectionTracker>> GetAllPOCollectionTrackerWithItems(POCollectionTrackerSearchDto poCollectionTrackerSearch)
+        {
+            using (var context = _tipsPurchaseDbContext)
+            {
+                var query = _tipsPurchaseDbContext.POCollectionTrackers.AsQueryable();
+                if (poCollectionTrackerSearch != null || (poCollectionTrackerSearch.VendorId.Any())
+                 && poCollectionTrackerSearch.VendorName.Any() && poCollectionTrackerSearch.Remarks.Any())
+
+                {
+                    query = query.Where
+                    (inv => (poCollectionTrackerSearch.VendorId.Any() ? poCollectionTrackerSearch.VendorId.Contains(inv.VendorId) : true)
+                   && (poCollectionTrackerSearch.VendorName.Any() ? poCollectionTrackerSearch.VendorName.Contains(inv.VendorName) : true)
+                   && (poCollectionTrackerSearch.Remarks.Any() ? poCollectionTrackerSearch.Remarks.Contains(inv.Remarks) : true))
+                    .Include(x => x.POBreakDown);
+                }
+                return query.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<POCollectionTracker>> SearchPOCollectionTrackerDate([FromQuery] SearchDatesParams searchDatesParams)
+        {
+            var poCollectionTrackerDetails = _tipsPurchaseDbContext.POCollectionTrackers
+            .Where(inv => ((inv.CreatedOn >= searchDatesParams.SearchFromDate &&
+            inv.CreatedOn <= searchDatesParams.SearchToDate
+            )))
+            .Include(x=>x.POBreakDown)
+            .ToList();
+            return poCollectionTrackerDetails;
+        }
+
+        public async Task<IEnumerable<POCollectionTracker>> SearchPOCollectionTracker([FromQuery] SearchParamess searchParamess)
+        {
+            using (var context = _tipsPurchaseDbContext)
+            {
+                var query = _tipsPurchaseDbContext.POCollectionTrackers.AsQueryable();
+                if (!string.IsNullOrEmpty(searchParamess.SearchValue))
+                {
+                    query = query.Where(inv => inv.VendorId.Contains(searchParamess.SearchValue)
+                    || inv.VendorName.Contains(searchParamess.SearchValue)
+                    || inv.Remarks.Contains(searchParamess.SearchValue))
+                        .Include(x => x.POBreakDown);
+                }
+                return query.ToList();
+            }
+        }
+
         public async Task<string> DeletePOCollectionTracker(POCollectionTracker pocollectionTracker)
         {
             Delete(pocollectionTracker);
