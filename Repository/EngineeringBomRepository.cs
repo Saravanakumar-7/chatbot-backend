@@ -15,7 +15,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading.Tasks; 
 
 namespace Repository
 {
@@ -321,12 +321,26 @@ namespace Repository
         //aravind
         public async Task<EnggBom> GetLatestEnggBomVersionDetailByItemNumber(string fgPartNumber, decimal revisionNo)
         {
-            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber 
-                                    && x.RevisionNumber == revisionNo)
-                                    .Include(t => t.EnggChildItems)
-                                    .FirstOrDefaultAsync();
+            //var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber 
+            //                        && x.RevisionNumber == revisionNo)
+            //                        .Include(t => t.EnggChildItems)
+            //                        .FirstOrDefaultAsync();
 
-            return EnggBomDetailsbyId;
+            //return EnggBomDetailsbyId;
+
+                    var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms
+                   .Where(x => x.ItemNumber == fgPartNumber && x.RevisionNumber == revisionNo)
+                    .Select(x => new
+                    {
+                    EnggBom = x,
+                    ActiveEnggChildItems = x.EnggChildItems.Where(ec => ec.IsActive)
+                    })
+                    .FirstOrDefaultAsync();
+
+                    EnggBomDetailsbyId.EnggBom.EnggChildItems =EnggBomDetailsbyId.ActiveEnggChildItems.ToList();
+
+                    return EnggBomDetailsbyId.EnggBom;
+
         }
 
         public async Task<EnggBom> GetEnggBomById(int id)
