@@ -9,5 +9,6 @@ namespace Entities
     public class SearchParames
     {
         public string? SearchValue { get; set; }
+
     }
 }
