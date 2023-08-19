@@ -12,9 +12,13 @@ namespace Tips.Warehouse.Api.Entities
         public string MftrPartNumber { get; set; }
         public string Description { get; set; }
 
-        //public string MRNumber { get; set; }
+        public string MRNumber { get; set; }
 
         public string ProjectNumber { get; set; }
+
+        [Precision(13, 3)]
+        public decimal Bomversion { get; set; }
+
         [Precision(13,3)]
         public decimal IssuedQty { get; set; }
         [Precision(13, 3)]

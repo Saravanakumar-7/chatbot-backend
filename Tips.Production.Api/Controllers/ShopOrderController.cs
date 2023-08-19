@@ -534,7 +534,26 @@ namespace Tips.Production.Api.Controllers
 
 
                         }
-                        materialIssue.materialIssueItems = materialIssueItemList;
+
+                        var groupedMaterialIssueItems = materialIssueItemList
+                            .GroupBy(item => item.PartNumber)
+                            .Select(group => new MaterialIssueItem
+                            {
+                                PartNumber = group.Key,
+                                Description = group.First().Description,
+                                ProjectNumber = group.First().ProjectNumber,
+                                PartType = group.First().PartType,
+                                UOM = group.First().UOM,
+                                RequiredQty = group.Sum(item => item.RequiredQty),
+                                IssuedQty = 0, // Assuming IssuedQty remains 0 for grouped items
+                                MaterialIssuedStatus = IssuedStatus.Open,
+                                CreatedBy = "Admin",
+                                CreatedOn = DateTime.Now,
+                                LastModifiedBy = "Admin",
+                                LastModifiedOn = DateTime.Now
+                            })
+                            .ToList();
+                        materialIssue.materialIssueItems = groupedMaterialIssueItems;
                         await _materialIssueRepository.CreateMaterialIssue(materialIssue);
                         _materialIssueRepository.SaveAsync();
                     }

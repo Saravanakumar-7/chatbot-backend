@@ -279,9 +279,11 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal IssueQty { get; set; }
         
         public string ShopOrderNumber { get; set; }
+        public decimal Bomversion { get; set; }
+
 
     }
- 
+
     public class InventoryDtoForShopOrderConfirmation
     {
         public string? PartNumber { get; set; }
@@ -289,7 +291,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         public decimal NewConvertedToFgQty { get; set; }
         public string? DataFrom { get; set; }
-        public string? MRNumber { get; set; }
+        public string? MRNumber { get; set; } 
     }
 
     public class ConsumptionInventoryDto

@@ -101,6 +101,8 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public string ShopOrderNumber { get; set; }
 
+        public decimal Bomversion { get; set; }
+
     }
     public class InventoryBalanceQtyMaterialIssue
     {

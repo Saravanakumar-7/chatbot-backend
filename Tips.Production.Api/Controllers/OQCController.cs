@@ -290,7 +290,7 @@ namespace Tips.Production.Api.Controllers
                     inventory1.ProjectNumber = projectNo;
                     inventory1.Balance_Quantity = oQCCreate.RejectedQty;
                     inventory1.UOM = itemMasterTranctionObject.uom;
-                    inventory1.Warehouse = "Scrap";
+                    inventory1.Warehouse = "Reject";
                     inventory1.Location = "Reject";
                     inventory1.GrinNo = "";
                     inventory1.GrinMaterialType = "";

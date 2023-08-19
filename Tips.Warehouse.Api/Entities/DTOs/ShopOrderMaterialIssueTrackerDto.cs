@@ -13,6 +13,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal IssuedQty { get; set; }
         [Precision(13, 3)]
         public decimal ConvertedToFgQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal Bomversion { get; set; }
         [Precision(13, 3)]
         public decimal BalanceQty { get; set; }
         public string DataFrom { get; set; }

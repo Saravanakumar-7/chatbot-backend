@@ -37,7 +37,24 @@ namespace Tips.Warehouse.Api.Controllers
             try
             {
                 var shopOrderMaterialIssueTrackers = await _materialIssueTrackerRepository.SOMaterialIssueTrackerDetailsByShopOrderNo(ShopOrderNo);
-                if (shopOrderMaterialIssueTrackers.Count() == 0)
+
+                var groupedMaterialIssueItemDtoList = shopOrderMaterialIssueTrackers
+                    .GroupBy(item => item.PartNumber)
+                    .Select(group => new ShopOrderMaterialIssueTrackerDto 
+                    {
+                        PartNumber = group.Key,
+                        ShopOrderNumber = group.First().ShopOrderNumber,
+                        Description = group.First().Description, 
+                        Bomversion = group.First().Bomversion,
+                        IssuedQty = group.Sum(item => item.IssuedQty),
+                        ConvertedToFgQty = group.Sum(item => item.ConvertedToFgQty),
+                        BalanceQty = group.Sum(item => item.BalanceQty),
+                        DataFrom = group.First().DataFrom
+                    })
+            .ToList();
+                
+                   // if (shopOrderMaterialIssueTrackers.Count() == 0)
+                    if (groupedMaterialIssueItemDtoList.Count() == 0)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"SOMaterialTrackerIssue with itemNumber: {ShopOrderNo}, is invalid";
@@ -49,7 +66,7 @@ namespace Tips.Warehouse.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned SOMaterialTrackerIssue with Itemnumber: {ShopOrderNo}");
-                    var result = _mapper.Map<List<ShopOrderMaterialIssueTrackerDto>>(shopOrderMaterialIssueTrackers);
+                    var result = _mapper.Map<List<ShopOrderMaterialIssueTrackerDto>>(groupedMaterialIssueItemDtoList);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned shopOrderMaterialIssueTrackers with id Successfully";
                     serviceResponse.Success = true;

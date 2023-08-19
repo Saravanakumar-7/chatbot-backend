@@ -693,7 +693,7 @@ namespace Repository
     .MaxAsync(x => x.ReleaseVersion);
 
             return maxRevisionNumber;
-        }
+        } 
 
         public async Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber)
         {

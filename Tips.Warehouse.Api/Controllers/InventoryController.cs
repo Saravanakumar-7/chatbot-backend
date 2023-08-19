@@ -26,19 +26,21 @@ namespace Tips.Warehouse.Api.Controllers
     public class InventoryController : ControllerBase
     {
         private IInventoryRepository _inventoryRepository;
+        private IInventoryTranctionRepository _inventoryTranctionRepository;
         private IMaterialIssueTrackerRepository _materialIssueTrackerRepository ;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public InventoryController(IConfiguration config, HttpClient httpClient, IInventoryRepository inventoryRepository,
+        public InventoryController(IConfiguration config, IInventoryTranctionRepository inventoryTranctionRepository, HttpClient httpClient, IInventoryRepository inventoryRepository,
             ILoggerManager logger, IMapper mapper, IMaterialIssueTrackerRepository materialIssueTrackerRepository)
         {
             _inventoryRepository = inventoryRepository;
             _logger = logger;
             _mapper = mapper;
             _httpClient = httpClient;
+            _inventoryTranctionRepository = inventoryTranctionRepository;
             _config = config;
             _materialIssueTrackerRepository = materialIssueTrackerRepository;
         }
@@ -625,11 +627,22 @@ namespace Tips.Warehouse.Api.Controllers
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.NotFound;
                         _logger.LogError($"Inventory with itemNumber: {item.PartNumber}, is not available");
-                        return Ok(serviceResponse);
+                        return StatusCode(500, serviceResponse);
                     }
 
-                    //decimal producedQty = dtoForShopOrderConfirmation.WipConfirmedQty;
-                    decimal producedQty = item.NewConvertedToFgQty;
+                    decimal producedQty = item.NewConvertedToFgQty; // value get from payload
+
+                    //decimal revisionNo = await _releaseProductBomRepository.GetLatestProductionBomByItemNumber(fgPartNumber);
+
+                    //var bom = await _repository.EnggBomRepository.GetLatestEnggBomVersionDetailByItemNumber(fgPartNumber, revisionNo);
+
+                    //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"], "GetLatestEnggBomVersionDetailByItemNumber?", "&fgPartNumber=", itemNumber));
+
+                    //var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                    //dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                    //dynamic itemMasterObject = itemMasterObjectData.data;
+
+                    //decimal producedQty = item.WipConfirmedQty * ;
                     for (int i = 0; i < inventoryDetails.Count; i++)
                     {
                         decimal balanceqty = inventoryDetails[i].Balance_Quantity;
@@ -639,18 +652,14 @@ namespace Tips.Warehouse.Api.Controllers
                             inventoryDetails[i].Balance_Quantity = 0;
                             inventoryDetails[i].IsStockAvailable = false;
                             lotNoWiseProducedQty = balanceqty;
-                            /** Dont Change the Position of IssuedQty and BalanceQty Code in this Method .it should be always last ***********************/
-                            producedQty -= balanceqty;
+                             producedQty -= balanceqty;
                             balanceqty = 0;
                         }
                         else
                         {
                             inventoryDetails[i].Balance_Quantity -= producedQty;
                             lotNoWiseProducedQty = producedQty;
-
-                            /******* Dont Change the Position of IssuedQty and BalanceQty 
-                             * Code in this Method. it should be always last ***********************/
-
+                             
                             producedQty = 0;
                         }
 
@@ -704,13 +713,14 @@ namespace Tips.Warehouse.Api.Controllers
                     decimal balanceqtyToConvert = (materialIssueTrack.IssuedQty - materialIssueTrack.ConvertedToFgQty);
                     if (balanceqtyToConvert <= newConvertedToFgQty)
                     {
-                        materialIssueTrack.ConvertedToFgQty += newConvertedToFgQty;
+                        materialIssueTrack.ConvertedToFgQty += balanceqtyToConvert;
                         newConvertedToFgQty -= balanceqtyToConvert;
                         balanceqtyToConvert = 0;
                     }
                     else
                     {
                         materialIssueTrack.ConvertedToFgQty += newConvertedToFgQty;
+                        balanceqtyToConvert -= newConvertedToFgQty;
                         newConvertedToFgQty = 0;
                     }
 
@@ -747,6 +757,7 @@ namespace Tips.Warehouse.Api.Controllers
                 }
 
                 decimal issuedQty = dtoForMaterialIssue.IssueQty;
+                string shopOrderNumber = dtoForMaterialIssue.ShopOrderNumber;
                 for (int i = 0; i < inventoryDetails.Count; i++)
                 {
                     decimal balanceqty = inventoryDetails[i].Balance_Quantity;
@@ -756,31 +767,92 @@ namespace Tips.Warehouse.Api.Controllers
 
                         inventoryDetails[i].Warehouse = "WIP";
                         inventoryDetails[i].Location = "WIP";
+                        inventoryDetails[i].shopOrderNo = shopOrderNumber;
                         inventoryDetails[i].IsStockAvailable = true;
                         lotNoWiseIssuedQty = balanceqty;
                         /** Dont Change the Position of IssuedQty and BalanceQty Code in this Method .it should be always last ***********************/
                         issuedQty -= balanceqty;
                         balanceqty = 0;
+                         
+
+                        InventoryTranction inventoryTransaction = new InventoryTranction();
+                        inventoryTransaction.PartNumber = inventoryDetails[i].PartNumber;
+                        inventoryTransaction.MftrPartNumber = inventoryDetails[i].MftrPartNumber;
+                        inventoryTransaction.LotNumber = inventoryDetails[i].LotNumber;
+                        inventoryTransaction.Description = inventoryDetails[i].Description;
+                        inventoryTransaction.PartType = inventoryDetails[i].PartType;
+                        inventoryTransaction.ProjectNumber = inventoryDetails[i].ProjectNumber;
+                        inventoryTransaction.Issued_Quantity = issuedQty;
+                        inventoryTransaction.UOM = inventoryDetails[i].UOM;
+                        inventoryTransaction.Issued_DateTime = DateTime.Now;
+                        inventoryTransaction.ReferenceID = inventoryDetails[i].ReferenceID;
+                        inventoryTransaction.ReferenceIDFrom = inventoryDetails[i].ReferenceIDFrom;
+                        inventoryTransaction.BOM_Version_No = 0;
+                        inventoryTransaction.From_Location = inventoryDetails[i].Location;
+                        inventoryTransaction.TO_Location = "WIP";
+                        inventoryTransaction.Unit = inventoryDetails[i].Unit;
+                        inventoryTransaction.GrinMaterialType = inventoryDetails[i].GrinMaterialType;
+                        inventoryTransaction.Remarks = "Issue Material";
+                        inventoryTransaction.IsStockAvailable = inventoryDetails[i].IsStockAvailable;
+                        inventoryTransaction.Warehouse = inventoryDetails[i].Warehouse;
+                        inventoryTransaction.GrinNo = inventoryDetails[i].GrinNo;
+                        inventoryTransaction.GrinPartId = inventoryDetails[i].GrinPartId;
+                        inventoryTransaction.shopOrderNo = shopOrderNumber;
+
+                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransaction);
+                        _inventoryTranctionRepository.SaveAsync();
+
                     }
                     else
                     {
-                        inventoryDetails[i].Balance_Quantity -= issuedQty;
+                         inventoryDetails[i].Balance_Quantity -= issuedQty;
+
                         lotNoWiseIssuedQty = issuedQty;
-                        string shopOrderNumber = dtoForMaterialIssue.ShopOrderNumber;
+                        
                         Inventory wipInventory = InsertWipDetailsInInventoryWhenIssuedQtyIsMore(inventoryDetails[i], issuedQty, shopOrderNumber);
 
-                        
                         await _inventoryRepository.CreateInventory(wipInventory);
+                         
 
-                        /******* Dont Change the Position of IssuedQty and BalanceQty 
-                         * Code in this Method. it should be always last ***********************/
+                        //Add Data to inventory transaction
 
-                        issuedQty = 0;
+                        InventoryTranction inventoryTransaction = new InventoryTranction();
+                        inventoryTransaction.PartNumber = inventoryDetails[i].PartNumber;
+                        inventoryTransaction.MftrPartNumber = inventoryDetails[i].MftrPartNumber;
+                        inventoryTransaction.LotNumber = inventoryDetails[i].LotNumber;
+                        inventoryTransaction.Description = inventoryDetails[i].Description;
+                        inventoryTransaction.PartType = inventoryDetails[i].PartType;
+                        inventoryTransaction.ProjectNumber = inventoryDetails[i].ProjectNumber;
+                        inventoryTransaction.Issued_Quantity = lotNoWiseIssuedQty;
+                        inventoryTransaction.UOM = inventoryDetails[i].UOM;
+                        inventoryTransaction.Issued_DateTime = DateTime.Now; 
+                        inventoryTransaction.ReferenceID = inventoryDetails[i].ReferenceID;
+                        inventoryTransaction.ReferenceIDFrom = inventoryDetails[i].ReferenceIDFrom;
+                        inventoryTransaction.BOM_Version_No = 0;
+                        inventoryTransaction.From_Location = inventoryDetails[i].Location;
+                        inventoryTransaction.TO_Location = "WIP"; 
+                        inventoryTransaction.Unit = inventoryDetails[i].Unit;
+                        inventoryTransaction.GrinMaterialType = inventoryDetails[i].GrinMaterialType;
+                        inventoryTransaction.Remarks = "Issue Material";
+                        inventoryTransaction.IsStockAvailable = inventoryDetails[i].IsStockAvailable;
+                        inventoryTransaction.Warehouse = inventoryDetails[i].Warehouse;
+                        inventoryTransaction.GrinNo = inventoryDetails[i].GrinNo;
+                        inventoryTransaction.GrinPartId = inventoryDetails[i].GrinPartId;
+                        inventoryTransaction.shopOrderNo = shopOrderNumber;
+
+                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransaction);
+                        _inventoryTranctionRepository.SaveAsync(); 
+
+
+                    /******* Dont Change the Position of IssuedQty and BalanceQty 
+                     * Code in this Method. it should be always last ***********************/
+
+                    issuedQty = 0;
                     }
 
                     string result = await _inventoryRepository.UpdateInventory(inventoryDetails[i]);
 
-                    /*********************************** Add data to Material Issue Tracker *************************/
+                    ///*********************************** Add data to Material Issue Tracker *************************/
                     ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = InsertDataToMaterialIssueTracker(dtoForMaterialIssue, inventoryDetails[i], lotNoWiseIssuedQty);
                     int transactionId = await _materialIssueTrackerRepository.AddDataToMaterialIssueTracker(shopOrderMaterialIssueTracker);
 
@@ -818,6 +890,7 @@ namespace Tips.Warehouse.Api.Controllers
             ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = new ShopOrderMaterialIssueTracker
             {
                 ShopOrderNumber = shopOrderNumber,
+                Bomversion = dtoForMaterialIssue.Bomversion,
                 PartNumber = inventoryDetail.PartNumber,
                 LotNumber = inventoryDetail.LotNumber,
                 MftrPartNumber = inventoryDetail.MftrPartNumber,
@@ -830,7 +903,8 @@ namespace Tips.Warehouse.Api.Controllers
                 Location = inventoryDetail.Location,
                 Unit = inventoryDetail.Unit,
                 PartType = inventoryDetail.PartType,
-                DataFrom = "ShopOrder"
+                DataFrom = "ShopOrder",
+                MRNumber = "NULL"
             };
             return shopOrderMaterialIssueTracker;
         }
@@ -844,7 +918,7 @@ namespace Tips.Warehouse.Api.Controllers
 
             wipInventory.Balance_Quantity = issueQty;
             wipInventory.Warehouse = "WIP";
-            wipInventory.Description = "WIP";
+            wipInventory.Description = inventoryDetail.Description;
             wipInventory.ReferenceIDFrom = "Shop Order";
             wipInventory.shopOrderNo = shopOrderNumber;
             return wipInventory;

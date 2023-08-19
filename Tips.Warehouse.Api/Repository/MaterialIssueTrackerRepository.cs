@@ -42,13 +42,14 @@ namespace Tips.Warehouse.Api.Repository
         {
             var resultList = (from st in _tipsWarehouseDbContext.ShopOrderMaterialIssueTrackers
                               where st.ShopOrderNumber == ShopOrderNo
-                              group st by new { st.PartNumber, st.Description, st.ShopOrderNumber, st.DataFrom } into g
+                              group st by new { st.PartNumber, st.Description,st.Bomversion, st.ShopOrderNumber, st.DataFrom } into g
                               select new ShopOrderMaterialIssueTrackerDto
                               {
                                   PartNumber = g.Key.PartNumber,
                                   Description = g.Key.Description,
                                   ShopOrderNumber = g.Key.ShopOrderNumber,
                                   DataFrom = g.Key.DataFrom,
+                                  Bomversion = g.Key.Bomversion,
                                   IssuedQty = g.Sum(st => st.IssuedQty),
                                   ConvertedToFgQty = g.Sum(st => st.ConvertedToFgQty),
                                   BalanceQty = g.Sum(st => st.IssuedQty) - g.Sum(st => st.ConvertedToFgQty)

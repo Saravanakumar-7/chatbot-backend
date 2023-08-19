@@ -1115,16 +1115,13 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 _logger.LogError(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomFGListByItemNumber?", "ItemNumber=", itemNumber));
-                var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomFGListByItemNumber?", "ItemNumber=", itemNumber));
-                //_logger.LogError(_httpClient.BaseAddress.ToString());
-                //_logger.LogError(_httpClient.ToString());
+                var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomFGListByItemNumber?", "ItemNumber=", itemNumber)); 
                 var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
                 dynamic bomDetailsStringData = JsonConvert.DeserializeObject(bomDetailsString);
                 dynamic bomData = bomDetailsStringData.data;
                 string jsonString = JsonConvert.SerializeObject(bomData[0].bomVersionNo);
                 JArray jArray = JArray.Parse(jsonString);
-                decimal[] bomVersionNo = jArray.ToObject<decimal[]>();
-                //List<decimal> bomVersionNo = jArray.ToObject<List<decimal>>();
+                decimal[] bomVersionNo = jArray.ToObject<decimal[]>(); 
 
                 ItemDetailsForShopOrderDto itemDetailsDto = new ItemDetailsForShopOrderDto();
                 itemDetailsDto.ItemNumber = bomData[0].itemNumber;
