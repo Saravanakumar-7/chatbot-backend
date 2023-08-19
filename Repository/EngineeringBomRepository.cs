@@ -15,7 +15,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading.Tasks; 
 
 namespace Repository
 {
@@ -204,67 +204,42 @@ namespace Repository
             // Return the parent FG item number
             return parentFgItemNumber;
         }
-        //test2
-        public async Task<List<EnggBomFGItemNumber>> GetFgItemsList(string childItemNumber)
+
+        public async Task<List<EnggBomFGItemNumber>> GetAllFgItemNumberListBySaItemNumber(string saItemNumber)
         {
-            List<EnggBomFGItemNumber> fgItemsList = new List<EnggBomFGItemNumber>();
-            await GetFgParentItemNumbers(childItemNumber, fgItemsList);
+            List<EnggBomFGItemNumber> fgParents = new List<EnggBomFGItemNumber>();
 
-            return fgItemsList;
-        }
+            // Identify all the parent BOMs by checking which BOMs have this current item in their EnggChildItems.
+            var parentBoms = await _tipsMasterDbContext.EnggBoms
+                .Include(b => b.EnggChildItems)
+                .Where(bom => bom.EnggChildItems.Any(child => child.ItemNumber == saItemNumber) && bom.IsActive ==true)
+                .ToListAsync();
 
-        private async Task GetFgParentItemNumbers(string childItemNumber, List<EnggBomFGItemNumber> fgItemsList)
-        {
-            var saParentItemNumber = await GetSAParentItemNumber(childItemNumber);
-
-            if (saParentItemNumber != null)
+            foreach (var parentBom in parentBoms)
             {
-                var fgParentItems = await GetFgParentItems(saParentItemNumber);
-                fgItemsList.AddRange(fgParentItems);
-
-                foreach (var fgParentItem in fgParentItems)
+                // If the parent BOM's ItemType is FG, add it to the list.
+                if (parentBom.ItemType == PartType.FG)
                 {
-                    await GetFgParentItemNumbers(fgParentItem.ItemNumber, fgItemsList);
+                    EnggBomFGItemNumber enggBomFGItemNumber =  new EnggBomFGItemNumber
+                    {
+                        ItemNumber = parentBom.ItemNumber,
+                        Description = parentBom.ItemDescription 
+                    };
+                    fgParents.Add(enggBomFGItemNumber);
+                }
+
+                // If the parent BOM's ItemType is SA, recursively search for its FG parents and add them to the list.
+                else if (parentBom.ItemType == PartType.SA)
+                {
+                    var fgParentsFromRecursion = await GetAllFgItemNumberListBySaItemNumber(parentBom.ItemNumber);
+                    fgParents.AddRange(fgParentsFromRecursion);
                 }
             }
+
+            return fgParents;
         }
 
-        private async Task<string> GetSAParentItemNumber(string childItemNumber)
-        {
-            var saParentItem = await _tipsMasterDbContext.EnggBoms
-                .FirstOrDefaultAsync(x => x.ItemType == PartType.SA && x.EnggChildItems.Any(item => item.ItemNumber == childItemNumber));
-
-            return saParentItem?.ItemNumber;
-        }
-
-        private async Task<List<EnggBomFGItemNumber>> GetFgParentItems(string saItemNumber)
-        {
-
-            var items = await _tipsMasterDbContext.EnggChildItems
-                .Where(x => x.ItemNumber == saItemNumber && x.PartType == PartType.SA).Select(x => x.EnggBomId).ToListAsync();
-
-            var fgParentItems = await _tipsMasterDbContext.EnggBoms
-        .Where(x => items.Contains(x.BOMId) && x.ItemType == PartType.FG)
-            .Select(c => new EnggBomFGItemNumber()
-                {
-                    ItemNumber = c.ItemNumber,
-                    Description = c.ItemDescription
-                })
-                .ToListAsync(); 
-
-
-            //var fgParentItems = await _tipsMasterDbContext.EnggBoms
-            //    .Where(x => x.ItemNumber == saItemNumber && x.ItemType == PartType.FG)
-            //    .Select(c => new EnggBomFGItemNumber()
-            //    {
-            //        ItemNumber = c.ItemNumber,
-            //        Description = c.ItemDescription
-            //    })
-            //    .ToListAsync();
-
-            return fgParentItems;
-        }
-
+      
         public async Task<IEnumerable<CoverageEnggChildDto>> GetEnggChildItemDetails(string ItemNumber)
         {
              
@@ -346,18 +321,25 @@ namespace Repository
         //aravind
         public async Task<EnggBom> GetLatestEnggBomVersionDetailByItemNumber(string fgPartNumber, decimal revisionNo)
         {
-            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms
-           .Where(x => x.ItemNumber == fgPartNumber && x.RevisionNumber == revisionNo)
-            .Select(x => new
-            {
-                EnggBom = x,
-                ActiveEnggChildItems = x.EnggChildItems.Where(ec => ec.IsActive)
-            })
-            .FirstOrDefaultAsync();
+            //var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber 
+            //                        && x.RevisionNumber == revisionNo)
+            //                        .Include(t => t.EnggChildItems)
+            //                        .FirstOrDefaultAsync();
 
-            EnggBomDetailsbyId.EnggBom.EnggChildItems = EnggBomDetailsbyId.ActiveEnggChildItems.ToList();
+            //return EnggBomDetailsbyId;
 
-            return EnggBomDetailsbyId.EnggBom;
+                    var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms
+                   .Where(x => x.ItemNumber == fgPartNumber && x.RevisionNumber == revisionNo)
+                    .Select(x => new
+                    {
+                    EnggBom = x,
+                    ActiveEnggChildItems = x.EnggChildItems.Where(ec => ec.IsActive)
+                    })
+                    .FirstOrDefaultAsync();
+
+                    EnggBomDetailsbyId.EnggBom.EnggChildItems =EnggBomDetailsbyId.ActiveEnggChildItems.ToList();
+
+                    return EnggBomDetailsbyId.EnggBom;
 
         }
 
@@ -711,7 +693,7 @@ namespace Repository
     .MaxAsync(x => x.ReleaseVersion);
 
             return maxRevisionNumber;
-        }
+        } 
 
         public async Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber)
         {

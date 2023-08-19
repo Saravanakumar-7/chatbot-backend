@@ -12,7 +12,7 @@ namespace Tips.Production.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal NewConvertedToFgQty { get; set; }
         public string? DataFrom { get; set; } 
-        public string? MRNumber { get; set; }
+        public string? MRNumber { get; set; } 
     }
     
 }

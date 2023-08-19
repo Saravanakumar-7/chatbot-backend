@@ -19,8 +19,14 @@ builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 
+var key = builder.Configuration["Jwt:key"];
+builder.Services.ConfigureJwtToken(builder.Configuration);
+
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IShopOrderRepository, ShopOrderRepository>();
+builder.Services.AddTransient<IShopOrderItemRepository, ShopOrderItemRepository>();
 builder.Services.AddTransient<IShopOrderConfirmationRepository, ShopOrderConfirmationRepository>();
 builder.Services.AddTransient<ISAShopOrderRepository, SAShopOrderRepository>();
 builder.Services.AddTransient<ISAShopOrderMaterialIssueRepository, SAShopOrderMaterialIssueRepository>();
@@ -29,23 +35,24 @@ builder.Services.AddTransient<IMaterialReturnNoteRepository, MaterialReturnNoteR
 builder.Services.AddScoped<IMaterialIssueRepository, MaterialIssueRepository>();
 builder.Services.AddScoped<IMaterialRequestsRepository, MaterialRequestsRepository>();
 builder.Services.AddScoped<IOQCRepository, OQCRepository>();
-
+builder.Services.AddScoped<IMaterialIssueHistoryRepository, MaterialIssueHistoryRepository>();
+builder.Services.AddScoped<IMaterialIssueItemRepository, MaterialIssueItemRepository>();
 
 
 //builder.Services.AddTransient<IMaterialReturnNoteItemRepository, Mater>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpClient();
+builder.Services.AddHttpContextAccessor();
+
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI();
 //}
 
 app.UseHttpsRedirection();
@@ -59,11 +66,10 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 
 app.UseCors("CorsPolicy");
 
-app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseRouting();
 app.MapControllers();
 
 app.Run();
-

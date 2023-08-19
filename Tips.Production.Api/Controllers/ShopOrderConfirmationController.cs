@@ -151,7 +151,7 @@ namespace Tips.Production.Api.Controllers
                 await _shopOrderRepo.UpdateShopOrder(shopOrderDetail);               
                 await _shopOrderConfirmationRepository.CreateShopOrderConfirmation(shopOrderConfirmation);
 
-
+                //shopOrderConfirmationPostDto.shopOrderItemConfirmations[0].WipConfirmedQty = shopOrderConfirmation.WipConfirmedQty;
                 //update Inventory Code                          
 
 

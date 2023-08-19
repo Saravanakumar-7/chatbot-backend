@@ -527,6 +527,14 @@ namespace Tips.Purchase.Api.Repository
             return pONameListbyVendorId;
         }
 
+        public async Task<decimal> GetOpenPoQuantityByItemNumber(string itemNumber)
+        {
+            return await _tipsPurchaseDbContext.PoItems
+              .Where(poi => poi.ItemNumber == itemNumber && poi.PoPartsStatus == true && poi.BalanceQty > 0
+               && poi.PurchaseOrder.IsShortClosed == false && poi.PurchaseOrder.IsDeleted == false)
+              .SumAsync(poi => poi.BalanceQty);
+        }
+
     }
 
     public class UploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository
@@ -680,6 +688,11 @@ namespace Tips.Purchase.Api.Repository
             Update(poItem);
             string result = $"POOrderItem of Detail {poItem.Id} is updated successfully!";
             return result;
-        } 
+        }
+
+
+        
+
+
     }
 }

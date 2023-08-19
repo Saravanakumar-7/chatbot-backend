@@ -268,5 +268,51 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
         // Get all ForeCastEngg 
+
+
+        // CoverageReportController
+
+        //[HttpGet("step1/{itemNumber}")]
+        //public async Task<ActionResult<CoverageReportItem>> GetFgTgCoverage(string itemNumber)
+        //{
+        //    var coverageReportResponse = new ServiceResponse<CoverageReportItem>();
+
+        //    try
+        //    {
+        //        // Call Inventory API
+        //        var inventoryResponse = await _httpClient.GetAsync("https://inventoryservice/stock-available/" + itemNumber);
+        //        var stockAvailable = await inventoryResponse.Content.ReadAsAsync<ServiceResponse<decimal>>();
+
+        //        // Call PurchaseOrder API 
+        //        var purchaseOrderResponse = await _httpClient.GetAsync("https://purchaseorderservice/open-po-quantity/" + itemNumber);
+        //        var openPoQty = await purchaseOrderResponse.Content.ReadAsAsync<ServiceResponse<decimal>>();
+
+        //        // Call SalesOrder API
+        //        var salesOrderResponse = await _httpClient.GetAsync("https://salesorderservice/open-sales-order-quantity/" + itemNumber);
+        //        var openSalesOrderQty = await salesOrderResponse.Content.ReadAsAsync<ServiceResponse<decimal>>();
+
+        //        var reportItem = new CoverageReportItem
+        //        {
+        //            ItemNumber = itemNumber,
+        //            StockAvailable = stockAvailable,
+        //            OpenPoQty = openPoQty,
+        //            OpenSalesOrderQty = openSalesOrderQty
+        //        };
+
+        //        coverageReportResponse.Data = reportItem;
+        //        coverageReportResponse.Message = "Retrieved coverage report step 1";
+        //        coverageReportResponse.Success = true;
+
+        //        return Ok(coverageReportResponse);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        coverageReportResponse.Success = false;
+        //        coverageReportResponse.Message = "Error generating coverage report";
+        //        return StatusCode(500, coverageReportResponse);
+        //    }
+        //}
+
     }
 }

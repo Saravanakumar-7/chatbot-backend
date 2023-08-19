@@ -891,7 +891,7 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         var balanceQty = salesOrderItem.BalanceQty;
 
-                        if (salesOrderItem.BalanceQty >= dispatchedQty)
+                        if (salesOrderItem.BalanceQty > dispatchedQty)
                         {
                             salesOrderItem.BalanceQty -= dispatchedQty;
                             salesOrderItem.DispatchQty += dispatchedQty;
@@ -900,19 +900,15 @@ namespace Tips.SalesService.Api.Controllers
                         else
                         {
                             salesOrderItem.BalanceQty = 0;
-                            salesOrderItem.DispatchQty += balanceQty;
+                            salesOrderItem.DispatchQty += dispatchedQty;
                             dispatchedQty -= balanceQty;
-                        }
-
-                        if (salesOrderItem.BalanceQty <= 0)
-                        {
-                            salesOrderItem.BalanceQty = 0;
+                            balanceQty = 0;
                             salesOrderItem.StatusEnum = OrderStatus.Closed;
-                        }
+                        }                        
 
                         await _salesOrderItemsRepository.UpdateSalesOrderItem(salesOrderItem);
 
-                        if (dispatchedQty == 0)
+                        if (dispatchedQty <= 0)
                         {
                             break;
                         }
@@ -1119,16 +1115,13 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 _logger.LogError(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomFGListByItemNumber?", "ItemNumber=", itemNumber));
-                var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomFGListByItemNumber?", "ItemNumber=", itemNumber));
-                //_logger.LogError(_httpClient.BaseAddress.ToString());
-                //_logger.LogError(_httpClient.ToString());
+                var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomFGListByItemNumber?", "ItemNumber=", itemNumber)); 
                 var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
                 dynamic bomDetailsStringData = JsonConvert.DeserializeObject(bomDetailsString);
                 dynamic bomData = bomDetailsStringData.data;
                 string jsonString = JsonConvert.SerializeObject(bomData[0].bomVersionNo);
                 JArray jArray = JArray.Parse(jsonString);
-                decimal[] bomVersionNo = jArray.ToObject<decimal[]>();
-                //List<decimal> bomVersionNo = jArray.ToObject<List<decimal>>();
+                decimal[] bomVersionNo = jArray.ToObject<decimal[]>(); 
 
                 ItemDetailsForShopOrderDto itemDetailsDto = new ItemDetailsForShopOrderDto();
                 itemDetailsDto.ItemNumber = bomData[0].itemNumber;
@@ -1338,13 +1331,13 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> ShortCloseSOItemSatusBySOItemId(int soItemId)
+        public async Task<IActionResult> ShortCloseSalesOrderItemById(int soItemId)
         {
             ServiceResponse<SalesOrderItemsDto> serviceResponse = new ServiceResponse<SalesOrderItemsDto>();
 
             try
             {
-                var soItemDetailBySOItemId = await _salesOrderItemsRepository.CloseSOItemSatusBySOItemId(soItemId);
+                var soItemDetailBySOItemId = await _salesOrderItemsRepository.GetSOItemDetailById(soItemId);
                 if (soItemDetailBySOItemId == null)
                 {
                     _logger.LogError($"SalesOrderItems with soItemId: {soItemId}, hasn't been found.");
@@ -1355,7 +1348,7 @@ namespace Tips.SalesService.Api.Controllers
                     return Ok(serviceResponse);
                 }
 
-                soItemDetailBySOItemId.StatusEnum = OrderStatus.ShortClose;
+                soItemDetailBySOItemId.StatusEnum = OrderStatus.ShortClosed;
                 string result = await _salesOrderItemsRepository.UpdateSalesOrderItem(soItemDetailBySOItemId);
                 _salesOrderItemsRepository.SaveAsync();
 
@@ -1364,18 +1357,11 @@ namespace Tips.SalesService.Api.Controllers
 
                 if (soItemOpenStatuscount == 0)
                 {
-                    var salesOrderDetails = await _repository.GetSalesOrderById(soItemDetailBySOItemId.SalesOrderId);
-                    salesOrderDetails.SOStatus = OrderStatus.ShortClose;
+                    var salesOrderDetails = await _repository.GetSalesOrderById(soItemDetailBySOItemId.SalesOrderId);//take only main model
+                    salesOrderDetails.SOStatus = OrderStatus.ShortClosed;
                     await _repository.UpdateSalesOrder(salesOrderDetails);
                     _repository.SaveAsync();
-                }
-                else
-                {
-                    var salesOrderDetails = await _repository.GetSalesOrderById(soItemDetailBySOItemId.SalesOrderId);
-                    salesOrderDetails.SOStatus = OrderStatus.PartiallyClosed;
-                    await _repository.UpdateSalesOrder(salesOrderDetails);
-                    _repository.SaveAsync();
-                }
+                } 
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SalesOrderItems Status have been closed";

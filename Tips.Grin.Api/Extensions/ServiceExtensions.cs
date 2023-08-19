@@ -39,11 +39,11 @@ namespace Tips.Grin.Api.Extensions
             services.AddSingleton<ILoggerManager, LoggerManager>();
         }
 
-        public static void ConfigureMSSqlContext(this IServiceCollection services, IConfiguration config)
-        {
-            var connectionString = config["MSSqlconnection:connectionString"];
-            services.AddDbContext<TipsGrinDbContext>(o => o.UseSqlServer(connectionString));
-        }
+        //public static void ConfigureMSSqlContext(this IServiceCollection services, IConfiguration config)
+        //{
+        //    var connectionString = config["MSSqlconnection:connectionString"];
+        //    services.AddDbContext<TipsGrinDbContext>(o => o.UseSqlServer(connectionString));
+        //}
 
         public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
         {
@@ -86,5 +86,27 @@ namespace Tips.Grin.Api.Extensions
                  };
              });
         }
+        public static void ConfigureJwtToken(this IServiceCollection services, IConfiguration config)
+        {
+            /// security key for token generation
+            var key = config["Jwt:key"];
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key))
+                };
+            });
+        }
+
     }
 }

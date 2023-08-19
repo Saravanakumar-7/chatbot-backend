@@ -16,6 +16,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<int?> CreateInventory(Inventory inventory);
         Task<string> UpdateInventory(Inventory inventory);
         Task<string> DeleteInventory(Inventory inventory);
+        Task<decimal> GetTotalStockOfItemNumber(string itemNumber);
         Task<List<InventoryItemNoStock>> GetItemNoByInventoryStock();
         Task<Inventory> GetInventoryById(int id);
         Task<List<InventoryDetailsLocationStock>> GetInventoryDetailsWithInventoryStock(string partNumber, string wareHouse, string location, string projectNumber);

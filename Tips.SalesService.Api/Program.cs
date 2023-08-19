@@ -31,16 +31,16 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IFgOqcRepository, FgOqcRepository>();
 builder.Services.AddScoped<IFinalOqcRepository, FinalOqcRepository>();
 
-builder.Services.AddScoped<IRfqLPCostingRepository,RfqLPCostingRepository>();
+builder.Services.AddScoped<IRfqLPCostingRepository, RfqLPCostingRepository>();
 builder.Services.AddScoped<IRfqSourcingRepository, RfqSourcingRepository>();
 builder.Services.AddScoped<IRfqEnggRepository, RfqEnggRepository>();
-builder.Services.AddScoped<IRfqCustomerSupportRepository,RfqCustomerSupportRepository>();
+builder.Services.AddScoped<IRfqCustomerSupportRepository, RfqCustomerSupportRepository>();
 builder.Services.AddScoped<IRfqCustomerSupportItemRepository, RfqCustomerSupportItemsRepository>();
 builder.Services.AddScoped<IRfqRepository, RfqRepository>();
 
-builder.Services.AddScoped<ISalesOrderRepository,SalesOrderRepository>();
-builder.Services.AddScoped<IQuoteRepository,QuoteRepository>();
-
+builder.Services.AddScoped<ISalesOrderRepository, SalesOrderRepository>();
+builder.Services.AddScoped<IQuoteRepository, QuoteRepository>();
+builder.Services.AddScoped<ISalesAdditionalChargesRepository, SalesAdditionalChargesRepository>();
 
 builder.Services.AddScoped<IForeCastRepository, ForeCastRepository>();
 builder.Services.AddScoped<IForeCastCustomerSupportRepository, ForeCastCustomerSupportRepository>();
@@ -48,7 +48,7 @@ builder.Services.AddScoped<IForeCastCustomerSupportItemRepository, ForeCastCusto
 builder.Services.AddScoped<IForeCastEnggRepository, ForeCastEnggRepository>();
 builder.Services.AddScoped<IForeCastEnggItemsRepository, ForeCastEnggItemRepository>();
 builder.Services.AddScoped<IForeCastReleaseLpRepository, ForeCastLPReleaseRepository>();
-
+builder.Services.AddScoped<ICollectionTrackerRepository, CollectionTrackerRepository>();
 builder.Services.AddScoped<IForecastSourcingRepository, ForeCastSourcingRepository>();
 builder.Services.AddScoped<IForecastLpCostingRepository, ForecastLpCostingRepository>();
 builder.Services.AddScoped<IMaterialRequestRepository, MaterialRequestRepository>();
@@ -63,7 +63,7 @@ builder.Services.AddScoped<IForeCastCustomFieldRepository, ForeCastCustomFieldRe
 builder.Services.AddScoped<ISalesOrderItemsRepository, SalesOrderItemRepository>();
 builder.Services.AddScoped<IItemPriceListRepository, ItemPriceListRepository>();
 builder.Services.AddScoped<ISalesOrderHistoryRepository, SalesOrderHistoryRepository>();
-
+builder.Services.AddScoped<ICoverageReportRepository, CoverageReportRepository>();
 
 //builder.Services.AddScoped<IRfqCustomerSupportNotesRepository, RfqCustomerSupportNotes>();
 
@@ -73,14 +73,14 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHttpClient(); 
+builder.Services.AddHttpClient();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI();
 //}
 
 app.UseHttpsRedirection();
@@ -101,4 +101,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
- 

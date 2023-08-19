@@ -34,5 +34,6 @@ namespace Tips.SalesService.Api.Contracts
         Task<object> GetSalesOrderTotalBySalesOrderId(int salesOrderId);
         Task<IEnumerable<SalesOrder>> GetAllSalesOrderWithItems(SalesOrderSearchDto salesOrderSearch);
         Task<SalesOrder> GetSalesOrderDetailsBySONumber(string salesOrderNumber);
+        Task<decimal> GetOpenSalesOrderQuantityByItemNumber(string salesOrderNumber);
     }
 }

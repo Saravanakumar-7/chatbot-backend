@@ -261,7 +261,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEnggBomByFgPartNumber(string itemNumber)
+        public async Task<IActionResult> GetEnggBomByPartNumber(string itemNumber)
         {
             ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
 
@@ -368,7 +368,51 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        [HttpGet("{fgPartNumber}")]
+        //get latest bom child Qty 
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetLatestEnggProductionBomVersionDetailByItemNumber(string fgPartNumber)
+        {
+            ServiceResponse<decimal> serviceResponse = new ServiceResponse<decimal>();
+
+            try
+            {
+                decimal revisionNo = await _releaseProductBomRepository.GetLatestProductionBomByItemNumber(fgPartNumber); 
+
+                if (revisionNo == null)
+                {
+                    serviceResponse.Data = 0;
+                    serviceResponse.Message = $"Production Bom latest Version fgPartNumber: {fgPartNumber}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Production Bom latest Version with fgPartNumber: {fgPartNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Production Bom latest Version with fgPartNumber: {fgPartNumber}");                    
+                    serviceResponse.Data = revisionNo;
+                    serviceResponse.Message = $"Production Bom latest Version with fgPartNumber: {fgPartNumber}";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Production Bom latest Version: {ex.Message}");
+                serviceResponse.Data = 0;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        [HttpGet]
         public async Task<IActionResult> GetLatestEnggBomVersionDetailByItemNumber(string fgPartNumber)
         {
             ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
@@ -1149,6 +1193,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        
 
         //aravind
         [HttpPost]
@@ -1318,7 +1363,7 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<IEnumerable<EnggBomFGItemNumber>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomFGItemNumber>>();
             try
             {
-                var enggBomChildFGItemNoDetails = await _enggBomRepository.GetFgItemsList(childItemNumber);
+                var enggBomChildFGItemNoDetails = await _enggBomRepository.GetAllFgItemNumberListBySaItemNumber(childItemNumber);
                 if (enggBomChildFGItemNoDetails == null)
                 {
                     serviceResponse.Data = null;

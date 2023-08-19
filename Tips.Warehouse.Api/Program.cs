@@ -1,8 +1,15 @@
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using MySql.Data.MySqlClient;
 using NLog;
+using System.Configuration;
 using System.Text.Json.Serialization;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 using Tips.Warehouse.Api.Extensions;
 using Tips.Warehouse.Api.Repository;
 
@@ -16,6 +23,8 @@ LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nl
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
+
+
 //builder.Services.ConfigureMSSqlContext(builder.Configuration);
 builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
@@ -41,8 +50,9 @@ builder.Services.AddScoped<IReturnInvoiceRepository, ReturnInvoiceRepository>();
 builder.Services.AddScoped<IBTODeliveryOrderItemsRepository, BTODeliveryOrderItemRepository>();
 builder.Services.AddScoped<IInvoiceChildRepository, InvoiceChildRepository>();
 builder.Services.AddScoped<ILocationTransferRepository, LocationTransferRepository>();
-
+builder.Services.AddScoped<IMaterialIssueTrackerRepository, MaterialIssueTrackerRepository>();
 builder.Services.AddScoped<IBTODeliveryOrderHistoryRepository, BTODeliveryOrderHistoryRepository>();
+builder.Services.AddScoped<MySqlConnection>();
 
 
 
@@ -52,6 +62,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
+
 
 //builder.Services.A
 
