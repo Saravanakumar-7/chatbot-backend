@@ -511,6 +511,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTranction.Issued_By = "Admin";
                         inventoryTranction.From_Location = "FG";
                         inventoryTranction.TO_Location = "BTO";
+                        inventoryTranction.Warehouse = "BTO";
                         inventoryTranction.Remarks = "Create BTO";
 
                         var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);

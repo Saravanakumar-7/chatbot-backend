@@ -386,7 +386,7 @@ namespace Tips.Warehouse.Api.Controllers
                         var invoiceQty = invoiceChildItem.InvoicedQty;
                         var doNumber = invoiceitemsDto[i].DONumber;
                     
-                        //DO Balance qty update method
+                        //DO Balance qty and Invoiced qty update method
                         invoiceQty = await DoItemBalanceQtyUpdateBasedOnInvoiceQty(invoiceChildItem, invoiceQty, doNumber);
 
                         //Add inventory Transaction Table
@@ -460,6 +460,7 @@ namespace Tips.Warehouse.Api.Controllers
             inventoryTranction.CreatedOn = DateTime.Now;
             inventoryTranction.From_Location = "BTO";
             inventoryTranction.TO_Location = "Invoice";
+            inventoryTranction.Warehouse = "Invoice";
             inventoryTranction.Remarks = "Create - Invoice";
 
             var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
@@ -478,6 +479,7 @@ namespace Tips.Warehouse.Api.Controllers
                 foreach (var doItem in btoItemDetails)
                 {
                     decimal doBalanceQty = Convert.ToDecimal(doItem.BalanceDoQty);
+                    doItem.InvoicedQty += invoiceQty;
 
                     if (doBalanceQty >= invoiceQty)
                     {

@@ -171,7 +171,7 @@ namespace Tips.Production.Api.Controllers
                     {
                         for (int i = 0; i < materialIssueDetails.materialIssueItems.Count(); i++)
                         {
-                            var balanceQty = 0;
+                            decimal balanceQuantity = 0;
                             var partnumber = materialIssueDetailById.materialIssueItems[i].PartNumber;
                             var projectnumber = materialIssueDetailById.materialIssueItems[i].ProjectNumber;
                             var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
@@ -181,13 +181,13 @@ namespace Tips.Production.Api.Controllers
                                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                 dynamic inventoryObject = inventoryObjectData.data;
-                                balanceQty = 0;
+                                balanceQuantity = 0;
                                 if (inventoryObject != null)
                                 {
-                                    balanceQty = inventoryObject[0].balanceQty;
+                                    balanceQuantity = inventoryObject[0].balanceQty;
                                 }
                             }
-                            materialIssueDetails.materialIssueItems[i].AvailableQty = balanceQty;
+                            materialIssueDetails.materialIssueItems[i].AvailableQty = balanceQuantity;
                         }
                     }
 
