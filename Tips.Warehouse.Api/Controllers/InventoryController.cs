@@ -841,13 +841,13 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTransaction.shopOrderNo = shopOrderNumber;
 
                         await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransaction);
-                        _inventoryTranctionRepository.SaveAsync(); 
+                        _inventoryTranctionRepository.SaveAsync();
 
 
-                    /******* Dont Change the Position of IssuedQty and BalanceQty 
-                     * Code in this Method. it should be always last ***********************/
+                        /******* Dont Change the Position of IssuedQty and BalanceQty 
+                         * Code in this Method. it should be always last ***********************/
 
-                    issuedQty = 0;
+                        issuedQty = 0;
                     }
 
                     string result = await _inventoryRepository.UpdateInventory(inventoryDetails[i]);
@@ -1351,6 +1351,54 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //Create Inventory From Grin Data
+        [HttpPost]
+        public async Task<IActionResult> CreateInventoryFromGrin([FromBody] InventoryGrinDtoPost inventoryDto)
+        {
+            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+
+            try
+            {
+                if (inventoryDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Inventory object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Inventory object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Inventory object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Inventory object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var createInvetory = _mapper.Map<Inventory>(inventoryDto);
+                createInvetory.IsStockAvailable = true;
+                _inventoryRepository.CreateInventory(createInvetory);
+                _inventoryRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inventory Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPut]
         public async Task<IActionResult> UpdateInventory(int id, [FromBody] InventoryDtoUpdate inventoryDtoUpdate)
         {

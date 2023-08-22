@@ -25,17 +25,18 @@ namespace Tips.Warehouse.Api.Controllers
 
         private ILocationTransferRepository _locationTransferRepository;
         private IInventoryRepository _inventoryRepository;
-
+        private IInventoryTranctionRepository _inventoryTranctionRepository;
         private IMapper _mapper;
         private ILoggerManager _logger;
         private object _context;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        public LocationTransferController(IInventoryRepository inventoryRepository,ILocationTransferRepository locationTransferRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        public LocationTransferController(IInventoryTranctionRepository inventoryTranctionRepository,IInventoryRepository inventoryRepository,ILocationTransferRepository locationTransferRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _locationTransferRepository = locationTransferRepository;
             _mapper = mapper;
             _inventoryRepository = inventoryRepository;
+            _inventoryTranctionRepository = inventoryTranctionRepository;
             _logger = logger;
             _httpClient = httpClient;
             _config = config;
@@ -260,6 +261,7 @@ namespace Tips.Warehouse.Api.Controllers
                 dynamic itemData = JsonConvert.DeserializeObject(itemDetail);
                 dynamic itemObject = itemData.data;
 
+                //Add Inventory table
                 var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber);
                 if (inventoryDetails != null)
                 {
@@ -321,6 +323,75 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = " Inventory hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+
+                //Add InventoryTranction table
+                var inventoryTranctionDetails = await _inventoryTranctionRepository.GetInventoryTranctionDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber);
+                if (inventoryTranctionDetails != null)
+                {
+                    foreach (var inventoryTranctionItem in inventoryTranctionDetails)
+                    {
+                        if (transferQty >= inventoryTranctionItem.Issued_Quantity)
+                        {
+                            inventoryTranctionItem.PartNumber = toPartNumber;
+                            inventoryTranctionItem.ProjectNumber = toProjectNumber;
+                            inventoryTranctionItem.MftrPartNumber = toPartNumber;
+                            inventoryTranctionItem.Description = itemObject.description;
+                            inventoryTranctionItem.UOM = itemObject.uom;
+                            inventoryTranctionItem.Warehouse = toWarehouse;
+                            inventoryTranctionItem.From_Location = fromLocation;
+                            inventoryTranctionItem.TO_Location = toLocation;
+                            inventoryTranctionItem.PartType = itemObject.itemType;
+                            inventoryTranctionItem.ReferenceID = Convert.ToString(createLocationTransfer.Id);
+                            inventoryTranctionItem.ReferenceIDFrom = "LocationTransfer";
+                            await _inventoryTranctionRepository.UpdateInventoryTraction(inventoryTranctionItem);
+                            _inventoryTranctionRepository.SaveAsync();
+                            transferQty -= inventoryTranctionItem.Issued_Quantity;
+                        }
+                        else
+                        {
+
+                            inventoryTranctionItem.Issued_Quantity -= transferQty;
+                            await _inventoryTranctionRepository.UpdateInventoryTraction(inventoryTranctionItem);
+
+
+                            InventoryTranction inventoryTranctionPost = new InventoryTranction();
+                            inventoryTranctionPost.PartNumber = toPartNumber;
+                            inventoryTranctionPost.MftrPartNumber = toPartNumber;
+                            inventoryTranctionPost.ProjectNumber = toProjectNumber;
+                            inventoryTranctionPost.Description = itemObject.description;
+                            inventoryTranctionPost.Issued_Quantity = transferQty;
+                            inventoryTranctionPost.UOM = itemObject?.uom;
+                            inventoryTranctionPost.GrinMaterialType = "";
+                            inventoryTranctionPost.shopOrderNo = "";
+                            inventoryTranctionPost.Unit = itemObject?.unit;
+                            inventoryTranctionPost.GrinNo = "";
+                            inventoryTranctionPost.GrinPartId = 0;
+                            inventoryTranctionPost.IsStockAvailable = true;
+                            inventoryTranctionPost.Warehouse = toWarehouse;
+                            inventoryTranctionPost.From_Location = fromLocation;
+                            inventoryTranctionPost.TO_Location = toLocation;
+                            inventoryTranctionPost.PartType = itemObject.itemType;
+                            inventoryTranctionPost.ReferenceID = Convert.ToString(createLocationTransfer.Id);
+                            inventoryTranctionPost.ReferenceIDFrom = "LocationTransfer";
+                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost);
+                            transferQty = 0;
+
+                            _inventoryTranctionRepository.SaveAsync();
+                        }
+                        if (transferQty <= 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " InventoryTranction hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);

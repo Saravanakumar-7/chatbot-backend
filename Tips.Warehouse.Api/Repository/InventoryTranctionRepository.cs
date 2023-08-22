@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -28,6 +29,57 @@ namespace Tips.Warehouse.Api.Repository
             Delete(inventoryTranction);
             string result = $"NaterialIssue details of {inventoryTranction.Id} is deleted successfully!";
             return result;
+        }
+        public async Task<IEnumerable<InventoryTranction>> GetInventoryTranctionDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse, string projectNumber)
+
+        {
+            var inventoryInventoryTranctionDetailsByItemAndLoc = await _tipsWarehouseDbContext.InventoryTranctions
+                .Where(x => x.PartNumber == ItemNumber && x.ProjectNumber == projectNumber && x.From_Location == Location && x.Warehouse == Warehouse && x.IsStockAvailable == true).ToListAsync();
+
+            return inventoryInventoryTranctionDetailsByItemAndLoc;
+        }
+        //Get InventoryTranction WIP from location and warehouse
+        public async Task<List<InventoryTranction>> GetWIPInventoryTranctionDetailsByItemNo(string ItemNumber, string ShopOrderNumber)
+        {
+            var inventoryTranctionDetail = await _tipsWarehouseDbContext.InventoryTranctions.Where(x => x.PartNumber == ItemNumber
+            && x.IsStockAvailable == true && x.From_Location == "WIP" && x.Warehouse == "WIP" && x.shopOrderNo == ShopOrderNumber)
+                          .ToListAsync();
+            return inventoryTranctionDetail;
+        }
+        public async Task<List<InventoryTranctionBalanceQtyMaterialIssue>> GetInventoryTranctionStockByItemAndProjectNo(string itemNumber, string projectNumber)
+        {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
+
+
+            List<InventoryTranctionBalanceQtyMaterialIssue> result = await _tipsWarehouseDbContext.InventoryTranctions
+                   .Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber && x.IsStockAvailable == true && !skipWareHouse.Contains(x.Warehouse))
+                   .GroupBy(l => new { l.PartNumber, l.ProjectNumber })
+                   .Select(group => new InventoryTranctionBalanceQtyMaterialIssue
+                   {
+                       PartNumber = group.Key.PartNumber,
+                       Issued_Quantity = group.Sum(c => c.Issued_Quantity),
+                       ProjectNumber = group.Key.ProjectNumber
+                   }).ToListAsync();
+
+            return result;
+        }
+        public async Task<InventoryTranction> GetInventoryTranctionDetailsByItemNoandProjectNoandShopOrderNo(string ItemNumber, string ProjectNumber, string shopOrderNo)
+        {
+            var inventoryTranctionDetailsById = await _tipsWarehouseDbContext.InventoryTranctions.Where(x => x.PartNumber == ItemNumber && x.ProjectNumber == ProjectNumber && x.shopOrderNo == shopOrderNo)
+
+                          .FirstOrDefaultAsync();
+
+            return inventoryTranctionDetailsById;
+        }
+
+        public async Task<List<InventoryTranction>> GetInventoryTranctionDetailsByItemNoandProjectNo(string ItemNumber, string ProjectNo)
+        {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
+            var inventoryTranctionDetail = await _tipsWarehouseDbContext.InventoryTranctions.Where(x => x.PartNumber == ItemNumber
+            && x.IsStockAvailable == true && x.ProjectNumber == ProjectNo && !skipWareHouse.Contains(x.Warehouse))
+                          .ToListAsync();
+
+            return inventoryTranctionDetail;
         }
 
         public async Task<PagedList<InventoryTranction>> GetAllInventoryTranction([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)

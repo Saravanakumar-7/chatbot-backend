@@ -182,8 +182,8 @@ namespace Tips.Production.Api.Controllers
                         var projectnumber = groupedMaterialIssueItemDtoList[i].ProjectNumber;
                         var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
                               "GetInventoryStockByItemAndProjectNo?", "itemNumber=", partnumber, "&projectNumber=", projectnumber));
-                            if (inventoryObjectResult != null && inventoryObjectResult.StatusCode == HttpStatusCode.OK)
-                            { 
+                        if (inventoryObjectResult != null && inventoryObjectResult.StatusCode == HttpStatusCode.OK)
+                        {
                             var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                             dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                             JArray inventoryArray = inventoryObjectData.data; // Use JArray instead of 
@@ -196,9 +196,9 @@ namespace Tips.Production.Api.Controllers
                                     decimal itemBalanceQty = Convert.ToDecimal(item["balanceQty"]);
                                     balanceQuantity += itemBalanceQty;
                                 }
-                            } 
                             }
-                        
+                        }
+
                         groupedMaterialIssueItemDtoList[i].AvailableQty = balanceQuantity;
 
                         groupedMaterialIssueItemList.Add(groupedMaterialIssueItemDtoList[i]);
@@ -406,7 +406,7 @@ namespace Tips.Production.Api.Controllers
                         var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnMaterialIssue"), data);
 
                         // Update the remaining properties of the material issue item
-                       
+
                         // ... Update other properties as needed
 
                         //var matertialIssueItem = _mapper.Map(allMaterialIssueItems, updatedItem);

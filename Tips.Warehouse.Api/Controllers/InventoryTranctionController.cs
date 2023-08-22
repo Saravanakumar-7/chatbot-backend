@@ -18,12 +18,14 @@ namespace Tips.Warehouse.Api.Controllers
     public class InventoryTranctionController : ControllerBase
     {       
             private IInventoryTranctionRepository _inventoryTranctionRepository;
+            private IMaterialIssueTrackerRepository _materialIssueTrackerRepository;
             private ILoggerManager _logger;
             private IMapper _mapper;
 
-            public InventoryTranctionController(IInventoryTranctionRepository inventoryTranctionRepository, ILoggerManager logger, IMapper mapper)
+            public InventoryTranctionController(IMaterialIssueTrackerRepository materialIssueTrackerRepository,IInventoryTranctionRepository inventoryTranctionRepository, ILoggerManager logger, IMapper mapper)
             {
                 _inventoryTranctionRepository = inventoryTranctionRepository;
+                _materialIssueTrackerRepository = materialIssueTrackerRepository;
                 _logger = logger;
                 _mapper = mapper;
             }
@@ -179,11 +181,10 @@ namespace Tips.Warehouse.Api.Controllers
                     _inventoryTranctionRepository.CreateInventoryTransaction(createInventoryTranction);
                     _inventoryTranctionRepository.SaveAsync();
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "MaterialIssue Successfully Created";
+                    serviceResponse.Message = "InventoryTranction Successfully Created";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-
-                    return Created("GetCommodityById", serviceResponse);
+                    return Ok( serviceResponse);
                 }
                 catch (Exception ex)
                 {
@@ -191,13 +192,98 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.Message = "Internal Server Error!";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                    _logger.LogError($"Something went wrong inside CreateInventoryTranction action: {ex.Message}");
                     return StatusCode(500, serviceResponse);
                 }
             }
 
-            // PUT api/<InventoryTranctionController>/5
-            [HttpPut]
+        [HttpGet]
+        public async Task<IActionResult> GetInventoryTranctionStockByItemAndProjectNo(string itemNumber, string projectNumber)
+        {
+            ServiceResponse<List<InventoryTranctionBalanceQtyMaterialIssue>> serviceResponse = new ServiceResponse<List<InventoryTranctionBalanceQtyMaterialIssue>>();
+            try
+            {
+                var InventoryTranctionDetails = await _inventoryTranctionRepository.GetInventoryTranctionStockByItemAndProjectNo(itemNumber, projectNumber);
+                if (InventoryTranctionDetails.Count() == 0)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventoryTranction with itemNumber and ProjectNumber: {itemNumber} {projectNumber}, is invalid";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"InventoryTranction with itemNumber and ProjectNumber: {itemNumber} {projectNumber}, is invalid");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned InventoryTranction with Itemnumber and ProjectNumber: {itemNumber} {projectNumber}");
+                    var result = _mapper.Map<List<InventoryTranctionBalanceQtyMaterialIssue>>(InventoryTranctionDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned InventoryTranction with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventoryTranction action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Invalid inventoryTranction{ex.Message},{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        //Create InventoryTranction From Grin Data
+        [HttpPost]
+        public IActionResult CreateInventoryTranctionFromGrin([FromBody] InventoryTranctionGrinDtoPost inventoryTranctionDto)
+        {
+            ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
+
+            try
+            {
+                if (inventoryTranctionDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "InventoryTranction object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("InventoryTranction object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid InventoryTranction object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid InventoryTranction object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var createInventoryTranction = _mapper.Map<InventoryTranction>(inventoryTranctionDto);
+
+                _inventoryTranctionRepository.CreateInventoryTransaction(createInventoryTranction);
+                _inventoryTranctionRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "InventoryTranction Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside CreateInventoryTranction action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // PUT api/<InventoryTranctionController>/5
+        [HttpPut]
             public async Task<IActionResult> UpdateInventoryTranction(int id, [FromBody] InventoryTranctionDtoUpdate inventoryTranctionDtoUpdate)
             {
                 ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
@@ -291,6 +377,133 @@ namespace Tips.Warehouse.Api.Controllers
                     return StatusCode(500, serviceResponse);
                 }
             }
-        
+
+        //update inventoryTranction on shoporder confirmation 
+        [HttpPost]
+        public async Task<IActionResult> UpdateInventoryTranctionOnShopOrderConfirmation(List<InventoryTranctionDtoForShopOrderConfirmation> dtoForShopOrderConfirmation)
+        {
+            ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
+            try
+            {
+                foreach (var item in dtoForShopOrderConfirmation)
+                {
+
+                    var inventoryTranctionDetails = await _inventoryTranctionRepository
+                        .GetWIPInventoryTranctionDetailsByItemNo(item.PartNumber, item.ShopOrderNumber);
+
+                    if (inventoryTranctionDetails == null || inventoryTranctionDetails.Count == 0)
+                    {
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"InventoryTranction Details hasn't been found";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        _logger.LogError($"InventoryTranction with itemNumber: {item.PartNumber}, is not available");
+                        return StatusCode(500, serviceResponse);
+                    }
+
+                    decimal producedQty = item.NewConvertedToFgQty; // value get from payload
+
+                    //decimal revisionNo = await _releaseProductBomRepository.GetLatestProductionBomByItemNumber(fgPartNumber);
+
+                    //var bom = await _repository.EnggBomRepository.GetLatestEnggBomVersionDetailByItemNumber(fgPartNumber, revisionNo);
+
+                    //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"], "GetLatestEnggBomVersionDetailByItemNumber?", "&fgPartNumber=", itemNumber));
+
+                    //var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                    //dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                    //dynamic itemMasterObject = itemMasterObjectData.data;
+
+                    //decimal producedQty = item.WipConfirmedQty * ;
+                    for (int i = 0; i < inventoryTranctionDetails.Count; i++)
+                    {
+                        decimal balanceqty = inventoryTranctionDetails[i].Issued_Quantity;
+                        decimal lotNoWiseProducedQty = 0;
+                        if (inventoryTranctionDetails[i].Issued_Quantity <= producedQty)
+                        {
+                            inventoryTranctionDetails[i].Issued_Quantity = 0;
+                            inventoryTranctionDetails[i].IsStockAvailable = false;
+                            lotNoWiseProducedQty = balanceqty;
+                            producedQty -= balanceqty;
+                            balanceqty = 0;
+                        }
+                        else
+                        {
+                            inventoryTranctionDetails[i].Issued_Quantity -= producedQty;
+                            lotNoWiseProducedQty = producedQty;
+
+                            producedQty = 0;
+                        }
+
+                        string result = await _inventoryTranctionRepository.UpdateInventoryTraction(inventoryTranctionDetails[i]);
+
+                        /*********************************** Update data to Material Issue Tracker *************************/
+                        await UpdateDataToMaterialIssueTracker(item, inventoryTranctionDetails[i]);
+                        /*********************************** End of Add data to Material Issue Tracker *************************/
+
+                        if (producedQty <= 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                _inventoryTranctionRepository.SaveAsync();
+                _materialIssueTrackerRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventoryTranction action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        private async Task UpdateDataToMaterialIssueTracker(InventoryTranctionDtoForShopOrderConfirmation item, InventoryTranction inventoryTranctionDetail)
+        {
+            // Retrieve the existing entry from the repository based on the ShopOrderNumber, PartNumber, and LotNumber
+
+            List<ShopOrderMaterialIssueTracker> materialIssueTrackerList = await _materialIssueTrackerRepository
+                                .GetDetailsByShopOrderNOItemNoLotNo(inventoryTranctionDetail.PartNumber, inventoryTranctionDetail.shopOrderNo, inventoryTranctionDetail.LotNumber);
+
+            if (materialIssueTrackerList != null || materialIssueTrackerList.Count > 0)
+            {
+                decimal newConvertedToFgQty = item.NewConvertedToFgQty;
+
+                foreach (var materialIssueTrack in materialIssueTrackerList)
+                {
+                    decimal balanceqtyToConvert = (materialIssueTrack.IssuedQty - materialIssueTrack.ConvertedToFgQty);
+                    if (balanceqtyToConvert <= newConvertedToFgQty)
+                    {
+                        materialIssueTrack.ConvertedToFgQty += balanceqtyToConvert;
+                        newConvertedToFgQty -= balanceqtyToConvert;
+                        balanceqtyToConvert = 0;
+                    }
+                    else
+                    {
+                        materialIssueTrack.ConvertedToFgQty += newConvertedToFgQty;
+                        balanceqtyToConvert -= newConvertedToFgQty;
+                        newConvertedToFgQty = 0;
+                    }
+
+                    await _materialIssueTrackerRepository.UpdateMaterialIssueTracker(materialIssueTrack);
+                    if (newConvertedToFgQty <= 0)
+                    {
+                        break;
+                    }
+                }
+
+            }
+        }
+
     }
 }

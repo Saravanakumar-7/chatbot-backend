@@ -711,7 +711,7 @@ namespace Tips.Grin.Api.Controllers
                             var json = JsonConvert.SerializeObject(grinInventoryDto);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), data);
 
                         }
                     }
@@ -747,7 +747,7 @@ namespace Tips.Grin.Api.Controllers
                             var json = JsonConvert.SerializeObject(grinInventoryTranctionDto);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data);
+                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranctionFromGrin"), data);
 
                         }
                     }

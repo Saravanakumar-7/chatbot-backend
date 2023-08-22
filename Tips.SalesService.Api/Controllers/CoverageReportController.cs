@@ -13,6 +13,8 @@ using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.DTOs;
 using Tips.SalesService.Api.Repository;
+using Newtonsoft.Json.Linq;
+
 
 
 namespace Tips.SalesService.Api.Controllers
@@ -65,10 +67,19 @@ namespace Tips.SalesService.Api.Controllers
                         FGOrTGPartNumber = salesOrderItem.FGItemNumber
                     };
 
-                    foreach (var inventory in inventoryObject)
-                    {
-                        coverageReport.Stock = coverageReport.Stock + inventoryObject.balance_Quantity;
-                    }
+                    //foreach (var inventory in inventoryObject)
+                    //{
+                    //    coverageReport.Stock = coverageReport.Stock + inventoryObject.balance_Quantity;
+
+                    //}
+                    //foreach (var inventory in inventoryObject)
+                    //{
+                        if (inventoryObject.balance_Quantity != null)
+                        {
+                            decimal balanceQuantityValue = (decimal)inventoryObject.balance_Quantity;
+                            coverageReport.Stock = (coverageReport.Stock ?? 0) + balanceQuantityValue;
+                        }
+                    //}
 
                     coverageReport.OpenSOQty = salesOrderItem.Balance_Qty - coverageReport.Stock;
 
@@ -84,7 +95,11 @@ namespace Tips.SalesService.Api.Controllers
                         {
                             foreach (var purchase in purchaseObject)
                             {
-                                coverageReport.OpenPoQty = coverageReport.OpenPoQty + purchase.balanceQty;
+                                if (purchase.balanceQty != null)
+                                {
+                                    decimal balanceQuantityValue = (decimal)purchase.balanceQty;
+                                    coverageReport.OpenPoQty = (coverageReport.OpenPoQty ?? 0) + balanceQuantityValue;
+                                }
                             }
                         }
                     }

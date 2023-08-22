@@ -145,15 +145,15 @@ namespace Tips.SalesService.Api.Controllers
                             SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
                             salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
                             string itemNumber = salesOrderItemsDtos.ItemNumber;
-                            if (inventoryItemWithStockDetails.ContainsKey(itemNumber))
-                            {
-                                salesOrderItemsDtos.AvailableStock = inventoryItemWithStockDetails[itemNumber];
-                            }
-                            else
-                            {
-                                salesOrderItemsDtos.AvailableStock = 0;
-                            }
-                            
+                            //if (inventoryItemWithStockDetails.ContainsKey(itemNumber))
+                            //{
+                            //    salesOrderItemsDtos.AvailableStock = inventoryItemWithStockDetails[itemNumber];
+                            //}
+                            //else
+                            //{
+                            //    salesOrderItemsDtos.AvailableStock = 0;
+                            //}
+
 
                             salesOrderItemsDtoList.Add(salesOrderItemsDtos);
                         }
