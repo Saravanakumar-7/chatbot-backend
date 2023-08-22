@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using AutoMapper;
 using Contracts;
 using Entities;
@@ -123,22 +124,33 @@ namespace Tips.SalesService.Api.Controllers
                         }
                     }
                     string salesOrderNo = salesOrderDto.SalesOrderNumber;
-                    SalesOrderStatus salesOrderStatus = salesOrderDto.SalesOrderStatus;
-
-
+                    SalesOrderStatus salesOrderStatus1 = salesOrderDto.SalesOrderStatus;
+                    //int salesOrderStatus = 1;
+                    int salesOrderStatus = (int)salesOrderStatus1;
 
                     List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x=> x.ItemNumber).Distinct().ToList();
 
+                     
                     if (itemNumberList != null)
                     {
                         var json = JsonConvert.SerializeObject(itemNumberList);
                         var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        var inventoryQtyResponse = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"],
-                            "GetAvailableStockQtyForSalesOrderItems?salesOrderNo=",salesOrderNo,"&salesOrderStatus=", salesOrderStatus), data);
+                        var inventoryQtyResponse = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetAvailableStockQtyForSalesOrderItems?", "salesOrderNo=", salesOrderNo, "&salesOrderStatus=", salesOrderStatus), data);
+
+                        //var json = JsonConvert.SerializeObject(itemNumberList);
+                        //var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                        //string apiUrl = $"{_config["InventoryAPI"]}GetAvailableStockQtyForSalesOrderItems?salesOrderNo={salesOrderNo}&salesOrderStatus={salesOrderStatus}";
+
+                        //var inventoryQtyResponse = await _httpClient.PostAsync(apiUrl, data);
 
                         var inventoryItemQtyDetails = await inventoryQtyResponse.Content.ReadAsStringAsync();
-                        dynamic inventoryTranctionObjectData = JsonConvert.DeserializeObject(inventoryItemQtyDetails);
-                        Dictionary<string, decimal> inventoryItemWithStockDetails = (Dictionary<string,decimal>)inventoryTranctionObjectData.data;
+                        //dynamic inventoryTranctionObjectData = JsonConvert.DeserializeObject(inventoryItemQtyDetails);
+
+                        Dictionary<string, decimal> inventoryItemWithStockDetails = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(inventoryItemQtyDetails);
+
+
+                        //Dictionary<string, decimal> inventoryItemWithStockDetails = (Dictionary<string, decimal>)inventoryTranctionObjectData;
 
                         foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
                         {
@@ -153,14 +165,14 @@ namespace Tips.SalesService.Api.Controllers
                             {
                                 salesOrderItemsDtos.AvailableStock = 0;
                             }
-                            
+
 
                             salesOrderItemsDtoList.Add(salesOrderItemsDtos);
                         }
                     }
 
 
-                    
+
 
                     salesOrderDto.SalesOrdersItems = salesOrderItemsDtoList;
                     salesOrderDto.SalesOrderAdditionalCharges = salesAdditionalChargesList;

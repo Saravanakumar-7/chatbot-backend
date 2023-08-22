@@ -690,6 +690,8 @@ namespace Tips.Grin.Api.Controllers
                     {
                         foreach (var project in parts.ProjectNumbers)
                         {
+                            //var lotNumber = await _grinPartsRepository.GetGrinPartsById(parts.Id);
+
                             GrinInventoryDto grinInventoryDto = new GrinInventoryDto();
                             grinInventoryDto.PartNumber = parts.ItemNumber;
                             grinInventoryDto.LotNumber = parts.LotNumber;
@@ -700,7 +702,7 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryDto.UOM = parts.UOM; 
                             grinInventoryDto.Warehouse = "GRIN";
                             grinInventoryDto.Location = "GRIN";
-                            grinInventoryDto.GrinNo = grinNo;
+                            grinInventoryDto.GrinNo = grinNo; 
                             grinInventoryDto.GrinPartId = parts.Id;
                             grinInventoryDto.PartType = parts.ItemType;  //We need to check this
                             grinInventoryDto.ReferenceID = Convert.ToString(parts.Id);
@@ -724,6 +726,8 @@ namespace Tips.Grin.Api.Controllers
                     {
                         foreach (var project in parts.ProjectNumbers)
                         {
+                            //var lotNumber = await _grinPartsRepository.GetGrinPartsById(parts.Id);
+
                             GrinInventoryTranctionDto grinInventoryTranctionDto = new GrinInventoryTranctionDto();
                             grinInventoryTranctionDto.PartNumber = parts.ItemNumber;
                             grinInventoryTranctionDto.LotNumber = parts.LotNumber;

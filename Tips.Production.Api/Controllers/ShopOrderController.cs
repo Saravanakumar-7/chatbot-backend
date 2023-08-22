@@ -719,7 +719,8 @@ namespace Tips.Production.Api.Controllers
         }
 
 
-        [HttpGet("salesOrderNo")]
+        //[HttpGet("salesOrderNo")]
+        [HttpGet]
         public async Task<IActionResult> GetShopOrderNoListBySalesOrderNo(string salesOrderNo,string itemNumber)
         {
             ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
