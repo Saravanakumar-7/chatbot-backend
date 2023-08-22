@@ -381,7 +381,14 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var shopOrderNumberListString = await shopOrderNumberListResponse.Content.ReadAsStringAsync();
                 dynamic shopOrderNumberListData = JsonConvert.DeserializeObject(shopOrderNumberListString);
-                List<string> shopOrderNumberList = (List<string>)shopOrderNumberListData.data;
+
+                List<string> shopOrderNumberList = new List<string>();
+                foreach (var item in shopOrderNumberListData)
+                {
+                    shopOrderNumberList.Add(item.ToString());
+                }
+
+                //List<string> shopOrderNumberList = (List<string>)shopOrderNumberListData.data;
                 if (salesOrderStatus == 0) // Retail SO
                 {
                     decimal itemQty = await _inventoryRepository.GetStockQtyForRetailSalesOrderItem(itemNo);
