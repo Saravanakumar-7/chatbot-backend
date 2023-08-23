@@ -94,6 +94,18 @@ namespace Repository
             return allActiveEnggBom;
         }
 
+        //get latest revisionno and isbomrelease
+        public async Task<EnggBom> GetAllLatestRevAndIsReleaseEnggBom(string itemNumber)
+        {
+            var getalllatestReleaseEnggBom = await FindByCondition(x => x.IsActive == true && x.IsEnggBomRelease == true)
+             .OrderByDescending(bom => bom.RevisionNumber)
+             .Where(x=>x.ItemNumber == itemNumber)
+            .Include(t => t.EnggChildItems)
+            .ThenInclude(t => t.EnggAlternates)
+            .Include(t => t.NREConsumable)
+            .FirstOrDefaultAsync();
+            return getalllatestReleaseEnggBom;
+        }
         public async Task<PagedList<EnggBom>> GetAllEnggBOM([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
@@ -693,7 +705,8 @@ namespace Repository
     .MaxAsync(x => x.ReleaseVersion);
 
             return maxRevisionNumber;
-        } 
+        }
+         
 
         public async Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber)
         {

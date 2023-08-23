@@ -443,10 +443,21 @@ namespace Tips.Warehouse.Api.Repository
             return inventoryDetail;
         }
 
+        public async Task<decimal> GetInventoryBySAItemNo(string itemNumber)
+        {
+            var inventoryDetail = await _tipsWarehouseDbContext.Inventory
+                .Where(x => x.PartNumber == itemNumber && x.IsStockAvailable == true && x.PartType == PartType.SA)
+                .SumAsync(x => x.Balance_Quantity);
+            return inventoryDetail;
+        }
+
+
         public async Task<ConsumptionInventoryDto> GetConsumptionInventoryByItemNo(string itemNumber)
         {
+            var partTypes = new PartType[] { PartType.FG, PartType.TG};
+
             var inventoryDetails = await _tipsWarehouseDbContext.Inventory
-            .Where(x => x.PartNumber == itemNumber && x.IsStockAvailable == true)
+            .Where(x => x.PartNumber == itemNumber && x.IsStockAvailable == true && x.Balance_Quantity>0 && partTypes.Contains(x.PartType))
             .GroupBy(x => x.PartNumber)  
             .Select(group => new ConsumptionInventoryDto
             {

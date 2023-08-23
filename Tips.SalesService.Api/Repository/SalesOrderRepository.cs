@@ -440,18 +440,40 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<List<SalesOrderFGandBalanceQty>> GetAllSalesOrderFGOrTGItemDetails()
         {
+            var openSalesOrderQty = _tipsSalesServiceDbContexts.SalesOrders
+    .Where(so => (so.SalesOrderStatus == SalesOrderStatus.BuildToPrint || so.SalesOrderStatus == SalesOrderStatus.Forecast) &&
+                 (so.SOStatus == OrderStatus.Open || so.SOStatus == OrderStatus.PartiallyClosed) &&
+                 so.IsShortClosed == false &&
+                 so.ConfirmStatus == true && so.ApproveStatus == true)
+    .Join(
+        _tipsSalesServiceDbContexts.SalesOrdersItems,
+        order => order.Id,
+        item => item.SalesOrderId,
+        (order, item) => new
+        {
+            Order = order,
+            Item = item
+        })
+    .Where(x => 
+                (x.Item.StatusEnum == OrderStatus.Open || x.Item.StatusEnum == OrderStatus.PartiallyClosed) &&
+                x.Item.BalanceQty > 0)
+    .GroupBy(x => new { x.Item.ItemNumber })
+    .Select(group => new SalesOrderFGandBalanceQty
+    {
+        FGItemNumber = group.Key.ItemNumber,
+        Balance_Qty = group.Sum(x => x.Item.BalanceQty)
+    }).ToList();
+            //List<SalesOrderFGandBalanceQty> result = _tipsSalesServiceDbContexts.SalesOrdersItems
+            //      .Where(x => x.StatusEnum != OrderStatus.Closed )
+            //      .GroupBy(l => new { l.ItemNumber })
+            //      .Select(group => new SalesOrderFGandBalanceQty
+            //      {
+            //          FGItemNumber = group.Key.ItemNumber,
+            //          Balance_Qty = group.Sum(c => c.BalanceQty)
+            //      }).ToList();
 
-            List<SalesOrderFGandBalanceQty> result = _tipsSalesServiceDbContexts.SalesOrdersItems
-                  .Where(x => x.StatusEnum != OrderStatus.Closed)
-                  .GroupBy(l => new { l.ItemNumber })
-                  .Select(group => new SalesOrderFGandBalanceQty
-                  {
-                      FGItemNumber = group.Key.ItemNumber,
-                      Balance_Qty = group.Sum(c => c.BalanceQty)
-                  }).ToList();
+            return openSalesOrderQty;
 
-            return result;
-             
         }
         //update shoporderQty
         public async Task<IEnumerable<SalesOrderItems>> UpdateShopOrderBySalesOrderNoandItemNo(string salesOrderNumber, string itemNumber,string projectNumber)

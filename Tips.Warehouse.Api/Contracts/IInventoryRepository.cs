@@ -59,6 +59,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<decimal> GetStockQtyForRetailSalesOrderItem(string ItemNumber);
         Task<Inventory> GetInventoryDetailsByItemNoandProjectNoandShopOrderNo(string ItemNumber, string ProjectNumber, string shopOrderNo);
 
+        Task<decimal> GetInventoryBySAItemNo(string itemNumber);
+
 
     }
 }
