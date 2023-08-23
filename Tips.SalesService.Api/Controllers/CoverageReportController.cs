@@ -231,6 +231,7 @@ namespace Tips.SalesService.Api.Controllers
                         .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
                     if (openFGCoverageDetails != null)
                     {
+                        // Child Item Required Qty from BOM
                         List<CoverageReportChildItemReqQtyDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBom(openFGCoverageDetails);
 
                         if (childItemReqQtyDtos != null)

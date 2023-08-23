@@ -2356,7 +2356,7 @@ namespace Tips.Master.Api.Controllers
                         await ChildItemRequiredQtyForCoverage(bomCoverageList, item.ItemNumber,item.BalanceToOrder);
                     }
 
-                    var groupedData = bomCoverageList
+                    var itemsRequiredQtyGrouped = bomCoverageList
                         .GroupBy(item => item.ItemNumber)
                         .Select(group => new BomCoverageReportChildItemReqQtyDto
                         {
@@ -2366,7 +2366,7 @@ namespace Tips.Master.Api.Controllers
                         })
                         .ToList();
                 }
-                serviceResponse.Data = bomCoverageList;
+                serviceResponse.Data = itemsRequiredQtyGrouped;
                 serviceResponse.Message = "Returned all ChildItemRequiredQtys";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
