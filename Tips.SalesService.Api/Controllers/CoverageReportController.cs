@@ -234,7 +234,7 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
                         var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
-                        var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetItemPartTypeByItemNumber?"), openFGCoverageDetailsString);
+                        var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsByFGItemNumber"), openFGCoverageDetailsString);
 
                         var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
                         dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
