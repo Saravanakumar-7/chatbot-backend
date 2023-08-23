@@ -15,7 +15,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
 
 namespace Repository
 {
@@ -53,16 +53,16 @@ namespace Repository
         }
 
         public async Task<int?> CreateEnggBom(EnggBom enggBom)
-        { 
+        {
             enggBom.CreatedBy = _createdBy;
             enggBom.CreatedOn = DateTime.Now;
             enggBom.LastModifiedBy = _createdBy;
             enggBom.LastModifiedOn = DateTime.Now;
-            enggBom.Unit = _unitname; 
+            enggBom.Unit = _unitname;
             var result = await Create(enggBom);
             return result.BOMId;
         }
-         
+
 
         public async Task<string> DeleteEnggBom(EnggBom enggBom)
         {
@@ -99,7 +99,7 @@ namespace Repository
         {
             var getalllatestReleaseEnggBom = await FindByCondition(x => x.IsActive == true && x.IsEnggBomRelease == true)
              .OrderByDescending(bom => bom.RevisionNumber)
-             .Where(x=>x.ItemNumber == itemNumber)
+             .Where(x => x.ItemNumber == itemNumber)
             .Include(t => t.EnggChildItems)
             .ThenInclude(t => t.EnggAlternates)
             .Include(t => t.NREConsumable)
@@ -113,8 +113,8 @@ namespace Repository
                           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
                              /*inv.ItemType.Equals(int.Parse(searchParams.SearchValue)) ||*/ inv.ItemDescription.Contains(searchParams.SearchValue))))
                                 .Include(t => t.EnggChildItems)
-                               .ThenInclude(t => t.EnggAlternates) 
-                               .Include(t => t.NREConsumable);  
+                               .ThenInclude(t => t.EnggAlternates)
+                               .Include(t => t.NREConsumable);
 
             return PagedList<EnggBom>.ToPagedList(enggBomDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
@@ -129,15 +129,15 @@ namespace Repository
             return getAllEnggBomItems;
 
         }
-         
+
         public async Task<List<EnggBomFGItemNumberWithQtyDto>> GetFGBomItemsChildDetails(List<string> itemNumberList)
         {
             var itemIdNoList = await TipsMasterDbContext.EnggBoms
                 .Where(im => itemNumberList.Contains(im.ItemNumber) && im.IsEnggBomRelease == true)
-                .Select(x => new { x.ItemNumber,x.BOMId,x.ItemType }).Distinct().ToListAsync();
+                .Select(x => new { x.ItemNumber, x.BOMId, x.ItemType }).Distinct().ToListAsync();
 
-            List<int> itemNos = itemIdNoList.Where(x=>x.ItemType == PartType.FG).Select(x=>x.BOMId).Distinct().ToList();
-                        
+            List<int> itemNos = itemIdNoList.Where(x => x.ItemType == PartType.FG).Select(x => x.BOMId).Distinct().ToList();
+
             List<EnggBomFGItemNumberWithQtyDto> result = _tipsMasterDbContext.EnggChildItems
                     .Where(x => itemNos.Contains(x.EnggBomId))
                     .GroupBy(l => new { l.ItemNumber, l.Description })
@@ -153,17 +153,17 @@ namespace Repository
 
         public async Task<IEnumerable<EnggBomFGItemNumber>> GetAllEnggBomFGItemNoListByItemNumber(string itemNumber)
         {
-            List<int>bomDetails = await _tipsMasterDbContext.EnggChildItems
+            List<int> bomDetails = await _tipsMasterDbContext.EnggChildItems
                                 .Where(x => x.ItemNumber == itemNumber && x.PartType == PartType.SA || x.PartType == PartType.PurchasePart)
                                 .Select(x => x.EnggBomId).Distinct().ToListAsync();
 
             IEnumerable<EnggBomFGItemNumber> getAllBomGroupList = await _tipsMasterDbContext.EnggBoms
-                .Where(x => bomDetails.Contains(x.BOMId) )
+                .Where(x => bomDetails.Contains(x.BOMId))
                 .Select(c => new EnggBomFGItemNumber()
-                               { 
-                                   ItemNumber = c.ItemNumber,
-                                    Description = c.ItemDescription
-                                }) 
+                {
+                    ItemNumber = c.ItemNumber,
+                    Description = c.ItemDescription
+                })
                              .ToListAsync();
 
             return getAllBomGroupList;
@@ -209,7 +209,7 @@ namespace Repository
 
                 if (recursiveParentFgItemNumber != null)
                 {
-                     return recursiveParentFgItemNumber;
+                    return recursiveParentFgItemNumber;
                 }
             }
 
@@ -224,7 +224,7 @@ namespace Repository
             // Identify all the parent BOMs by checking which BOMs have this current item in their EnggChildItems.
             var parentBoms = await _tipsMasterDbContext.EnggBoms
                 .Include(b => b.EnggChildItems)
-                .Where(bom => bom.EnggChildItems.Any(child => child.ItemNumber == saItemNumber) && bom.IsActive ==true)
+                .Where(bom => bom.EnggChildItems.Any(child => child.ItemNumber == saItemNumber) && bom.IsActive == true)
                 .ToListAsync();
 
             foreach (var parentBom in parentBoms)
@@ -232,10 +232,10 @@ namespace Repository
                 // If the parent BOM's ItemType is FG, add it to the list.
                 if (parentBom.ItemType == PartType.FG)
                 {
-                    EnggBomFGItemNumber enggBomFGItemNumber =  new EnggBomFGItemNumber
+                    EnggBomFGItemNumber enggBomFGItemNumber = new EnggBomFGItemNumber
                     {
                         ItemNumber = parentBom.ItemNumber,
-                        Description = parentBom.ItemDescription 
+                        Description = parentBom.ItemDescription
                     };
                     fgParents.Add(enggBomFGItemNumber);
                 }
@@ -251,10 +251,10 @@ namespace Repository
             return fgParents;
         }
 
-      
+
         public async Task<IEnumerable<CoverageEnggChildDto>> GetEnggChildItemDetails(string ItemNumber)
         {
-             
+
 
             return null;
         }
@@ -316,13 +316,13 @@ namespace Repository
       )
       .Where(x => x.ItemType == PartType.FG)
       .Select(x => x.ItemNumber)
-      .ToListAsync(); 
+      .ToListAsync();
             return (IEnumerable<EnggBomFGItemNumber>)fgParentItemNumbers;
         }
 
         public async Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber)
         {
-            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber)                                             
+            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber)
                                 .Include(t => t.EnggChildItems)
                                 .ThenInclude(x => x.EnggAlternates)
                                 .Include(m => m.NREConsumable)
@@ -340,24 +340,24 @@ namespace Repository
 
             //return EnggBomDetailsbyId;
 
-                    var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms
-                   .Where(x => x.ItemNumber == fgPartNumber && x.RevisionNumber == revisionNo)
-                    .Select(x => new
-                    {
-                    EnggBom = x,
-                    ActiveEnggChildItems = x.EnggChildItems.Where(ec => ec.IsActive)
-                    })
-                    .FirstOrDefaultAsync();
+            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms
+           .Where(x => x.ItemNumber == fgPartNumber && x.RevisionNumber == revisionNo)
+            .Select(x => new
+            {
+                EnggBom = x,
+                ActiveEnggChildItems = x.EnggChildItems.Where(ec => ec.IsActive)
+            })
+            .FirstOrDefaultAsync();
 
-                    EnggBomDetailsbyId.EnggBom.EnggChildItems =EnggBomDetailsbyId.ActiveEnggChildItems.ToList();
+            EnggBomDetailsbyId.EnggBom.EnggChildItems = EnggBomDetailsbyId.ActiveEnggChildItems.ToList();
 
-                    return EnggBomDetailsbyId.EnggBom;
+            return EnggBomDetailsbyId.EnggBom;
 
         }
 
         public async Task<EnggBom> GetEnggBomById(int id)
         {
-            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.BOMId == id)                                                           
+            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.BOMId == id)
                                 .Include(m => m.NREConsumable)
                                 .Include(t => t.EnggChildItems)
                                 .ThenInclude(x => x.EnggAlternates)
@@ -390,22 +390,22 @@ namespace Repository
 
             var enggBomItemNumberList = enggBomDetails
            .Select(bom => new EnggBomItemRevisionList
-            {
-                ItemNumber = bom.ItemNumber,
-                RevisionNumber = bom.RevisionNumbers,
+           {
+               ItemNumber = bom.ItemNumber,
+               RevisionNumber = bom.RevisionNumbers,
                ItemDescription = bom.ItemDescription
            }).ToList();
 
             return enggBomItemNumberList;
         }
 
-        public async Task<EnggBom> ReleasedEnggBomByItemAndRevisionNumber(string itemNumber,decimal revisionNumber)
+        public async Task<EnggBom> ReleasedEnggBomByItemAndRevisionNumber(string itemNumber, decimal revisionNumber)
         {
             var releaseEnggBom = await _tipsMasterDbContext.EnggBoms
             .Where(x => x.ItemNumber == itemNumber && x.RevisionNumber == revisionNumber)
             .FirstOrDefaultAsync();
 
-            releaseEnggBom.IsEnggBomRelease= true;
+            releaseEnggBom.IsEnggBomRelease = true;
 
             return releaseEnggBom;
         }
@@ -419,7 +419,7 @@ namespace Repository
         //}
 
         public async Task<IEnumerable<EngineeringBom>> GetAllEnggBomVersionListByItemNumber(string itemNumber)
-        { 
+        {
             var enggBomDetails = await _tipsMasterDbContext.EngineeringBoms
                 .Where(x => x.ItemNumber == itemNumber)
                 .ToListAsync();
@@ -427,7 +427,7 @@ namespace Repository
             return enggBomDetails;
         }
 
-        public async Task<EnggBom> GetEnggBomByItemNoAndRevNo(string itemNumber,decimal revisionNumber)
+        public async Task<EnggBom> GetEnggBomByItemNoAndRevNo(string itemNumber, decimal revisionNumber)
         {
             var EnggBomDetailsbyItemNumber = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == itemNumber && x.RevisionNumber == revisionNumber)
                                .Include(m => m.NREConsumable)
@@ -441,13 +441,13 @@ namespace Repository
 
     public class ReleaseEnggBomRepository : RepositoryBase<EngineeringBom>, IReleaseEnggBomRepository
     {
-        private TipsMasterDbContext _tipsMasterDbContext; 
+        private TipsMasterDbContext _tipsMasterDbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
         public ReleaseEnggBomRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
-            _tipsMasterDbContext = repositoryContext; 
+            _tipsMasterDbContext = repositoryContext;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
@@ -528,7 +528,7 @@ namespace Repository
 
     public class ReleaseCostBomRepository : RepositoryBase<CostingBom>, IReleaseCostBomRepository
     {
-        private TipsMasterDbContext _tipsMasterDbContext; 
+        private TipsMasterDbContext _tipsMasterDbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
@@ -560,7 +560,7 @@ namespace Repository
             .Select(group => new
             {
                 ItemNumber = group.Key,
-                ItemDescription = group.Select(bom=>bom.ItemDescription).FirstOrDefault(),
+                ItemDescription = group.Select(bom => bom.ItemDescription).FirstOrDefault(),
                 RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
             })
             .ToList();
@@ -611,15 +611,15 @@ namespace Repository
         }
     }
 
-        public class ReleaseProductBomRepository : RepositoryBase<ProductionBom>, IReleaseProductBomRepository
-        {
+    public class ReleaseProductBomRepository : RepositoryBase<ProductionBom>, IReleaseProductBomRepository
+    {
         private TipsMasterDbContext _tipsMasterDbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
         public ReleaseProductBomRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
-            {
-                _tipsMasterDbContext = repositoryContext;
+        {
+            _tipsMasterDbContext = repositoryContext;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
@@ -628,38 +628,38 @@ namespace Repository
         }
 
         public async Task<int?> CreateReleaseProductBom(ProductionBom releaseProductBom)
+        {
+            releaseProductBom.CreatedBy = _createdBy;
+            releaseProductBom.CreatedOn = DateTime.Now;
+            releaseProductBom.LastModifiedBy = _createdBy;
+            releaseProductBom.LastModifiedOn = DateTime.Now;
+            var result = await Create(releaseProductBom);
+            return result.Id;
+        }
+
+        public async Task<IEnumerable<object>> GetAllReleaseProductBomItemNumberVersionList()
+        {
+            var releaseProductBomDetails = _tipsMasterDbContext.CostingBoms
+            .Where(x => x.IsReleaseCostCompleted == true && x.IsReleaseProductCompleted == false)
+            .GroupBy(bom => bom.ItemNumber)
+            .Select(group => new
             {
-                releaseProductBom.CreatedBy = _createdBy;
-                releaseProductBom.CreatedOn = DateTime.Now;
-                releaseProductBom.LastModifiedBy = _createdBy;
-                releaseProductBom.LastModifiedOn = DateTime.Now;
-                var result = await Create(releaseProductBom);
-                return result.Id;
-            }
+                ItemNumber = group.Key,
+                ItemDescription = group.Select(bom => bom.ItemDescription).FirstOrDefault(),
+                RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
+            })
+            .ToList();
 
-            public async Task<IEnumerable<object>> GetAllReleaseProductBomItemNumberVersionList()
-            {
-                var releaseProductBomDetails = _tipsMasterDbContext.CostingBoms
-                .Where(x => x.IsReleaseCostCompleted == true && x.IsReleaseProductCompleted == false)
-                .GroupBy(bom => bom.ItemNumber)
-                .Select(group => new
-                {
-                    ItemNumber = group.Key,
-                    ItemDescription = group.Select(bom => bom.ItemDescription).FirstOrDefault(),
-                    RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
-                })
-                .ToList();
+            var releaseProductBomItemNumberList = releaseProductBomDetails
+           .Select(bom => new GetAllReleaseProductBomItemNumberVersionList
+           {
+               ItemNumber = bom.ItemNumber,
+               ItemDescription = bom.ItemDescription,
+               ReleaseVersion = bom.RevisionNumbers
+           }).ToList();
 
-                var releaseProductBomItemNumberList = releaseProductBomDetails
-               .Select(bom => new GetAllReleaseProductBomItemNumberVersionList
-               {
-                   ItemNumber = bom.ItemNumber,
-                   ItemDescription = bom.ItemDescription,
-                   ReleaseVersion = bom.RevisionNumbers
-               }).ToList();
-
-                return releaseProductBomItemNumberList;
-            }
+            return releaseProductBomItemNumberList;
+        }
         public async Task<PagedList<ProductionBom>> GetAllProductionBom([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             var productionBomDetails = FindAll().OrderByDescending(x => x.Id)
@@ -676,12 +676,12 @@ namespace Repository
             return productionBomDetailsbyId;
         }
 
-      
-        public async Task<EnggBom> GetProductionBomByItemAndBomVersionNo(string itemNumber , decimal bomVersionNo)
+
+        public async Task<EnggBom> GetProductionBomByItemAndBomVersionNo(string itemNumber, decimal bomVersionNo)
         {
             var productionBomDetails = await _tipsMasterDbContext.EnggBoms
                                   .Where(x => x.ItemNumber == itemNumber && x.RevisionNumber == bomVersionNo && x.IsActive == true)
-                                  .Include(x => x.EnggChildItems.Where(c=>c.IsActive == true))
+                                  .Include(x => x.EnggChildItems.Where(c => c.IsActive == true))
                                   .Include(x => x.NREConsumable)
                                   .FirstOrDefaultAsync();
 
@@ -701,16 +701,16 @@ namespace Repository
         {
 
             decimal maxRevisionNumber = await _tipsMasterDbContext.ProductionBoms
-    .Where(x => x.ItemNumber == itemNumber)
-    .MaxAsync(x => x.ReleaseVersion);
+            .Where(x => x.ItemNumber == itemNumber)
+            .MaxAsync(x => x.ReleaseVersion);
 
             return maxRevisionNumber;
         }
-         
+
 
         public async Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber)
         {
-            var productionBomDetails =await _tipsMasterDbContext.ProductionBoms
+            var productionBomDetails = await _tipsMasterDbContext.ProductionBoms
                .Where(x => x.ItemNumber == itemNumber)
              .ToListAsync();
 
@@ -723,18 +723,18 @@ namespace Repository
                  .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
                  .Select(x => x.ReleaseVersion).ToArray();
 
-            
-                var releaseProductBomItemNumberList = releaseProductBomDetails
-                   .Select(bom => new ProductionBomRevisionNumber
-                   {
-                       ItemNumber = itemNumber,
-                       ItemType = PartType.FG,
-                       BomVersionNo = releaseProductBomDetails
-                   }).ToList();
-                return releaseProductBomItemNumberList;
-           
+
+            var releaseProductBomItemNumberList = releaseProductBomDetails
+               .Select(bom => new ProductionBomRevisionNumber
+               {
+                   ItemNumber = itemNumber,
+                   ItemType = PartType.FG,
+                   BomVersionNo = releaseProductBomDetails
+               }).ToList();
+            return releaseProductBomItemNumberList;
+
         }
-      
+
         //aravind
         public async Task<IEnumerable<ProductionBomRevisionNumber>> GetAllProductionBomSAListByItemNumber(string itemNumber)
         {
@@ -749,34 +749,34 @@ namespace Repository
             List<string> fgItemNumber = new List<string>();
             if (enggChildItem.Count > 0 && enggChildItem != null)
             {
-                     fgItemNumber = _tipsMasterDbContext.EnggBoms
-                    .Where(x => enggChildItem.Contains(x.BOMId) && x.ItemType == PartType.FG)
-                    .Select(x => x.ItemNumber).Distinct().ToList();
+                fgItemNumber = _tipsMasterDbContext.EnggBoms
+               .Where(x => enggChildItem.Contains(x.BOMId) && x.ItemType == PartType.FG)
+               .Select(x => x.ItemNumber).Distinct().ToList();
             }
 
-                var releaseProductBomItemNumberList = releaseProductBomDetails
-                   .Select(bom => new ProductionBomRevisionNumber
-                   {
-                       ItemNumber = itemNumber,
-                       FGItemNumber = fgItemNumber,
-                       ItemType = PartType.SA,
-                       BomVersionNo = releaseProductBomDetails
-                   }).ToList();
-            
-                return releaseProductBomItemNumberList;
+            var releaseProductBomItemNumberList = releaseProductBomDetails
+               .Select(bom => new ProductionBomRevisionNumber
+               {
+                   ItemNumber = itemNumber,
+                   FGItemNumber = fgItemNumber,
+                   ItemType = PartType.SA,
+                   BomVersionNo = releaseProductBomDetails
+               }).ToList();
+
+            return releaseProductBomItemNumberList;
         }
 
     }
 
-        public class EnggBomGroupRepository : RepositoryBase<EnggBomGroup>, IEnggBomGroupRepository
-        {
+    public class EnggBomGroupRepository : RepositoryBase<EnggBomGroup>, IEnggBomGroupRepository
+    {
         private TipsMasterDbContext _tipsMasterDbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
         public EnggBomGroupRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
-            {
-                _tipsMasterDbContext = repositoryContext;
+        {
+            _tipsMasterDbContext = repositoryContext;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
@@ -785,21 +785,21 @@ namespace Repository
         }
 
         public async Task<int?> CreateEnggBomGroup(EnggBomGroup enggbomGroup)
-            {
-                enggbomGroup.CreatedBy = _createdBy;
-                enggbomGroup.CreatedOn = DateTime.Now;
-                enggbomGroup.LastModifiedBy = _createdBy;
-                enggbomGroup.LastModifiedOn = DateTime.Now;
-                var result = await Create(enggbomGroup);
-                return result.Id;
-            }
+        {
+            enggbomGroup.CreatedBy = _createdBy;
+            enggbomGroup.CreatedOn = DateTime.Now;
+            enggbomGroup.LastModifiedBy = _createdBy;
+            enggbomGroup.LastModifiedOn = DateTime.Now;
+            var result = await Create(enggbomGroup);
+            return result.Id;
+        }
 
-            public async Task<string> DeleteEnggBomGroup(EnggBomGroup enggbomGroup)
-            {
-                Delete(enggbomGroup);
-                string result = $"EnggBomGroup details of {enggbomGroup.Id} is deleted successfully!";
-                return result;
-            }
+        public async Task<string> DeleteEnggBomGroup(EnggBomGroup enggbomGroup)
+        {
+            Delete(enggbomGroup);
+            string result = $"EnggBomGroup details of {enggbomGroup.Id} is deleted successfully!";
+            return result;
+        }
 
         //public async Task<PagedList<EnggBomGroup>> GetAllActiveEnggBomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         //{
@@ -818,19 +818,19 @@ namespace Repository
         }
 
         public async Task<IEnumerable<ListOfBomGroupDto>> GetAllBomGroupList()
-            {
-                IEnumerable<ListOfBomGroupDto> getAllBomGroupList = await _tipsMasterDbContext.BomGroups
-                                   .Select(c => new ListOfBomGroupDto()
-                                   {
-                                       Id = c.Id,
-                                       BomGroupName = c.BomGroupName,
+        {
+            IEnumerable<ListOfBomGroupDto> getAllBomGroupList = await _tipsMasterDbContext.BomGroups
+                               .Select(c => new ListOfBomGroupDto()
+                               {
+                                   Id = c.Id,
+                                   BomGroupName = c.BomGroupName,
 
-                                   })
-                                   .OrderByDescending(c => c.Id)
-                                 .ToListAsync();
+                               })
+                               .OrderByDescending(c => c.Id)
+                             .ToListAsync();
 
-                return getAllBomGroupList;
-            }
+            return getAllBomGroupList;
+        }
 
         public async Task<PagedList<EnggBomGroup>> GetAllEnggBomGroup([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
@@ -846,29 +846,29 @@ namespace Repository
         //    return enggBomGroupDetails;
         //}
         public async Task<EnggBomGroup> GetEnggBomGroupById(int id)
-            {
-                var EnggbomGroupDetailsbyId = await _tipsMasterDbContext.BomGroups.Where(x => x.Id == id).FirstOrDefaultAsync();
-                return EnggbomGroupDetailsbyId;
-            }
-
-            public async Task<string> UpdateEnggBomGroup(EnggBomGroup enggbomGroup)
-            {
-                enggbomGroup.LastModifiedBy = _createdBy;
-                enggbomGroup.LastModifiedOn = DateTime.Now;
-                Update(enggbomGroup);
-                string result = $"EnggBomGroup Detail {enggbomGroup.Id} is updated successfully!";
-                return result;
-            }
-        }
-        public class EnggCustomFieldRepository : RepositoryBase<EnggCustomField>, IEnggCustomFieldRepository
         {
-            private TipsMasterDbContext _tipsMasterDbContext;
+            var EnggbomGroupDetailsbyId = await _tipsMasterDbContext.BomGroups.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return EnggbomGroupDetailsbyId;
+        }
+
+        public async Task<string> UpdateEnggBomGroup(EnggBomGroup enggbomGroup)
+        {
+            enggbomGroup.LastModifiedBy = _createdBy;
+            enggbomGroup.LastModifiedOn = DateTime.Now;
+            Update(enggbomGroup);
+            string result = $"EnggBomGroup Detail {enggbomGroup.Id} is updated successfully!";
+            return result;
+        }
+    }
+    public class EnggCustomFieldRepository : RepositoryBase<EnggCustomField>, IEnggCustomFieldRepository
+    {
+        private TipsMasterDbContext _tipsMasterDbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
         public EnggCustomFieldRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
-            {
-                _tipsMasterDbContext = repositoryContext; 
+        {
+            _tipsMasterDbContext = repositoryContext;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
@@ -877,21 +877,21 @@ namespace Repository
         }
 
         public async Task<int?> CreateEnggCustomField(EnggCustomField enggcustomFields)
-            {
-                enggcustomFields.CreatedBy = _createdBy;
-                enggcustomFields.CreatedOn = DateTime.Now;
-                enggcustomFields.LastModifiedBy = _createdBy;
-                enggcustomFields.LastModifiedOn = DateTime.Now;
-                var result = await Create(enggcustomFields);
-                return result.Id;
-            }
+        {
+            enggcustomFields.CreatedBy = _createdBy;
+            enggcustomFields.CreatedOn = DateTime.Now;
+            enggcustomFields.LastModifiedBy = _createdBy;
+            enggcustomFields.LastModifiedOn = DateTime.Now;
+            var result = await Create(enggcustomFields);
+            return result.Id;
+        }
 
-            public async Task<string> DeleteEnggCustomField(EnggCustomField enggcustomFields)
-            {
-                Delete(enggcustomFields);
-                string result = $"EnggCustomFields details of {enggcustomFields.Id} is deleted successfully!";
-                return result;
-            }
+        public async Task<string> DeleteEnggCustomField(EnggCustomField enggcustomFields)
+        {
+            Delete(enggcustomFields);
+            string result = $"EnggCustomFields details of {enggcustomFields.Id} is deleted successfully!";
+            return result;
+        }
 
         //public async Task<PagedList<EnggCustomField>> GetAllActiveEnggCustomFields([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         //{
@@ -924,37 +924,37 @@ namespace Repository
         }
 
         public async Task<IEnumerable<EnggCustomField>> GetEnggCustomFieldByBomGroup(string BomgroupName)
-            {
-                var getEnggCustomFieldByBomGroup = await FindByCondition(x => x.BOMGroupName == BomgroupName).ToListAsync();
+        {
+            var getEnggCustomFieldByBomGroup = await FindByCondition(x => x.BOMGroupName == BomgroupName).ToListAsync();
 
-                return getEnggCustomFieldByBomGroup;
-            }
-
-            public async Task<EnggCustomField> GetEnggCustomFieldById(int id)
-            {
-                var EnggcustomFieldsDetailsbyId = await _tipsMasterDbContext.CustomFields.Where(x => x.Id == id).FirstOrDefaultAsync();
-                return EnggcustomFieldsDetailsbyId;
-            }
-
-            public async Task<string> UpdateEnggCustomField(EnggCustomField enggcustomFields)
-            {
-                enggcustomFields.LastModifiedBy = _createdBy;
-                enggcustomFields.LastModifiedOn = DateTime.Now;
-                Update(enggcustomFields);
-                string result = $"EnggCustomFields Detail {enggcustomFields.Id} is updated successfully!";
-                return result;
-            }
+            return getEnggCustomFieldByBomGroup;
         }
 
-        public class EngineeringNREConsumableRepository : RepositoryBase<NREConsumable>, IEnggBomNREConsumableRepository
+        public async Task<EnggCustomField> GetEnggCustomFieldById(int id)
         {
-            private TipsMasterDbContext _tipsMasterDbContext;
+            var EnggcustomFieldsDetailsbyId = await _tipsMasterDbContext.CustomFields.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return EnggcustomFieldsDetailsbyId;
+        }
+
+        public async Task<string> UpdateEnggCustomField(EnggCustomField enggcustomFields)
+        {
+            enggcustomFields.LastModifiedBy = _createdBy;
+            enggcustomFields.LastModifiedOn = DateTime.Now;
+            Update(enggcustomFields);
+            string result = $"EnggCustomFields Detail {enggcustomFields.Id} is updated successfully!";
+            return result;
+        }
+    }
+
+    public class EngineeringNREConsumableRepository : RepositoryBase<NREConsumable>, IEnggBomNREConsumableRepository
+    {
+        private TipsMasterDbContext _tipsMasterDbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
         public EngineeringNREConsumableRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
-            {
-                _tipsMasterDbContext = repositoryContext;
+        {
+            _tipsMasterDbContext = repositoryContext;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
@@ -963,41 +963,41 @@ namespace Repository
         }
 
         public Task<int?> CreateEnggNREConsumable(NREConsumable bomNREConsumable)
-            {
-                throw new NotImplementedException();
-            }
+        {
+            throw new NotImplementedException();
+        }
 
-            public Task<string> DeleteEnggNREConsumable(NREConsumable bomNREConsumable)
-            {
-                throw new NotImplementedException();
-            }
+        public Task<string> DeleteEnggNREConsumable(NREConsumable bomNREConsumable)
+        {
+            throw new NotImplementedException();
+        }
 
-            public Task<IEnumerable<NREConsumable>> GetAllActiveEnggNREConsumable()
-            {
-                throw new NotImplementedException();
-            }
+        public Task<IEnumerable<NREConsumable>> GetAllActiveEnggNREConsumable()
+        {
+            throw new NotImplementedException();
+        }
 
-            public Task<IEnumerable<NREConsumable>> GetAllEnggNREConsumable()
-            {
-                throw new NotImplementedException();
-            }
+        public Task<IEnumerable<NREConsumable>> GetAllEnggNREConsumable()
+        {
+            throw new NotImplementedException();
+        }
 
-            public async Task<NREConsumable> GetAllNREConsumableLists(int id)
-            {
-                var getRountingList = await _tipsMasterDbContext.BomNREConsumables
-                                       .Where(x => x.EnggBomId == id).FirstOrDefaultAsync();
-                return getRountingList;
-            }
+        public async Task<NREConsumable> GetAllNREConsumableLists(int id)
+        {
+            var getRountingList = await _tipsMasterDbContext.BomNREConsumables
+                                   .Where(x => x.EnggBomId == id).FirstOrDefaultAsync();
+            return getRountingList;
+        }
 
 
-            public Task<NREConsumable> GetEnggNREConsumableById(int id)
-            {
-                throw new NotImplementedException();
-            }
+        public Task<NREConsumable> GetEnggNREConsumableById(int id)
+        {
+            throw new NotImplementedException();
+        }
 
-            public Task<string> UpdateEnggNREConsumable(NREConsumable bomNREConsumable)
-            {
-                throw new NotImplementedException();
-            }
+        public Task<string> UpdateEnggNREConsumable(NREConsumable bomNREConsumable)
+        {
+            throw new NotImplementedException();
         }
     }
+}

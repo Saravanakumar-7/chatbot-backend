@@ -5,6 +5,6 @@
         Open,
         PartiallyClosed,
         Closed,
-        ShortClose
+        ShortClosed
     }
 }

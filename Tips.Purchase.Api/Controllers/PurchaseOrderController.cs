@@ -250,6 +250,31 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetListOfOpenPOQtyByItemNoList(List<string> itemNumberList)
+        {
+            ServiceResponse<IEnumerable<OpenPurchaseOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenPurchaseOrderDto>>();
+            try
+            {
+                var revNumberDetailsbyPONumber = await _poItemsRepository.GetListOfOpenPOQtyByItemNoList(itemNumberList);
+                var result = _mapper.Map<IEnumerable<OpenPurchaseOrderDto>>(revNumberDetailsbyPONumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Open PurchaseOrder Details";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside PurchaseOrderDetails action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetPRNumberandQtyListByItemNumber(string itemMaster)
         {
@@ -1703,7 +1728,7 @@ namespace Tips.Purchase.Api.Controllers
                     return Ok(serviceResponse);
                 }
 
-                poItemDetailByPoItemId.PoStatus = PoStatus.ShortClose;
+                poItemDetailByPoItemId.PoStatus = PoStatus.ShortClosed;
                 string result = await _poItemsRepository.UpdatePOOrderItem(poItemDetailByPoItemId);
                 _poItemsRepository.SaveAsync();
 
@@ -1713,7 +1738,7 @@ namespace Tips.Purchase.Api.Controllers
                 if (poItemOpenStatuscount == 0)
                 {
                     var poDetails = await _repository.GetPurchaseOrderById(poItemDetailByPoItemId.PurchaseOrderId);
-                    poDetails.PoStatus = PoStatus.ShortClose;
+                    poDetails.PoStatus = PoStatus.ShortClosed;
                     await _repository.UpdatePurchaseOrder(poDetails);
                     _repository.SaveAsync();
                 }

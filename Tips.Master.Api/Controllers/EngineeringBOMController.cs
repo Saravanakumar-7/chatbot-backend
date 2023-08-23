@@ -14,6 +14,7 @@ using System.Net.Http;
 using Entities.Enums;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 using System;
+using MySqlX.XDevAPI.Common;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -2323,7 +2324,7 @@ namespace Tips.Master.Api.Controllers
         //coverage test final
 
         [HttpPost]
-        public async Task<IActionResult> GetBomDetailsByFGItemNumber([FromBody] List<OpenSalesCoverageReportDto> openFGCoverageDetails)
+        public async Task<IActionResult> GetBomDetailsForCoverageReport([FromBody] List<OpenSalesCoverageReportDto> openFGCoverageDetails)
         {
             ServiceResponse<List<BomCoverageReportChildItemReqQtyDto>> serviceResponse = new ServiceResponse<List<BomCoverageReportChildItemReqQtyDto>>();
             try
@@ -2347,16 +2348,69 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid coverageReportChildItemReqQtyDtos object sent from the client.");
                     return BadRequest(serviceResponse);
                 }
+                List<BomCoverageReportChildItemReqQtyDto> bomCoverageList = new List<BomCoverageReportChildItemReqQtyDto>();
+                if (openFGCoverageDetails != null) {
 
-                foreach (var item in openFGCoverageDetails)
-                {
+                    foreach (var item in openFGCoverageDetails)
+                    {
+                        await ChildItemRequiredQtyForCoverage(bomCoverageList, item.ItemNumber,item.BalanceToOrder);
+                    }
 
-
+                    var groupedData = bomCoverageList
+                        .GroupBy(item => item.ItemNumber)
+                        .Select(group => new BomCoverageReportChildItemReqQtyDto
+                        {
+                            ItemNumber = group.Key,
+                            PartType = group.First().PartType,
+                            RequiredQty = group.Sum(item => item.RequiredQty)
+                        })
+                        .ToList();
                 }
+                serviceResponse.Data = bomCoverageList;
+                serviceResponse.Message = "Returned all ChildItemRequiredQtys";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error in GetBomDetailsForCoverageReport {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllProductionBomSAListByItemNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
+        private async Task ChildItemRequiredQtyForCoverage(List<BomCoverageReportChildItemReqQtyDto> bomCoverageList, string itemNumber,decimal requiredQty)
+        {
+            var productionBomMaxVersion = await _releaseProductBomRepository
+                                        .GetLatestProductionBomByItemNumber(itemNumber);
+            var enggBomDetail = await _enggBomRepository
+                  .GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);
+            if (enggBomDetail != null)
+            {
+                foreach (var enggChildItem in enggBomDetail?.EnggChildItems)
+                {
+                    if (enggChildItem.PartType != PartType.SA)
+                    {
+                        BomCoverageReportChildItemReqQtyDto bomCoverageReportChildItemReqQty = new BomCoverageReportChildItemReqQtyDto
+                        {
+                            ItemNumber = enggChildItem.ItemNumber,
+                            PartType = enggChildItem.PartType,
+                            RequiredQty = enggChildItem.Quantity * requiredQty
+
+                        };
+                        bomCoverageList.Add(bomCoverageReportChildItemReqQty);
+                    }
+                    else
+                    {
+                        decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
+                        await ChildItemRequiredQtyForCoverage(bomCoverageList, enggChildItem.ItemNumber, requiredQtySA);
+                    }
+
+                }
             }
         }
 

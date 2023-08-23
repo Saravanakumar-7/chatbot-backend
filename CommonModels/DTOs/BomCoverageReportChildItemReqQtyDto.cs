@@ -21,7 +21,7 @@ namespace Entities.DTOs
         public decimal? OpenSOQty { get; set; }
         public decimal? Stock { get; set; }
         public decimal? OpenPoQty { get; set; }
-        public decimal? BalanceToOrder { get; set; }
+        public decimal BalanceToOrder { get; set; }
         public decimal? TotalRequiredQty { get; set; }
         public string? Status { get; set; }
     }

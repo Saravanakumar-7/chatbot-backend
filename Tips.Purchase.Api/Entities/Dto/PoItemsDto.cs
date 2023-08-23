@@ -203,4 +203,13 @@ namespace Tips.Purchase.Api.Entities.Dto
         public List<PrDetailsDto>? PrDetails { get; set; }
 
     }
+
+
+    public class OpenPoQuantityDto
+    {
+
+        public string? ItemNumber { get; set; }
+        public decimal OpenPoQty { get; set; }
+
+    }
 }

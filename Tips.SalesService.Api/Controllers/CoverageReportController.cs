@@ -16,6 +16,7 @@ using Tips.SalesService.Api.Repository;
 using Newtonsoft.Json.Linq;
 using Entities.Enums;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -213,44 +214,108 @@ namespace Tips.SalesService.Api.Controllers
             return openSalesCoverageReports;
         }
 
-        //bom
-        //itemtype        
-        //reqqty -->from bom item by fg itemnumber
-        //totalrequ ---> reqqty * balcetoriqty 
-
-        //uncomment below code 
+   
 
         [HttpGet]
         public async Task<IActionResult> GenerateCoverageReportForFgChildItems()
         {
+            ServiceResponse<List<CoverageReportDtoForChildItem>> serviceResponse = new ServiceResponse<List<CoverageReportDtoForChildItem>>();
+            
             try
             {
+                List<CoverageReportDtoForChildItem> coverageReportDtoForChildItemList = new List<CoverageReportDtoForChildItem>();
                 List<OpenSalesCoverageReport> openSalesCoverageReports = await FGLevelCoverageReport();
                 if (openSalesCoverageReports != null)
                 {
                     List<OpenSalesCoverageReport> openFGCoverageDetails = openSalesCoverageReports
-                    .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
+                        .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
                     if (openFGCoverageDetails != null)
                     {
-                        var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
-                        var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
-                        var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsByFGItemNumber"), openFGCoverageDetailsString);
+                        List<CoverageReportChildItemReqQtyDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBom(openFGCoverageDetails);
 
-                        var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
-                        dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
-                        List<CoverageReportChildItemReqQtyDto> childItemReqQtyDtos = (List<CoverageReportChildItemReqQtyDto>)childItemRequiredQtyData.data;
-                        foreach (var item in childItemReqQtyDtos)
+                        if (childItemReqQtyDtos != null)
                         {
+                            List<string?> itemNumberList = childItemReqQtyDtos.Select(x => x.ItemNumber).ToList();
+
+                            
+                            var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
+                            var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
+
+                            //Open Stock with WIP Quantity
+                            List<ChildItemStockWithWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItems(itemNoListString);
+
+                            //Open PO Qty for Child Items
+                            List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItems(itemNoListString);
+
+                            if (itemStockWithWipList != null)
+                            {
+                                foreach (var item in childItemReqQtyDtos)
+                                {
+                                    CoverageReportDtoForChildItem coverageDetailOfChildItem = new CoverageReportDtoForChildItem
+                                    {
+                                        ItemNumber = item.ItemNumber,
+                                        PartType = item.PartType,
+                                        RequiredQty = item.RequiredQty,
+                                        Stock = itemStockWithWipList.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
+                                        WipQty = itemStockWithWipList.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
+                                        OpenPoQty = openPoQtyList.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
+                                    };
+                                    coverageDetailOfChildItem.BalanceToOrder = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
+                                        + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
+                                    coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
+                                }
+                            }
 
                         }
                     }
                 }
+                serviceResponse.Data = coverageReportDtoForChildItemList;
+                serviceResponse.Message = $"Returned Child Item CoverageReport Successfully in GenerateCoverageReportForFgChildItems ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
 
-                throw;
+                _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItems action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
+        }
+
+        private async Task<List<ChildItemStockWithWipDto>> GetStockWithWipQtyForChildItems(StringContent itemNoListString)
+        {
+            var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQty"), itemNoListString);
+            var itemStockWithWipString = await responses.Content.ReadAsStringAsync();
+            dynamic itemStockWithWipData = JsonConvert.DeserializeObject(itemStockWithWipString);
+            List<ChildItemStockWithWipDto> itemStockWithWipList = (List<ChildItemStockWithWipDto>)itemStockWithWipData.data;
+            return itemStockWithWipList;
+        }
+
+        private async Task<List<OpenPoQuantityDto>> GetOpenPoQtyForChildItems(StringContent itemNoListString)
+        {
+            var openPoQtyResponse = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"],
+                                            "GetListOfOpenPOQtyByItemNoList"), itemNoListString);
+            var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
+            dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
+            List<OpenPoQuantityDto> openPoQtyList = (List<OpenPoQuantityDto>)openPoQtyData.data;
+            return openPoQtyList;
+        }
+
+        private async Task<List<CoverageReportChildItemReqQtyDto>> GetChildItemRequiredQtyFromBom(List<OpenSalesCoverageReport> openFGCoverageDetails)
+        {
+            var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
+            var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsForCoverageReport"), openFGCoverageDetailsString);
+
+            var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
+            dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
+            List<CoverageReportChildItemReqQtyDto> childItemReqQtyDtos = (List<CoverageReportChildItemReqQtyDto>)childItemRequiredQtyData.data;
+            return childItemReqQtyDtos;
         }
 
 

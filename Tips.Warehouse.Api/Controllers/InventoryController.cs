@@ -648,6 +648,44 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetConsumptionChildItemStockWithWipQty(List<string> itemNumberList)
+        {
+            ServiceResponse<ConsumptionInventoryDto> serviceResponse = new ServiceResponse<ConsumptionInventoryDto>();
+            try
+            {
+                var InventoryDetails = await _inventoryRepository.GetConsumptionChildItemStockWithWipQty(itemNumberList);
+                if (InventoryDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory Details hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"In GetConsumptionChildItemStockWithWipQty ItemNumber List is Empty");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with Itemnumber List in GetConsumptionChildItemStockWithWipQty");
+                    var result = _mapper.Map<ConsumptionInventoryDto>(InventoryDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned InventoryDetails with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"In GetConsumptionChildItemStockWithWipQty error: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //update inventory on shoporder confirmation 
         [HttpPost]
         public async Task<IActionResult> UpdateInventoryOnShopOrderConfirmation(List<InventoryDtoForShopOrderConfirmation> dtoForShopOrderConfirmation)
