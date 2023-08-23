@@ -7,7 +7,7 @@ using Entities.Enums;
 
 namespace Entities.DTOs
 {
-    public class CoverageReportChildItemReqQtyDto
+    public class BomCoverageReportChildItemReqQtyDto
     {
         public string ItemNumber { get; set; }
         public PartType PartType { get; set; }

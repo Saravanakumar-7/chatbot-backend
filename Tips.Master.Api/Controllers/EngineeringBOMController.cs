@@ -2322,46 +2322,45 @@ namespace Tips.Master.Api.Controllers
 
         //coverage test final
 
-        [HttpPost]
-        public async Task<IActionResult> GetBomDetailsByFGItemNumber([FromBody] List<CoverageReportChildItemReqQtyDto> coverageReportChildItemReqQtyDtos)
-        {
-            ServiceResponse<List<CoverageReportChildItemReqQtyDto>> serviceResponse = new ServiceResponse<List<CoverageReportChildItemReqQtyDto>>();
-            try
-            {
-                if (coverageReportChildItemReqQtyDtos == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Data Not found in this coverageReportChildItemReqQtyDtos Method.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Data Not found in this coverageReportChildItemReqQtyDtos Method");
-                    return BadRequest(serviceResponse);
-                }
+        //[HttpPost]
+        //public async Task<IActionResult> GetBomDetailsByFGItemNumber([FromBody] List<BomCoverageReportChildItemReqQtyDto> coverageReportChildItemReqQtyDtos)
+        //{
+        //    ServiceResponse<List<BomCoverageReportChildItemReqQtyDto>> serviceResponse = new ServiceResponse<List<BomCoverageReportChildItemReqQtyDto>>();
+        //    try
+        //    {
+        //        if (coverageReportChildItemReqQtyDtos == null)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Data Not found in this coverageReportChildItemReqQtyDtos Method.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            _logger.LogError("Data Not found in this coverageReportChildItemReqQtyDtos Method");
+        //            return BadRequest(serviceResponse);
+        //        }
 
-                if (!ModelState.IsValid)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "coverageReportChildItemReqQtyDtosr object sent from the client.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid coverageReportChildItemReqQtyDtos object sent from the client.");
-                    return BadRequest(serviceResponse);
-                }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "coverageReportChildItemReqQtyDtosr object sent from the client.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            _logger.LogError("Invalid coverageReportChildItemReqQtyDtos object sent from the client.");
+        //            return BadRequest(serviceResponse);
+        //        }
 
-                foreach (var item in coverageReportChildItemReqQtyDtos)
-                { 
+        //        foreach (var item in coverageReportChildItemReqQtyDtos)
+        //        { 
 
                     
-                }
-            }
-            catch (Exception ex)
-            {
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
 
-            }
-        }
+        //    }
+        //}
 
-
-                public async Task<decimal> CalculateTotalRequiredQtyForItem(string itemNumber, decimal balanceToOrderQty)
+       public async Task<decimal> CalculateTotalRequiredQtyForItem(string itemNumber, decimal balanceToOrderQty)
         {
             decimal totalRequiredQty = 0;
 
@@ -2377,20 +2376,7 @@ namespace Tips.Master.Api.Controllers
 
             return totalRequiredQty;
         }
-
-        //public async Task<decimal> CalculateTotalRequiredQtyForItem(string itemNumber, decimal balanceToOrderQty)
-        //{
-        //    decimal totalRequiredQty = 0;
-
-        //    var enggBOM = await GetEnggBOM(itemNumber);
-
-        //    if (enggBOM != null)
-        //    {
-        //        totalRequiredQty = await CalculateTotalRequiredQtyRecursive(enggBOM, balanceToOrderQty);
-        //    }
-
-        //    return totalRequiredQty;
-        //}
+         
 
         private async Task<EnggBom> GetEnggBOM(string itemNumber)
         {

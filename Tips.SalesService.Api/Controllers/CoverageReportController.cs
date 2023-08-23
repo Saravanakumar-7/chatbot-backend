@@ -218,54 +218,40 @@ namespace Tips.SalesService.Api.Controllers
         //reqqty -->from bom item by fg itemnumber
         //totalrequ ---> reqqty * balcetoriqty 
 
+        //uncomment below code 
 
+        //[HttpGet]
+        //public async Task<IActionResult> GenerateCoverageReportForFgChildItems()
+        //{
+        //    try
+        //    {
+        //        List<OpenSalesCoverageReport> openSalesCoverageReports = await FGLevelCoverageReport();
+        //        if (openSalesCoverageReports != null)
+        //        {
+        //            List<OpenSalesCoverageReport> openFGCoverageDetails = openSalesCoverageReports
+        //            .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
+        //            if (openFGCoverageDetails != null)
+        //            {
+        //                var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
+        //                var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
+        //                var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsByFGItemNumber"), openFGCoverageDetailsString);
 
-        [HttpGet]
-        public async Task<IActionResult> GenerateCoverageReportForFgChildItems()
-        {
-            try
-            {
-                List<OpenSalesCoverageReport> openSalesCoverageReports = await FGLevelCoverageReport();
-                if (openSalesCoverageReports != null)
-                {
-                    List<OpenSalesCoverageReport> openFGCoverageDetails = openSalesCoverageReports
-                    .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
-                    if (openFGCoverageDetails != null)
-                    {
-                        var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
-                        var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
-                        var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsByFGItemNumber"), openFGCoverageDetailsString);
+        //                var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
+        //                dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
+        //                List<CoverageReportChildItemReqQtyDto> childItemReqQtyDtos = (List<CoverageReportChildItemReqQtyDto>)childItemRequiredQtyData.data;
+        //                foreach (var item in childItemReqQtyDtos)
+        //                {
+                          
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
 
-                        var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
-                        dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
-                        List<CoverageReportChildItemReqQtyDto> childItemReqQtyDtos = (List<CoverageReportChildItemReqQtyDto>)childItemRequiredQtyData.data;
-                        foreach (var item in childItemReqQtyDtos)
-                        {
-
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        //        throw;
+        //    }
+        //}
 
 
             //private async Task<decimal> CalculateTotalRequiredQtyForItem(string itemNumber, decimal? balanceToOrderQty)
