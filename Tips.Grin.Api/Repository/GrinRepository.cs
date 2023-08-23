@@ -249,12 +249,7 @@ namespace Tips.Grin.Api.Repository
               // .ThenInclude(d => d.ProjectNumbers);
 
             return PagedList<Grins>.ToPagedList(getAllGrinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-        }
-
-        private void ThenInclude(Func<object, ProjectNumbers> value)
-        {
-            throw new NotImplementedException();
-        }
+        } 
 
         public async Task<Grins> GetGrinById(int id)
         {

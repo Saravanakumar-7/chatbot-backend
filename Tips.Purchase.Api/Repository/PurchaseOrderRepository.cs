@@ -643,13 +643,13 @@ namespace Tips.Purchase.Api.Repository
                 joinResult.PurchaseOrder.IsModified == false &&
                 joinResult.PoItem.BalanceQty > 0 &&
                 joinResult.PoItem.PartType == PartType.TG &&
-                joinResult.PoItem.PoPartsStatus == true)
-            .GroupBy(joinResult => new { joinResult.PoItem.ItemNumber, joinResult.PoItem.PONumber })
+                (joinResult.PoItem.PoStatus == PoStatus.Open || joinResult.PoItem.PoStatus == PoStatus.PartiallyClosed)
+                )
+            .GroupBy(joinResult => new { joinResult.PoItem.ItemNumber })
             .Select(group => new OpenPurchaseOrderDto
             {
                 ItemNumber = group.Key.ItemNumber,
-                BalanceQty = group.Sum(c => c.PoItem.BalanceQty),
-                PONumber = group.Key.PONumber
+                BalanceQty = group.Sum(c => c.PoItem.BalanceQty)
             }).ToListAsync(); 
 
     //        List<OpenPurchaseOrderDto> result = await _tipsPurchaseDbContext.PoItems

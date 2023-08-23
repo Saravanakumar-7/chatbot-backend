@@ -365,6 +365,18 @@ namespace Repository
             return getItemMasterByItemNo;
         }
 
+        public async Task<List<ItemWithPartTypeDto>> GetItemPartTypeByItemNo(List<string> ItemNumberList)
+        {
+            var itemWithPartTypes = await FindByCondition(x => ItemNumberList.Contains(x.ItemNumber))
+                .Select(s => new ItemWithPartTypeDto
+                {
+                    ItemNumber = s.ItemNumber,
+                    PartType = s.ItemType
+                }
+                ).ToListAsync();
+            return itemWithPartTypes;
+        }
+
         public async Task<List<ItemMasterMtrPartNoDto>> GetItemMasterByPartNo(string partNumber)
         {
             var itemMasterDescription = await TipsMasterDbContext.ItemMasters

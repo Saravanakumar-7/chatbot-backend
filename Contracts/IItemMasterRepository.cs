@@ -24,6 +24,7 @@ namespace Contracts
         Task<string> DeleteItemMaster(ItemMaster itemMaster);
         Task<IEnumerable<ItemMasterIdNoListDto>> GetAllActiveItemMasterIdNoList();
         Task<IEnumerable<ItemMasterIdNoListDto>> GetAllItemMasterIdNoList();
+        Task<List<ItemWithPartTypeDto>> GetItemPartTypeByItemNo(List<string> ItemNumberList);
         Task<ItemMaster> GetItemMasterByItemNumber(string shopOrderNo);
         Task<List<ItemMasterMtrPartNoDto>> GetItemMasterByPartNo(string partNumber);
         Task<IEnumerable<ItemMaster>> SearchItemMasterDate(SearchDateParamess searchDateParam);

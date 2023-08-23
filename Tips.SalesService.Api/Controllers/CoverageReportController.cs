@@ -14,8 +14,8 @@ using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.DTOs;
 using Tips.SalesService.Api.Repository;
 using Newtonsoft.Json.Linq;
-
-
+using Entities.Enums;
+using System.Collections.Generic;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -100,16 +100,55 @@ namespace Tips.SalesService.Api.Controllers
 
 
        [HttpGet]
-        public async Task<List<OpenSalesCoverageReport>> GenerateCoverageFGLevelReport()
+        public async Task<IActionResult> GenerateCoverageFGLevelReport()
+        {
+
+            ServiceResponse<List<OpenSalesCoverageReport>> serviceResponse = new ServiceResponse<List<OpenSalesCoverageReport>>();
+
+            try
+            {
+                List<OpenSalesCoverageReport> openSalesCoverageReports = await FGLevelCoverageReport();
+
+                serviceResponse.Data = openSalesCoverageReports;
+                serviceResponse.Message = $"Returned CoverageReport Successfully ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GenerateCoverageFGLevelReport action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        private async Task<List<OpenSalesCoverageReport>> FGLevelCoverageReport()
         {
             var salesOrders = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGItemDetails();
             List<OpenSalesCoverageReport> openSalesCoverageReports = new List<OpenSalesCoverageReport>();
 
+            List<string?> itemNumberList = salesOrders.Select(x => x.FGItemNumber).ToList();
+
+            var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
+            var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
+            var responses = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetItemPartTypeByItemNumber?"), itemNoListString);
+
+            var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
+            dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
+            List<ItemWithPartTypeDto> itemNoWithPartType = (List<ItemWithPartTypeDto>)itemNoPartTypeData.data;
+
             foreach (var salesOrderItem in salesOrders)
             {
+
                 var coverageReport = new OpenSalesCoverageReport
                 {
-                    FGOrTGPartNumber = salesOrderItem.FGItemNumber
+                    ItemNumber = salesOrderItem.FGItemNumber,
+                    TotalRequiredQty = salesOrderItem.Balance_Qty
+
                 };
                 // Calculate Stock
 
@@ -131,52 +170,70 @@ namespace Tips.SalesService.Api.Controllers
                 // Calculate OpenSOQty
                 coverageReport.OpenSOQty = salesOrderItem.Balance_Qty - coverageReport.Stock;
 
-                // Calculate OpenPoQty
-                var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
-                              "GetAllOpenTGPoDetails?", "itemNumber=", salesOrderItem.FGItemNumber));
+                PartType itemPartType = PartType.TG;
 
-                if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
+                foreach (var item in itemNoWithPartType)
                 {
-                    var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
-                    dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
-                    dynamic purchaseObject = purchaseObjectData.data;
-
-                    if (purchaseObject != null)
+                    if (item.ItemNumber == salesOrderItem.FGItemNumber)
                     {
-                        foreach (var purchase in purchaseObject)
+                        itemPartType = item.PartType;
+                        break;
+                    }
+                }
+                if (itemPartType == PartType.TG)
+                {
+
+                    // Calculate OpenPoQty
+                    var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
+                                  "GetAllOpenTGPoDetails?", "itemNumber=", salesOrderItem.FGItemNumber));
+
+                    if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
+                    {
+                        var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
+                        dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
+                        dynamic purchaseObject = purchaseObjectData.data;
+
+                        if (purchaseObject != null)
                         {
-                            coverageReport.OpenPoQty = coverageReport.OpenPoQty + purchase.balanceQty;
+                            foreach (var purchase in purchaseObject)
+                            {
+                                coverageReport.OpenPoQty = coverageReport.OpenPoQty + purchase.balanceQty;
+                            }
                         }
                     }
                 }
 
                 // Calculate BalanceToOrder
-                coverageReport.BalanceToOrder = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
+                var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
 
-                // Calculate TotalRequiredQty using the CalculateTotalRequiredQtyForItem method
-                if (coverageReport.BalanceToOrder > 0)
-                {
-
-                    var enggBomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
-                                            "CalculateTotalRequiredQtyForItem?", "&fgPartNumber=", salesOrderItem.FGItemNumber, "&balanceToOrderQty=", coverageReport.BalanceToOrder));
-
-                    if (enggBomDetails != null && enggBomDetails.IsSuccessStatusCode)
-                    {
-                        var enggBomObjectString = await enggBomDetails.Content.ReadAsStringAsync();
-                        dynamic enggBomObjectData = JsonConvert.DeserializeObject(enggBomObjectString);
-                        dynamic totalRequiredQty = enggBomObjectData.data;
-
-                        if (totalRequiredQty != null)
-                        {
-                            coverageReport.TotalRequiredQty = totalRequiredQty;
-                            openSalesCoverageReports.Add(coverageReport);
-                        }
-                    }
-                }
+                coverageReport.BalanceToOrder = balanceToOrderQty <= 0 ? 0 : balanceToOrderQty;
+                openSalesCoverageReports.Add(coverageReport);
             }
 
             return openSalesCoverageReports;
         }
+
+        //bom
+        //itemtype        
+        //reqqty -->from bom item by fg itemnumber
+        //totalrequ ---> reqqty * balcetoriqty 
+
+
+
+ 
+        
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
