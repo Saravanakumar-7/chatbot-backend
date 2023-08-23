@@ -220,111 +220,111 @@ namespace Tips.SalesService.Api.Controllers
 
         //uncomment below code 
 
-        //[HttpGet]
-        //public async Task<IActionResult> GenerateCoverageReportForFgChildItems()
-        //{
-        //    try
-        //    {
-        //        List<OpenSalesCoverageReport> openSalesCoverageReports = await FGLevelCoverageReport();
-        //        if (openSalesCoverageReports != null)
-        //        {
-        //            List<OpenSalesCoverageReport> openFGCoverageDetails = openSalesCoverageReports
-        //            .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
-        //            if (openFGCoverageDetails != null)
-        //            {
-        //                var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
-        //                var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
-        //                var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsByFGItemNumber"), openFGCoverageDetailsString);
+        [HttpGet]
+        public async Task<IActionResult> GenerateCoverageReportForFgChildItems()
+        {
+            try
+            {
+                List<OpenSalesCoverageReport> openSalesCoverageReports = await FGLevelCoverageReport();
+                if (openSalesCoverageReports != null)
+                {
+                    List<OpenSalesCoverageReport> openFGCoverageDetails = openSalesCoverageReports
+                    .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
+                    if (openFGCoverageDetails != null)
+                    {
+                        var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
+                        var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
+                        var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsByFGItemNumber"), openFGCoverageDetailsString);
 
-        //                var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
-        //                dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
-        //                List<CoverageReportChildItemReqQtyDto> childItemReqQtyDtos = (List<CoverageReportChildItemReqQtyDto>)childItemRequiredQtyData.data;
-        //                foreach (var item in childItemReqQtyDtos)
-        //                {
-                          
-        //                }
-        //            }
+                        var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
+                        dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
+                        List<CoverageReportChildItemReqQtyDto> childItemReqQtyDtos = (List<CoverageReportChildItemReqQtyDto>)childItemRequiredQtyData.data;
+                        foreach (var item in childItemReqQtyDtos)
+                        {
+
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
+
+        //private async Task<decimal> CalculateTotalRequiredQtyForItem(string itemNumber, decimal? balanceToOrderQty)
+        //{
+        //    decimal totalRequiredQty = 0;
+
+        //    var enggBOM = await GetEnggBOM(itemNumber);
+
+        //    if (enggBOM != null)
+        //    {
+        //        totalRequiredQty = await CalculateTotalRequiredQtyRecursive(enggBOM, balanceToOrderQty);
+        //    }
+
+        //    return totalRequiredQty;
+        //}
+
+        //private async Task<> GetEnggBOM(string itemNumber)
+        //{
+        //    var enggBomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
+        //                            "GetLatestEnggBomVersionDetailByIemNumber?", "&fgPartNumber=", itemNumber));
+
+        //    if (enggBomDetails != null && enggBomDetails.IsSuccessStatusCode)
+        //    {
+        //        var enggBomObjectString = await enggBomDetails.Content.ReadAsStringAsync();
+        //        dynamic enggBomObjectData = JsonConvert.DeserializeObject(enggBomObjectString);
+        //        dynamic enggBomObject = enggBomObjectData.data;
+
+        //        if (enggBomObject != null)
+        //        {
+        //            // Parse and construct an EnggBom object based on the retrieved data
+        //            EnggBom enggBom = new EnggBom
+        //            {
+        //                ItemNumber = enggBomObject.ItemNumber,
+        //                // ... Populate other properties based on enggBomObject
+        //            };
+
+        //            return enggBom;
         //        }
         //    }
-        //    catch (Exception ex)
-        //    {
 
-        //        throw;
-        //    }
+        //    return null; // Return null if no valid EnggBom is retrieved
         //}
 
 
-            //private async Task<decimal> CalculateTotalRequiredQtyForItem(string itemNumber, decimal? balanceToOrderQty)
-            //{
-            //    decimal totalRequiredQty = 0;
+        //private async Task<decimal> CalculateTotalRequiredQtyRecursive(EnggBom enggBOM, decimal parentQty)
+        //{
+        //    decimal totalRequiredQty = 0;
 
-            //    var enggBOM = await GetEnggBOM(itemNumber);
+        //    foreach (var enggChildItem in enggBOM.EnggChildItems)
+        //    {
+        //        if (enggChildItem.PartType == PartType.SA)
+        //        {
+        //            var childEnggBOM = await GetEnggBOM(enggChildItem.ItemNumber);
 
-            //    if (enggBOM != null)
-            //    {
-            //        totalRequiredQty = await CalculateTotalRequiredQtyRecursive(enggBOM, balanceToOrderQty);
-            //    }
+        //            if (childEnggBOM != null)
+        //            {
+        //                decimal childQty = enggChildItem.Quantity * parentQty;
+        //                decimal childRequiredQty = await CalculateTotalRequiredQtyRecursive(childEnggBOM, childQty);
+        //                totalRequiredQty += childRequiredQty;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            totalRequiredQty += enggChildItem.Quantity * parentQty;
+        //        }
+        //    }
 
-            //    return totalRequiredQty;
-            //}
-
-            //private async Task<> GetEnggBOM(string itemNumber)
-            //{
-            //    var enggBomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
-            //                            "GetLatestEnggBomVersionDetailByIemNumber?", "&fgPartNumber=", itemNumber));
-
-            //    if (enggBomDetails != null && enggBomDetails.IsSuccessStatusCode)
-            //    {
-            //        var enggBomObjectString = await enggBomDetails.Content.ReadAsStringAsync();
-            //        dynamic enggBomObjectData = JsonConvert.DeserializeObject(enggBomObjectString);
-            //        dynamic enggBomObject = enggBomObjectData.data;
-
-            //        if (enggBomObject != null)
-            //        {
-            //            // Parse and construct an EnggBom object based on the retrieved data
-            //            EnggBom enggBom = new EnggBom
-            //            {
-            //                ItemNumber = enggBomObject.ItemNumber,
-            //                // ... Populate other properties based on enggBomObject
-            //            };
-
-            //            return enggBom;
-            //        }
-            //    }
-
-            //    return null; // Return null if no valid EnggBom is retrieved
-            //}
+        //    return totalRequiredQty;
+        //}
 
 
-            //private async Task<decimal> CalculateTotalRequiredQtyRecursive(EnggBom enggBOM, decimal parentQty)
-            //{
-            //    decimal totalRequiredQty = 0;
-
-            //    foreach (var enggChildItem in enggBOM.EnggChildItems)
-            //    {
-            //        if (enggChildItem.PartType == PartType.SA)
-            //        {
-            //            var childEnggBOM = await GetEnggBOM(enggChildItem.ItemNumber);
-
-            //            if (childEnggBOM != null)
-            //            {
-            //                decimal childQty = enggChildItem.Quantity * parentQty;
-            //                decimal childRequiredQty = await CalculateTotalRequiredQtyRecursive(childEnggBOM, childQty);
-            //                totalRequiredQty += childRequiredQty;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            totalRequiredQty += enggChildItem.Quantity * parentQty;
-            //        }
-            //    }
-
-            //    return totalRequiredQty;
-            //}
-
-
-            //test consumption report
-            [HttpGet]
+        //test consumption report
+        [HttpGet]
         public async Task<List<CoverageReport>> GenerateCoverageReportAsync()
         {
             var coverageReports = new Dictionary<string, CoverageReport>();
