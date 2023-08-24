@@ -221,8 +221,9 @@ namespace Tips.SalesService.Api.Controllers
 
                         // Calculate BalanceToOrder
                         var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
+                        coverageReport.BalanceToOrder = balanceToOrderQty.HasValue && balanceToOrderQty.Value > 0 ? balanceToOrderQty.Value : 0;
 
-                        coverageReport.BalanceToOrder = balanceToOrderQty <= 0 ? 0 : balanceToOrderQty;
+                        //coverageReport.BalanceToOrder = balanceToOrderQty <= 0 ? 0 : balanceToOrderQty;
                         openSalesCoverageReports.Add(coverageReport);
                     }
                     catch (Exception ex)
@@ -246,6 +247,31 @@ namespace Tips.SalesService.Api.Controllers
             {
                 List<CoverageReportDtoForChildItem> coverageReportDtoForChildItemList = new List<CoverageReportDtoForChildItem>();
                 List<OpenSalesCoverageReport> openSalesCoverageReports = await FGLevelCoverageReport();
+                //List<OpenSalesCoverageReport> openSalesCoverageReports = new List<OpenSalesCoverageReport>();
+                //OpenSalesCoverageReport openSalesCoverageReport = new OpenSalesCoverageReport
+                //{
+                //        ItemNumber = "1002370",
+                //        PartType = PartType.FG,
+                //        OpenSOQty = 100,
+                //        TotalRequiredQty = 80,
+                //        Stock = 40,
+                //        OpenPoQty = 20,
+                //        BalanceToOrder=20,
+                        
+                // };
+                //OpenSalesCoverageReport openSalesCoverageReport1 = new OpenSalesCoverageReport
+                //{
+                //    ItemNumber = "102010038069",
+                //    PartType = PartType.FG,
+                //    OpenSOQty = 100,
+                //    TotalRequiredQty = 80,
+                //    Stock = 40,
+                //    OpenPoQty = 20,
+                //    BalanceToOrder = 20,
+                //};
+                //openSalesCoverageReports.Add(openSalesCoverageReport1);
+                //openSalesCoverageReports.Add(openSalesCoverageReport);
+
                 if (openSalesCoverageReports != null)
                 {
                     List<OpenSalesCoverageReport> openFGCoverageDetails = openSalesCoverageReports
@@ -264,7 +290,7 @@ namespace Tips.SalesService.Api.Controllers
                             var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
 
                             //Open Stock with WIP Quantity
-                            List<ChildItemStockWithWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItems(itemNoListString);
+                            List<ChildItemStockWithWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItems(itemNoListString); 
 
                             //Open PO Qty for Child Items
                             List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItems(itemNoListString);
@@ -277,7 +303,7 @@ namespace Tips.SalesService.Api.Controllers
                                     {
                                         ItemNumber = item.ItemNumber,
                                         PartType = item.PartType,
-                                        RequiredQty = item.RequiredQty,
+                                        RequiredQty = item.TotalRequiredQty,
                                         Stock = itemStockWithWipList.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
                                         WipQty = itemStockWithWipList.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
                                         OpenPoQty = openPoQtyList.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
@@ -314,9 +340,52 @@ namespace Tips.SalesService.Api.Controllers
             var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQty"), itemNoListString);
             var itemStockWithWipString = await responses.Content.ReadAsStringAsync();
             dynamic itemStockWithWipData = JsonConvert.DeserializeObject(itemStockWithWipString);
-            List<ChildItemStockWithWipDto> itemStockWithWipList = (List<ChildItemStockWithWipDto>)itemStockWithWipData.data;
-            return itemStockWithWipList;
+            //List<ChildItemStockWithWipDto> itemStockWithWipList = (List<ChildItemStockWithWipDto>)itemStockWithWipData.data;
+
+
+            List<ChildItemStockWithWipDto> childItemStockWithWipQty = new List<ChildItemStockWithWipDto>();
+
+            foreach (var item in itemStockWithWipData.data)
+            {
+                ChildItemStockWithWipDto dto = JsonConvert.DeserializeObject<ChildItemStockWithWipDto>(item.ToString());
+                childItemStockWithWipQty.Add(dto);
+            }
+
+            return childItemStockWithWipQty; 
         }
+
+        //private async Task<List<ChildItemStockWithWipDto>> GetStockWithWipQtyForChildItems(StringContent itemNoListString)
+        //{
+        //    var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQty"), itemNoListString);
+
+        //    if (responses.IsSuccessStatusCode)
+        //    {
+        //        var itemStockWithWipString = await responses.Content.ReadAsStringAsync();
+
+        //        dynamic itemStockWithWipData = JsonConvert.DeserializeObject(itemStockWithWipString);
+
+        //        if (itemStockWithWipData != null && itemStockWithWipData.data != null)
+        //        {
+        //            List<ChildItemStockWithWipDto> itemStockWithWipList =
+        //                JsonConvert.DeserializeObject<List<ChildItemStockWithWipDto>>(itemStockWithWipData.data.ToString());
+
+        //            return itemStockWithWipList;
+        //        }
+        //        else
+        //        {
+        //            // Handle the case where the data is null or doesn't contain the expected structure.
+        //            // You might want to return an empty list or handle the error as appropriate.
+        //            return new List<ChildItemStockWithWipDto>();
+        //        }
+        //    }
+        //    else
+        //    {
+        //        // Handle the case where the HTTP request was not successful.
+        //        // You might want to throw an exception or handle the error as appropriate.
+        //        return new List<ChildItemStockWithWipDto>();
+        //    }
+        //}
+
 
         private async Task<List<OpenPoQuantityDto>> GetOpenPoQtyForChildItems(StringContent itemNoListString)
         {
@@ -324,20 +393,39 @@ namespace Tips.SalesService.Api.Controllers
                                             "GetListOfOpenPOQtyByItemNoList"), itemNoListString);
             var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
             dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
-            List<OpenPoQuantityDto> openPoQtyList = (List<OpenPoQuantityDto>)openPoQtyData.data;
-            return openPoQtyList;
-        }
+            //List<OpenPoQuantityDto> openPoQtyList = (List<OpenPoQuantityDto>)openPoQtyData.data;
+            List<OpenPoQuantityDto> openPoQtyList = new List<OpenPoQuantityDto>();
 
-        private async Task<List<CoverageReportChildItemReqQtyDto>> GetChildItemRequiredQtyFromBom(List<OpenSalesCoverageReport> openFGCoverageDetails)
+            foreach (var item in openPoQtyData.data)
+            {
+                OpenPoQuantityDto dto = JsonConvert.DeserializeObject<OpenPoQuantityDto>(item.ToString());
+                openPoQtyList.Add(dto);
+            }
+
+            return openPoQtyList; 
+        }
+         
+        private async Task<List<CoverageReportChildItemReqQtyDto>> GetChildItemRequiredQtyFromBom(List<OpenSalesCoverageReport> openFGCoverageDetails) 
         {
             var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
             var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsForCoverageReport"), openFGCoverageDetailsString);
+            var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsForCoverageReport"), openFGCoverageDetailsString); 
 
             var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
             dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
-            List<CoverageReportChildItemReqQtyDto> childItemReqQtyDtos = (List<CoverageReportChildItemReqQtyDto>)childItemRequiredQtyData.data;
+            //List<CoverageReportChildItemReqQtyDto> childItemReqQtyDtos = (List<CoverageReportChildItemReqQtyDto>)childItemRequiredQtyData.data;
+
+            List<CoverageReportChildItemReqQtyDto> childItemReqQtyDtos = new List<CoverageReportChildItemReqQtyDto>();
+
+            foreach (var item in childItemRequiredQtyData.data)
+            {
+                CoverageReportChildItemReqQtyDto dto = JsonConvert.DeserializeObject<CoverageReportChildItemReqQtyDto>(item.ToString());
+                childItemReqQtyDtos.Add(dto);
+            }
+
             return childItemReqQtyDtos;
+
+
         }
 
 

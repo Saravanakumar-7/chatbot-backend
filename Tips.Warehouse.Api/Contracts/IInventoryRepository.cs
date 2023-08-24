@@ -28,6 +28,7 @@ namespace Tips.Warehouse.Api.Contracts
 
         //Task<Inventory> UpdateInventoryBalanceQty(string partNumber, string Qty);
         Task<decimal> GetStockDetailsForAllLocationWarehouseByItemNo(string ItemNumber);
+
         Task<IEnumerable<ListOfLocationTransferDto>> GetInventoryDetailsForLocationTransfer(string ItemNumber);
         Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfStock(InventoryBalQty inventoryBalQty);
         Task<IEnumerable<Inventory>> SearchInventoryDetailsWithSumOfStock(InventoryItemNo inventoryItemNo);
@@ -58,7 +59,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<decimal> GetStockQtyForRetailSalesOrderItem(string ItemNumber);
         Task<Inventory> GetInventoryDetailsByItemNoandProjectNoandShopOrderNo(string ItemNumber, string ProjectNumber, string shopOrderNo);
         Task<decimal> GetInventoryBySAItemNo(string itemNumber);
-        //Task<ConsumptionChildItemInventoryDto> GetConsumptionChildItemStockWithWipQty(List<string> itemNumberList);
+
         Task<List<ConsumptionChildItemInventoryDto>> GetConsumptionChildItemStockWithWipQty(List<string> itemNumberList);
     }
 }

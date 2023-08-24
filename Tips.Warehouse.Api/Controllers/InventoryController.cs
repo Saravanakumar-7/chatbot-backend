@@ -649,10 +649,10 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> GetConsumptionChildItemStockWithWipQty(List<string> itemNumberList)
         {
-            ServiceResponse<ConsumptionInventoryDto> serviceResponse = new ServiceResponse<ConsumptionInventoryDto>();
+            ServiceResponse<List<ConsumptionChildItemInventoryDto>> serviceResponse = new ServiceResponse<List<ConsumptionChildItemInventoryDto>>();
             try
             {
                 var InventoryDetails = await _inventoryRepository.GetConsumptionChildItemStockWithWipQty(itemNumberList);
@@ -668,8 +668,9 @@ namespace Tips.Warehouse.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Inventory with Itemnumber List in GetConsumptionChildItemStockWithWipQty");
-                    var result = _mapper.Map<ConsumptionInventoryDto>(InventoryDetails);
-                    serviceResponse.Data = result;
+                    //var result = _mapper.Map<ConsumptionInventoryDto>(InventoryDetails);
+                    //var result = _mapper.Map<ConsumptionChildItemInventoryDto>(InventoryDetails);
+                    serviceResponse.Data = InventoryDetails;
                     serviceResponse.Message = "Returned InventoryDetails with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

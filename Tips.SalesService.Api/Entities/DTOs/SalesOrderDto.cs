@@ -290,8 +290,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
     public class CoverageReportChildItemReqQtyDto
     {
-        public string ItemNumber { get; set; }
+        //public string ItemNumber { get; set; }
+        //public PartType PartType { get; set; }
+        //public decimal RequiredQty { get; set; }
+
+        public string? ItemNumber { get; set; }
         public PartType PartType { get; set; }
-        public decimal RequiredQty { get; set; }
+        public decimal? TotalRequiredQty { get; set; }
     }
 }
