@@ -62,11 +62,33 @@ namespace Tips.Production.Api.Repository
 
         public async Task<PagedList<MaterialIssue>> GetAllMaterialIssues([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
+            PartType? check;
+            if (Enum.TryParse<PartType>(searchParams.SearchValue, out PartType result))
+            {
+                check = result;
+            }
+            else
+            {
+                check = null;
+            }
+            int searchValueAsInt;
+            bool isSearchValueNumeric = int.TryParse(searchParams.SearchValue, out searchValueAsInt);
             var materialIssueDetails = FindAll().OrderByDescending(x => x.Id)
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ShopOrderNumber.Contains(searchParams.SearchValue) ||
-                   inv.ItemNumber.Contains(searchParams.SearchValue) || inv.ShopOrderQty.Equals(int.Parse(searchParams.SearchValue)))));
+                .Where(inv => (string.IsNullOrWhiteSpace(searchParams.SearchValue))
+                || (string.IsNullOrEmpty(searchParams.SearchValue)
+                || inv.ShopOrderNumber.Contains(searchParams.SearchValue)
+                || inv.ItemNumber.Contains(searchParams.SearchValue)
+                || (isSearchValueNumeric && inv.ShopOrderQty.Equals(searchValueAsInt))
+                || inv.ItemType.Equals(check)
+                ));
 
             return PagedList<MaterialIssue>.ToPagedList(materialIssueDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+            //var materialIssueDetails = FindAll().OrderByDescending(x => x.Id)
+            //    .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ShopOrderNumber.Contains(searchParams.SearchValue) ||
+            //       inv.ItemNumber.Contains(searchParams.SearchValue) || inv.ShopOrderQty.Equals(int.Parse(searchParams.SearchValue)))));
+
+            //return PagedList<MaterialIssue>.ToPagedList(materialIssueDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
 

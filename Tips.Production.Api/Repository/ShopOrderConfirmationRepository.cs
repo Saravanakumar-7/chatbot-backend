@@ -41,13 +41,35 @@ namespace Tips.Production.Api.Repository
 
         public async Task<PagedList<ShopOrderConfirmation>> GetAllShopOrderConfirmation([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
+            PartType? check;
+            if (Enum.TryParse<PartType>(searchParams.SearchValue, out PartType result))
+            {
+                check = result;
+            }
+            else
+            {
+                check = null;
+            }
+            decimal searchValueAsInt;
+            bool isSearchValueNumeric = decimal.TryParse(searchParams.SearchValue, out searchValueAsInt);
             var shopOrderCOnfirmationDetails = FindAll().OrderByDescending(x => x.Id)
-               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ShopOrderNumber.Contains(searchParams.SearchValue) ||
-                   inv.ItemType.Equals(int.Parse(searchParams.SearchValue))
-                   || inv.ShopOrderReleaseQty.Equals(int.Parse(searchParams.SearchValue))
-                   || inv.WipConfirmedQty.Equals(int.Parse(searchParams.SearchValue)))));
+               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
+               || inv.ShopOrderNumber.Contains(searchParams.SearchValue)
+               || inv.ItemNumber.Contains(searchParams.SearchValue)
+               || inv.ItemType.Equals(check)
+               || (isSearchValueNumeric && inv.ShopOrderReleaseQty == searchValueAsInt)
+               || (isSearchValueNumeric && inv.WipConfirmedQty == searchValueAsInt)
+               )));
 
             return PagedList<ShopOrderConfirmation>.ToPagedList(shopOrderCOnfirmationDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+            //var shopOrderCOnfirmationDetails = FindAll().OrderByDescending(x => x.Id)
+            //   .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ShopOrderNumber.Contains(searchParams.SearchValue) ||
+            //       inv.ItemType.Equals(int.Parse(searchParams.SearchValue))
+            //       || inv.ShopOrderReleaseQty.Equals(int.Parse(searchParams.SearchValue))
+            //       || inv.WipConfirmedQty.Equals(int.Parse(searchParams.SearchValue)))));
+
+            //return PagedList<ShopOrderConfirmation>.ToPagedList(shopOrderCOnfirmationDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         } 
 

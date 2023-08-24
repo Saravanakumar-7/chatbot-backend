@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -43,11 +44,12 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<TypeSolution>> GetAllTypeSolutions()
+        public async Task<IEnumerable<TypeSolution>> GetAllTypeSolutions([FromQuery] SearchParames searchParams)
         {
-            var getAllTypeSolutions = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
-
-            return getAllTypeSolutions;
+            var typeSolutionDetails = FindAll()
+                                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.TypeSolutionName.Contains(searchParams.SearchValue) ||
+                                 inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return typeSolutionDetails;
         }
 
         public async Task<TypeSolution> GetTypeSolutionById(int id)

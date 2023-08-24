@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Contracts
 {
     public interface IRoomNameRepository : IRepositoryBase<RoomNames>
     {
-        Task<IEnumerable<RoomNames>> GetAllRoomNames();
+        Task<IEnumerable<RoomNames>> GetAllRoomNames([FromQuery] SearchParames searchParams);
         Task<RoomNames> GetRoomNameById(int id);
         Task<int?> CreateRoomName(RoomNames roomName);
         Task<string> UpdateRoomName(RoomNames roomName);

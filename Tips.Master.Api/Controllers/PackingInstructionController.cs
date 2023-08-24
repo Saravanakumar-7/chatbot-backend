@@ -27,7 +27,7 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<PackingInstructionController>
         [HttpGet]
-        public async Task<IActionResult> GetAllPackingInstructions(SearchParames searchParams)
+        public async Task<IActionResult> GetAllPackingInstructions([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PackingInstructionDto>> serviceResponse = new ServiceResponse<IEnumerable<PackingInstructionDto>>();
             try
@@ -56,7 +56,7 @@ namespace Tips.Master.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActivePackingInstructions(SearchParames searchParams)
+        public async Task<IActionResult> GetAllActivePackingInstructions([FromQuery]SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PackingInstructionDto>> serviceResponse = new ServiceResponse<IEnumerable<PackingInstructionDto>>();
 

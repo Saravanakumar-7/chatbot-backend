@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Mvc;
 
 namespace Repository
 {
@@ -45,17 +45,20 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<VendorDepartment>> GetAllActiveVendorDepartment()
+        public async Task<IEnumerable<VendorDepartment>> GetAllActiveVendorDepartment([FromQuery] SearchParames searchParams)
         {
-            var AllActiveVendorDepartments = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return AllActiveVendorDepartments;
+            var vendorDepartmentDetails = FindAll()
+                                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorDepartmentName.Contains(searchParams.SearchValue) ||
+                                 inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return vendorDepartmentDetails;
         }
 
-        public async Task<IEnumerable<VendorDepartment>> GetAllVendorDepartment()
+        public async Task<IEnumerable<VendorDepartment>> GetAllVendorDepartment([FromQuery] SearchParames searchParams)
         {
-            var GetallVendorDepartments = await FindAll().ToListAsync();
-
-            return GetallVendorDepartments;
+            var vendorDepartmentDetails = FindAll()
+                                        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorDepartmentName.Contains(searchParams.SearchValue) ||
+                                  inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return vendorDepartmentDetails;
         }
 
         public async Task<VendorDepartment> GetVendorDepartmentById(int id)

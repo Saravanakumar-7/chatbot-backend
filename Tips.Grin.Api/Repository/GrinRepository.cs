@@ -241,14 +241,25 @@ namespace Tips.Grin.Api.Repository
         {
             var getAllGrinDetails = FindAll().OrderByDescending(x => x.Id)
               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue) ||
-                 inv.VendorId.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))));
-              //.Include(t => t.GrinDocuments)
-              //.Include(t => t.GrinParts)
-              ////.ThenInclude(c=>c.CoCUpload)
-              //.Include(t => t.GrinParts)
-              // .ThenInclude(d => d.ProjectNumbers);
+                 inv.InvoiceNumber.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))));
+            //.Include(t => t.GrinDocuments)
+            //.Include(t => t.GrinParts)
+            ////.ThenInclude(c=>c.CoCUpload)
+            //.Include(t => t.GrinParts)
+            // .ThenInclude(d => d.ProjectNumbers);
 
             return PagedList<Grins>.ToPagedList(getAllGrinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+            //var getAllGrinDetails = FindAll().OrderByDescending(x => x.Id)
+            //  .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue) ||
+            //     inv.VendorId.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))));
+            //  //.Include(t => t.GrinDocuments)
+            //  //.Include(t => t.GrinParts)
+            //  ////.ThenInclude(c=>c.CoCUpload)
+            //  //.Include(t => t.GrinParts)
+            //  // .ThenInclude(d => d.ProjectNumbers);
+
+            //return PagedList<Grins>.ToPagedList(getAllGrinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         private void ThenInclude(Func<object, ProjectNumbers> value)

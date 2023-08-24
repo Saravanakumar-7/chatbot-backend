@@ -1732,6 +1732,15 @@ namespace Tips.SalesService.Api.Controllers
 
                 rfqIsEnggCompleteUpdate.IsEnggComplete = true;
 
+                var rfqEnggItemDto = rfqEnggDtoPost.RfqEnggItems;
+                var rfqEnggLists = new List<RfqEnggItem>();
+                for (int i = 0; i < rfqEnggItemDto.Count; i++)
+                {
+                    RfqEnggItem rfqEnggItems = _mapper.Map<RfqEnggItem>(rfqEnggItemDto[i]);
+                    rfqEnggLists.Add(rfqEnggItems);
+                }
+                createRfqEngg.RfqEnggItems = rfqEnggLists;
+
                 _rfqenggRepository.CreateRfqEngg(createRfqEngg);
                 _rfqRepository.Update(rfqIsEnggCompleteUpdate);
                 _rfqenggRepository.SaveAsync();

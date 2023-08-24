@@ -150,15 +150,25 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-
-
             var getAllBTODetails = FindAll().OrderByDescending(x => x.Id)
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BTONumber.Contains(searchParams.SearchValue) ||
-                 inv.PONumber.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
-                 || inv.SalesOrderId.Equals(int.Parse(searchParams.SearchValue)))))
+                .Where(inv => (string.IsNullOrWhiteSpace(searchParams.SearchValue))
+                || (string.IsNullOrEmpty(searchParams.SearchValue)
+                || inv.BTONumber.Contains(searchParams.SearchValue)
+                || inv.PONumber.Contains(searchParams.SearchValue)
+                || inv.CustomerName.Contains(searchParams.SearchValue)
+                || inv.CustomerId.Equals(searchParams.SearchValue)
+                 ))
                  .Include(t => t.bTODeliveryOrderItems);
 
             return PagedList<BTODeliveryOrder>.ToPagedList(getAllBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+            //var getAllBTODetails = FindAll().OrderByDescending(x => x.Id)
+            //    .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BTONumber.Contains(searchParams.SearchValue) ||
+            //     inv.PONumber.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
+            //     || inv.SalesOrderId.Equals(int.Parse(searchParams.SearchValue)))))
+            //     .Include(t => t.bTODeliveryOrderItems);
+
+            //return PagedList<BTODeliveryOrder>.ToPagedList(getAllBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
         public async Task<IEnumerable<ListofBtoDeliveryOrderDetails>> GetBtoDeliveryOrderNumberList()
         {
@@ -309,20 +319,33 @@ namespace Tips.Warehouse.Api.Repository
             return result.Id;
         }
 
-
-        public async Task<PagedList<BTODeliveryOrderHistory>> GetAllBtoHistoryDetails(PagingParameter pagingParameter)
+        public async Task<PagedList<BTODeliveryOrderHistory>> GetAllBtoHistoryDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParams)
         {
-            var bto = await _tipsWarehouseDbContext.ReturnBtoDeliveryOrders
-              .FirstOrDefaultAsync();
+            var getAllBTODetails = FindAll().OrderByDescending(x => x.Id)
+                    .Where(inv => (string.IsNullOrWhiteSpace(searchParams.SearchValue))
+                    || (string.IsNullOrEmpty(searchParams.SearchValue)
+                    || inv.BTONumber.Contains(searchParams.SearchValue)
+                    || inv.PONumber.Contains(searchParams.SearchValue)
+                    || inv.CustomerName.Contains(searchParams.SearchValue)
 
-            var getAllBTODetails = PagedList<BTODeliveryOrderHistory>.ToPagedList(FindAll()
-                    .Where(x => x.UniqeId != null)
-                    .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+                     ));
+
+
+            return PagedList<BTODeliveryOrderHistory>.ToPagedList(getAllBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+        //public async Task<PagedList<BTODeliveryOrderHistory>> GetAllBtoHistoryDetails(PagingParameter pagingParameter)
+        //{
+        //    var bto = await _tipsWarehouseDbContext.ReturnBtoDeliveryOrders
+        //      .FirstOrDefaultAsync();
+
+        //    var getAllBTODetails = PagedList<BTODeliveryOrderHistory>.ToPagedList(FindAll()
+        //            .Where(x => x.UniqeId != null)
+        //            .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
           
 
-            return getAllBTODetails;
-        }
+        //    return getAllBTODetails;
+        //}
 
         public async Task<BTODeliveryOrderHistory> GetBtoHistoryDetailsById(int id)
         {

@@ -8,7 +8,7 @@ namespace Tips.Warehouse.Api.Contracts
     public interface IBTODeliveryOrderHistoryRepository : IRepositoryBase<BTODeliveryOrderHistory>
     {
         Task<long> CreateBTODeliveryOrderHistory(BTODeliveryOrderHistory bTODeliveryOrderHistory);
-        Task<PagedList<BTODeliveryOrderHistory>> GetAllBtoHistoryDetails(PagingParameter pagingParameter);
+        Task<PagedList<BTODeliveryOrderHistory>> GetAllBtoHistoryDetails(PagingParameter pagingParameter, SearchParammes searchParamess);
 
         Task<BTODeliveryOrderHistory> GetBtoHistoryDetailsById(int id);
 

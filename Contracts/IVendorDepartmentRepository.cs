@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface IVendorDepartmentRepository : IRepositoryBase<VendorDepartment>
     {
-        Task<IEnumerable<VendorDepartment>> GetAllVendorDepartment();
+        Task<IEnumerable<VendorDepartment>> GetAllVendorDepartment(SearchParames searchParams);
         Task<VendorDepartment> GetVendorDepartmentById(int id);
-        Task<IEnumerable<VendorDepartment>> GetAllActiveVendorDepartment();
+        Task<IEnumerable<VendorDepartment>> GetAllActiveVendorDepartment(SearchParames searchParams);
         Task<int?> CreateVendorDepartment(VendorDepartment vendorDepartment);
         Task<string> UpdateVendorDepartment(VendorDepartment vendorDepartment);
         Task<string> DeleteVendorDepartment(VendorDepartment vendorDepartment);

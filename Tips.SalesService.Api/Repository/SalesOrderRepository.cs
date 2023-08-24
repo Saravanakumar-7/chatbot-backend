@@ -122,27 +122,42 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<PagedList<SalesOrder>> GetAllSalesOrder([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            int searchValueInt;
-            bool isSearchValueInt = int.TryParse(searchParammes.SearchValue, out searchValueInt);
-
             var salesOrderDetails = FindAll().OrderByDescending(x => x.Id)
-                .Where(inv => (string.IsNullOrWhiteSpace(searchParammes.SearchValue)
-                               || inv.SalesOrderNumber.Contains(searchParammes.SearchValue)
-                               || inv.ProjectNumber.Contains(searchParammes.SearchValue)
-                               || inv.OrderType.Contains(searchParammes.SearchValue)
-                               || inv.CustomerName.Contains(searchParammes.SearchValue)
-                               || inv.OrderDate.ToString().Contains(searchParammes.SearchValue)
-                               || inv.ReceivedDate.ToString().Contains(searchParammes.SearchValue)
-                               || inv.PODate.ToString().Contains(searchParammes.SearchValue)
-                               || (!isSearchValueInt || inv.RevisionNumber == searchValueInt)
-                               || inv.CustomerId.Contains(searchParammes.SearchValue))
-                               // Add this condition to filter by SalesOrderNumber
-                               && (string.IsNullOrEmpty(searchParammes.SearchValue) || inv.SalesOrderNumber == searchParammes.SearchValue))
-                .Include(t => t.SalesOrdersItems)
-                .ThenInclude(p => p.ScheduleDates)
-                .Include(p => p.SalesOrderAdditionalCharges);
+               .Where(inv => (string.IsNullOrWhiteSpace(searchParammes.SearchValue))
+                              // Add this condition to filter by SalesOrderNumber
+                              || (string.IsNullOrEmpty(searchParammes.SearchValue))
+                              || inv.SalesOrderNumber.Contains(searchParammes.SearchValue)
+                              || inv.ProjectNumber.Contains(searchParammes.SearchValue)
+                              || inv.CustomerName.Contains(searchParammes.SearchValue)
+                              || inv.CustomerId.Contains(searchParammes.SearchValue)
+                            )
+               .Include(t => t.SalesOrdersItems)
+               .ThenInclude(p => p.ScheduleDates)
+               .Include(p => p.SalesOrderAdditionalCharges);
 
             return PagedList<SalesOrder>.ToPagedList(salesOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+            //int searchValueInt;
+            //bool isSearchValueInt = int.TryParse(searchParammes.SearchValue, out searchValueInt);
+
+            //var salesOrderDetails = FindAll().OrderByDescending(x => x.Id)
+            //    .Where(inv => (string.IsNullOrWhiteSpace(searchParammes.SearchValue)
+            //                   || inv.SalesOrderNumber.Contains(searchParammes.SearchValue)
+            //                   || inv.ProjectNumber.Contains(searchParammes.SearchValue)
+            //                   || inv.OrderType.Contains(searchParammes.SearchValue)
+            //                   || inv.CustomerName.Contains(searchParammes.SearchValue)
+            //                   || inv.OrderDate.ToString().Contains(searchParammes.SearchValue)
+            //                   || inv.ReceivedDate.ToString().Contains(searchParammes.SearchValue)
+            //                   || inv.PODate.ToString().Contains(searchParammes.SearchValue)
+            //                   || (!isSearchValueInt || inv.RevisionNumber == searchValueInt)
+            //                   || inv.CustomerId.Contains(searchParammes.SearchValue))
+            //                   // Add this condition to filter by SalesOrderNumber
+            //                   && (string.IsNullOrEmpty(searchParammes.SearchValue) || inv.SalesOrderNumber == searchParammes.SearchValue))
+            //    .Include(t => t.SalesOrdersItems)
+            //    .ThenInclude(p => p.ScheduleDates)
+            //    .Include(p => p.SalesOrderAdditionalCharges);
+
+            //return PagedList<SalesOrder>.ToPagedList(salesOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
         public async Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParam)

@@ -24,13 +24,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllRoomNames()
+        public async Task<IActionResult> GetAllRoomNames([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<RoomNamesDto>> serviceResponse = new ServiceResponse<IEnumerable<RoomNamesDto>>();
             try
             {
 
-                var getAllRoomNames = await _repository.RoomNameRepository.GetAllRoomNames();
+                var getAllRoomNames = await _repository.RoomNameRepository.GetAllRoomNames(searchParams);
                 _logger.LogInfo("Returned all RoomName");
                 var result = _mapper.Map<IEnumerable<RoomNamesDto>>(getAllRoomNames);
                 serviceResponse.Data = result;

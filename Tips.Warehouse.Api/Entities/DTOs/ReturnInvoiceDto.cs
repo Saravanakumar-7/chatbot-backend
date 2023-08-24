@@ -15,7 +15,7 @@
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<ReturnInvoiceItem>? ReturnInvoiceItems { get; set; }
+        public List<ReturnInvoiceItemDto>? ReturnInvoiceItems { get; set; }
     }
 
     public class ReturnInvoiceDtoPost

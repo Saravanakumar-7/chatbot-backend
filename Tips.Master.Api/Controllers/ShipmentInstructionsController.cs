@@ -25,7 +25,7 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<ShipmentInstructionsController>
         [HttpGet]
-        public async Task<IActionResult> GetAllShipmentInstructions(SearchParames searchParams)
+        public async Task<IActionResult> GetAllShipmentInstructions([FromQuery]SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ShipmentInstructionsDto>> serviceResponse = new ServiceResponse<IEnumerable<ShipmentInstructionsDto>>();
             try

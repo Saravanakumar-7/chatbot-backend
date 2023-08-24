@@ -25,7 +25,7 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<CategoryController>
         [HttpGet]
-        public async Task<IActionResult> GetAllCategory(SearchParames searchParams)
+        public async Task<IActionResult> GetAllCategory([FromQuery]SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<CategoryDto>>();
             try
@@ -53,7 +53,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCategory(SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveCategory([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<CategoryDto>>();
             try

@@ -25,13 +25,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllTypeSolutions()
+        public async Task<IActionResult> GetAllTypeSolutions([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<TypeSolutionDto>> serviceResponse = new ServiceResponse<IEnumerable<TypeSolutionDto>>();
             try
             {
 
-                var getAllTypeSolution = await _repository.TypeSolutionRepository.GetAllTypeSolutions();
+                var getAllTypeSolution = await _repository.TypeSolutionRepository.GetAllTypeSolutions(searchParams);
                 _logger.LogInfo("Returned all TypeSolution");
                 var result = _mapper.Map<IEnumerable<TypeSolutionDto>>(getAllTypeSolution);
                 serviceResponse.Data = result;

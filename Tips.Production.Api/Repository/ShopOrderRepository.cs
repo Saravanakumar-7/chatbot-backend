@@ -63,12 +63,31 @@ namespace Tips.Production.Api.Repository
 
         public async Task<PagedList<ShopOrder>> GetAllShopOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
+            PartType? check;
+            if (Enum.TryParse<PartType>(searchParamess.SearchValue, out PartType result))
+            {
+                check = result;
+            }
+            else
+            {
+                check = null;
+            }
             var allShopOrderDetails = FindAll().OrderByDescending(x => x.Id)
-                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParamess.SearchValue) || inv.ShopOrderNumber.Contains(searchParamess.SearchValue) ||
-                      inv.ProjectType.Contains(searchParamess.SearchValue) || inv.ItemType.Equals(int.Parse(searchParamess.SearchValue)) || inv.TotalSOReleaseQty.Equals(int.Parse(searchParamess.SearchValue)))))
+                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParamess.SearchValue)
+                      || inv.ShopOrderNumber.Contains(searchParamess.SearchValue)
+                      || inv.ProjectType.Contains(searchParamess.SearchValue)
+                      || inv.ItemType.Equals(check)
+                      )))
                      .Include(t => t.ShopOrderItems);
 
             return PagedList<ShopOrder>.ToPagedList(allShopOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+            //var allShopOrderDetails = FindAll().OrderByDescending(x => x.Id)
+            //          .Where(inv => ((string.IsNullOrWhiteSpace(searchParamess.SearchValue) || inv.ShopOrderNumber.Contains(searchParamess.SearchValue) ||
+            //          inv.ProjectType.Contains(searchParamess.SearchValue) || inv.ItemType.Equals(int.Parse(searchParamess.SearchValue)) || inv.TotalSOReleaseQty.Equals(int.Parse(searchParamess.SearchValue)))))
+            //         .Include(t => t.ShopOrderItems);
+
+            //return PagedList<ShopOrder>.ToPagedList(allShopOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<IEnumerable<ListOfShopOrderDto>> GetAllFGShopOrderNoList()

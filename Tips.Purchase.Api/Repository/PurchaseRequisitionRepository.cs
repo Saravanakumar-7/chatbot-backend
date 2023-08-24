@@ -314,13 +314,31 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<PagedList<PurchaseRequisition>> GetAllPurchaseRequisitions([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
-
+            int? searchrev;
+            DateTime? searchDate;
+            try
+            {
+                searchrev = int.Parse(searchParams.SearchValue);
+            }
+            catch
+            {
+                searchrev = null;
+            }
+            try
+            {
+                searchDate = DateTime.Parse(searchParams.SearchValue);
+            }
+            catch
+            {
+                searchDate = null;
+            }
             var purchaseRequistionDetails = FindAll().OrderByDescending(on => on.Id)
-
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PrNumber.Contains(searchParams.SearchValue)
-               || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
-               || inv.PrDate.Equals(int.Parse(searchParams.SearchValue))))).Include(f => f.PrFiles)
-                                  .Include(t => t.PrItemsDtoList)
+            .Where(inv => (string.IsNullOrWhiteSpace(searchParams.SearchValue)
+              || inv.PrNumber.Contains(searchParams.SearchValue)
+              || inv.RevisionNumber.Equals(searchrev)
+              || inv.PrDate.Equals(searchDate)))
+            .Include(f => f.PrFiles)
+            .Include(t => t.PrItemsDtoList)
                                   .ThenInclude(x => x.prAddprojectsDtoList)
                                   .Include(m => m.PrItemsDtoList)
                                   .ThenInclude(i => i.prAddDeliverySchedulesDtoList)
@@ -328,6 +346,19 @@ namespace Tips.Purchase.Api.Repository
                                   .ThenInclude(pr => pr.prSpecialInstructionsDtoList);
 
             return PagedList<PurchaseRequisition>.ToPagedList(purchaseRequistionDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            //var purchaseRequistionDetails = FindAll().OrderByDescending(on => on.Id)
+
+            //    .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PrNumber.Contains(searchParams.SearchValue)
+            //   || inv.RevisionNumber.Equals(int.Parse(searchParams.SearchValue))
+            //   || inv.PrDate.Equals(int.Parse(searchParams.SearchValue))))).Include(f => f.PrFiles)
+            //                      .Include(t => t.PrItemsDtoList)
+            //                      .ThenInclude(x => x.prAddprojectsDtoList)
+            //                      .Include(m => m.PrItemsDtoList)
+            //                      .ThenInclude(i => i.prAddDeliverySchedulesDtoList)
+            //                      .Include(itm => itm.PrItemsDtoList)
+            //                      .ThenInclude(pr => pr.prSpecialInstructionsDtoList);
+
+            //return PagedList<PurchaseRequisition>.ToPagedList(purchaseRequistionDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
         public async Task<PurchaseRequisition> GetPurchaseRequisitionById(int id)
         {
