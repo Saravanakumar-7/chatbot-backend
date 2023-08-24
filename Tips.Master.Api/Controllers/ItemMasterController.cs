@@ -1093,6 +1093,44 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //get parttype by passing itemnumber
+        [HttpPost]
+        public async Task<IActionResult> GetItemPartTypeByItemNumber(List<string> itemNumberList)
+        {
+            ServiceResponse<List<ItemWithPartTypeDto>> serviceResponse = new ServiceResponse<List<ItemWithPartTypeDto>>();
+
+            try
+            {
+                var getItemMasterByItemNumber = await _repository.ItemMasterRepository.GetItemPartTypeByItemNo(itemNumberList);
+                if (getItemMasterByItemNumber == null)
+                {
+                    _logger.LogError($"some Itemmasters Not found in action method GetItemPartTypeByItemNumber");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Itemmasters Not found in action method GetItemPartTypeByItemNumber.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {  
+                    serviceResponse.Data = getItemMasterByItemNumber;
+                    serviceResponse.Message = "Returned All Item PartType:";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetItemMasterByItemNumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Internal server error: {ex.Message}{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> GetItemMasterDetailsForMNRByItemNo(string ItemNumber)
         {

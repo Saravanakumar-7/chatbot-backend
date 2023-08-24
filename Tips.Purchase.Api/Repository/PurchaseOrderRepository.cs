@@ -5,6 +5,7 @@ using Entities.Helper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NLog.Filters;
 using Org.BouncyCastle.Asn1.Misc;
 using System.Security.Claims;
 using Tips.Purchase.Api.Contracts;
@@ -48,12 +49,12 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PurchaseOrder> ChangePurchaseOrderVersion(PurchaseOrder purchaseOrder)
         {
             var getOldPODetails = _tipsPurchaseDbContext.PurchaseOrders
-                .Where(x => x.PONumber == purchaseOrder.PONumber && x.IsModified ==  false)
+                .Where(x => x.PONumber == purchaseOrder.PONumber && x.IsModified == false)
                 .FirstOrDefault();
 
             if (getOldPODetails != null)
             {
-                getOldPODetails.IsModified=true;
+                getOldPODetails.IsModified = true;
                 getOldPODetails.LastModifiedBy = _createdBy;
                 getOldPODetails.LastModifiedOn = DateTime.Now;
                 Update(getOldPODetails);
@@ -77,7 +78,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string poNumber)
         {
             //grin 
-            
+
             IEnumerable<GetDownloadUrlDto> getDownloadDetails = await _tipsPurchaseDbContext.DocumentUploads
                                 .Where(b => b.ParentNumber == poNumber)
                                 .Select(x => new GetDownloadUrlDto()
@@ -98,9 +99,9 @@ namespace Tips.Purchase.Api.Repository
             {
                 var query = _tipsPurchaseDbContext.PurchaseOrders.Include("POItems");
                 if (purchaseOrderSearch != null || (purchaseOrderSearch.PONumber.Any())
-               && purchaseOrderSearch.ProcurementType.Any() && purchaseOrderSearch.ShippingMode.Any() 
+               && purchaseOrderSearch.ProcurementType.Any() && purchaseOrderSearch.ShippingMode.Any()
                && purchaseOrderSearch.VendorName.Any() && purchaseOrderSearch.PoStatus.Any())
-               {
+                {
                     query = query.Where
                     (po => (purchaseOrderSearch.PONumber.Any() ? purchaseOrderSearch.PONumber.Contains(po.PONumber) : true)
                    && (purchaseOrderSearch.ProcurementType.Any() ? purchaseOrderSearch.ProcurementType.Contains(po.ProcurementType) : true)
@@ -135,7 +136,7 @@ namespace Tips.Purchase.Api.Repository
                 {
                     query = query.Where(po => po.PONumber.Contains(searchParammes.SearchValue)
                     || po.VendorName.Contains(searchParammes.SearchValue)
-                    || po.PODate.ToString().Contains(searchParammes.SearchValue) 
+                    || po.PODate.ToString().Contains(searchParammes.SearchValue)
                     //|| po.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
                     || po.ProcurementType.Contains(searchParammes.SearchValue)
                     //|| po.VendorId.Contains(searchParammes.SearchValue)
@@ -148,7 +149,7 @@ namespace Tips.Purchase.Api.Repository
                     s.Description.Contains(searchParammes.SearchValue)
                     || s.MftrItemNumber.Contains(searchParammes.SearchValue)
                     || s.PONumber.Contains(searchParammes.SearchValue)))//||
-                   // (!isSearchValueInt || po.RevisionNumber == searchValueInt))
+                                                                        // (!isSearchValueInt || po.RevisionNumber == searchValueInt))
                     .Include(itm => itm.POItems)
                     .ThenInclude(po => po.POAddprojects)
                     .Include(itm => itm.POItems)
@@ -181,20 +182,20 @@ namespace Tips.Purchase.Api.Repository
 
             return prDetails;
         }
-         
+
         public async Task<IEnumerable<PRNoandQtyListDto>> GetPRNumberandQtyListByItemNumber(string itemNumber)
         {
-            
-                     var Join = from pri in _tipsPurchaseDbContext.PrItems
-                                where pri.ItemNumber == itemNumber
-                                join pr in _tipsPurchaseDbContext.PurchaseRequisitions on pri.PurchaseRequistionId equals pr.Id
-                                where pr.PrApprovalI == true && pr.PrApprovalII == true
-                                select new PRNoandQtyListDto
-                                {
-                                    PRNumber =pr.PrNumber,
-                                    Qty = pri.Qty,
-                                };
-                var postdata = Join.ToList();
+
+            var Join = from pri in _tipsPurchaseDbContext.PrItems
+                       where pri.ItemNumber == itemNumber
+                       join pr in _tipsPurchaseDbContext.PurchaseRequisitions on pri.PurchaseRequistionId equals pr.Id
+                       where pr.PrApprovalI == true && pr.PrApprovalII == true
+                       select new PRNoandQtyListDto
+                       {
+                           PRNumber = pr.PrNumber,
+                           Qty = pri.Qty,
+                       };
+            var postdata = Join.ToList();
 
             return postdata;
         }
@@ -216,10 +217,10 @@ namespace Tips.Purchase.Api.Repository
              .ThenInclude(po => po.PrDetails)
              .Include(itm => itm.PoIncoTerms)
             .ToList();
-            return purchaseOrderDetails;        
-    }
+            return purchaseOrderDetails;
+        }
 
-    public async Task<int?> GetPONumberAutoIncrementCount(DateTime date)
+        public async Task<int?> GetPONumberAutoIncrementCount(DateTime date)
         {
             var getPONumberAutoIncrementCount = _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.CreatedOn == date.Date).Count();
 
@@ -252,7 +253,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<string> GeneratePONumber()
         {
             using var transaction = await _tipsPurchaseDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
-             
+
             try
             {
                 var poNumberEntity = await _tipsPurchaseDbContext.PONumbers.SingleAsync();
@@ -272,7 +273,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<IEnumerable<PurchaseOrder>> GetAllActivePurchaseOrders()
         {
             var activePurchaseOrderDetails = FindAll().OrderByDescending(on => on.Id)
-                                .Where(x=>x.Status != Status.Closed)
+                                .Where(x => x.Status != Status.Closed)
                                 .Include(o => o.POFiles)
                                 .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
@@ -440,8 +441,8 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PurchaseOrder> GetPurchaseOrderById(int id)
         {
             var purchaseOrderDetailById = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.Id == id)
-                                                .Include(o=>o.POFiles)
-                
+                                                .Include(o => o.POFiles)
+
                 .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
                                 .Include(m => m.POItems)
@@ -462,7 +463,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PurchaseOrder> GetPurchaseOrderByPONumber(string poNumber)
         {
             var purchaseOrderDetailbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders
-                .Where(x => x.PONumber == poNumber &&  x.IsDeleted== false && x.IsModified == false)
+                .Where(x => x.PONumber == poNumber && x.IsDeleted == false && x.IsModified == false)
                 .Include(o => o.POFiles)
                 .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
@@ -481,7 +482,7 @@ namespace Tips.Purchase.Api.Repository
             return purchaseOrderDetailbyPONumber;
         }
 
-        public async Task<PurchaseOrder> GetPurchaseOrderByPONoAndRevNo(string poNumber,int revisionNumber)
+        public async Task<PurchaseOrder> GetPurchaseOrderByPONoAndRevNo(string poNumber, int revisionNumber)
         {
             var purchaseOrderDetail = await _tipsPurchaseDbContext.PurchaseOrders
                 .Where(x => x.PONumber == poNumber && x.RevisionNumber == revisionNumber && x.IsDeleted == false)
@@ -632,7 +633,7 @@ namespace Tips.Purchase.Api.Repository
             return getPODetailsByPONOandItemNo;
         }
         //aravind
-        
+
 
         //public async Task<IEnumerable<PoItem>> GetPODetailsByItemNo(string ItemNumber)
         //{
@@ -657,45 +658,87 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<List<OpenPurchaseOrderDto>> GetOpenPOTGDetailsByItem(string itemNumber)
         {
-
             List<OpenPurchaseOrderDto> result = await _tipsPurchaseDbContext.PoItems
-    .Join(_tipsPurchaseDbContext.PurchaseOrders,
-        poItem => poItem.PONumber,
-        purchaseOrder => purchaseOrder.PONumber,
-        (poItem, purchaseOrder) => new { PoItem = poItem, PurchaseOrder = purchaseOrder })
-    .Where(joinResult => joinResult.PoItem.ItemNumber == itemNumber
-    && joinResult.PurchaseOrder.Status != Status.Closed && (int)joinResult.PoItem.PartType == (int)PartType.TG)
-    .GroupBy(joinResult => new { joinResult.PoItem.ItemNumber, joinResult.PoItem.PONumber })
-    .Select(group => new OpenPurchaseOrderDto
-    {
-        ItemNumber = group.Key.ItemNumber,
-        BalanceQty = group.Sum(c => c.PoItem.BalanceQty),
-        PONumber = group.Key.PONumber
-    }).ToListAsync();
+           .Join(
+               _tipsPurchaseDbContext.PurchaseOrders,
+               poItem => poItem.PONumber,
+               purchaseOrder => purchaseOrder.PONumber,
+               (poItem, purchaseOrder) => new { PoItem = poItem, PurchaseOrder = purchaseOrder })
+           .Where(joinResult =>
+               joinResult.PurchaseOrder.Status == Status.Open || joinResult.PurchaseOrder.Status == Status.PartiallyClosed &&
+               joinResult.PurchaseOrder.IsDeleted == false &&
+               joinResult.PurchaseOrder.IsShortClosed == false &&
+               joinResult.PurchaseOrder.POApprovalI == true &&
+               joinResult.PurchaseOrder.POApprovalII == true &&
+               joinResult.PurchaseOrder.IsModified == false &&
+               joinResult.PoItem.BalanceQty > 0 &&
+               joinResult.PoItem.PartType == PartType.TG &&
+               (joinResult.PoItem.PoStatus == PoStatus.Open || joinResult.PoItem.PoStatus == PoStatus.PartiallyClosed)
+               )
+           .GroupBy(joinResult => new { joinResult.PoItem.ItemNumber })
+           .Select(group => new OpenPurchaseOrderDto
+           {
+               ItemNumber = group.Key.ItemNumber,
+               BalanceQty = group.Sum(c => c.PoItem.BalanceQty)
+           }).ToListAsync();
+
+            //        List<OpenPurchaseOrderDto> result = await _tipsPurchaseDbContext.PoItems
+            //.Join(_tipsPurchaseDbContext.PurchaseOrders,
+            //    poItem => poItem.PONumber,
+            //    purchaseOrder => purchaseOrder.PONumber,
+            //    (poItem, purchaseOrder) => new { PoItem = poItem, PurchaseOrder = purchaseOrder })
+            //.Where(joinResult => joinResult.PoItem.ItemNumber == itemNumber
+            //&& joinResult.PurchaseOrder.Status != Status.Closed && (int)joinResult.PoItem.PartType == (int)PartType.TG)
+            //.GroupBy(joinResult => new { joinResult.PoItem.ItemNumber, joinResult.PoItem.PONumber })
+            //.Select(group => new OpenPurchaseOrderDto
+            //{
+            //    ItemNumber = group.Key.ItemNumber,
+            //    BalanceQty = group.Sum(c => c.PoItem.BalanceQty),
+            //    PONumber = group.Key.PONumber
+            //}).ToListAsync();
 
             return result;
 
         }
 
         public async Task<List<OpenPurchaseOrderDto>> GetOpenPODetailsByItem(string itemNumber)
-        {            
+        {
 
             List<OpenPurchaseOrderDto> result = await _tipsPurchaseDbContext.PoItems
-    .Join(_tipsPurchaseDbContext.PurchaseOrders,
-        poItem => poItem.PONumber,
-        purchaseOrder => purchaseOrder.PONumber,
-        (poItem, purchaseOrder) => new { PoItem = poItem, PurchaseOrder = purchaseOrder })
-    .Where(joinResult => joinResult.PoItem.ItemNumber == itemNumber && joinResult.PurchaseOrder.Status != Status.Closed)
-    .GroupBy(joinResult => new { joinResult.PoItem.ItemNumber, joinResult.PoItem.PONumber })
-    .Select(group => new OpenPurchaseOrderDto
-    {
-        ItemNumber = group.Key.ItemNumber,
-        BalanceQty = group.Sum(c => c.PoItem.BalanceQty),
-        PONumber = group.Key.PONumber
-    }).ToListAsync();
+            .Join(_tipsPurchaseDbContext.PurchaseOrders,
+                poItem => poItem.PONumber,
+                purchaseOrder => purchaseOrder.PONumber,
+                (poItem, purchaseOrder) => new { PoItem = poItem, PurchaseOrder = purchaseOrder })
+            .Where(joinResult => joinResult.PoItem.ItemNumber == itemNumber && joinResult.PurchaseOrder.Status != Status.Closed)
+            .GroupBy(joinResult => new { joinResult.PoItem.ItemNumber, joinResult.PoItem.PONumber })
+            .Select(group => new OpenPurchaseOrderDto
+            {
+                ItemNumber = group.Key.ItemNumber,
+                BalanceQty = group.Sum(c => c.PoItem.BalanceQty),
+                PONumber = group.Key.PONumber
+            }).ToListAsync();
 
             return result;
-             
+
+        }
+
+        public async Task<List<OpenPoQuantityDto>> GetListOfOpenPOQtyByItemNoList(List<string> itemNumberList)
+        {
+            var poStatus = new List<PoStatus> { PoStatus.Open, PoStatus.PartiallyClosed };
+
+            List<OpenPoQuantityDto> openPoQtyList = await _tipsPurchaseDbContext.PoItems
+                .Include(x => x.PurchaseOrder)
+                .Where(x => poStatus.Contains(x.PurchaseOrder.PoStatus) && poStatus.Contains(x.PoStatus)
+                    && itemNumberList.Contains(x.ItemNumber) && x.PurchaseOrder.IsDeleted== false 
+                    && x.PurchaseOrder.IsModified ==false)
+                .GroupBy( i=> new { i.ItemNumber })
+                .Select(gr => new OpenPoQuantityDto
+                {
+                    ItemNumber = gr.Key.ItemNumber,
+                    OpenPoQty = gr.Sum(x => x.BalanceQty)
+                }).ToListAsync();
+            return openPoQtyList;
+
         }
         public async Task<PoItem> ClosePoItemSatusByPoItemId(int poItemId)
         {
@@ -720,7 +763,7 @@ namespace Tips.Purchase.Api.Repository
         }
 
 
-        
+
 
 
     }

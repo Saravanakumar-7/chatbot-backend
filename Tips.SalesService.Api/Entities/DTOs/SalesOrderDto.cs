@@ -1,4 +1,5 @@
-﻿using Microsoft.Build.Framework;
+﻿using Entities.Enums;
+using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using Tips.SalesService.Api.Entities.Dto;
@@ -285,5 +286,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
         public List<SalesOrderItemsDto>? SalesOrdersItems { get; set; }
         public List<SalesOrderAdditionalChargesDto>? SalesOrderAdditionalCharges { get; set; } 
+    }
+
+    public class CoverageReportChildItemReqQtyDto
+    {
+        public string ItemNumber { get; set; }
+        public PartType PartType { get; set; }
+        public decimal RequiredQty { get; set; }
     }
 }

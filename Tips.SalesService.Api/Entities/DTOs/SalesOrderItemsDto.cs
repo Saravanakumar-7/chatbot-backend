@@ -316,7 +316,9 @@ namespace Tips.SalesService.Api.Entities.Dto
     public class SalesOrderFGandBalanceQty
     {
         public string? FGItemNumber { get; set; }
-        public decimal Balance_Qty { get; set; } 
+        public decimal Balance_Qty { get; set; }
+        public PartType PartType { get; set; }
+
 
     }
 }

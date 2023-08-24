@@ -467,4 +467,11 @@ namespace Entities.DTOs
         public List<ItemMasterRoutingReportDto>? ItemMasterRouting { get; set; }
     }
 
+    public class ItemWithPartTypeDto 
+    {
+        public string ItemNumber { get; set; }
+
+        public PartType PartType { get; set; }
+    }
+
 }
