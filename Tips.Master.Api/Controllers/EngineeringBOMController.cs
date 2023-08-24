@@ -2366,7 +2366,7 @@ namespace Tips.Master.Api.Controllers
                         })
                         .ToList();
                 }
-                serviceResponse.Data = itemsRequiredQtyGrouped;
+                serviceResponse.Data = null/*itemsRequiredQtyGrouped*/;
                 serviceResponse.Message = "Returned all ChildItemRequiredQtys";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
