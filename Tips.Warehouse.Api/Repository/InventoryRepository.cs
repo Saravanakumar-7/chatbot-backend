@@ -25,10 +25,13 @@ namespace Tips.Warehouse.Api.Repository
     {
         private readonly string _connectionString;
         private readonly MySqlConnection _connection;
- 
+        private TipsWarehouseDbContext _tipsWarehouseDbContext;
+
+
         public InventoryRepository(TipsWarehouseDbContext repositoryContext, MySqlConnection connection) : base(repositoryContext)
         {
-            _connection = connection; 
+            _connection = connection;
+            _tipsWarehouseDbContext = repositoryContext;
         }
         public async Task<IEnumerable<Inventory>> SearchInventoryDetailsWithSumOfStock(InventoryItemNo inventoryItemNo)
         {
@@ -458,7 +461,7 @@ namespace Tips.Warehouse.Api.Repository
 
             var inventoryDetails = await _tipsWarehouseDbContext.Inventory
             .Where(x => x.PartNumber == itemNumber && x.IsStockAvailable == true && x.Balance_Quantity>0
-            && partTypes.Contains(x.PartType) && x.Warehouse =="FG")
+            && partTypes.Contains(x.PartType) /*&& x.Warehouse =="FG"*/)
             .GroupBy(x => x.PartNumber)  
             .Select(group => new ConsumptionInventoryDto
             {

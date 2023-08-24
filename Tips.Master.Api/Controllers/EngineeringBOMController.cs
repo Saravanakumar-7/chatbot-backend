@@ -2324,7 +2324,7 @@ namespace Tips.Master.Api.Controllers
         //coverage test final
 
         [HttpPost]
-        public async Task<IActionResult> GetBomDetailsForCoverageReport([FromBody] List<OpenSalesCoverageReportDto> openFGCoverageDetails)
+        public async Task<IActionResult> GetBomDetailsForCoverageReport(List<OpenSalesCoverageReportDto> openFGCoverageDetails)
         {
             ServiceResponse<List<BomCoverageReportChildItemReqQtyDto>> serviceResponse = new ServiceResponse<List<BomCoverageReportChildItemReqQtyDto>>();
             try
@@ -2355,8 +2355,10 @@ namespace Tips.Master.Api.Controllers
                     {
                         await ChildItemRequiredQtyForCoverage(bomCoverageList, item.ItemNumber,item.BalanceToOrder);
                     }
-
-                    var itemsRequiredQtyGrouped = bomCoverageList
+                    //changed
+                    
+                }
+                var itemsRequiredQtyGrouped = bomCoverageList
                         .GroupBy(item => item.ItemNumber)
                         .Select(group => new BomCoverageReportChildItemReqQtyDto
                         {
@@ -2365,7 +2367,7 @@ namespace Tips.Master.Api.Controllers
                             RequiredQty = group.Sum(item => item.RequiredQty)
                         })
                         .ToList();
-                }
+
                 serviceResponse.Data = itemsRequiredQtyGrouped;
                 serviceResponse.Message = "Returned all ChildItemRequiredQtys";
                 serviceResponse.Success = true;
@@ -2414,22 +2416,22 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        public async Task<decimal> CalculateTotalRequiredQtyForItem(string itemNumber, decimal balanceToOrderQty)
-        {
-            decimal totalRequiredQty = 0;
+        //public async Task<decimal> CalculateTotalRequiredQtyForItem(string itemNumber, decimal balanceToOrderQty)
+        //{
+        //    decimal totalRequiredQty = 0;
 
-            var enggBOM = await GetEnggBOM(itemNumber);
+        //    var enggBOM = await GetEnggBOM(itemNumber);
 
-            if (enggBOM != null)
-            {
-                List<CoverageReportDto> result = await CalculateTotalRequiredQtyRecursive(enggBOM, balanceToOrderQty);
+        //    if (enggBOM != null)
+        //    {
+        //        List<CoverageReportDto> result = await CalculateTotalRequiredQtyRecursive(enggBOM, balanceToOrderQty);
                 
-                // Calculate the sum of TotalRequiredQty values from the result list
-                totalRequiredQty = result.Sum(dto => dto.TotalRequiredQty);
-            }
+        //        // Calculate the sum of TotalRequiredQty values from the result list
+        //        totalRequiredQty = result.Sum(dto => dto.TotalRequiredQty);
+        //    }
 
-            return totalRequiredQty;
-        }
+        //    return totalRequiredQty;
+        //}
          
 
         private async Task<EnggBom> GetEnggBOM(string itemNumber)
