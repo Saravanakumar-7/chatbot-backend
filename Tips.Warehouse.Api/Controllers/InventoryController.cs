@@ -624,7 +624,8 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"Inventory with itemNumber: {itemNumber}, is invalid");
-                    return Ok(serviceResponse);
+                    return NotFound(serviceResponse);
+
                 }
                 else
                 {
