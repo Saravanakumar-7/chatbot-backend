@@ -241,9 +241,9 @@ namespace Tips.SalesService.Api.Repository
         public async Task<SalesOrder> GetSalesOrderById(int id)
         {
             var getSalesOrderbyId = await _tipsSalesServiceDbContext.SalesOrders.Where(x => x.Id == id)
-                .Include(o => o.SalesOrderAdditionalCharges)
                                   .Include(t => t.SalesOrdersItems)
                                   .ThenInclude(p => p.ScheduleDates)
+                                    .Include(o => o.SalesOrderAdditionalCharges)
 
                                  .FirstOrDefaultAsync();
 
@@ -515,7 +515,7 @@ namespace Tips.SalesService.Api.Repository
 
             return updateShopOrderQty;
         }
-        public async Task<IEnumerable<SalesOrderItems>> GetSalesOrderDetailsByIdandItemNo(string ItemNumber, int SalesOrderId)
+        public async Task<IEnumerable<SalesOrderItems>> GetSalesOrderItemDetailsByIdandItemNo(string ItemNumber, int SalesOrderId)
         {
             OrderStatus[] status = { OrderStatus.Open, OrderStatus.PartiallyClosed };
 

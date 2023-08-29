@@ -240,54 +240,26 @@ namespace Tips.Grin.Api.Repository
         public async Task<PagedList<Grins>> GetAllGrin([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             var getAllGrinDetails = FindAll().OrderByDescending(x => x.Id)
-                .Where(inv =>
-                    (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
-                    inv.GrinNumber.Contains(searchParams.SearchValue) ||
-                    inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
-                    inv.VendorName.Contains(searchParams.SearchValue)));
-
-            // Handle DBNull values if present
-            getAllGrinDetails = getAllGrinDetails.Select(inv => new Grins
-            {
-                Id = inv.Id,
-                // Handle DBNull for other properties similarly
-                GrinNumber = inv.GrinNumber is DBNull ? string.Empty : (string)inv.GrinNumber,
-                InvoiceNumber = inv.InvoiceNumber is DBNull ? string.Empty : (string)inv.InvoiceNumber,
-                VendorName = inv.VendorName is DBNull ? string.Empty : (string)inv.VendorName,
-                // ... handle other properties
-            });
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue) ||
+                 inv.InvoiceNumber.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))));
+            //.Include(t => t.GrinDocuments)
+            //.Include(t => t.GrinParts)
+            ////.ThenInclude(c=>c.CoCUpload)
+            //.Include(t => t.GrinParts)
+            // .ThenInclude(d => d.ProjectNumbers);
 
             return PagedList<Grins>.ToPagedList(getAllGrinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-        }
 
-        //public async Task<PagedList<Grins>> GetAllGrin([FromQuery] PagingParameter pagingParameter,[FromQuery] SearchParams searchParams)
-        //{
-        //    var getAllGrinDetails = FindAll().OrderByDescending(x => x.Id)
-        //      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue) ||
-        //         inv.InvoiceNumber.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))));
-        //    //.Include(t => t.GrinDocuments)
-        //    //.Include(t => t.GrinParts)
-        //    ////.ThenInclude(c=>c.CoCUpload)
-        //    //.Include(t => t.GrinParts)
-        //    // .ThenInclude(d => d.ProjectNumbers);
+            //var getAllGrinDetails = FindAll().OrderByDescending(x => x.Id)
+            //  .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue) ||
+            //     inv.VendorId.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))));
+            //  //.Include(t => t.GrinDocuments)
+            //  //.Include(t => t.GrinParts)
+            //  ////.ThenInclude(c=>c.CoCUpload)
+            //  //.Include(t => t.GrinParts)
+            //  // .ThenInclude(d => d.ProjectNumbers);
 
-        //    return PagedList<Grins>.ToPagedList(getAllGrinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-
-        //    //var getAllGrinDetails = FindAll().OrderByDescending(x => x.Id)
-        //    //  .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GrinNumber.Contains(searchParams.SearchValue) ||
-        //    //     inv.VendorId.Contains(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue))));
-        //    //  //.Include(t => t.GrinDocuments)
-        //    //  //.Include(t => t.GrinParts)
-        //    //  ////.ThenInclude(c=>c.CoCUpload)
-        //    //  //.Include(t => t.GrinParts)
-        //    //  // .ThenInclude(d => d.ProjectNumbers);
-
-        //    //return PagedList<Grins>.ToPagedList(getAllGrinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-        //}
-
-        private void ThenInclude(Func<object, ProjectNumbers> value)
-        {
-            throw new NotImplementedException();
+            //return PagedList<Grins>.ToPagedList(getAllGrinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<Grins> GetGrinById(int id)

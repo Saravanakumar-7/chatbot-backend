@@ -896,44 +896,56 @@ namespace Tips.SalesService.Api.Controllers
 
                 foreach (var item in salesOrderDispatchQtyDto)
                 {
-                    IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
+                    IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
                     var dispatchedQty = item.DispatchQty;
-
-                    foreach (var salesOrderItem in salesOrderItems)
+                    if (salesOrderItems != null)
                     {
-                        var balanceQty = salesOrderItem.BalanceQty;
-
-                        if (salesOrderItem.BalanceQty > dispatchedQty)
+                        foreach (var salesOrderItem in salesOrderItems)
                         {
-                            salesOrderItem.BalanceQty -= dispatchedQty;
-                            salesOrderItem.DispatchQty += dispatchedQty;
-                            dispatchedQty = 0;
-                        }
-                        else
-                        {
-                            salesOrderItem.BalanceQty = 0;
-                            salesOrderItem.DispatchQty += dispatchedQty;
-                            dispatchedQty -= balanceQty;
-                            balanceQty = 0;
-                            salesOrderItem.StatusEnum = OrderStatus.Closed;
-                        }                        
+                            var balanceQty = salesOrderItem.BalanceQty;
 
-                        await _salesOrderItemsRepository.UpdateSalesOrderItem(salesOrderItem);
+                            if (salesOrderItem.BalanceQty > dispatchedQty)
+                            {
+                                salesOrderItem.BalanceQty -= dispatchedQty;
+                                salesOrderItem.DispatchQty += dispatchedQty;
+                                dispatchedQty = 0;
+                            }
+                            else
+                            {
+                                salesOrderItem.BalanceQty = 0;
+                                salesOrderItem.DispatchQty += balanceQty;
+                                dispatchedQty -= balanceQty;
+                                balanceQty = 0;
+                                salesOrderItem.StatusEnum = OrderStatus.Closed;
+                            }
 
-                        if (dispatchedQty <= 0)
-                        {
-                            break;
+                            await _salesOrderItemsRepository.UpdateSalesOrderItem(salesOrderItem);
+
+                            if (dispatchedQty <= 0)
+                            {
+                                break;
+                            }
                         }
                     }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside UpdateDispatchDetails action in SalesOrder Controller");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
                 }
+                    _salesOrderItemsRepository.SaveAsync();
 
-                _salesOrderItemsRepository.SaveAsync();
-
-                serviceResponse.Data = null;
-                serviceResponse.Message = "SalesOrder Successfully Updated";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "SalesOrder Successfully Updated";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                
+                
             }
             catch (Exception ex)
             {
@@ -959,7 +971,7 @@ namespace Tips.SalesService.Api.Controllers
             //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
             foreach (var item in salesOrderDispatchQtyDto)
             {
-                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
+                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
                 var orderItem = salesOrderItems.FirstOrDefault();
                 orderItem.BalanceQty = orderItem.BalanceQty + item.DispatchQty;
                 orderItem.DispatchQty -= item.DispatchQty;
@@ -982,7 +994,7 @@ namespace Tips.SalesService.Api.Controllers
             //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
             foreach (var item in salesOrderDispatchQtyDto)
             {
-                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
+                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
                 var orderItem = salesOrderItems.FirstOrDefault();
                 orderItem.BalanceQty = orderItem.BalanceQty - item.DispatchQty;
                 orderItem.DispatchQty += item.DispatchQty;
@@ -1004,7 +1016,7 @@ namespace Tips.SalesService.Api.Controllers
             //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
             foreach (var item in salesOrderDispatchQtyDto)
             {
-                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
+                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
                 var orderItem = salesOrderItems.FirstOrDefault();
                 orderItem.BalanceQty = orderItem.BalanceQty + item.ReturnQty;
                 orderItem.DispatchQty -= item.ReturnQty;
@@ -1020,7 +1032,7 @@ namespace Tips.SalesService.Api.Controllers
         {
             foreach (var item in salesOrderDispatchQtyDto)
             {
-                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderDetailsByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
+                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
                 var orderItem = salesOrderItems.FirstOrDefault();
                 orderItem.BalanceQty += item.ReturnQty;
                 orderItem.DispatchQty -= item.ReturnQty;
