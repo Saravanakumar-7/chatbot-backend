@@ -28,12 +28,15 @@ namespace Tips.Production.Api.Controllers
         private IMaterialIssueHistoryRepository _materialIssueHistoryRepository;
         private IMaterialIssueRepository _materialIssueRepository;
         private IMaterialIssueItemRepository _materialIssueItemRepository;
+        private IShopOrderRepository _shopOrderRepository;
         private ILoggerManager _logger;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private IMapper _mapper;
 
-        public MaterialIssueController(IMaterialIssueItemRepository materialIssueItemRepository,IMaterialIssueHistoryRepository materialIssueHistoryRepository, IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        public MaterialIssueController(IMaterialIssueItemRepository materialIssueItemRepository,
+            IMaterialIssueHistoryRepository materialIssueHistoryRepository, IMaterialIssueRepository materialIssueRepository, 
+            ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, IShopOrderRepository shopOrderRepository)
         {
             _materialIssueItemRepository = materialIssueItemRepository;
             _materialIssueHistoryRepository = materialIssueHistoryRepository;
@@ -42,6 +45,7 @@ namespace Tips.Production.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _mapper = mapper;
+            _shopOrderRepository = shopOrderRepository;
         }
 
         // GET: api/<MaterialIssueController>
@@ -366,13 +370,26 @@ namespace Tips.Production.Api.Controllers
                 //List<InventoryDtoForMaterialIssue> inventoryDtoForIssue = new List<InventoryDtoForMaterialIssue>();
 
                 // get latest production bom version by passing fgnumber
-                var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], 
-                                        "GetLatestEnggProductionBomVersionDetailByItemNumber?","&fgPartNumber=", materialIssueDetailsById.ItemNumber));
-                var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                dynamic itemMasterObject = itemMasterObjectData.data;
+                //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], 
+                //                        "GetLatestEnggProductionBomVersionDetailByItemNumber?","&fgPartNumber=", materialIssueDetailsById.ItemNumber));
+                //var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                //dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                //dynamic itemMasterObject = itemMasterObjectData.data;
 
-                foreach (var updatedItem in materialIssueUpdateDto.MaterialIssueItems)
+                if(allMaterialIssueItems == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Internal Server Error!";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Material Issue Item with Given MaterailId does not existins. Error in  UpdateMaterialIssue action");
+                    return NotFound(serviceResponse);
+                }
+
+                ShopOrder shopOrderDetail = await _shopOrderRepository.GetShopOrderByShopOrderNo(materialIssueDetailsById.ShopOrderNumber);
+                decimal bomRevNo = shopOrderDetail.BomRevisionNo;
+                List<MaterialIssueItemUpdateDto> materialIssueItemDtos = materialIssueUpdateDto.MaterialIssueItems;
+                foreach (var updatedItem in materialIssueItemDtos)
                 {
                     if (updatedItem.NewIssueQty > 0)
                     {
@@ -381,16 +398,9 @@ namespace Tips.Production.Api.Controllers
 
                         if (existingItem != null)
                         {
-                            existingItem.PartNumber = updatedItem.PartNumber;
-                            existingItem.Description = updatedItem.Description;
-                            existingItem.PartType = updatedItem.PartType;
-                            existingItem.UOM = updatedItem.UOM;
-                            existingItem.RequiredQty = updatedItem.RequiredQty;
-                            existingItem.Unit = updatedItem.Unit;
-                            existingItem.MaterialIssuedStatus = updatedItem.MaterialIssuedStatus;
-
+                           
                             existingItem.IssuedQty += updatedItem.NewIssueQty;
-                            existingItem.MaterialIssuedStatus = updatedItem.MaterialIssuedStatus;
+                            
                             var projectNo = existingItem.ProjectNumber;
                             decimal newIssuedQty = updatedItem.NewIssueQty;
                             var partnumber = updatedItem.PartNumber;
@@ -401,18 +411,13 @@ namespace Tips.Production.Api.Controllers
                             inventoryDtoForIssue.PartNumber = partnumber;
                             inventoryDtoForIssue.ProjectNumber = projectNo;
                             inventoryDtoForIssue.DataFrom = "ShopOrder";
-                            inventoryDtoForIssue.Bomversion = itemMasterObject;
+                            inventoryDtoForIssue.Bomversion = bomRevNo;
                             inventoryDtoForIssue.IssueQty = newIssuedQty;
                             inventoryDtoForIssue.ShopOrderNumber = materialIssueUpdateDto.ShopOrderNumber;
                             var json = JsonConvert.SerializeObject(inventoryDtoForIssue);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
                             var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnMaterialIssue"), data);
 
-                            // Update the remaining properties of the material issue item
-
-                            // ... Update other properties as needed
-
-                            //var matertialIssueItem = _mapper.Map(allMaterialIssueItems, updatedItem);
                             await _materialIssueItemRepository.UpdateMaterialIssueItem(existingItem);
                             
                         }

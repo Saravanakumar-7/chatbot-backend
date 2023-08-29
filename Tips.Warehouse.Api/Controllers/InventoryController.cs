@@ -670,7 +670,7 @@ namespace Tips.Warehouse.Api.Controllers
                     _logger.LogInfo($"Returned Inventory with Itemnumber List in GetConsumptionChildItemStockWithWipQty");
                     //var result = _mapper.Map<ConsumptionInventoryDto>(InventoryDetails);
                     //var result = _mapper.Map<ConsumptionChildItemInventoryDto>(InventoryDetails);
-                    serviceResponse.Data = InventoryDetails;
+                    //serviceResponse.Data = InventoryDetails;
                     serviceResponse.Message = "Returned InventoryDetails with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -834,7 +834,7 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"Inventory with itemNumber: {dtoForMaterialIssue.PartNumber}, is invalid");
-                    return Ok(serviceResponse);
+                    return NotFound(serviceResponse);
                 }
 
                 decimal issuedQty = dtoForMaterialIssue.IssueQty;
@@ -875,13 +875,13 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTransaction.GrinMaterialType = inventoryDetails[i].GrinMaterialType;
                         inventoryTransaction.Remarks = "Issue Material";
                         inventoryTransaction.IsStockAvailable = inventoryDetails[i].IsStockAvailable;
-                        inventoryTransaction.Warehouse = inventoryDetails[i].Warehouse;
+                        inventoryTransaction.Warehouse = "WIP";
                         inventoryTransaction.GrinNo = inventoryDetails[i].GrinNo;
                         inventoryTransaction.GrinPartId = inventoryDetails[i].GrinPartId;
                         inventoryTransaction.shopOrderNo = shopOrderNumber;
 
                         await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransaction);
-                        _inventoryTranctionRepository.SaveAsync();
+                        
 
                     }
                     else
@@ -916,13 +916,13 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTransaction.GrinMaterialType = inventoryDetails[i].GrinMaterialType;
                         inventoryTransaction.Remarks = "Issue Material";
                         inventoryTransaction.IsStockAvailable = inventoryDetails[i].IsStockAvailable;
-                        inventoryTransaction.Warehouse = inventoryDetails[i].Warehouse;
+                        inventoryTransaction.Warehouse = "WIP";
                         inventoryTransaction.GrinNo = inventoryDetails[i].GrinNo;
                         inventoryTransaction.GrinPartId = inventoryDetails[i].GrinPartId;
                         inventoryTransaction.shopOrderNo = shopOrderNumber;
 
                         await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransaction);
-                        _inventoryTranctionRepository.SaveAsync();
+                        
 
 
                         /******* Dont Change the Position of IssuedQty and BalanceQty 
@@ -946,6 +946,7 @@ namespace Tips.Warehouse.Api.Controllers
                 }
 
                 _inventoryRepository.SaveAsync();
+                _inventoryTranctionRepository.SaveAsync();
                 _materialIssueTrackerRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Updated Successfully";
@@ -999,6 +1000,7 @@ namespace Tips.Warehouse.Api.Controllers
 
             wipInventory.Balance_Quantity = issueQty;
             wipInventory.Warehouse = "WIP";
+            wipInventory.Location = "WIP";
             wipInventory.Description = inventoryDetail.Description;
             wipInventory.ReferenceIDFrom = "Shop Order";
             wipInventory.shopOrderNo = shopOrderNumber;
