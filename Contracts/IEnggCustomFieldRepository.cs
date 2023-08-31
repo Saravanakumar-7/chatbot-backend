@@ -11,6 +11,7 @@ namespace Contracts
     public interface IEnggCustomFieldRepository:IRepositoryBase<EnggCustomField>
     {
         Task<IEnumerable<EnggCustomField>> GetAllEnggCustomFields();
+        //Task<PagedList<EnggCustomField>> GetAllEnggCustomFields(PagingParameter pagingParameter, SearchParames searchParams);
         Task<EnggCustomField> GetEnggCustomFieldById(int id);
         Task<IEnumerable<EnggCustomField>> GetAllActiveEnggCustomFields();
         Task<int?> CreateEnggCustomField(EnggCustomField enggcustomFields);

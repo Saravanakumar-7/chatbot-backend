@@ -3,6 +3,7 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NuGet.Common;
@@ -51,20 +52,49 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid User Data sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
-                var (token, userId) = await _jwtAuth.GetToken(loginDto.UserName, loginDto.Password);
-                 
+                var (loginResult, token, userId) = await _jwtAuth.GetToken(loginDto);
+
                 LoginResponseDto loginResponseDto = new LoginResponseDto();
                 loginResponseDto.Name = loginDto.UserName;
                 loginResponseDto.UnitName = loginDto.UnitName;
-                //loginResponseDto.Token = TokenDetails.Result;
-                loginResponseDto.UnitName = loginDto.UnitName;
-                loginResponseDto.Token = token;
-                loginResponseDto.UserId = userId; 
+
+                switch (loginResult)
+                {
+                    case LoginResult.Success:
+                        loginResponseDto.Token = token;
+                        loginResponseDto.UserId = userId;
+                        serviceResponse.Message = "Token Successfully Created";
+                        serviceResponse.Success = true;
+                        serviceResponse.StatusCode = HttpStatusCode.OK;
+                        break;
+
+                    case LoginResult.UserNotFound:
+                        serviceResponse.Message = "User does not exist";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        break;
+
+                    case LoginResult.InvalidPassword:
+                        serviceResponse.Message = "Invalid password";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.Unauthorized;
+                        break;
+
+                    case LoginResult.InvalidUnit:
+                        serviceResponse.Message = "User does not exist in this unit";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        break;
+
+                    default: // LoginResult.InvalidEntry
+                        serviceResponse.Message = "Invalid entry";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                        break;
+                }
+
                 serviceResponse.Data = loginResponseDto;
-                serviceResponse.Message = "Token Successfully Created";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
+                return StatusCode((int)serviceResponse.StatusCode, serviceResponse);
             }
             catch (Exception ex)
             {
@@ -76,5 +106,55 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //[HttpPost]
+        //public async Task<IActionResult> GenerateUserToken([FromBody] LoginDto loginDto)
+        //{
+        //    ServiceResponse<LoginResponseDto> serviceResponse = new ServiceResponse<LoginResponseDto>();
+        //    try
+        //    {
+        //        if (loginDto is null)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "User Data sent";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            _logger.LogError("User Data sent from client is null");
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid User Data";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            _logger.LogError("Invalid User Data sent from client is null.");
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        var (token, userId) = await _jwtAuth.GetToken(loginDto.UserName, loginDto.Password);
+                 
+        //        LoginResponseDto loginResponseDto = new LoginResponseDto();
+        //        loginResponseDto.Name = loginDto.UserName;
+        //        loginResponseDto.UnitName = loginDto.UnitName;
+        //        //loginResponseDto.Token = TokenDetails.Result;
+        //        loginResponseDto.UnitName = loginDto.UnitName;
+        //        loginResponseDto.Token = token;
+        //        loginResponseDto.UserId = userId; 
+        //        serviceResponse.Data = loginResponseDto;
+        //        serviceResponse.Message = "Token Successfully Created";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal Server Error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        _logger.LogError($"Something went wrong inside Costcenter action: {ex.Message}");
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
     }
 }

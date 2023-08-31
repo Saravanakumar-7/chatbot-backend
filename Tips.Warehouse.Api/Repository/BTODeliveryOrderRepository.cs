@@ -147,29 +147,43 @@ namespace Tips.Warehouse.Api.Repository
 
             return PagedList<BTODeliveryOrder>.ToPagedList(getAllActiveBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-
         public async Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
+            int searchValueInt;
+            bool isSearchValueInt = int.TryParse(searchParams.SearchValue, out searchValueInt);
             var getAllBTODetails = FindAll().OrderByDescending(x => x.Id)
-                .Where(inv => (string.IsNullOrWhiteSpace(searchParams.SearchValue))
-                || (string.IsNullOrEmpty(searchParams.SearchValue)
-                || inv.BTONumber.Contains(searchParams.SearchValue)
-                || inv.PONumber.Contains(searchParams.SearchValue)
-                || inv.CustomerName.Contains(searchParams.SearchValue)
-                || inv.CustomerId.Equals(searchParams.SearchValue)
-                 ))
+                .Where(inv => (string.IsNullOrWhiteSpace(searchParams.SearchValue)) || (string.IsNullOrEmpty(searchParams.SearchValue)
+                || inv.BTONumber.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue)
+                || inv.CustomerName.Contains(searchParams.SearchValue) || inv.CustomerId.Contains(searchParams.SearchValue)
+                || inv.SalesOrderNumber.Contains(searchParams.SearchValue) || inv.CustomerAliasName.Contains(searchParams.SearchValue)
+                || (isSearchValueInt && inv.SalesOrderId.Equals(searchValueInt)) || inv.TypeOfSolution.Contains(searchParams.SearchValue)
+                || inv.OrderType.Contains(searchParams.SearchValue)))
                  .Include(t => t.bTODeliveryOrderItems);
 
             return PagedList<BTODeliveryOrder>.ToPagedList(getAllBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-
-            //var getAllBTODetails = FindAll().OrderByDescending(x => x.Id)
-            //    .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BTONumber.Contains(searchParams.SearchValue) ||
-            //     inv.PONumber.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
-            //     || inv.SalesOrderId.Equals(int.Parse(searchParams.SearchValue)))))
-            //     .Include(t => t.bTODeliveryOrderItems);
-
-            //return PagedList<BTODeliveryOrder>.ToPagedList(getAllBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        //public async Task<PagedList<BTODeliveryOrder>> GetAllBTODeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        //{
+        //    var getAllBTODetails = FindAll().OrderByDescending(x => x.Id)
+        //        .Where(inv => (string.IsNullOrWhiteSpace(searchParams.SearchValue))
+        //        || (string.IsNullOrEmpty(searchParams.SearchValue)
+        //        || inv.BTONumber.Contains(searchParams.SearchValue)
+        //        || inv.PONumber.Contains(searchParams.SearchValue)
+        //        || inv.CustomerName.Contains(searchParams.SearchValue)
+        //        || inv.CustomerId.Equals(searchParams.SearchValue)
+        //         ))
+        //         .Include(t => t.bTODeliveryOrderItems);
+
+        //    return PagedList<BTODeliveryOrder>.ToPagedList(getAllBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+        //    //var getAllBTODetails = FindAll().OrderByDescending(x => x.Id)
+        //    //    .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BTONumber.Contains(searchParams.SearchValue) ||
+        //    //     inv.PONumber.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
+        //    //     || inv.SalesOrderId.Equals(int.Parse(searchParams.SearchValue)))))
+        //    //     .Include(t => t.bTODeliveryOrderItems);
+
+        //    //return PagedList<BTODeliveryOrder>.ToPagedList(getAllBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
         public async Task<IEnumerable<ListofBtoDeliveryOrderDetails>> GetBtoDeliveryOrderNumberList()
         {
 

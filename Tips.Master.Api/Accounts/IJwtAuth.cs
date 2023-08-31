@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Enums;
 using Entities.Helper;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,8 @@ namespace Accounts
     public interface IJwtAuth 
     {
         //Task<string> GetToken(string userName, string password);
-        Task<(string token, int userId)> GetToken(string userName, string password);
+        //Task<(string token, int userId)> GetToken(string userName, string password);
+        Task<(LoginResult Result, string Token, int UserId)> GetToken(LoginDto loginDto);
 
 
     }

@@ -623,7 +623,14 @@ namespace Tips.Purchase.Api.Repository
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
+        //public async Task<IEnumerable<PoItem>> GetPoItemDetailsByIdandConfirmationDate(int poItemId,DateTime confirmationDate)
+        //{
+        //    var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContexts.PoItems
+        //         .Where(x => x.Id == poItemId && x.POConfirmationDates == confirmationDate && x.PoPartsStatus != true)
+        //                  .ToListAsync();
 
+        //    return getPODetailsByPONOandItemNo;
+        //}
         public async Task<IEnumerable<PoItem>> GetPODetailsByPONumberandItemNo(string ItemNumber, string PONumber)
         {
             var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContexts.PoItems

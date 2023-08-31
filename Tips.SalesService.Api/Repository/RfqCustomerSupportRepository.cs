@@ -677,6 +677,8 @@ namespace Tips.SalesService.Api.Repository
                 .Where(inv =>
                     (string.IsNullOrWhiteSpace(searchParammes.SearchValue) ||
                     inv.RfqNumber.Contains(searchParammes.SearchValue) ||
+                    inv.LeadId.Contains(searchParammes.SearchValue) ||
+                    inv.CustomerId.Contains(searchParammes.SearchValue) ||
                     inv.CustomerName.Contains(searchParammes.SearchValue)) &&
                     (!isSearchValueInt || inv.RevisionNumber == searchValueInt) && inv.IsModified == false)
                 .OrderByDescending(x => x.Id);

@@ -108,16 +108,41 @@ namespace Repository
         }
         public async Task<PagedList<EnggBom>> GetAllEnggBOM([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
-
+            PartType? check;
+            if (Enum.TryParse<PartType>(searchParams.SearchValue, out PartType result))
+            {
+                check = result;
+            }
+            else
+            {
+                check = null;
+            }
+            int searchValueAsInt;
+            bool isSearchValueNumeric = int.TryParse(searchParams.SearchValue, out searchValueAsInt);
             var enggBomDetails = FindAll().OrderByDescending(x => x.BOMId)
-                          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-                             /*inv.ItemType.Equals(int.Parse(searchParams.SearchValue)) ||*/ inv.ItemDescription.Contains(searchParams.SearchValue))))
+                          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
+                          || inv.ItemNumber.Contains(searchParams.SearchValue)
+                          || inv.ItemDescription.Contains(searchParams.SearchValue)
+                          || (isSearchValueNumeric && inv.RevisionNumber.Equals(searchValueAsInt))
+                          || inv.ItemType.Equals(check))))
                                 .Include(t => t.EnggChildItems)
                                .ThenInclude(t => t.EnggAlternates)
                                .Include(t => t.NREConsumable);
 
             return PagedList<EnggBom>.ToPagedList(enggBomDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        //public async Task<PagedList<EnggBom>> GetAllEnggBOM([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //{
+
+        //    var enggBomDetails = FindAll().OrderByDescending(x => x.BOMId)
+        //                  .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
+        //                     /*inv.ItemType.Equals(int.Parse(searchParams.SearchValue)) ||*/ inv.ItemDescription.Contains(searchParams.SearchValue))))
+        //                        .Include(t => t.EnggChildItems)
+        //                       .ThenInclude(t => t.EnggAlternates)
+        //                       .Include(t => t.NREConsumable);
+
+        //    return PagedList<EnggBom>.ToPagedList(enggBomDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
         public async Task<IEnumerable<EnggBomItemDto>> GetAllEnggBOMItemNumber()
         {
             IEnumerable<EnggBomItemDto> getAllEnggBomItems = await _tipsMasterDbContext.EnggBoms
@@ -480,15 +505,28 @@ namespace Repository
 
             return PagedList<EngineeringBom>.ToPagedList(enggBomDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-
         public async Task<PagedList<EngineeringBom>> GetAllReleaseEnggBom([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
+            decimal searchValueAsInt;
+            bool isSearchValueNumeric = decimal.TryParse(searchParams.SearchValue, out searchValueAsInt);
             var enggBomDetails = FindAll().OrderByDescending(x => x.Id)
-                          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
-                             inv.ReleaseNote.Contains(searchParams.SearchValue) || inv.ReleaseFor.Contains(searchParams.SearchValue))));
+                          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
+                          || inv.ItemNumber.Contains(searchParams.SearchValue)
+                          || inv.ReleaseNote.Contains(searchParams.SearchValue)
+                          || inv.ReleaseFor.Contains(searchParams.SearchValue)
+                || (isSearchValueNumeric && inv.ReleaseVersion.Equals(searchValueAsInt))
+                          )));
 
             return PagedList<EngineeringBom>.ToPagedList(enggBomDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        //public async Task<PagedList<EngineeringBom>> GetAllReleaseEnggBom([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //{
+        //    var enggBomDetails = FindAll().OrderByDescending(x => x.Id)
+        //                  .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ItemNumber.Contains(searchParams.SearchValue) ||
+        //                     inv.ReleaseNote.Contains(searchParams.SearchValue) || inv.ReleaseFor.Contains(searchParams.SearchValue))));
+
+        //    return PagedList<EngineeringBom>.ToPagedList(enggBomDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
 
         public async Task<EngineeringBom> GetReleaseEnggBomById(int id)
         {

@@ -351,6 +351,8 @@ namespace Tips.SalesService.Api.Repository
             var quoteDetails = FindAll().OrderByDescending(x => x.Id)
             .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.QuoteNumber.Contains(searchParammes.SearchValue)
             || inv.RFQNumber.Contains(searchParammes.SearchValue)
+            ||inv.CustomerId.Contains(searchParammes.SearchValue)
+            || inv.LeadId.Contains(searchParammes.SearchValue)
             || inv.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
             || inv.TotalAmount.Equals(int.Parse(searchParammes.SearchValue))
             || inv.CustomerName.Contains(searchParammes.SearchValue))))

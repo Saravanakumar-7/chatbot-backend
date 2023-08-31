@@ -53,8 +53,9 @@ namespace Repository
         public async Task<PagedList<VendorMaster>> GetAllVendorMasters(PagingParameter pagingParameter, SearchParames searchParams)
         {
             var itemmasterDetails = FindAll().OrderByDescending(x => x.Id)
-            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue) ||
-            inv.VendorType.Contains(searchParams.SearchValue) || inv.VendorAliasName.Contains(searchParams.SearchValue))))
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue)
+            || inv.VendorType.Contains(searchParams.SearchValue) || inv.VendorAliasName.Contains(searchParams.SearchValue)
+            || inv.PurchaseGroup.Contains(searchParams.SearchValue) || inv.TypeOfCompany.Contains(searchParams.SearchValue))))
             .Include(a => a.VendorBankings)
             .Include(a => a.Addresses)
             .Include(a => a.RelatedVendors)
@@ -63,6 +64,19 @@ namespace Repository
 
             return PagedList<VendorMaster>.ToPagedList(itemmasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        //public async Task<PagedList<VendorMaster>> GetAllVendorMasters(PagingParameter pagingParameter, SearchParames searchParams)
+        //{
+        //    var itemmasterDetails = FindAll().OrderByDescending(x => x.Id)
+        //    .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue) ||
+        //    inv.VendorType.Contains(searchParams.SearchValue) || inv.VendorAliasName.Contains(searchParams.SearchValue))))
+        //    .Include(a => a.VendorBankings)
+        //    .Include(a => a.Addresses)
+        //    .Include(a => a.RelatedVendors)
+        //    .Include(a => a.HeadCountings)
+        //    .Include(a => a.Contacts);
+
+        //    return PagedList<VendorMaster>.ToPagedList(itemmasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
 
         public async Task<VendorMaster> GetVendorMasterById(int id)
         {

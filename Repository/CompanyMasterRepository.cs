@@ -98,9 +98,9 @@ namespace Repository
         {
             var companymasterDetails = FindAll().OrderByDescending(x => x.Id)
              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CompanyName.Contains(searchParams.SearchValue) ||
-                inv.CompanyId.Contains(searchParams.SearchValue) || inv.CompanyType.Contains(searchParams.SearchValue) || inv.PurchaseGroup.Contains(searchParams.SearchValue)
+                inv.TypeOfCompany.Contains(searchParams.SearchValue) || inv.CompanyType.Contains(searchParams.SearchValue) || inv.PurchaseGroup.Contains(searchParams.SearchValue)
                                  || inv.CompanyAliasName.Contains(searchParams.SearchValue))))
-                                                                                                                                                                            
+
              .Include(t => t.CompanyAddresses)
              .Include(t => t.CompanyBankings)
              .Include(t => t.CompanyContacts)
@@ -109,6 +109,21 @@ namespace Repository
 
             return PagedList<CompanyMaster>.ToPagedList(companymasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        //public async Task<PagedList<CompanyMaster>> GetAllCompanyMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //{
+        //    var companymasterDetails = FindAll().OrderByDescending(x => x.Id)
+        //     .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CompanyName.Contains(searchParams.SearchValue) ||
+        //        inv.CompanyId.Contains(searchParams.SearchValue) || inv.CompanyType.Contains(searchParams.SearchValue) || inv.PurchaseGroup.Contains(searchParams.SearchValue)
+        //                         || inv.CompanyAliasName.Contains(searchParams.SearchValue))))
+                                                                                                                                                                            
+        //     .Include(t => t.CompanyAddresses)
+        //     .Include(t => t.CompanyBankings)
+        //     .Include(t => t.CompanyContacts)
+        //      .Include(d => d.CompanyMasterHeadCountings)
+        //      .Include(x => x.CompanyApprovals);
+
+        //    return PagedList<CompanyMaster>.ToPagedList(companymasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
 
 
         public async Task<CompanyMaster> GetCompanyMasterById(int id)

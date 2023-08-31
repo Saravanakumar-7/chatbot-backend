@@ -58,13 +58,14 @@ namespace Tips.Warehouse.Api.Repository
                 throw ex;
             }
         }
-
         public async Task<PagedList<Invoice>> GetAllInvoices([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
 
             var getAllInvoiceList = FindAll().OrderByDescending(x => x.Id)
                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
-                inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
+                inv.CustomerAliasName.Contains(searchParams.SearchValue)
+                || inv.CustomerId.Contains(searchParams.SearchValue)
+                || inv.CustomerName.Contains(searchParams.SearchValue)
                 || inv.CompanyName.Contains(searchParams.SearchValue))))
                 .Include(k => k.invoiceChildItems)
                 .Include(p => p.InvoiceAdditionalCharges);
@@ -72,6 +73,19 @@ namespace Tips.Warehouse.Api.Repository
             return PagedList<Invoice>.ToPagedList(getAllInvoiceList, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
+        //public async Task<PagedList<Invoice>> GetAllInvoices([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        //{
+
+        //    var getAllInvoiceList = FindAll().OrderByDescending(x => x.Id)
+        //       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
+        //        inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
+        //        || inv.CompanyName.Contains(searchParams.SearchValue))))
+        //        .Include(k => k.invoiceChildItems)
+        //        .Include(p => p.InvoiceAdditionalCharges);
+
+        //    return PagedList<Invoice>.ToPagedList(getAllInvoiceList, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+        //}
 
         public async Task<IEnumerable<Invoice>> SearchInvoiceDate([FromQuery] SearchsDateParms searchsDateParms)
         {

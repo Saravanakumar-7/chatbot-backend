@@ -33,13 +33,14 @@ namespace Tips.Purchase.Api.Controllers
         private IPoItemsRepository _poItemsRepository;
         private IPurchaseRequisitionRepository _purchaseRequisitionRepository;
         private IPoConfirmationDateHistoryRepository _poConfirmationDateHistoryRepository;
+        private IPoConfirmationHistoryRepository _poConfirmationHistoryRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IDocumentUploadRepository _documentUploadRepository;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
 
 
-        public PurchaseOrderController(IPurchaseRequisitionRepository purchaseRequisitionRepository,IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper)
+        public PurchaseOrderController(IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _poItemsRepository = poItemsRepository;
@@ -49,6 +50,7 @@ namespace Tips.Purchase.Api.Controllers
             _documentUploadRepository = documentUploadRepository;
             _webHostEnvironment = webHostEnvironment;
             _poConfirmationDateHistoryRepository = poConfirmationDateHistoryRepository;
+            _poConfirmationHistoryRepository = poConfirmationHistoryRepository;
         }
 
         [HttpGet]
@@ -1709,6 +1711,44 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //[HttpGet("{id}")]
+        //public async Task<IActionResult> UpdatePoItemConfirmationStatus(int poItemId, DateTime confirmationDate)
+        //{
+        //    ServiceResponse<PoItemsDto> serviceResponse = new ServiceResponse<PoItemsDto>();
+
+        //    try
+        //    {
+        //        var purchaseOrderItemDetailById = await _poItemsRepository.GetPoItemDetailsByIdandConfirmationDate(poItemId, confirmationDate);
+        //        if (purchaseOrderItemDetailById == null)
+        //        {
+        //            _logger.LogError($"PurchaseOrderItem with poItemId: {poItemId}, hasn't been found in db.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"PurchaseOrderItem with poItemId hasn't been found.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            return NotFound(serviceResponse);
+        //        }
+
+        //        purchaseOrderItemDetailById.PoConfirmationStatus = true;
+        //        string result = await _poItemsRepository.UpdatePOOrderItem(purchaseOrderItemDetailById);
+        //        _repository.SaveAsync();
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "PurchaseOrderItemConfirmationStatus have been Updated";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside UpdatePurchaseOrderItemConfirmationStatus action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
 
         [HttpGet]
         public async Task<IActionResult> ShortClosePoItemSatusByPoItemId(int poItemId)

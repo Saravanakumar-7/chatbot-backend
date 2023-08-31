@@ -16,6 +16,7 @@ namespace Tips.Purchase.Api.Entities
         public decimal UnitPrice { get; set; }
         [Precision(13, 3)]
         public decimal Qty { get; set; }
+        public bool PoConfirmationStatus { get; set; }
         public DateTime ConfirmationDate { get; set; }
         public string? PONumber { get; set; }
 
@@ -28,6 +29,7 @@ namespace Tips.Purchase.Api.Entities
         public string? SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
         public bool PoPartsStatus { get; set; }
+        public PoStatus PoStatus { get; set; }
 
         [Precision(13, 3)]
         public decimal SGST { get; set; }
@@ -37,18 +39,13 @@ namespace Tips.Purchase.Api.Entities
         public decimal IGST { get; set; }
         [Precision(13, 3)]
         public decimal UTGST { get; set; }
-
-
         [Precision(13, 3)]
         public decimal? SubTotal { get; set; }
-
         [Precision(13, 3)]
         public decimal TotalWithTax { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public PoStatus PoStatus { get; set; }
-        public bool PoConfirmationStatus { get; set; }
     }
 }
