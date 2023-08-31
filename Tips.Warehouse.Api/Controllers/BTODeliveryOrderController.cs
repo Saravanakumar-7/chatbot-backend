@@ -472,30 +472,31 @@ namespace Tips.Warehouse.Api.Controllers
                             }
                             
                         }
-             
-
-                        //Add BTO Detail Into Inventory transaction Table
-
-                        InventoryTranction inventoryTranction = new InventoryTranction();
-                        inventoryTranction.PartNumber = bTODoItemList[i].FGItemNumber;
-                        inventoryTranction.MftrPartNumber = bTODoItemList[i].FGItemNumber;
-                        inventoryTranction.Description = bTODoItemList[i].Description;
-                        inventoryTranction.Issued_Quantity = Convert.ToDecimal(bTODoItemList[i].DispatchQty);
-                        inventoryTranction.UOM = bTODoItemList[i].UOM;
-                        inventoryTranction.Issued_DateTime = DateTime.Now;
-                        inventoryTranction.ReferenceID = bTODeliveryOrder.BTONumber;
-                        inventoryTranction.ReferenceIDFrom = "BTO Delivery Order";
-                        inventoryTranction.Issued_By = "Admin";
-                        inventoryTranction.From_Location = "FG";
-                        inventoryTranction.TO_Location = "BTO";
-                        inventoryTranction.Warehouse = "BTO";
-                        inventoryTranction.Remarks = "Create BTO";
-
-                        var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
 
-                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
-                        
+                        ////Add BTO Detail Into Inventory transaction Table
+
+                        //InventoryTranction inventoryTranction = new InventoryTranction();
+                        //inventoryTranction.PartNumber = bTODoItemList[i].FGItemNumber;
+                        //inventoryTranction.MftrPartNumber = bTODoItemList[i].FGItemNumber;
+                        //inventoryTranction.PartType = bTODoItemList[i].PartType;
+                        //inventoryTranction.Description = bTODoItemList[i].Description;
+                        //inventoryTranction.Issued_Quantity = Convert.ToDecimal(bTODoItemList[i].DispatchQty);
+                        //inventoryTranction.UOM = bTODoItemList[i].UOM;
+                        //inventoryTranction.Issued_DateTime = DateTime.Now;
+                        //inventoryTranction.ReferenceID = bTODeliveryOrder.BTONumber;
+                        //inventoryTranction.ReferenceIDFrom = "BTO Delivery Order";
+                        //inventoryTranction.Issued_By = "Admin";
+                        //inventoryTranction.From_Location = "FG";
+                        //inventoryTranction.TO_Location = "BTO";
+                        //inventoryTranction.Warehouse = "BTO";
+                        //inventoryTranction.Remarks = "Create BTO";
+
+                        //var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+
+
+                        //await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+
 
 
                         // Add Bto detail in to btodeliveryorderhistory table
@@ -552,7 +553,7 @@ namespace Tips.Warehouse.Api.Controllers
                 if((response.StatusCode == HttpStatusCode.OK))
                 {
                     _inventoryRepository.SaveAsync();
-                    _inventoryTranctionRepository.SaveAsync();
+                    //_inventoryTranctionRepository.SaveAsync();
                     _bTODeliveryOrderHistoryRepository.SaveAsync();
                     _repository.SaveAsync();
                 }

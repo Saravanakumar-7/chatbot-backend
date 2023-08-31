@@ -24,24 +24,25 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllRegistrationForm([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //public async Task<IActionResult> GetAllRegistrationForm([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+             public async Task<IActionResult> GetAllRegistrationForm([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<RegistrationFormDto>> serviceResponse = new ServiceResponse<IEnumerable<RegistrationFormDto>>();
             try
             {
 
-                var registrationFormDetails = await _repository.RegistrationFormRepository.GetAllRegistrationForm(pagingParameter, searchParams);
+                var registrationFormDetails = await _repository.RegistrationFormRepository.GetAllRegistrationForm(searchParams);
 
-                var metadata = new
-                {
-                    registrationFormDetails.TotalCount,
-                    registrationFormDetails.PageSize,
-                    registrationFormDetails.CurrentPage,
-                    registrationFormDetails.HasNext,
-                    registrationFormDetails.HasPreviuos
-                };
+                //var metadata = new
+                //{
+                //    registrationFormDetails.TotalCount,
+                //    registrationFormDetails.PageSize,
+                //    registrationFormDetails.CurrentPage,
+                //    registrationFormDetails.HasNext,
+                //    registrationFormDetails.HasPreviuos
+                //};
 
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                //Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all RegistrationForm");
                 var result = _mapper.Map<IEnumerable<RegistrationFormDto>>(registrationFormDetails);
                 serviceResponse.Data = result;

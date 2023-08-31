@@ -527,83 +527,83 @@ namespace Tips.Grin.Api.Controllers
                                 "UpdateInventory?id=", inventoryObject.id), data);
                         }
 
-                        //InventoryTranction Update Code
+                        ////InventoryTranction Update Code
 
-                        decimal acceptedQuantity = iQCDto[i].AcceptedQty;
-                        var inventoryTranctionObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryTranctionAPI"],
-                            "GetInventoryTranctionDetailsByGrinNoandGrinId?", "GrinNo=", grinNo, "&GrinPartsId=",
-                            grinPartsId, "&ItemNumber=", itemNo, "&ProjectNumber=", projectNos));
-                        var inventoryTranctionObjectString = await inventoryTranctionObjectResult.Content.ReadAsStringAsync();
-                        dynamic inventoryTranctionObjectData = JsonConvert.DeserializeObject(inventoryTranctionObjectString);
-                        dynamic inventoryTranctionObject = inventoryTranctionObjectData.data;
-                        if (inventoryTranctionObject != null)
-                        {
-                            decimal balanceQty = inventoryTranctionObject.issued_Quantity;
+                        //decimal acceptedQuantity = iQCDto[i].AcceptedQty;
+                        //var inventoryTranctionObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryTranctionAPI"],
+                        //    "GetInventoryTranctionDetailsByGrinNoandGrinId?", "GrinNo=", grinNo, "&GrinPartsId=",
+                        //    grinPartsId, "&ItemNumber=", itemNo, "&ProjectNumber=", projectNos));
+                        //var inventoryTranctionObjectString = await inventoryTranctionObjectResult.Content.ReadAsStringAsync();
+                        //dynamic inventoryTranctionObjectData = JsonConvert.DeserializeObject(inventoryTranctionObjectString);
+                        //dynamic inventoryTranctionObject = inventoryTranctionObjectData.data;
+                        //if (inventoryTranctionObject != null)
+                        //{
+                        //    decimal balanceQty = inventoryTranctionObject.issued_Quantity;
 
-                            if (inventoryTranctionObject.issued_Quantity <= acceptedQuantity && inventoryTranctionObject.issued_Quantity != 0)
-                            {
-                                inventoryTranctionObject.warehouse = "IQC";
-                                inventoryTranctionObject.from_Location = "IQC";
-                                inventoryTranctionObject.tO_Location = "IQC";
-                                inventoryTranctionObject.referenceIDFrom = "GRIN";
-                                acceptedQuantity -= balanceQty;
+                        //    if (inventoryTranctionObject.issued_Quantity <= acceptedQuantity && inventoryTranctionObject.issued_Quantity != 0)
+                        //    {
+                        //        inventoryTranctionObject.warehouse = "IQC";
+                        //        inventoryTranctionObject.from_Location = "IQC";
+                        //        inventoryTranctionObject.tO_Location = "IQC";
+                        //        inventoryTranctionObject.referenceIDFrom = "GRIN";
+                        //        acceptedQuantity -= balanceQty;
 
-                            }
-                            else if (inventoryTranctionObject.issued_Quantity > acceptedQuantity)
-                            {
-                                if (acceptedQuantity == 0)
-                                {
-                                    inventoryTranctionObject.issued_Quantity = acceptedQuantity;
-                                    inventoryTranctionObject.warehouse = "IQC";
-                                    inventoryTranctionObject.from_Location = "IQC";
-                                    inventoryTranctionObject.tO_Location = "IQC";
-                                    inventoryTranctionObject.referenceIDFrom = "GRIN";
-                                    inventoryTranctionObject.isStockAvailable = false;
-                                }
-                                else
-                                {
-                                    inventoryTranctionObject.issued_Quantity = acceptedQuantity;
-                                    inventoryTranctionObject.warehouse = "IQC";
-                                    inventoryTranctionObject.from_Location = "IQC";
-                                    inventoryTranctionObject.tO_Location = "IQC";
-                                    inventoryTranctionObject.referenceIDFrom = "GRIN";
-                                    acceptedQuantity = 0;
-                                }
-                            }
+                        //    }
+                        //    else if (inventoryTranctionObject.issued_Quantity > acceptedQuantity)
+                        //    {
+                        //        if (acceptedQuantity == 0)
+                        //        {
+                        //            inventoryTranctionObject.issued_Quantity = acceptedQuantity;
+                        //            inventoryTranctionObject.warehouse = "IQC";
+                        //            inventoryTranctionObject.from_Location = "IQC";
+                        //            inventoryTranctionObject.tO_Location = "IQC";
+                        //            inventoryTranctionObject.referenceIDFrom = "GRIN";
+                        //            inventoryTranctionObject.isStockAvailable = false;
+                        //        }
+                        //        else
+                        //        {
+                        //            inventoryTranctionObject.issued_Quantity = acceptedQuantity;
+                        //            inventoryTranctionObject.warehouse = "IQC";
+                        //            inventoryTranctionObject.from_Location = "IQC";
+                        //            inventoryTranctionObject.tO_Location = "IQC";
+                        //            inventoryTranctionObject.referenceIDFrom = "GRIN";
+                        //            acceptedQuantity = 0;
+                        //        }
+                        //    }
 
-                            var json = JsonConvert.SerializeObject(inventoryTranctionObject);
-                            var data = new StringContent(json, Encoding.UTF8, "application/json");
-                            var response = await _httpClient.PutAsync(string.Concat(_config["InventoryTranctionAPI"],
-                                "UpdateInventoryTranction?id=", inventoryTranctionObject.id), data);
-                        }
-                        else
-                        {
-                            IQCInventoryTranctionDto iqcInventoryTranctionDto = new IQCInventoryTranctionDto();
-                            iqcInventoryTranctionDto.PartNumber = grinPartsDetails.ItemNumber;
-                            iqcInventoryTranctionDto.LotNumber = grinPartsDetails.LotNumber;
-                            iqcInventoryTranctionDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
-                            iqcInventoryTranctionDto.Description = grinPartsDetails.ItemDescription;
-                            iqcInventoryTranctionDto.ProjectNumber = projectNo.ProjectNumber;
-                            iqcInventoryTranctionDto.Issued_Quantity = Convert.ToDecimal(projectNo.ProjectQty);
-                            iqcInventoryTranctionDto.UOM = grinPartsDetails.UOM;
-                            iqcInventoryTranctionDto.Warehouse = "IQC";
-                            iqcInventoryTranctionDto.From_Location = "IQC";
-                            iqcInventoryTranctionDto.TO_Location = "IQC";
-                            iqcInventoryTranctionDto.GrinNo = grinNo;
-                            iqcInventoryTranctionDto.GrinPartId = grinPartsDetails.Id;
-                            iqcInventoryTranctionDto.PartType = grinPartsDetails.ItemType;  //We need to check this
-                            iqcInventoryTranctionDto.ReferenceID = Convert.ToString(grinPartsDetails.Id);
-                            iqcInventoryTranctionDto.ReferenceIDFrom = "GRIN";
-                            iqcInventoryTranctionDto.GrinMaterialType = "";
-                            iqcInventoryTranctionDto.ShopOrderNo = "";
-                            iqcInventoryTranctionDto.IsStockAvailable = true;
+                        //    var json = JsonConvert.SerializeObject(inventoryTranctionObject);
+                        //    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        //    var response = await _httpClient.PutAsync(string.Concat(_config["InventoryTranctionAPI"],
+                        //        "UpdateInventoryTranction?id=", inventoryTranctionObject.id), data);
+                        //}
+                        //else
+                        //{
+                        //    IQCInventoryTranctionDto iqcInventoryTranctionDto = new IQCInventoryTranctionDto();
+                        //    iqcInventoryTranctionDto.PartNumber = grinPartsDetails.ItemNumber;
+                        //    iqcInventoryTranctionDto.LotNumber = grinPartsDetails.LotNumber;
+                        //    iqcInventoryTranctionDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
+                        //    iqcInventoryTranctionDto.Description = grinPartsDetails.ItemDescription;
+                        //    iqcInventoryTranctionDto.ProjectNumber = projectNo.ProjectNumber;
+                        //    iqcInventoryTranctionDto.Issued_Quantity = Convert.ToDecimal(projectNo.ProjectQty);
+                        //    iqcInventoryTranctionDto.UOM = grinPartsDetails.UOM;
+                        //    iqcInventoryTranctionDto.Warehouse = "IQC";
+                        //    iqcInventoryTranctionDto.From_Location = "IQC";
+                        //    iqcInventoryTranctionDto.TO_Location = "IQC";
+                        //    iqcInventoryTranctionDto.GrinNo = grinNo;
+                        //    iqcInventoryTranctionDto.GrinPartId = grinPartsDetails.Id;
+                        //    iqcInventoryTranctionDto.PartType = grinPartsDetails.ItemType;  //We need to check this
+                        //    iqcInventoryTranctionDto.ReferenceID = Convert.ToString(grinPartsDetails.Id);
+                        //    iqcInventoryTranctionDto.ReferenceIDFrom = "GRIN";
+                        //    iqcInventoryTranctionDto.GrinMaterialType = "";
+                        //    iqcInventoryTranctionDto.ShopOrderNo = "";
+                        //    iqcInventoryTranctionDto.IsStockAvailable = true;
 
-                            var json = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
-                            var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        //    var json = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
+                        //    var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data);
+                        //    var response = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data);
 
-                        }
+                        //}
                     }
 
                     ////update accepted qty and rejected qty in grin model

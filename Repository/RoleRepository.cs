@@ -54,14 +54,25 @@ namespace Repository
             return PagedList<Role>.ToPagedList(activeRolesDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<PagedList<Role>> GetAllRoles([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //public async Task<PagedList<Role>> GetAllRoles([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //{
+
+        //    var rolesDetails = FindAll().OrderByDescending(x => x.Id)
+        //     .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.RoleName.Contains(searchParams.SearchValue) ||
+        //        inv.Description.Contains(searchParams.SearchValue))));
+
+        //    return PagedList<Role>.ToPagedList(rolesDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
+
+        public async Task<IEnumerable<Role>> GetAllRoles([FromQuery] SearchParames searchParams)
         {
+            var rolesDetails = FindAll()
+                .Where(inv => (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
+                               inv.RoleName.Contains(searchParams.SearchValue) ||
+                               inv.Description.Contains(searchParams.SearchValue)))
+                .OrderByDescending(x => x.Id);
 
-            var rolesDetails = FindAll().OrderByDescending(x => x.Id)
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.RoleName.Contains(searchParams.SearchValue) ||
-                inv.Description.Contains(searchParams.SearchValue))));
-
-            return PagedList<Role>.ToPagedList(rolesDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            return rolesDetails.ToList();
         }
 
         public async Task<Role> GetRoleById(int id)

@@ -726,8 +726,6 @@ namespace Tips.Grin.Api.Controllers
                     {
                         foreach (var project in parts.ProjectNumbers)
                         {
-                            //var lotNumber = await _grinPartsRepository.GetGrinPartsById(parts.Id);
-
                             GrinInventoryTranctionDto grinInventoryTranctionDto = new GrinInventoryTranctionDto();
                             grinInventoryTranctionDto.PartNumber = parts.ItemNumber;
                             grinInventoryTranctionDto.LotNumber = parts.LotNumber;
