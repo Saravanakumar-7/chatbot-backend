@@ -10,7 +10,8 @@ namespace Contracts
 {
     public interface IRoleRepository : IRepositoryBase<Role>
     {
-        Task<PagedList<Role>> GetAllRoles(PagingParameter pagingParameter, SearchParames searchParams);
+        //Task<PagedList<Role>> GetAllRoles(SearchParames searchParams);
+        Task<IEnumerable<Role>> GetAllRoles(SearchParames searchParams);
         Task<Role> GetRoleById(int id);
         Task<PagedList<Role>> GetAllActiveRoles(PagingParameter pagingParameter, SearchParames searchParams);
         Task<int?> CreateRole(Role role);

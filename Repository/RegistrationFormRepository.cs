@@ -58,16 +58,28 @@ namespace Repository
 
             return PagedList<RegistrationForm>.ToPagedList(activeRegistrationFormDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-
-        public async Task<PagedList<RegistrationForm>> GetAllRegistrationForm([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<RegistrationForm>> GetAllRegistrationForm([FromQuery] SearchParames searchParams)
         {
-            var registrationFormDetails = FindAll().OrderByDescending(x => x.Id)
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.UserName.Contains(searchParams.SearchValue) ||
-                inv.EmailId.Contains(searchParams.SearchValue) || inv.FirstName.Contains(searchParams.SearchValue) ||
-                inv.LastName.Contains(searchParams.SearchValue))));
+            var registrationFormDetails = FindAll()
+                .Where(inv => (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
+                               inv.UserName.Contains(searchParams.SearchValue) ||
+                               inv.EmailId.Contains(searchParams.SearchValue) ||
+                               inv.FirstName.Contains(searchParams.SearchValue) ||
+                               inv.LastName.Contains(searchParams.SearchValue)))
+                .OrderByDescending(x => x.Id);
 
-            return PagedList<RegistrationForm>.ToPagedList(registrationFormDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            return registrationFormDetails.ToList();
         }
+
+        //public async Task<PagedList<RegistrationForm>> GetAllRegistrationForm([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //{
+        //    var registrationFormDetails = FindAll().OrderByDescending(x => x.Id)
+        //     .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.UserName.Contains(searchParams.SearchValue) ||
+        //        inv.EmailId.Contains(searchParams.SearchValue) || inv.FirstName.Contains(searchParams.SearchValue) ||
+        //        inv.LastName.Contains(searchParams.SearchValue))));
+
+        //    return PagedList<RegistrationForm>.ToPagedList(registrationFormDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
 
         public async Task<RegistrationForm> GetRegistrationFormById(int id)
         {

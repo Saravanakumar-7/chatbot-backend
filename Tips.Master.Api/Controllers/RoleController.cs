@@ -24,24 +24,25 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllRoles([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+       // public async Task<IActionResult> GetAllRoles([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+            public async Task<IActionResult> GetAllRoles([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<RoleDto>> serviceResponse = new ServiceResponse<IEnumerable<RoleDto>>();
             try
             {
 
-                var roleDetails = await _repository.RoleRepository.GetAllRoles(pagingParameter, searchParams);
+                var roleDetails = await _repository.RoleRepository.GetAllRoles(searchParams);
 
-                var metadata = new
-                {
-                    roleDetails.TotalCount,
-                    roleDetails.PageSize,
-                    roleDetails.CurrentPage,
-                    roleDetails.HasNext,
-                    roleDetails.HasPreviuos
-                };
+                //var metadata = new
+                //{
+                //    roleDetails.TotalCount,
+                //    roleDetails.PageSize,
+                //    roleDetails.CurrentPage,
+                //    roleDetails.HasNext,
+                //    roleDetails.HasPreviuos
+                //};
 
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                //Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all Roles");
                 var result = _mapper.Map<IEnumerable<RoleDto>>(roleDetails);
                 serviceResponse.Data = result;

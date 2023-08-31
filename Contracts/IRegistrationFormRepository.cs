@@ -11,7 +11,9 @@ namespace Contracts
 {
     public interface IRegistrationFormRepository : IRepositoryBase<RegistrationForm>
     {
-        Task<PagedList<RegistrationForm>> GetAllRegistrationForm(PagingParameter pagingParameter, SearchParames searchParams);
+        //Task<PagedList<RegistrationForm>> GetAllRegistrationForm(PagingParameter pagingParameter, SearchParames searchParams);
+
+        Task<IEnumerable<RegistrationForm>> GetAllRegistrationForm(SearchParames searchParams);
         Task<RegistrationForm> GetRegistrationFormById(int id);
         Task<PagedList<RegistrationForm>> GetAllActiveRegistrationForm(PagingParameter pagingParameter, SearchParames searchParams);
         Task<int?> CreateRegistrationForm(RegistrationForm registrationForm);
