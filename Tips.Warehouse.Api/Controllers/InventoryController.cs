@@ -379,6 +379,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var shopOrderNumberListResponse = await _httpClient.GetAsync(string.Concat(_config["ProductionAPI"],
                          "GetShopOrderNoListBySalesOrderNo?", "SalesOrderNO=", salesOrderNo, "&itemNumber=", itemNo));
 
+
                 var shopOrderNumberListString = await shopOrderNumberListResponse.Content.ReadAsStringAsync();
                 dynamic shopOrderNumberListData = JsonConvert.DeserializeObject(shopOrderNumberListString);
 

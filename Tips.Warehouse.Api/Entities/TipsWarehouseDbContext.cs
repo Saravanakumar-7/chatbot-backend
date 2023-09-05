@@ -23,7 +23,7 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<BTONumber> BTONumbers { get; set; }
         public DbSet<DeliveryOrder> DeliveryOrder { get; set; }
         public DbSet<DONumber> DONumbers { get; set; }
-        public DbSet<Inventory> Inventory { get; set; }
+        public DbSet<Inventory> Inventories { get; set; }
         public DbSet<InvoiceNumber> InvoiceNumbers { get; set; }
         public DbSet<InventoryTranction> InventoryTranctions { get; set; }
         public DbSet<ReturnBtoDeliveryOrder> ReturnBtoDeliveryOrders { get; set; }

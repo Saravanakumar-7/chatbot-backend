@@ -44,63 +44,7 @@ namespace Tips.SalesService.Api.Controllers
             _salesOrderItemsRepository = salesOrderItemsRepository;
 
         }
-
-        //get consumption report in FG Level
-        //[HttpGet]
-        //public async Task<List<OpenSalesCoverageReport>> GenerateCoverageFGLevelReport()
-        //{
-        //    var salesOrders = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGItemDetails();
-        //    List<OpenSalesCoverageReport> openSalesCoverageReports = new List<OpenSalesCoverageReport>();
-
-        //    foreach (var salesOrderItem in salesOrders)
-        //    {
-
-        //        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-        //                      "GetConsumptionInventoryByItemNo?", "itemNumber=", salesOrderItem.FGItemNumber));
-
-        //        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-        //        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-        //        dynamic inventoryObject = inventoryObjectData.data;
-        //        if (inventoryObject != null)
-        //        {
-        //            OpenSalesCoverageReport coverageReport = new OpenSalesCoverageReport
-        //            {
-        //                FGOrTGPartNumber = salesOrderItem.FGItemNumber
-        //            };
-
-        //            foreach (var inventory in inventoryObject)
-        //            {
-        //                coverageReport.Stock = coverageReport.Stock + inventoryObject.balance_Quantity;
-        //            }
-
-        //            coverageReport.OpenSOQty = salesOrderItem.Balance_Qty - coverageReport.Stock;
-
-        //            var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
-        //                          "GetAllOpenTGPoDetails?", "itemNumber=", salesOrderItem.FGItemNumber));
-
-        //            if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
-        //            {
-        //                var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
-        //                dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
-        //                dynamic purchaseObject = purchaseObjectData.data;
-        //                if (purchaseObject != null)
-        //                {
-        //                    foreach (var purchase in purchaseObject)
-        //                    {
-        //                        coverageReport.OpenPoQty = coverageReport.OpenPoQty + purchase.balanceQty;
-        //                    }
-        //                }
-        //            }
-        //            coverageReport.BalanceToOrder = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
-        //            openSalesCoverageReports.Add(coverageReport);
-        //        }
-        //    }
-        //    return openSalesCoverageReports;
-
-        //}
-
-
-       [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> GenerateCoverageFGLevelReport()
         {
 
@@ -133,10 +77,10 @@ namespace Tips.SalesService.Api.Controllers
             List<OpenSalesCoverageReport> openSalesCoverageReports = new List<OpenSalesCoverageReport>();
 
             List<string?> itemNumberList = salesOrders.Select(x => x.FGItemNumber).ToList();
-
+            //change
             var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
             var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
-            var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMastersAPI"], "GetItemPartTypeByItemNumber"), itemNoListString);
+            var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"), itemNoListString);
 
             var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
             dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
@@ -353,40 +297,7 @@ namespace Tips.SalesService.Api.Controllers
 
             return childItemStockWithWipQty; 
         }
-
-        //private async Task<List<ChildItemStockWithWipDto>> GetStockWithWipQtyForChildItems(StringContent itemNoListString)
-        //{
-        //    var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQty"), itemNoListString);
-
-        //    if (responses.IsSuccessStatusCode)
-        //    {
-        //        var itemStockWithWipString = await responses.Content.ReadAsStringAsync();
-
-        //        dynamic itemStockWithWipData = JsonConvert.DeserializeObject(itemStockWithWipString);
-
-        //        if (itemStockWithWipData != null && itemStockWithWipData.data != null)
-        //        {
-        //            List<ChildItemStockWithWipDto> itemStockWithWipList =
-        //                JsonConvert.DeserializeObject<List<ChildItemStockWithWipDto>>(itemStockWithWipData.data.ToString());
-
-        //            return itemStockWithWipList;
-        //        }
-        //        else
-        //        {
-        //            // Handle the case where the data is null or doesn't contain the expected structure.
-        //            // You might want to return an empty list or handle the error as appropriate.
-        //            return new List<ChildItemStockWithWipDto>();
-        //        }
-        //    }
-        //    else
-        //    {
-        //        // Handle the case where the HTTP request was not successful.
-        //        // You might want to throw an exception or handle the error as appropriate.
-        //        return new List<ChildItemStockWithWipDto>();
-        //    }
-        //}
-
-
+         
         private async Task<List<OpenPoQuantityDto>> GetOpenPoQtyForChildItems(StringContent itemNoListString)
         {
             var openPoQtyResponse = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"],
@@ -413,7 +324,6 @@ namespace Tips.SalesService.Api.Controllers
 
             var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
             dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
-            //List<CoverageReportChildItemReqQtyDto> childItemReqQtyDtos = (List<CoverageReportChildItemReqQtyDto>)childItemRequiredQtyData.data;
 
             List<CoverageReportChildItemReqQtyDto> childItemReqQtyDtos = new List<CoverageReportChildItemReqQtyDto>();
 
@@ -427,76 +337,6 @@ namespace Tips.SalesService.Api.Controllers
 
 
         }
-
-
-        //private async Task<decimal> CalculateTotalRequiredQtyForItem(string itemNumber, decimal? balanceToOrderQty)
-        //{
-        //    decimal totalRequiredQty = 0;
-
-        //    var enggBOM = await GetEnggBOM(itemNumber);
-
-        //    if (enggBOM != null)
-        //    {
-        //        totalRequiredQty = await CalculateTotalRequiredQtyRecursive(enggBOM, balanceToOrderQty);
-        //    }
-
-        //    return totalRequiredQty;
-        //}
-
-        //private async Task<> GetEnggBOM(string itemNumber)
-        //{
-        //    var enggBomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
-        //                            "GetLatestEnggBomVersionDetailByIemNumber?", "&fgPartNumber=", itemNumber));
-
-        //    if (enggBomDetails != null && enggBomDetails.IsSuccessStatusCode)
-        //    {
-        //        var enggBomObjectString = await enggBomDetails.Content.ReadAsStringAsync();
-        //        dynamic enggBomObjectData = JsonConvert.DeserializeObject(enggBomObjectString);
-        //        dynamic enggBomObject = enggBomObjectData.data;
-
-        //        if (enggBomObject != null)
-        //        {
-        //            // Parse and construct an EnggBom object based on the retrieved data
-        //            EnggBom enggBom = new EnggBom
-        //            {
-        //                ItemNumber = enggBomObject.ItemNumber,
-        //                // ... Populate other properties based on enggBomObject
-        //            };
-
-        //            return enggBom;
-        //        }
-        //    }
-
-        //    return null; // Return null if no valid EnggBom is retrieved
-        //}
-
-
-        //private async Task<decimal> CalculateTotalRequiredQtyRecursive(EnggBom enggBOM, decimal parentQty)
-        //{
-        //    decimal totalRequiredQty = 0;
-
-        //    foreach (var enggChildItem in enggBOM.EnggChildItems)
-        //    {
-        //        if (enggChildItem.PartType == PartType.SA)
-        //        {
-        //            var childEnggBOM = await GetEnggBOM(enggChildItem.ItemNumber);
-
-        //            if (childEnggBOM != null)
-        //            {
-        //                decimal childQty = enggChildItem.Quantity * parentQty;
-        //                decimal childRequiredQty = await CalculateTotalRequiredQtyRecursive(childEnggBOM, childQty);
-        //                totalRequiredQty += childRequiredQty;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            totalRequiredQty += enggChildItem.Quantity * parentQty;
-        //        }
-        //    }
-
-        //    return totalRequiredQty;
-        //}
-
 
         //test consumption report
         [HttpGet]
@@ -630,90 +470,6 @@ namespace Tips.SalesService.Api.Controllers
 
             return childItems;
         }
-
-        //[HttpGet]
-        //public async Task<IActionResult> GetCoverageReport()
-        //{
-        //    ServiceResponse<IEnumerable<CoverageReportDto>> serviceResponse = new ServiceResponse<IEnumerable<CoverageReportDto>>();
-
-        //    try
-        //    {
-        //        var getAllForecastLpCosting = await _coverageRepository.GetAllSalesOrderDetails();
-
-        //        _logger.LogInfo("Returned Coverage Report");
-        //        var result = _mapper.Map<List<CoverageReportDto>>(getAllForecastLpCosting);
-        //        //bom details
-        //        var json = JsonConvert.SerializeObject(result);
-        //        var data = new StringContent(json, Encoding.UTF8, "application/json");
-        //        var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "CoverageEnggBomChildDetails"), data);
-
-        //        //var inventoryObjectResult = await _httpClient.PostAsync(string.Concat(_config["ItemMasterAPI"], "GetItemsRoutingDetailsForLpCosting"), content);
-        //        //var itemsRoutingDetailsJsonString = await inventoryObjectResult.Content.ReadAsStringAsync();
-        //        //dynamic itemsRoutingDetailsJson = JsonConvert.DeserializeObject(itemsRoutingDetailsJsonString);
-        //        //var data = itemsRoutingDetailsJson.data;
-
-        //        //serviceResponse.Data = result;
-        //        serviceResponse.Message = "Returned Coverage Report Successfully";
-        //        serviceResponse.Success = true;
-        //        serviceResponse.StatusCode = HttpStatusCode.OK;
-        //        return Ok(serviceResponse);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex.Message);
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = "Internal server error";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    }
-        //}
-        // Get all ForeCastEngg 
-
-
-        // CoverageReportController
-
-        //[HttpGet("step1/{itemNumber}")]
-        //public async Task<ActionResult<CoverageReportItem>> GetFgTgCoverage(string itemNumber)
-        //{
-        //    var coverageReportResponse = new ServiceResponse<CoverageReportItem>();
-
-        //    try
-        //    {
-        //        // Call Inventory API
-        //        var inventoryResponse = await _httpClient.GetAsync("https://inventoryservice/stock-available/" + itemNumber);
-        //        var stockAvailable = await inventoryResponse.Content.ReadAsAsync<ServiceResponse<decimal>>();
-
-        //        // Call PurchaseOrder API 
-        //        var purchaseOrderResponse = await _httpClient.GetAsync("https://purchaseorderservice/open-po-quantity/" + itemNumber);
-        //        var openPoQty = await purchaseOrderResponse.Content.ReadAsAsync<ServiceResponse<decimal>>();
-
-        //        // Call SalesOrder API
-        //        var salesOrderResponse = await _httpClient.GetAsync("https://salesorderservice/open-sales-order-quantity/" + itemNumber);
-        //        var openSalesOrderQty = await salesOrderResponse.Content.ReadAsAsync<ServiceResponse<decimal>>();
-
-        //        var reportItem = new CoverageReportItem
-        //        {
-        //            ItemNumber = itemNumber,
-        //            StockAvailable = stockAvailable,
-        //            OpenPoQty = openPoQty,
-        //            OpenSalesOrderQty = openSalesOrderQty
-        //        };
-
-        //        coverageReportResponse.Data = reportItem;
-        //        coverageReportResponse.Message = "Retrieved coverage report step 1";
-        //        coverageReportResponse.Success = true;
-
-        //        return Ok(coverageReportResponse);
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        coverageReportResponse.Success = false;
-        //        coverageReportResponse.Message = "Error generating coverage report";
-        //        return StatusCode(500, coverageReportResponse);
-        //    }
-        //}
-
+         
     }
 }

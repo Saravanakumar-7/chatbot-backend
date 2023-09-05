@@ -36,7 +36,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<List<InventoryBalanceQtyMaterialIssue>> GetInventoryStockByItemAndProjectNo(string itemNumber, string projectNumber);
         Task<Inventory> GetInventoryDetailsByItemAndProjectNo(string itemNumber, string projectNumber);
         Task<List<Inventory>> GetInventoryDetailsByItemNoandProjectNo(string ItemNumber, string ProjectNo);
-        Task<List<Inventory>> GetInventoryByItemNo(string itemNumber);
+        Task<List<Inventory>> GetInventoryByItemNo(string itemNumber); 
         Task<ConsumptionInventoryDto> GetConsumptionInventoryByItemNo(string itemNumber);    
         Task<Inventory> GetInventoryDetailsByGrinNo(string GrinNo, string ItemNumber, string ProjectNumber);
         Task<Inventory> GetInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber);
@@ -49,7 +49,7 @@ namespace Tips.Warehouse.Api.Contracts
 
         Task<IEnumerable<Inventory>> SearchInventory([FromQuery] SearchParames searchParames);
         Task<IEnumerable<Inventory>> SearchInventoryDate([FromQuery] SearchsDateParms searchsDateParms);
-        Task<IEnumerable<Inventory>> GetInventoryByItemNumber(string ItemNumber);
+        Task<List<Inventory>> GetInventoryByItemNumber(string ItemNumber);
         Task<Inventory> GetSingleInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse);
         Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse, string projectNumber);
         Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandPartTypes(string ItemNumber);

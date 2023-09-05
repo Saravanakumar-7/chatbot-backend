@@ -123,7 +123,7 @@ namespace Tips.Warehouse.Api.Repository
 
             var getAllOpenDeliveryOrderDetails = FindAll().OrderByDescending(x => x.Id)
                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.OpenDONumber.Contains(searchParams.SearchValue) ||
-                inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue))))
+                inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue) || inv.CustomerId.Contains(searchParams.SearchValue))))
                 .Include(x => x.OpenDeliveryOrderParts);
             return PagedList<OpenDeliveryOrder>.ToPagedList(getAllOpenDeliveryOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
@@ -143,11 +143,11 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<ODODetailsDto> GetODODetailsByItemNo(string itemNumber)
         {
-            decimal Stock = _tipsWarehouseDbContext.Inventory
+            decimal Stock = _tipsWarehouseDbContext.Inventories
                 .Where(x => x.PartNumber == itemNumber)
                 .Sum(x => x.Balance_Quantity);
 
-            var projectNumbers = await _tipsWarehouseDbContext.Inventory
+            var projectNumbers = await _tipsWarehouseDbContext.Inventories
                             .Where(x => x.PartNumber == itemNumber)
                             .Select(s => new ODODetailsDto()
                             {
@@ -162,7 +162,7 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<List<WarehouseDetailsDto>> GetWarehouseODOByItemNo(string itemNumber)
         {
-            var projectNumbers = await _tipsWarehouseDbContext.Inventory
+            var projectNumbers = await _tipsWarehouseDbContext.Inventories
                                 .Where(x => x.PartNumber == itemNumber)
                                 .Select(s => new WarehouseDetailsDto()
                                 {
@@ -175,7 +175,7 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<List<LocationDetailsDto>> GetLocationODOByItemNo(string itemNumber, string warehouse)
         {
-            var projectNumbers = await _tipsWarehouseDbContext.Inventory
+            var projectNumbers = await _tipsWarehouseDbContext.Inventories
                                 .Where(x => x.PartNumber == itemNumber && x.Warehouse == warehouse)
                                 .Select(s => new LocationDetailsDto()
                                 {

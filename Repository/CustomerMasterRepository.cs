@@ -127,7 +127,7 @@ namespace Repository
             {
                 var customermasterDetails = FindAll().OrderByDescending(x => x.Id)
                   .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue) ||
-                                         inv.CustomerAliasName.Contains(searchParams.SearchValue))))
+                                         inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerNumber.Contains(searchParams.SearchValue))))
                     .Include(t => t.CustomerAddresses)
                    .Include(t => t.RelatedCustomers)
                  .Include(t => t.CustomerShippingAddresses)
