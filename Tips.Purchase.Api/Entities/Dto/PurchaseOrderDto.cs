@@ -12,6 +12,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
         public string? CompanyAliasName { get; set; }
+        public bool PoConfirmationStatus { get; set; }
 
         //VendorDetails
         public string? VendorName { get; set; }

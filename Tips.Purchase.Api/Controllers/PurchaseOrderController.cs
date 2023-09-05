@@ -22,6 +22,7 @@ using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.Dto;
 using Tips.Purchase.Api.Entities.DTOs;
 using Tips.Purchase.Api.Entities.Enums;
+using Tips.Purchase.Api.Repository;
 
 namespace Tips.Purchase.Api.Controllers
 {
@@ -37,10 +38,11 @@ namespace Tips.Purchase.Api.Controllers
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IDocumentUploadRepository _documentUploadRepository;
+        private IPoConfirmationDateRepository _poConfirmationDateRepository;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
 
 
-        public PurchaseOrderController(IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper)
+        public PurchaseOrderController(IPoConfirmationDateRepository poConfirmationDateRepository,IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _poItemsRepository = poItemsRepository;
@@ -51,6 +53,7 @@ namespace Tips.Purchase.Api.Controllers
             _webHostEnvironment = webHostEnvironment;
             _poConfirmationDateHistoryRepository = poConfirmationDateHistoryRepository;
             _poConfirmationHistoryRepository = poConfirmationHistoryRepository;
+            _poConfirmationDateRepository = poConfirmationDateRepository;
         }
 
         [HttpGet]
@@ -729,7 +732,7 @@ namespace Tips.Purchase.Api.Controllers
                         poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
                         poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
-                        poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
+                        //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
                         poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
                         poItemDtoList.Add(poItemDetails);
                     }
@@ -742,23 +745,23 @@ namespace Tips.Purchase.Api.Controllers
                 _repository.SaveAsync();
 
                 //Adding data in PoConfirmationDateHistory
-                foreach (var poItems in poItemDtoList)
-                {
-                    if (poItems.POConfirmationDates != null)
-                    {
-                        foreach (var poConfirmationDate in poItems.POConfirmationDates)
-                        {
-                            PoConfirmationDateHistory poConfirmationDateHistory = new PoConfirmationDateHistory();
-                            poConfirmationDateHistory.ConfirmationDate = poConfirmationDate.ConfirmationDate;
-                            poConfirmationDateHistory.Qty = poConfirmationDate.Qty;
+                //foreach (var poItems in poItemDtoList)
+                //{
+                //    if (poItems.POConfirmationDates != null)
+                //    {
+                //        foreach (var poConfirmationDate in poItems.POConfirmationDates)
+                //        {
+                //            PoConfirmationDateHistory poConfirmationDateHistory = new PoConfirmationDateHistory();
+                //            poConfirmationDateHistory.ConfirmationDate = poConfirmationDate.ConfirmationDate;
+                //            poConfirmationDateHistory.Qty = poConfirmationDate.Qty;
                       
-                            var poConfirmationDateHistoryDetails = _mapper.Map<PoConfirmationDateHistory>(poConfirmationDateHistory);
+                //            var poConfirmationDateHistoryDetails = _mapper.Map<PoConfirmationDateHistory>(poConfirmationDateHistory);
 
-                            await _poConfirmationDateHistoryRepository.CreatePoConfirmationDateHistory(poConfirmationDateHistoryDetails);
-                            _poConfirmationDateHistoryRepository.SaveAsync();
-                        }
-                    }
-                }
+                //            await _poConfirmationDateHistoryRepository.CreatePoConfirmationDateHistory(poConfirmationDateHistoryDetails);
+                //            _poConfirmationDateHistoryRepository.SaveAsync();
+                //        }
+                //    }
+                //}
 
                 //Changing Status in Pr
                 foreach (var poItems in poItemDtoList)
@@ -1712,43 +1715,136 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-        //[HttpGet("{id}")]
-        //public async Task<IActionResult> UpdatePoItemConfirmationStatus(int poItemId, DateTime confirmationDate)
-        //{
-        //    ServiceResponse<PoItemsDto> serviceResponse = new ServiceResponse<PoItemsDto>();
+        [HttpPost]
+        public async Task<IActionResult> PoConfirmationStatus(List<List<PoItemConfirmationDateDto>> PoItemConfirmationDateDto)
+        {
+            ServiceResponse<PoItemConfirmationDateDto> serviceResponse = new ServiceResponse<PoItemConfirmationDateDto>();
 
-        //    try
-        //    {
-        //        var purchaseOrderItemDetailById = await _poItemsRepository.GetPoItemDetailsByIdandConfirmationDate(poItemId, confirmationDate);
-        //        if (purchaseOrderItemDetailById == null)
-        //        {
-        //            _logger.LogError($"PurchaseOrderItem with poItemId: {poItemId}, hasn't been found in db.");
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = $"PurchaseOrderItem with poItemId hasn't been found.";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
-        //            return NotFound(serviceResponse);
-        //        }
+            try
+            {
+                var purchaseOrderDetailById = await _repository.GetPurchaseOrderById(PoItemConfirmationDateDto[0][0].PoId);
+                if (purchaseOrderDetailById == null)
+                {
+                    _logger.LogError($"PurchaseOrder with poItemId: {PoItemConfirmationDateDto[0][0].PoId}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder with PoId hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
 
-        //        purchaseOrderItemDetailById.PoConfirmationStatus = true;
-        //        string result = await _poItemsRepository.UpdatePOOrderItem(purchaseOrderItemDetailById);
-        //        _repository.SaveAsync();
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = "PurchaseOrderItemConfirmationStatus have been Updated";
-        //        serviceResponse.Success = true;
-        //        serviceResponse.StatusCode = HttpStatusCode.OK;
-        //        return Ok(serviceResponse);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Something went wrong inside UpdatePurchaseOrderItemConfirmationStatus action: {ex.Message}");
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = "Internal server error";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    }
-        //}
+                //Updating PoConfirmationDate table
+                var PoItemConfirmationDateDtoDetails = await _poConfirmationDateRepository.GetPoConfirmationDateDetailsById(PoItemConfirmationDateDto[0][0].POItemDetailId);
+
+                if (PoItemConfirmationDateDtoDetails.Count() == 0)
+                {
+                    var poConfirmationDateDtoDetails = PoItemConfirmationDateDto
+                        .SelectMany(PoItemConfirmationDateDtoList => PoItemConfirmationDateDtoList)
+                        .Select(poConfirmationDate => new PoConfirmationDate
+                        {
+                            ConfirmationDate = poConfirmationDate.ConfirmationDate,
+                            Qty = poConfirmationDate.Qty,
+                            POItemDetailId = poConfirmationDate.POItemDetailId
+                        })
+                        .ToList();
+
+                    await _poConfirmationDateRepository.CreatePoConfirmationDateList(poConfirmationDateDtoDetails);
+                    _poConfirmationDateRepository.SaveAsync();
+                }
+
+                else
+                {
+                    await _poConfirmationDateRepository.DeletePoConfirmationDateList(PoItemConfirmationDateDtoDetails);
+                    _poConfirmationDateRepository.SaveAsync();
+
+                    var poItemConfirmationDateDtoDetails = await _poConfirmationDateRepository.GetPoConfirmationDateDetailsById(PoItemConfirmationDateDto[0][0].POItemDetailId);
+
+                    if (poItemConfirmationDateDtoDetails.Count() == 0)
+                    {
+                        var poConfirmationDateDtoDetails = PoItemConfirmationDateDto
+                            .SelectMany(PoItemConfirmationDateDtoList => PoItemConfirmationDateDtoList)
+                            .Select(poConfirmationDate => new PoConfirmationDate
+                            {
+                                ConfirmationDate = poConfirmationDate.ConfirmationDate,
+                                Qty = poConfirmationDate.Qty,
+                                POItemDetailId = poConfirmationDate.POItemDetailId
+                            })
+                            .ToList();
+
+                        await _poConfirmationDateRepository.CreatePoConfirmationDateList(poConfirmationDateDtoDetails);
+                        _poConfirmationDateRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "PoConfirmationDateDetails have been Found";
+                        serviceResponse.Success = true;
+                        serviceResponse.StatusCode = HttpStatusCode.OK;
+                        return Ok(serviceResponse);
+                    }
+
+                }
+
+                //Update PoConfirmationHistory Table
+                var PoItemConfirmationDateDetails = await _poConfirmationDateRepository.GetPoConfirmationDateDetailsById(PoItemConfirmationDateDto[0][0].POItemDetailId);
+                if (PoItemConfirmationDateDetails != null)
+                {
+                    foreach (var poConfirmationDate in PoItemConfirmationDateDetails)
+                    {
+                        var purchaseOrderItemDetailById = await _poItemsRepository.GetPoItemDetailsById(PoItemConfirmationDateDto[0][0].POItemDetailId);
+                        PoConfirmationHistory poConfirmationHistory = new PoConfirmationHistory();
+                        poConfirmationHistory.ItemNumber = purchaseOrderItemDetailById.ItemNumber;
+                        poConfirmationHistory.MftrItemNumber = purchaseOrderItemDetailById.MftrItemNumber;
+                        poConfirmationHistory.Description = purchaseOrderItemDetailById.Description;
+                        poConfirmationHistory.UOM = purchaseOrderItemDetailById.UOM;
+                        poConfirmationHistory.UnitPrice = purchaseOrderItemDetailById.UnitPrice;
+                        poConfirmationHistory.Qty = poConfirmationDate.Qty;
+                        poConfirmationHistory.ConfirmationDate = poConfirmationDate.ConfirmationDate;
+                        poConfirmationHistory.PONumber = purchaseOrderItemDetailById.PONumber;
+                        poConfirmationHistory.BalanceQty = purchaseOrderItemDetailById.BalanceQty;
+                        poConfirmationHistory.ReceivedQty = purchaseOrderItemDetailById.ReceivedQty;
+                        poConfirmationHistory.PartType = purchaseOrderItemDetailById.PartType;
+                        poConfirmationHistory.SpecialInstruction = purchaseOrderItemDetailById.SpecialInstruction;
+                        poConfirmationHistory.IsTechnicalDocsRequired = purchaseOrderItemDetailById.IsTechnicalDocsRequired;
+                        poConfirmationHistory.PoPartsStatus = purchaseOrderItemDetailById.PoPartsStatus;
+                        poConfirmationHistory.PoStatus = purchaseOrderItemDetailById.PoStatus;
+                        poConfirmationHistory.SGST = purchaseOrderItemDetailById.SGST;
+                        poConfirmationHistory.CGST = purchaseOrderItemDetailById.CGST;
+                        poConfirmationHistory.IGST = purchaseOrderItemDetailById.IGST;
+                        poConfirmationHistory.UTGST = purchaseOrderItemDetailById.UTGST;
+                        poConfirmationHistory.SubTotal = purchaseOrderItemDetailById.SubTotal;
+                        poConfirmationHistory.TotalWithTax = purchaseOrderItemDetailById.TotalWithTax;
+                        poConfirmationHistory.CreatedBy = purchaseOrderItemDetailById.CreatedBy;
+                        poConfirmationHistory.CreatedBy = purchaseOrderItemDetailById.CreatedBy;
+                        poConfirmationHistory.LastModifiedBy = purchaseOrderItemDetailById.LastModifiedBy;
+                        poConfirmationHistory.LastModifiedOn = purchaseOrderItemDetailById.LastModifiedOn;
+
+                        await _poConfirmationHistoryRepository.CreatePoConfirmationHistory(poConfirmationHistory);
+                    }
+                    _poConfirmationHistoryRepository.SaveAsync();
+                }
+
+                //Update PoConfirmationStatus in PurchaseOrder Table
+                purchaseOrderDetailById.PoConfirmationStatus = true;
+                string result = await _repository.UpdatePurchaseOrder(purchaseOrderDetailById);
+                _repository.SaveAsync();
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "PoConfirmationStatus have been Updated";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside PoConfirmationStatus action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> ShortClosePoItemSatusByPoItemId(int poItemId)

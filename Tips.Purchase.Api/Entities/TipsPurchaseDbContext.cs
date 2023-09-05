@@ -30,6 +30,6 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PoIncoTerm> PoIncoTerms { get; set; }
         public DbSet<PoConfirmationDate> PoConfirmationDates { get; set; }
         public DbSet<PoConfirmationDateHistory> PoConfirmationDateHistories { get; set; }
-
+        public DbSet<PoConfirmationHistory> PoConfirmationHistories { get; set; }
     }
 }

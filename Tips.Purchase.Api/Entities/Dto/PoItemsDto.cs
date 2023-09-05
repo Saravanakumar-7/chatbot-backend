@@ -12,7 +12,6 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? MftrItemNumber { get; set; }
         public string? Description { get; set; }
         public string? PONumber { get; set; }
-
         public string? UOM { get; set; }
         [Precision(18, 3)]
         public decimal UnitPrice { get; set; }
@@ -74,7 +73,7 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         public List<PoAddProjectPostDto>? POAddprojects { get; set; }
         public List<PoAddDeliverySchedulePostDto>? POAddDeliverySchedules { get; set; }
-        public List<PoConfirmationDatePostDto>? POConfirmationDates { get; set; }
+       // public List<PoConfirmationDatePostDto>? POConfirmationDates { get; set; }
         public List<PoSpecialInstructionPostDto>? POSpecialInstructions { get; set; }
         public List<PrDetailsPostDto>? PrDetails { get; set; }
 
@@ -211,5 +210,14 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? ItemNumber { get; set; }
         public decimal OpenPoQty { get; set; }
 
+    }
+    public class PoItemConfirmationDateDto
+    {
+        public int PoId { get; set; }
+        public int POItemDetailId { get; set; }
+        public DateTime ConfirmationDate { get; set; }
+
+        [Precision(13, 3)]
+        public decimal Qty { get; set; }
     }
 }

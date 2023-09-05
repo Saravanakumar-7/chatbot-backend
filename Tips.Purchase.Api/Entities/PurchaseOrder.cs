@@ -51,6 +51,7 @@ namespace Tips.Purchase.Api.Entities
         public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }
         public PoStatus PoStatus { get; set; }
+        public bool PoConfirmationStatus { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

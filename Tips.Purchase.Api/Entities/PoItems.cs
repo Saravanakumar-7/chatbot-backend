@@ -50,7 +50,6 @@ namespace Tips.Purchase.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public PoStatus PoStatus { get; set; }
-        public bool PoConfirmationStatus { get; set; }
         public int PurchaseOrderId { get; set; }
         public PurchaseOrder? PurchaseOrder { get; set; }
 

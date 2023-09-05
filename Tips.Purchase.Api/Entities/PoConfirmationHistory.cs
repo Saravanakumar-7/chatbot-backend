@@ -16,7 +16,6 @@ namespace Tips.Purchase.Api.Entities
         public decimal UnitPrice { get; set; }
         [Precision(13, 3)]
         public decimal Qty { get; set; }
-        public bool PoConfirmationStatus { get; set; }
         public DateTime ConfirmationDate { get; set; }
         public string? PONumber { get; set; }
 
