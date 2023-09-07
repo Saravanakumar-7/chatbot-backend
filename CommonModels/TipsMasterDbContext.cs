@@ -1,4 +1,4 @@
-﻿using Entities;
+using Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Runtime.InteropServices;
@@ -7,11 +7,10 @@ namespace Entities
 {
     public class TipsMasterDbContext : DbContext
     {
-        public TipsMasterDbContext(DbContextOptions<TipsMasterDbContext> options) : base(options)   
+        public TipsMasterDbContext(DbContextOptions<TipsMasterDbContext> options) : base(options)
         {
 
         }
-
         public DbSet<CustomerType> CustomerTypes { get; set; }
         public DbSet<LeadTime> LeadTimes { get; set; }
         public DbSet<MaterialType>? MaterialTypes { get; set; }
@@ -45,7 +44,7 @@ namespace Entities
         public DbSet<CompanyMasterHeadCounting>? CompanyMasterHeadCountings { get; set; }
 
         public DbSet<CustomerMasterHeadCounting>? CustomerMasterHeadCountings { get; set; }
-        public DbSet<UOM>Uom { get; set; }
+        public DbSet<UOM> Uom { get; set; }
         public DbSet<UOC> Uoc { get; set; }
         public DbSet<Commodity> Commodity { get; set; }
         public DbSet<Locations> Locations { get; set; }
@@ -62,12 +61,12 @@ namespace Entities
 
         public DbSet<CustomerMaster> CustomerMasters { get; set; }
         public DbSet<CustomerContacts> CustomerContacts { get; set; }
-        public DbSet<CustomerAddresses> CustomerAddresses{ get; set; }
-        public DbSet<CustomerShippingAddresses> CustomerShippingAddresses{ get; set; }
-        public DbSet<CustomerBanking> CustomerBankings{ get; set; }
+        public DbSet<CustomerAddresses> CustomerAddresses { get; set; }
+        public DbSet<CustomerShippingAddresses> CustomerShippingAddresses { get; set; }
+        public DbSet<CustomerBanking> CustomerBankings { get; set; }
 
         public DbSet<Bank>? Banks { get; set; }
-        public DbSet<IncoTerm>? IncoTerms { get; set; } 
+        public DbSet<IncoTerm>? IncoTerms { get; set; }
         public DbSet<Currency>? Currencies { get; set; }
         public DbSet<Department>? Departments { get; set; }
 
@@ -127,21 +126,21 @@ namespace Entities
         public DbSet<Architectures>? Architectures { get; set; }
         public DbSet<PmcContractor>? PmcContractors { get; set; }
         public DbSet<LightningDesigner>? LightningDesigners { get; set; }
-  public DbSet<City>? Cities { get; set; }
+        public DbSet<City>? Cities { get; set; }
 
- public DbSet<TypeOfHome> typeOfHomes { get; set; }
+        public DbSet<TypeOfHome> typeOfHomes { get; set; }
 
-  public DbSet<SFT> SFTs { get; set; }
+        public DbSet<SFT> SFTs { get; set; }
 
-  public DbSet<ProjectName>? ProjectNames { get; set; }
+        public DbSet<ProjectName>? ProjectNames { get; set; }
 
         public DbSet<Role> Roles { get; set; }
         public DbSet<RoleAccess> RoleAccesses { get; set; }
         public DbSet<RegistrationForm> RegistrationForms { get; set; }
         public DbSet<UserAccess> UserAccesses { get; set; }
         public DbSet<FormsAccess> FormsAccesses { get; set; }
-        public DbSet<LeadWebsite> LeadWebsites { get; set; } 
- public DbSet<Unit> Units { get; set; }
+        public DbSet<LeadWebsite> LeadWebsites { get; set; }
+        public DbSet<Unit> Units { get; set; }
 
         public DbSet<IssuingStock> IssuingStocks { get; set; }
         public DbSet<VendorRelatedVendor>? RelatedVendors { get; set; }

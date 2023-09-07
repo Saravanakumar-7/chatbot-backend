@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Entities.Migrations;
 using System.Net;
 using Newtonsoft.Json;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -18,13 +19,14 @@ namespace Tips.Master.Api.Controllers
             private IRepositoryWrapperForMaster _repository;
             private ILoggerManager _logger;
             private IMapper _mapper;
-
-            public CustomerMasterController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        private readonly IConfiguration _config;
+        public CustomerMasterController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper, IConfiguration config)
             {
                 _repository = repository;
                 _logger = logger;
                 _mapper = mapper;
-            }
+            _config = config;
+        }
  
         [HttpGet]
         public async Task<IActionResult> GetAllCustomerMaster([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
@@ -139,13 +141,30 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
 
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> CreateCustomerMaster([FromBody] CustomerMasterDtoPost customerMasterDtoPost)
         {
             ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();
             //CustomerMaster customerDetail = null;
-
+            string serverKey = GetServerKey();
             try
             {
                 if (customerMasterDtoPost is null)
@@ -183,23 +202,24 @@ namespace Tips.Master.Api.Controllers
                 customerMaster.RelatedCustomers= related.ToList();
                 customerMaster.CustomerBanking = banking.ToList();
                 customerMaster.CustomerMasterHeadCountings= headcount.ToList();
-
-                var customerDetails = await _repository.CustomerMasterRepository.GetCSNumberAutoIncrementCount();
-                var newcount = customerDetails?.Id;
-                if (newcount > 0)
+                if (serverKey != "keus")
                 {
-                    var number = newcount + 1;
-                    string e = String.Format("{0:D4}", number);
-                    customerMaster.CustomerNumber = "CS" + (e);
-                }
-                else
-                {
-                    var count = 1;
-                    var e = count.ToString("D4");
-                    customerMaster.CustomerNumber = "CS" + (e);
-                }
+                    var customerDetails = await _repository.CustomerMasterRepository.GetCSNumberAutoIncrementCount();
+                    var newcount = customerDetails?.Id;
+                    if (newcount > 0)
+                    {
+                        var number = newcount + 1;
+                        string e = String.Format("{0:D4}", number);
+                        customerMaster.CustomerNumber = "CS" + (e);
+                    }
+                    else
+                    {
+                        var count = 1;
+                        var e = count.ToString("D4");
+                        customerMaster.CustomerNumber = "CS" + (e);
+                    }
 
-
+                }
                 await _repository.CustomerMasterRepository.CreateCustomerMaster(customerMaster);
 
 
@@ -207,8 +227,6 @@ namespace Tips.Master.Api.Controllers
 
                 var customerMasterDetails = await _repository.CustomerMasterRepository.GetCSNumberAutoIncrementCount();
                 var customerData = _mapper.Map<CustomerMasterDto>(customerMasterDetails);
-
-
 
                 serviceResponse.Data = customerData;
                 serviceResponse.Message = "CustomerMaster Successfully Created";

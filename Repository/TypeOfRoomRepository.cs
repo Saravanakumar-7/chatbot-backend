@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MySqlX.XDevAPI.Common;
 
@@ -40,18 +41,34 @@ namespace Repository
             string result = $"TypeOfRoom details of {typeOfRoom.Id} is deleted successfully!";
             return result;
         }
-
-        public async Task<IEnumerable<TypeOfRoom>> GetAllActiveTypeOfRoom()
+        public async Task<IEnumerable<TypeOfRoom>> GetAllActiveTypeOfRoom([FromQuery] SearchParames searchParams)
         {
-            var AllActiveTypeOfRoom = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+            var AllActiveTypeOfRoom = await FindByCondition(x => x.ActiveStatus == true)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
+                inv.TypeOfRoomName.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue)
+                || inv.Remarks.Contains(searchParams.SearchValue)))).ToListAsync();
+
             return AllActiveTypeOfRoom;
         }
-
-        public async Task<IEnumerable<TypeOfRoom>> GetAllTypeOfRoom()
+        //public async Task<IEnumerable<TypeOfRoom>> GetAllActiveTypeOfRoom()
+        //{
+        //    var AllActiveTypeOfRoom = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
+        //    return AllActiveTypeOfRoom;
+        //}
+        public async Task<IEnumerable<TypeOfRoom>> GetAllTypeOfRoom([FromQuery] SearchParames searchParams)
         {
-            var GetallTypeOfRoom = await FindAll().ToListAsync();
+            var GetallTypeOfRoom = await FindAll().Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
+                inv.TypeOfRoomName.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue)
+                || inv.Remarks.Contains(searchParams.SearchValue)))).ToListAsync();
             return GetallTypeOfRoom;
         }
+
+
+        //public async Task<IEnumerable<TypeOfRoom>> GetAllTypeOfRoom()
+        //{
+        //    var GetallTypeOfRoom = await FindAll().ToListAsync();
+        //    return GetallTypeOfRoom;
+        //}
 
         public async Task<TypeOfRoom> GetTypeOfRoomById(int id)
         {

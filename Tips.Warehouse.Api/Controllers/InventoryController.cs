@@ -379,6 +379,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var shopOrderNumberListResponse = await _httpClient.GetAsync(string.Concat(_config["ProductionAPI"],
                          "GetShopOrderNoListBySalesOrderNo?", "SalesOrderNO=", salesOrderNo, "&itemNumber=", itemNo));
 
+
                 var shopOrderNumberListString = await shopOrderNumberListResponse.Content.ReadAsStringAsync();
                 dynamic shopOrderNumberListData = JsonConvert.DeserializeObject(shopOrderNumberListString);
 
@@ -670,7 +671,7 @@ namespace Tips.Warehouse.Api.Controllers
                     _logger.LogInfo($"Returned Inventory with Itemnumber List in GetConsumptionChildItemStockWithWipQty");
                     //var result = _mapper.Map<ConsumptionInventoryDto>(InventoryDetails);
                     //var result = _mapper.Map<ConsumptionChildItemInventoryDto>(InventoryDetails);
-                    //serviceResponse.Data = InventoryDetails;
+                    serviceResponse.Data = InventoryDetails;
                     serviceResponse.Message = "Returned InventoryDetails with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

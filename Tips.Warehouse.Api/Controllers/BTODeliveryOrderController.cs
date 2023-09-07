@@ -438,8 +438,8 @@ namespace Tips.Warehouse.Api.Controllers
 
                         //Update Inventory balanced Quantity 
 
-                        var PartNumber = bTODoItemList[i].FGItemNumber;
-                        var getInventoryFGDetailsByItemnumber = await _inventoryRepository.GetInventoryByItemNumber(PartNumber);
+                        var ItemNumber = bTODoItemList[i].FGItemNumber; 
+                        var getInventoryFGDetailsByItemnumber = await _inventoryRepository.GetInventoryByItemNumber(ItemNumber); //pass projectNo
                         decimal dispatchQuantity = Convert.ToDecimal(bTODeliveryOrderItemsListDto[i].DispatchQty);
                         if (getInventoryFGDetailsByItemnumber != null)
                         {

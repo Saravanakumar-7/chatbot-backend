@@ -27,6 +27,8 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.Authorization;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -47,11 +49,14 @@ namespace Tips.Grin.Api.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+ 
 
-        public GrinController(IGrinRepository repository, IDocumentUploadRepository documentUploadRepository, IGrinPartsRepository grinPartsRepository,
+        public GrinController(IGrinRepository repository, IHttpContextAccessor httpContextAccessor, IDocumentUploadRepository documentUploadRepository, IGrinPartsRepository grinPartsRepository,
             IWebHostEnvironment webHostEnvironment, ILoggerManager logger, IMapper mapper, HttpClient httpClient,IConfiguration config)
         {
             _repository = repository;
+            _httpContextAccessor = httpContextAccessor;          
             _grinPartsRepository = grinPartsRepository;
             _logger = logger;
             _mapper = mapper;
@@ -59,6 +64,25 @@ namespace Tips.Grin.Api.Controllers
             _documentUploadRepository = documentUploadRepository;
             _httpClient = httpClient;
             _config = config;
+
+            var tokenValue = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
+            {
+                var token = tokenValue.Substring(7);
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var tokenObject = tokenHandler.ReadToken(token) as JwtSecurityToken;
+
+                //if (tokenObject != null)
+                //{
+                //    // Access the claims from the token
+                //    var claims = tokenObject.Claims.ToList();
+
+                //    // Example: Access a specific claim by its type (e.g., ClaimTypes.Name)
+                //    //_createdBy = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+                //}
+            }
+
         }
         // GET: api/<GrinController>
         [HttpGet]
@@ -421,8 +445,19 @@ namespace Tips.Grin.Api.Controllers
                         GrinPartsItemMasterEnggDto grinPartsItemMasterEnggDto = _mapper.Map<GrinPartsItemMasterEnggDto>(GrinpartsDetails);
                         grinPartsItemMasterEnggDto.ProjectNumbers = _mapper.Map<List<ProjectNumbersDto>>(GrinpartsDetails.ProjectNumbers);
 
+
+                        var httpClient = new HttpClient();
+
+                        // Include the token in the Authorization header
+                        var tokenValue = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+                        if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
+                        {
+                            var token = tokenValue.Substring(7);
+                            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        }
+
                         //Add ItemMasterEnggDetails in GrinParts
-                       var ItemNumber = grinPartsItemMasterEnggDto.ItemNumber;
+                        var ItemNumber = grinPartsItemMasterEnggDto.ItemNumber;
                         var itemMasterDetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
                             "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
 
@@ -945,6 +980,34 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogError($"Something went wrong inside UpdateGrin action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        //get all grin number based bining is completed
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllGrinNumberWhereBinningComplete()
+        {
+            ServiceResponse<IEnumerable<GrinNoForIqcAndBinning>> serviceResponse = new ServiceResponse<IEnumerable<GrinNoForIqcAndBinning>>();
+            try
+            {
+                var getAllGrinNumberWhereBinningComplete = await _repository.GetAllGrinNumberWhereBinningComplete();
+                var result = _mapper.Map<IEnumerable<GrinNoForIqcAndBinning>>(getAllGrinNumberWhereBinningComplete);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all GrinNumberWhereBinningComplete";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllGrinNumberWhereBinningComplete action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

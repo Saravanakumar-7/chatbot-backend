@@ -461,53 +461,25 @@ namespace Tips.SalesService.Api.Repository
         } 
 
         public async Task<List<SalesOrderFGandBalanceQty>> GetAllSalesOrderFGOrTGItemDetails()
-        {
+        {  
+                var salesOrderIdList = await _tipsSalesServiceDbContexts.SalesOrders
+                    .Where(so => (so.SalesOrderStatus == SalesOrderStatus.BuildToPrint || so.SalesOrderStatus == SalesOrderStatus.Forecast) &&
+                                 (so.SOStatus == OrderStatus.Open || so.SOStatus == OrderStatus.PartiallyClosed) &&
+                                 so.IsShortClosed == false &&
+                                 so.ConfirmStatus == true && so.ApproveStatus == true).Select(x => x.Id).ToListAsync();
 
-            var salesOrderIdList = await _tipsSalesServiceDbContexts.SalesOrders
-                .Where(so => (so.SalesOrderStatus == SalesOrderStatus.BuildToPrint || so.SalesOrderStatus == SalesOrderStatus.Forecast) &&
-                             (so.SOStatus == OrderStatus.Open || so.SOStatus == OrderStatus.PartiallyClosed) &&
-                             so.IsShortClosed == false &&
-                             so.ConfirmStatus == true && so.ApproveStatus == true).Select(x => x.Id).ToListAsync();
+                var openSalesOrderQty = await _tipsSalesServiceDbContexts.SalesOrdersItems
+                    .Where(x =>
+                                (x.StatusEnum == OrderStatus.Open || x.StatusEnum == OrderStatus.PartiallyClosed) &&
+                                x.BalanceQty > 0 && salesOrderIdList.Contains(x.SalesOrderId))
+                    .GroupBy(x => new { x.ItemNumber })
+                    .Select(group => new SalesOrderFGandBalanceQty
+                    {
+                        FGItemNumber = group.Key.ItemNumber,
+                        Balance_Qty = group.Sum(x => x.BalanceQty)
+                    }).ToListAsync();
 
-            var openSalesOrderQty = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                .Where(x =>
-                            (x.StatusEnum == OrderStatus.Open || x.StatusEnum == OrderStatus.PartiallyClosed) &&
-                            x.BalanceQty > 0 && salesOrderIdList.Contains(x.SalesOrderId))
-                .GroupBy(x => new { x.ItemNumber })
-                .Select(group => new SalesOrderFGandBalanceQty
-                {
-                    FGItemNumber = group.Key.ItemNumber,
-                    Balance_Qty = group.Sum(x => x.BalanceQty)
-                }).ToListAsync();
-
-
-
-
-            //var openSalesOrderQty = _tipsSalesServiceDbContexts.SalesOrders
-            //    .Where(so => (so.SalesOrderStatus == SalesOrderStatus.BuildToPrint || so.SalesOrderStatus == SalesOrderStatus.Forecast) &&
-            //                 (so.SOStatus == OrderStatus.Open || so.SOStatus == OrderStatus.PartiallyClosed) &&
-            //                 so.IsShortClosed == false &&
-            //                 so.ConfirmStatus == true && so.ApproveStatus == true)
-            //    .Join(
-            //        _tipsSalesServiceDbContexts.SalesOrdersItems,
-            //        order => order.Id,
-            //        item => item.SalesOrderId,
-            //        (order, item) => new
-            //        {
-            //            Order = order,
-            //            Item = item
-            //        })
-            //    .Where(x => 
-            //                (x.Item.StatusEnum == OrderStatus.Open || x.Item.StatusEnum == OrderStatus.PartiallyClosed) &&
-            //                x.Item.BalanceQty > 0)
-            //    .GroupBy(x => new { x.Item.ItemNumber })
-            //    .Select(group => new SalesOrderFGandBalanceQty
-            //    {
-            //        FGItemNumber = group.Key.ItemNumber,
-            //        Balance_Qty = group.Sum(x => x.Item.BalanceQty)
-            //    }).ToList();
-
-            return openSalesOrderQty;
+                return openSalesOrderQty;          
 
         }
         //update shoporderQty

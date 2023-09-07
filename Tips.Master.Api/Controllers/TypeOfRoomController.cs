@@ -27,13 +27,13 @@ namespace Tips.Master.Api.Controllers
             _typeOfRoomRepository = typeOfRoomRepository;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllTypeOfRoom()
+        public async Task<IActionResult> GetAllTypeOfRoom([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<TypeOfRoomDto>> serviceResponse = new ServiceResponse<IEnumerable<TypeOfRoomDto>>();
 
             try
             {
-                var TypeOfRoomList = await _repository.TypeOfRoomRepository.GetAllTypeOfRoom();
+                var TypeOfRoomList = await _repository.TypeOfRoomRepository.GetAllTypeOfRoom(searchParams);
                 _logger.LogInfo("Returned all TypeOfRoom");
                 var result = _mapper.Map<IEnumerable<TypeOfRoomDto>>(TypeOfRoomList);
                 serviceResponse.Data = result;
@@ -52,14 +52,40 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllTypeOfRoom()
+        //{
+        //    ServiceResponse<IEnumerable<TypeOfRoomDto>> serviceResponse = new ServiceResponse<IEnumerable<TypeOfRoomDto>>();
+
+        //    try
+        //    {
+        //        var TypeOfRoomList = await _repository.TypeOfRoomRepository.GetAllTypeOfRoom();
+        //        _logger.LogInfo("Returned all TypeOfRoom");
+        //        var result = _mapper.Map<IEnumerable<TypeOfRoomDto>>(TypeOfRoomList);
+        //        serviceResponse.Data = result;
+        //        serviceResponse.Message = "Returned all TypeOfRoom Successfully";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveTypeOfRooms()
+        public async Task<IActionResult> GetAllActiveTypeOfRooms([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<TypeOfRoomDto>> serviceResponse = new ServiceResponse<IEnumerable<TypeOfRoomDto>>();
 
             try
             {
-                var TypeOfRoomList = await _repository.TypeOfRoomRepository.GetAllActiveTypeOfRoom();
+                var TypeOfRoomList = await _repository.TypeOfRoomRepository.GetAllActiveTypeOfRoom(searchParams);
                 _logger.LogInfo("Returned all TypeOfRoom");
                 var result = _mapper.Map<IEnumerable<TypeOfRoomDto>>(TypeOfRoomList);
                 serviceResponse.Data = result;
@@ -80,6 +106,34 @@ namespace Tips.Master.Api.Controllers
 
             }
         }
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllActiveTypeOfRooms()
+        //{
+        //    ServiceResponse<IEnumerable<TypeOfRoomDto>> serviceResponse = new ServiceResponse<IEnumerable<TypeOfRoomDto>>();
+
+        //    try
+        //    {
+        //        var TypeOfRoomList = await _repository.TypeOfRoomRepository.GetAllActiveTypeOfRoom();
+        //        _logger.LogInfo("Returned all TypeOfRoom");
+        //        var result = _mapper.Map<IEnumerable<TypeOfRoomDto>>(TypeOfRoomList);
+        //        serviceResponse.Data = result;
+        //        serviceResponse.Message = "Returned all Active TypeOfRoom Successfully";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+
+        //    }
+        //}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTypeOfRoomById(int id)
         {
