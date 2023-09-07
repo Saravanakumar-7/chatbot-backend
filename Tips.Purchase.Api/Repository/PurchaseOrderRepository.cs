@@ -765,7 +765,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<string> UpdatePOOrderItem(PoItem poItem)
         {
             Update(poItem);
-            string result = $"POOrderItem of Detail {poItem.Id} is updated successfully!";
+            string result = $"PoItem of Detail {poItem.Id} is updated successfully!";
             return result;
         }
 

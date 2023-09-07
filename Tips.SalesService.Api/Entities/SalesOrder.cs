@@ -76,7 +76,7 @@ namespace Tips.SalesService.Api.Entities
         [DefaultValue(false)]
         public bool ApproveStatus { get; set; }
         public DateTime? ConfirmDate { get; set; }
-
+        public bool SoConfirmationStatus { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

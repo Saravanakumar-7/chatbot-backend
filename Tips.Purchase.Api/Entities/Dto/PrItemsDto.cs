@@ -1,6 +1,6 @@
-﻿using Entities.Enums;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Tips.Purchase.Api.Entities.DTOs;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Entities.Dto
 {
@@ -15,7 +15,7 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
-      
+        public PrStatus PrStatus { get; set; }
         public List<PrAddProjectDto>? PrAddprojectsDtoList { get; set; }
         public List<PrAddDeliveryScheduleDto>? PrAddDeliverySchedulesDtoList { get; set; }
         public List<PrSpecialInstructionDto>? prSpecialInstructionsDtoList { get; set; }

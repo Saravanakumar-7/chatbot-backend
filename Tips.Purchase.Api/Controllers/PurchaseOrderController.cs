@@ -1716,16 +1716,16 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PoConfirmationStatus(List<List<PoItemConfirmationDateDto>> PoItemConfirmationDateDto)
+        public async Task<IActionResult> PoConfirmationStatus(List<List<PoItemConfirmationDateDto>> poItemConfirmationDateDto)
         {
             ServiceResponse<PoItemConfirmationDateDto> serviceResponse = new ServiceResponse<PoItemConfirmationDateDto>();
 
             try
             {
-                var purchaseOrderDetailById = await _repository.GetPurchaseOrderById(PoItemConfirmationDateDto[0][0].PoId);
+                var purchaseOrderDetailById = await _repository.GetPurchaseOrderById(poItemConfirmationDateDto[0][0].PoId);
                 if (purchaseOrderDetailById == null)
                 {
-                    _logger.LogError($"PurchaseOrder with poItemId: {PoItemConfirmationDateDto[0][0].PoId}, hasn't been found in db.");
+                    _logger.LogError($"PurchaseOrder with PoId: {poItemConfirmationDateDto[0][0].PoId}, hasn't been found in db.");
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"PurchaseOrder with PoId hasn't been found.";
                     serviceResponse.Success = false;
@@ -1734,11 +1734,11 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
                 //Updating PoConfirmationDate table
-                var PoItemConfirmationDateDtoDetails = await _poConfirmationDateRepository.GetPoConfirmationDateDetailsById(PoItemConfirmationDateDto[0][0].POItemDetailId);
+                var poItemConfirmationDateDtoDetails = await _poConfirmationDateRepository.GetPoConfirmationDateDetailsById(poItemConfirmationDateDto[0][0].POItemDetailId);
 
-                if (PoItemConfirmationDateDtoDetails.Count() == 0)
+                if (poItemConfirmationDateDtoDetails.Count() == 0)
                 {
-                    var poConfirmationDateDtoDetails = PoItemConfirmationDateDto
+                    var poConfirmationDateDtoDetails = poItemConfirmationDateDto
                         .SelectMany(PoItemConfirmationDateDtoList => PoItemConfirmationDateDtoList)
                         .Select(poConfirmationDate => new PoConfirmationDate
                         {
@@ -1754,14 +1754,14 @@ namespace Tips.Purchase.Api.Controllers
 
                 else
                 {
-                    await _poConfirmationDateRepository.DeletePoConfirmationDateList(PoItemConfirmationDateDtoDetails);
+                    await _poConfirmationDateRepository.DeletePoConfirmationDateList(poItemConfirmationDateDtoDetails);
                     _poConfirmationDateRepository.SaveAsync();
 
-                    var poItemConfirmationDateDtoDetails = await _poConfirmationDateRepository.GetPoConfirmationDateDetailsById(PoItemConfirmationDateDto[0][0].POItemDetailId);
+                    var poItemConfirmationDateDtoList = await _poConfirmationDateRepository.GetPoConfirmationDateDetailsById(poItemConfirmationDateDto[0][0].POItemDetailId);
 
-                    if (poItemConfirmationDateDtoDetails.Count() == 0)
+                    if (poItemConfirmationDateDtoList.Count() == 0)
                     {
-                        var poConfirmationDateDtoDetails = PoItemConfirmationDateDto
+                        var poConfirmationDateDtoDetails = poItemConfirmationDateDto
                             .SelectMany(PoItemConfirmationDateDtoList => PoItemConfirmationDateDtoList)
                             .Select(poConfirmationDate => new PoConfirmationDate
                             {
@@ -1786,12 +1786,12 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
                 //Update PoConfirmationHistory Table
-                var PoItemConfirmationDateDetails = await _poConfirmationDateRepository.GetPoConfirmationDateDetailsById(PoItemConfirmationDateDto[0][0].POItemDetailId);
-                if (PoItemConfirmationDateDetails != null)
+                var poItemConfirmationDateDetails = await _poConfirmationDateRepository.GetPoConfirmationDateDetailsById(poItemConfirmationDateDto[0][0].POItemDetailId);
+                if (poItemConfirmationDateDetails != null)
                 {
-                    foreach (var poConfirmationDate in PoItemConfirmationDateDetails)
+                    foreach (var poConfirmationDate in poItemConfirmationDateDetails)
                     {
-                        var purchaseOrderItemDetailById = await _poItemsRepository.GetPoItemDetailsById(PoItemConfirmationDateDto[0][0].POItemDetailId);
+                        var purchaseOrderItemDetailById = await _poItemsRepository.GetPoItemDetailsById(poItemConfirmationDateDto[0][0].POItemDetailId);
                         PoConfirmationHistory poConfirmationHistory = new PoConfirmationHistory();
                         poConfirmationHistory.ItemNumber = purchaseOrderItemDetailById.ItemNumber;
                         poConfirmationHistory.MftrItemNumber = purchaseOrderItemDetailById.MftrItemNumber;

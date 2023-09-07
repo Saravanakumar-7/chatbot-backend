@@ -18,7 +18,7 @@ using Tips.Purchase.Api.Contracts;
 using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.Dto;
 using Tips.Purchase.Api.Entities.DTOs;
-
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Controllers
 {
@@ -27,6 +27,7 @@ namespace Tips.Purchase.Api.Controllers
     public class PurchaseRequisitionController : ControllerBase
     {
         private IPurchaseRequisitionRepository _repository;
+        private IPrItemsRepository _prItemRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IDocumentUploadRepository _prdocumentUploadRepository;
@@ -34,9 +35,10 @@ namespace Tips.Purchase.Api.Controllers
 
 
 
-        public PurchaseRequisitionController(IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper)
+        public PurchaseRequisitionController(IPrItemsRepository prItemRepository,IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
+            _prItemRepository = prItemRepository;
             _logger = logger;
             _mapper = mapper;
             _prdocumentUploadRepository = prdocumentUploadRepository;
@@ -1131,6 +1133,63 @@ namespace Tips.Purchase.Api.Controllers
                 _logger.LogError($"Something went wrong inside GetDownloadUrlDetails action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> ShortClosePrItemSatusByPrItemId(int prItemId)
+        {
+            ServiceResponse<PrItemsDto> serviceResponse = new ServiceResponse<PrItemsDto>();
+
+            try
+            {
+                var prItemDetailByPrItemId = await _prItemRepository.ClosePrItemSatusByPrItemId(prItemId);
+                if (prItemDetailByPrItemId == null)
+                {
+                    _logger.LogError($"PrItem with prItemId: {prItemId}, hasn't been found.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PrItem with prItemId hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+                prItemDetailByPrItemId.PrStatus = PrStatus.ShortClosed;
+                string result = await _prItemRepository.UpdatePrItem(prItemDetailByPrItemId);
+                _prItemRepository.SaveAsync();
+
+                //Update PurchaseRequisition Table Status
+                var prItemOpenStatuscount = await _prItemRepository.GetPrItemOpenStatusCount(prItemDetailByPrItemId.PurchaseRequistionId);
+
+                if (prItemOpenStatuscount == 0)
+                {
+                    var prDetails = await _repository.GetPurchaseRequisitionById(prItemDetailByPrItemId.PurchaseRequistionId);
+                    prDetails.PrStatus = PrStatus.ShortClosed;
+                    await _repository.UpdatePurchaseRequisition(prDetails);
+                    _repository.SaveAsync();
+                }
+                else
+                {
+                    var poDetails = await _repository.GetPurchaseRequisitionById(prItemDetailByPrItemId.PurchaseRequistionId);
+                    poDetails.PrStatus = PrStatus.PartiallyClosed;
+                    await _repository.UpdatePurchaseRequisition(poDetails);
+                    _repository.SaveAsync();
+                }
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "PrItem Status have been closed";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ChangePrItemSatusByPrItemId action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

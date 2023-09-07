@@ -3,6 +3,8 @@
     public enum PrStatus
     {
         Open,
-        Closed
+        PartiallyClosed,
+        Closed,
+        ShortClosed
     }
 }

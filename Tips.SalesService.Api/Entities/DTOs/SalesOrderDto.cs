@@ -72,6 +72,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [DefaultValue(false)]
         public bool ConfirmStatus { get; set; }
         public DateTime? ConfirmDate { get; set; }
+        public bool SoConfirmationStatus { get; set; }
         [DefaultValue(false)]
         public bool ApproveStatus { get; set; }
         public string? CreatedBy { get; set; }

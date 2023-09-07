@@ -1,21 +1,21 @@
-﻿using Entities;
+﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using Tips.SalesService.Api.Entities.Enum;
 
 namespace Tips.SalesService.Api.Entities
 {
-    public class SalesOrderItems
+    public class SoConfirmationDateHistory
     {
         [Key]
-        public int Id { get; set; } 
+        public int Id { get; set; }
         public string? ItemNumber { get; set; }
-       
+        public DateTime ConfirmationDate { get; set; }
+        [Precision(13, 3)]
+        public decimal Qty { get; set; }
         public string? Description { get; set; }
         public string? SalesOrderNumber { get; set; }
-        public string? ProjectNumber { get; set; } 
+        public string? ProjectNumber { get; set; }
 
-        public OrderStatus StatusEnum { get; set; }       
+        public OrderStatus StatusEnum { get; set; }
         public string? UOM { get; set; }
         public string? Currency { get; set; }
 
@@ -53,10 +53,5 @@ namespace Tips.SalesService.Api.Entities
         public DateTime RequestedDate { get; set; }
         public string? PriceList { get; set; }
         public string? Remarks { get; set; }
-        public int SalesOrderId { get; set; }
-        public SalesOrder? SalesOrder { get; set; } 
-        public List<ScheduleDate>? ScheduleDates { get; set; }
-        public List<SoConfirmationDate> SoConfirmationDates { get; set; }
-
     }
 }

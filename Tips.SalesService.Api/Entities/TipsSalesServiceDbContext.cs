@@ -95,6 +95,8 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<SOBreakDown> SOBreakDowns { get; set; }
 
         public DbSet<CoverageReport> CoverageReports { get; set; }
+        public DbSet<SoConfirmationDate> SoConfirmationDates { get; set; }
+        public DbSet<SoConfirmationDateHistory> SoConfirmationDateHistories { get; set; }
 
 
     }

@@ -28,12 +28,14 @@ namespace Tips.SalesService.Api.Controllers
         private ISalesOrderRepository _repository;
         private ISalesOrderItemsRepository _salesOrderItemsRepository;
         private ISalesAdditionalChargesRepository _salesAdditionalChargesRepository;
+        private ISoConfirmationDateRepository _soConfirmationDateRepository;
+        private ISoConfirmationDateHistoryRepository _soConfirmationDateHistoryRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private ISalesOrderHistoryRepository _salesOrderHistory;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        public SalesOrderController(IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
+        public SalesOrderController(ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository,IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
             ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository,
             ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
@@ -43,6 +45,8 @@ namespace Tips.SalesService.Api.Controllers
             _salesOrderItemsRepository = salesOrderItemsRepository;
             _salesOrderHistory = salesOrderHistoryRepository;
             _salesAdditionalChargesRepository = salesAdditionalChargesRepository;
+            _soConfirmationDateRepository = soConfirmationDateRepository;
+            _soConfirmationDateHistoryRepository = soConfirmationDateHistoryRepository;
             _httpClient = httpClient;
             _config = config;
         }
@@ -1399,6 +1403,138 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside CloseSOItemSatusBySOItemId action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SoConfirmationStatus(List<List<SoItemConfirmationDateDto>> soItemConfirmationDateDto)
+        {
+            ServiceResponse<SoItemConfirmationDateDto> serviceResponse = new ServiceResponse<SoItemConfirmationDateDto>();
+
+            try
+            {
+                var salesOrderDetailById = await _repository.GetSalesOrderById(soItemConfirmationDateDto[0][0].SalesOrderId);
+                if (salesOrderDetailById == null)
+                {
+                    _logger.LogError($"SalesOrder with SalesOrderId: {soItemConfirmationDateDto[0][0].SalesOrderId}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrder with SalesOrderId hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+                //Updating SoConfirmationDate table
+                var soItemConfirmationDateDtoDetails = await _soConfirmationDateRepository.GetSoConfirmationDateDetailsById(soItemConfirmationDateDto[0][0].SalesOrderItemsId);
+
+                if (soItemConfirmationDateDtoDetails.Count() == 0)
+                {
+                    var soConfirmationDateDtoDetails = soItemConfirmationDateDto
+                        .SelectMany(SoItemConfirmationDateDtoList => SoItemConfirmationDateDtoList)
+                        .Select(soConfirmationDate => new SoConfirmationDate
+                        {
+                            ConfirmationDate = soConfirmationDate.ConfirmationDate,
+                            Qty = soConfirmationDate.Qty,
+                            SalesOrderItemsId = soConfirmationDate.SalesOrderItemsId
+                        })
+                        .ToList();
+
+                    await _soConfirmationDateRepository.CreateSoConfirmationDateList(soConfirmationDateDtoDetails);
+                    _soConfirmationDateRepository.SaveAsync();
+                }
+
+                else
+                {
+                    await _soConfirmationDateRepository.DeleteSoConfirmationDateList(soItemConfirmationDateDtoDetails);
+                    _soConfirmationDateRepository.SaveAsync();
+
+                    var soItemConfirmationDateDtoList = await _soConfirmationDateRepository.GetSoConfirmationDateDetailsById(soItemConfirmationDateDto[0][0].SalesOrderItemsId);
+
+                    if (soItemConfirmationDateDtoList.Count() == 0)
+                    {
+                        var soConfirmationDateDtoDetails = soItemConfirmationDateDto
+                            .SelectMany(PoItemConfirmationDateDtoList => PoItemConfirmationDateDtoList)
+                            .Select(soConfirmationDate => new SoConfirmationDate
+                            {
+                                ConfirmationDate = soConfirmationDate.ConfirmationDate,
+                                Qty = soConfirmationDate.Qty,
+                                SalesOrderItemsId = soConfirmationDate.SalesOrderItemsId
+                            })
+                            .ToList();
+
+                        await _soConfirmationDateRepository.CreateSoConfirmationDateList(soConfirmationDateDtoDetails);
+                        _soConfirmationDateRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "SoConfirmationDateDetails have been Found";
+                        serviceResponse.Success = true;
+                        serviceResponse.StatusCode = HttpStatusCode.OK;
+                        return Ok(serviceResponse);
+                    }
+
+                }
+
+                //Update SoConfirmationHistory Table
+                var soItemConfirmationDateDetails = await _soConfirmationDateRepository.GetSoConfirmationDateDetailsById(soItemConfirmationDateDto[0][0].SalesOrderItemsId);
+                if (soItemConfirmationDateDetails != null)
+                {
+                    foreach (var soConfirmationDate in soItemConfirmationDateDetails)
+                    {
+                        var purchaseOrderItemDetailById = await _salesOrderItemsRepository.GetSalesOrderItemDetailsById(soItemConfirmationDateDto[0][0].SalesOrderItemsId);
+                        SoConfirmationDateHistory soConfirmationDateHistory = new SoConfirmationDateHistory();
+                        soConfirmationDateHistory.ItemNumber = purchaseOrderItemDetailById.ItemNumber;
+                        soConfirmationDateHistory.Description = purchaseOrderItemDetailById.Description;
+                        soConfirmationDateHistory.SalesOrderNumber = purchaseOrderItemDetailById.SalesOrderNumber;
+                        soConfirmationDateHistory.ProjectNumber = purchaseOrderItemDetailById.ProjectNumber;
+                        soConfirmationDateHistory.StatusEnum = purchaseOrderItemDetailById.StatusEnum;
+                        soConfirmationDateHistory.Qty = soConfirmationDate.Qty;
+                        soConfirmationDateHistory.ConfirmationDate = soConfirmationDate.ConfirmationDate;
+                        soConfirmationDateHistory.UOM = purchaseOrderItemDetailById.UOM;
+                        soConfirmationDateHistory.Currency = purchaseOrderItemDetailById.Currency;
+                        soConfirmationDateHistory.TotalAmount = purchaseOrderItemDetailById.TotalAmount;
+                        soConfirmationDateHistory.BasicAmount = purchaseOrderItemDetailById.BasicAmount;
+                        soConfirmationDateHistory.Discount = purchaseOrderItemDetailById.Discount;
+                        soConfirmationDateHistory.RoomName = purchaseOrderItemDetailById.RoomName;
+                        soConfirmationDateHistory.DiscountType = purchaseOrderItemDetailById.DiscountType;
+                        soConfirmationDateHistory.UnitPrice = purchaseOrderItemDetailById.UnitPrice;
+                        soConfirmationDateHistory.OrderQty = purchaseOrderItemDetailById.OrderQty;
+                        soConfirmationDateHistory.BalanceQty = purchaseOrderItemDetailById.BalanceQty;
+                        soConfirmationDateHistory.DispatchQty = purchaseOrderItemDetailById.DispatchQty;
+                        soConfirmationDateHistory.ShopOrderQty = purchaseOrderItemDetailById.ShopOrderQty;
+                        soConfirmationDateHistory.SGST = purchaseOrderItemDetailById.SGST;
+                        soConfirmationDateHistory.CGST = purchaseOrderItemDetailById.CGST;
+                        soConfirmationDateHistory.UTGST = purchaseOrderItemDetailById.UTGST;
+                        soConfirmationDateHistory.IGST = purchaseOrderItemDetailById.IGST;
+                        soConfirmationDateHistory.RequestedDate = purchaseOrderItemDetailById.RequestedDate;
+                        soConfirmationDateHistory.PriceList = purchaseOrderItemDetailById.PriceList;
+                        soConfirmationDateHistory.Remarks = purchaseOrderItemDetailById.Remarks;
+
+                        await _soConfirmationDateHistoryRepository.CreateSoConfirmationHistory(soConfirmationDateHistory);
+                    }
+                    _soConfirmationDateHistoryRepository.SaveAsync();
+                }
+
+                //Update SoConfirmationStatus in SalesOrder Table
+                salesOrderDetailById.SoConfirmationStatus = true;
+                string result = await _repository.UpdateSalesOrder(salesOrderDetailById);
+                _repository.SaveAsync();
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "SoConfirmationStatus have been Updated";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside SoConfirmationStatus action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;

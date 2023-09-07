@@ -1,6 +1,6 @@
-﻿using Entities.Enums;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Entities
 {
@@ -15,7 +15,8 @@ namespace Tips.Purchase.Api.Entities
         public PartType PartType { get; set; }
 
         [Precision(13, 3)]
-        public decimal? Qty { get; set; }      
+        public decimal? Qty { get; set; }
+        public PrStatus PrStatus { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

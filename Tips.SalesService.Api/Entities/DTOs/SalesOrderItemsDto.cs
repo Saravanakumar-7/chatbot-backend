@@ -61,6 +61,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public DateTime RequestedDate { get; set; }
         public string? Remarks { get; set; } 
         public List<ScheduleDateDto>? ScheduleDates { get; set; }
+        public List<SoConfirmationDateDto> SoConfirmationDates { get; set; }
 
     }
 
@@ -320,5 +321,12 @@ namespace Tips.SalesService.Api.Entities.Dto
         public PartType PartType { get; set; }
 
 
+    }
+    public class SoItemConfirmationDateDto
+    {
+        public int SalesOrderId { get; set; }
+        public int SalesOrderItemsId { get; set; }
+        public DateTime ConfirmationDate { get; set; }
+        public decimal Qty { get; set; }
     }
 }

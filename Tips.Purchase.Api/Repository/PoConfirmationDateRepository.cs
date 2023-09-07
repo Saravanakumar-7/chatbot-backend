@@ -43,10 +43,5 @@ namespace Tips.Purchase.Api.Repository
             return poConfirmationDateList;
         }
 
-        //public async Task<IEnumerable<long>> CreatePoConfirmationDate(List<PoConfirmationDate> poConfirmationDate)
-        //{
-        //    var result = await Create(poConfirmationDate);
-        //    return result.Id;
-        //}
     }
 }

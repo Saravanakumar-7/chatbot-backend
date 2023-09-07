@@ -404,7 +404,14 @@ namespace Tips.SalesService.Api.Repository
         {
             _tipsSalesServiceDbContexts = repositoryContext;
         }
+        public async Task<SalesOrderItems> GetSalesOrderItemDetailsById(int soItemId)
+        {
+            var salesOrderItemDetails = await _tipsSalesServiceDbContexts.SalesOrdersItems
+                 .Where(x => x.Id == soItemId)
+                          .FirstOrDefaultAsync();
 
+            return salesOrderItemDetails;
+        }
         public async Task<IEnumerable<ListOfProjectNoDto>> GetprojectNoByItemNo(string itemNo)
         {
             //OrderStatus[] status = { OrderStatus.Open, OrderStatus.PartiallyClosed };

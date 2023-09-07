@@ -8,6 +8,8 @@ using Tips.Purchase.Api.Contracts;
 using System.Security.Claims;
 using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.DTOs;
+using System.Reflection;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Repository
 {
@@ -455,6 +457,69 @@ namespace Tips.Purchase.Api.Repository
             Delete(documentUpload);
             string result = $"DocumentUpload details of {documentUpload.Id} is deleted successfully!";
             return result;
+        }
+    }
+    public class PurchaseRequisitionItemRepository : RepositoryBase<PrItem>, IPrItemsRepository
+    {
+        private TipsPurchaseDbContext _tipsPurchaseDbContexts;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public PurchaseRequisitionItemRepository(TipsPurchaseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        {
+            _tipsPurchaseDbContexts = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+        }
+
+        public Task<IEnumerable<PrItem>> GetAllPrItems()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PrItem> GetPrItemById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<PrItem>> GetAllActivePrItems()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int?> CreatePrItem(PrItem prItem)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<string> UpdatePrItem(PrItem prItem)
+        {
+            Update(prItem);
+            string result = $"PrItem of Detail {prItem.Id} is updated successfully!";
+            return result;
+        }
+
+        public Task<string> DeletePrItem(PrItem prItem)
+        {
+            throw new NotImplementedException();
+        }
+        public async Task<PrItem> ClosePrItemSatusByPrItemId(int prItemId)
+        {
+            var prItemDetailByPrItemId = await _tipsPurchaseDbContext.PrItems.Where(x => x.Id == prItemId)
+
+                                .FirstOrDefaultAsync();
+
+            return prItemDetailByPrItemId;
+        }
+        public async Task<int?> GetPrItemOpenStatusCount(int prId)
+        {
+            var prItemStatusCount = _tipsPurchaseDbContext.PrItems
+                                        .Where(x => x.PurchaseRequistionId == prId && x.PrStatus == PrStatus.Open).Count();
+
+            return prItemStatusCount;
         }
     }
 

@@ -2,7 +2,7 @@
 
 namespace Tips.Purchase.Api.Contracts
 {
-    public interface IPrItemsRepository
+    public interface IPrItemsRepository : IRepositoryBase<PrItem>
     {
         Task<IEnumerable<PrItem>> GetAllPrItems();
         Task<PrItem> GetPrItemById(int id);
@@ -10,5 +10,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<int?> CreatePrItem(PrItem prItem);
         Task<string> UpdatePrItem(PrItem prItem);
         Task<string> DeletePrItem(PrItem prItem);
+        Task<PrItem> ClosePrItemSatusByPrItemId(int prItemId);
+        Task<int?> GetPrItemOpenStatusCount(int prId);
     }
 }
