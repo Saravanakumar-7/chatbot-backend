@@ -152,14 +152,10 @@ namespace Tips.SalesService.Api.Controllers
                                 dynamic purchaseObject = purchaseObjectData.data;
 
                                 if (purchaseObject != null)
-
                                 {
-                                    //foreach (var purchase in purchaseObject)
-                                    //{
-                                        decimal OpenPoQty = (decimal)purchaseObject.balanceQty; 
-                                        coverageReport.OpenPoQty = coverageReport.OpenPoQty + OpenPoQty;
-                                    //}
-                                }
+                                    decimal OpenPoQty = (decimal)purchaseObject.balanceQty; 
+                                    coverageReport.OpenPoQty = coverageReport.OpenPoQty + OpenPoQty;
+                              }
                             }
                         }
 
@@ -182,7 +178,7 @@ namespace Tips.SalesService.Api.Controllers
 
    
 
-        [HttpGet]
+        [HttpGet] 
         public async Task<IActionResult> GenerateCoverageReportForFgChildItems()
         {
             ServiceResponse<List<CoverageReportDtoForChildItem>> serviceResponse = new ServiceResponse<List<CoverageReportDtoForChildItem>>();
@@ -194,15 +190,15 @@ namespace Tips.SalesService.Api.Controllers
                 //List<OpenSalesCoverageReport> openSalesCoverageReports = new List<OpenSalesCoverageReport>();
                 //OpenSalesCoverageReport openSalesCoverageReport = new OpenSalesCoverageReport
                 //{
-                //        ItemNumber = "1002370",
-                //        PartType = PartType.FG,
-                //        OpenSOQty = 100,
-                //        TotalRequiredQty = 80,
-                //        Stock = 40,
-                //        OpenPoQty = 20,
-                //        BalanceToOrder=20,
-                        
-                // };
+                //    ItemNumber = "1002370",
+                //    PartType = PartType.FG,
+                //    OpenSOQty = 100,
+                //    TotalRequiredQty = 80,
+                //    Stock = 40,
+                //    OpenPoQty = 20,
+                //    BalanceToOrder = 20,
+
+                //};
                 //OpenSalesCoverageReport openSalesCoverageReport1 = new OpenSalesCoverageReport
                 //{
                 //    ItemNumber = "102010038069",
@@ -257,7 +253,6 @@ namespace Tips.SalesService.Api.Controllers
                                     coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
                                 }
                             }
-
                         }
                     }
                 }

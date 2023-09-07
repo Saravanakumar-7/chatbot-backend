@@ -671,7 +671,7 @@ namespace Tips.Warehouse.Api.Controllers
                     _logger.LogInfo($"Returned Inventory with Itemnumber List in GetConsumptionChildItemStockWithWipQty");
                     //var result = _mapper.Map<ConsumptionInventoryDto>(InventoryDetails);
                     //var result = _mapper.Map<ConsumptionChildItemInventoryDto>(InventoryDetails);
-                    //serviceResponse.Data = InventoryDetails;
+                    serviceResponse.Data = InventoryDetails;
                     serviceResponse.Message = "Returned InventoryDetails with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

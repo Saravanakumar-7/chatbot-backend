@@ -37,7 +37,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<Inventory> GetInventoryDetailsByItemAndProjectNo(string itemNumber, string projectNumber);
         Task<List<Inventory>> GetInventoryDetailsByItemNoandProjectNo(string ItemNumber, string ProjectNo);
         Task<List<Inventory>> GetInventoryByItemNo(string itemNumber); 
-        Task<ConsumptionInventoryDto> GetConsumptionInventoryByItemNo(string itemNumber);    
+        Task<ConsumptionInventoryDto> GetConsumptionInventoryByItemNo(string itemNumber);
+        Task<ConsumptionInventoryDto> GetConsumptionInventoryByItemNoAndProjectNo(string itemNumber, string projectNumber);
         Task<Inventory> GetInventoryDetailsByGrinNo(string GrinNo, string ItemNumber, string ProjectNumber);
         Task<Inventory> GetInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber);
         Task<IEnumerable<GetInventoryListByItemNo>> GetInventoryListByItemNo(string ItemNumber );

@@ -473,6 +473,25 @@ namespace Tips.Warehouse.Api.Repository
             return inventoryDetails;
         }
 
+        //passing Project Number and itemnumber
+        public async Task<ConsumptionInventoryDto> GetConsumptionInventoryByItemNoAndProjectNo(string itemNumber, string projectNumber)
+        {
+            var partTypes = new PartType[] { PartType.FG, PartType.TG };
+
+            var inventoryDetails = await _tipsWarehouseDbContext.Inventories
+            .Where(x => x.PartNumber == itemNumber && x.IsStockAvailable == true && x.ProjectNumber == projectNumber && x.Balance_Quantity > 0
+            && partTypes.Contains(x.PartType) /*&& x.Warehouse =="FG"*/)
+            .GroupBy(x => x.PartNumber)
+            .Select(group => new ConsumptionInventoryDto
+            {
+                PartNumber = group.Key,
+                Balance_Quantity = group.Sum(x => x.Balance_Quantity) // Calculate the sum of quantities
+            })
+            .FirstOrDefaultAsync();
+
+            return inventoryDetails;
+        }
+
         public async Task<List<ConsumptionChildItemInventoryDto>> GetConsumptionChildItemStockWithWipQty(List<string> itemNumberList)
         {
             var partTypes = new PartType[] { PartType.PurchasePart};

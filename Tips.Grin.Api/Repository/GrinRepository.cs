@@ -112,7 +112,21 @@ namespace Tips.Grin.Api.Repository
             Delete(grins);
             string result = $"Grin details of {grins.Id} is deleted successfully!";
             return result;
-        } 
+        }
+
+        public async Task<IEnumerable<GrinNoForIqcAndBinning>> GetAllGrinNumberWhereBinningComplete()
+        {
+            IEnumerable<GrinNoForIqcAndBinning> grinNoForBinning = await _tipsGrinDbContext.Grins
+                .Where(x => x.IsGrinCompleted == true && x.IsBinningCompleted == true)
+                                .Select(x => new GrinNoForIqcAndBinning()
+                                {
+                                    GrinNumber = x.GrinNumber,
+                                    GrinId = x.Id
+                                })
+                              .ToListAsync();
+
+            return grinNoForBinning;
+        }
 
         //public async Task<PagedList<Grins>> GetAllActiveGrin([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         //{

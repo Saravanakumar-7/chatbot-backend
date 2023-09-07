@@ -258,11 +258,12 @@ namespace Tips.Purchase.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetListOfOpenPOQtyByItemNoList(List<string> itemNumberList)
         {
-            ServiceResponse<IEnumerable<OpenPurchaseOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenPurchaseOrderDto>>();
+            //openpurchaseorderdto
+            ServiceResponse<IEnumerable<OpenPoQuantityDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenPoQuantityDto>>();
             try
             {
                 var revNumberDetailsbyPONumber = await _poItemsRepository.GetListOfOpenPOQtyByItemNoList(itemNumberList);
-                var result = _mapper.Map<IEnumerable<OpenPurchaseOrderDto>>(revNumberDetailsbyPONumber);
+                var result = _mapper.Map<IEnumerable<OpenPoQuantityDto>>(revNumberDetailsbyPONumber);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Open PurchaseOrder Details";
                 serviceResponse.Success = true;

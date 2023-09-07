@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface ITypeOfRoomRepository
     {
-        Task<IEnumerable<TypeOfRoom>> GetAllTypeOfRoom();
+        Task<IEnumerable<TypeOfRoom>> GetAllTypeOfRoom(SearchParames searchParams);
         Task<TypeOfRoom> GetTypeOfRoomById(int id);
-        Task<IEnumerable<TypeOfRoom>> GetAllActiveTypeOfRoom();
+        Task<IEnumerable<TypeOfRoom>> GetAllActiveTypeOfRoom(SearchParames searchParams);
         Task<int?> CreateTypeOfRoom(TypeOfRoom typeOfRoom);
         Task<string> UpdateTypeOfRoom(TypeOfRoom typeOfRoom);
         Task<string> DeleteTypeOfRoom(TypeOfRoom typeOfRoom);
