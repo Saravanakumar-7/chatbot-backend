@@ -55,6 +55,9 @@ namespace Tips.SalesService.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+         
+        public bool IsShortClosed { get; set; } = false;
+        public string? ShortClosedRemarks { get; set; }
 
         public List<QuoteGeneral>? QuoteGenerals { get; set; }
         public List<QuoteAdditionalCharges>? QuoteAdditionalCharges { get; set; }

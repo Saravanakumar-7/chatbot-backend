@@ -231,4 +231,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? ValidThrough { get; set; }
         public bool? IsDiscountApplicable { get; set; }
     }
+    // To allow short closed
+    public class ShortClosedDto
+    {
+        public string? QuoteNumber { get; set; }
+        public string? ShortClosedRemarks { get; set; }
+    }
 }

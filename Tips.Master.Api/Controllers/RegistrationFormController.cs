@@ -63,13 +63,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveRegistrationForm([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveRegistrationForm()
         {
             ServiceResponse<IEnumerable<RegistrationFormDto>> serviceResponse = new ServiceResponse<IEnumerable<RegistrationFormDto>>();
 
             try
             {
-                var activeRegistrationFormDetails = await _repository.RegistrationFormRepository.GetAllActiveRegistrationForm(pagingParameter, searchParams);
+                var activeRegistrationFormDetails = await _repository.RegistrationFormRepository.GetAllActiveRegistrationForm();
                 _logger.LogInfo("Returned all RegistrationForm");
                 var result = _mapper.Map<IEnumerable<RegistrationFormDto>>(activeRegistrationFormDetails);
                 serviceResponse.Data = result;

@@ -28,6 +28,8 @@ namespace Tips.Purchase.Api.Entities
         public string? ShippingMode { get; set; }
         public string? ShipTo { get; set; }
         public string? BillTo { get; set; }
+        public int? BillToId { get; set; }
+        public int? ShipToId { get; set; }
 
         //Terms
         public string? RetentionPeriod { get; set; }
@@ -51,6 +53,7 @@ namespace Tips.Purchase.Api.Entities
         public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }
         public PoStatus PoStatus { get; set; }
+        [DefaultValue(false)]
         public bool PoConfirmationStatus { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }

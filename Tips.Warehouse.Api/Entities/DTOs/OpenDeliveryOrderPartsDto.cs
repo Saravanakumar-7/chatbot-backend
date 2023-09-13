@@ -41,46 +41,34 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     }
     public class OpenDeliveryOrderPartsDtoPost
     {
-
-        [Required(ErrorMessage = "ItemNo is required")]
-        public string ItemNumber { get; set; }
-
-        [Required(ErrorMessage = "ItemType is required")]
+         
+        public string ItemNumber { get; set; } 
         public PartType ItemType { get; set; }
 
         [Required]
         public string ItemDescription { get; set; }
-
-        [Required(ErrorMessage = "UnitPrice is required")]
+         
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
-
-        [Required(ErrorMessage = "UOC is required")]
+         
         public string UOC { get; set; }
-
-        [Required(ErrorMessage = "UOM is required")]
+         
         public string UOM { get; set; }
-
-        [Required(ErrorMessage = "StockAvailable is required")]
+         
         public decimal StockAvailable { get; set; }
         public string Warehouse { get; set; }
-
-        [Required(ErrorMessage = "Location is required")]
+         
         public string Location { get; set; }
-
-        [Required(ErrorMessage = "LocationStock is required")]
+         
         public decimal LocationStock { get; set; }
-
-        [Required(ErrorMessage = "DispatchQty is required")]
+         
         [Precision(13, 3)]
         public decimal DispatchQty { get; set; }
-
-        [Required(ErrorMessage = "Remarks is required")]
+         
         public string? Remarks { get; set; }
         public string? SerialNo { get; set; }
 
         public bool IsActive { get; set; } = true;
-
         
         
     }

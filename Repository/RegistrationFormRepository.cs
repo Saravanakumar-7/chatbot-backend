@@ -49,15 +49,23 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<RegistrationForm>> GetAllActiveRegistrationForm([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<List<RegistrationForm>> GetAllActiveRegistrationForm()
         {
-            var activeRegistrationFormDetails = FindAll().OrderByDescending(x => x.Id)
-              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.UserName.Contains(searchParams.SearchValue) ||
-                 inv.EmailId.Contains(searchParams.SearchValue) || inv.FirstName.Contains(searchParams.SearchValue) ||
-                 inv.LastName.Contains(searchParams.SearchValue))));
+            var activeRegistrationFormDetails = FindAll().OrderByDescending(x => x.Id);
 
-            return PagedList<RegistrationForm>.ToPagedList(activeRegistrationFormDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            return await activeRegistrationFormDetails.ToListAsync(); // Assuming you're using Entity Framework
         }
+
+
+        //public async Task<PagedList<RegistrationForm>> GetAllActiveRegistrationForm([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //{
+        //    var activeRegistrationFormDetails = FindAll().OrderByDescending(x => x.Id)
+        //      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.UserName.Contains(searchParams.SearchValue) ||
+        //         inv.EmailId.Contains(searchParams.SearchValue) || inv.FirstName.Contains(searchParams.SearchValue) ||
+        //         inv.LastName.Contains(searchParams.SearchValue))));
+
+        //    return PagedList<RegistrationForm>.ToPagedList(activeRegistrationFormDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
         public async Task<IEnumerable<RegistrationForm>> GetAllRegistrationForm([FromQuery] SearchParames searchParams)
         {
             var registrationFormDetails = FindAll()

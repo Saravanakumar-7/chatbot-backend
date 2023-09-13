@@ -503,6 +503,49 @@ namespace Tips.SalesService.Api.Controllers
                 }
             }
 
+        // To allow short closed
+        [HttpPost]
+        public async Task<IActionResult> QuoteShortClosed([FromBody] ShortClosedDto shortClosedDto)
+        {
+            ServiceResponse<QuoteDto> serviceResponse = new ServiceResponse<QuoteDto>();
+            try
+            {
+                if (shortClosedDto.QuoteNumber is null)
+                {
+                    _logger.LogError("QuoteNumber object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "QuoteNumber object sent from client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid QuoteNumber object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid QuoteNumber object sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                await _repository.CreateShortClosed(shortClosedDto);
+                serviceResponse.Data = null;
+                serviceResponse.Message = " Quote ShortClosed Successfully"; ;
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside QuoteShortClosed action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
         }
+
+    }
     } 
 

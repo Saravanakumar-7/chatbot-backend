@@ -185,6 +185,34 @@ namespace Tips.SalesService.Api.Repository
             return rfqAndForecastNumbers;
 
         }
+
+        //get list of cs and forecast number list
+        //charan
+        public async Task<IEnumerable<string>> GetRfqCsandForecastCsProjectNumberList()
+        {
+            var rfqNumber = _tipsSalesServiceDbContext.RfqCustomerSupportItems
+    .Select(r => r.RfqNumber)
+    .Distinct()
+    .ToList();
+
+            var forecastNumber = _tipsSalesServiceDbContext.foreCastCustomerSupportItems
+                .Select(r => r.ForecastNumber)
+                .Distinct()
+                .ToList();
+
+            // Null checks to handle empty lists
+            if (rfqNumber == null)
+                rfqNumber = new List<string>();
+
+            if (forecastNumber == null)
+                forecastNumber = new List<string>();
+
+            var rfqAndForecastNumbers = rfqNumber.Union(forecastNumber).ToList();
+
+            return rfqAndForecastNumbers;
+
+        }
+
         //getrfqandforecast number list
         public async Task<IEnumerable<string>> GetRfqEnggandForecastCsProjectList()
         {
@@ -211,19 +239,7 @@ namespace Tips.SalesService.Api.Repository
             if (forecastNumber == null)
                 forecastNumber = new List<string>();
 
-            var rfqAndForecastNumbers = rfqNumber.Union(forecastNumber).ToList();
-            //var rfqNumber = _tipsSalesServiceDbContext.RfqCustomerSupportItems
-            //                 .Where(r => r.ItemNumber == itemNumber)
-            //                 .Select(r=> r.RfqNumber)
-            //                 .Distinct()
-            //                 .ToList();
-
-            //var forecastNumber = _tipsSalesServiceDbContext.foreCastCustomerSupportItems
-            //                        .Where(r => r.ItemNumber == itemNumber)
-            //                        .Select(r => r.ForecastNumber)
-            //                        .Distinct()
-            //                        .ToList();
-            //var rfqAndForecastNumbers = rfqNumber.Concat(forecastNumber);
+            var rfqAndForecastNumbers = rfqNumber.Union(forecastNumber).ToList(); 
 
             return rfqAndForecastNumbers;
 
@@ -663,12 +679,7 @@ namespace Tips.SalesService.Api.Repository
         }
 
         public async Task<PagedList<Rfq>> GetAllRfq([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
-        {
-            //var rfqDetails = FindAll().OrderByDescending(x => x.Id)
-            //    .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.RfqNumber.Contains(searchParammes.SearchValue)
-            //    || inv.CustomerName.Contains(searchParammes.SearchValue) 
-            //    || inv.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
-            //     )));
+        { 
 
             int searchValueInt;
             bool isSearchValueInt = int.TryParse(searchParammes.SearchValue, out searchValueInt);
@@ -1052,7 +1063,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<RfqEnggItem>> GetRfqEnggRelesedDetailsByRfqNumber(string rfqNumber)
         {
-            List<int> poId = await _tipsSalesServiceDbContext.RfqEnggs
+                List<int> poId = await _tipsSalesServiceDbContext.RfqEnggs
               .Where(s => s.RFQNumber == rfqNumber).Select(x => x.Id).Distinct().ToListAsync();
 
             var rfqEnggRelesedDetails = await _tipsSalesServiceDbContext.RfqEnggItems.Where(x => poId.Contains(x.RfqEnggId)

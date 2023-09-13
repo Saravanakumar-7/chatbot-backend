@@ -446,15 +446,15 @@ namespace Tips.Grin.Api.Controllers
                         grinPartsItemMasterEnggDto.ProjectNumbers = _mapper.Map<List<ProjectNumbersDto>>(GrinpartsDetails.ProjectNumbers);
 
 
-                        var httpClient = new HttpClient();
+                        //var httpClient = new HttpClient();
 
-                        // Include the token in the Authorization header
-                        var tokenValue = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-                        if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
-                        {
-                            var token = tokenValue.Substring(7);
-                            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                        }
+                        //// Include the token in the Authorization header
+                        //var tokenValue = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+                        //if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
+                        //{
+                        //    var token = tokenValue.Substring(7);
+                        //    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        //}
 
                         //Add ItemMasterEnggDetails in GrinParts
                         var ItemNumber = grinPartsItemMasterEnggDto.ItemNumber;
@@ -697,9 +697,7 @@ namespace Tips.Grin.Api.Controllers
                     {
                         if (grinPartsDto[i].COCUpload != null && grinPartsDto[i].COCUpload.Count > 0)
                         {
-                            CoCDocumentSave(grinPartsDto, grins, grinNo, i, grinPartsDocumentUploadDtoList);
-                            
-
+                            CoCDocumentSave(grinPartsDto, grins, grinNo, i, grinPartsDocumentUploadDtoList); 
                         }
 
                     }

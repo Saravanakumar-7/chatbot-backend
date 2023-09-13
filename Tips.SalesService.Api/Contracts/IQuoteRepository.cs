@@ -12,6 +12,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> GenerateQuoteNumber();
 
         Task<IEnumerable<CsItemDetailsForQuoteDto>> GetCsItemDetailsForQuote(string rfqNumber);
+        Task CreateShortClosed(ShortClosedDto shortClosedDto);
         Task<IEnumerable<rfqEnggItemDetailsForQuoteDto>> GetAllRfqEnggDetailsByRfqNo(string rfqNumber);
 
         Task<int?> GetQuoteNumberAutoIncrementCount(DateTime date);

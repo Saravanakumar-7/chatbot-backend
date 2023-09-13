@@ -9,6 +9,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? PONumber { get; set; }
         public DateTime PODate { get; set; }
         public int? RevisionNumber { get; set; }
+        public int? BillToId { get; set; }
+        public int? ShipToId { get; set; }
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
         public string? CompanyAliasName { get; set; }
@@ -58,6 +60,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime PODate { get; set; }
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
+        public int? BillToId { get; set; }
+        public int? ShipToId { get; set; }
         public List<DocumentUploadPostDto> POFiles { get; set; }
 
         //public string? POFiles { get; set; }
@@ -98,6 +102,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         //VendorDetails
         public string? VendorName { get; set; }
+        public int? BillToId { get; set; }
+        public int? ShipToId { get; set; }
         public string? VendorId { get; set; }
         public string? QuotationReferenceNumber { get; set; }
         public DateTime? QuotationDate { get; set; }
@@ -172,6 +178,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? ShippingMode { get; set; }
         public string? ShipTo { get; set; }
         public string? BillTo { get; set; }
+        public int? BillToId { get; set; }
+        public int? ShipToId { get; set; }
         //public List<DocumentUploadPostDto>? POFiles { get; set; }
         public List<DocumentUploadDto>? POFiles { get; set; }
 
