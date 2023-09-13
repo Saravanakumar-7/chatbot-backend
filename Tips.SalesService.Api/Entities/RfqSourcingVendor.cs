@@ -26,9 +26,14 @@ namespace Tips.SalesService.Api.Entities
 
         [Precision(13,3)]
         public decimal? QuoteQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandindPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MoqCost { get; set; }
+
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }       
-        public bool IsActive { get; set; } = true;        
+        public bool Primary { get; set; } = true;        
         public int RfqSourcingItemsId { get; set; }
         public RfqSourcingItems? RfqSourcingItems { get; set; }
     }

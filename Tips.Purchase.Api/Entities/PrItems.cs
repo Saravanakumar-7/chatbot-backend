@@ -12,11 +12,12 @@ namespace Tips.Purchase.Api.Entities
         public string? MftrItemNumber { get; set; }
         public string? Description { get; set; }
         public string? UOM { get; set; }
-        public PartType PartType { get; set; }
+        public PoPartType PartType { get; set; }
 
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
         public PrStatus PrStatus { get; set; }
+        public string? SpecialInstruction { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

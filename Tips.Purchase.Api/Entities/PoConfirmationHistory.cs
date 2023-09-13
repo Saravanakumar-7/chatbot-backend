@@ -24,7 +24,7 @@ namespace Tips.Purchase.Api.Entities
         [Precision(13, 3)]
         public decimal ReceivedQty { get; set; }
 
-        public PartType? PartType { get; set; }
+        public PoPartType? PartType { get; set; }
         public string? SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
         public bool PoPartsStatus { get; set; }

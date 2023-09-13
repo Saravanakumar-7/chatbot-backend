@@ -679,7 +679,7 @@ namespace Tips.Purchase.Api.Repository
                joinResult.PurchaseOrder.POApprovalII == true &&
                joinResult.PurchaseOrder.IsModified == false &&
                joinResult.PoItem.BalanceQty > 0 &&
-               joinResult.PoItem.PartType == PartType.TG &&
+               joinResult.PoItem.PartType == PoPartType.TG &&
                (joinResult.PoItem.PoStatus == PoStatus.Open || joinResult.PoItem.PoStatus == PoStatus.PartiallyClosed)
                )
            .GroupBy(joinResult => new { joinResult.PoItem.ItemNumber })

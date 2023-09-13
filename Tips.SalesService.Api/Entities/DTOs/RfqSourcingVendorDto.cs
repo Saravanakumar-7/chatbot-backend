@@ -25,9 +25,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? QuoteQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandindPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MoqCost { get; set; }
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }
-        public bool IsActive { get; set; }
+        public bool Primary { get; set; }
 
     }
     public class RfqSourcingVendorPostDto
@@ -57,9 +61,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? QuoteQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandindPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MoqCost { get; set; }
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }       
-        public bool IsActive { get; set; } = true;
+        public bool Primary { get; set; } = true;
          
     }
     public class RfqSourcingVendorUpdateDto
@@ -90,6 +98,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? QuoteQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandindPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MoqCost { get; set; }
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }        
     }

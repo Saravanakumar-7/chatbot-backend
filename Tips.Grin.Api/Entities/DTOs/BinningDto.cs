@@ -196,6 +196,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     }
     public class GrinAndBinningDetailsDto
     {
+        public int Id { get; set; }
         public string? GrinNumber { get; set; }
         public string VendorName { get; set; }
         public string InvoiceNumber { get; set; }

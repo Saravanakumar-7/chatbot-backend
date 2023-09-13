@@ -2,6 +2,7 @@
 using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using Tips.Purchase.Api.Entities.DTOs;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Entities.Dto
 {
@@ -35,6 +36,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal? SubTotal { get; set; }
         [Precision(13, 3)]
         public decimal TotalWithTax { get; set; }
+        public PoStatus PoStatus { get; set; }
 
         public List<PoAddProjectDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleDto>? POAddDeliverySchedules { get; set; }
