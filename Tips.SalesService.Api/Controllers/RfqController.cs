@@ -522,6 +522,34 @@ namespace Tips.SalesService.Api.Controllers
 
 
         }
+        //get cs and forecast list of project number
+        //charan
+        [HttpGet]
+        public async Task<IActionResult> GetRfqCsandForecastCsProjectNumberList()
+        {
+            ServiceResponse<IEnumerable<string>> serviceResponse = new ServiceResponse<IEnumerable<string>>();
+            try
+            {
+                var rfqCsandForecastCsByItemNo = await _itemRepository.GetRfqCsandForecastCsProjectNumberList(); 
+                serviceResponse.Data = rfqCsandForecastCsByItemNo;
+                serviceResponse.Message = "Returned all RfqCsandForecastCsDetailList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqCsandForecastCsDetailList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+
         //GetRfqCsandForecastCsDetailListByItemNumber 
         [HttpGet]
         public async Task<IActionResult> GetRfqCsandForecastCsDetailListByItemNumber(string itemNumber)
@@ -530,7 +558,6 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var rfqCsandForecastCsByItemNo = await _itemRepository.GetRfqCsandForecastCsDetailListByItemNumber(itemNumber);
-                //var result = _mapper.Map<IEnumerable<RfqCsandForecastCsprojectNumber>>(rfqCsandForecastCsByItemNo);
                 serviceResponse.Data = rfqCsandForecastCsByItemNo;
                 serviceResponse.Message = "Returned all RfqCsandForecastCsDetailList";
                 serviceResponse.Success = true;

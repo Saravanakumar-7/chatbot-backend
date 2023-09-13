@@ -202,18 +202,32 @@ namespace Tips.Warehouse.Api.Repository
                     // Apply filtering based on the inventoryBalQty properties if they are not null
                     if (inventoryBalQty.PartNumber != null && inventoryBalQty.PartNumber.Any())
                     {
-                        query = query.Where(inv => inventoryBalQty.PartNumber.Contains(inv.PartNumber));
+                        query = query.Where(inv => inventoryBalQty.PartNumber.Contains(inv.PartNumber) && inv.Warehouse != "Grin" && inv.Warehouse != "IQC");
                     }
 
                     if (inventoryBalQty.Warehouse != null && inventoryBalQty.Warehouse.Any())
                     {
-                        query = query.Where(inv => inventoryBalQty.Warehouse.Contains(inv.Warehouse));
+                        query = query.Where(inv => inventoryBalQty.Warehouse.Contains(inv.Warehouse) && inv.Warehouse != "Grin" && inv.Warehouse != "IQC");
                     }
 
                     if (inventoryBalQty.Location != null && inventoryBalQty.Location.Any())
                     {
-                        query = query.Where(inv => inventoryBalQty.Location.Contains(inv.Location));
+                        query = query.Where(inv => inventoryBalQty.Location.Contains(inv.Location) && inv.Location != "Grin" && inv.Warehouse != "IQC");
                     }
+                    //if (inventoryBalQty.PartNumber != null && inventoryBalQty.PartNumber.Any())
+                    //{
+                    //    query = query.Where(inv => inventoryBalQty.PartNumber.Contains(inv.PartNumber));
+                    //}
+
+                    //if (inventoryBalQty.Warehouse != null && inventoryBalQty.Warehouse.Any())
+                    //{
+                    //    query = query.Where(inv => inventoryBalQty.Warehouse.Contains(inv.Warehouse));
+                    //}
+
+                    //if (inventoryBalQty.Location != null && inventoryBalQty.Location.Any())
+                    //{
+                    //    query = query.Where(inv => inventoryBalQty.Location.Contains(inv.Location));
+                    //}
                 }
 
                 // Retrieve the filtered inventory items
@@ -638,11 +652,11 @@ namespace Tips.Warehouse.Api.Repository
             var partTypes = new PartType[] { PartType.FG, PartType.TG, PartType.FRU };
 
             var getSalesOrderDetailsBy = await _tipsWarehouseDbContext.Inventories
-                .Where(x => x.PartNumber == ItemNumber && partTypes.Contains(x.PartType) && x.IsStockAvailable && x.Balance_Quantity>0)
+                .Where(x => x.PartNumber == ItemNumber && partTypes.Contains(x.PartType) && x.IsStockAvailable== true && x.Balance_Quantity>0)
                 .FirstOrDefaultAsync();
 
             return getSalesOrderDetailsBy;
-        }
+        } 
 
         public async Task<List<Inventory>> GetInventoryByItemNumber(string ItemNumber)
         {

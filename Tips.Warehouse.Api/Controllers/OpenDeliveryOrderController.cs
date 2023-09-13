@@ -325,21 +325,6 @@ namespace Tips.Warehouse.Api.Controllers
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
 
-                //var newcount = await _repository.GetODONumberAutoIncrementCount(date);
-
-                //if (newcount > 0)
-                //{
-                //    var number = newcount + 1;
-                //    string e = String.Format("{0:D4}", number);
-                //    openDeliveryorder.OpenDONumber = days + months + years + "ODO" + (e);
-                //}
-                //else
-                //{
-                //    var count = 1;
-                //    var e = count.ToString("D4");
-                //    openDeliveryorder.OpenDONumber = days + months + years + "ODO" + (e);
-                //}
-
                 var dateFormat = days + months + years;
                 var odoNumber = await _repository.GenerateODONumber();
                 openDeliveryorder.OpenDONumber = dateFormat + odoNumber;
@@ -356,28 +341,38 @@ namespace Tips.Warehouse.Api.Controllers
                         //Update Inventory balanced Quantity 
 
                         var PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
-                        var getInventoryFGDetailsByItemnumber = await _inventoryRepository.GetInventoryFGDetailsByItemNumber(PartNumber);
+                        var getInventoryFGDetailsByItemnumber = await _inventoryRepository.GetInventoryDetailsByItemNoandPartTypes(PartNumber);
                         decimal Quantity = Convert.ToDecimal(openDeliveryOrderitemsList[i].DispatchQty);
+
                         if (getInventoryFGDetailsByItemnumber != null)
                         {
-                            if (Quantity != 0 && getInventoryFGDetailsByItemnumber.Balance_Quantity >= Quantity)
+                            foreach (var item in getInventoryFGDetailsByItemnumber)
                             {
-                                getInventoryFGDetailsByItemnumber.Balance_Quantity = getInventoryFGDetailsByItemnumber.Balance_Quantity - Quantity;
-                                Quantity = 0;
-                                if (getInventoryFGDetailsByItemnumber.Balance_Quantity == 0)
+                                if (Quantity != 0 && item.Balance_Quantity >= Quantity)
                                 {
-                                    getInventoryFGDetailsByItemnumber.IsStockAvailable = false;
+                                    item.Balance_Quantity = item.Balance_Quantity - Quantity;
+                                    Quantity = 0;
+                                    if (item.Balance_Quantity == 0)
+                                    {
+                                        item.IsStockAvailable = false;
+                                    }
+                                 
+                                }
+                                if (Quantity != 0 && item.Balance_Quantity < Quantity)
+                                {
+                                    Quantity = Quantity - item.Balance_Quantity;
+                                    item.Balance_Quantity = 0;
+                                    item.IsStockAvailable = false;                                     
+                                }
+
+                                _inventoryRepository.UpdateInventory(item);
+                                _inventoryRepository.SaveAsync();
+
+                                if (Quantity <= 0)
+                                {
+                                    break;
                                 }
                             }
-                            if (Quantity != 0 && getInventoryFGDetailsByItemnumber.Balance_Quantity < Quantity)
-                            {
-                                Quantity = Quantity - getInventoryFGDetailsByItemnumber.Balance_Quantity;
-                                getInventoryFGDetailsByItemnumber.Balance_Quantity = 0;
-                                getInventoryFGDetailsByItemnumber.IsStockAvailable = false;
-                            }
-
-                            _inventoryRepository.UpdateInventory(getInventoryFGDetailsByItemnumber);
-                            _inventoryRepository.SaveAsync();
                         }
                         else
                         {
@@ -404,37 +399,37 @@ namespace Tips.Warehouse.Api.Controllers
                         }
 
 
-                        //Add BTO Detail Into Inventory transaction Table
+                        ////Add BTO Detail Into Inventory transaction Table
 
-                        InventoryTranction inventoryTranction = new InventoryTranction();
-                        inventoryTranction.PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
-                        inventoryTranction.MftrPartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
-                        inventoryTranction.Description = openDeliveryOrderItemsDtoList[i].ItemDescription;
-                        inventoryTranction.Issued_Quantity = Convert.ToDecimal(openDeliveryOrderItemsDtoList[i].DispatchQty);
-                        inventoryTranction.UOM = openDeliveryOrderItemsDtoList[i].UOM;
-                        inventoryTranction.Issued_DateTime = DateTime.Now;
-                        inventoryTranction.ReferenceID = openDeliveryorder.OpenDONumber;
-                        inventoryTranction.ReferenceIDFrom = "Open Delivery Order";
-                        inventoryTranction.Issued_By = "Admin";
-                        inventoryTranction.CreatedOn = DateTime.Now;
-                        inventoryTranction.Unit = "Bangalore";
-                        inventoryTranction.CreatedBy = "Admin";
-                        inventoryTranction.LastModifiedBy = "Admin";
-                        inventoryTranction.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
-                        inventoryTranction.LastModifiedOn = DateTime.Now;
-                        inventoryTranction.ModifiedStatus = false;
-                        inventoryTranction.From_Location = openDeliveryOrderItemsDtoList[i].Location;
-                        inventoryTranction.TO_Location = "ODO";
-                        inventoryTranction.Remarks = "Create ODO";
+                        //InventoryTranction inventoryTranction = new InventoryTranction();
+                        //inventoryTranction.PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                        //inventoryTranction.MftrPartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                        //inventoryTranction.Description = openDeliveryOrderItemsDtoList[i].ItemDescription;
+                        //inventoryTranction.Issued_Quantity = Convert.ToDecimal(openDeliveryOrderItemsDtoList[i].DispatchQty);
+                        //inventoryTranction.UOM = openDeliveryOrderItemsDtoList[i].UOM;
+                        //inventoryTranction.Issued_DateTime = DateTime.Now;
+                        //inventoryTranction.ReferenceID = openDeliveryorder.OpenDONumber;
+                        //inventoryTranction.ReferenceIDFrom = "Open Delivery Order";
+                        //inventoryTranction.Issued_By = "Admin";
+                        //inventoryTranction.CreatedOn = DateTime.Now;
+                        //inventoryTranction.Unit = "Bangalore";
+                        //inventoryTranction.CreatedBy = "Admin";
+                        //inventoryTranction.LastModifiedBy = "Admin";
+                        //inventoryTranction.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
+                        //inventoryTranction.LastModifiedOn = DateTime.Now;
+                        //inventoryTranction.ModifiedStatus = false;
+                        //inventoryTranction.From_Location = openDeliveryOrderItemsDtoList[i].Location;
+                        //inventoryTranction.TO_Location = "ODO";
+                        //inventoryTranction.Remarks = "Create ODO";
 
-                        var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
-
-
-                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
-                        _inventoryTranctionRepository.SaveAsync();
+                        //var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
 
-                        // Add Bto detail in to opendeliveryorderhistory table
+                        //await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                        //_inventoryTranctionRepository.SaveAsync();
+
+
+                        //// Add Bto detail in to opendeliveryorderhistory table
 
                         OpenDeliveryOrderHistory openDeliveryOrderHistory = new OpenDeliveryOrderHistory();
                         openDeliveryOrderHistory.ODONumber = openDeliveryorder.OpenDONumber;

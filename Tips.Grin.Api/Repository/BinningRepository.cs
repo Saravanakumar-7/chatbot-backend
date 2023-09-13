@@ -44,6 +44,7 @@ namespace Tips.Grin.Api.Repository
                               from Binnings in dept.DefaultIfEmpty()
                               select new GrinAndBinningDetailsDto
                               {
+                                  Id = e.Id,
                                   GrinNumber = e.GrinNumber,
                                   InvoiceNumber = e.InvoiceNumber,
                                   VendorName = e.VendorName,

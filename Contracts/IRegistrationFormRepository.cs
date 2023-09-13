@@ -15,7 +15,7 @@ namespace Contracts
 
         Task<IEnumerable<RegistrationForm>> GetAllRegistrationForm(SearchParames searchParams);
         Task<RegistrationForm> GetRegistrationFormById(int id);
-        Task<PagedList<RegistrationForm>> GetAllActiveRegistrationForm(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<List<RegistrationForm>> GetAllActiveRegistrationForm(); 
         Task<int?> CreateRegistrationForm(RegistrationForm registrationForm);
 
         Task<int> GetRegistrationUserById(int id);

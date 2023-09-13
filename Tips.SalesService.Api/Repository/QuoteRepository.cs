@@ -351,11 +351,13 @@ namespace Tips.SalesService.Api.Repository
             var quoteDetails = FindAll().OrderByDescending(x => x.Id)
             .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.QuoteNumber.Contains(searchParammes.SearchValue)
             || inv.RFQNumber.Contains(searchParammes.SearchValue)
-            ||inv.CustomerId.Contains(searchParammes.SearchValue)
+            || inv.CustomerId.Contains(searchParammes.SearchValue)
             || inv.LeadId.Contains(searchParammes.SearchValue)
             || inv.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
             || inv.TotalAmount.Equals(int.Parse(searchParammes.SearchValue))
-            || inv.CustomerName.Contains(searchParammes.SearchValue))))
+            || inv.CustomerName.Contains(searchParammes.SearchValue)
+            || inv.CustomerId.Contains(searchParammes.SearchValue)
+            )))
                                 .Include(t => t.QuoteGenerals)
                                 .Include(x => x.QuoteAdditionalCharges)
                                 .Include(m => m.QuoteOtherTerms)
@@ -386,6 +388,20 @@ namespace Tips.SalesService.Api.Repository
             Update(quote);
             string result = $"Quote of Detail {quote.Id} is updated successfully!";
             return result;
+        }
+        //To allow short closed
+        public async Task CreateShortClosed(ShortClosedDto shortClosedDto)
+        {
+            var listofquote = await _tipsSalesServiceDbContext.Quotes.Where(x => x.QuoteNumber == shortClosedDto.QuoteNumber)
+            .OrderByDescending(x => x.RevisionNumber).Select(inv => inv.Id).ToArrayAsync();
+            foreach (var id in listofquote)
+            {
+                var quoteDetails = await _tipsSalesServiceDbContext.Quotes.Where(x => x.Id == id).FirstOrDefaultAsync();
+                quoteDetails.IsShortClosed = true;
+                quoteDetails.ShortClosedRemarks = shortClosedDto.ShortClosedRemarks;
+                Update(quoteDetails);
+                SaveAsync();
+            }
         }
     }
 }

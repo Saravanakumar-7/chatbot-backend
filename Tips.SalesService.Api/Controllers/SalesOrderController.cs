@@ -139,22 +139,13 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         var json = JsonConvert.SerializeObject(itemNumberList);
                         var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        var inventoryQtyResponse = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetAvailableStockQtyForSalesOrderItems?", "salesOrderNo=", salesOrderNo, "&salesOrderStatus=", salesOrderStatus), data);
-
-                        //var json = JsonConvert.SerializeObject(itemNumberList);
-                        //var data = new StringContent(json, Encoding.UTF8, "application/json");
-
-                        //string apiUrl = $"{_config["InventoryAPI"]}GetAvailableStockQtyForSalesOrderItems?salesOrderNo={salesOrderNo}&salesOrderStatus={salesOrderStatus}";
-
-                        //var inventoryQtyResponse = await _httpClient.PostAsync(apiUrl, data);
+                        var inventoryQtyResponse = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetAvailableStockQtyForSalesOrderItems?", "salesOrderNo=", salesOrderNo, "&salesOrderStatus=", salesOrderStatus), data); 
 
                         var inventoryItemQtyDetails = await inventoryQtyResponse.Content.ReadAsStringAsync();
-                        //dynamic inventoryTranctionObjectData = JsonConvert.DeserializeObject(inventoryItemQtyDetails);
+                    
 
                         Dictionary<string, decimal> inventoryItemWithStockDetails = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(inventoryItemQtyDetails);
-
-
-                        //Dictionary<string, decimal> inventoryItemWithStockDetails = (Dictionary<string, decimal>)inventoryTranctionObjectData;
+                         
 
                         foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
                         {
@@ -1522,7 +1513,8 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
                 //Update SoConfirmationStatus in SalesOrder Table
-                salesOrderDetailById.SoConfirmationStatus = true;
+                //santhosh
+                //salesOrderDetailById.SoConfirmationStatus = true;
                 string result = await _repository.UpdateSalesOrder(salesOrderDetailById);
                 _repository.SaveAsync();
 
