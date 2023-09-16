@@ -2248,12 +2248,12 @@ namespace Tips.SalesService.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetForecastDeatailsByForecastNoAndRevNo(string forecast, int revisionNumber)
         {
-            ServiceResponse<ForeCastDto> serviceResponse = new ServiceResponse<ForeCastDto>();
+            ServiceResponse<ForeCastCustomerSupportDto> serviceResponse = new ServiceResponse<ForeCastCustomerSupportDto>();
             try
             {
-                var forecastDetail = await _Forecastrepository.GetForecastDeatailsByForecastNoAndRevNo(forecast, revisionNumber);
+                var forecastCsDetail = await _Forecastrepository.GetForecastCsDeatailsByForecastNoAndRevNo(forecast, revisionNumber);
 
-                if (forecastDetail == null)
+                if (forecastCsDetail == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"Forecast  hasn't been found";
@@ -2265,8 +2265,8 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Forecast with id: {forecast}");
-                    ForeCastDto foreCastDto = _mapper.Map<ForeCastDto>(forecastDetail);
-                    serviceResponse.Data = foreCastDto;
+                    ForeCastCustomerSupportDto foreCastCsDto = _mapper.Map<ForeCastCustomerSupportDto>(forecastCsDetail);
+                    serviceResponse.Data = foreCastCsDto;
                     serviceResponse.Message = "Returned ForecastDeatailsByForecastNoAndRevNo Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

@@ -19,6 +19,7 @@ namespace Contracts
         Task<string> DeleteVendorMaster(VendorMaster vendorMaster);
         Task<IEnumerable<VendorIdNameListDto>> GetAllActiveVendorMasterNameList();
         Task<IEnumerable<VendorIdNameListDto>> GetAllVendorMasterNameList();
+        Task<string> GenerateVendorId();
 
     }
 }

@@ -207,6 +207,18 @@ namespace Tips.SalesService.Api.Repository
             return forecastDetail;
         }
 
+        public async Task<ForeCastCustomerSupport> GetForecastCsDeatailsByForecastNoAndRevNo(string forecast, int revisionNumber)
+        {
+            var forecastDetail = await _tipsSalesServiceDbContext.ForeCastCustomerSupports
+                .Where(x => x.ForecastNumber == forecast && x.RevisionNumber == revisionNumber)
+                .Include(x => x.ForeCastCustomerSupportItems)
+                .ThenInclude(x => x.ForeCastCSDeliverySchedule)
+                 .Include(x => x.ForeCastCustomerSupportNotes)
+                .FirstOrDefaultAsync();
+
+            return forecastDetail;
+        }
+
         public async Task<ForeCast> UpdateForecastRevNo(ForeCast forecast)
         {
             var getOldForecastDetails = _tipsSalesServiceDbContext.ForeCasts

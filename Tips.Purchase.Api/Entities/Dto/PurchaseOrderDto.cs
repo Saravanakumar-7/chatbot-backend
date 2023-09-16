@@ -202,7 +202,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
         public List<PoItemsReportDto>? POItems { get; set; }
-        public List<PoIncoTermDto>? POIncoTerms { get; set; }
+        public List<PoIncoTermReportDto>? POIncoTerms { get; set; }
 
     }
 

@@ -742,7 +742,7 @@ namespace Tips.Purchase.Api.Controllers
 
                 purchaseOrderDetails.POItems = poItemDtoList;
                 purchaseOrderDetails.POFiles = poDocumentUploadDtoList;
-                purchaseOrderDetails.PoIncoTerms = poIncoTermList.ToList();
+                purchaseOrderDetails.POIncoTerms = poIncoTermList.ToList();
                 await _repository.CreatePurchaseOrder(purchaseOrderDetails);
                 _repository.SaveAsync();
 
@@ -840,7 +840,16 @@ namespace Tips.Purchase.Api.Controllers
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<PurchaseOrder, PurchaseOrderReportDto>();
+                    cfg.CreateMap<PurchaseOrder, PurchaseOrderReportDto>()
+                    .ForMember(dest => dest.POIncoTerms, opt => opt.MapFrom(src => src.POIncoTerms
+                        .Select(PoIncoTerm => new PoIncoTermReportDto
+                        {
+                            Id = PoIncoTerm.Id,
+                            IncoTermName = PoIncoTerm.IncoTermName,
+                            PONumber = src.PONumber,
+                        })
+                            )
+                        );
                     cfg.CreateMap<PoItem, PoItemsReportDto>()
                         .ForMember(dest => dest.POAddprojects, opt => opt.MapFrom(src => src.POAddprojects
                         .Select(PoAddProject => new PoAddProjectReportDto
@@ -906,7 +915,17 @@ namespace Tips.Purchase.Api.Controllers
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<PurchaseOrder, PurchaseOrderReportDto>();
+                    cfg.CreateMap<PurchaseOrder, PurchaseOrderReportDto>()
+
+                        .ForMember(dest => dest.POIncoTerms, opt => opt.MapFrom(src => src.POIncoTerms
+                        .Select(PoIncoTerm => new PoIncoTermReportDto
+                        {
+                            Id = PoIncoTerm.Id,
+                            IncoTermName = PoIncoTerm.IncoTermName,
+                            PONumber = src.PONumber,
+                        })
+                            )
+                        );
                     cfg.CreateMap<PoItem, PoItemsReportDto>()
                         .ForMember(dest => dest.POAddprojects, opt => opt.MapFrom(src => src.POAddprojects
                         .Select(PoAddProject => new PoAddProjectReportDto
@@ -970,7 +989,17 @@ namespace Tips.Purchase.Api.Controllers
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<PurchaseOrder, PurchaseOrderReportDto>();
+                    cfg.CreateMap<PurchaseOrder, PurchaseOrderReportDto>()
+                    .ForMember(dest => dest.POIncoTerms, opt => opt.MapFrom(src => src.POIncoTerms
+                        .Select(PoIncoTerm => new PoIncoTermReportDto
+                        {
+                            Id = PoIncoTerm.Id,
+                            IncoTermName = PoIncoTerm.IncoTermName,
+                            PONumber = src.PONumber,
+                        })
+                            )
+                        );
+              
                     cfg.CreateMap<PoItem, PoItemsReportDto>()
                         .ForMember(dest => dest.POAddprojects, opt => opt.MapFrom(src => src.POAddprojects
                         .Select(PoAddProject => new PoAddProjectReportDto
@@ -1219,12 +1248,12 @@ namespace Tips.Purchase.Api.Controllers
          
 
         [HttpPut]
-        public async Task<IActionResult> UpdatePurchaseOrder([FromBody] PurchaseOrderUpdateDto purchaseOrderPostDto)
+        public async Task<IActionResult> UpdatePurchaseOrder([FromBody] PurchaseOrderUpdateDto purchaseOrderUpdateDto)
         {
             ServiceResponse<PurchaseOrderPostDto> serviceResponse = new ServiceResponse<PurchaseOrderPostDto>();
             try
             {
-                if (purchaseOrderPostDto is null)
+                if (purchaseOrderUpdateDto is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "PurchaseOrder object is null.";
@@ -1243,10 +1272,10 @@ namespace Tips.Purchase.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderPostDto);
-                var poItemDto = purchaseOrderPostDto.POItems;
+                var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderUpdateDto);
+                var poItemDto = purchaseOrderUpdateDto.POItems;
                 var poItemDtoList = new List<PoItem>();
-                var poIncoTermDto = purchaseOrderPostDto.POIncoTerms;
+                var poIncoTermDto = purchaseOrderUpdateDto.POIncoTerms;
                 var poIncoTermsList = new List<PoIncoTerm>();
 
                 if (poIncoTermDto != null)
@@ -1257,7 +1286,7 @@ namespace Tips.Purchase.Api.Controllers
                         poIncoTermsList.Add(poIncoTermDetails);
                     }
                 }
-                purchaseOrderDetails.PoIncoTerms = poIncoTermsList;
+                purchaseOrderDetails.POIncoTerms = poIncoTermsList;
 
                 if (poItemDto != null)
                 {
@@ -1269,6 +1298,7 @@ namespace Tips.Purchase.Api.Controllers
                         poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
                         poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
                         poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
+                        poItemDetails.PONumber = purchaseOrderUpdateDto.PONumber;
                         poItemDtoList.Add(poItemDetails);
                     }
                 }

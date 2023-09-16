@@ -154,6 +154,7 @@ namespace Entities
         public DbSet<CompanyFileUpload> CompanyFileUploads { get; set; }
         public DbSet<NoOfRoom> NoOfRooms { get; set; }
         public DbSet<TypeOfRoom> TypeOfRooms { get; set; }
+        public DbSet<VendorId> VendorIds { get; set; }
 
     }
 }

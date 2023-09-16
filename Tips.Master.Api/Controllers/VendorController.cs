@@ -137,12 +137,16 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
+
                 var address = _mapper.Map<IEnumerable<VendorAddress>>(vendorMasterPost.Addresses);
                 var contact = _mapper.Map<IEnumerable<VendorContacts>>(vendorMasterPost.Contacts);
                 var banking = _mapper.Map<IEnumerable<VendorBanking>>(vendorMasterPost.VendorBankings);
                 var related = _mapper.Map<IEnumerable<VendorRelatedVendor>>(vendorMasterPost.RelatedVendors);
                 var headcount = _mapper.Map<IEnumerable<VendorHeadCounting>>(vendorMasterPost.HeadCountings);
                 var vendorMaster = _mapper.Map<VendorMaster>(vendorMasterPost);
+
+                var vendorNumber = await _repository.VendorRepository.GenerateVendorId();
+                vendorMaster.VendorId = vendorNumber;
 
                 vendorMaster.Addresses = address.ToList();
                 vendorMaster.Contacts = contact.ToList();

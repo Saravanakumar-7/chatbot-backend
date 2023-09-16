@@ -41,6 +41,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<ForeCast> GetForecastDeatailsByForecastNoAndRevNo(string forecast, int revisionNumber);
 
         Task<ForeCast> UpdateForecastRevNo(ForeCast forecast);
+        Task<ForeCastCustomerSupport> GetForecastCsDeatailsByForecastNoAndRevNo(string forecast, int revisionNumber);
 
 
 
