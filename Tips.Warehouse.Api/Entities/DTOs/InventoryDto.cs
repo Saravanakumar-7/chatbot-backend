@@ -225,6 +225,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class UpdateInventoryBalanceQty
     {
         public string? PartNumber { get; set; }
+        public string? ProjectNumber { get; set; }
         public List<InventoryUpdateDtoForMRWarehouse> MRNWarehouseList { get; set; }
     }
 
@@ -243,6 +244,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class MRNUpdateInventoryBalanceQty
     {
         public string? PartNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
 
         public List<MRNInventoryUpdateDto> MRNDetails { get; set; }

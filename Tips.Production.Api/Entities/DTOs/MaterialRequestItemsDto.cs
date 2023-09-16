@@ -83,6 +83,7 @@ namespace Tips.Production.Api.Entities.DTOs
     public class UpdateInventoryBalanceQty
     {
         public string? PartNumber { get; set; }
+        public string? ProjectNumber { get; set; }
         public List<InventoryUpdateDtoForMRWarehouse> MRNWarehouseList { get; set; }
     }
 

@@ -525,6 +525,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     cfg.CreateMap<MaterialRequestItems, UpdateInventoryBalanceQty>()
                         .ForMember(dest => dest.PartNumber, opt => opt.MapFrom(src => src.PartNumber))
+                        .ForMember(dest => dest.ProjectNumber, opt => opt.MapFrom(projectNo))
                         .ForMember(dest => dest.MRNWarehouseList, opt => opt.MapFrom(src => src.MRStockDetails.Select(detail => new InventoryUpdateDtoForMRWarehouse
                         {
                             Warehouse = detail.Warehouse,
@@ -535,17 +536,33 @@ namespace Tips.Production.Api.Controllers
                 });
 
                 var mapper = mapperConfiguration.CreateMapper();
-                var materialRequestDetails = materialReqItemList.Select(item => mapper.Map<UpdateInventoryBalanceQty>(item)).ToList();
-                
+               
+                var materialRequestDetails = materialReqItemList
+                    .Select(item => {
+                        var updateInventoryBalanceQty = mapper.Map<UpdateInventoryBalanceQty>(item);
+                        updateInventoryBalanceQty.ProjectNumber = projectNo; // Assuming projecNo is your variable
+                        return updateInventoryBalanceQty;
+                    })
+                    .ToList();
+
+
                 var json = JsonConvert.SerializeObject(materialRequestDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialInventoryBalanceQty"), data);
-
+                if(response.StatusCode == HttpStatusCode.InternalServerError)
+                {
+                    _logger.LogError($"Something went wrong inside UpdateMaterialRequest action. Inventory update action MaterialInventoryBalanceQty failed! ");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Internal server error";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
 
                 updateMaterialReqquest.MaterialRequestItems = materialReqItemList;
                 var updateMaterialReq = _mapper.Map(materialRequestUpdateDto, getMaterialRequest);
                 // updateMaterialReq.MaterialRequestItems = materialReqItemList;
-                updateMaterialReqquest.MrStatus = MaterialStatus.close;
+                updateMaterialReqquest.MrStatus = MaterialStatus.Closed;
                 string result = await _materialRequestRepository.UpdateMaterialRequest(updateMaterialReq);
                 _materialRequestRepository.SaveAsync();
 

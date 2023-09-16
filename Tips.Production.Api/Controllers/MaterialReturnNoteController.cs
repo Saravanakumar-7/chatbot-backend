@@ -226,11 +226,20 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
+                var mrnNumber = await _materialReturnNoteRepository.GenerateMRNNumber();
+                if (mrnNumber == null)
+                {
+                    _logger.LogError("Something went wrong inside Service Method GenerateMRNNumber");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Something went wrong. please try again";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
 
                 var materialReturnNote = _mapper.Map<MaterialReturnNote>(materialReturnNotePostDto);
                 var materialReturnNoteItemDto = materialReturnNotePostDto.MaterialReturnNoteItems;
 
-                var materialReturnNoteItemList = new List<MaterialReturnNoteItem>();
 
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
@@ -255,7 +264,8 @@ namespace Tips.Production.Api.Controllers
                 //}
 
                 var dateFormat = days + months + years;
-                var mrnNumber = await _materialReturnNoteRepository.GenerateMRNNumber();
+                var materialReturnNoteItemList = new List<MaterialReturnNoteItem>();
+
                 materialReturnNote.MRNNumber = dateFormat + mrnNumber;
 
                 if (materialReturnNoteItemDto != null)
@@ -389,9 +399,9 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var materialReturnNoteDetailById = await _materialReturnNoteRepository.GetMaterialReturnNoteById(id);
+                var materialReturnNoteDetail = await _materialReturnNoteRepository.GetMaterialReturnNoteById(id);
 
-                if (materialReturnNoteDetailById is null)
+                if (materialReturnNoteDetail is null)
                 {
                     _logger.LogError($"GetMaterialReturnNote with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -400,8 +410,7 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-
-                var materialReturnNoteDetail = _mapper.Map<MaterialReturnNote>(materialReturnNoteDetailById);
+                 
                 var materialReturnNotesItemDto = materialReturnNoteUpdateDto.MaterialReturnNoteItems;
                 var materialReturnNoteItemList = new List<MaterialReturnNoteItem>();
                 if (materialReturnNotesItemDto != null)
@@ -429,20 +438,7 @@ namespace Tips.Production.Api.Controllers
                             Qty = detail.Qty,
                             LocationStock = detail.LocationStock,
                         }).ToList()));
-                });
-
-                //var mapperConfiguration = new MapperConfiguration(cfg =>
-                //{
-                //    cfg.CreateMap<MaterialReturnNoteItem, MRNUpdateInventoryBalanceQty>()
-                //        .ForMember(dest => dest.PartNumber, opt => opt.MapFrom(src => src.PartNumber))
-                //        .ForMember(dest => dest.MRNDetails, opt => opt.MapFrom(src => src.MRNWarehouseList.Select(detail => new MRNInventoryUpdateDto
-                //        {
-                //            Warehouse = detail.Warehouse,
-                //            Location = detail.Location,
-                //            Qty = detail.Qty,
-                //            LocationStock = detail.LocationStock,
-                //        }).ToList()));
-                //});
+                });  
 
                 var mapper = mapperConfiguration.CreateMapper();
                 var materialReturnNoteDetails = materialReturnNoteItemList.Select(item => mapper.Map<MRNUpdateInventoryBalanceQty>(item)).ToList();
@@ -451,26 +447,13 @@ namespace Tips.Production.Api.Controllers
                 var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialReturnNoteInventoryBalanceQty"), data);
 
                 materialReturnNoteDetail.MaterialReturnNoteItems = materialReturnNoteItemList;
-                var updateMaterialReturnNoteItem = _mapper.Map(materialReturnNoteUpdateDto, materialReturnNoteDetailById);
+                var updateMaterialReturnNoteItem = _mapper.Map(materialReturnNoteUpdateDto, materialReturnNoteDetail);
 
 
-                materialReturnNoteDetail.MrnStatus = MaterialStatus.close;
+                materialReturnNoteDetail.MrnStatus = MaterialStatus.Closed;
                 string result = await _materialReturnNoteRepository.UpdateMaterialReturnNote(updateMaterialReturnNoteItem);               
                 _materialReturnNoteRepository.SaveAsync();
-             
-                //update balance qty and Return qty in Inventory table
-
-                
-                //JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-                //{
-                //    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                //};
-                //string json = JsonConvert.SerializeObject(materialReturnNoteDetail);
-
-                
-                //var data = new StringContent(json, Encoding.UTF8, "application/json");
-                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryForMRN"), data);
-
+              
                 serviceResponse.Data = null;
                 serviceResponse.Message = "MaterialReturnNote Updated Successfully";
                 serviceResponse.Success = true;

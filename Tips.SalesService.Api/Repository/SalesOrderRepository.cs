@@ -325,68 +325,88 @@ namespace Tips.SalesService.Api.Repository
             return projectSODetails;
         }
 
-        public async Task<List<SalesOrderQtyDto>> GetSalesOrderQtyDetailsByItemNo(string itemNumber ,string projectNo)
+        //    public async Task<List<SalesOrderQtyDto>> GetSalesOrderQtyDetailsByItemNo(string itemNumber ,string projectNo)
+        //    {
+        //        List<SalesOrderQtyDto> salesOrderQtyDtos = new List<SalesOrderQtyDto>();
+
+        //        OrderStatus[] status = { OrderStatus.Open, OrderStatus.PartiallyClosed };
+
+        //        var SalesOrderNoList = await _tipsSalesServiceDbContext.SalesOrdersItems
+        //.Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo && status.Contains(x.StatusEnum))
+        //.Select(x => x.SalesOrderNumber).Distinct().ToListAsync();
+
+        //        foreach (var salesOrderNo in SalesOrderNoList)
+        //        {
+
+        //            decimal totalOrderQty = await _tipsSalesServiceDbContext.SalesOrdersItems
+        //    .Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo && x.SalesOrderNumber == salesOrderNo 
+        //    && status.Contains(x.StatusEnum)
+        //    )
+        //    .SumAsync(m => m.OrderQty);
+
+        //            decimal totalBalanceQty = await _tipsSalesServiceDbContext.SalesOrdersItems
+        //                .Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo
+        //                && x.SalesOrderNumber == salesOrderNo
+        //                && status.Contains(x.StatusEnum)
+        //                )
+        //                .SumAsync(m => m.BalanceQty);
+
+        //            decimal OpenShopOrderSumQty = await _tipsSalesServiceDbContext.SalesOrdersItems
+        //                .Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo
+        //                && x.SalesOrderNumber == salesOrderNo
+        //                && status.Contains(x.StatusEnum)
+        //                )
+        //                .SumAsync(m => m.ShopOrderQty);
+
+        //            decimal OpenSalesOrderQty = totalOrderQty - OpenShopOrderSumQty;
+
+        //            var salesOrderQtyDetail = await _tipsSalesServiceDbContext.SalesOrdersItems
+        //                .Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo && status.Contains(x.StatusEnum)
+        //                && x.SalesOrderNumber == salesOrderNo)
+        //                .Select(m => new SalesOrderQtyDto()
+        //                {
+        //                    SalesOrderNo = m.SalesOrderNumber,
+        //                    SalesOrderQty = totalOrderQty,
+        //                    OpenSalesOrderQty = OpenSalesOrderQty // Set the sum of BalanceQty
+
+        //                }).FirstOrDefaultAsync();
+        //            //        decimal totalOrderQty = await _tipsSalesServiceDbContext.SalesOrdersItems
+        //            //.Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo)
+        //            //.SumAsync(m => m.OrderQty);
+
+        //            //        var salesOrderQtyDetails = await _tipsSalesServiceDbContext.SalesOrdersItems
+        //            //                           .Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo)
+        //            //                           .Select(m => new SalesOrderQtyDto()
+        //            //                           {
+        //            //                               SalesOrderNo = m.SalesOrderNumber,
+        //            //                               SalesOrderQty = m.OrderQty, //we have to change sum of ordered qty
+        //            //                               OpenSalesOrderQty = m.BalanceQty //we have to change sum of balanced qty
+
+        //            //                           }).ToListAsync();
+        //            salesOrderQtyDtos.Add(salesOrderQtyDetail);
+        //        }
+
+        //                 return salesOrderQtyDtos;
+        //    }
+
+
+        public async Task<List<SalesOrderQtyDto>> GetSalesOrderQtyDetailsByItemNo(string itemNumber, string projectNo)
         {
-            List<SalesOrderQtyDto> salesOrderQtyDtos = new List<SalesOrderQtyDto>();
-
             OrderStatus[] status = { OrderStatus.Open, OrderStatus.PartiallyClosed };
+            List<SalesOrderQtyDto> salesOrderQtyDtos = await _tipsSalesServiceDbContext.SalesOrdersItems
+              .Where(x => x.ItemNumber == itemNumber
+                         && x.ProjectNumber == projectNo
+                         && status.Contains(x.StatusEnum))
+              .GroupBy(x => x.SalesOrderNumber)
+              .Select(g => new SalesOrderQtyDto
+              {
+                  SalesOrderNo = g.Key,
+                  SalesOrderQty = g.Sum(x => x.OrderQty),
+                  OpenSalesOrderQty = g.Sum(x => x.OrderQty) - g.Sum(x => x.ShopOrderQty)
+              })
+              .ToListAsync();
 
-            var SalesOrderNoList = await _tipsSalesServiceDbContext.SalesOrdersItems
-    .Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo && status.Contains(x.StatusEnum))
-    .Select(x => x.SalesOrderNumber).Distinct().ToListAsync();
-
-            foreach (var salesOrderNo in SalesOrderNoList)
-            {
-
-                decimal totalOrderQty = await _tipsSalesServiceDbContext.SalesOrdersItems
-        .Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo && x.SalesOrderNumber == salesOrderNo 
-        && status.Contains(x.StatusEnum)
-        )
-        .SumAsync(m => m.OrderQty);
-
-                decimal totalBalanceQty = await _tipsSalesServiceDbContext.SalesOrdersItems
-                    .Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo
-                    && x.SalesOrderNumber == salesOrderNo
-                    && status.Contains(x.StatusEnum)
-                    )
-                    .SumAsync(m => m.BalanceQty);
-
-                decimal OpenShopOrderSumQty = await _tipsSalesServiceDbContext.SalesOrdersItems
-                    .Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo
-                    && x.SalesOrderNumber == salesOrderNo
-                    && status.Contains(x.StatusEnum)
-                    )
-                    .SumAsync(m => m.ShopOrderQty);
-
-                decimal OpenSalesOrderQty = totalOrderQty - OpenShopOrderSumQty;
-
-                var salesOrderQtyDetail = await _tipsSalesServiceDbContext.SalesOrdersItems
-                    .Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo && status.Contains(x.StatusEnum)
-                    && x.SalesOrderNumber == salesOrderNo)
-                    .Select(m => new SalesOrderQtyDto()
-                    {
-                        SalesOrderNo = m.SalesOrderNumber,
-                        SalesOrderQty = totalOrderQty,
-                        OpenSalesOrderQty = OpenSalesOrderQty // Set the sum of BalanceQty
-
-                    }).FirstOrDefaultAsync();
-                //        decimal totalOrderQty = await _tipsSalesServiceDbContext.SalesOrdersItems
-                //.Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo)
-                //.SumAsync(m => m.OrderQty);
-
-                //        var salesOrderQtyDetails = await _tipsSalesServiceDbContext.SalesOrdersItems
-                //                           .Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNo)
-                //                           .Select(m => new SalesOrderQtyDto()
-                //                           {
-                //                               SalesOrderNo = m.SalesOrderNumber,
-                //                               SalesOrderQty = m.OrderQty, //we have to change sum of ordered qty
-                //                               OpenSalesOrderQty = m.BalanceQty //we have to change sum of balanced qty
-
-                //                           }).ToListAsync();
-                salesOrderQtyDtos.Add(salesOrderQtyDetail);
-            }
-
-                     return salesOrderQtyDtos;
+            return salesOrderQtyDtos;
         }
 
         public async Task<decimal> GetOpenSalesOrderQuantityByItemNumber(string itemNumber)
