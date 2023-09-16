@@ -2,7 +2,8 @@
 {
     public enum MaterialStatus
     {
-        open,
-        close
+        Open,
+        PartiallyClosed,
+        Closed
     }
 }

@@ -67,5 +67,55 @@ namespace Tips.Warehouse.Api.Repository
 
             return shopOrderMaterialIssueTracker;
         }
+
+        public async Task<List<MRNIssueTrackerDto>> GetWipQtyFromMaterialIssueTracker(string shopOrderNo, string partNumber,decimal returnedQty)
+        {
+            List<MRNIssueTrackerDto> mRNIssueTrackerDtos = new List<MRNIssueTrackerDto>();
+            var shopOrderMaterialIssueTracker = await _tipsWarehouseDbContext.ShopOrderMaterialIssueTrackers
+                .Where(x => x.PartNumber == partNumber && x.ShopOrderNumber == shopOrderNo && (x.IssuedQty-x.ConvertedToFgQty) > 0).ToListAsync();
+            // Sort the records by CreatedOn date in descending order (LIFO).
+            shopOrderMaterialIssueTracker.Sort((x, y) => y.CreatedOn?.CompareTo(x.CreatedOn) ?? 1);
+
+            // Iterate through the records and add the lot number and quantity to the list.
+            for (int i = 0; i < shopOrderMaterialIssueTracker.Count; i++)
+            {
+                var record = shopOrderMaterialIssueTracker[i];
+                decimal wipQty = record.IssuedQty - record.ConvertedToFgQty;
+                // Only add the record to the list if the quantity is greater than or equal to the given quantity.
+                if (wipQty >= returnedQty)
+                {
+                    MRNIssueTrackerDto mRNIssueTrackerDto = new MRNIssueTrackerDto
+                    {
+                        PartNumber = partNumber,
+                        WipQty = returnedQty,
+                        LotNumber = record.LotNumber
+                        
+                    };
+                    mRNIssueTrackerDtos.Add(mRNIssueTrackerDto);
+                    shopOrderMaterialIssueTracker[i].IssuedQty -= returnedQty;
+                    returnedQty = 0;                    
+                }
+                else
+                {
+                    MRNIssueTrackerDto mRNIssueTrackerDto = new MRNIssueTrackerDto
+                    {
+                        PartNumber = partNumber,
+                        WipQty = wipQty,
+                        LotNumber = record.LotNumber
+                    };
+                    mRNIssueTrackerDtos.Add(mRNIssueTrackerDto);
+                    shopOrderMaterialIssueTracker[i].IssuedQty = 0;
+                    returnedQty -= wipQty;
+                }
+
+                if(returnedQty <= 0)
+                {
+                    break;
+                }
+                _tipsWarehouseDbContext.Update(shopOrderMaterialIssueTracker[i]);
+            }
+            _tipsWarehouseDbContext.SaveChangesAsync();
+            return mRNIssueTrackerDtos;
+        }
     }
 }

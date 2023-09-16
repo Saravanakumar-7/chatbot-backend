@@ -238,7 +238,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<ForeCast> ForeCastCustomerSupportByForeCastNumber(string ForeCastNumber)
         {
             var forecastCsByForecastNumber = await _tipsSalesServiceDbContext.ForeCasts
-              .Where(x => x.ForeCastNumber == ForeCastNumber)
+              .Where(x => x.ForeCastNumber == ForeCastNumber).OrderByDescending(x=>x.Id)
                         .FirstOrDefaultAsync();
             return forecastCsByForecastNumber;
         }

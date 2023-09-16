@@ -33,4 +33,12 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public PartType PartType { get; set; }
 
     }
+
+    public class MRNIssueTrackerDto
+    {
+        public string PartNumber { get; set; }
+        public decimal WipQty { get; set; }
+        public string LotNumber { get; set; }
+
+    }
 }

@@ -417,11 +417,12 @@ namespace Tips.Warehouse.Api.Repository
 
             return getInventoryDetailsByItemAndLoc;
         }
-        public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandLocationandwarehouse(string ItemNumber, string Location, string Warehouse)
+        public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandLocationandwarehouse(string ItemNumber, string Location, string Warehouse,string projectNumber)
 
         {
             var getInventoryDetailsByItemAndLoc = await _tipsWarehouseDbContext.Inventories
-                .Where(x => x.PartNumber == ItemNumber && x.Location == Location && x.Warehouse == Warehouse && x.IsStockAvailable == true).ToListAsync();
+                .Where(x => x.PartNumber == ItemNumber && x.Location == Location && x.Warehouse == Warehouse
+                && x.IsStockAvailable == true && x.ProjectNumber == projectNumber).ToListAsync();
 
             return getInventoryDetailsByItemAndLoc;
         }
@@ -708,5 +709,12 @@ namespace Tips.Warehouse.Api.Repository
         .SumAsync(i => i.Balance_Quantity);
         }
 
+        public async Task<List<Inventory>> GetWipInventoryDetailsByLotNumber(string itemNumber, string projectNumber, string lotNumber)
+        {
+            var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber
+            && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.LotNumber == lotNumber)
+                          .ToListAsync();
+            return inventoryDetail;
+        }
     }
 }

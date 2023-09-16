@@ -29,6 +29,7 @@ using static Org.BouncyCastle.Math.EC.ECCurve;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -745,8 +746,29 @@ namespace Tips.Grin.Api.Controllers
 
                             var json = JsonConvert.SerializeObject(grinInventoryDto);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
-
+                            // Include the token in the Authorization header
+                            var tokenValue = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                            if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
+                            {
+                                var token = tokenValue.Substring(7);
+                                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                            }
                             var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), data);
+
+                            //var json = JsonConvert.SerializeObject(grinInventoryDto);
+                            //var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                            //var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"));
+                            //request.Content = data;
+
+                            //// Add the bearer token header
+                            //var accessToken = "YOUR_ACCESS_TOKEN_HERE"; // Replace with your actual access token
+                            //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                            //var response = await _httpClient.SendAsync(request);
+
+                            // Handle the response here
+
 
                         }
                     }

@@ -100,7 +100,7 @@ namespace Tips.Production.Api.Repository
         {
             var materialReturnNoteDetails = FindAll().OrderByDescending(x => x.Id)
                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProjectNumber.Contains(searchParams.SearchValue) ||
-                   inv.MRNNumber.Contains(searchParams.SearchValue)))&& inv.MrnStatus == MaterialStatus.open)
+                   inv.MRNNumber.Contains(searchParams.SearchValue)))&& inv.MrnStatus == MaterialStatus.Open)
                 .Include(s => s.MaterialReturnNoteItems)
                 .ThenInclude(m => m.MRNWarehouseList);
 
@@ -111,7 +111,7 @@ namespace Tips.Production.Api.Repository
         public async Task<IEnumerable<MaterialReturnNote>> GetAllMRNStatusClose()
         {
             var materialReturnNoteDetails = FindAll().OrderByDescending(x => x.Id)
-                .Where(x => x.MrnStatus == MaterialStatus.close)
+                .Where(x => x.MrnStatus == MaterialStatus.Closed)
                 .Include(s => s.MaterialReturnNoteItems)
                 .ThenInclude(m => m.MRNWarehouseList)
                 .ToList();

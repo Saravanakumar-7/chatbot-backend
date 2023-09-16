@@ -58,7 +58,7 @@ namespace Tips.Production.Api.Repository
         {
             var materialRequestDetails = FindAll().OrderByDescending(x => x.Id)
                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.MRNumber.Contains(searchParammes.SearchValue)
-              || inv.ProjectNumber.Contains(searchParammes.SearchValue))) && inv.MrStatus == MaterialStatus.open)
+              || inv.ProjectNumber.Contains(searchParammes.SearchValue))) && inv.MrStatus == MaterialStatus.Open)
                 .Include(s => s.MaterialRequestItems)
                 .ThenInclude(m => m.MRStockDetails);
 
@@ -69,7 +69,7 @@ namespace Tips.Production.Api.Repository
         public async Task<IEnumerable<MaterialRequests>> GetAllMRStatusClose()
         {
             var materialRequestDetails = FindAll().OrderByDescending(x => x.Id)
-                .Where(x => x.MrStatus == MaterialStatus.close)
+                .Where(x => x.MrStatus == MaterialStatus.Closed)
                 .Include(s => s.MaterialRequestItems)
                 .ThenInclude(m => m.MRStockDetails)
                 .ToList();

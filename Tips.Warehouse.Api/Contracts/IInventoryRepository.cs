@@ -21,7 +21,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<Inventory> GetInventoryById(int id);
         Task<List<InventoryDetailsLocationStock>> GetInventoryDetailsWithInventoryStock(string partNumber, string wareHouse, string location, string projectNumber);
 
-        Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandLocationandwarehouse(string ItemNumber, string Location, string Warehouse);
+        Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandLocationandwarehouse(string ItemNumber, string Location, string Warehouse, string projectNumber);
         Task<Inventory> GetInventoryDetails(string ItemNumber);
 
         Task<Inventory> GetInventoryFGDetailsByItemNumber(string ItemNumber);
@@ -62,5 +62,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<decimal> GetInventoryBySAItemNo(string itemNumber);
 
         Task<List<ConsumptionChildItemInventoryDto>> GetConsumptionChildItemStockWithWipQty(List<string> itemNumberList);
+
+        Task<List<Inventory>> GetWipInventoryDetailsByLotNumber(string itemNumber, string projectNumber, string lotNumber);
     }
 }
