@@ -22,24 +22,22 @@ namespace Tips.Production.Api.Repository
 
         }
 
-        public Task<decimal?> GetNotShortCloseQty(string fgItemNumber,string saItemNumber, string projectNumber, string salesOrderNumber)
+        public async Task<decimal?> GetNotShortCloseQty(string fgItemNumber,string saItemNumber, string projectNumber, string salesOrderNumber)
         {
 
-        //    var shopOrderIds = _tipsProductionDbContext.ShopOrders
-        //                         .Where(im => im.ItemNumber == saItemNumber)
-        //                         .Select(x => x.Id)
-        //                         .Distinct()
-        //                         .ToListAsync();
+            List<int> shopOrderIds = await _tipsProductionDbContext.ShopOrders
+                                .Where(im => im.ItemNumber == saItemNumber)
+                                .Select(x => x.Id)
+                                .Distinct()
+                                .ToListAsync();
 
-        //    List<int> itemNos = shopOrderIds.t; // itemNos now contains the list of IDs
-
-        //    var totalReleaseQty =  _tipsProductionDbContext.ShopOrderItems
-        //        .Where(x => x.FGItemNumber == fgItemNumber &&
-        //                    x.ProjectNumber == projectNumber &&
-        //                    x.SalesOrderNumber == salesOrderNumber &&
-        //                    itemNos.Contains(x.ShopOrderId)) // Use the list of IDs here
-        //        .SumAsync(x => x.ReleaseQty);
-            return null;
+            decimal? totalReleaseQty = await _tipsProductionDbContext.ShopOrderItems
+                                    .Where(x => x.FGItemNumber == fgItemNumber &&
+                                                x.ProjectNumber == projectNumber &&
+                                                x.SalesOrderNumber == salesOrderNumber &&
+                                                shopOrderIds.Contains(x.ShopOrderId))
+                                    .SumAsync(x => x.ReleaseQty);
+            return totalReleaseQty;
 
         }
 
