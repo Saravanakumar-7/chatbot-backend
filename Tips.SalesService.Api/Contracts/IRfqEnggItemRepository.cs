@@ -24,5 +24,8 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<RfqEnggItem>> GetRfqEnggCountByRfqNumber(string rfqNumber);
         Task<IEnumerable<RfqEnggItem>> GetRfqEnggCountByRfqNumber(string rfqNumber, decimal revNo);
         Task<IEnumerable<RfqEnggItem>> RfqEnggReleasedItemList(string rfqNumber);
+        Task<string> UpdateRfqEnggItemLandedandMOQ(RfqEnggItem rfqEnggItem);
+        Task<List<RfqEnggItem>> GetRfqEnggItemsbyRfqId(int RfqId);
+        Task<RfqEnggItem> GetRfqEnggItemByItemNumber(string itemNumber);
     }
 }

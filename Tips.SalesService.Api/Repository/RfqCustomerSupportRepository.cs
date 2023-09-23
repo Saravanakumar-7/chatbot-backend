@@ -1008,7 +1008,27 @@ namespace Tips.SalesService.Api.Repository
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
         }
+        public async Task<List<RfqEnggItem>> GetRfqEnggItemsbyRfqId(int RfqId)
+        {
+            var rfqnoandrev = await _tipsSalesServiceDbContext.Rfqs.Where(x => x.Id == RfqId).FirstOrDefaultAsync();
+            decimal rfqrev = rfqnoandrev.RevisionNumber;
+            var rfqEngg = await _tipsSalesServiceDbContext.RfqEnggs
+                .Where(x => x.RFQNumber == rfqnoandrev.RfqNumber && x.RevisionNumber == rfqrev).OrderByDescending(x => x.Id).Select(x => x.Id).FirstOrDefaultAsync();
+            var rfqEnggItems = await _tipsSalesServiceDbContext.RfqEnggItems.Where(x => x.RfqEnggId == rfqEngg).OrderByDescending(x => x.Id).ToListAsync();
+            return rfqEnggItems;
 
+        }
+
+        public async Task<RfqEnggItem> GetRfqEnggItemByItemNumber(string itemNumber)
+        {
+            var rfqEnggItems = await _tipsSalesServiceDbContext.RfqEnggItems.Where(x => x.ItemNumber == itemNumber).FirstOrDefaultAsync();
+            return rfqEnggItems;
+        }
+        public async Task<string> UpdateRfqEnggItemLandedandMOQ(RfqEnggItem rfqEnggItem)
+        {
+            Update(rfqEnggItem);
+            return "RfqEnggItem LandedPrice And MOQ Cost is Update";
+        }
         public async Task<string> ActivateRfqEnggItemById(RfqEnggItem rfqEnggItem)
         { 
             Update(rfqEnggItem);

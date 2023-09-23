@@ -352,5 +352,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal BalanceQty { get; set; }
 
     }
+    public class GetInventoryItemNoAndDescriptionList
+    {
+        public string PartNumber { get; set; }
+        public string Description { get; set; }
+    }
 
 }

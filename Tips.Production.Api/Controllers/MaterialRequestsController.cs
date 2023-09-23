@@ -897,5 +897,128 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetInventoryItemNoAndDescriptionDetailsByProjectNo(string projectNumber)
+        {
+            ServiceResponse<IEnumerable<MaterialRequestInventoryDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestInventoryDto>>();
+
+            try
+            {
+                var inventoryItemNoAndDescriptionList = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                            "GetInventoryItemNoAndDescriptionListByProjectNo?", "&ProjectNumber=", projectNumber));
+
+                var inventoryObjectString = await inventoryItemNoAndDescriptionList.Content.ReadAsStringAsync();
+                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                dynamic inventoryObject = inventoryObjectData.data;
+
+                if (inventoryObject == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory ItemNo And Description with ProjectNumber: {projectNumber}, hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"Inventory ItemNo And Description with ProjectNumber: {projectNumber}, hasn't been found.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogError($"Returned Inventory ItemNo And Description with ProjectNumber: {projectNumber}");
+
+                    var materialRequestInventoryDtoList = new List<MaterialRequestInventoryDto>();
+
+                    foreach (var item in inventoryObjectData.data)
+                    {
+                        var partNumber = item.partNumber?.ToString();
+                        var description = item.description?.ToString();
+
+                        var materialRequestInventoryDto = new MaterialRequestInventoryDto
+                        {
+                            PartNumber = partNumber,
+                            Description = description
+                        };
+
+                        materialRequestInventoryDtoList.Add(materialRequestInventoryDto);
+                    }
+
+                    serviceResponse.Data = materialRequestInventoryDtoList;
+                    serviceResponse.Message = $"Returned Inventory ItemNo and Description List Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetInventoryItemNoAndDescriptionDetailsByProjectNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetGeneralInventoryItemNoAndDescriptionList()
+        {
+            ServiceResponse<IEnumerable<MaterialRequestInventoryDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestInventoryDto>>();
+
+            try
+            {
+                var inventoryItemNoAndDescriptionList = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                            "GetInventoryItemNoAndDescriptionList?"));
+
+                var inventoryObjectString = await inventoryItemNoAndDescriptionList.Content.ReadAsStringAsync();
+                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                dynamic inventoryObject = inventoryObjectData.data;
+
+                if (inventoryObject == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory ItemNo And Description hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"Inventory ItemNo And Description hasn't been found.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogError($"Returned Inventory ItemNo And Description ");
+
+                    var materialRequestInventoryDtoList = new List<MaterialRequestInventoryDto>();
+
+                    foreach (var item in inventoryObjectData.data)
+                    {
+                        var partNumber = item.partNumber?.ToString();
+                        var description = item.description?.ToString();
+
+                        var materialRequestInventoryDto = new MaterialRequestInventoryDto
+                        {
+                            PartNumber = partNumber,
+                            Description = description
+                        };
+
+                        materialRequestInventoryDtoList.Add(materialRequestInventoryDto);
+                    }
+
+                    serviceResponse.Data = materialRequestInventoryDtoList;
+                    serviceResponse.Message = $"Returned All Inventory ItemNo and Description List Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetGeneralInventoryItemNoAndDescriptionList action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
     }
 }

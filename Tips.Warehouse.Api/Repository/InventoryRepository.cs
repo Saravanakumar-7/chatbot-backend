@@ -18,6 +18,7 @@ using Tips.Warehouse.Api.Entities.DTOs;
 using System.Data.SqlClient;
 using System.Linq;
 using Entities.Enums;
+using System.Collections;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -406,6 +407,33 @@ namespace Tips.Warehouse.Api.Repository
                                         x.GrinPartId == GrinPartsId && x.PartNumber == ItemNumber && 
                                         x.ProjectNumber == ProjectNumber && x.IsStockAvailable==true)
                           .FirstOrDefaultAsync();
+
+            return getInventoryDetailsById;
+        }
+        public async Task<IEnumerable<GetInventoryItemNoAndDescriptionList>> GetInventoryItemNoAndDescriptionByProjectNo(string projectNumber)
+        {
+            IEnumerable<GetInventoryItemNoAndDescriptionList> inventoryDetails = await _tipsWarehouseDbContext.Inventories.
+                Where(x => x.ProjectNumber == projectNumber)
+                 .Select(x => new GetInventoryItemNoAndDescriptionList()
+                 {
+                     PartNumber = x.PartNumber,
+                     Description = x.Description
+
+                 })
+                 .ToListAsync();
+
+            return inventoryDetails;
+        }
+        public async Task<IEnumerable<GetInventoryItemNoAndDescriptionList>> GetInventoryItemNoAndDescriptionList()
+        {
+            IEnumerable<GetInventoryItemNoAndDescriptionList> getInventoryDetailsById = await _tipsWarehouseDbContext.Inventories
+                 .Select(x => new GetInventoryItemNoAndDescriptionList()
+                 {
+                     PartNumber = x.PartNumber,
+                     Description = x.Description
+
+                 })
+                 .ToListAsync();
 
             return getInventoryDetailsById;
         }

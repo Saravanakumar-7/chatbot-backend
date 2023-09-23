@@ -25,6 +25,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqSourcingPostDto
     {
+        public int RFQId { get; set; }
         [StringLength(500, ErrorMessage = "RFQNumber can't be longer than 100 characters")]
         public string? RFQNumber { get; set; }
 
@@ -51,5 +52,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string Unit { get; set; }
 
         public List<RfqSourcingItemsUpdateDto>? RfqSourcingItemsUpdateDtos { get; set; }
+    }
+    public class RfqSourcingPPdetails
+    {
+        public string PPItemNumber { get; set; }
+        public decimal? VLandindPrice { get; set; }
+        public decimal? VMoqcost { get; set; }
     }
 }

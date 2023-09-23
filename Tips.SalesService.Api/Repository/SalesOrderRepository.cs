@@ -243,6 +243,8 @@ namespace Tips.SalesService.Api.Repository
             var getSalesOrderbyId = await _tipsSalesServiceDbContext.SalesOrders.Where(x => x.Id == id)
                                   .Include(t => t.SalesOrdersItems)
                                   .ThenInclude(p => p.ScheduleDates)
+                                   .Include(t => t.SalesOrdersItems)
+                                  .ThenInclude(p => p.SoConfirmationDates)
                                     .Include(o => o.SalesOrderAdditionalCharges)
 
                                  .FirstOrDefaultAsync();

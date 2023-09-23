@@ -34,7 +34,97 @@ namespace Repository
 
             _tipsMasterDbContext = repositoryContext;
         }
-
+        public async Task<FGFinalLandedandMoqPrice> GetEngganditsPP(string FGItemNumber, decimal FGRevno, List<RfqSourcingPPdetailsforEngg> rfqSourcingPPdetails)
+        {
+            var FGid = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == FGItemNumber && x.RevisionNumber == FGRevno).Select(x => x.BOMId).FirstOrDefaultAsync();
+            List<EnggChildItem> FGchilditems = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == FGid).ToListAsync();
+            FGFinalLandedandMoqPrice FGFinalLandedandMoqPrice = new FGFinalLandedandMoqPrice()
+            {
+                FGItemNumber = FGItemNumber,
+                FinalLandindPrice = 0,
+                FinalMoqcost = 0
+            };
+            SAFinalLandedandMoqPrice sAFinalLandedandMoqPrice = new SAFinalLandedandMoqPrice()
+            {
+                SAFinalLandindPrice = 0,
+                SAFinalMoqcost = 0
+            };
+            SAFinalLandedandMoqPrice ChildsAFinalLandedandMoqPrice = new SAFinalLandedandMoqPrice()
+            {
+                SAFinalLandindPrice = 0,
+                SAFinalMoqcost = 0
+            };
+            decimal? FGfsum = 0;
+            decimal? FGmsum = 0;
+            foreach (var fgitem in FGchilditems)
+            {
+                if (fgitem.PartType == PartType.SA)
+                {
+                    ChildsAFinalLandedandMoqPrice = await GetEnggFGSA(fgitem.ItemNumber, fgitem.Quantity, rfqSourcingPPdetails);
+                    sAFinalLandedandMoqPrice.SAFinalLandindPrice = sAFinalLandedandMoqPrice.SAFinalLandindPrice + ChildsAFinalLandedandMoqPrice.SAFinalLandindPrice;
+                    sAFinalLandedandMoqPrice.SAFinalMoqcost = sAFinalLandedandMoqPrice.SAFinalMoqcost + ChildsAFinalLandedandMoqPrice.SAFinalMoqcost;
+                }
+                if (fgitem.PartType == PartType.PurchasePart)
+                {
+                    foreach (var FPPdetails in rfqSourcingPPdetails)
+                    {
+                        if (fgitem.ItemNumber == FPPdetails.PPItemNumber)
+                        {
+                            decimal? landedprice = fgitem.Quantity * FPPdetails.VLandindPrice;
+                            decimal? moqcost = FPPdetails.VMoqcost;
+                            FGfsum = FGfsum + landedprice;
+                            FGmsum = FGmsum + moqcost;
+                        }
+                    }
+                }
+            }
+            FGFinalLandedandMoqPrice.FinalLandindPrice = FGfsum + sAFinalLandedandMoqPrice.SAFinalLandindPrice;
+            FGFinalLandedandMoqPrice.FinalMoqcost = FGmsum + sAFinalLandedandMoqPrice.SAFinalMoqcost;
+            return FGFinalLandedandMoqPrice;
+        }
+        public async Task<SAFinalLandedandMoqPrice> GetEnggFGSA(string SAItemNumber, decimal SAQty, List<RfqSourcingPPdetailsforEngg> rfqSourcingPPdetails)
+        {
+            var SAid = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == SAItemNumber).OrderByDescending(x => x.BOMId).Select(x => x.BOMId).FirstOrDefaultAsync();
+            List<EnggChildItem> SAchilditems = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == SAid).ToListAsync();
+            SAFinalLandedandMoqPrice sAFinalLandedandMoqPrice = new SAFinalLandedandMoqPrice()
+            {
+                SAFinalLandindPrice = 0,
+                SAFinalMoqcost = 0
+            };
+            SAFinalLandedandMoqPrice ChildsAFinalLandedandMoqPrice = new SAFinalLandedandMoqPrice()
+            {
+                SAFinalLandindPrice = 0,
+                SAFinalMoqcost = 0
+            };
+            decimal? SAfsum = 0;
+            decimal? SAmsum = 0;
+            foreach (var saitem in SAchilditems)
+            {
+                if (saitem.PartType == PartType.SA)
+                {
+                    SAFinalLandedandMoqPrice TotalChildsAFinalLandedandMoqPrice = new SAFinalLandedandMoqPrice();
+                    TotalChildsAFinalLandedandMoqPrice = await GetEnggFGSA(saitem.ItemNumber, saitem.Quantity, rfqSourcingPPdetails);
+                    ChildsAFinalLandedandMoqPrice.SAFinalLandindPrice = TotalChildsAFinalLandedandMoqPrice.SAFinalLandindPrice + ChildsAFinalLandedandMoqPrice.SAFinalLandindPrice;
+                    ChildsAFinalLandedandMoqPrice.SAFinalMoqcost = TotalChildsAFinalLandedandMoqPrice.SAFinalMoqcost + ChildsAFinalLandedandMoqPrice.SAFinalMoqcost;
+                }
+                if (saitem.PartType == PartType.PurchasePart)
+                {
+                    foreach (var SPPdetails in rfqSourcingPPdetails)
+                    {
+                        if (saitem.ItemNumber == SPPdetails.PPItemNumber)
+                        {
+                            decimal? landedprice = saitem.Quantity * SPPdetails.VLandindPrice;
+                            decimal? moqcost = SPPdetails.VMoqcost;
+                            SAfsum = SAfsum + landedprice;
+                            SAmsum = SAmsum + moqcost;
+                        }
+                    }
+                }
+            }
+            sAFinalLandedandMoqPrice.SAFinalLandindPrice = (SAfsum + ChildsAFinalLandedandMoqPrice.SAFinalLandindPrice) * SAQty;
+            sAFinalLandedandMoqPrice.SAFinalMoqcost = (SAmsum + ChildsAFinalLandedandMoqPrice.SAFinalMoqcost) * SAQty;
+            return sAFinalLandedandMoqPrice;
+        }
         public async Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom)
         {
             enggBom.CreatedBy = _createdBy;

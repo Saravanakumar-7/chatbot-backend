@@ -155,5 +155,22 @@ namespace Entities.DTOs
 
 
     }
+    public class RfqSourcingPPdetailsforEngg
+    {
+        public string PPItemNumber { get; set; }
+        public decimal? VLandindPrice { get; set; }
+        public decimal? VMoqcost { get; set; }
+    }
+    public class FGFinalLandedandMoqPrice
+    {
+        public string FGItemNumber { get; set; }
+        public decimal? FinalLandindPrice { get; set; }
+        public decimal? FinalMoqcost { get; set; }
+    }
+    public class SAFinalLandedandMoqPrice
+    {
+        public decimal? SAFinalLandindPrice { get; set; }
+        public decimal? SAFinalMoqcost { get; set; }
+    }
 
 }

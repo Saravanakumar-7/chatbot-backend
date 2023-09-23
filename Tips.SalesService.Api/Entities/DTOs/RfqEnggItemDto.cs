@@ -23,7 +23,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? CostingBomVersionNo { get; set; }
         public string? ItemNumber { get; set; }
-       
+        [Precision(13, 3)]
+        public decimal? LandedPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MOQCost { get; set; }
+
 
     }
     public class RfqEnggItemDtoPost
@@ -61,6 +65,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? CostingBomVersionNo { get; set; }
         public string? ItemNumber { get; set; }
         public string? CustomFields { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandedPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MOQCost { get; set; }
 
 
     }

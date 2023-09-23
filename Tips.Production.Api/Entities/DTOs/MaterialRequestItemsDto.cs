@@ -30,13 +30,13 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
-        public string? MftrPartNumber { get; set; }
-        public PartType PartType { get; set; } 
+        //public string? MftrPartNumber { get; set; }
+        public PartType PartType { get; set; }
 
         [Precision(13, 3)]
         public decimal? IssuedQty { get; set; }
         public string? Stock { get; set; }
-        
+
 
         [Precision(13, 3)]
         public decimal? RequiredQty { get; set; }
@@ -53,10 +53,10 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? IssuedQty { get; set; }
-        public string? MftrPartNumber { get; set; }
+        //public string? MftrPartNumber { get; set; }
         public PartType PartType { get; set; }
         public string? Stock { get; set; }
-        
+
 
         [Precision(13, 3)]
         public decimal? RequiredQty { get; set; }
@@ -65,19 +65,19 @@ namespace Tips.Production.Api.Entities.DTOs
 
 
     }
-//    public class UpdateInventoryBalanceQty
-//    {
-//     public string? PartNumber { get; set; } 
-//    public List<InventoryUpdateDtoForMRWarehouse> MRStockDetails { get; set; }
-//}
-//public class InventoryUpdateDtoForMRWarehouse
-//{
-//        public string? Warehouse { get; set; }
-//        public string? Location { get; set; }
+    //    public class UpdateInventoryBalanceQty
+    //    {
+    //     public string? PartNumber { get; set; } 
+    //    public List<InventoryUpdateDtoForMRWarehouse> MRStockDetails { get; set; }
+    //}
+    //public class InventoryUpdateDtoForMRWarehouse
+    //{
+    //        public string? Warehouse { get; set; }
+    //        public string? Location { get; set; }
 
-//        [Precision(13, 3)]
-//        public decimal LocationStock { get; set; }
-//    }
+    //        [Precision(13, 3)]
+    //        public decimal LocationStock { get; set; }
+    //    }
 
 
     public class UpdateInventoryBalanceQty
@@ -108,7 +108,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? DataFrom { get; set; }
         public string ShopOrderNumber { get; set; }
         public string Description { get; set; }
-        public string MftrPartNumber { get; set; } 
+        public string MftrPartNumber { get; set; }
 
         public PartType PartType { get; set; }
     }
@@ -136,5 +136,10 @@ namespace Tips.Production.Api.Entities.DTOs
 
 
     }
+    public class MaterialRequestInventoryDto
+    {
+        public string PartNumber { get; set; }
+        public string Description { get; set; }
 
+    }
 }

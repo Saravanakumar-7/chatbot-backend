@@ -151,6 +151,7 @@ namespace Tips.SalesService.Api.Controllers
                         {
                             SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
                             salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
+                            salesOrderItemsDtos.SoConfirmationDates = _mapper.Map<List<SoConfirmationDateDto>>(salesOrderItemDetails.SoConfirmationDates);
                             string itemNumber = salesOrderItemsDtos.ItemNumber;
                             if (inventoryItemWithStockDetails.ContainsKey(itemNumber))
                             {

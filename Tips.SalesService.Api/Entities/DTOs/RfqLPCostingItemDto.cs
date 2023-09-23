@@ -24,8 +24,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? MarkUpForMaterial { get; set; }
 
-        public string? MarkUpForProcessSteps { get; set; }       
-
+        public string? MarkUpForProcessSteps { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandedPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MOQCost { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public List<RfqLPCostingProcessDto>? RfqLPCostingProcesses { get; set; }

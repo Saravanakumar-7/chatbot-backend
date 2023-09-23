@@ -90,6 +90,30 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GetEngganditsPP([FromQuery] string FGItemNumber, [FromQuery] decimal FGRevno, [FromBody] List<RfqSourcingPPdetailsforEngg> rfqSourcingPPdetails)
+        {
+            ServiceResponse<FGFinalLandedandMoqPrice> serviceResponse = new ServiceResponse<FGFinalLandedandMoqPrice>();
+            try
+            {
+                FGFinalLandedandMoqPrice enggandpps = await _enggBomRepository.GetEngganditsPP(FGItemNumber, FGRevno, rfqSourcingPPdetails);
+                serviceResponse.Data = enggandpps;
+                serviceResponse.Message = "Returned all GetEngganditsPP Boms Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetEngganditsPP action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         //coverage
 
         [HttpPost]

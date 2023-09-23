@@ -153,6 +153,87 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        //MaterialRequest
+        [HttpGet]
+        public async Task<IActionResult> GetInventoryItemNoAndDescriptionListByProjectNo(string projectNumber)
+
+        {
+            ServiceResponse<IEnumerable<GetInventoryItemNoAndDescriptionList>> serviceResponse = new ServiceResponse<IEnumerable<GetInventoryItemNoAndDescriptionList>>();
+
+            try
+            {
+                var inventoryDetailsByProjectNo = await _inventoryRepository.GetInventoryItemNoAndDescriptionByProjectNo(projectNumber);
+                if (inventoryDetailsByProjectNo.Count() == 0)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory with ProjectNumber: {projectNumber}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with ProjectNumber: {projectNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory ItemNo and Description with ProjectNumber: {projectNumber}");
+                    var result = _mapper.Map<IEnumerable<GetInventoryItemNoAndDescriptionList>>(inventoryDetailsByProjectNo);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned Inventory ItemNo and Description List Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetItemNoAndDescriptionListByProjectNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        //MaterialRequest
+        [HttpGet]
+        public async Task<IActionResult> GetInventoryItemNoAndDescriptionList()
+
+        {
+            ServiceResponse<IEnumerable<GetInventoryItemNoAndDescriptionList>> serviceResponse = new ServiceResponse<IEnumerable<GetInventoryItemNoAndDescriptionList>>();
+
+            try
+            {
+                var inventoryDetails = await _inventoryRepository.GetInventoryItemNoAndDescriptionList();
+                if (inventoryDetails.Count() == 0)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory ItemNo and Description hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory ItemNo and Description hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory ItemNo and Description");
+                    var result = _mapper.Map<IEnumerable<GetInventoryItemNoAndDescriptionList>>(inventoryDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned All Inventory ItemNo and Description List Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetInventoryItemNoAndDescriptionList action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         //passing itemnumber and location
 
         [HttpGet]

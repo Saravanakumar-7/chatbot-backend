@@ -40,7 +40,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? TotalAmountWithInstallationCharges { get; set; }
 
         public string? ReasonForModification { get; set; }
-
+        public bool IsShortClosed { get; set; }
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }

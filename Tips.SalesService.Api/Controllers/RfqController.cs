@@ -741,12 +741,14 @@ namespace Tips.SalesService.Api.Controllers
                         ItemNumber = item.ItemNumber,
                         Description = item.Description,
                         CustomerItemNumber = item.CustomerItemNumber,
+                        LandedPrice = item.LandedPrice,
+                        MOQCost = item.MOQCost,
                         TotalCost = 0,
                         MaterialCost = 0,
                         MarkUpForMaterial = 0,
                         RfqLPCostingProcesses = processStepsList,
                         RfqLPCostingNREConsumables = null,
-                        RfqLPCostingOtherCharges = null
+                        RfqLPCostingOtherCharges = null 
                     };
                     rfqLPCostingItems.Add(rfqLPCostingItem);
                 }

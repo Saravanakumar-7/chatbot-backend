@@ -24,6 +24,10 @@ namespace Tips.SalesService.Api.Entities
         public string? ItemNumber { get; set; }
 
         public string? CustomFields { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandedPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MOQCost { get; set; }
 
         public int RfqEnggId { get; set; }
         public RfqEngg? RfqEngg { get; set; }

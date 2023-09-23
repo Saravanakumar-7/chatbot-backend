@@ -10,6 +10,7 @@ using Entities;
 using Entities.Helper;
 using System.Net;
 using Newtonsoft.Json;
+using System.Text;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,16 +21,22 @@ namespace Tips.SalesService.Api.Controllers
     public class RfqSourcingController : ControllerBase
     {
         private IRfqSourcingRepository _repository;
+        private IRfqEnggItemRepository _rfqEnggItemRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IRfqRepository _rfqRepository;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
 
-        public RfqSourcingController(IRfqSourcingRepository repository,IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
+        public RfqSourcingController(IRfqSourcingRepository repository,IRfqRepository rfqRepository, IRfqEnggItemRepository rfqEnggItemRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _rfqRepository = rfqRepository;
+            _rfqEnggItemRepository = rfqEnggItemRepository;
+            _httpClient = httpClient;
+            _config = config;
         }
         // GET: api/<RfqSourcingController>
         [HttpGet]
@@ -240,7 +247,46 @@ namespace Tips.SalesService.Api.Controllers
 
                     await _repository.CreateRfqSourcing(createRfqSource);
                     _rfqRepository.Update(rfqIsSourcingUpdate);
-                    _repository.SaveAsync();
+
+                // LandedPrice and MoqCost Calculation
+                int rfqId = rfqSourcingPostDto.RFQId;
+                //Taking the Sourcing PP And is Primary Vendor Details 
+                List<RfqSourcingPPdetails> rfqSourcingPPdetailsList = new List<RfqSourcingPPdetails>();
+                foreach (var ppinsource in createRfqSource.RfqSourcingItems)
+                {
+                    RfqSourcingPPdetails rfqSourcingPPdetails = new RfqSourcingPPdetails();
+                    rfqSourcingPPdetails.PPItemNumber = ppinsource.ItemNumber;
+                    foreach (var ppvendor in ppinsource.RfqSourcingVendors)
+                    {
+                        if (ppvendor.Primary == true)
+                        {
+                            rfqSourcingPPdetails.VLandindPrice = ppvendor.LandindPrice;
+                            rfqSourcingPPdetails.VMoqcost = ppvendor.MoqCost;
+                        }
+                    }
+                    rfqSourcingPPdetailsList.Add(rfqSourcingPPdetails);
+                }
+                //Getting the FG's of that RFQ
+                List<RfqEnggItem> listofFgs = await _rfqEnggItemRepository.GetRfqEnggItemsbyRfqId(rfqId);
+                foreach (var fgitemnumber in listofFgs)
+                {
+                    //Calculating for the Fg LandedPrice and MOQCost
+                    var httpClientHandler = new HttpClientHandler();
+                    httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                    var httpClient = new HttpClient(httpClientHandler);
+                    string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(rfqSourcingPPdetailsList);
+                    var rfqApiUrl = _config["EngineeringBomAPI"];
+                    var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
+                    var rfqCustomerIdResponse = await _httpClient.PostAsync($"{rfqApiUrl}GetEngganditsPP?FGItemNumber={fgitemnumber.ItemNumber}&FGRevno={fgitemnumber.CostingBomVersionNo}", content);
+                    var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
+                    var rfqCustomerIdObjectData = JsonConvert.DeserializeObject<EnggItemsLandedandMoq>(rfqCustomerIdString);
+                    var rfqEnggItemsDetails = await _rfqEnggItemRepository.GetRfqEnggItemByItemNumber(rfqCustomerIdObjectData.data.fgItemNumber);
+                    rfqEnggItemsDetails.LandedPrice = rfqCustomerIdObjectData.data.finalLandindPrice;
+                    rfqEnggItemsDetails.MOQCost = rfqCustomerIdObjectData.data.finalMoqcost;
+                    await _rfqEnggItemRepository.UpdateRfqEnggItemLandedandMOQ(rfqEnggItemsDetails);
+                }
+                _rfqEnggItemRepository.SaveAsync();
+                _repository.SaveAsync();
                     serviceResponse.Data = null;
                     serviceResponse.Message = "RfqSourcing Created Successfully";
                     serviceResponse.Success = true;
