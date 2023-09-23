@@ -5,8 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities.DTOs;
-using Tips.Production.Api.Entities;
+using Tips.Production.Api.Entities; 
+using Tips.Production.Api.Entities.Enums;
+
 using Entities;
+using Entities.Enums;
+using Newtonsoft.Json;
+using System.Net.Http;
+using Tips.Production.Api.Repository;
 
 namespace Tips.Production.Api.Controllers
 {
@@ -17,12 +23,17 @@ namespace Tips.Production.Api.Controllers
         private ISAShopOrderRepository _sashopOrderRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-
-        public SAShopOrderController(ISAShopOrderRepository sashopOrderRepository, ILoggerManager logger, IMapper mapper)
+        private IMaterialIssueRepository _materialIssueRepository;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
+        public SAShopOrderController(ISAShopOrderRepository sashopOrderRepository, IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IConfiguration config, HttpClient httpClient, IMapper mapper)
         {
             _logger = logger;
             _sashopOrderRepository = sashopOrderRepository;
+            _materialIssueRepository = materialIssueRepository;
             _mapper = mapper;
+            _httpClient = httpClient;
+            _config = config;
         }
 
         [HttpGet]
@@ -121,6 +132,9 @@ namespace Tips.Production.Api.Controllers
 
                 _sashopOrderRepository.CreateSAShopOrder(sAShopOrder);
                 _sashopOrderRepository.SaveAsync();
+
+               CreateSAMaterialIssueDetails(sAShopOrder);
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SAShopOrder Successfully Created";
                 serviceResponse.Success = true;
@@ -132,6 +146,90 @@ namespace Tips.Production.Api.Controllers
                 _logger.LogError($"Something went wrong inside CreateSAShopOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        private async Task<IActionResult> CreateSAMaterialIssueDetails(SAShopOrder SaShopOrder)
+        {
+            ServiceResponse<MaterialIssueDto> serviceResponse = new ServiceResponse<MaterialIssueDto>();
+            try
+            {
+                dynamic bomData = null;
+                for (int i = 0; i < SaShopOrder.ShopOrderItems.Count(); i++)
+                {
+                    if (i == 0)
+                    {
+                        var fgNumber = SaShopOrder.SAItemNumber;
+                        decimal bomversion = SaShopOrder.BomRevisionNo;
+                        var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetProductionBomByItemAndBomVersionNo?", "ItemNumber=", fgNumber, "&bomVersionNo=", bomversion));
+                        var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
+                        dynamic bomDetailsData = JsonConvert.DeserializeObject(bomDetailsString);
+                        bomData = bomDetailsData.data;
+                    }
+
+                    if (bomData != null)
+                    {
+                        MaterialIssue materialIssue = new MaterialIssue();
+                        materialIssue.ShopOrderNumber = SaShopOrder.SAShopOrderNumber;
+                        materialIssue.ShopOrderDate = SaShopOrder.CreatedOn;
+                        materialIssue.ProjectType = ProjectType.RFQ;
+                        materialIssue.ItemType = SaShopOrder.ItemType;
+                        materialIssue.ShopOrderQty = SaShopOrder.TotalSOReleaseQty;
+                        materialIssue.ItemNumber = SaShopOrder.SAItemNumber;
+                        materialIssue.MaterialIssuedStatus = IssuedStatus.Open;
+                        List<MaterialIssueItem> materialIssueItemList = new List<MaterialIssueItem>();
+                        foreach (var bom in bomData.enggChildItemDtos)
+                        {
+                            var projectNo = SaShopOrder.ShopOrderItems[i].ProjectNumber;
+                            MaterialIssueItem materialIssueItem = new MaterialIssueItem();
+                            materialIssueItem.PartNumber = bom.itemNumber;
+                            materialIssueItem.Description = bom.description;
+                            materialIssueItem.ProjectNumber = projectNo;
+                            materialIssueItem.PartType = bom.partType;
+                            materialIssueItem.UOM = bom.uom;
+                            materialIssueItem.RequiredQty = (bom.quantity * SaShopOrder.TotalSOReleaseQty);
+                            materialIssueItem.IssuedQty = 0;
+                            materialIssueItem.MaterialIssuedStatus = IssuedStatus.Open;
+                            materialIssueItem.CreatedBy = "Admin";
+                            materialIssueItem.CreatedOn = DateTime.Now;
+                            materialIssueItem.LastModifiedBy = "Admin";
+                            materialIssueItem.LastModifiedOn = DateTime.Now;
+                            materialIssueItemList.Add(materialIssueItem);
+                        }
+
+                        var groupedMaterialIssueItems = materialIssueItemList
+                            .GroupBy(item => item.PartNumber)
+                            .Select(group => new MaterialIssueItem
+                            {
+                                PartNumber = group.Key,
+                                Description = group.First().Description,
+                                ProjectNumber = group.First().ProjectNumber,
+                                PartType = group.First().PartType,
+                                UOM = group.First().UOM,
+                                RequiredQty = group.Sum(item => item.RequiredQty),
+                                IssuedQty = 0, // Assuming IssuedQty remains 0 for grouped items
+                                MaterialIssuedStatus = IssuedStatus.Open,
+                                CreatedBy = "Admin",
+                                CreatedOn = DateTime.Now,
+                                LastModifiedBy = "Admin",
+                                LastModifiedOn = DateTime.Now
+                            })
+                            .ToList();
+                        materialIssue.materialIssueItems = groupedMaterialIssueItems;
+                        await _materialIssueRepository.CreateMaterialIssue(materialIssue);
+                        _materialIssueRepository.SaveAsync();
+                    }
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateSAShopOrder action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong {ex.Message},{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

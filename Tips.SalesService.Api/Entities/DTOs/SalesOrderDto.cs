@@ -299,4 +299,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public PartType PartType { get; set; }
         public decimal? TotalRequiredQty { get; set; }
     }
+
+   
+
 }

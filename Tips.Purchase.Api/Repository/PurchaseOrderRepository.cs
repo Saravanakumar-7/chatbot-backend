@@ -340,15 +340,7 @@ namespace Tips.Purchase.Api.Repository
         }
 
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIINameList()
-        {
-            //IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalIINameList = await _tipsPurchaseDbContext.PurchaseOrders
-            //                .Where(x => x.POApprovalII == false && x.IsDeleted == false && x.IsModified ==false).Select(x => new PurchaseOrderIdNameListDto()
-            //                {
-            //                    Id = x.Id,
-            //                    PONumber = x.PONumber,
-            //                }).ToListAsync();
-
-
+        { 
             IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalIINameList = await _tipsPurchaseDbContext.PurchaseOrders
             .Where(x => x.POApprovalII == false && x.POApprovalI == true && x.IsDeleted == false && x.IsModified == false)
             .GroupBy(x => x.PONumber)

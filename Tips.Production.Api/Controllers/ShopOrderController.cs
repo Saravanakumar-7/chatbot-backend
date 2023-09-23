@@ -414,13 +414,14 @@ namespace Tips.Production.Api.Controllers
                         //     "UpdateShopOrderQty?", "salesOrderNumber=", shopOrderDto[i].SalesOrderNumber,
                         //     "projectNumber=", shopOrderDto[i].ProjectNumber,"&itemNumber=",
                         //      shopOrderDto[i].FGItemNumber, "&releaseQty=", shopOrderDto[i].ReleaseQty));
+                        if (shopOrder.ItemType == PartType.FG)
+                        {
+                            var shopOrderDetail = _mapper.Map<UpdateSalesOrderQtyDto>(shopOrderDto[i]);
 
-                        var shopOrderDetail = _mapper.Map<UpdateSalesOrderQtyDto>(shopOrderDto[i]);
-
-                        var jsons = JsonConvert.SerializeObject(shopOrderDetail);
-                        var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                        var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateShopOrderQty?"), datas);
-
+                            var jsons = JsonConvert.SerializeObject(shopOrderDetail);
+                            var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                            var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateShopOrderQty?"), datas);
+                        }
                         ShoporderItemList.Add(shopOrderItemDetail);
 
                     }
@@ -1090,5 +1091,44 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //SA ShopOrder
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetSAShopOrderBalanceQty(string fgItemNumber, string saItemNumber, string projectNumber, string salesOrderNumber)
+        {
+            ServiceResponse<decimal?> serviceResponse = new ServiceResponse<decimal?>();
+            try
+            {
+                var notShortCloseQty = await _shopOrderItemRepository.GetNotShortCloseQty(fgItemNumber,saItemNumber,projectNumber,salesOrderNumber);
+                if (notShortCloseQty == null)
+                {
+                    _logger.LogError($"ShopOrder Release Quantity is getting Null Values");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ShopOrder Release Quantity is getting Null Values";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+                 
+                serviceResponse.Data = notShortCloseQty;
+                serviceResponse.Message = "Get ShopOrder Qunatity successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ShortCloseShopOrderItemSatusByShopOrderItemId action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 }

@@ -58,4 +58,22 @@ namespace Entities.DTOs
         public decimal[] BomVersionNo { get; set; }
 
     }
+
+    public class ProductionBomRevisionNumberAndQty
+    {
+        public string ItemNumber { get; set; }
+
+        /// <summary>
+        /// This is FG Itemnumber with Bom Qty of given SA present on this FG BOM
+        /// </summary>
+        public Dictionary<string,decimal> FGItemNumberWithSaBomQty { get; set; }
+        public PartType ItemType { get; set; }
+        public decimal[] BomVersionNo { get; set; }
+    }
+
+    public class GetBomQuantityDto
+    { 
+        public decimal BomQuantity { get; set; }
+
+    }
 }

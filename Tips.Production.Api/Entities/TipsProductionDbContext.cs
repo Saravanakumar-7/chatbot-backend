@@ -16,6 +16,7 @@ namespace Tips.Production.Api.Entities
         public DbSet<ShopOrderItem> ShopOrderItems { get; set; }
         public DbSet<ShopOrderConfirmation> ShopOrderConfirmations { get; set; }
         public DbSet<SAShopOrder> SAShopOrders { get; set; }
+        public DbSet<SAShopOrderItem> SAShopOrderItems { get; set; }
         public DbSet<SAShopOrderMaterialIssue> SAShopOrderMaterialIssues { get; set; }
         public DbSet<SAShopOrderMaterialIssueGeneral> SAShopOrderMaterialIssueGenerals { get; set; }
         public DbSet<FGShopOrderMaterialIssue> FGShopOrderMaterialIssues { get; set; }

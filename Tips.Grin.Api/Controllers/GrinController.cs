@@ -640,14 +640,7 @@ namespace Tips.Grin.Api.Controllers
                     if (totalGrinCost != 0)
                     {
                         for (int i = 0; i < grinPartsDto.Count; i++)
-                        {
-                            //get itemtype from itemmaster model
-                            //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
-                            // "GetItemMasterByItemNumber?", "&ItemNumber=",grinPartsDto[i].ItemNumber));
-
-                            //var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                            //dynamic itemmasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                            //dynamic itemMasterObject = itemmasterObjectData.data;
+                        { 
 
                             GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
                             total = grinParts.Qty * grinParts.UnitPrice;
@@ -666,14 +659,7 @@ namespace Tips.Grin.Api.Controllers
                     {
                         for (int i = 0; i < grinPartsDto.Count; i++)
                         {
-                            GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
-                            //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
-                            //"GetItemMasterByItemNumber?", "ItemNumber=", grinParts.ItemNumber));
-
-                            //var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                            //dynamic itemmasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                            ////dynamic itemMasterObject = itemmasterObjectData.data;
-
+                            GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);                    
                             grinParts.ItemType = grinPartsDto[i].ItemType;
                             grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
                             grinPartsList.Add(grinParts);

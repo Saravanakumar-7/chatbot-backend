@@ -21,13 +21,15 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<SalesOrder>> SearchSalesOrder([FromQuery] SearchParammes searchParammes);
 
         Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParam);
-
+        Task<PagedList<SalesOrder>> GetAllSalesOrderForecast(PagingParameter pagingParameter, SearchParammes searchParammes);
+        Task<PagedList<SalesOrder>> GetAllSalesOrderRfq(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<IEnumerable<SalesOrderIdNameListDto>> GetAllSalesOrderIdNameList();
 
         //Task<string> UpdateSOBasedOnCreatingDO();
 
         //Task<string> UpdateSOBasedOnCreatingShopOrder();
         Task<List<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber);
+        Task<List<ProjectSOSADetailDto>> GetProjectDetailsBySAItemNo(string fgItemNumbers);
         Task<List<SalesOrderQtyDto>> GetSalesOrderQtyDetailsByItemNo(string itemNumber,string projectNo);
         Task<IEnumerable<SalesOrderIdNameListDto>> GetAllActiveSalesOrderNameList();
         Task<string> GenerateSONumber();
@@ -35,5 +37,6 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<SalesOrder>> GetAllSalesOrderWithItems(SalesOrderSearchDto salesOrderSearch);
         Task<SalesOrder> GetSalesOrderDetailsBySONumber(string salesOrderNumber);
         Task<decimal> GetOpenSalesOrderQuantityByItemNumber(string salesOrderNumber);
+        Task<List<SalesOrderQtyForSADto>> GetSASalesOrderQtyDetailsByItemNo(string fgItemNumber, string projectNo, decimal BomQty); 
     }
 }
