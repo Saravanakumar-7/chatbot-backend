@@ -2283,11 +2283,50 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //sa  
+
+        [HttpGet]
+        public async Task<IActionResult> GetSABomListByItemNumber(string fgPartNumber, string saItemNumber)
+        {
+            ServiceResponse<decimal?> serviceResponse = new ServiceResponse<decimal?>();
+            try
+            {
+                var BomQuantity = await _enggBomRepository.GetSABomQuantity(fgPartNumber, saItemNumber);
+                if (BomQuantity == null)
+                {
+                    serviceResponse.Data = 0;
+                    serviceResponse.Message = $"BomQtyDetails is Invalid.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"BomQtyDetails with FG and SA part number: {fgPartNumber}{saItemNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    //var result = _mapper.Map<GetBomQuantityDto>(BomQuantity);
+                    serviceResponse.Data = BomQuantity;
+                    serviceResponse.Message = "Returned all BomQtyDetails";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllProductionBomFGListByItemNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllProductionBomSAListByItemNumber(string itemNumber)
         {
-            ServiceResponse<IEnumerable<ProductionBomRevisionNumber>> serviceResponse = new ServiceResponse<IEnumerable<ProductionBomRevisionNumber>>();
+            ServiceResponse<ProductionBomRevisionNumberAndQty> serviceResponse = new ServiceResponse<ProductionBomRevisionNumberAndQty>();
             try
             {
                 var productionBomDetails = await _releaseProductBomRepository.GetAllProductionBomSAListByItemNumber(itemNumber);
@@ -2302,7 +2341,9 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
-                    var result = _mapper.Map<IEnumerable<ProductionBomRevisionNumber>>(productionBomDetails);
+                    var result = _mapper.Map<ProductionBomRevisionNumberAndQty>(productionBomDetails);
+
+                    //var result = _mapper.Map<IEnumerable<ProductionBomRevisionNumber>>(productionBomDetails);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned all ProductionBomSAList";
                     serviceResponse.Success = true;

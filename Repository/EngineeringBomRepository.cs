@@ -175,6 +175,27 @@ namespace Repository
 
             return result;
         }
+        //sa
+        public async Task<decimal?> GetSABomQuantity(string fgPartNumber, string saItemNumber)
+        {
+
+            var maxRevisionNumber = await _tipsMasterDbContext.EnggBoms
+                    .Where(x => x.ItemNumber == fgPartNumber && x.ItemType == PartType.FG)
+                    .MaxAsync(x => x.RevisionNumber);
+
+            var bomId = await _tipsMasterDbContext.EnggBoms
+                .Where(x => x.ItemNumber == fgPartNumber && x.ItemType == PartType.FG 
+                        && x.RevisionNumber == maxRevisionNumber)
+                .Select(x => x.BOMId)
+                .FirstOrDefaultAsync();
+             
+
+            var sumOfQuantity = await _tipsMasterDbContext.EnggChildItems
+                 .Where(x => x.EnggBomId == bomId && x.ItemNumber == saItemNumber && x.IsActive == true)
+                 .SumAsync(x => x.Quantity);
+
+            return sumOfQuantity;
+        }
 
         public async Task<IEnumerable<EnggBomFGItemNumber>> GetAllEnggBomFGItemNoListByItemNumber(string itemNumber)
         {
@@ -193,6 +214,9 @@ namespace Repository
 
             return getAllBomGroupList;
         }
+
+
+
 
         //test
         // Define a recursive method to find the parent FG item number for a given SA item number
@@ -773,36 +797,163 @@ namespace Repository
 
         }
 
-        //aravind
-        public async Task<IEnumerable<ProductionBomRevisionNumber>> GetAllProductionBomSAListByItemNumber(string itemNumber)
+        public async Task<ProductionBomRevisionNumberAndQty> GetAllProductionBomSAListByItemNumber(string itemNumber)
         {
             var releaseProductBomDetails = _tipsMasterDbContext.ProductionBoms
                  .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
                  .Select(x => x.ReleaseVersion).ToArray();
+            decimal requiredQty = 1;
+            Dictionary<string, decimal> fgItemNumberListWithQty = new Dictionary<string, decimal>();
+            fgItemNumberListWithQty = await GetFgItemNoListForAnSaItemNo(itemNumber, fgItemNumberListWithQty, requiredQty);
 
-            var enggChildItem = _tipsMasterDbContext.EnggChildItems
-                .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
-                .Select(x => x.EnggBomId).Distinct().ToList();
-
-            List<string> fgItemNumber = new List<string>();
-            if (enggChildItem.Count > 0 && enggChildItem != null)
+            var saItemDetailsWithRequiredQty = new ProductionBomRevisionNumberAndQty
             {
-                fgItemNumber = _tipsMasterDbContext.EnggBoms
-               .Where(x => enggChildItem.Contains(x.BOMId) && x.ItemType == PartType.FG)
-               .Select(x => x.ItemNumber).Distinct().ToList();
+                ItemNumber = itemNumber,
+                FGItemNumberWithSaBomQty = fgItemNumberListWithQty,
+                ItemType = PartType.SA,
+                BomVersionNo = releaseProductBomDetails
+            };
+
+            return saItemDetailsWithRequiredQty;
+        }
+
+        private async Task<Dictionary<string, decimal>> GetFgItemNoListForAnSaItemNo(string itemNumber, Dictionary<string, decimal> fgItemNumberList, decimal requiredQty)
+        {
+            var fgSaItemNoWithItemTypeDict = new Dictionary<string, Dictionary<int, PartType>>();
+            //var enggBomIdsWithQty = await _tipsMasterDbContext.EnggChildItems
+            //    .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
+            //    .GroupBy(x => x.EnggBomId)  // Group by BomId
+            //    .Select(group => new
+            //    {
+            //        BomId = group.Key,
+            //        TotalQuantity = group.Sum(x => x.Quantity)
+            //    })
+            //    .ToListAsync();
+
+            //var enggBomIdsWithQty = await _tipsMasterDbContext.EnggChildItems
+            //                         .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
+            //                         .GroupBy(x => x.ItemNumber) // Group by ItemNumber
+            //                         .Select(group => new
+            //                         {
+            //                             ItemNumber = group.Key,
+            //                             BomId = group
+            //                                 .Select(x => x.EnggBomId)
+            //                                 .OrderByDescending(bomId => _tipsMasterDbContext.EnggBoms
+            //                                     .Where(e => e.BOMId == bomId)
+            //                                     .Max(e => e.RevisionNumber)
+            //                                 )
+            //                                 .FirstOrDefault(),
+            //                             TotalQuantity = group.Sum(x => x.Quantity)
+            //                         })
+            //                         .ToListAsync();
+
+            var enggBomIdsWithQty = await _tipsMasterDbContext.EnggChildItems
+                                    .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
+                                    .GroupBy(x => x.ItemNumber) // Group by ItemNumber
+                                    .Select(group => new
+                                    {
+                                        ItemNumber = group.Key,
+                                        BomId = group
+                                            .Select(x => x.EnggBomId)
+                                            .OrderByDescending(bomId => _tipsMasterDbContext.EnggBoms
+                                                .Where(e => e.BOMId == bomId)
+                                                .Max(e => e.RevisionNumber)
+                                            )
+                                            .FirstOrDefault(),
+                                        TotalQuantity = group
+                                            .OrderByDescending(x => _tipsMasterDbContext.EnggBoms
+                                                .Where(e => e.BOMId == x.EnggBomId)
+                                                .Max(e => e.RevisionNumber)
+                                            )
+                                            .Select(x => x.Quantity)
+                                            .FirstOrDefault()
+                                    })
+                                    .ToListAsync();
+
+            var enggBomIds = enggBomIdsWithQty.Select(x => x.BomId).ToList();
+            var enggBomIdsWithQtyDict = enggBomIdsWithQty.ToDictionary(x=> x.BomId,(x=>x.TotalQuantity * requiredQty));
+             
+            if (enggBomIdsWithQty.Count > 0)
+            {
+                var fgParents = await _tipsMasterDbContext.EnggBoms
+                    .Where(x => enggBomIds.Contains(x.BOMId))
+                    .Select(x => new { x.ItemNumber, x.ItemType, x.BOMId })
+                    .Distinct()
+                    .ToListAsync();
+
+                foreach (var fgitem in fgParents)
+                {
+                    Dictionary<int, PartType> bomIdWithItemTypeDict = new Dictionary<int, PartType>();
+
+                    if (!fgSaItemNoWithItemTypeDict.ContainsKey(fgitem.ItemNumber))
+                    {
+                        bomIdWithItemTypeDict.Add(fgitem.BOMId, fgitem.ItemType);
+                        fgSaItemNoWithItemTypeDict[fgitem.ItemNumber] = bomIdWithItemTypeDict;
+                    }
+                    else
+                    {
+                        fgSaItemNoWithItemTypeDict[fgitem.ItemNumber].Add(fgitem.BOMId, fgitem.ItemType);
+                    }
+                }
             }
 
-            var releaseProductBomItemNumberList = releaseProductBomDetails
-               .Select(bom => new ProductionBomRevisionNumber
-               {
-                   ItemNumber = itemNumber,
-                   FGItemNumber = fgItemNumber,
-                   ItemType = PartType.SA,
-                   BomVersionNo = releaseProductBomDetails
-               }).ToList();
 
-            return releaseProductBomItemNumberList;
+            foreach (var item in fgSaItemNoWithItemTypeDict)
+            {
+                var itemTypeDetails = item.Value;
+                foreach (var itemType in itemTypeDetails)
+                {
+                    if (itemType.Value == PartType.SA)
+                    {
+                        await GetFgItemNoListForAnSaItemNo(item.Key, fgItemNumberList, enggBomIdsWithQtyDict[itemType.Key]);
+                    }
+                    else
+                    {
+                        fgItemNumberList.Add(item.Key, enggBomIdsWithQtyDict[itemType.Key]);
+                    }
+                }
+            }
+
+            return fgItemNumberList;
         }
+
+     
+        //public async Task<IEnumerable<ProductionBomRevisionNumber>> GetAllProductionBomSAListByItemNumber(string itemNumber)
+        //{
+        //    var releaseProductBomDetails = _tipsMasterDbContext.ProductionBoms
+        //         .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
+        //         .Select(x => x.ReleaseVersion).ToArray();
+
+        //    var enggChildItem = _tipsMasterDbContext.EnggChildItems
+        //        .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
+        //        .Select(x => x.EnggBomId).Distinct().ToList();
+
+        //    Dictionary<string,PartType> fgSaItemNumberAndType = new Dictionary<string, PartType>();
+        //    if (enggChildItem.Count > 0 && enggChildItem != null)
+        //    {
+        //        fgSaItemNumberAndType = _tipsMasterDbContext.EnggBoms
+        //       .Where(x => enggChildItem.Contains(x.BOMId) && x.ItemType == PartType.FG)
+        //       .Select(x => new { x.ItemNumber, x.ItemType }).Distinct().ToDictionaryAsync<string, PartType>();
+        //    }
+
+
+
+        //    foreach (var item in fgSaItemNumberAndType)
+        //    {
+
+        //    }
+
+        //    var releaseProductBomItemNumberList = releaseProductBomDetails
+        //       .Select(bom => new ProductionBomRevisionNumber
+        //       {
+        //           ItemNumber = itemNumber,
+        //           FGItemNumber = fgSaItemNumberAndType,
+        //           ItemType = PartType.SA,
+        //           BomVersionNo = releaseProductBomDetails
+        //       }).ToList();
+
+        //    return releaseProductBomItemNumberList;
+        //}
 
     }
 

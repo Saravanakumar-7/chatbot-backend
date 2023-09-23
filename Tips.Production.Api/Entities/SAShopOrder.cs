@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
+using System.ComponentModel; 
 using Tips.Production.Api.Entities.Enums;
+using Entities.Enums;
 
 namespace Tips.Production.Api.Entities
 {
@@ -25,6 +26,13 @@ namespace Tips.Production.Api.Entities
         [Required]
         [MaxLength(100)]
         public string? SAItemNumber { get; set; }
+
+        [Required]
+        public PartType ItemType { get; set; }
+
+        [Precision(13, 3)]
+        public decimal TotalSOReleaseQty { get; set; }
+
         [Required]
         [MaxLength(500)]
         public string? Description { get; set; }
@@ -34,6 +42,10 @@ namespace Tips.Production.Api.Entities
         [Precision(13, 3)]
         [Required]
         public decimal SalesOrderQty { get; set; }
+
+        [Required]
+        public decimal BomRevisionNo { get; set; }
+
         [Precision(13, 3)]
         [Required]
         public decimal SAShopOrderReleaseQty { get; set; }
@@ -63,6 +75,7 @@ namespace Tips.Production.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public List<SAShopOrderItem>? ShopOrderItems { get; set; }
 
     }
 }

@@ -240,6 +240,7 @@ namespace Tips.SalesService.Api.Controllers
 
                     await _repository.CreateRfqSourcing(createRfqSource);
                     _rfqRepository.Update(rfqIsSourcingUpdate);
+
                     _repository.SaveAsync();
                     serviceResponse.Data = null;
                     serviceResponse.Message = "RfqSourcing Created Successfully";

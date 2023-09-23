@@ -206,7 +206,7 @@ namespace Repository
         public async Task<IEnumerable<ItemNoListDto>> GetAllPurchasePartItemNoList()
         {
             IEnumerable<ItemNoListDto> itemNumberListDto = await TipsMasterDbContext.ItemMasters
-                               .Where(x => x.ItemType == PartType.PurchasePart && x.ItemType == PartType.FG)
+                               .Where(x => x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG)
                                .Select(c => new ItemNoListDto()
                                {
                                    ItemNumber = c.ItemNumber,

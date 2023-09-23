@@ -90,6 +90,85 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        //get all without Forecast sales order details
+        [HttpGet]
+        public async Task<IActionResult> GetAllSalesOrderRfq([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
+        {
+            ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
+            try
+            {
+                var getAllSalesOrder = await _repository.GetAllSalesOrderRfq(pagingParameter, searchParammes);
+                var metadata = new
+                {
+                    getAllSalesOrder.TotalCount,
+                    getAllSalesOrder.PageSize,
+                    getAllSalesOrder.CurrentPage,
+                    getAllSalesOrder.HasNext,
+                    getAllSalesOrder.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all SalesOrders");
+                var result = _mapper.Map<IEnumerable<SalesOrderDto>>(getAllSalesOrder);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SalesOrders";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInfo($"Returned owner with id: {ex.Message}{ex.InnerException}");
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = ($"Returned owner with id: {ex.Message}{ex.InnerException}");
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        //get all forecast sales order details
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllSalesOrderForecast([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
+        {
+            ServiceResponse<IEnumerable<SalesOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDto>>();
+            try
+            {
+                var getAllSalesOrder = await _repository.GetAllSalesOrderForecast(pagingParameter, searchParammes);
+                var metadata = new
+                {
+                    getAllSalesOrder.TotalCount,
+                    getAllSalesOrder.PageSize,
+                    getAllSalesOrder.CurrentPage,
+                    getAllSalesOrder.HasNext,
+                    getAllSalesOrder.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all SalesOrders");
+                var result = _mapper.Map<IEnumerable<SalesOrderDto>>(getAllSalesOrder);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SalesOrders";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInfo($"Returned owner with id: {ex.Message}{ex.InnerException}");
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = ($"Returned owner with id: {ex.Message}{ex.InnerException}");
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
 
         // GET api/<PurchaseOrderController>/5
@@ -1174,6 +1253,8 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+         
+
 
         [HttpGet]
         public async Task<IActionResult> GetSASalesOrderDetailsByItemNo(string itemNumber)
@@ -1181,36 +1262,40 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<SARevisionNumber> serviceResponse = new ServiceResponse<SARevisionNumber>();
             try
             {
-                var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetAllProductionBomSAListByItemNumber?", "ItemNumber=", itemNumber));
-                var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
-                dynamic bomDetailsStringData = JsonConvert.DeserializeObject(bomDetailsString);
-                dynamic bomData = bomDetailsStringData.data;
+                var saFgItemDetailsWithBomQty = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
+                    "GetAllProductionBomSAListByItemNumber?", "ItemNumber=", itemNumber));
+                var saFgItemDetailsWithBomQtyString = await saFgItemDetailsWithBomQty.Content.ReadAsStringAsync();
+                dynamic saFgItemDetailsWithBomQtyData = JsonConvert.DeserializeObject(saFgItemDetailsWithBomQtyString);
+                dynamic saFgItemDetailWithBomQty = saFgItemDetailsWithBomQtyData.data;
 
-                string jsonString = JsonConvert.SerializeObject(bomData[0].bomVersionNo);
+                string jsonString = JsonConvert.SerializeObject(saFgItemDetailWithBomQty.bomVersionNo);
                 JArray jArray = JArray.Parse(jsonString);
                 decimal[] bomVersionNo = jArray.ToObject<decimal[]>();
-                //List<decimal> bomVersionNo = jArray.ToObject<List<decimal>>();
-                //decimal bomVersionNo = decimal.Parse(bomData[0].bomVersionNo.ToString());
 
+                string jString = JsonConvert.SerializeObject(saFgItemDetailWithBomQty.fgItemNumberWithSaBomQty);
+                Dictionary<string, decimal> fgItemNumberWithSqBomQty = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(jString);
+                List<string> fgItemNoList = fgItemNumberWithSqBomQty.Select(x => x.Key).ToList();
 
-                string jString = JsonConvert.SerializeObject(bomData[0].fgItemNumber);
-                JArray jsonArray = JArray.Parse(jString);
-                List<string> fgItemNumber = jsonArray.ToObject<List<string>>();
-
+                //string jString = JsonConvert.SerializeObject(saFgItemDetailWithBomQty.fgItemNumberWithSaBomQty);
+                //JArray jsonArray = JArray.Parse(jString);
+                //Dictionary<string, decimal> fgItemNumberWithSqBomQty = jsonArray.ToObject<Dictionary<string, decimal>>();
+                //List<string> fgItemNoList= fgItemNumberWithSqBomQty.Select(x=>x.Key).ToList();
                 SARevisionNumber itemDetailsDto = new SARevisionNumber();
-                itemDetailsDto.ItemNumber = bomData[0].itemNumber;
-                itemDetailsDto.FGItemNumber = fgItemNumber;
-                itemDetailsDto.ItemType = bomData[0].itemType;
+                itemDetailsDto.ItemNumber = saFgItemDetailWithBomQty.itemNumber;
+                itemDetailsDto.FGItemNumber = fgItemNoList;
+                itemDetailsDto.ItemType = saFgItemDetailWithBomQty.itemType;
                 itemDetailsDto.BomVersionNo = bomVersionNo;
 
-                var projectSODetails = await _repository.GetProjectDetailsByItemNo(itemNumber);
-                foreach (var project in projectSODetails)
-                { 
-                        project.SalesOrderQtyDetails = await _repository.GetSalesOrderQtyDetailsByItemNo(itemNumber, project.ProjectNumber);
-                    
+                foreach (var fgItemNo in fgItemNumberWithSqBomQty)
+                {
+                    decimal BomQty = fgItemNo.Value;
+                    var projectSODetails = await _repository.GetProjectDetailsBySAItemNo(fgItemNo.Key);
+                    foreach (var project in projectSODetails)
+                    {
+                        project.SalesOrderQtyDetails = await _repository.GetSASalesOrderQtyDetailsByItemNo(fgItemNo.Key, project.ProjectNumber, BomQty);
+                        itemDetailsDto.ProjectSODetails = projectSODetails;
                     }
-                itemDetailsDto.ProjectSODetails = projectSODetails;
-
+                }
                 serviceResponse.Data = itemDetailsDto;
                 serviceResponse.Message = "Returned all SalesOrderSADetails";
                 serviceResponse.Success = true;
@@ -1226,6 +1311,19 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+        }
+
+        //get sa details
+        private async Task<dynamic> GetSAQuantityFromBom(string item, string itemNumber)
+        {
+            var enggBomQtyDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
+                        "GetSABomListByItemNumber?", "fgPartNumber=", item, "&saItemNumber=", itemNumber));
+
+            var enggBomQtyObjectString = await enggBomQtyDetails.Content.ReadAsStringAsync();
+            dynamic enggBomQtyObjectData = JsonConvert.DeserializeObject(enggBomQtyObjectString);
+            dynamic enggBomQtyObject = enggBomQtyObjectData.data;
+
+            return enggBomQtyObject;
         }
 
         [HttpGet]

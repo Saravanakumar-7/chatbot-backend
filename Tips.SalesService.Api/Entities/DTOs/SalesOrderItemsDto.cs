@@ -220,9 +220,9 @@ namespace Tips.SalesService.Api.Entities.Dto
         public List<string> FGItemNumber { get; set; }
         public PartType ItemType { get; set; }
         public decimal[] BomVersionNo { get; set; }
-        public List<ProjectSODetailDto>? ProjectSODetails { get; set; }
+        public List<ProjectSOSADetailDto>? ProjectSODetails { get; set; }
 
-    }
+    } 
 
     public class ShopOrderReleaseQtyDto
     {
@@ -253,11 +253,30 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string CustomerId { get; set; }
         public List<SalesOrderQtyDto> SalesOrderQtyDetails { get; set; }
     }
+
+    public class ProjectSOSADetailDto
+    {
+        public string ProjectNumber { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerId { get; set; }
+        public List<SalesOrderQtyForSADto> SalesOrderQtyDetails { get; set; }
+    }
+
     public class SalesOrderQtyDto
     {
         public string SalesOrderNo { get; set; }
         public decimal SalesOrderQty { get; set; }
         public decimal OpenSalesOrderQty { get; set; }
+    }
+    public class SalesOrderQtyForSADto
+    {
+        public string SalesOrderNo { get; set; }
+        public decimal SalesOrderQty { get; set; }
+        public decimal OpenSalesOrderQty { get; set; }
+        public decimal RequiredQty { get; set; }
+        public string Description { get; set; }
+        public string FgItemNumber { get; set; }
+        public string ProjectNumber { get; set; }
     }
     public class SalesOrderItemsReportDto
     {
@@ -328,5 +347,11 @@ namespace Tips.SalesService.Api.Entities.Dto
         public int SalesOrderItemsId { get; set; }
         public DateTime ConfirmationDate { get; set; }
         public decimal Qty { get; set; }
+    }
+
+    public class ProjectDetailDto
+    {
+        public string FGItemNumber { get; set; } 
+        public List<ProjectDetailDto> ProjectDetailDtos { get; set; }
     }
 }

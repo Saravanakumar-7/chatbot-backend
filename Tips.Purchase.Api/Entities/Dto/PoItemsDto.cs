@@ -1,5 +1,5 @@
 ﻿using Entities;
-using Entities.Enums;
+//using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using Tips.Purchase.Api.Entities.DTOs;
 using Tips.Purchase.Api.Entities.Enums;
