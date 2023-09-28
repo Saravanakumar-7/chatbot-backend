@@ -737,7 +737,7 @@ namespace Tips.Warehouse.Api.Repository
         .SumAsync(i => i.Balance_Quantity);
         }
 
-        public async Task<List<Inventory>> GetWipInventoryDetailsByLotNumber(string itemNumber, string projectNumber, string lotNumber)
+        public async Task<List<Inventory>> GetWipInventoryDetailsByLotNumber(string itemNumber, string lotNumber)
         {
             var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber
             && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.LotNumber == lotNumber)

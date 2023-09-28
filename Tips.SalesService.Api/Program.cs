@@ -64,8 +64,11 @@ builder.Services.AddScoped<ISalesOrderItemsRepository, SalesOrderItemRepository>
 builder.Services.AddScoped<IItemPriceListRepository, ItemPriceListRepository>();
 builder.Services.AddScoped<ISalesOrderHistoryRepository, SalesOrderHistoryRepository>();
 builder.Services.AddScoped<ICoverageReportRepository, CoverageReportRepository>();
-builder.Services.AddScoped<ISoConfirmationDateRepository, SoConfirmationDateRepository>();
 builder.Services.AddScoped<ISoConfirmationDateHistoryRepository, SoConfirmationDateHistoryRepository>();
+builder.Services.AddScoped<ISoConfirmationDateRepository, SoConfirmationDateRepository>();
+
+
+
 
 //builder.Services.AddScoped<IRfqCustomerSupportNotesRepository, RfqCustomerSupportNotes>();
 

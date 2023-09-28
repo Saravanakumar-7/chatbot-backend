@@ -260,7 +260,7 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         if (ppvendor.Primary == true)
                         {
-                            rfqSourcingPPdetails.VLandindPrice = ppvendor.LandindPrice;
+                            rfqSourcingPPdetails.VLandindPrice = ppvendor.LandingPrice;
                             rfqSourcingPPdetails.VMoqcost = ppvendor.MoqCost;
                         }
                     }

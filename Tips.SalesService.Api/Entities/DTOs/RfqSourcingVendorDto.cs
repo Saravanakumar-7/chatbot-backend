@@ -26,7 +26,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? QuoteQty { get; set; }
         [Precision(13, 3)]
-        public decimal? LandindPrice { get; set; }
+        public decimal? LandingPrice { get; set; }
         [Precision(13, 3)]
         public decimal? MoqCost { get; set; }
         public DateTime? QuoteDate { get; set; }
@@ -62,7 +62,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? QuoteQty { get; set; }
         [Precision(13, 3)]
-        public decimal? LandindPrice { get; set; }
+        public decimal? LandingPrice { get; set; }
         [Precision(13, 3)]
         public decimal? MoqCost { get; set; }
         public DateTime? QuoteDate { get; set; }
@@ -99,7 +99,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? QuoteQty { get; set; }
         [Precision(13, 3)]
-        public decimal? LandindPrice { get; set; }
+        public decimal? LandingPrice { get; set; }
         [Precision(13, 3)]
         public decimal? MoqCost { get; set; }
         public DateTime? QuoteDate { get; set; }

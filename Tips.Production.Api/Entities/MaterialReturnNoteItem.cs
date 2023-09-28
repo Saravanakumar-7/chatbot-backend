@@ -14,6 +14,8 @@ namespace Tips.Production.Api.Entities
         public string? MftrPartNumber { get; set; }
         [NotMapped]
         public string? ProjectNumber { get; set; }
+        [NotMapped]
+        public string? ShopOrderNumber { get; set; }
 
         public PartType PartType { get; set; }
         [Precision(13, 3)]
