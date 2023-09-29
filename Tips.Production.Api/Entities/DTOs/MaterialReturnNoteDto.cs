@@ -59,6 +59,7 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         public string? PartNumber { get; set; }
         public string? ProjectNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
 
         public List<MRNInventoryUpdateDto> MRNDetails { get; set; }
     }

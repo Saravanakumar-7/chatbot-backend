@@ -419,6 +419,7 @@ namespace Tips.Production.Api.Controllers
                     {
                         MaterialReturnNoteItem materialReturnNoteItem = _mapper.Map<MaterialReturnNoteItem>(materialReturnNotesItemDto[i]);
                         materialReturnNoteItem.ProjectNumber = materialReturnNoteUpdateDto.ProjectNumber;
+                        materialReturnNoteItem.ShopOrderNumber = materialReturnNoteUpdateDto.ShopOrderNumber;
                         materialReturnNoteItem.MRNWarehouseList = _mapper.Map<List<MRNWarehouseDetails>>(materialReturnNotesItemDto[i].MRNWarehouseList);
 
                         materialReturnNoteItemList.Add(materialReturnNoteItem);
@@ -431,6 +432,7 @@ namespace Tips.Production.Api.Controllers
                     cfg.CreateMap<MaterialReturnNoteItem, MRNUpdateInventoryBalanceQty>()
                         .ForMember(dest => dest.PartNumber, opt => opt.MapFrom(src => src.PartNumber))
                         .ForMember(dest => dest.ProjectNumber, opt => opt.MapFrom(src => src.ProjectNumber))
+                        .ForMember(dest => dest.ShopOrderNumber, opt => opt.MapFrom(src => src.ShopOrderNumber))
                         .ForMember(dest => dest.MRNDetails, opt => opt.MapFrom(src => src.MRNWarehouseList.Select(detail => new MRNInventoryUpdateDto
                         {
                             Warehouse = detail.Warehouse,
