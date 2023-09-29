@@ -31,7 +31,7 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<ShopOrder>> SearchShopOrder([FromQuery] SearchParamess searchParammes);
         Task<IEnumerable<ShopOrder>> SearchShopOrderDate([FromQuery] SearchDateparames searchDatesParams);
         Task<IEnumerable<ListOfShopOrderDto>> GetAllActiveShopOrderNoListByProjectNo(string projectNo, PartType partType);
-
+        Task<string> GenerateSONumberForAvision();
         Task<string> GenerateSONumber();
         public void SaveAsync();
     }

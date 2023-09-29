@@ -23,6 +23,7 @@ using Tips.Purchase.Api.Entities.Dto;
 using Tips.Purchase.Api.Entities.DTOs;
 using Tips.Purchase.Api.Entities.Enums;
 using Tips.Purchase.Api.Repository;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.Purchase.Api.Controllers
 {
@@ -39,10 +40,11 @@ namespace Tips.Purchase.Api.Controllers
         private IMapper _mapper;
         private IDocumentUploadRepository _documentUploadRepository;
         private IPoConfirmationDateRepository _poConfirmationDateRepository;
+        private IConfiguration _config;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
 
 
-        public PurchaseOrderController(IPoConfirmationDateRepository poConfirmationDateRepository,IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper)
+        public PurchaseOrderController(IPoConfirmationDateRepository poConfirmationDateRepository,IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
             _poItemsRepository = poItemsRepository;
@@ -54,6 +56,7 @@ namespace Tips.Purchase.Api.Controllers
             _poConfirmationDateHistoryRepository = poConfirmationDateHistoryRepository;
             _poConfirmationHistoryRepository = poConfirmationHistoryRepository;
             _poConfirmationDateRepository = poConfirmationDateRepository;
+            _config = config;
         }
 
         [HttpGet]
@@ -632,6 +635,8 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<PurchaseOrderPostDto> serviceResponse = new ServiceResponse<PurchaseOrderPostDto>();
             try
             {
+                string serverKey = GetServerKey();
+
                 if (purchaseOrderPostDto is null)
                 {
                     serviceResponse.Data = null;
@@ -678,11 +683,17 @@ namespace Tips.Purchase.Api.Controllers
                 //    var e = count.ToString("D4");
                 //    purchaseOrderDetails.PONumber = days + months + years + "PO" + (e);
                 //}
-
-                var dateFormat = days + months + years;
-                var poNumber = await _repository.GeneratePONumber();
-                purchaseOrderDetails.PONumber = dateFormat + poNumber;
-
+                if (serverKey == "avision")
+                {
+                    var poNum = await _repository.GeneratePONumberForAvision();
+                    purchaseOrderDetails.PONumber = poNum;
+                }
+                else
+                {
+                    var dateFormat = days + months + years;
+                    var poNumber = await _repository.GeneratePONumber();
+                    purchaseOrderDetails.PONumber = dateFormat + poNumber;
+                }
                 //// Po Upload
 
                 var poUploadDetails = purchaseOrderPostDto.POFiles;
@@ -707,7 +718,7 @@ namespace Tips.Purchase.Api.Controllers
                             FileName = fileName,
                             FileExtension = FileExt,
                             FilePath = filePath,
-                            ParentNumber = poNumber,
+                            ParentNumber = poNumbers,
                             DocumentFrom = "PODocument",
                         };
                         _documentUploadRepository.CreateUploadDocumentPO(uploadedFile);
@@ -814,6 +825,26 @@ namespace Tips.Purchase.Api.Controllers
             var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
 
             return File(bytes, ContentType, Path.GetFileName(filePath));
+        }
+
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
         }
 
         //public async Task<IActionResult> StageDocumentDownloadFile(int fileid)

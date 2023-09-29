@@ -13,6 +13,7 @@ namespace Tips.SalesService.Api.Entities
     {
         [Key]
         public int Id { get; set; }
+        public int RFQId { get; set; }
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }      
         public string Unit { get; set; }

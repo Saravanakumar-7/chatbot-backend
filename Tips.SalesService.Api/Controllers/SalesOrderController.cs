@@ -9,6 +9,7 @@ using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
+using Microsoft.VisualBasic;
 using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -277,6 +278,8 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<SalesOrderPostDto> serviceResponse = new ServiceResponse<SalesOrderPostDto>();
             try
             {
+                string serverKey = GetServerKey();
+
                 if (salesOrderDtoPost is null)
                 {
                     serviceResponse.Data = null;
@@ -332,10 +335,17 @@ namespace Tips.SalesService.Api.Controllers
                 //    createSalesOrder.SalesOrderNumber = days + months + years + "SO" + (e);
                 //}
 
-                var dateFormat = days + months + years;
-                var soNumber = await _repository.GenerateSONumber();
-                createSalesOrder.SalesOrderNumber = dateFormat + soNumber;
-
+                if (serverKey == "avision")
+                {
+                    var soNumber = await _repository.GenerateSONumberForAvision();
+                    createSalesOrder.SalesOrderNumber = soNumber;
+                }
+                else
+                {
+                    var dateFormat = days + months + years;
+                    var soNumber = await _repository.GenerateSONumber();
+                    createSalesOrder.SalesOrderNumber = dateFormat + soNumber;
+                }
                 if (salesOrderItemsDto != null)
                 {
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
@@ -368,6 +378,27 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
+
         //From Date and To Date filter 
         [HttpGet]
         public async Task<IActionResult> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParam)

@@ -32,5 +32,6 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<GrinNoForIqcAndBinning>> GetAllGrinNumberForBinning();
         Task<int?> GetGrinIqcStatusCount(string grinNo);
         Task<int?> GetGrinbinningStatusCount(string grinNo);
+        Task<string> GenerateGrinNumberForAvision();
     }
 }

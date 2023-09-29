@@ -20,7 +20,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal Qty { get; set; }
         public decimal BalanceQty { get; set; }
         public decimal ReceivedQty { get; set; }
-        public PartType? PartType { get; set; }
+        public PoPartType? PartType { get; set; }
         public string? SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
         [Precision(13, 3)]
@@ -56,7 +56,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal UnitPrice { get; set; }
         [Precision(13, 3)]
         public decimal Qty { get; set; }
-        public PartType? PartType { get; set; }
+        public PoPartType? PartType { get; set; }
 
         public string? SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
@@ -87,7 +87,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? MftrItemNumber { get; set; }
         public string? Description { get; set; }
         public string? UOM { get; set; }
-        public PartType? PartType { get; set; }
+        public PoPartType? PartType { get; set; }
 
         [Precision(18, 3)]
         public decimal UnitPrice { get; set; }
@@ -180,7 +180,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal Qty { get; set; }
         public decimal BalanceQty { get; set; }
         public decimal ReceivedQty { get; set; }
-        public PartType? PartType { get; set; }
+        public PoPartType? PartType { get; set; }
         public string? SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
         [Precision(13, 3)]

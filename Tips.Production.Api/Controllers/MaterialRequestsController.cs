@@ -523,9 +523,11 @@ namespace Tips.Production.Api.Controllers
 
                 var mapperConfiguration = new MapperConfiguration(cfg =>
                 {
+                    cfg.CreateMap<MaterialRequests, UpdateInventoryBalanceQty>()
+                    .ForMember(dest => dest.ProjectNumber, opt => opt.MapFrom(src => src.ProjectNumber));
                     cfg.CreateMap<MaterialRequestItems, UpdateInventoryBalanceQty>()
                         .ForMember(dest => dest.PartNumber, opt => opt.MapFrom(src => src.PartNumber))
-                        .ForMember(dest => dest.ProjectNumber, opt => opt.MapFrom(projectNo))
+                        
                         .ForMember(dest => dest.MRNWarehouseList, opt => opt.MapFrom(src => src.MRStockDetails.Select(detail => new InventoryUpdateDtoForMRWarehouse
                         {
                             Warehouse = detail.Warehouse,
@@ -552,6 +554,19 @@ namespace Tips.Production.Api.Controllers
                 if(response.StatusCode == HttpStatusCode.InternalServerError)
                 {
                     _logger.LogError($"Something went wrong inside UpdateMaterialRequest action. Inventory update action MaterialInventoryBalanceQty failed! ");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Internal server error";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+
+                var jsonCon = JsonConvert.SerializeObject(materialRequestDetails);
+                var datass = new StringContent(jsonCon, Encoding.UTF8, "application/json");
+                var results = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "MaterialInventoryTranctionBalanceQty"), datass);
+                if (results.StatusCode == HttpStatusCode.InternalServerError)
+                {
+                    _logger.LogError($"Something went wrong inside UpdateMaterialRequest action. InventoryTranction update action MaterialInventoryBalanceQty failed! ");
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Internal server error";
                     serviceResponse.Success = false;

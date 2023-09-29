@@ -194,6 +194,118 @@ namespace Tips.SalesService.Api.Controllers
 
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> CreateRfqSourcing([FromBody] RfqSourcingPostDto rfqSourcingPostDto)
+        //{
+        //    ServiceResponse<RfqSourcingDto> serviceResponse = new ServiceResponse<RfqSourcingDto>();
+
+        //    try
+        //    {
+        //        if (rfqSourcingPostDto is null)
+        //        {
+        //            _logger.LogError("RfqSourcing object sent from client is null.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "RfqSourcing object sent from client is null.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _logger.LogError("Invalid RfqSourcing object sent from client.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid RfqSourcing object sent from client.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+
+
+
+        //        var createRfqSource = _mapper.Map<RfqSourcing>(rfqSourcingPostDto);
+
+        //        var rfqSourceData = createRfqSource.RFQNumber;
+
+        //        var rfqIsSourcingUpdate = await _rfqRepository.RfqSourcingByRfqNumbers(rfqSourceData);
+
+        //        rfqIsSourcingUpdate.IsSourcing = true;
+
+        //        var rfqSourceDto = rfqSourcingPostDto.RfqSourcingItemsPostDtos;
+
+        //        var sourceItemList = new List<RfqSourcingItems>();
+
+        //            if (rfqSourceDto != null)
+        //            {
+        //                for (int i = 0; i < rfqSourceDto.Count; i++)
+        //                {
+        //                    RfqSourcingItems rfqSourcingItems = _mapper.Map<RfqSourcingItems>(rfqSourceDto[i]);
+        //                    rfqSourcingItems.RfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(rfqSourceDto[i].RfqSourcingVendorDtos);
+        //                    sourceItemList.Add(rfqSourcingItems);
+        //                }
+        //            }
+        //            createRfqSource.RfqSourcingItems = sourceItemList;
+
+        //            await _repository.CreateRfqSourcing(createRfqSource);
+        //            _rfqRepository.Update(rfqIsSourcingUpdate);
+
+        //        // LandedPrice and MoqCost Calculation
+        //        int rfqId = rfqSourcingPostDto.RFQId;
+        //        //Taking the Sourcing PP And is Primary Vendor Details 
+        //        List<RfqSourcingPPdetails> rfqSourcingPPdetailsList = new List<RfqSourcingPPdetails>();
+        //        foreach (var ppinsource in createRfqSource.RfqSourcingItems)
+        //        {
+        //            RfqSourcingPPdetails rfqSourcingPPdetails = new RfqSourcingPPdetails();
+        //            rfqSourcingPPdetails.PPItemNumber = ppinsource.ItemNumber;
+        //            foreach (var ppvendor in ppinsource.RfqSourcingVendors)
+        //            {
+        //                if (ppvendor.Primary == true)
+        //                {
+        //                    rfqSourcingPPdetails.VLandindPrice = ppvendor.LandindPrice;
+        //                    rfqSourcingPPdetails.VMoqcost = ppvendor.MoqCost;
+        //                }
+        //            }
+        //            rfqSourcingPPdetailsList.Add(rfqSourcingPPdetails);
+        //        }
+        //        //Getting the FG's of that RFQ
+        //        List<RfqEnggItem> listofFgs = await _rfqEnggItemRepository.GetRfqEnggItemsbyRfqId(rfqId);
+        //        foreach (var fgitemnumber in listofFgs)
+        //        {
+        //            //Calculating for the Fg LandedPrice and MOQCost
+        //            var httpClientHandler = new HttpClientHandler();
+        //            httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+        //            var httpClient = new HttpClient(httpClientHandler);
+        //            string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(rfqSourcingPPdetailsList);
+        //            var rfqApiUrl = _config["EngineeringBomAPI"];
+        //            var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
+        //            var rfqCustomerIdResponse = await _httpClient.PostAsync($"{rfqApiUrl}GetEngganditsPP?FGItemNumber={fgitemnumber.ItemNumber}&FGRevno={fgitemnumber.CostingBomVersionNo}", content);
+        //            var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
+        //            var rfqCustomerIdObjectData = JsonConvert.DeserializeObject<EnggItemsLandedandMoq>(rfqCustomerIdString);
+        //            var rfqEnggItemsDetails = await _rfqEnggItemRepository.GetRfqEnggItemByItemNumber(rfqCustomerIdObjectData.data.fgItemNumber);
+        //            rfqEnggItemsDetails.LandedPrice = rfqCustomerIdObjectData.data.finalLandindPrice;
+        //            rfqEnggItemsDetails.MOQCost = rfqCustomerIdObjectData.data.finalMoqcost;
+        //            await _rfqEnggItemRepository.UpdateRfqEnggItemLandedandMOQ(rfqEnggItemsDetails);
+        //        }
+        //        _rfqEnggItemRepository.SaveAsync();
+        //        _repository.SaveAsync();
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "RfqSourcing Created Successfully";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Created("GetRfqSourceById", serviceResponse);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside CreateRfqSource action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
+        // PUT api/<RfqSourcingController>/5
         [HttpPost]
         public async Task<IActionResult> CreateRfqSourcing([FromBody] RfqSourcingPostDto rfqSourcingPostDto)
         {
@@ -219,34 +331,24 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-
-
-
                 var createRfqSource = _mapper.Map<RfqSourcing>(rfqSourcingPostDto);
-
                 var rfqSourceData = createRfqSource.RFQNumber;
-                
                 var rfqIsSourcingUpdate = await _rfqRepository.RfqSourcingByRfqNumbers(rfqSourceData);
-
                 rfqIsSourcingUpdate.IsSourcing = true;
-
                 var rfqSourceDto = rfqSourcingPostDto.RfqSourcingItemsPostDtos;
-
                 var sourceItemList = new List<RfqSourcingItems>();
-
-                    if (rfqSourceDto != null)
+                if (rfqSourceDto != null)
+                {
+                    for (int i = 0; i < rfqSourceDto.Count; i++)
                     {
-                        for (int i = 0; i < rfqSourceDto.Count; i++)
-                        {
-                            RfqSourcingItems rfqSourcingItems = _mapper.Map<RfqSourcingItems>(rfqSourceDto[i]);
-                            rfqSourcingItems.RfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(rfqSourceDto[i].RfqSourcingVendorDtos);
-                            sourceItemList.Add(rfqSourcingItems);
-                        }
+                        RfqSourcingItems rfqSourcingItems = _mapper.Map<RfqSourcingItems>(rfqSourceDto[i]);
+                        rfqSourcingItems.RfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(rfqSourceDto[i].RfqSourcingVendorDtos);
+                        sourceItemList.Add(rfqSourcingItems);
                     }
-                    createRfqSource.RfqSourcingItems = sourceItemList;
-
-                    await _repository.CreateRfqSourcing(createRfqSource);
-                    _rfqRepository.Update(rfqIsSourcingUpdate);
+                }
+                createRfqSource.RfqSourcingItems = sourceItemList;
+                await _repository.CreateRfqSourcing(createRfqSource);
+                _rfqRepository.Update(rfqIsSourcingUpdate);
 
                 // LandedPrice and MoqCost Calculation
                 int rfqId = rfqSourcingPostDto.RFQId;
@@ -260,7 +362,7 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         if (ppvendor.Primary == true)
                         {
-                            rfqSourcingPPdetails.VLandindPrice = ppvendor.LandindPrice;
+                            rfqSourcingPPdetails.VLandindPrice = ppvendor.LandingPrice;
                             rfqSourcingPPdetails.VMoqcost = ppvendor.MoqCost;
                         }
                     }
@@ -287,12 +389,11 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 _rfqEnggItemRepository.SaveAsync();
                 _repository.SaveAsync();
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "RfqSourcing Created Successfully";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Created("GetRfqSourceById", serviceResponse);
-                
+                serviceResponse.Data = null;
+                serviceResponse.Message = "RfqSourcing Created Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("GetRfqSourceById", serviceResponse);
             }
             catch (Exception ex)
             {
@@ -304,8 +405,6 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
-        // PUT api/<RfqSourcingController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRfqSourcing(int id, [FromBody] RfqSourcingUpdateDto rfqSourcingUpdateDto)
         {

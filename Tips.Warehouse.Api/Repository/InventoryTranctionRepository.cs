@@ -102,7 +102,15 @@ namespace Tips.Warehouse.Api.Repository
 
             return getInventoryTranctionById;
         }
+        public async Task<IEnumerable<InventoryTranction>> GetInventoryTranctionDetailsByItemNoandLocationandwarehouse(string ItemNumber, string Location, string Warehouse, string projectNumber)
 
+        {
+            var getInventoryTranctionDetailsByItemAndLoc = await _tipsWarehouseDbContext.InventoryTranctions
+                .Where(x => x.PartNumber == ItemNumber && x.From_Location == Location && x.Warehouse == Warehouse
+                && x.IsStockAvailable == true && x.ProjectNumber == projectNumber).ToListAsync();
+
+            return getInventoryTranctionDetailsByItemAndLoc;
+        }
         public async Task<InventoryTranction> GetInventoryTranctionDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber)
         {
             var inventoryTranctionDetailsById = await _tipsWarehouseDbContext.InventoryTranctions.Where(x => x.GrinNo == GrinNo &&

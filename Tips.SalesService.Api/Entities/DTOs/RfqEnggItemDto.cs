@@ -72,4 +72,14 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
 
     }
+    public class RfqEnggSourcingDto
+    {
+        public string? ItemNumber { get; set; }
+        [Precision(13, 3)]
+        public decimal Qty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? CostingBomVersionNo { get; set; }
+
+    }
 }

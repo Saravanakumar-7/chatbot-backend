@@ -27,7 +27,7 @@ namespace Tips.SalesService.Api.Entities
         [Precision(13,3)]
         public decimal? QuoteQty { get; set; }
         [Precision(13, 3)]
-        public decimal? LandindPrice { get; set; }
+        public decimal? LandingPrice { get; set; }
         [Precision(13, 3)]
         public decimal? MoqCost { get; set; }
 

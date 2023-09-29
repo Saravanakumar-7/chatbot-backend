@@ -505,5 +505,52 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        //MaterialRequest
+        [HttpPost]
+        public async Task<IActionResult> MaterialInventoryTranctionBalanceQty([FromBody] List<UpdateInventoryTranctionBalanceQty> updateInventoryTranctionBalanceQty)
+        {
+            try
+            {
+                foreach (var materialIssueQty in updateInventoryTranctionBalanceQty)
+                {
+                    foreach (var Location in materialIssueQty.MRNWarehouseList)
+                    {
+                        decimal issuedQty = Location.Qty;
+                        IEnumerable<InventoryTranction> inventories = await _inventoryTranctionRepository.GetInventoryTranctionDetailsByItemNoandLocationandwarehouse(materialIssueQty.PartNumber, Location.Location, Location.Warehouse, materialIssueQty.ProjectNumber);
+                        foreach (var invItem in inventories)
+                        {
+                            decimal stock = invItem.Issued_Quantity;
+                            if (stock <= issuedQty)
+                            {
+
+                                invItem.Issued_Quantity = 0;
+                                invItem.IsStockAvailable = false;
+                                issuedQty -= stock;
+
+                            }
+                            else
+                            {
+                                invItem.Issued_Quantity -= issuedQty;
+                                issuedQty = 0;
+                            }
+                            await _inventoryTranctionRepository.UpdateInventoryTraction(invItem);
+                            if (issuedQty <= 0)
+                            {
+                                break;
+                            }
+                        }
+
+                    }
+                }
+                _inventoryTranctionRepository.SaveAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500);
+            }
+        }
+
     }
 }

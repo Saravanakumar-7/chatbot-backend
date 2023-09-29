@@ -61,6 +61,26 @@ namespace Tips.Production.Api.Repository
             }
         }
 
+        public async Task<string> GenerateSONumberForAvision()
+        {
+            using var transaction = await _tipsProductionDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var poNumberEntity = await _tipsProductionDbContext.SONumbers.SingleAsync();
+                poNumberEntity.CurrentValue += 1;
+                _tipsProductionDbContext.Update(poNumberEntity);
+                await _tipsProductionDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"AV-WO-{poNumberEntity.CurrentValue:D5}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
         public async Task<PagedList<ShopOrder>> GetAllShopOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             PartType? check;

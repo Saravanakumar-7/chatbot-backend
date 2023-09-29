@@ -280,5 +280,23 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
 
     }
+    public class UpdateInventoryTranctionBalanceQty
+    {
+        public string? PartNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public List<InventoryTranctionUpdateDtoForMRWarehouse> MRNWarehouseList { get; set; }
+    }
+
+    public class InventoryTranctionUpdateDtoForMRWarehouse
+    {
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+
+        [Precision(13, 3)]
+        public decimal Qty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal LocationStock { get; set; }
+    }
 
 }

@@ -7,6 +7,7 @@ using Entities;
 using Entities.DTOs;
 using Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
@@ -428,8 +429,8 @@ namespace Tips.Production.Api.Controllers
                 }
                 shopOrder.ShopOrderItems = ShoporderItemList;
 
-                if (serverKey == "trasccon")                
-                { 
+                if (serverKey == "trasccon")
+                {
                     var date = DateTime.Now;
                     var days = Convert.ToString(date.Day.ToString("D2"));
                     var months = Convert.ToString(date.Month.ToString("D2"));
@@ -437,6 +438,11 @@ namespace Tips.Production.Api.Controllers
                     var dateFormat = days + months + years;
                     var soNumber = await _shopOrderRepository.GenerateSONumber();
                     shopOrder.ShopOrderNumber = dateFormat + soNumber;
+                }
+                else if (serverKey == "avision")
+                {
+                    var soNumber = await _shopOrderRepository.GenerateSONumberForAvision();
+                    shopOrder.ShopOrderNumber = soNumber;
                 }
                 else
                 {

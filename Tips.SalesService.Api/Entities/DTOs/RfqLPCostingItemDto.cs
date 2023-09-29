@@ -53,7 +53,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]       
         public decimal? MarkUpForMaterial { get; set; }
         public string? MarkUpForProcessSteps { get; set; }
-
+        [Precision(13, 3)]
+        public decimal? LandedPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MOQCost { get; set; }
 
         public List<RfqLPCostingProcessDtoPost>? RfqLPCostingProcesses { get; set; }
         public List<RfqLPCostingNREConsumableDtoPost>? RfqLPCostingNREConsumables { get; set; }
@@ -79,7 +82,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? MarkUpForMaterial { get; set; }
 
         public string? MarkUpForProcessSteps { get; set; }
-
+        [Precision(13, 3)]
+        public decimal? LandedPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MOQCost { get; set; }
         public List<RfqLPCostingProcessDtoUpdate>? RfqLPCostingProcesses { get; set; }
         public List<RfqLPCostingNREConsumableDtoUpdate>? RfqLPCostingNREConsumables { get; set; }
         public List<RfqLPCostingOtherChargesDtoUpdate>? RfqLPCostingOtherCharges { get; set; }

@@ -89,6 +89,25 @@ namespace Tips.Grin.Api.Repository
                 throw ex;
             }
         }
+        public async Task<string> GenerateGrinNumberForAvision()
+        {
+            using var transaction = await _tipsGrinDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var grinNumberEntity = await _tipsGrinDbContext.GrinNumbers.SingleAsync();
+                grinNumberEntity.CurrentValue += 1;
+                _tipsGrinDbContext.Update(grinNumberEntity);
+                await _tipsGrinDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"AV-Grin-{grinNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
 
         public async Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string grinNumber)
         {

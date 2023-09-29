@@ -270,6 +270,26 @@ namespace Tips.Purchase.Api.Repository
             }
         }
 
+        public async Task<string> GeneratePONumberForAvision()
+        {
+            using var transaction = await _tipsPurchaseDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var poNumberEntity = await _tipsPurchaseDbContext.PONumbers.SingleAsync();
+                poNumberEntity.CurrentValue += 1;
+                _tipsPurchaseDbContext.Update(poNumberEntity);
+                await _tipsPurchaseDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"AV-PO-{poNumberEntity.CurrentValue:D5}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
         public async Task<IEnumerable<PurchaseOrder>> GetAllActivePurchaseOrders()
         {
             var activePurchaseOrderDetails = FindAll().OrderByDescending(on => on.Id)

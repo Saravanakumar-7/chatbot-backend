@@ -20,6 +20,7 @@ namespace Contracts
         Task<IEnumerable<VendorIdNameListDto>> GetAllActiveVendorMasterNameList();
         Task<IEnumerable<VendorIdNameListDto>> GetAllVendorMasterNameList();
         Task<string> GenerateVendorId();
+        Task<string> GenerateVendorIdForAvision();
 
     }
 }

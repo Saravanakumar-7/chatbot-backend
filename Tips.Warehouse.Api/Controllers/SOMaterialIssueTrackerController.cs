@@ -131,7 +131,8 @@ namespace Tips.Warehouse.Api.Controllers
                         Location = "",
                         Unit = "",
                         PartType = dtoForMaterialRequest[i].PartType,
-                        DataFrom = "MR"
+                        DataFrom = "MR",
+                        MRNumber = dtoForMaterialRequest[i].MRNumber
                     };
 
                     await _materialIssueTrackerRepository.CreateMaterialIssueTracker(shopOrderMaterialIssueTracker);

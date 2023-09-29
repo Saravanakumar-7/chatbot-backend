@@ -250,6 +250,26 @@ namespace Tips.SalesService.Api.Repository
                 throw ex;
             }
         }
+
+        public async Task<string> GenerateSONumberForAvision()
+        {
+            using var transaction = await _tipsSalesServiceDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var poNumberEntity = await _tipsSalesServiceDbContext.SONumbers.SingleAsync();
+                poNumberEntity.CurrentValue += 1;
+                _tipsSalesServiceDbContext.Update(poNumberEntity);
+                await _tipsSalesServiceDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"AV-SO-{poNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
         public async Task<IEnumerable<SalesOrderIdNameListDto>> GetAllSalesOrderIdNameList()
         {
             IEnumerable<SalesOrderIdNameListDto> activeSalesOrderNameList = await _tipsSalesServiceDbContext.SalesOrders

@@ -20,5 +20,6 @@ namespace Tips.Warehouse.Api.Contracts
         Task<List<InventoryTranctionBalanceQtyMaterialIssue>> GetInventoryTranctionStockByItemAndProjectNo(string itemNumber, string projectNumber);
         Task<InventoryTranction> GetInventoryTranctionDetailsByItemNoandProjectNoandShopOrderNo(string ItemNumber, string ProjectNumber, string shopOrderNo);
         Task<List<InventoryTranction>> GetInventoryTranctionDetailsByItemNoandProjectNo(string ItemNumber, string ProjectNo);
+        Task<IEnumerable<InventoryTranction>> GetInventoryTranctionDetailsByItemNoandLocationandwarehouse(string ItemNumber, string Location, string Warehouse, string projectNumber);
     }
 }

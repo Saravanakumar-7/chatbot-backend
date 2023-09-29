@@ -172,5 +172,15 @@ namespace Entities.DTOs
         public decimal? SAFinalLandindPrice { get; set; }
         public decimal? SAFinalMoqcost { get; set; }
     }
+    public class RfqEnggitemSourcingDto
+    {
+        public string? ItemNumber { get; set; }
+        [Precision(13, 3)]
+        public decimal Qty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? CostingBomVersionNo { get; set; }
+
+    }
 
 }

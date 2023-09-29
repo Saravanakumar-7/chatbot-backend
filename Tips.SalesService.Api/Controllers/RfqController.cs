@@ -427,6 +427,49 @@ namespace Tips.SalesService.Api.Controllers
         }
         //get list of child item under fg bom
 
+        //[HttpGet("{RfqNumber}")]
+        //public async Task<IActionResult> GetFGBomChildItemDetails(string RfqNumber)
+        //{
+        //    ServiceResponse<IEnumerable<RfqSourcingItemsDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqSourcingItemsDto>>();
+        //    try
+        //    {
+        //        var getAllRfqEnggRelesedList = await _rfqenggItemRepository.GetRfqEnggRelesedDetailsByRfqNumber(RfqNumber);
+        //        List<string?>? itemDetails = getAllRfqEnggRelesedList?.Select(x => x.ItemNumber).ToList();
+        //        List<EnggBomFGItemNumberWithQtyDto>? itemsRoutingDetailsDynamic = new List<EnggBomFGItemNumberWithQtyDto>();
+
+        //        if (itemDetails != null)
+        //        {
+        //            var itemDetailsString = JsonConvert.SerializeObject(itemDetails);
+        //            var content = new StringContent(itemDetailsString, Encoding.UTF8, "application/json");
+        //            var inventoryObjectResult = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetFGBomItemsChildDetails"), content);
+        //            var itemsRoutingDetailsJsonString = await inventoryObjectResult.Content.ReadAsStringAsync();
+        //            dynamic itemsRoutingDetailsJson = JsonConvert.DeserializeObject(itemsRoutingDetailsJsonString);
+        //            var data = itemsRoutingDetailsJson.data;
+        //            itemsRoutingDetailsDynamic = data.ToObject<List<EnggBomFGItemNumberWithQtyDto>>();
+        //        }
+        //        var result = _mapper.Map<IEnumerable<RfqSourcingItemsDto>>(itemsRoutingDetailsDynamic);
+        //        serviceResponse.Data = result;
+        //        serviceResponse.Message = "Returned all getAllRfqEnggRelesedList";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong inside getAllRfqEnggRelesedList action";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
+
+
+
+        //pass rfq id and get customer support data
+
         [HttpGet("{RfqNumber}")]
         public async Task<IActionResult> GetFGBomChildItemDetails(string RfqNumber)
         {
@@ -434,12 +477,11 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var getAllRfqEnggRelesedList = await _rfqenggItemRepository.GetRfqEnggRelesedDetailsByRfqNumber(RfqNumber);
-                List<string?>? itemDetails = getAllRfqEnggRelesedList?.Select(x => x.ItemNumber).ToList();
+                List<RfqEnggItem> rfqEnggSourcingDtos = _mapper.Map<List<RfqEnggItem>>(getAllRfqEnggRelesedList);
                 List<EnggBomFGItemNumberWithQtyDto>? itemsRoutingDetailsDynamic = new List<EnggBomFGItemNumberWithQtyDto>();
-
-                if (itemDetails != null)
+                if (rfqEnggSourcingDtos != null)
                 {
-                    var itemDetailsString = JsonConvert.SerializeObject(itemDetails);
+                    var itemDetailsString = JsonConvert.SerializeObject(rfqEnggSourcingDtos);
                     var content = new StringContent(itemDetailsString, Encoding.UTF8, "application/json");
                     var inventoryObjectResult = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetFGBomItemsChildDetails"), content);
                     var itemsRoutingDetailsJsonString = await inventoryObjectResult.Content.ReadAsStringAsync();
@@ -464,11 +506,6 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        
-
-
-
-        //pass rfq id and get customer support data
 
         [HttpGet("{RfqNumber}")]
         public async Task<IActionResult> RfqCustomerSupportByRfqNumber(string RfqNumber)
@@ -1575,7 +1612,7 @@ namespace Tips.SalesService.Api.Controllers
                         createRfq.RfqNumber = latestRfqNo;
                     }
                 }
-                if (serverKey == "keus")
+                else if (serverKey == "keus")
                 {
                     var dateFormat = days + months + years;
                     var rfqNumber = await _rfqRepository.GenerateRFQNumber();
@@ -1819,10 +1856,13 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 
 
-                var updaterfq = _mapper.Map<Rfq>(rfqUpdateDto);
-                await _rfqRepository.UpdateRfqRevNo(updaterfq);
+                //var updaterfq = _mapper.Map<Rfq>(rfqUpdateDto);
+                //await _rfqRepository.UpdateRfqRevNo(updaterfq);
                 //updaterfq.RevisionNumber += 1;
                 //_logger.LogInfo(result);
+                string serverKey = GetServerKey();
+                var updaterfq = _mapper.Map<Rfq>(rfqUpdateDto);
+                await _rfqRepository.UpdateRfqRevNo(updaterfq, serverKey);
                 _rfqRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Updated Successfully";
@@ -1842,11 +1882,93 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         // Update rfqengg
+        //[HttpPut]
+        //public async Task<IActionResult> UpdateRfqEngg([FromBody] RfqEnggDtoUpdate rfqEnggDtoUpdate)
+        //{
+        //    ServiceResponse<RfqEnggDto> serviceResponse = new ServiceResponse<RfqEnggDto>();
+
+        //    try
+        //    {
+        //        if (rfqEnggDtoUpdate is null)
+        //        {
+        //            _logger.LogError("RfqEngg object sent from client is null.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Update RfqEngg object is null";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _logger.LogError("Invalid Rfqengg object sent from client.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid Update Rfqengg object sent from client.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+
+        //        var rfqEnggItems = _mapper.Map<IEnumerable<RfqEnggItem>>(rfqEnggDtoUpdate.RfqEnggItems);
+        //        var rfqEnggRiskIdentificationItems = _mapper.Map<IEnumerable<RfqEnggRiskIdentification>>(rfqEnggDtoUpdate.RfqEnggRiskIdentifications);
+
+        //        var updateRfqEngg = _mapper.Map<RfqEngg>(rfqEnggDtoUpdate);
+
+        //        updateRfqEngg.RfqEnggItems = rfqEnggItems.ToList();
+        //        updateRfqEngg.RfqEnggRiskIdentifications = rfqEnggRiskIdentificationItems.ToList();
+
+        //        var rfqNumber = updateRfqEngg.RFQNumber;
+        //        var enggReleasedItems = await _rfqenggItemRepository.RfqEnggReleasedItemList(rfqNumber);
+        //        var updatedItems = new List<RfqEnggItemDtoUpdate>();
+
+        //        foreach (var itemList in rfqEnggDtoUpdate.RfqEnggItems)
+        //        {
+        //            var releaseItem = enggReleasedItems.FirstOrDefault(item => item.ItemNumber == itemList.ItemNumber);
+
+        //            if (releaseItem != null)
+        //            {
+        //                itemList.ReleaseStatus = true;
+        //            }
+        //            else
+        //            {
+        //                itemList.ReleaseStatus = false;
+        //            }
+
+        //            updatedItems.Add(itemList);
+        //        }
+        //        var rfqDetailsByRfqNumber = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
+
+        //        var version = 1;
+
+        //        rfqDetailsByRfqNumber.RevisionNumber = rfqDetailsByRfqNumber.RevisionNumber + version;
+
+
+        //        await _rfqenggRepository.UpdateRfqEnggRevNo(updateRfqEngg);
+        //        _rfqRepository.Update(rfqDetailsByRfqNumber);
+        //        //string result = await _rfqenggRepository.UpdateRfqEngg(updateRfqEngg);
+        //        //_logger.LogInfo(result);
+        //        _rfqenggRepository.SaveAsync();
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Updated Successfully";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside UpdateRfqEngg action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+        //Update RfqLPCosting
+
         [HttpPut]
         public async Task<IActionResult> UpdateRfqEngg([FromBody] RfqEnggDtoUpdate rfqEnggDtoUpdate)
         {
             ServiceResponse<RfqEnggDto> serviceResponse = new ServiceResponse<RfqEnggDto>();
-
             try
             {
                 if (rfqEnggDtoUpdate is null)
@@ -1867,45 +1989,53 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-
                 var rfqEnggItems = _mapper.Map<IEnumerable<RfqEnggItem>>(rfqEnggDtoUpdate.RfqEnggItems);
                 var rfqEnggRiskIdentificationItems = _mapper.Map<IEnumerable<RfqEnggRiskIdentification>>(rfqEnggDtoUpdate.RfqEnggRiskIdentifications);
-
                 var updateRfqEngg = _mapper.Map<RfqEngg>(rfqEnggDtoUpdate);
-
                 updateRfqEngg.RfqEnggItems = rfqEnggItems.ToList();
                 updateRfqEngg.RfqEnggRiskIdentifications = rfqEnggRiskIdentificationItems.ToList();
-
                 var rfqNumber = updateRfqEngg.RFQNumber;
                 var enggReleasedItems = await _rfqenggItemRepository.RfqEnggReleasedItemList(rfqNumber);
                 var updatedItems = new List<RfqEnggItemDtoUpdate>();
-
+                var rfqDetailsByRfqNumber = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
+                var version = 1;
+                rfqDetailsByRfqNumber.RevisionNumber = rfqDetailsByRfqNumber.RevisionNumber + version;
+                int flag = 0;
                 foreach (var itemList in rfqEnggDtoUpdate.RfqEnggItems)
                 {
                     var releaseItem = enggReleasedItems.FirstOrDefault(item => item.ItemNumber == itemList.ItemNumber);
-
                     if (releaseItem != null)
                     {
                         itemList.ReleaseStatus = true;
+                        flag = 1;
                     }
                     else
                     {
                         itemList.ReleaseStatus = false;
+                        rfqDetailsByRfqNumber.IsSourcing = false;
+                        if (flag == 0)
+                        {
+                            rfqDetailsByRfqNumber.IsEnggRelease = CsRelease.NotYetReleased;
+                        }
+                        else
+                        {
+                            rfqDetailsByRfqNumber.IsEnggRelease = CsRelease.PartiallyRelease;
+                        }
+                        rfqDetailsByRfqNumber.IsEnggComplete = false;
+                        rfqDetailsByRfqNumber.EnggComplete = EnggStatus.EnggNotYetCompleted;
                     }
-
                     updatedItems.Add(itemList);
                 }
-                var rfqDetailsByRfqNumber = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
-
-                var version = 1;
-
-                rfqDetailsByRfqNumber.RevisionNumber = rfqDetailsByRfqNumber.RevisionNumber + version;
-
-
                 await _rfqenggRepository.UpdateRfqEnggRevNo(updateRfqEngg);
-                _rfqRepository.Update(rfqDetailsByRfqNumber);
-                //string result = await _rfqenggRepository.UpdateRfqEngg(updateRfqEngg);
-                //_logger.LogInfo(result);
+                rfqDetailsByRfqNumber.Id = 0;
+                _rfqRepository.Create(rfqDetailsByRfqNumber);
+                // creating CS for new RFQ version
+                string serverKey = GetServerKey();
+                if (!serverKey.Equals("keus"))
+                {
+                    await _repository.UpdateRfqCSRev(rfqDetailsByRfqNumber.RfqNumber, rfqDetailsByRfqNumber.RevisionNumber);
+                }
+                _repository.SaveAsync();
                 _rfqenggRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Updated Successfully";
@@ -1923,7 +2053,6 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        //Update RfqLPCosting
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRfqLPCosting(int id, [FromBody] RfqLPCostingDtoUpdate rfqLPCostingDtoUpdate)
         {
@@ -1999,11 +2128,113 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        //[HttpPut]
+        //public async Task<IActionResult> UpdateRfqCustomerSupport([FromBody] RfqCustomerSupportUpdateDto rfqCustomerSupportUpdateDto)
+        //{
+        //    ServiceResponse<RfqCustomerSupportDto> serviceResponse = new ServiceResponse<RfqCustomerSupportDto>();
+
+        //    try
+        //    {
+        //        if (rfqCustomerSupportUpdateDto is null)
+        //        {
+        //            _logger.LogError("RfqCustomerSupport object sent from client is null.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Update RfqCustomerSupport object is null";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _logger.LogError("Invalid RfqCustomerSupport object sent from client.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid Update RfqCustomerSupport object sent from client.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+
+
+        //        var updateRfqCS = _mapper.Map<RfqCustomerSupport>(rfqCustomerSupportUpdateDto);
+
+
+        //        var rfqNumber = updateRfqCS.RfqNumber;
+
+        //        var csReleasedItems = await _itemRepository.RfqCsReleasedItemList(rfqNumber);
+        //        var updatedItems = new List<RfqCustomerSupportItemUpdateDto>();
+
+        //        foreach (var itemList in rfqCustomerSupportUpdateDto.RfqCustomerSupportItems)
+        //        {
+        //            var releaseItem = csReleasedItems.FirstOrDefault(item => item.ItemNumber == itemList.ItemNumber);
+
+        //            if (releaseItem != null)
+        //            {
+        //                itemList.ReleaseStatus = true;
+        //            }
+        //            else
+        //            {
+        //                itemList.ReleaseStatus = false;
+        //            }
+
+        //            updatedItems.Add(itemList);
+        //        }
+
+        //        rfqCustomerSupportUpdateDto.RfqCustomerSupportItems = updatedItems;
+
+
+
+        //        var rfqDetailsByRfqNumber = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
+
+        //        var version = 1;
+
+        //        rfqDetailsByRfqNumber.RevisionNumber = rfqDetailsByRfqNumber.RevisionNumber + version;
+
+        //        //test
+
+
+        //        var rfqCSItemDto = rfqCustomerSupportUpdateDto.RfqCustomerSupportItems;
+
+        //        var rfqCsItemList = new List<RfqCustomerSupportItems>();
+        //        if (rfqCSItemDto != null)
+        //        {
+        //            for (int i = 0; i < rfqCSItemDto.Count; i++)
+        //            {
+        //                RfqCustomerSupportItems rfqCSItemDetail = _mapper.Map<RfqCustomerSupportItems>(rfqCSItemDto[i]);
+        //                rfqCSItemDetail.RfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqCSItemDto[i].RfqCSDeliverySchedule);
+        //                rfqCsItemList.Add(rfqCSItemDetail);
+
+        //            }
+        //        }
+        //        updateRfqCS.RfqCustomerSupportItems = rfqCsItemList;
+        //        var data = _mapper.Map(rfqCustomerSupportUpdateDto, updateRfqCS);
+        //        await _repository.UpdateRfqcsRevNo(data);
+        //        //string result = await _repository.UpdateRfqCustomerSupport(data);
+        //        //_logger.LogInfo(result);
+        //        _rfqRepository.Update(rfqDetailsByRfqNumber);
+        //        _repository.SaveAsync();
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Updated Successfully";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside UpdateRfqCustomerSupport action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
+        //Delete RFq
+
         [HttpPut]
         public async Task<IActionResult> UpdateRfqCustomerSupport([FromBody] RfqCustomerSupportUpdateDto rfqCustomerSupportUpdateDto)
         {
             ServiceResponse<RfqCustomerSupportDto> serviceResponse = new ServiceResponse<RfqCustomerSupportDto>();
-
             try
             {
                 if (rfqCustomerSupportUpdateDto is null)
@@ -2024,47 +2255,46 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-              
-
                 var updateRfqCS = _mapper.Map<RfqCustomerSupport>(rfqCustomerSupportUpdateDto);
-
-
                 var rfqNumber = updateRfqCS.RfqNumber;
-
                 var csReleasedItems = await _itemRepository.RfqCsReleasedItemList(rfqNumber);
+                var rfqDetailsByRfqNumber = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
+                var version = 1;
+                rfqDetailsByRfqNumber.RevisionNumber = rfqDetailsByRfqNumber.RevisionNumber + version;
                 var updatedItems = new List<RfqCustomerSupportItemUpdateDto>();
-
+                int flag = 0;
                 foreach (var itemList in rfqCustomerSupportUpdateDto.RfqCustomerSupportItems)
                 {
                     var releaseItem = csReleasedItems.FirstOrDefault(item => item.ItemNumber == itemList.ItemNumber);
-
                     if (releaseItem != null)
                     {
                         itemList.ReleaseStatus = true;
+                        flag = 1;
                     }
                     else
                     {
                         itemList.ReleaseStatus = false;
+                        rfqDetailsByRfqNumber.IsSourcing = false;
+                        rfqDetailsByRfqNumber.IsCsComplete = false;
+                        rfqDetailsByRfqNumber.CsComplete = CsStatus.CsNotYetCompleted;
+                        if (flag == 0)
+                        {
+                            rfqDetailsByRfqNumber.IsCsRelease = CsRelease.NotYetReleased;
+                            rfqDetailsByRfqNumber.IsEnggRelease = CsRelease.NotYetReleased;
+                        }
+                        else
+                        {
+                            rfqDetailsByRfqNumber.IsCsRelease = CsRelease.PartiallyRelease;
+                            rfqDetailsByRfqNumber.IsEnggRelease = CsRelease.PartiallyRelease;
+                        }
+                        rfqDetailsByRfqNumber.IsEnggComplete = false;
+                        rfqDetailsByRfqNumber.EnggComplete = EnggStatus.EnggNotYetCompleted;
                     }
-
                     updatedItems.Add(itemList);
                 }
-
                 rfqCustomerSupportUpdateDto.RfqCustomerSupportItems = updatedItems;
 
-
-
-                var rfqDetailsByRfqNumber = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
-
-                var version = 1;
-
-                rfqDetailsByRfqNumber.RevisionNumber = rfqDetailsByRfqNumber.RevisionNumber + version;
-
-                //test
-
-
                 var rfqCSItemDto = rfqCustomerSupportUpdateDto.RfqCustomerSupportItems;
-
                 var rfqCsItemList = new List<RfqCustomerSupportItems>();
                 if (rfqCSItemDto != null)
                 {
@@ -2073,15 +2303,20 @@ namespace Tips.SalesService.Api.Controllers
                         RfqCustomerSupportItems rfqCSItemDetail = _mapper.Map<RfqCustomerSupportItems>(rfqCSItemDto[i]);
                         rfqCSItemDetail.RfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqCSItemDto[i].RfqCSDeliverySchedule);
                         rfqCsItemList.Add(rfqCSItemDetail);
-
                     }
                 }
                 updateRfqCS.RfqCustomerSupportItems = rfqCsItemList;
                 var data = _mapper.Map(rfqCustomerSupportUpdateDto, updateRfqCS);
                 await _repository.UpdateRfqcsRevNo(data);
-                //string result = await _repository.UpdateRfqCustomerSupport(data);
-                //_logger.LogInfo(result);
-                _rfqRepository.Update(rfqDetailsByRfqNumber);
+                rfqDetailsByRfqNumber.Id = 0;
+                _rfqRepository.Create(rfqDetailsByRfqNumber);
+                // creating engg for new RFQ version
+                string serverKey = GetServerKey();
+                if (!serverKey.Equals("keus"))
+                {
+                    await _rfqenggRepository.UpdateRfqEnggRev(rfqDetailsByRfqNumber.RfqNumber, rfqDetailsByRfqNumber.RevisionNumber);
+                }
+                _rfqenggRepository.SaveAsync();
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Updated Successfully";
@@ -2099,8 +2334,6 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
-        //Delete RFq
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRfq(int id)
         {

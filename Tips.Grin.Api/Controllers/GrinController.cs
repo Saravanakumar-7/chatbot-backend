@@ -511,6 +511,8 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
+
                 if (grinPostDto is null)
                 {
                     _logger.LogError("Grin object sent from client is null.");
@@ -551,11 +553,18 @@ namespace Tips.Grin.Api.Controllers
                 //    grins.GrinNumber = days + months + years + "G" + (e);
                 //}
 
-                var dateFormat = days + months + years;
-                var grinNumber = await _repository.GenerateGrinNumber();
-                var grinNo = dateFormat + grinNumber;
-                grins.GrinNumber = grinNo;
-
+                if (serverKey == "avision")
+                {
+                    var grinNum = await _repository.GenerateGrinNumberForAvision();
+                    grins.GrinNumber = grinNum;
+                }
+                else
+                {
+                    var dateFormat = days + months + years;
+                    var grinNumber = await _repository.GenerateGrinNumber();
+                    var grinNo = dateFormat + grinNumber;
+                    grins.GrinNumber = grinNo;
+                }
                 var grinPartsDto = grinPostDto.GrinParts;
 
                 List<GrinParts> grinPartsList  = new List<GrinParts>();
@@ -684,7 +693,7 @@ namespace Tips.Grin.Api.Controllers
                     {
                         if (grinPartsDto[i].COCUpload != null && grinPartsDto[i].COCUpload.Count > 0)
                         {
-                            CoCDocumentSave(grinPartsDto, grins, grinNo, i, grinPartsDocumentUploadDtoList); 
+                            CoCDocumentSave(grinPartsDto, grins, grins.GrinNumber, i, grinPartsDocumentUploadDtoList); 
                         }
 
                     }
@@ -698,7 +707,7 @@ namespace Tips.Grin.Api.Controllers
                     foreach (var grinPart in grins.GrinParts)
                     {
                         var grinPartsId = await _grinPartsRepository.GetGrinPartsById(grinPart.Id);
-                        grinPartsId.LotNumber = grinNo + grinPartsId.Id;
+                        grinPartsId.LotNumber = grins.GrinNumber + grinPartsId.Id;
                         await _grinPartsRepository.UpdateGrinQty(grinPartsId);
                         _grinPartsRepository.SaveAsync();
                     }
@@ -722,7 +731,7 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryDto.UOM = parts.UOM; 
                             grinInventoryDto.Warehouse = "GRIN";
                             grinInventoryDto.Location = "GRIN";
-                            grinInventoryDto.GrinNo = grinNo; 
+                            grinInventoryDto.GrinNo = grins.GrinNumber; 
                             grinInventoryDto.GrinPartId = parts.Id;
                             grinInventoryDto.PartType = parts.ItemType;  //We need to check this
                             grinInventoryDto.ReferenceID = Convert.ToString(parts.Id);
@@ -778,7 +787,7 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryTranctionDto.Warehouse = "GRIN";
                             grinInventoryTranctionDto.From_Location = "GRIN";
                             grinInventoryTranctionDto.TO_Location = "GRIN";
-                            grinInventoryTranctionDto.GrinNo = grinNo;
+                            grinInventoryTranctionDto.GrinNo = grins.GrinNumber;
                             grinInventoryTranctionDto.GrinPartId = parts.Id;
                             grinInventoryTranctionDto.PartType = parts.ItemType;  //We need to check this
                             grinInventoryTranctionDto.ReferenceID = Convert.ToString(parts.Id);
@@ -908,6 +917,26 @@ namespace Tips.Grin.Api.Controllers
                     }
                 }
                 grins.GrinDocuments = grinDocumentUploadDtoList;
+            }
+        }
+
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
             }
         }
 

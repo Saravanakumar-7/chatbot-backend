@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Entities.Migrations;
 using System.Net;
 using Newtonsoft.Json;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,12 +21,14 @@ namespace Tips.Master.Api.Controllers
         private IRepositoryWrapperForMaster _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
+        private IConfiguration _config;
 
-        public VendorController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        public VendorController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _config = config;
         }
 
         // GET: api/<VendorController>
@@ -118,6 +121,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
+
                 if (vendorMasterPost is null)
                 {
                     _logger.LogError("VendorMasters object sent from client is null.");
@@ -145,8 +150,16 @@ namespace Tips.Master.Api.Controllers
                 var headcount = _mapper.Map<IEnumerable<VendorHeadCounting>>(vendorMasterPost.HeadCountings);
                 var vendorMaster = _mapper.Map<VendorMaster>(vendorMasterPost);
 
-                var vendorNumber = await _repository.VendorRepository.GenerateVendorId();
-                vendorMaster.VendorId = vendorNumber;
+                if (serverKey == "avision")
+                {
+                    var vendorNumber = await _repository.VendorRepository.GenerateVendorIdForAvision();
+                    vendorMaster.VendorId = vendorNumber;
+                }
+                else
+                {
+                    var vendorNumber = await _repository.VendorRepository.GenerateVendorId();
+                    vendorMaster.VendorId = vendorNumber;
+                }
 
                 vendorMaster.Addresses = address.ToList();
                 vendorMaster.Contacts = contact.ToList();
@@ -174,7 +187,25 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
 
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
         // PUT api/<VendorController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateVendorMaster(int id, [FromBody] VendorMasterDto vendorMasterUpdateDto)

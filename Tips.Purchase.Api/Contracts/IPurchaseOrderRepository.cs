@@ -42,5 +42,6 @@ namespace Tips.Purchase.Api.Contracts
         Task<PurchaseRequisition> GetPrDetailsByPrNumber(string prNumber);
 
         Task<decimal> GetOpenPoQuantityByItemNumber(string itemNumber);
+        Task<string> GeneratePONumberForAvision();
     }
 }

@@ -61,6 +61,26 @@ namespace Repository
                 throw ex;
             }
         }
+        public async Task<string> GenerateVendorIdForAvision()
+        {
+            using var transaction = await TipsMasterDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var poNumberEntity = await TipsMasterDbContext.VendorIds.SingleAsync();
+                poNumberEntity.CurrentValue += 1;
+                TipsMasterDbContext.Update(poNumberEntity);
+                await TipsMasterDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"AV-VD-{poNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
         public async Task<IEnumerable<VendorMaster>> GetAllActiveVendorMasters()
         {
             var getAllActiveVendorMastersList = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
