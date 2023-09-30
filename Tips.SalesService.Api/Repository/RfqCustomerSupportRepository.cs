@@ -613,7 +613,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<Rfq> RfqDetailsByRfqNumbers(string rfqNumber)
         {
             var rfqDetailsByRfqNumber = await _tipsSalesServiceDbContext.Rfqs
-              .Where(x => x.RfqNumber == rfqNumber)
+              .Where(x => x.RfqNumber == rfqNumber).OrderByDescending(x=>x.RevisionNumber)
                         .FirstOrDefaultAsync();
             return rfqDetailsByRfqNumber;
         }

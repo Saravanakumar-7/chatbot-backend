@@ -37,35 +37,35 @@ namespace Tips.Grin.Api.Repository
         }
         //public async Task<PagedList<Binning>> GetAllBinningDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         //{
-        public async Task<PagedList<GrinAndBinningDetailsDto>> GetAllBinningDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
-        {
-            var grinDetails = from e in _tipsGrinDbContext.Grins
-                              join d in _tipsGrinDbContext.Binnings on e.GrinNumber equals d.GrinNumber into dept
-                              from Binnings in dept.DefaultIfEmpty()
-                              select new GrinAndBinningDetailsDto
-                              {
-                                  Id = e.Id,
-                                  GrinNumber = e.GrinNumber,
-                                  InvoiceNumber = e.InvoiceNumber,
-                                  VendorName = e.VendorName,
-                                  LastModifiedOn = Binnings.LastModifiedOn,
-                                  LastModifiedBy = Binnings.LastModifiedBy
+        //public async Task<PagedList<GrinAndBinningDetailsDto>> GetAllBinningDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        //{
+        //    var grinDetails = from e in _tipsGrinDbContext.Grins
+        //                      join d in _tipsGrinDbContext.Binnings on e.GrinNumber equals d.GrinNumber into dept
+        //                      from Binnings in dept.DefaultIfEmpty()
+        //                      select new GrinAndBinningDetailsDto
+        //                      {
+        //                          Id = e.Id,
+        //                          GrinNumber = e.GrinNumber,
+        //                          InvoiceNumber = e.InvoiceNumber,
+        //                          VendorName = e.VendorName,
+        //                          LastModifiedOn = Binnings.LastModifiedOn,
+        //                          LastModifiedBy = Binnings.LastModifiedBy
 
-                              };
+        //                      };
 
-            if (!string.IsNullOrWhiteSpace(searchParams.SearchValue))
-            {
-                string searchTerm = searchParams.SearchValue.Trim();
+        //    if (!string.IsNullOrWhiteSpace(searchParams.SearchValue))
+        //    {
+        //        string searchTerm = searchParams.SearchValue.Trim();
 
-                grinDetails = grinDetails.Where(dto =>
-                    dto.GrinNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    dto.InvoiceNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    dto.VendorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
-                );
-            }
+        //        grinDetails = grinDetails.Where(dto =>
+        //            dto.GrinNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+        //            dto.InvoiceNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+        //            dto.VendorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+        //        );
+        //    }
 
-            return PagedList<GrinAndBinningDetailsDto>.ToPagedList(grinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
-        }
+        //    return PagedList<GrinAndBinningDetailsDto>.ToPagedList(grinDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
         //public async Task<PagedList<GrinAndBinningDetailsDto>> GetAllBinningDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         //{
 
@@ -88,6 +88,46 @@ namespace Tips.Grin.Api.Repository
 
 
         //}
+
+        public async Task<PagedList<GrinAndBinningDetailsDto>> GetAllBinningDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        {
+
+            List<string> grinNumberList = _tipsGrinDbContext.Grins.Select(x => x.GrinNumber).ToList();
+
+            var binningGrinNoList = await _tipsGrinDbContext.Binnings
+                                    .Where(x => grinNumberList.Contains(x.GrinNumber))
+                                    .Select(x => new { x.GrinNumber, x.Id })
+                                    .Distinct()  // Ensure unique pairs of GrinNumber-Id
+                                    .ToListAsync();
+
+            var grinNumbers = binningGrinNoList.Select(b => b.GrinNumber).ToList();
+
+            var grinDetails = grinNumbers
+                                .Select(grinNumber => new GrinAndBinningDetailsDto
+                                {
+                                    Id = binningGrinNoList.FirstOrDefault(b => b.GrinNumber == grinNumber)?.Id ?? 0,
+                                    GrinNumber = grinNumber,
+                                    InvoiceNumber = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.InvoiceNumber,
+                                    VendorName = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.VendorName,
+                                    LastModifiedOn = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.LastModifiedOn,
+                                    LastModifiedBy = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.LastModifiedBy
+                                })
+                                .ToList();
+
+            if (!string.IsNullOrWhiteSpace(searchParams.SearchValue))
+            {
+                string searchTerm = searchParams.SearchValue.Trim();
+
+                grinDetails = grinDetails
+                              .Where(dto =>
+                                  dto.GrinNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                  dto.InvoiceNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                  dto.VendorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+            return PagedList<GrinAndBinningDetailsDto>.ToPagedList(grinDetails.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+
+        }
+
         public async Task<IEnumerable<Binning>> GetBinningDetailsByGrinNo(string grinNo)
         {
             var binningDetailsByGrinNo = await FindByCondition(x => x.GrinNumber == grinNo).ToListAsync();
