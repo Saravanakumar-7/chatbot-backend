@@ -808,7 +808,7 @@ namespace Tips.Grin.Api.Controllers
                 ////update balance qty  in Purchase order table for grin concept
 
                 var grinPartsDetail = _mapper.Map<List<GrinUpdateQtyDetailsDto>>(grinPartsDto);
-
+                //
                 var jsons = JsonConvert.SerializeObject(grinPartsDetail);
                 var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
                 var responses = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdateBalanceQtyDetails"), datas);
