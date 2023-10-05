@@ -21,7 +21,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? RevisionNumber { get; set; }
         public string? RfqNumber { get; set; }
         public string? CustomerRfqNumber { get; set; }
- 
+
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public string Unit { get; set; }
@@ -45,32 +45,51 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceivedate { get; set; }
-        public DateTime? QuoteExpectdate { get; set; }       
+        public DateTime? QuoteExpectdate { get; set; }
         public List<RfqEnggItemDtoPost>? RfqEnggItems { get; set; }
 
         public List<RfqEnggRiskIdentificationDtoPost>? RfqEnggRiskIdentifications { get; set; }
 
 
     }
+    //public class RfqEnggDtoUpdate
+    //{
+
+
+    //    public string? CustomerName { get; set; }
+
+    //    public string? CustomerAliasName { get; set; }
+
+
+
+    //    public string? RfqNumber { get; set; }
+
+    //    [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
+    //    public string? CustomerRfqNumber { get; set; }
+    //    public DateTime? RequestReceivedate { get; set; }
+    //    public DateTime? QuoteExpectdate { get; set; }
+    //    public string Unit { get; set; }
+    //    public List<RfqEnggItemDtoUpdate>? RfqEnggItems { get; set; }
+    //    public List<RfqEnggRiskIdentificationDtoUpdate>? RfqEnggRiskIdentifications { get; set; }
+
+    //}
     public class RfqEnggDtoUpdate
     {
-       
-
+        public int Id { get; set; }
+        public string RfqNumber { get; set; }
+        public int RevisionNumber { get; set; }
+        public string? CustomerId { get; set; }
         public string? CustomerName { get; set; }
-
         public string? CustomerAliasName { get; set; }
-
-
-
-        public string? RfqNumber { get; set; }
-
-        [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+        public string? Remarks { get; set; }
+        public string? ReasonForModification { get; set; }
         public string Unit { get; set; }
         public List<RfqEnggItemDtoUpdate>? RfqEnggItems { get; set; }
         public List<RfqEnggRiskIdentificationDtoUpdate>? RfqEnggRiskIdentifications { get; set; }
-
     }
 }

@@ -382,12 +382,12 @@ namespace Tips.SalesService.Api.Controllers
                     var rfqCustomerIdResponse = await _httpClient.PostAsync($"{rfqApiUrl}GetEngganditsPP?FGItemNumber={fgitemnumber.ItemNumber}&FGRevno={fgitemnumber.CostingBomVersionNo}", content);
                     var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
                     var rfqCustomerIdObjectData = JsonConvert.DeserializeObject<EnggItemsLandedandMoq>(rfqCustomerIdString);
-                    var rfqEnggItemsDetails = await _rfqEnggItemRepository.GetRfqEnggItemByItemNumber(rfqCustomerIdObjectData.data.fgItemNumber);
-                    rfqEnggItemsDetails.LandedPrice = rfqCustomerIdObjectData.data.finalLandindPrice;
-                    rfqEnggItemsDetails.MOQCost = rfqCustomerIdObjectData.data.finalMoqcost;
-                    await _rfqEnggItemRepository.UpdateRfqEnggItemLandedandMOQ(rfqEnggItemsDetails);
+                    //var rfqEnggItemsDetails = await _rfqRepository.GetRfqEnggItemByItemNumber(rfqCustomerIdObjectData.data.fgItemNumber);
+                    fgitemnumber.LandedPrice = rfqCustomerIdObjectData.data.finalLandindPrice;
+                    fgitemnumber.MOQCost = rfqCustomerIdObjectData.data.finalMoqcost;
+                    await _rfqEnggItemRepository.UpdateRfqEnggItemLandedandMOQ(fgitemnumber);
+                    _rfqEnggItemRepository.SaveAsync();
                 }
-                _rfqEnggItemRepository.SaveAsync();
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "RfqSourcing Created Successfully";

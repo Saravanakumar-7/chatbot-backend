@@ -37,7 +37,14 @@ namespace Tips.SalesService.Api.Repository
              var result = await Create(rfqCustomerSupport);
             return result.Id;
         }
-
+        public async Task<RfqCustomerSupport> GetRfqCustomerSupportDetailsbyrfqnumber(string rfqno)
+        {
+            var getRfqCSById = await _tipsSalesServiceDbContext.RfqCustomerSupports.Where(x => x.RfqNumber == rfqno).OrderByDescending(x => x.RevisionNumber)
+                           .FirstOrDefaultAsync();
+            getRfqCSById.RfqCustomerSupportItems = null;
+            getRfqCSById.RfqCustomerSupportNotes = null;
+            return getRfqCSById;
+        }
         public async Task<string> UpdateRfqCSRev(string rfqnumber, int rfqrev)
         {
             var csdetails = await _tipsSalesServiceDbContext.RfqCustomerSupports.Where(x => x.RfqNumber == rfqnumber).OrderByDescending(x => x.Id)
@@ -157,13 +164,13 @@ namespace Tips.SalesService.Api.Repository
             rfqCustomerSupport.CreatedOn = rfqCustomerSupport.CreatedOn;
             rfqCustomerSupport.LastModifiedBy = "Admin";
             rfqCustomerSupport.LastModifiedOn = DateTime.Now;
-            var getOldRevisionNumber = _tipsSalesServiceDbContext.RfqCustomerSupports
-                .Where(x => x.RfqNumber == rfqCustomerSupport.RfqNumber)
-                .OrderByDescending(x => x.Id)
-                .Select(x => x.RevisionNumber)
-                .FirstOrDefault();
+            //var getOldRevisionNumber = _tipsSalesServiceDbContext.RfqCustomerSupports
+            //    .Where(x => x.RfqNumber == rfqCustomerSupport.RfqNumber)
+            //    .OrderByDescending(x => x.Id)
+            //    .Select(x => x.RevisionNumber)
+            //    .FirstOrDefault();
 
-            rfqCustomerSupport.RevisionNumber = (getOldRevisionNumber + 1);
+            //rfqCustomerSupport.RevisionNumber = (getOldRevisionNumber + 1);
             var result = await Create(rfqCustomerSupport);
             return result;
 
@@ -380,7 +387,7 @@ namespace Tips.SalesService.Api.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<RfqCustomerSupportItems>> RfqCsReleasedItemList(string rfqNumber)
+        public async Task<List<string>> RfqCsReleasedItemList(string rfqNumber)
         {
             var latestrfqCsId = await _tipsSalesServiceDbContext.RfqCustomerSupports
             .Where(x => x.RfqNumber == rfqNumber)
@@ -389,7 +396,7 @@ namespace Tips.SalesService.Api.Repository
             .FirstOrDefaultAsync();
 
             var releaseItemList = await _tipsSalesServiceDbContext.RfqCustomerSupportItems
-              .Where(x => x.RfqNumber == rfqNumber && x.ReleaseStatus == true && x.RfqCustomerSupportId == latestrfqCsId)              
+              .Where(x => x.RfqNumber == rfqNumber && x.ReleaseStatus == true && x.RfqCustomerSupportId == latestrfqCsId).Select(x => x.ItemNumber)
               .ToListAsync();
 
             return releaseItemList;
@@ -537,10 +544,16 @@ namespace Tips.SalesService.Api.Repository
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
             _mapper = mapper;
         }
+        public async Task<Rfq> RfqDetailsById(int rfqId)
+        {
+            var rfqDetailsByRfqNumber = await _tipsSalesServiceDbContext.Rfqs
+              .Where(x => x.Id == rfqId).FirstOrDefaultAsync();
+            return rfqDetailsByRfqNumber;
+        }
         public async Task<Rfq> RfqSourcingByRfqNumbers(string RfqNumber)
         {
             var SourcingByRfqNumber = await _tipsSalesServiceDbContext.Rfqs
-              .Where(x => x.RfqNumber == RfqNumber)
+              .Where(x => x.RfqNumber == RfqNumber).OrderByDescending(x => x.RevisionNumber)
                         .FirstOrDefaultAsync();
             return SourcingByRfqNumber;
         }
@@ -911,21 +924,7 @@ namespace Tips.SalesService.Api.Repository
         //}
         public async Task<Rfq> UpdateRfqRevNo(Rfq rfq, string serverKey)
         {
-            //rfq.CreatedBy = "Admin";
-            //rfq.CreatedOn = DateTime.Now;
-            //rfq.Unit = "Bangalore";
-            //var getOldRevisionNumber = _tipsSalesServiceDbContext.Rfqs
-            //    .Where(x => x.RfqNumber == rfq.RfqNumber)
-            //    .OrderByDescending(x => x.Id)
-            //    .Select(x => x.RevisionNumber)
-            //    .FirstOrDefault();
-
-            //rfq.RevisionNumber = getOldRevisionNumber;
-            //var result = await Create(rfq);
-            //return result;
-
-            var getOldRfqDetails = _tipsSalesServiceDbContext.Rfqs
-                .Where(x => x.RfqNumber == rfq.RfqNumber && x.IsModified == false)
+            var getOldRfqDetails = _tipsSalesServiceDbContext.Rfqs.Where(x => x.RfqNumber == rfq.RfqNumber && x.IsModified == false)
                 .FirstOrDefault();
 
             if (getOldRfqDetails != null)
@@ -940,11 +939,8 @@ namespace Tips.SalesService.Api.Repository
             rfq.CreatedOn = rfq.CreatedOn;
             rfq.LastModifiedBy = "Admin";
             rfq.LastModifiedOn = DateTime.Now;
-            var getOldRevisionNumber = _tipsSalesServiceDbContext.Rfqs
-                .Where(x => x.RfqNumber == rfq.RfqNumber)
-                .OrderByDescending(x => x.Id)
-                .Select(x => x.RevisionNumber)
-                .FirstOrDefault();
+            var getOldRevisionNumber = _tipsSalesServiceDbContext.Rfqs.Where(x => x.RfqNumber == rfq.RfqNumber).OrderByDescending(x => x.Id)
+                .Select(x => x.RevisionNumber).FirstOrDefault();
 
             rfq.RevisionNumber = (getOldRevisionNumber + 1);
             var result = await Create(rfq);
@@ -966,6 +962,8 @@ namespace Tips.SalesService.Api.Repository
                     detail.CustomerRfqNumber = rfq.CustomerRfqNumber;
                     detail.CustomerAliasName = rfq.CustomerAliasName;
                     detail.RequestReceivedate = rfq.RequestReceivedate;
+                    detail.TypeOfSolution = rfq.TypeOfSolution;
+                    detail.ProductType = rfq.ProductType;
                     if (detail.RfqCustomerSupportItems != null)
                     {
                         foreach (var itemdetail in detail.RfqCustomerSupportItems)
@@ -1073,7 +1071,43 @@ namespace Tips.SalesService.Api.Repository
             var result = await Create(rfqEngg);
             return result.Id;
         }
+        public async Task<string> UpdateRfqEnggRev(string rfqnumber, int rfqrev, Rfq newrfq)
+        {
+            var enggdetails = await _tipsSalesServiceDbContext.RfqEnggs.Where(x => x.RFQNumber == rfqnumber)
+           .Include(x => x.RfqEnggItems).Include(x => x.RfqEnggRiskIdentifications).OrderByDescending(x => x.Id).FirstOrDefaultAsync();
+            if (enggdetails != null)
+            {
+                RfqEngg rfqEngg = enggdetails;
+                rfqEngg.CustomerName = newrfq.CustomerName;
+                rfqEngg.CustomerAliasName = newrfq.CustomerAliasName;
+                rfqEngg.CustomerRfqNumber = newrfq.CustomerRfqNumber;
+                rfqEngg.RequestReceiveDate = newrfq.RequestReceivedate;
+                rfqEngg.QuoteExpectDate = newrfq.QuoteExpectdate;
+                rfqEngg.RevisionNumber = rfqrev;
+                foreach (var eachitem in rfqEngg.RfqEnggItems)
+                {
+                    eachitem.RfqEnggId = rfqEngg.Id;
+                    eachitem.Id = 0;
+                    _tipsSalesServiceDbContext.RfqEnggItems.Add(eachitem);
+                }
+                foreach (var eachitem in rfqEngg.RfqEnggRiskIdentifications)
+                {
+                    eachitem.RfqEnggId = rfqEngg.Id;
+                    eachitem.Id = 0;
+                    _tipsSalesServiceDbContext.RfqEnggRiskIdentifications.Add(eachitem);
+                }
+                rfqEngg.Id = 0;
+                await Create(rfqEngg);
+                await _tipsSalesServiceDbContext.SaveChangesAsync();
+                string result = $"RFQEngg RevNo. of Detail is updated successfully!";
+                return result;
+            }
+            else
+            {
+                return "RFQEngg is not Present";
+            }
 
+        }
         public async Task<string> DeleteRfqEngg(RfqEngg rfqEngg)
         {
             Delete(rfqEngg);
@@ -1168,6 +1202,7 @@ namespace Tips.SalesService.Api.Repository
                 .FirstOrDefault();
 
             rfqEngg.RevisionNumber = (getOldRevisionNumber + 1);
+            rfqEngg.Id = 0;
             var result = await Create(rfqEngg);
             return result;
 
@@ -1238,6 +1273,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<string> UpdateRfqEnggItemLandedandMOQ(RfqEnggItem rfqEnggItem)
         {
             Update(rfqEnggItem);
+            await _tipsSalesServiceDbContext.SaveChangesAsync();
             return "RfqEnggItem LandedPrice And MOQ Cost is Update";
         }
         public async Task<string> ActivateRfqEnggItemById(RfqEnggItem rfqEnggItem)

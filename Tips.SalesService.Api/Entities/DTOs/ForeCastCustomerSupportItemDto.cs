@@ -47,6 +47,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomFields { get; set; }
         public string? ItemNumber { get; set; }
         public int? Qty { get; set; }
+        public bool ReleaseStatus { get; set; }
 
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }      

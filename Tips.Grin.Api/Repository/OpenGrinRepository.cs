@@ -85,12 +85,12 @@ namespace Tips.Grin.Api.Repository
             {
                 var query = _tipsGrinDbContext.OpenGrin.Include("OpenGrinParts");
                 if (openGrinSearchDto != null || (openGrinSearchDto.OpenGrinNumber.Any())
-               && openGrinSearchDto.SenderName.Any() && openGrinSearchDto.ReturnedBy.Any() && openGrinSearchDto.ReceiptRefNo.Any())
+               && openGrinSearchDto.SenderName.Any() /*&& openGrinSearchDto.ReturnedBy.Any()*/ && openGrinSearchDto.ReceiptRefNo.Any())
                 {
                     query = query.Where
                     (og => (openGrinSearchDto.OpenGrinNumber.Any() ? openGrinSearchDto.OpenGrinNumber.Contains(og.OpenGrinNumber) : true)
                    && (openGrinSearchDto.SenderName.Any() ? openGrinSearchDto.SenderName.Contains(og.SenderName) : true)
-                   && (openGrinSearchDto.ReturnedBy.Any() ? openGrinSearchDto.ReturnedBy.Contains(og.ReturnedBy) : true)
+                   //&& (openGrinSearchDto.ReturnedBy.Any() ? openGrinSearchDto.ReturnedBy.Contains(og.ReturnedBy) : true)
                    && (openGrinSearchDto.ReceiptRefNo.Any() ? openGrinSearchDto.ReceiptRefNo.Contains(og.ReceiptRefNo) : true))
                     .Include(item => item.OpenGrinParts)
                     .ThenInclude(op => op.OpenGrinDetails);
@@ -155,7 +155,26 @@ namespace Tips.Grin.Api.Repository
 
             return openGrinPartDetailsById;
         }
+        public async Task<IEnumerable<OpenGrinDataListDto>> GetAllOpenGrinDataList()
+        {
+            IEnumerable<OpenGrinDataListDto> openGrinDataList = await _tipsGrinDbContext.OpenGrin
+                           .Select(x => new OpenGrinDataListDto()
+                           {
+                               Id = x.Id,
+                               OpenGrinNumber = x.OpenGrinNumber,
+                               SenderName = x.SenderName,
+                               SenderId = x.SenderId,
+                               Remarks = x.Remarks,
+                               ReturnedBy = x.ReturnedBy,
+                               ReceiptRefNo = x.ReceiptRefNo,
+                               CustomerSupplied = x.CustomerSupplied,
 
+                           }).ToListAsync();
+
+
+            return openGrinDataList;
+
+        }
         public async Task<string> UpdateOpenGrin(OpenGrin openGrin)
         {
             openGrin.LastModifiedBy = _createdBy;

@@ -13,15 +13,18 @@ using Tips.SalesService.Api.Entities.DTOs;
 using System.Collections.Immutable;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
 
 namespace Tips.SalesService.Api.Repository
 {
     public class ForeCastRepository : RepositoryBase<ForeCast>, IForeCastRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-        public ForeCastRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private IMapper _mapper;
+        public ForeCastRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext,IMapper mapper) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _mapper = mapper;
         }
 
         public async Task<int?> CreateForeCast(ForeCast foreCast)
@@ -219,6 +222,33 @@ namespace Tips.SalesService.Api.Repository
             return forecastDetail;
         }
 
+        //public async Task<ForeCast> UpdateForecastRevNo(ForeCast forecast)
+        //{
+        //    var getOldForecastDetails = _tipsSalesServiceDbContext.ForeCasts
+        //      .Where(x => x.ForeCastNumber == forecast.ForeCastNumber && x.IsModified == false)
+        //      .FirstOrDefault();
+
+        //    if (getOldForecastDetails != null)
+        //    {
+        //        getOldForecastDetails.IsModified = true;
+        //        getOldForecastDetails.LastModifiedBy = "Admin";
+        //        getOldForecastDetails.LastModifiedOn = DateTime.Now;
+        //        Update(getOldForecastDetails);
+        //    }
+
+        //    forecast.CreatedOn = forecast.CreatedOn;
+        //    forecast.LastModifiedBy = "Admin";
+        //    forecast.LastModifiedOn = DateTime.Now;
+        //    var getOldRevisionNumber = _tipsSalesServiceDbContext.ForeCasts
+        //        .Where(x => x.ForeCastNumber == forecast.ForeCastNumber)
+        //        .OrderByDescending(x => x.Id)
+        //        .Select(x => x.RevisionNumber)
+        //        .FirstOrDefault();
+
+        //    forecast.RevisionNumber = (getOldRevisionNumber + 1);
+        //    var result = await Create(forecast);
+        //    return result;
+        //}
         public async Task<ForeCast> UpdateForecastRevNo(ForeCast forecast)
         {
             var getOldForecastDetails = _tipsSalesServiceDbContext.ForeCasts
@@ -232,7 +262,7 @@ namespace Tips.SalesService.Api.Repository
                 getOldForecastDetails.LastModifiedOn = DateTime.Now;
                 Update(getOldForecastDetails);
             }
-
+            forecast.CreatedBy = forecast.CreatedBy;
             forecast.CreatedOn = forecast.CreatedOn;
             forecast.LastModifiedBy = "Admin";
             forecast.LastModifiedOn = DateTime.Now;
@@ -244,9 +274,60 @@ namespace Tips.SalesService.Api.Repository
 
             forecast.RevisionNumber = (getOldRevisionNumber + 1);
             var result = await Create(forecast);
+
+            //updating the connected tables
+            var updatecs = await _tipsSalesServiceDbContext.ForeCastCustomerSupports
+                .Where(x => x.ForecastNumber == forecast.ForeCastNumber && x.RevisionNumber == getOldRevisionNumber)
+                .Include(x => x.ForeCastCustomerSupportItems).ThenInclude(x => x.ForeCastCSDeliverySchedule)
+                .Include(x => x.ForeCastCustomerSupportNotes).ToListAsync();
+
+            if (updatecs != null)
+            {
+                var updatedcsdetails = _mapper.Map<List<ForeCastCustomerSupport>>(updatecs);
+                foreach (var detail in updatedcsdetails)
+                {
+                    detail.RevisionNumber = forecast.RevisionNumber;
+                    detail.CustomerName = forecast.CustomerName;
+                    detail.CustomerForecastNumber = forecast.CustomerForecastNumber;
+                    detail.CustomerAliasName = forecast.CustomerAliasName;
+                    detail.RequestReceivedDate = forecast.RequestReceivedDate;
+                    detail.ProductType = forecast.ProductType;
+                    detail.TypeOfSolution = forecast.TypeOfSolution;
+                    if (detail.ForeCastCustomerSupportItems != null)
+                    {
+                        foreach (var itemdetail in detail.ForeCastCustomerSupportItems)
+                        {
+                            itemdetail.ForeCastCustomerSupportId = detail.Id;
+                            if (itemdetail.ForeCastCSDeliverySchedule != null)
+                            {
+                                foreach (var itemdelydetail in itemdetail.ForeCastCSDeliverySchedule)
+                                {
+                                    itemdelydetail.ForeCastCustomerSupportItemId = itemdetail.Id;
+                                    itemdelydetail.Id = 0;
+                                    _tipsSalesServiceDbContext.ForeCastCSDeliverySchedules.Add(itemdelydetail);
+                                }
+                            }
+                            itemdetail.Id = 0;
+                            _tipsSalesServiceDbContext.foreCastCustomerSupportItems.Add(itemdetail);
+                        }
+                    }
+                    if (detail.ForeCastCustomerSupportNotes != null)
+                    {
+                        foreach (var notedetail in detail.ForeCastCustomerSupportNotes)
+                        {
+                            notedetail.ForeCastCustomerSupportId = detail.Id;
+                            notedetail.Id = 0;
+                            _tipsSalesServiceDbContext.ForeCastCustomerSupportNotes.Add(notedetail);
+                        }
+                    }
+                    detail.Id = 0;
+                    _tipsSalesServiceDbContext.ForeCastCustomerSupports.Add(detail);
+                }
+                await _tipsSalesServiceDbContext.SaveChangesAsync();
+            }
+
             return result;
         }
-
         public async Task<ForeCast> ForeCastCustomerSupportByForeCastNumber(string ForeCastNumber)
         {
             var forecastCsByForecastNumber = await _tipsSalesServiceDbContext.ForeCasts
@@ -288,7 +369,14 @@ namespace Tips.SalesService.Api.Repository
             var result = await Create(foreCastCustomerSupport);
             return result.Id;
         }
-
+        public async Task<ForeCastCustomerSupport> GetforecastCustomerSupportDetailsbyforecastnumber(string rfqno)
+        {
+            var getRfqCSById = await _tipsSalesServiceDbContext.ForeCastCustomerSupports.Where(x => x.ForecastNumber == rfqno).OrderByDescending(x => x.RevisionNumber)
+                           .FirstOrDefaultAsync();
+            getRfqCSById.ForeCastCustomerSupportItems = null;
+            getRfqCSById.ForeCastCustomerSupportNotes = null;
+            return getRfqCSById;
+        }
 
 
         public async Task<string> DeleteForeCastCustomerSupport(ForeCastCustomerSupport foreCastCustomerSupport)
@@ -349,23 +437,38 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
+        //public async Task<ForeCastCustomerSupport> UpdateForecastcsRevNo(ForeCastCustomerSupport foreCastCustomerSupport)
+        //{
+        //    foreCastCustomerSupport.CreatedBy = foreCastCustomerSupport.CreatedBy;
+        //    foreCastCustomerSupport.CreatedOn = foreCastCustomerSupport.CreatedOn;
+        //    foreCastCustomerSupport.LastModifiedBy = "Admin";
+        //    foreCastCustomerSupport.LastModifiedOn = DateTime.Now;
+        //    var getOldRevisionNumber = _tipsSalesServiceDbContext.ForeCastCustomerSupports
+        //        .Where(x => x.ForecastNumber == foreCastCustomerSupport.ForecastNumber)
+        //        .OrderByDescending(x => x.Id)
+        //        .Select(x => x.RevisionNumber)
+        //        .FirstOrDefault();
+
+        //    foreCastCustomerSupport.RevisionNumber = (getOldRevisionNumber + 1);
+        //    var result = await Create(foreCastCustomerSupport);
+        //    return result;
+        //}
         public async Task<ForeCastCustomerSupport> UpdateForecastcsRevNo(ForeCastCustomerSupport foreCastCustomerSupport)
         {
             foreCastCustomerSupport.CreatedBy = foreCastCustomerSupport.CreatedBy;
             foreCastCustomerSupport.CreatedOn = foreCastCustomerSupport.CreatedOn;
             foreCastCustomerSupport.LastModifiedBy = "Admin";
             foreCastCustomerSupport.LastModifiedOn = DateTime.Now;
-            var getOldRevisionNumber = _tipsSalesServiceDbContext.ForeCastCustomerSupports
-                .Where(x => x.ForecastNumber == foreCastCustomerSupport.ForecastNumber)
-                .OrderByDescending(x => x.Id)
-                .Select(x => x.RevisionNumber)
-                .FirstOrDefault();
+            //var getOldRevisionNumber = _tipsSalesServiceDbContext.ForeCastCustomerSupports
+            //    .Where(x => x.ForecastNumber == foreCastCustomerSupport.ForecastNumber)
+            //    .OrderByDescending(x => x.Id)
+            //    .Select(x => x.RevisionNumber)
+            //    .FirstOrDefault();
 
-            foreCastCustomerSupport.RevisionNumber = (getOldRevisionNumber + 1);
+            //foreCastCustomerSupport.RevisionNumber = (getOldRevisionNumber + 1);
             var result = await Create(foreCastCustomerSupport);
             return result;
         }
-
         public async Task<ForeCastCustomerSupport> GetForecastCsByForecastNoAndRevNo(string forecast, decimal revisionNumber)
         {
             var forecastCsByRfqNoAndRevNo = await _tipsSalesServiceDbContext.ForeCastCustomerSupports.Where(x => x.ForecastNumber == forecast
@@ -401,7 +504,20 @@ namespace Tips.SalesService.Api.Repository
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
 
         }
+        public async Task<List<string>> ForcastCsReleasedItemList(string forcastNumber)
+        {
+            var latestforcastCsId = await _tipsSalesServiceDbContext.ForeCastCustomerSupports
+            .Where(x => x.ForecastNumber == forcastNumber)
+            .OrderByDescending(x => x.RevisionNumber)
+            .Select(x => x.Id)
+            .FirstOrDefaultAsync();
 
+            var releaseItemList = await _tipsSalesServiceDbContext.foreCastCustomerSupportItems
+              .Where(x => x.ForecastNumber == forcastNumber && x.ReleaseStatus == true && x.ForeCastCustomerSupportId == latestforcastCsId).Select(x => x.ItemNumber)
+              .ToListAsync();
+
+            return releaseItemList;
+        }
         public async Task<string> ActivateForeCastCustomerSupportItemById(ForeCastCustomerSupportItem foreCastCustomerSupportItem)
         {
             foreCastCustomerSupportItem.LastModifiedBy = "Admin";

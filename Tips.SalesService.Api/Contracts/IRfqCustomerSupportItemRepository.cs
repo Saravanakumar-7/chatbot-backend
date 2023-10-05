@@ -12,7 +12,7 @@ namespace Tips.SalesService.Api.Contracts
     public interface IRfqCustomerSupportItemRepository : IRepositoryBase<RfqCustomerSupportItems>
     {
         Task<IEnumerable<RfqCustomerSupportItems>> GetAllRfqCustomerSupportItem();
-        Task<IEnumerable<RfqCustomerSupportItems>> RfqCsReleasedItemList(string rfqNumber);
+        Task<List<string>> RfqCsReleasedItemList(string rfqNumber);
 
         Task<RfqCustomerSupportItems> GetRfqCustomerSupportItemById(int id);
         Task<IEnumerable<RfqCustomerSupportItems>> GetRfqCustomerSupportItemByRfqNumber(string rfqNumber);

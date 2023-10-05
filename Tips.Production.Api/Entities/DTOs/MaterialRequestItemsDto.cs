@@ -11,6 +11,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? MftrPartNumber { get; set; }
         public PartType PartType { get; set; }
         public string? Stock { get; set; }
+        public string? UOM { get; set; }
 
         [Precision(13, 3)]
         public decimal? IssuedQty { get; set; }
@@ -36,7 +37,7 @@ namespace Tips.Production.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? IssuedQty { get; set; }
         public string? Stock { get; set; }
-
+        public string? UOM { get; set; }
 
         [Precision(13, 3)]
         public decimal? RequiredQty { get; set; }
@@ -56,7 +57,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? MftrPartNumber { get; set; }
         public PartType PartType { get; set; }
         public string? Stock { get; set; }
-
+        public string? UOM { get; set; }
 
         [Precision(13, 3)]
         public decimal? RequiredQty { get; set; }
@@ -111,6 +112,10 @@ namespace Tips.Production.Api.Entities.DTOs
         public string MftrPartNumber { get; set; }
 
         public PartType PartType { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public string? UOM { get; set; }
+        public string Unit { get; set; }
     }
 
     public class MaterialRequestItemsReportDto

@@ -63,29 +63,48 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public List<RfqCustomerSupportNotesPostDto>? RfqCustomerSupportNotes { get; set; }
 
     }
+    //public class RfqCustomerSupportUpdateDto
+    //{
+
+    //    public string? LeadId { get; set; }
+
+    //    [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
+    //    public string? CustomerName { get; set; }
+    //    public string? CustomerAliasName { get; set; }
+
+
+    //    [Required]
+    //    public string RFQNumber { get; set; }
+
+    //    [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
+    //    public string? CustomerRfqNumber { get; set; }
+
+    //    public string? TypeOfSolution { get; set; }
+    //    public string? ProductType { get; set; }
+
+
+    //    public DateTime? RequestReceivedate { get; set; }
+    //    public DateTime? QuoteExpectdate { get; set; }
+    //    public string Unit { get; set; }
+    //    public List<RfqCustomerSupportItemUpdateDto>? RfqCustomerSupportItems { get; set; }
+    //    public List<RfqCustomerSupportNotesUpdateDto>? RfqCustomerSupportNotes { get; set; }
+
+    //}
     public class RfqCustomerSupportUpdateDto
     {
-
-        public string? LeadId { get; set; }
-
-        [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
+        public int Id { get; set; }
+        public string RfqNumber { get; set; }
+        public int RevisionNumber { get; set; }
+        public string? CustomerId { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
-
-
-        [Required]
-        public string RFQNumber { get; set; }
-
-        [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
         public string? CustomerRfqNumber { get; set; }
-
-        public string? TypeOfSolution { get; set; }
-        public string? ProductType { get; set; }
-
-
         public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
-        public string Unit { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+        public string? Remarks { get; set; }
+        public string? ReasonForModification { get; set; }
         public List<RfqCustomerSupportItemUpdateDto>? RfqCustomerSupportItems { get; set; }
         public List<RfqCustomerSupportNotesUpdateDto>? RfqCustomerSupportNotes { get; set; }
 

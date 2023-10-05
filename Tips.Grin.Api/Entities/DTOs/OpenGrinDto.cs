@@ -6,7 +6,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 {
     public class OpenGrinDto
     {
-        public int Id { get; set; }        
+        public int Id { get; set; }
         public string? OpenGrinNumber { get; set; }
         public string? SenderName { get; set; }
         public string? SenderId { get; set; }
@@ -118,8 +118,19 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public List<string>? OpenGrinNumber { get; set; }
         public List<string>? SenderName { get; set; }
-        public List<string>? ReturnedBy { get; set; }
+        //public List<string>? ReturnedBy { get; set; }
         public List<string>? ReceiptRefNo { get; set; }
 
+    }
+    public class OpenGrinDataListDto
+    {
+        public int Id { get; set; }
+        public string? OpenGrinNumber { get; set; }
+        public string? SenderName { get; set; }
+        public string? SenderId { get; set; }
+        public string? Remarks { get; set; }
+        public string? ReturnedBy { get; set; }
+        public string? ReceiptRefNo { get; set; }
+        public bool CustomerSupplied { get; set; }
     }
 }

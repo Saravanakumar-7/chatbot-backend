@@ -994,9 +994,13 @@ namespace Repository
 
         public async Task<IEnumerable<ProductionBomRevisionNumber>> GetAllProductionBomFGListByItemNumber(string itemNumber)
         {
-            var releaseProductBomDetails = _tipsMasterDbContext.ProductionBoms
-                 .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
-                 .Select(x => x.ReleaseVersion).ToArray();
+            var latestReleaseVersion = _tipsMasterDbContext.ProductionBoms
+             .Where(x => x.ItemNumber == itemNumber && x.IsActive)
+             .OrderByDescending(x => x.ReleaseVersion)
+             .Select(x => x.ReleaseVersion)
+             .FirstOrDefault();
+
+            var releaseProductBomDetails = new[] { latestReleaseVersion };
 
 
             var releaseProductBomItemNumberList = releaseProductBomDetails
@@ -1007,6 +1011,20 @@ namespace Repository
                    BomVersionNo = releaseProductBomDetails
                }).ToList();
             return releaseProductBomItemNumberList;
+
+            //var releaseProductBomDetails = _tipsMasterDbContext.ProductionBoms
+            //     .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
+            //     .Select(x => x.ReleaseVersion).ToArray();
+
+
+            //var releaseProductBomItemNumberList = releaseProductBomDetails
+            //   .Select(bom => new ProductionBomRevisionNumber
+            //   {
+            //       ItemNumber = itemNumber,
+            //       ItemType = PartType.FG,
+            //       BomVersionNo = releaseProductBomDetails
+            //   }).ToList();
+            //return releaseProductBomItemNumberList;
 
         }
 

@@ -478,25 +478,33 @@ namespace Tips.Production.Api.Controllers
                 for (int i = 0; i < materialReqItemDto.Count; i++)
                 {
                     MaterialRequestItems materialItemDetail = _mapper.Map<MaterialRequestItems>(materialReqItemDto[i]);
-                    var mrStockDetails = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
+                    List<MRStockDetails> mrStockDetails = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
                     materialItemDetail.MRStockDetails = mrStockDetails;
                     materialItemDetail.IssuedQty = mrStockDetails.Select(x=> x.Qty).Sum();
                     materialReqItemList.Add(materialItemDetail);
-                    //add material request data to somaterialissue tracker
-                    InventoryDtoForMaterialRequest inventoryDtoForMaterialRequest = new InventoryDtoForMaterialRequest
+                    foreach (var item in mrStockDetails)
                     {
-                        PartNumber = materialItemDetail.PartNumber,
-                        ProjectNumber = projectNo, 
-                        DataFrom = "MR",
-                        IssueQty = materialItemDetail.IssuedQty,
-                        ShopOrderNumber = shopOrderNumber,
-                        MftrPartNumber = materialItemDetail.MftrPartNumber,
-                        Description= materialItemDetail.PartDescription,
-                        PartType = materialItemDetail.PartType,
-                        MRNumber = materialRequestUpdateDto.MRNumber
+                        //add material request data to somaterialissue tracker
+                        InventoryDtoForMaterialRequest inventoryDtoForMaterialRequest = new InventoryDtoForMaterialRequest
+                        {
+                            PartNumber = materialItemDetail.PartNumber,
+                            ProjectNumber = projectNo,
+                            DataFrom = "MR",
+                            IssueQty = materialItemDetail.IssuedQty,
+                            ShopOrderNumber = shopOrderNumber,
+                            MftrPartNumber = materialItemDetail.MftrPartNumber,
+                            Description = materialItemDetail.PartDescription,
+                            PartType = materialItemDetail.PartType,
+                            MRNumber = materialRequestUpdateDto.MRNumber,
+                            Warehouse = item.Warehouse,
+                            Location = item.Location,
+                            UOM = materialItemDetail.UOM,
+                            Unit = materialRequestUpdateDto.Unit,
 
-                    };
-                    inventoryDtos.Add(inventoryDtoForMaterialRequest);
+                        };
+                        inventoryDtos.Add(inventoryDtoForMaterialRequest);
+                    }
+                    
 
                 }
 
@@ -561,18 +569,18 @@ namespace Tips.Production.Api.Controllers
                     return StatusCode(500, serviceResponse);
                 }
 
-                var jsonCon = JsonConvert.SerializeObject(materialRequestDetails);
-                var datass = new StringContent(jsonCon, Encoding.UTF8, "application/json");
-                var results = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "MaterialInventoryTranctionBalanceQty"), datass);
-                if (results.StatusCode == HttpStatusCode.InternalServerError)
-                {
-                    _logger.LogError($"Something went wrong inside UpdateMaterialRequest action. InventoryTranction update action MaterialInventoryBalanceQty failed! ");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Internal server error";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500, serviceResponse);
-                }
+                //var jsonCon = JsonConvert.SerializeObject(materialRequestDetails);
+                //var datass = new StringContent(jsonCon, Encoding.UTF8, "application/json");
+                //var results = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datass);
+                //if (results.StatusCode == HttpStatusCode.InternalServerError)
+                //{
+                //    _logger.LogError($"Something went wrong inside UpdateMaterialRequest action. InventoryTranction update action MaterialInventoryBalanceQty failed! ");
+                //    serviceResponse.Data = null;
+                //    serviceResponse.Message = "Internal server error";
+                //    serviceResponse.Success = false;
+                //    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                //    return StatusCode(500, serviceResponse);
+                //}
 
                 updateMaterialReqquest.MaterialRequestItems = materialReqItemList;
                 var updateMaterialReq = _mapper.Map(materialRequestUpdateDto, getMaterialRequest);

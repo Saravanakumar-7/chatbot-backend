@@ -19,5 +19,6 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<OpenGrin>> GetAllOpenGrinWithItems(OpenGrinSearchDto openGrinSearchDto);
         Task<IEnumerable<OpenGrin>> SearchOpenGrin(SearchParames searchParames);
         Task<IEnumerable<OpenGrin>> SearchOpenGrinDate(SearchDateParames searchParames);
+        Task<IEnumerable<OpenGrinDataListDto>> GetAllOpenGrinDataList();
     }
 }

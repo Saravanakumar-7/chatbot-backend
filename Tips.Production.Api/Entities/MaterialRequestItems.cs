@@ -13,6 +13,7 @@ namespace Tips.Production.Api.Entities
         public string? MftrPartNumber { get; set; }
         public PartType PartType { get; set; }
         public string? Stock { get; set; }
+        public string? UOM { get; set; }
 
         [Precision(13, 3)]
         public decimal IssuedQty { get; set; }

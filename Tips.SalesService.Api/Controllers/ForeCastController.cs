@@ -1256,7 +1256,7 @@ namespace Tips.SalesService.Api.Controllers
         }
         // PUT api/<ForeCastController>/5
         [HttpPut]
-        public async Task<IActionResult> UpdateForeCast( [FromBody] ForeCastUpdateDto foreCastUpdateDto)
+        public async Task<IActionResult> UpdateForeCast([FromBody] ForeCastUpdateDto foreCastUpdateDto)
         {
             ServiceResponse<ForeCastDto> serviceResponse = new ServiceResponse<ForeCastDto>();
 
@@ -1282,7 +1282,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 var updateForecast = _mapper.Map<ForeCast>(foreCastUpdateDto);
                 await _Forecastrepository.UpdateForecastRevNo(updateForecast);
-                
+
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Updated Successfully";
@@ -1439,8 +1439,89 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //[HttpPut]
+        //public async Task<IActionResult> UpdateForeCastCustomerSupport( [FromBody] ForeCastCustomerSupportUpdateDto foreCastCustomerSupportUpdateDto)
+        //{
+        //    ServiceResponse<ForeCastCustomerSupportDto> serviceResponse = new ServiceResponse<ForeCastCustomerSupportDto>();
+
+        //    try
+        //    {
+        //        if (foreCastCustomerSupportUpdateDto is null)
+        //        {
+        //            _logger.LogError("ForeCastCustomerSupport object sent from client is null.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Update ForeCastCustomerSupport object is null";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _logger.LogError("Invalid ForeCastCustomerSupport object sent from client.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid Update ForeCastCustomerSupport object sent from client.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+
+        //        var updateForecastCS = _mapper.Map<ForeCastCustomerSupport>(foreCastCustomerSupportUpdateDto);
+
+        //        //tets
+
+
+        //        var forecastNumber = updateForecastCS.ForecastNumber;
+
+        //        var forecastDetailsByForecastNumber = await _Forecastrepository.ForeCastCustomerSupportByForeCastNumber(forecastNumber);
+
+        //        var version = 1;
+
+        //        forecastDetailsByForecastNumber.RevisionNumber = forecastDetailsByForecastNumber.RevisionNumber + version;
+
+        //        //test
+
+
+        //        var forecastCSItemDto = foreCastCustomerSupportUpdateDto.ForeCastCustomerSupportItems;
+
+        //        var forecastCsItemList = new List<ForeCastCustomerSupportItem>();
+        //        if (forecastCSItemDto != null)
+        //        {
+        //            for (int i = 0; i < forecastCSItemDto.Count; i++)
+        //            {
+        //                ForeCastCustomerSupportItem forecastItemDetail = _mapper.Map<ForeCastCustomerSupportItem>(forecastCSItemDto[i]);
+        //                forecastItemDetail.ForeCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliverySchedule>>(forecastCSItemDto[i].ForeCastCSDeliverySchedule);
+        //                forecastCsItemList.Add(forecastItemDetail);
+
+        //            }
+        //        }
+        //        updateForecastCS.ForeCastCustomerSupportItems = forecastCsItemList;
+        //        var data = _mapper.Map(foreCastCustomerSupportUpdateDto, updateForecastCS);
+        //        await _repository.UpdateForecastcsRevNo(data);
+
+        //        _Forecastrepository.Update(forecastDetailsByForecastNumber);
+        //        _repository.SaveAsync();
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Updated Successfully";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+
+        //    }
+
+
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside UpdateForeCastCustomerSupport action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+        //Delete lpcosting
         [HttpPut]
-        public async Task<IActionResult> UpdateForeCastCustomerSupport( [FromBody] ForeCastCustomerSupportUpdateDto foreCastCustomerSupportUpdateDto)
+        public async Task<IActionResult> UpdateForeCastCustomerSupport([FromBody] ForeCastCustomerSupportUpdateDto foreCastCustomerSupportUpdateDto)
         {
             ServiceResponse<ForeCastCustomerSupportDto> serviceResponse = new ServiceResponse<ForeCastCustomerSupportDto>();
 
@@ -1465,40 +1546,100 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var updateForecastCS = _mapper.Map<ForeCastCustomerSupport>(foreCastCustomerSupportUpdateDto);
+                ForeCast oldversionRFQdetails = await _Forecastrepository.GetForeCastById(foreCastCustomerSupportUpdateDto.Id);
+                oldversionRFQdetails.ForeCastNumber = foreCastCustomerSupportUpdateDto.ForecastNumber;
+                oldversionRFQdetails.RevisionNumber = foreCastCustomerSupportUpdateDto.RevisionNumber;
+                oldversionRFQdetails.CustomerId = foreCastCustomerSupportUpdateDto.CustomerId;
+                oldversionRFQdetails.CustomerName = foreCastCustomerSupportUpdateDto.CustomerName;
+                oldversionRFQdetails.CustomerAliasName = foreCastCustomerSupportUpdateDto.CustomerAliasName;
+                oldversionRFQdetails.CustomerForecastNumber = foreCastCustomerSupportUpdateDto.CustomerForecastNumber;
+                oldversionRFQdetails.RequestReceivedDate = foreCastCustomerSupportUpdateDto.RequestReceivedate;
+                oldversionRFQdetails.QuoteExpectedDate = foreCastCustomerSupportUpdateDto.QuoteExpectdate;
+                oldversionRFQdetails.TypeOfSolution = foreCastCustomerSupportUpdateDto.TypeOfSolution;
+                oldversionRFQdetails.ProductType = foreCastCustomerSupportUpdateDto.ProductType;
+                oldversionRFQdetails.Remarks = foreCastCustomerSupportUpdateDto.Remarks;
+                oldversionRFQdetails.ReasonForModification = foreCastCustomerSupportUpdateDto.ReasonForModification;
+                oldversionRFQdetails.RevisionNumber = oldversionRFQdetails.RevisionNumber + 1;
 
-                //tets
-
-
-                var forecastNumber = updateForecastCS.ForecastNumber;
-
-                var forecastDetailsByForecastNumber = await _Forecastrepository.ForeCastCustomerSupportByForeCastNumber(forecastNumber);
-
-                var version = 1;
-
-                forecastDetailsByForecastNumber.RevisionNumber = forecastDetailsByForecastNumber.RevisionNumber + version;
-
-                //test
-
+                var csReleasedItems = await _itemRepository.ForcastCsReleasedItemList(foreCastCustomerSupportUpdateDto.ForecastNumber);
+                //var forecastDetailsByForecastNumber = await _Forecastrepository.ForeCastCustomerSupportByForeCastNumber(forecastNumber);
+                //var version = 1;
+                //forecastDetailsByForecastNumber.RevisionNumber = forecastDetailsByForecastNumber.RevisionNumber + version;
+                var updatedItems = new List<ForeCastCustomerSupportItemUpdateDto>();
+                int flag = 0;
+                foreach (var itemList in foreCastCustomerSupportUpdateDto.ForeCastCustomerSupportItems)
+                {
+                    bool releaseItem = csReleasedItems.Any(item => item == itemList.ItemNumber);
+                    if (releaseItem)
+                    {
+                        itemList.ReleaseStatus = true;
+                        flag = 1;
+                    }
+                    else
+                    {
+                        itemList.ReleaseStatus = false;
+                        oldversionRFQdetails.IsSourcing = false;
+                        oldversionRFQdetails.IsCsComplete = false;
+                        oldversionRFQdetails.CsComplete = CsStatus.CsNotYetCompleted;
+                        if (flag == 0)
+                        {
+                            oldversionRFQdetails.IsCsRelease = CsRelease.PartiallyRelease;
+                        }
+                        else
+                        {
+                            oldversionRFQdetails.IsCsRelease = CsRelease.PartiallyRelease;
+                        }
+                    }
+                    updatedItems.Add(itemList);
+                }
+                oldversionRFQdetails.Id = 0;
+                _Forecastrepository.Create(oldversionRFQdetails);
+                foreCastCustomerSupportUpdateDto.ForeCastCustomerSupportItems = null;
+                foreCastCustomerSupportUpdateDto.ForeCastCustomerSupportItems = updatedItems;
 
                 var forecastCSItemDto = foreCastCustomerSupportUpdateDto.ForeCastCustomerSupportItems;
-
                 var forecastCsItemList = new List<ForeCastCustomerSupportItem>();
                 if (forecastCSItemDto != null)
                 {
                     for (int i = 0; i < forecastCSItemDto.Count; i++)
                     {
-                        ForeCastCustomerSupportItem forecastItemDetail = _mapper.Map<ForeCastCustomerSupportItem>(forecastCSItemDto[i]);
-                        forecastItemDetail.ForeCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliverySchedule>>(forecastCSItemDto[i].ForeCastCSDeliverySchedule);
-                        forecastCsItemList.Add(forecastItemDetail);
-
+                        ForeCastCustomerSupportItem forecastCSItemDetail = _mapper.Map<ForeCastCustomerSupportItem>(forecastCSItemDto[i]);
+                        forecastCSItemDetail.ForeCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliverySchedule>>(forecastCSItemDto[i].ForeCastCSDeliverySchedule);
+                        forecastCsItemList.Add(forecastCSItemDetail);
                     }
                 }
-                updateForecastCS.ForeCastCustomerSupportItems = forecastCsItemList;
-                var data = _mapper.Map(foreCastCustomerSupportUpdateDto, updateForecastCS);
-                await _repository.UpdateForecastcsRevNo(data);
 
-                _Forecastrepository.Update(forecastDetailsByForecastNumber);
+                var rfqCSnotedto = foreCastCustomerSupportUpdateDto.ForeCastCustomerSupportNotes;
+                var rfqCsnotelist = new List<ForeCastCustomerSupportNotes>();
+                if (rfqCSnotedto != null)
+                {
+                    for (int i = 0; i < rfqCSnotedto.Count; i++)
+                    {
+                        ForeCastCustomerSupportNotes rfqCSnoteDetail = _mapper.Map<ForeCastCustomerSupportNotes>(rfqCSnotedto[i]);
+                        rfqCsnotelist.Add(rfqCSnoteDetail);
+                    }
+                }
+
+                //updateForecastCS.ForeCastCustomerSupportItems = forecastCsItemList;
+                //var data = _mapper.Map(foreCastCustomerSupportUpdateDto, updateForecastCS);
+
+                ForeCastCustomerSupport oldCSdetails = await _repository.GetforecastCustomerSupportDetailsbyforecastnumber(foreCastCustomerSupportUpdateDto.ForecastNumber);
+                oldCSdetails.Id = 0;
+                oldCSdetails.CustomerName = oldversionRFQdetails.CustomerName;
+                oldCSdetails.RevisionNumber = oldversionRFQdetails.RevisionNumber;
+                oldCSdetails.CustomerAliasName = oldversionRFQdetails.CustomerAliasName;
+                oldCSdetails.CustomerForecastNumber = oldversionRFQdetails.CustomerForecastNumber;
+                oldCSdetails.RequestReceivedDate = oldversionRFQdetails.RequestReceivedDate;
+                oldCSdetails.QuoteExpectedDate = oldversionRFQdetails.QuoteExpectedDate;
+                oldCSdetails.TypeOfSolution = oldversionRFQdetails.TypeOfSolution;
+                oldCSdetails.ProductType = oldversionRFQdetails.ProductType;
+                oldCSdetails.Unit = oldversionRFQdetails.Unit;
+                oldCSdetails.ForeCastCustomerSupportItems = forecastCsItemList;
+                oldCSdetails.ForeCastCustomerSupportNotes = rfqCsnotelist;
+
+
+                await _repository.UpdateForecastcsRevNo(oldCSdetails);
+
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Updated Successfully";
@@ -1519,7 +1660,6 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        //Delete lpcosting
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteForeCastLpCosting(int id)
         {

@@ -31,6 +31,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string Description { get; set; }
         public string MftrPartNumber { get; set; }
         public PartType PartType { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public string? UOM { get; set; }
+        public string Unit { get; set; }
 
     }
 

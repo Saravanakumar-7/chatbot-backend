@@ -861,12 +861,12 @@ namespace Tips.Purchase.Api.Controllers
         //}
 
         [HttpGet]
-        public async Task<IActionResult> SearchPurchaseOrderDate([FromQuery] SearchDatesParams searchDateParam)
+        public async Task<IActionResult> SearchPurchaseOrderDate([FromQuery] SearchDatesParams searchDateParam, PoVersion poVersion )
         {
             ServiceResponse<IEnumerable<PurchaseOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderReportDto>>();
             try
             {
-                var purchaseOrderList = await _repository.SearchPurchaseOrderDate(searchDateParam);
+                var purchaseOrderList = await _repository.SearchPurchaseOrderDate(searchDateParam, poVersion);
 
                 var config = new MapperConfiguration(cfg =>
                 {
@@ -926,12 +926,12 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetAllPurchaseOrderWithItems([FromBody] PurchaseOrderSearchDto purchaseOrderSearch)
+        public async Task<IActionResult> GetAllPurchaseOrderWithItems([FromBody] PurchaseOrderSearchDto purchaseOrderSearch, PoVersion poVersion)
         {
             ServiceResponse<IEnumerable<PurchaseOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderReportDto>>();
             try
             {
-                var purchaseOrderList = await _repository.GetAllPurchaseOrderWithItems(purchaseOrderSearch);
+                var purchaseOrderList = await _repository.GetAllPurchaseOrderWithItems(purchaseOrderSearch, poVersion);
 
                 _logger.LogInfo("Returned all PurhaseOrders");
                 //var config = new MapperConfiguration(cfg =>
@@ -1001,12 +1001,12 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SearchPurchaseOrder([FromQuery] SearchParamess searchParams)
+        public async Task<IActionResult> SearchPurchaseOrder([FromQuery] SearchParamess searchParams, PoVersion poVersion)
         {
             ServiceResponse<IEnumerable<PurchaseOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderReportDto>>();
             try
             {
-                var purchaseOrderList = await _repository.SearchPurchaseOrder(searchParams);
+                var purchaseOrderList = await _repository.SearchPurchaseOrder(searchParams, poVersion);
                 _logger.LogInfo("Returned all PurchaseOrders");
                 //var config = new MapperConfiguration(cfg =>
                 //{

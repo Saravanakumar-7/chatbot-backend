@@ -56,7 +56,7 @@ namespace Tips.Purchase.Api.Repository
             .Where(inv => ((inv.CreatedOn >= searchDatesParams.SearchFromDate &&
             inv.CreatedOn <= searchDatesParams.SearchToDate
             )))
-            .Include(x=>x.POBreakDown)
+            .Include(x => x.POBreakDown)
             .ToList();
             return poCollectionTrackerDetails;
         }

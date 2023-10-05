@@ -125,7 +125,7 @@ namespace Entities.DTOs
     public class EnggBomFGItemNumberWithQtyDto
     {
         public string ItemNumber { set; get; }
-        public string ItemDescription { set; get; }
+        public string? ItemDescription { set; get; }
         public decimal QtyReq { set; get; }
 
     }

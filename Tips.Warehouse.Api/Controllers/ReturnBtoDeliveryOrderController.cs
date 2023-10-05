@@ -389,6 +389,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTranction.From_Location = "BTO";
                         inventoryTranction.TO_Location = "FG";
                         inventoryTranction.Remarks = "Return BTO";
+                        inventoryTranction.Warehouse = "FG";
 
                         var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 

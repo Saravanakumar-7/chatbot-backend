@@ -13,6 +13,7 @@ using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.Dto;
 using Tips.Purchase.Api.Entities.DTOs;
 using Tips.Purchase.Api.Entities.Enums;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Tips.Purchase.Api.Repository
 {
@@ -93,78 +94,242 @@ namespace Tips.Purchase.Api.Repository
             return getDownloadDetails;
         }
 
-        public async Task<IEnumerable<PurchaseOrder>> GetAllPurchaseOrderWithItems(PurchaseOrderSearchDto purchaseOrderSearch)
+        //public async Task<IEnumerable<PurchaseOrder>> GetAllPurchaseOrderWithItems(PurchaseOrderSearchDto purchaseOrderSearch, PoVersion poVersion)
+        //{
+        //    using (var context = _tipsPurchaseDbContext)
+        //    {
+        //        var query = _tipsPurchaseDbContext.PurchaseOrders.Include("POItems");
+        //        if (purchaseOrderSearch != null || (purchaseOrderSearch.PONumber.Any())
+        //       && purchaseOrderSearch.ProcurementType.Any() && purchaseOrderSearch.ShippingMode.Any()
+        //       && purchaseOrderSearch.VendorName.Any() && purchaseOrderSearch.PoStatus.Any())
+        //        {
+        //            query = query.Where
+        //            (po => (purchaseOrderSearch.PONumber.Any() ? purchaseOrderSearch.PONumber.Contains(po.PONumber) : true)
+        //           && (purchaseOrderSearch.ProcurementType.Any() ? purchaseOrderSearch.ProcurementType.Contains(po.ProcurementType) : true)
+        //           && (purchaseOrderSearch.ShippingMode.Any() ? purchaseOrderSearch.ShippingMode.Contains(po.ShippingMode) : true)
+        //           && (purchaseOrderSearch.VendorName.Any() ? purchaseOrderSearch.VendorName.Contains(po.VendorName) : true)
+        //           && (purchaseOrderSearch.PoStatus.Any() ? purchaseOrderSearch.PoStatus.Contains(po.Status) : true))
+        //            .Include(itm => itm.POItems)
+        //            .ThenInclude(po => po.POAddprojects)
+        //            .Include(itm => itm.POItems)
+        //            .ThenInclude(po => po.POAddDeliverySchedules)
+        //            .Include(itm => itm.POItems)
+        //            .ThenInclude(po => po.POSpecialInstructions)
+        //             .Include(itm => itm.POItems)
+        //            .ThenInclude(po => po.POConfirmationDates)
+        //             .Include(itm => itm.POItems)
+        //            .ThenInclude(po => po.PrDetails)
+        //            .Include(itm => itm.POIncoTerms);
+        //        }
+        //        return query.ToList();
+        //    }
+        //}
+
+        //public async Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrder([FromQuery] SearchParamess searchParammes)
+        //{
+        //    using (var context = _tipsPurchaseDbContext)
+        //    {
+        //        var query = _tipsPurchaseDbContext.PurchaseOrders.Include("POItems");
+        //        // int searchValueInt;
+        //        //bool isSearchValueInt = int.TryParse(searchParammes.SearchValue, out searchValueInt);
+
+        //        if (!string.IsNullOrEmpty(searchParammes.SearchValue))
+        //        {
+        //            query = query.Where(po => po.PONumber.Contains(searchParammes.SearchValue)
+        //            || po.VendorName.Contains(searchParammes.SearchValue)
+        //            || po.PODate.ToString().Contains(searchParammes.SearchValue)
+        //            //|| po.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
+        //            || po.ProcurementType.Contains(searchParammes.SearchValue)
+        //            //|| po.VendorId.Contains(searchParammes.SearchValue)
+        //            || po.QuotationDate.ToString().Contains(searchParammes.SearchValue)
+        //            //|| po.QuotationReferenceNumber.Contains(searchParammes.SearchValue)
+        //            || po.ShippingMode.Contains(searchParammes.SearchValue)
+        //            || po.PaymentTerms.Contains(searchParammes.SearchValue)
+        //            || po.DeliveryTerms.Contains(searchParammes.SearchValue)
+        //            || po.POItems.Any(s => s.ItemNumber.Contains(searchParammes.SearchValue) ||
+        //            s.Description.Contains(searchParammes.SearchValue)
+        //            || s.MftrItemNumber.Contains(searchParammes.SearchValue)
+        //            || s.PONumber.Contains(searchParammes.SearchValue)))//||
+        //                                                                // (!isSearchValueInt || po.RevisionNumber == searchValueInt))
+        //            .Include(itm => itm.POItems)
+        //            .ThenInclude(po => po.POAddprojects)
+        //            .Include(itm => itm.POItems)
+        //            .ThenInclude(po => po.POAddDeliverySchedules)
+        //            .Include(itm => itm.POItems)
+        //            .ThenInclude(po => po.POSpecialInstructions)
+        //            .Include(itm => itm.POItems)
+        //            .ThenInclude(po => po.POConfirmationDates)
+        //            .Include(itm => itm.POItems)
+        //            .ThenInclude(po => po.PrDetails)
+        //            .Include(itm => itm.POIncoTerms);
+        //        }
+        //        return query.ToList();
+        //    }
+        //}
+        public async Task<IEnumerable<PurchaseOrder>> GetAllPurchaseOrderWithItems(PurchaseOrderSearchDto purchaseOrderSearch, PoVersion poVersion)
         {
-            using (var context = _tipsPurchaseDbContext)
+            IQueryable<PurchaseOrder> query = _tipsPurchaseDbContext.PurchaseOrders.Include(po => po.POItems);
+
+            if (purchaseOrderSearch != null &&
+                (purchaseOrderSearch.PONumber.Any() ||
+                 purchaseOrderSearch.ProcurementType.Any() ||
+                 purchaseOrderSearch.ShippingMode.Any() ||
+                 purchaseOrderSearch.VendorName.Any() ||
+                 purchaseOrderSearch.PoStatus.Any()))
             {
-                var query = _tipsPurchaseDbContext.PurchaseOrders.Include("POItems");
-                if (purchaseOrderSearch != null || (purchaseOrderSearch.PONumber.Any())
-               && purchaseOrderSearch.ProcurementType.Any() && purchaseOrderSearch.ShippingMode.Any()
-               && purchaseOrderSearch.VendorName.Any() && purchaseOrderSearch.PoStatus.Any())
-                {
-                    query = query.Where
-                    (po => (purchaseOrderSearch.PONumber.Any() ? purchaseOrderSearch.PONumber.Contains(po.PONumber) : true)
-                   && (purchaseOrderSearch.ProcurementType.Any() ? purchaseOrderSearch.ProcurementType.Contains(po.ProcurementType) : true)
-                   && (purchaseOrderSearch.ShippingMode.Any() ? purchaseOrderSearch.ShippingMode.Contains(po.ShippingMode) : true)
-                   && (purchaseOrderSearch.VendorName.Any() ? purchaseOrderSearch.VendorName.Contains(po.VendorName) : true)
-                   && (purchaseOrderSearch.PoStatus.Any() ? purchaseOrderSearch.PoStatus.Contains(po.Status) : true))
-                    .Include(itm => itm.POItems)
-                    .ThenInclude(po => po.POAddprojects)
-                    .Include(itm => itm.POItems)
-                    .ThenInclude(po => po.POAddDeliverySchedules)
-                    .Include(itm => itm.POItems)
-                    .ThenInclude(po => po.POSpecialInstructions)
-                     .Include(itm => itm.POItems)
-                    .ThenInclude(po => po.POConfirmationDates)
-                     .Include(itm => itm.POItems)
-                    .ThenInclude(po => po.PrDetails)
-                    .Include(itm => itm.POIncoTerms);
-                }
-                return query.ToList();
+                query = query.Where(po =>
+                    (purchaseOrderSearch.PONumber.Any() ? purchaseOrderSearch.PONumber.Contains(po.PONumber) : true) &&
+                    (purchaseOrderSearch.ProcurementType.Any() ? purchaseOrderSearch.ProcurementType.Contains(po.ProcurementType) : true) &&
+                    (purchaseOrderSearch.ShippingMode.Any() ? purchaseOrderSearch.ShippingMode.Contains(po.ShippingMode) : true) &&
+                    (purchaseOrderSearch.VendorName.Any() ? purchaseOrderSearch.VendorName.Contains(po.VendorName) : true) &&
+                    (purchaseOrderSearch.PoStatus.Any() ? purchaseOrderSearch.PoStatus.Contains(po.Status) : true));
             }
+
+            if (poVersion == PoVersion.LatestVersion)
+            {
+                var latestRevisions = query.GroupBy(po => po.PONumber)
+                    .Select(group => group.OrderByDescending(po => po.RevisionNumber).FirstOrDefault())
+                    .ToList();
+
+                var latestRevisionIds = latestRevisions.Select(po => po.Id).ToList();
+
+                query = query.Where(po => latestRevisionIds.Contains(po.Id));
+            }
+
+            query = query.Include(po => po.POItems)
+                .ThenInclude(po => po.POAddprojects)
+                .Include(po => po.POItems)
+                .ThenInclude(po => po.POAddDeliverySchedules)
+                .Include(po => po.POItems)
+                .ThenInclude(po => po.POSpecialInstructions)
+                .Include(po => po.POItems)
+                .ThenInclude(po => po.POConfirmationDates)
+                .Include(po => po.POItems)
+                .ThenInclude(po => po.PrDetails)
+                .Include(po => po.POIncoTerms);
+
+            return await query.ToListAsync();
         }
 
-        public async Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrder([FromQuery] SearchParamess searchParammes)
+        public async Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrder([FromQuery] SearchParamess searchParammes, PoVersion poVersion)
         {
-            using (var context = _tipsPurchaseDbContext)
-            {
-                var query = _tipsPurchaseDbContext.PurchaseOrders.Include("POItems");
-                // int searchValueInt;
-                //bool isSearchValueInt = int.TryParse(searchParammes.SearchValue, out searchValueInt);
+            IQueryable<PurchaseOrder> query = _tipsPurchaseDbContext.PurchaseOrders;
 
-                if (!string.IsNullOrEmpty(searchParammes.SearchValue))
-                {
-                    query = query.Where(po => po.PONumber.Contains(searchParammes.SearchValue)
+            // Apply search criteria
+            if (!string.IsNullOrEmpty(searchParammes.SearchValue))
+            {
+                query = query.Where(po => po.PONumber.Contains(searchParammes.SearchValue)
                     || po.VendorName.Contains(searchParammes.SearchValue)
                     || po.PODate.ToString().Contains(searchParammes.SearchValue)
-                    //|| po.RevisionNumber.Equals(int.Parse(searchParammes.SearchValue))
                     || po.ProcurementType.Contains(searchParammes.SearchValue)
-                    //|| po.VendorId.Contains(searchParammes.SearchValue)
                     || po.QuotationDate.ToString().Contains(searchParammes.SearchValue)
-                    //|| po.QuotationReferenceNumber.Contains(searchParammes.SearchValue)
                     || po.ShippingMode.Contains(searchParammes.SearchValue)
                     || po.PaymentTerms.Contains(searchParammes.SearchValue)
                     || po.DeliveryTerms.Contains(searchParammes.SearchValue)
-                    || po.POItems.Any(s => s.ItemNumber.Contains(searchParammes.SearchValue) ||
-                    s.Description.Contains(searchParammes.SearchValue)
-                    || s.MftrItemNumber.Contains(searchParammes.SearchValue)
-                    || s.PONumber.Contains(searchParammes.SearchValue)))//||
-                                                                        // (!isSearchValueInt || po.RevisionNumber == searchValueInt))
-                    .Include(itm => itm.POItems)
-                    .ThenInclude(po => po.POAddprojects)
-                    .Include(itm => itm.POItems)
-                    .ThenInclude(po => po.POAddDeliverySchedules)
-                    .Include(itm => itm.POItems)
-                    .ThenInclude(po => po.POSpecialInstructions)
-                    .Include(itm => itm.POItems)
-                    .ThenInclude(po => po.POConfirmationDates)
-                    .Include(itm => itm.POItems)
-                    .ThenInclude(po => po.PrDetails)
-                    .Include(itm => itm.POIncoTerms);
-                }
-                return query.ToList();
+                    || po.POItems.Any(s => s.ItemNumber.Contains(searchParammes.SearchValue)
+                        || s.Description.Contains(searchParammes.SearchValue)
+                        || s.MftrItemNumber.Contains(searchParammes.SearchValue)
+                        || s.PONumber.Contains(searchParammes.SearchValue)));
             }
+
+            if (poVersion == PoVersion.LatestVersion)
+            {
+                var latestRevisions = query.GroupBy(po => po.PONumber)
+                    .Select(group => group.OrderByDescending(po => po.RevisionNumber).FirstOrDefault())
+                    .ToList();
+
+                // Get the IDs of the latest revision Purchase Orders
+                var latestRevisionIds = latestRevisions.Select(po => po.Id).ToList();
+
+                // Filter by latest revision IDs
+                query = query.Where(po => latestRevisionIds.Contains(po.Id));
+            }
+
+            // Separate the Include statements
+            query = query
+                .Include(itm => itm.POItems)
+                .ThenInclude(po => po.POAddprojects)
+                .Include(itm => itm.POItems)
+                .ThenInclude(po => po.POAddDeliverySchedules)
+                .Include(itm => itm.POItems)
+                .ThenInclude(po => po.POSpecialInstructions)
+                .Include(itm => itm.POItems)
+                .ThenInclude(po => po.POConfirmationDates)
+                .Include(itm => itm.POItems)
+                .ThenInclude(po => po.PrDetails)
+                .Include(itm => itm.POIncoTerms);
+
+            return await query.ToListAsync();
         }
+
+        //public async Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrderDate([FromQuery] SearchDatesParams searchDatesParams)
+        //{
+        //    var purchaseOrderDetails = _tipsPurchaseDbContext.PurchaseOrders
+        //    .Where(inv => ((inv.CreatedOn >= searchDatesParams.SearchFromDate &&
+        //    inv.CreatedOn <= searchDatesParams.SearchToDate
+        //    )))
+        //    .Include(itm => itm.POItems)
+        //    .ThenInclude(po => po.POAddprojects)
+        //    .Include(itm => itm.POItems)
+        //    .ThenInclude(po => po.POAddDeliverySchedules)
+        //    .Include(itm => itm.POItems)
+        //    .ThenInclude(po => po.POSpecialInstructions)
+        //    .Include(itm => itm.POItems)
+        //    .ThenInclude(po => po.POConfirmationDates)
+        //    .Include(itm => itm.POItems)
+        //     .ThenInclude(po => po.PrDetails)
+        //     .Include(itm => itm.POIncoTerms)
+        //    .ToList();
+        //    return purchaseOrderDetails;
+        //}
+        public async Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrderDate([FromQuery] SearchDatesParams searchDatesParams, PoVersion poVersion)
+        {
+
+            if (poVersion == PoVersion.LatestVersion)
+            {
+                IQueryable<PurchaseOrder> query = _tipsPurchaseDbContext.PurchaseOrders
+                .Where(inv => inv.LastModifiedOn.Value.Date >= searchDatesParams.SearchFromDate.Value.Date
+                 && inv.LastModifiedOn.Value.Date <= searchDatesParams.SearchToDate.Value.Date)
+                .Include(itm => itm.POItems)
+                .ThenInclude(po => po.POAddprojects)
+                .Include(itm => itm.POItems)
+                .ThenInclude(po => po.POAddDeliverySchedules)
+                .Include(itm => itm.POItems)
+                .ThenInclude(po => po.POSpecialInstructions)
+                .Include(itm => itm.POItems)
+                .ThenInclude(po => po.POConfirmationDates)
+                .Include(itm => itm.POItems)
+                .ThenInclude(po => po.PrDetails)
+                .Include(itm => itm.POIncoTerms);
+                // Filter by the latest revision number if selected
+                query = query.GroupBy(inv => inv.PONumber)
+                    .Select(group => group.OrderByDescending(inv => inv.RevisionNumber).FirstOrDefault());
+                var purchaseOrderDetails = await query.ToListAsync();
+                return purchaseOrderDetails;
+            }
+            else
+            {
+                IQueryable<PurchaseOrder> query = _tipsPurchaseDbContext.PurchaseOrders
+                .Where(inv => (inv.CreatedOn.Value.Date >= searchDatesParams.SearchFromDate.Value.Date && inv.CreatedOn.Value.Date <= searchDatesParams.SearchToDate.Value.Date)
+                || (inv.LastModifiedOn.Value.Date >= searchDatesParams.SearchFromDate.Value.Date && inv.LastModifiedOn.Value.Date <= searchDatesParams.SearchToDate.Value.Date))
+                .Include(itm => itm.POItems)
+                .ThenInclude(po => po.POAddprojects)
+                .Include(itm => itm.POItems)
+                .ThenInclude(po => po.POAddDeliverySchedules)
+                .Include(itm => itm.POItems)
+                .ThenInclude(po => po.POSpecialInstructions)
+                .Include(itm => itm.POItems)
+                .ThenInclude(po => po.POConfirmationDates)
+                .Include(itm => itm.POItems)
+                .ThenInclude(po => po.PrDetails)
+                .Include(itm => itm.POIncoTerms);
+                var purchaseOrderDetails = await query.ToListAsync();
+                return purchaseOrderDetails;
+            }
+
+
+        }
+
         public async Task<IEnumerable<PurchaseOrderRevNoListDto>> GetAllRevisionNumberListByPoNumber(string poNumber)
         {
             IEnumerable<PurchaseOrderRevNoListDto> revNoListbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders
@@ -198,26 +363,6 @@ namespace Tips.Purchase.Api.Repository
             var postdata = Join.ToList();
 
             return postdata;
-        }
-        public async Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrderDate([FromQuery] SearchDatesParams searchDatesParams)
-        {
-            var purchaseOrderDetails = _tipsPurchaseDbContext.PurchaseOrders
-            .Where(inv => ((inv.CreatedOn >= searchDatesParams.SearchFromDate &&
-            inv.CreatedOn <= searchDatesParams.SearchToDate
-            )))
-            .Include(itm => itm.POItems)
-            .ThenInclude(po => po.POAddprojects)
-            .Include(itm => itm.POItems)
-            .ThenInclude(po => po.POAddDeliverySchedules)
-            .Include(itm => itm.POItems)
-            .ThenInclude(po => po.POSpecialInstructions)
-            .Include(itm => itm.POItems)
-            .ThenInclude(po => po.POConfirmationDates)
-            .Include(itm => itm.POItems)
-             .ThenInclude(po => po.PrDetails)
-             .Include(itm => itm.POIncoTerms)
-            .ToList();
-            return purchaseOrderDetails;
         }
 
         public async Task<int?> GetPONumberAutoIncrementCount(DateTime date)

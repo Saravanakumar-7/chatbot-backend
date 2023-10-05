@@ -18,6 +18,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<ForeCastCustomerSupport> UpdateForecastcsRevNo(ForeCastCustomerSupport foreCastCustomerSupport);
         Task<ForeCastCustomerSupport> GetForecastCsByForecastNoAndRevNo(string forecast, decimal revisionNumber);
         Task<ForeCastCustomerSupport> GetForecastCsLatestRevNoByForecastnumber(string forecast);
+        Task<ForeCastCustomerSupport> GetforecastCustomerSupportDetailsbyforecastnumber(string rfqno);
 
     }
 }

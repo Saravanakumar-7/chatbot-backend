@@ -1998,8 +1998,7 @@ namespace Tips.SalesService.Api.Controllers
                 var enggReleasedItems = await _rfqenggItemRepository.RfqEnggReleasedItemList(rfqNumber);
                 var updatedItems = new List<RfqEnggItemDtoUpdate>();
                 var rfqDetailsByRfqNumber = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
-                var version = 1;
-                rfqDetailsByRfqNumber.RevisionNumber = rfqDetailsByRfqNumber.RevisionNumber + version;
+                rfqDetailsByRfqNumber.RevisionNumber = rfqDetailsByRfqNumber.RevisionNumber + 1;
                 int flag = 0;
                 foreach (var itemList in rfqEnggDtoUpdate.RfqEnggItems)
                 {
@@ -2234,7 +2233,7 @@ namespace Tips.SalesService.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateRfqCustomerSupport([FromBody] RfqCustomerSupportUpdateDto rfqCustomerSupportUpdateDto)
         {
-            ServiceResponse<RfqCustomerSupportDto> serviceResponse = new ServiceResponse<RfqCustomerSupportDto>();
+            ServiceResponse<RfqCustomerSupportUpdateDto> serviceResponse = new ServiceResponse<RfqCustomerSupportUpdateDto>();
             try
             {
                 if (rfqCustomerSupportUpdateDto is null)
@@ -2255,18 +2254,30 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var updateRfqCS = _mapper.Map<RfqCustomerSupport>(rfqCustomerSupportUpdateDto);
-                var rfqNumber = updateRfqCS.RfqNumber;
-                var csReleasedItems = await _itemRepository.RfqCsReleasedItemList(rfqNumber);
-                var rfqDetailsByRfqNumber = await _rfqRepository.RfqDetailsByRfqNumbers(rfqNumber);
-                var version = 1;
-                rfqDetailsByRfqNumber.RevisionNumber = rfqDetailsByRfqNumber.RevisionNumber + version;
+
+                Rfq oldversionRFQdetails = await _rfqRepository.RfqDetailsById(rfqCustomerSupportUpdateDto.Id);
+                oldversionRFQdetails.RfqNumber = rfqCustomerSupportUpdateDto.RfqNumber;
+                oldversionRFQdetails.RevisionNumber = rfqCustomerSupportUpdateDto.RevisionNumber;
+                oldversionRFQdetails.CustomerId = rfqCustomerSupportUpdateDto.CustomerId;
+                oldversionRFQdetails.CustomerName = rfqCustomerSupportUpdateDto.CustomerName;
+                oldversionRFQdetails.CustomerAliasName = rfqCustomerSupportUpdateDto.CustomerAliasName;
+                oldversionRFQdetails.CustomerRfqNumber = rfqCustomerSupportUpdateDto.CustomerRfqNumber;
+                oldversionRFQdetails.RequestReceivedate = rfqCustomerSupportUpdateDto.RequestReceivedate;
+                oldversionRFQdetails.QuoteExpectdate = rfqCustomerSupportUpdateDto.QuoteExpectdate;
+                oldversionRFQdetails.TypeOfSolution = rfqCustomerSupportUpdateDto.TypeOfSolution;
+                oldversionRFQdetails.ProductType = rfqCustomerSupportUpdateDto.ProductType;
+                oldversionRFQdetails.Remarks = rfqCustomerSupportUpdateDto.Remarks;
+                oldversionRFQdetails.ReasonForModification = rfqCustomerSupportUpdateDto.ReasonForModification;
+                oldversionRFQdetails.RevisionNumber = oldversionRFQdetails.RevisionNumber + 1;
+
+                var oldRFQcsReleasedItems = await _itemRepository.RfqCsReleasedItemList(rfqCustomerSupportUpdateDto.RfqNumber);
                 var updatedItems = new List<RfqCustomerSupportItemUpdateDto>();
                 int flag = 0;
                 foreach (var itemList in rfqCustomerSupportUpdateDto.RfqCustomerSupportItems)
                 {
-                    var releaseItem = csReleasedItems.FirstOrDefault(item => item.ItemNumber == itemList.ItemNumber);
-                    if (releaseItem != null)
+                    bool releaseItem = oldRFQcsReleasedItems.Any(item => item == itemList.ItemNumber);
+                    if (releaseItem)
+                    // if (releaseItem != null)
                     {
                         itemList.ReleaseStatus = true;
                         flag = 1;
@@ -2274,24 +2285,27 @@ namespace Tips.SalesService.Api.Controllers
                     else
                     {
                         itemList.ReleaseStatus = false;
-                        rfqDetailsByRfqNumber.IsSourcing = false;
-                        rfqDetailsByRfqNumber.IsCsComplete = false;
-                        rfqDetailsByRfqNumber.CsComplete = CsStatus.CsNotYetCompleted;
+                        oldversionRFQdetails.IsSourcing = false;
+                        oldversionRFQdetails.IsCsComplete = false;
+                        oldversionRFQdetails.CsComplete = CsStatus.CsNotYetCompleted;
                         if (flag == 0)
                         {
-                            rfqDetailsByRfqNumber.IsCsRelease = CsRelease.NotYetReleased;
-                            rfqDetailsByRfqNumber.IsEnggRelease = CsRelease.NotYetReleased;
+                            oldversionRFQdetails.IsCsRelease = CsRelease.NotYetReleased;
+                            oldversionRFQdetails.IsEnggRelease = CsRelease.NotYetReleased;
                         }
                         else
                         {
-                            rfqDetailsByRfqNumber.IsCsRelease = CsRelease.PartiallyRelease;
-                            rfqDetailsByRfqNumber.IsEnggRelease = CsRelease.PartiallyRelease;
+                            oldversionRFQdetails.IsCsRelease = CsRelease.PartiallyRelease;
+                            oldversionRFQdetails.IsEnggRelease = CsRelease.PartiallyRelease;
                         }
-                        rfqDetailsByRfqNumber.IsEnggComplete = false;
-                        rfqDetailsByRfqNumber.EnggComplete = EnggStatus.EnggNotYetCompleted;
+                        oldversionRFQdetails.IsEnggComplete = false;
+                        oldversionRFQdetails.EnggComplete = EnggStatus.EnggNotYetCompleted;
                     }
                     updatedItems.Add(itemList);
                 }
+                oldversionRFQdetails.Id = 0;
+                _rfqRepository.Create(oldversionRFQdetails);
+                rfqCustomerSupportUpdateDto.RfqCustomerSupportItems = null;
                 rfqCustomerSupportUpdateDto.RfqCustomerSupportItems = updatedItems;
 
                 var rfqCSItemDto = rfqCustomerSupportUpdateDto.RfqCustomerSupportItems;
@@ -2305,18 +2319,43 @@ namespace Tips.SalesService.Api.Controllers
                         rfqCsItemList.Add(rfqCSItemDetail);
                     }
                 }
-                updateRfqCS.RfqCustomerSupportItems = rfqCsItemList;
-                var data = _mapper.Map(rfqCustomerSupportUpdateDto, updateRfqCS);
-                await _repository.UpdateRfqcsRevNo(data);
-                rfqDetailsByRfqNumber.Id = 0;
-                _rfqRepository.Create(rfqDetailsByRfqNumber);
-                // creating engg for new RFQ version
-                string serverKey = GetServerKey();
-                if (!serverKey.Equals("keus"))
+
+                var rfqCSnotedto = rfqCustomerSupportUpdateDto.RfqCustomerSupportNotes;
+                var rfqCsnotelist = new List<RfqCustomerSupportNotes>();
+                if (rfqCSnotedto != null)
                 {
-                    await _rfqenggRepository.UpdateRfqEnggRev(rfqDetailsByRfqNumber.RfqNumber, rfqDetailsByRfqNumber.RevisionNumber);
+                    for (int i = 0; i < rfqCSnotedto.Count; i++)
+                    {
+                        RfqCustomerSupportNotes rfqCSnoteDetail = _mapper.Map<RfqCustomerSupportNotes>(rfqCSnotedto[i]);
+                        rfqCsnotelist.Add(rfqCSnoteDetail);
+                    }
                 }
-                _rfqenggRepository.SaveAsync();
+
+                RfqCustomerSupport oldCSdetails = await _repository.GetRfqCustomerSupportDetailsbyrfqnumber(rfqCustomerSupportUpdateDto.RfqNumber);
+                oldCSdetails.Id = 0;
+                oldCSdetails.CustomerName = oldversionRFQdetails.CustomerName;
+                oldCSdetails.RevisionNumber = oldversionRFQdetails.RevisionNumber;
+                oldCSdetails.CustomerAliasName = oldversionRFQdetails.CustomerAliasName;
+                oldCSdetails.CustomerRfqNumber = oldversionRFQdetails.CustomerRfqNumber;
+                oldCSdetails.RequestReceivedate = oldversionRFQdetails.RequestReceivedate;
+                oldCSdetails.QuoteExpectdate = oldversionRFQdetails.QuoteExpectdate;
+                oldCSdetails.TypeOfSolution = oldversionRFQdetails.TypeOfSolution;
+                oldCSdetails.ProductType = oldversionRFQdetails.ProductType;
+                oldCSdetails.Unit = oldversionRFQdetails.Unit;
+                oldCSdetails.RfqCustomerSupportItems = rfqCsItemList;
+                oldCSdetails.RfqCustomerSupportNotes = rfqCsnotelist;
+
+
+                await _repository.UpdateRfqcsRevNo(oldCSdetails);
+
+                // creating engg for new RFQ version
+                //string serverKey = GetServerKey();
+                //if (!serverKey.Equals("keus"))
+                //{
+                //    await _rfqenggRepository.UpdateRfqEnggRev(oldversionRFQdetails.RfqNumber, oldversionRFQdetails.RevisionNumber, oldversionRFQdetails);
+                //    _rfqenggRepository.SaveAsync();
+                //}
+
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Updated Successfully";
