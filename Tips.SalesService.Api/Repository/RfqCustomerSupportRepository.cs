@@ -652,9 +652,7 @@ namespace Tips.SalesService.Api.Repository
             rfq.CreatedBy = "Admin";
             rfq.CreatedOn = date.Date;
             var version = 1;
-            rfq.RevisionNumber = version;
-            //Guid rfqNumber = Guid.NewGuid();
-            //rfq.RfqNumber = "RFQ-" + rfqNumber.ToString();
+            rfq.RevisionNumber = version;            
             rfq.Unit = "Bangalore";
             var result = await Create(rfq);
             return result.Id;
@@ -667,11 +665,6 @@ namespace Tips.SalesService.Api.Repository
         }
         public async Task<string> GetRfqNumberAutoIncrementNumber()
         {
-            //var getRfqNumberAutoIncrementNumber = await _tipsSalesServiceDbContext.Rfqs.OrderByDescending(x => x.Id)
-            // .Select(x => x.RfqNumber)
-            // .FirstOrDefaultAsync();
-
-            //return getRfqNumberAutoIncrementNumber;
             var rfqNumbers = await _tipsSalesServiceDbContext.Rfqs
        .Select(x => x.RfqNumber)
        .ToListAsync();
@@ -710,18 +703,7 @@ namespace Tips.SalesService.Api.Repository
                     RevisionNumber = x.RevisionNumber
                 }).OrderByDescending(x => x.Id).ToListAsync();
 
-            return latestRfqs;
-            //IEnumerable<RfqNumberListDto> getAllActiveRfqNumberList = await _tipsSalesServiceDbContext.Rfqs
-            //                    .Select(x => new RfqNumberListDto()
-            //                    {
-            //                        Id = x.Id,
-            //                        RfqNumber = x.RfqNumber,
-            //                        CustomerName = x.CustomerName,
-            //                        RevisionNumber = x.RevisionNumber
-            //                    })
-            //                  .OrderByDescending(x => x.Id).ToListAsync();
-
-            //return getAllActiveRfqNumberList;
+            return latestRfqs;            
         }
 
         public async Task<IEnumerable<RfqNumberListDto>> GetAllRfqNumberList()
@@ -748,26 +730,20 @@ namespace Tips.SalesService.Api.Repository
         }
 
         public async Task<PagedList<Rfq>> GetAllRfq([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
-        { 
-
+        {
             int searchValueInt;
             bool isSearchValueInt = int.TryParse(searchParammes.SearchValue, out searchValueInt);
-
-            var rfqDetails = FindAll()
-                .Where(inv =>
-                    (string.IsNullOrWhiteSpace(searchParammes.SearchValue) ||
-                    inv.RfqNumber.Contains(searchParammes.SearchValue) ||
-                    inv.LeadId.Contains(searchParammes.SearchValue) ||
-                    inv.CustomerId.Contains(searchParammes.SearchValue) ||
-                    inv.CustomerName.Contains(searchParammes.SearchValue)) &&
+            var rfqDetails = FindAll().Where(inv =>
+                   ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.RfqNumber.Contains(searchParammes.SearchValue) ||
+                    inv.LeadId.Contains(searchParammes.SearchValue) || inv.CustomerId.Contains(searchParammes.SearchValue) ||
+                    inv.CustomerName.Contains(searchParammes.SearchValue)) && 
                     (!isSearchValueInt || inv.RevisionNumber == searchValueInt) && inv.IsModified == false)
+                    &&(inv.RevisionNumber== _tipsSalesServiceDbContext.Rfqs.Where(r => r.RfqNumber == inv.RfqNumber).Max(r => r.RevisionNumber)))
                 .OrderByDescending(x => x.Id);
-
-
+                    
             return PagedList<Rfq>.ToPagedList(rfqDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-
-
+                
         public async Task<Rfq> GetRfqById(int id)
         {
             var getRfqById = await _tipsSalesServiceDbContext.Rfqs.Where(x => x.Id == id)

@@ -46,6 +46,45 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetAllReturnDeliveryOrder([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParams)
+        {
+            ServiceResponse<IEnumerable<BTODeliveryOrderHistory>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderHistory>>();
+            try
+            {
+                var btoHistoryDetails = await _bTODeliveryOrderHistoryRepository.GetAllReturnDeliveryOrder(pagingParameter, searchParams);
+                var metadata = new
+                {
+                    btoHistoryDetails.TotalCount,
+                    btoHistoryDetails.PageSize,
+                    btoHistoryDetails.CurrentPage,
+                    btoHistoryDetails.HasNext,
+                    btoHistoryDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all BTODeliveryOrderHistories");
+                var result = _mapper.Map<IEnumerable<BTODeliveryOrderHistory>>(btoHistoryDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all BTODeliveryOrderHistories";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+
+        [HttpGet]
         public async Task<IActionResult> GetAllBtoHistoryDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParams)
         {
             ServiceResponse<IEnumerable<BTODeliveryOrderHistory>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderHistory>>();

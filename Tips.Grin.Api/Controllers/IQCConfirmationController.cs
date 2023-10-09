@@ -411,7 +411,7 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
+        //create Iqc
         [HttpPost]
         public async Task<IActionResult> CreateIqc([FromBody] IQCConfirmationPostDto iQCConfirmationPostDto)
         {

@@ -272,8 +272,9 @@ namespace Repository
             List<EnggBomFGItemNumberWithQtyDto> enggBomFGItemNumberWithQtyDtos = new List<EnggBomFGItemNumberWithQtyDto>();
             foreach (var rfqfgitem in itemNumberList)
             {
-                int fgdetails = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == rfqfgitem.ItemNumber && x.RevisionNumber == rfqfgitem.CostingBomVersionNo)
-                    .Select(x => x.BOMId).FirstOrDefaultAsync();
+                int fgdetails = await _tipsMasterDbContext.EnggBoms.Where(x=>x.ItemNumber==rfqfgitem.ItemNumber && x.RevisionNumber == rfqfgitem.CostingBomVersionNo)
+                    .Select(x => x.BOMId)
+                    .FirstOrDefaultAsync();
                 var fgbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == fgdetails).OrderByDescending(x => x.PartType).ToListAsync();
                 if (fgbomdetails != null)
                 {
@@ -302,7 +303,7 @@ namespace Repository
                         }
                         if (childofFG.PartType == PartType.SA)
                         {
-                            var subSA = await GetSABomItemsChildDetails(childofFG.ItemNumber, childofFG.Quantity, childofFG.Version);
+                            var subSA = await GetSABomItemsChildDetails(childofFG.ItemNumber, childofFG.Quantity);//, childofFG.Version);
                             foreach (var existingpp in subSA)
                             {
                                 int flag = 0;
@@ -330,10 +331,12 @@ namespace Repository
             }
             return enggBomFGItemNumberWithQtyDtos;
         }
-        public async Task<List<EnggBomFGItemNumberWithQtyDto>> GetSABomItemsChildDetails(string SAitemnumber, decimal SAQty, string SAversion)
+        public async Task<List<EnggBomFGItemNumberWithQtyDto>> GetSABomItemsChildDetails(string SAitemnumber, decimal SAQty)//, string SAversion)
         {
             List<EnggBomFGItemNumberWithQtyDto> enggBomSAItemNumberWithQtyDtos = new List<EnggBomFGItemNumberWithQtyDto>();
-            int sadetails = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == SAitemnumber && x.RevisionNumber == decimal.Parse(SAversion)).Select(x => x.BOMId).FirstOrDefaultAsync();
+            int sadetails = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == SAitemnumber).OrderByDescending(x=>x.RevisionNumber)
+                //&& x.RevisionNumber == decimal.Parse(SAversion))
+                .Select(x => x.BOMId).FirstOrDefaultAsync();
             var sabomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == sadetails).OrderByDescending(x => x.PartType).ToListAsync();
             if (sabomdetails != null)
             {
@@ -362,7 +365,7 @@ namespace Repository
                     }
                     if (childofSA.PartType == PartType.SA)
                     {
-                        var subSA = await GetSABomItemsChildDetails(childofSA.ItemNumber, childofSA.Quantity, childofSA.Version);
+                        var subSA = await GetSABomItemsChildDetails(childofSA.ItemNumber, childofSA.Quantity);//, childofSA.Version);
                         foreach (var existingpp in subSA)
                         {
                             int flag = 0;
