@@ -10,6 +10,7 @@ using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Tls.Crypto.Impl.BC;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
@@ -22,17 +23,24 @@ namespace Tips.SalesService.Api.Repository
     public class SalesOrderRepository : RepositoryBase<SalesOrder>, ISalesOrderRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-        public SalesOrderRepository(TipsSalesServiceDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public SalesOrderRepository(TipsSalesServiceDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsSalesServiceDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<long> CreateSalesOrder(SalesOrder salesOrder)
         {
             var date = DateTime.Now;
-            salesOrder.CreatedBy = "Admin";
+            salesOrder.CreatedBy = _createdBy;
             salesOrder.CreatedOn = date.Date;
-            salesOrder.Unit = "Banglore";
+            salesOrder.Unit = _unitname;
             var version = 1;
             salesOrder.RevisionNumber = (version);
             var result = await Create(salesOrder);
@@ -337,7 +345,9 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateSalesOrder(SalesOrder salesOrder)
         {
-            salesOrder.LastModifiedBy = "Admin";
+            salesOrder.CreatedBy = salesOrder.CreatedBy;
+            salesOrder.CreatedOn = salesOrder.CreatedOn;
+            salesOrder.LastModifiedBy = _createdBy;
             salesOrder.LastModifiedOn = DateTime.Now;
             var oldRevisionNumber = _tipsSalesServiceDbContext.SalesOrders
                .Where(x => x.SalesOrderNumber == salesOrder.SalesOrderNumber)

@@ -1393,10 +1393,55 @@ namespace Tips.Purchase.Api.Controllers
                     }
                 }
             }
-            //
-
 
             _poItemsRepository.SaveAsync();
+            return Ok();
+        }
+        //pass data from grin qty using _httpclient service to purchase
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePoStatus([FromBody] List<PurchaseOrderUpdateQtyDetailsDto> purchaseOrderUpdateQtyDetails)
+        {
+            foreach (var item in purchaseOrderUpdateQtyDetails)
+            {
+                IEnumerable<PoItem> poItems = await _poItemsRepository.GetPoItemDetailsByPONumberandItemNo(item.ItemNumber, item.PONumber);
+              
+                foreach (var poItem in poItems)
+                {
+                    if(poItem.Qty == item.Qty)
+                    {
+                        poItem.PoStatus = PoStatus.Closed;
+                        await _poItemsRepository.UpdatePOOrderItem(poItem);
+
+                    }
+                    else
+                    {
+                        poItem.PoStatus = PoStatus.PartiallyClosed;
+                        await _poItemsRepository.UpdatePOOrderItem(poItem);
+                    }
+                  
+                }
+            }
+            _poItemsRepository.SaveAsync();
+
+            
+                var poItemsPartiallyClosedStatusCount = await _poItemsRepository.GetPoItemsPartiallyClosedStatusCount(purchaseOrderUpdateQtyDetails[0].PONumber);
+
+                if (poItemsPartiallyClosedStatusCount != 0)
+                {
+                    var purchaseOrderDetails = await _repository.GetPurchaseOrderByPONumber(purchaseOrderUpdateQtyDetails[0].PONumber);
+                    purchaseOrderDetails.PoStatus = PoStatus.PartiallyClosed;
+                    await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
+                    
+                }
+                else
+                {
+                    var purchaseOrderDetails = await _repository.GetPurchaseOrderByPONumber(purchaseOrderUpdateQtyDetails[0].PONumber);
+                    purchaseOrderDetails.PoStatus = PoStatus.Closed;
+                    await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
+                }
+            _repository.SaveAsync();
+
             return Ok();
         }
         //[HttpPut("{id}")]

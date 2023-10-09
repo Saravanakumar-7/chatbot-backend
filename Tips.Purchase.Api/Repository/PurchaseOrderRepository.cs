@@ -796,6 +796,14 @@ namespace Tips.Purchase.Api.Repository
 
             return getPODetailsByPONOandItemNo;
         }
+        public async Task<IEnumerable<PoItem>> GetPoItemDetailsByPONumberandItemNo(string ItemNumber, string PONumber)
+        {
+            var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContexts.PoItems
+                 .Where(x => x.ItemNumber == ItemNumber && x.PONumber == PONumber)
+                          .ToListAsync();
+
+            return getPODetailsByPONOandItemNo;
+        }
         //aravind
 
 
@@ -925,7 +933,13 @@ namespace Tips.Purchase.Api.Repository
             string result = $"PoItem of Detail {poItem.Id} is updated successfully!";
             return result;
         }
+        public async Task<int?> GetPoItemsPartiallyClosedStatusCount(string poNumber)
+        {
+            var poItemsPartiallyClosedStatusCount = _tipsPurchaseDbContext.PoItems.Where(x => x.PONumber == poNumber 
+                                                            && x.PoStatus == PoStatus.PartiallyClosed).Count();
 
+            return poItemsPartiallyClosedStatusCount;
+        }
 
 
 
