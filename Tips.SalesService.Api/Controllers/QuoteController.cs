@@ -324,7 +324,7 @@ namespace Tips.SalesService.Api.Controllers
             [HttpPost]
             public async Task<IActionResult> ChangeRevisionNumber([FromBody] QuoteUpdateDto quotePostDto)
             {
-                ServiceResponse<QuoteDto> serviceResponse = new ServiceResponse<QuoteDto>();
+                ServiceResponse<QuotePostDto> serviceResponse = new ServiceResponse<QuotePostDto>();
 
                 try
                 {

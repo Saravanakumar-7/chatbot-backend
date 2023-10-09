@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using Org.BouncyCastle.Ocsp;
 using System.Linq;
+using System.Security.Claims;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.DTOs;
@@ -14,17 +15,24 @@ namespace Tips.SalesService.Api.Repository
     public class QuoteRepository : RepositoryBase<Quote>, IQuoteRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-        public QuoteRepository(TipsSalesServiceDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public QuoteRepository(TipsSalesServiceDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsSalesServiceDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<long> CreateQuote(Quote quote)
         {
             var date = DateTime.Now;
-            quote.CreatedBy = "Admin";
+            quote.CreatedBy = _createdBy;
             quote.CreatedOn = date.Date;
-            quote.Unit = "Bangalore";
+            quote.Unit = _unitname;
             var version = 1;
             quote.RevisionNumber = Convert.ToDecimal(version);
             var result = await Create(quote);
@@ -383,7 +391,9 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateQuote(Quote quote)
         {
-            quote.LastModifiedBy = "Admin";
+            quote.CreatedBy = quote.CreatedBy;
+            quote.CreatedOn = quote.CreatedOn;
+            quote.LastModifiedBy = _createdBy;
             quote.LastModifiedOn = DateTime.Now;
             Update(quote);
             string result = $"Quote of Detail {quote.Id} is updated successfully!";

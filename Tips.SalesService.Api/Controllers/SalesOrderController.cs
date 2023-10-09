@@ -601,7 +601,7 @@ namespace Tips.SalesService.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSalesOrder(int id, [FromBody] SalesOrderUpdateDto salesOrderDtoUpdate)
         {
-            ServiceResponse<SalesOrderUpdateDto> serviceResponse = new ServiceResponse<SalesOrderUpdateDto>();
+            ServiceResponse<SalesOrderPostDto> serviceResponse = new ServiceResponse<SalesOrderPostDto>();
             try
             {
                 if (salesOrderDtoUpdate is null)

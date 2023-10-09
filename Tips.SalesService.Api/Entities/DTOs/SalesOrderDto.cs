@@ -183,7 +183,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Required]
         public string Unit { get; set; }
-
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
         public List<SalesOrderItemsUpdateDto>? SalesOrderItemsUpdateDtos { get; set; }
         public List<SalesOrderAdditionalChargesUpdateDto>? SalesOrderAdditionalChargesUpdateDtos { get; set; }
     }

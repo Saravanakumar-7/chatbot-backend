@@ -141,7 +141,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? GeneralDiscount { get; set; }
         public string? Remarks { get; set; }
-
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
         public List<QuoteGeneralUpdateDto>? QuoteGeneralUpdateDtos { get; set; }
         public List<QuoteAdditionalChargesUpdateDto>? QuoteAdditionalChargesUpdateDtos { get; set; }
         public List<QuoteRFQNotesUpdateDto>? QuoteRFQNotesUpdateDtos { get; set; }
