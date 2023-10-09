@@ -333,6 +333,19 @@ namespace Tips.Warehouse.Api.Repository
             return result.Id;
         }
 
+        public async Task<PagedList<BTODeliveryOrderHistory>> GetAllReturnDeliveryOrder([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParams)
+        {
+            var getAllBTODetails = _tipsWarehouseDbContext.BTODeliveryOrderHistories.OrderByDescending(x => x.Id)
+                    .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue))
+                    || (string.IsNullOrEmpty(searchParams.SearchValue)
+                    || inv.BTONumber.Contains(searchParams.SearchValue)
+                    || inv.PONumber.Contains(searchParams.SearchValue)
+                    || inv.CustomerName.Contains(searchParams.SearchValue)))&&(inv.UniqeId!=null)   );
+
+
+            return PagedList<BTODeliveryOrderHistory>.ToPagedList(getAllBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
         public async Task<PagedList<BTODeliveryOrderHistory>> GetAllBtoHistoryDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParams)
         {
             var getAllBTODetails = FindAll().OrderByDescending(x => x.Id)
