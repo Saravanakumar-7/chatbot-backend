@@ -14,6 +14,7 @@ namespace Tips.Production.Api.Entities
         public string? MRNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public string? FGItemNumber { get; set; }
+
         public PartType ShopOrderType { get; set; }
         public string? ShopOrderNumber { get; set; }
         public string? IssuedBy { get; set; }

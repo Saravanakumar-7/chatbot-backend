@@ -273,7 +273,8 @@ namespace Tips.SalesService.Api.Controllers
 
         // POST api/<PurchaseOrderController>
         [HttpPost]
-        public async Task<IActionResult> CreateSalesOrder([FromBody] SalesOrderPostDto salesOrderDtoPost)
+        public async Task<IActionResult> 
+            CreateSalesOrder([FromBody] SalesOrderPostDto salesOrderDtoPost)
         {
             ServiceResponse<SalesOrderPostDto> serviceResponse = new ServiceResponse<SalesOrderPostDto>();
             try
