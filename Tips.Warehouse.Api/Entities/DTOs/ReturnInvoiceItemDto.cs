@@ -17,7 +17,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal InvoicedQty { get; set; }
         public string? UOM { get; set; }
 
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
 
         public int InvoicePartsId { get; set; }
 
@@ -65,7 +65,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal InvoicedQty { get; set; }
         public string? UOM { get; set; }
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
 
         public int InvoicePartsId { get; set; }
 

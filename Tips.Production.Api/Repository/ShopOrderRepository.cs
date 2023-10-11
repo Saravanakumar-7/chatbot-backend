@@ -60,6 +60,25 @@ namespace Tips.Production.Api.Repository
                 throw ex;
             }
         }
+        public async Task<string> GenerateSONumberForKeus()
+        {
+            using var transaction = await _tipsProductionDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var poNumberEntity = await _tipsProductionDbContext.SONumbers.SingleAsync();
+                poNumberEntity.CurrentValue += 1;
+                _tipsProductionDbContext.Update(poNumberEntity);
+                await _tipsProductionDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"SHO-{poNumberEntity.CurrentValue:D5}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
 
         public async Task<string> GenerateSONumberForAvision()
         {

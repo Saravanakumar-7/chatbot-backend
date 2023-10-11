@@ -1597,20 +1597,22 @@ namespace Tips.SalesService.Api.Controllers
                 ////var newcount = await _rfqRepository.GetRfqNumberAutoIncrementCount(date);
                 if (serverKey == "trasccon")
                 {
-                    var latestRfqNo = await _rfqRepository.GetRfqNumberAutoIncrementNumber();
+                    var rfqNumber = await _rfqRepository.GenerateRFQNumberForTransccon();
+                    createRfq.RfqNumber = rfqNumber;
+                    //var latestRfqNo = await _rfqRepository.GetRfqNumberAutoIncrementNumber();
 
-                    if (latestRfqNo == null)
-                    {
-                        int num = 0;
-                        createRfq.RfqNumber = "TISPL-" + (num + 1);
-                    }
-                    else
-                    {
-                        //string result = latestRfqNo.Substring(0, latestRfqNo.IndexOf("-")).Trim();
-                        //string spliValue = latestRfqNo.Split('-').Last();
-                        //int num = Int32.Parse(spliValue);
-                        createRfq.RfqNumber = latestRfqNo;
-                    }
+                    //if (latestRfqNo == null)
+                    //{
+                    //    int num = 0;
+                    //    createRfq.RfqNumber = "TISPL-" + (num + 1);
+                    //}
+                    //else
+                    //{
+                    //    //string result = latestRfqNo.Substring(0, latestRfqNo.IndexOf("-")).Trim();
+                    //    //string spliValue = latestRfqNo.Split('-').Last();
+                    //    //int num = Int32.Parse(spliValue);
+                    //    createRfq.RfqNumber = latestRfqNo;
+                    //}
                 }
                 else if (serverKey == "keus")
                 {

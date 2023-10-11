@@ -796,10 +796,10 @@ namespace Tips.Purchase.Api.Repository
 
             return getPODetailsByPONOandItemNo;
         }
-        public async Task<IEnumerable<PoItem>> GetPoItemDetailsByPONumberandItemNo(string ItemNumber, string PONumber)
+        public async Task<IEnumerable<PoItem>> GetPoItemDetailsByPONumberandItemNo(string ItemNumber, string PONumber,int poItemId)
         {
             var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContexts.PoItems
-                 .Where(x => x.ItemNumber == ItemNumber && x.PONumber == PONumber)
+                 .Where(x => x.ItemNumber == ItemNumber && x.PONumber == PONumber && x.Id == poItemId)
                           .ToListAsync();
 
             return getPODetailsByPONOandItemNo;

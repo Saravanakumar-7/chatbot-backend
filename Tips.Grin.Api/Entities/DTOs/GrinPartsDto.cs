@@ -116,7 +116,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public string ItemDescription { get; set; }
         public string? PONumber { get; set; }
-
+        public int PoItemId { get; set; }
         public string? ItemNumber { get; set; }
 
         [Precision(18, 3)]
@@ -241,6 +241,13 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public decimal? Qty { get; set; }
         public string? PONumber { get; set; }
+    }
+    public class GrinQtyPoStatusUpdateDto
+    {
+        public string? ItemNumber { get; set; }
+        public decimal? Qty { get; set; }
+        public string? PONumber { get; set; }
+        public int PoItemId { get; set; }
     }
     public class GrinPartsItemMasterEnggDto
     {

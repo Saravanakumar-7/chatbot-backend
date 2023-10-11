@@ -444,6 +444,17 @@ namespace Tips.Production.Api.Controllers
                     var soNumber = await _shopOrderRepository.GenerateSONumberForAvision();
                     shopOrder.ShopOrderNumber = soNumber;
                 }
+                else if(serverKey == "keus")
+                {
+                   
+                    var date = DateTime.Now;
+                    var days = Convert.ToString(date.Day.ToString("D2"));
+                    var months = Convert.ToString(date.Month.ToString("D2"));
+                    var years = Convert.ToString(date.ToString("yy"));
+                    var dateFormat = days + months + years;
+                    var soNumber = await _shopOrderRepository.GenerateSONumberForKeus();
+                    shopOrder.ShopOrderNumber = dateFormat + soNumber;
+                }
                 else
                 {
                     Guid shopOrderNumber = Guid.NewGuid();

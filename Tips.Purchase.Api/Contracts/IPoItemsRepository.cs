@@ -21,6 +21,6 @@ namespace Tips.Purchase.Api.Contracts
         Task<List<OpenPoQuantityDto>> GetListOfOpenPOQtyByItemNoList(List<string> itemNumberList);
         Task<PoItem> GetPoItemDetailsById(int poItemId);
         Task<int?> GetPoItemsPartiallyClosedStatusCount(string poNumber);
-        Task<IEnumerable<PoItem>> GetPoItemDetailsByPONumberandItemNo(string ItemNumber, string PONumber);
+        Task<IEnumerable<PoItem>> GetPoItemDetailsByPONumberandItemNo(string ItemNumber, string PONumber, int poItemId);
     }
 }

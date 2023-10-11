@@ -815,7 +815,8 @@ namespace Tips.Grin.Api.Controllers
 
                 //Update PoStatus in Purchase order And PoItem table
 
-                var jsonCon = JsonConvert.SerializeObject(grinPartsDetail);
+                var grinPartsDetails = _mapper.Map<List<GrinQtyPoStatusUpdateDto>>(grinPartsDto);
+                var jsonCon = JsonConvert.SerializeObject(grinPartsDetails);
                 var datass = new StringContent(jsonCon, Encoding.UTF8, "application/json");
                 var result = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdatePoStatus"), datass);
 

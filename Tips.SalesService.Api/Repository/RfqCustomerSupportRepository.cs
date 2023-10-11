@@ -602,6 +602,25 @@ namespace Tips.SalesService.Api.Repository
                 throw ex;
             }
         }
+        public async Task<string> GenerateRFQNumberForTransccon()
+        {
+            using var transaction = await _tipsSalesServiceDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var rfqNumberEntity = await _tipsSalesServiceDbContext.RFQNos.SingleAsync();
+                rfqNumberEntity.CurrentValue += 1;
+                _tipsSalesServiceDbContext.Update(rfqNumberEntity);
+                await _tipsSalesServiceDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"TISPL-{rfqNumberEntity.CurrentValue:D4}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
         //public async Task<string> GenerateRFQTrascconNumber()
         //{
         //    using var transaction = await _tipsSalesServiceDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);

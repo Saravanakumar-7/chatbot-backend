@@ -33,6 +33,7 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<ListOfShopOrderDto>> GetAllActiveShopOrderNoListByProjectNo(string projectNo, PartType partType);
         Task<string> GenerateSONumberForAvision();
         Task<string> GenerateSONumber();
+        Task<string> GenerateSONumberForKeus();
         public void SaveAsync();
     }
 }

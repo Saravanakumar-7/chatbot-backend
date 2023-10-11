@@ -233,25 +233,26 @@ namespace Tips.Warehouse.Api.Controllers
                             await _inventoryRepository.CreateInventory(inventory);
                             _inventoryRepository.SaveAsync();
                         }
-                         
+
                         //add return details in to inventory table
 
-                        //InventoryTranction inventoryTranction = new InventoryTranction();
-                        //inventoryTranction.PartNumber = returnInvoiceItemsList[i].FGPartNumber;
-                        //inventoryTranction.MftrPartNumber = returnInvoiceItemsList[i].FGPartNumber;
-                        //inventoryTranction.Description = returnInvoiceItemsList[i].Description;
-                        //inventoryTranction.Issued_Quantity = ReturnQty;
-                        //inventoryTranction.UOM = returnInvoiceItemsList[i].UOM;
-                        //inventoryTranction.Issued_DateTime = DateTime.Now;
-                        //inventoryTranction.ReferenceID = returnInvoiceDetails.InvoiceNumber;
-                        //inventoryTranction.ReferenceIDFrom = "Return Invoice";
-                        //inventoryTranction.From_Location = "Invoice";
-                        //inventoryTranction.TO_Location = "FG";
-                        //inventoryTranction.Remarks = returnInvoiceItemsList[i].Remarks;
+                        InventoryTranction inventoryTranction = new InventoryTranction();
+                        inventoryTranction.PartNumber = returnInvoiceItemsList[i].FGPartNumber;
+                        inventoryTranction.MftrPartNumber = returnInvoiceItemsList[i].FGPartNumber;
+                        inventoryTranction.Description = returnInvoiceItemsList[i].Description;
+                        inventoryTranction.Issued_Quantity = ReturnQty;
+                        inventoryTranction.UOM = returnInvoiceItemsList[i].UOM;
+                        inventoryTranction.Issued_DateTime = DateTime.Now;
+                        inventoryTranction.ReferenceID = returnInvoiceDetails.InvoiceNumber;
+                        inventoryTranction.ReferenceIDFrom = "Return Invoice";
+                        inventoryTranction.From_Location = "Invoice";
+                        inventoryTranction.TO_Location = "FG";
+                        inventoryTranction.Remarks = returnInvoiceItemsList[i].Remarks;
+                        inventoryTranction.Warehouse = "FG";
 
-                        //await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
-                        //_inventoryTranctionRepository.SaveAsync();
-                         
+                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
+                        _inventoryTranctionRepository.SaveAsync();
+
 
                         //update Dispatch Qty in Bto Delivery Order Table
                         int getBtoDeliveryOrderPartsId = returnInvoiceItemDto[i].BtoDeliveryOrderPartsId;
