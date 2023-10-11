@@ -502,40 +502,18 @@ namespace Tips.Production.Api.Controllers
                             Unit = materialRequestUpdateDto.Unit,
 
                         };
-                        inventoryDtos.Add(inventoryDtoForMaterialRequest);
+                        inventoryDtos.Add(inventoryDtoForMaterialRequest);                     
+
                     }
-                    
 
-                }
-
-                var jsons = JsonConvert.SerializeObject(inventoryDtos);
-                var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                var responses = await _httpClient.PostAsync(string.Concat(_config["SOMaterialIssueTrackerAPI"],"CreateMaterialRequestOnSOMaterialIssueTracker"), datas);
-
-                //InventoryDtoForMaterialRequest inventoryDtoForMaterialRequest = new InventoryDtoForMaterialRequest();
-                //inventoryDtoForMaterialRequest.PartNumber = materialItemDetail.PartNumber;
-                //inventoryDtoForMaterialRequest.ProjectNumber = projectNo;
-                //inventoryDtoForMaterialRequest.DataFrom = "MR";
-                //inventoryDtoForMaterialRequest.IssueQty = materialItemDetail.IssuedQty;
-                //inventoryDtoForMaterialRequest.ShopOrderNumber = shopOrderNumber;
-                //var json1 = JsonConvert.SerializeObject(inventoryDtoForMaterialRequest);
-
-                //var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
-                //var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnMaterialIssue"), data1);
-
-                //var materialRequestDetails = _mapper.Map<List<UpdateInventoryBalanceQty>>(materialReqItemList);
-
-                //var json = JsonConvert.SerializeObject(materialRequestDetails);
-                //var data = new StringContent(json, Encoding.UTF8, "application/json");
-                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialInventoryBalanceQty"), data);
-
+                } 
                 var mapperConfiguration = new MapperConfiguration(cfg =>
                 {
                     cfg.CreateMap<MaterialRequests, UpdateInventoryBalanceQty>()
                     .ForMember(dest => dest.ProjectNumber, opt => opt.MapFrom(src => src.ProjectNumber));
                     cfg.CreateMap<MaterialRequestItems, UpdateInventoryBalanceQty>()
                         .ForMember(dest => dest.PartNumber, opt => opt.MapFrom(src => src.PartNumber))
-                        
+
                         .ForMember(dest => dest.MRNWarehouseList, opt => opt.MapFrom(src => src.MRStockDetails.Select(detail => new InventoryUpdateDtoForMRWarehouse
                         {
                             Warehouse = detail.Warehouse,
@@ -546,20 +524,21 @@ namespace Tips.Production.Api.Controllers
                 });
 
                 var mapper = mapperConfiguration.CreateMapper();
-               
+
                 var materialRequestDetails = materialReqItemList
-                    .Select(item => {
+                    .Select(item =>
+                    {
                         var updateInventoryBalanceQty = mapper.Map<UpdateInventoryBalanceQty>(item);
-                        updateInventoryBalanceQty.ProjectNumber = projectNo; // Assuming projecNo is your variable
+                        updateInventoryBalanceQty.ProjectNumber = projectNo;
                         return updateInventoryBalanceQty;
                     })
                     .ToList();
 
-
                 var json = JsonConvert.SerializeObject(materialRequestDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialInventoryBalanceQty"), data);
-                if(response.StatusCode == HttpStatusCode.InternalServerError)
+
+                if (response.StatusCode == HttpStatusCode.InternalServerError)
                 {
                     _logger.LogError($"Something went wrong inside UpdateMaterialRequest action. Inventory update action MaterialInventoryBalanceQty failed! ");
                     serviceResponse.Data = null;
@@ -567,43 +546,14 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(500, serviceResponse);
-                }
-
-                //var jsonCon = JsonConvert.SerializeObject(materialRequestDetails);
-                //var datass = new StringContent(jsonCon, Encoding.UTF8, "application/json");
-                //var results = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datass);
-                //if (results.StatusCode == HttpStatusCode.InternalServerError)
-                //{
-                //    _logger.LogError($"Something went wrong inside UpdateMaterialRequest action. InventoryTranction update action MaterialInventoryBalanceQty failed! ");
-                //    serviceResponse.Data = null;
-                //    serviceResponse.Message = "Internal server error";
-                //    serviceResponse.Success = false;
-                //    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                //    return StatusCode(500, serviceResponse);
-                //}
+                } 
 
                 updateMaterialReqquest.MaterialRequestItems = materialReqItemList;
                 var updateMaterialReq = _mapper.Map(materialRequestUpdateDto, getMaterialRequest);
                 // updateMaterialReq.MaterialRequestItems = materialReqItemList;
                 updateMaterialReqquest.MrStatus = MaterialStatus.Closed;
                 string result = await _materialRequestRepository.UpdateMaterialRequest(updateMaterialReq);
-                _materialRequestRepository.SaveAsync();
-
-
-
-
-                //update balance qty and Return qty in Inventory table
-
-
-                //JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-                //{
-                //    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                //};
-                //string json = JsonConvert.SerializeObject(updateMaterialReqquest);
-
-
-                //var data = new StringContent(json, Encoding.UTF8, "application/json");
-                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryForMR"), data);
+                _materialRequestRepository.SaveAsync(); 
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "materialReq Updated Successfully";

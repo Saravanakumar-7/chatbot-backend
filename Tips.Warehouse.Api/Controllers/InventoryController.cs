@@ -1073,8 +1073,29 @@ namespace Tips.Warehouse.Api.Controllers
             return shopOrderMaterialIssueTracker;
         }
 
-       
-
+        private static ShopOrderMaterialIssueTracker MRInsertDataToMaterialIssueTracker(string shopOrderNumber, Inventory inventoryDetail, decimal lotNoWiseIssuedQty)
+        { 
+            ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = new ShopOrderMaterialIssueTracker
+            {
+                ShopOrderNumber = shopOrderNumber,
+                Bomversion = 0,
+                PartNumber = inventoryDetail.PartNumber,
+                LotNumber = inventoryDetail.LotNumber,
+                MftrPartNumber = inventoryDetail.MftrPartNumber,
+                Description = inventoryDetail.Description,
+                ProjectNumber = inventoryDetail.ProjectNumber,
+                IssuedQty = lotNoWiseIssuedQty,
+                ConvertedToFgQty = 0,
+                UOM = inventoryDetail.UOM,
+                Warehouse = "WIP",
+                Location = "WIP",
+                Unit = inventoryDetail.Unit,
+                PartType = inventoryDetail.PartType,
+                DataFrom = "Material Request",
+                MRNumber = "NULL"
+            };
+            return shopOrderMaterialIssueTracker;
+        }
 
         private Inventory InsertWipDetailsInInventoryWhenIssuedQtyIsMore(Inventory inventoryDetail, decimal issueQty,string shopOrderNumber)
         {
@@ -1103,6 +1124,38 @@ namespace Tips.Warehouse.Api.Controllers
             wipInventory.shopOrderNo = shopOrderNumber;
             return wipInventory;
         }
+
+        //for material request tracker
+
+        private Inventory MRInsertWipDetailsInInventoryWhenIssuedQtyIsMore(Inventory inventoryDetail, decimal issueQty, string shopOrderNumber)
+        {
+            //Inventory wipInventory = _mapper.Map<Inventory>(inventoryDetail);
+
+            Inventory wipInventory = new Inventory();
+
+            wipInventory.PartNumber = inventoryDetail.PartNumber;
+            wipInventory.LotNumber = inventoryDetail.LotNumber;
+            wipInventory.MftrPartNumber = inventoryDetail.MftrPartNumber;
+            wipInventory.Description = inventoryDetail.Description;
+            wipInventory.ProjectNumber = inventoryDetail.ProjectNumber;
+            wipInventory.UOM = inventoryDetail.UOM;
+            wipInventory.Unit = inventoryDetail.Unit;
+            wipInventory.GrinNo = inventoryDetail.GrinNo;
+            wipInventory.GrinPartId = inventoryDetail.GrinPartId;
+            wipInventory.PartType = inventoryDetail.PartType;
+            wipInventory.GrinMaterialType = inventoryDetail.GrinMaterialType;
+            wipInventory.ReferenceIDFrom = "Material Request";
+            wipInventory.ReferenceID = inventoryDetail.ReferenceID;
+            wipInventory.CreatedOn = DateTime.Now;
+            wipInventory.Balance_Quantity = issueQty;
+            wipInventory.Warehouse = "WIP";
+            wipInventory.Location = "WIP";
+            wipInventory.IsStockAvailable = true;
+            wipInventory.shopOrderNo = shopOrderNumber;
+            return wipInventory;
+        }
+
+
 
 
 
@@ -1155,28 +1208,100 @@ namespace Tips.Warehouse.Api.Controllers
                     foreach (var Location in materialIssueQty.MRNWarehouseList)
                     {
                         decimal issuedQty = Location.Qty;
+                        decimal lotNoWiseIssuedQty = 0;
                         IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNoandLocationandwarehouse(materialIssueQty.PartNumber, Location.Location, Location.Warehouse, materialIssueQty.ProjectNumber);
                         foreach (var invItem in inventories)
                         {
+                            var shopOrderNumber = invItem.shopOrderNo;
                             decimal stock = invItem.Balance_Quantity;
                             if (stock <= issuedQty)
-                            {
-
+                            {   
                                 invItem.Balance_Quantity = 0;
                                 invItem.IsStockAvailable = false;
                                 issuedQty -= stock;
+                                lotNoWiseIssuedQty = stock;
+                                /** Dont Change the Position of IssuedQty and BalanceQty Code in this Method .it should be always last ***********************/
+                                //create inventory transaction
+
+                                Inventory wipInventory = MRInsertWipDetailsInInventoryWhenIssuedQtyIsMore(invItem, issuedQty, shopOrderNumber);
+
+                                await _inventoryRepository.CreateInventory(wipInventory);
+
+                                InventoryTranction inventoryTransaction = new InventoryTranction();
+                                inventoryTransaction.PartNumber = invItem.PartNumber;
+                                inventoryTransaction.MftrPartNumber = invItem.MftrPartNumber;
+                                inventoryTransaction.LotNumber = invItem.LotNumber;
+                                inventoryTransaction.Description = invItem.Description;
+                                inventoryTransaction.PartType = invItem.PartType;
+                                inventoryTransaction.ProjectNumber = invItem.ProjectNumber;
+                                inventoryTransaction.Issued_Quantity = issuedQty;
+                                inventoryTransaction.UOM = invItem.UOM;
+                                inventoryTransaction.Issued_DateTime = DateTime.Now;
+                                inventoryTransaction.ReferenceID = invItem.ReferenceID;
+                                inventoryTransaction.ReferenceIDFrom = invItem.ReferenceIDFrom;
+                                inventoryTransaction.BOM_Version_No = 0;
+                                inventoryTransaction.From_Location = invItem.Location;
+                                inventoryTransaction.TO_Location = "WIP";
+                                inventoryTransaction.Unit = invItem.Unit;
+                                inventoryTransaction.GrinMaterialType = invItem.GrinMaterialType;
+                                inventoryTransaction.Remarks = "Material Request";
+                                inventoryTransaction.IsStockAvailable = invItem.IsStockAvailable;
+                                inventoryTransaction.Warehouse = "WIP";
+                                inventoryTransaction.GrinNo = invItem.GrinNo;
+                                inventoryTransaction.GrinPartId = invItem.GrinPartId;
+                                inventoryTransaction.shopOrderNo = shopOrderNumber;
+
+                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransaction);
 
                             }
                             else
-                            {
+                            {                             
+
                                 invItem.Balance_Quantity -= issuedQty;
+                                lotNoWiseIssuedQty = issuedQty;
+                                 
+                                Inventory wipInventory = MRInsertWipDetailsInInventoryWhenIssuedQtyIsMore(invItem, issuedQty, shopOrderNumber);
+
+                                await _inventoryRepository.CreateInventory(wipInventory);
+
+                                InventoryTranction inventoryTransaction = new InventoryTranction();
+                                inventoryTransaction.PartNumber = invItem.PartNumber;
+                                inventoryTransaction.MftrPartNumber = invItem.MftrPartNumber;
+                                inventoryTransaction.LotNumber = invItem.LotNumber;
+                                inventoryTransaction.Description = invItem.Description;
+                                inventoryTransaction.PartType = invItem.PartType;
+                                inventoryTransaction.ProjectNumber = invItem.ProjectNumber;
+                                inventoryTransaction.Issued_Quantity = lotNoWiseIssuedQty;
+                                inventoryTransaction.UOM = invItem.UOM;
+                                inventoryTransaction.Issued_DateTime = DateTime.Now;
+                                inventoryTransaction.ReferenceID = invItem.ReferenceID;
+                                inventoryTransaction.ReferenceIDFrom = invItem.ReferenceIDFrom;
+                                inventoryTransaction.BOM_Version_No = 0;
+                                inventoryTransaction.From_Location = invItem.Location;
+                                inventoryTransaction.TO_Location = "WIP";
+                                inventoryTransaction.Unit = invItem.Unit;
+                                inventoryTransaction.GrinMaterialType = invItem.GrinMaterialType;
+                                inventoryTransaction.Remarks = "Material Request";
+                                inventoryTransaction.IsStockAvailable = invItem.IsStockAvailable;
+                                inventoryTransaction.Warehouse = "WIP";
+                                inventoryTransaction.GrinNo = invItem.GrinNo;
+                                inventoryTransaction.GrinPartId = invItem.GrinPartId;
+                                inventoryTransaction.shopOrderNo = shopOrderNumber;
+
+                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransaction);
                                 issuedQty = 0;
                             }
                             await _inventoryRepository.UpdateInventory(invItem);
+
+                            ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = MRInsertDataToMaterialIssueTracker(shopOrderNumber,invItem, lotNoWiseIssuedQty);
+                            int transactionId = await _materialIssueTrackerRepository.AddDataToMaterialIssueTracker(shopOrderMaterialIssueTracker);
+
+                            /*********************************** End of Add data to Material Issue Tracker *************************/
+
                             if (issuedQty <= 0)
                             {
                                 break;
-                            }
+                            } 
                         }
 
                     }
@@ -1189,6 +1314,154 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500);
             }
         }
+
+       // public async Task<IActionResult> MaterialInventoryBalanceQty([FromBody] List<UpdateInventoryBalanceQty> updateInventoryBalanceQty)
+       //{
+       //     ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+       //     try
+       //     {
+       //         var inventoryDetails = await _inventoryRepository
+       //                 .GetInventoryDetailsByItemNoandProjectNo(dtoForMaterialIssue.PartNumber, dtoForMaterialIssue.ProjectNumber);
+
+       //         if (inventoryDetails == null || inventoryDetails.Count == 0)
+       //         {
+       //             serviceResponse.Data = null;
+       //             serviceResponse.Message = $"Inventory Details hasn't been found";
+       //             serviceResponse.Success = false;
+       //             serviceResponse.StatusCode = HttpStatusCode.NotFound;
+       //             _logger.LogError($"Inventory with itemNumber: {dtoForMaterialIssue.PartNumber}, is invalid");
+       //             return NotFound(serviceResponse);
+       //         }
+
+       //         decimal issuedQty = dtoForMaterialIssue.IssueQty;
+       //         string shopOrderNumber = dtoForMaterialIssue.ShopOrderNumber;
+       //         for (int i = 0; i < inventoryDetails.Count; i++)
+       //         {
+       //             decimal balanceqty = inventoryDetails[i].Balance_Quantity;
+       //             decimal lotNoWiseIssuedQty = 0;
+       //             if (inventoryDetails[i].Balance_Quantity <= issuedQty)
+       //             {
+
+       //                 inventoryDetails[i].Warehouse = "WIP";
+       //                 inventoryDetails[i].Location = "WIP";
+       //                 inventoryDetails[i].shopOrderNo = shopOrderNumber;
+       //                 inventoryDetails[i].IsStockAvailable = true;
+       //                 lotNoWiseIssuedQty = balanceqty;
+       //                 /** Dont Change the Position of IssuedQty and BalanceQty Code in this Method .it should be always last ***********************/
+       //                 issuedQty -= balanceqty;
+       //                 balanceqty = 0;
+
+
+       //                 InventoryTranction inventoryTransaction = new InventoryTranction();
+       //                 inventoryTransaction.PartNumber = inventoryDetails[i].PartNumber;
+       //                 inventoryTransaction.MftrPartNumber = inventoryDetails[i].MftrPartNumber;
+       //                 inventoryTransaction.LotNumber = inventoryDetails[i].LotNumber;
+       //                 inventoryTransaction.Description = inventoryDetails[i].Description;
+       //                 inventoryTransaction.PartType = inventoryDetails[i].PartType;
+       //                 inventoryTransaction.ProjectNumber = inventoryDetails[i].ProjectNumber;
+       //                 inventoryTransaction.Issued_Quantity = issuedQty;
+       //                 inventoryTransaction.UOM = inventoryDetails[i].UOM;
+       //                 inventoryTransaction.Issued_DateTime = DateTime.Now;
+       //                 inventoryTransaction.ReferenceID = inventoryDetails[i].ReferenceID;
+       //                 inventoryTransaction.ReferenceIDFrom = inventoryDetails[i].ReferenceIDFrom;
+       //                 inventoryTransaction.BOM_Version_No = 0;
+       //                 inventoryTransaction.From_Location = inventoryDetails[i].Location;
+       //                 inventoryTransaction.TO_Location = "WIP";
+       //                 inventoryTransaction.Unit = inventoryDetails[i].Unit;
+       //                 inventoryTransaction.GrinMaterialType = inventoryDetails[i].GrinMaterialType;
+       //                 inventoryTransaction.Remarks = "Issue Material";
+       //                 inventoryTransaction.IsStockAvailable = inventoryDetails[i].IsStockAvailable;
+       //                 inventoryTransaction.Warehouse = "WIP";
+       //                 inventoryTransaction.GrinNo = inventoryDetails[i].GrinNo;
+       //                 inventoryTransaction.GrinPartId = inventoryDetails[i].GrinPartId;
+       //                 inventoryTransaction.shopOrderNo = shopOrderNumber;
+
+       //                 await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransaction);
+
+
+       //             }
+       //             else
+       //             {
+       //                 inventoryDetails[i].Balance_Quantity -= issuedQty;
+
+       //                 lotNoWiseIssuedQty = issuedQty;
+
+       //                 Inventory wipInventory = InsertWipDetailsInInventoryWhenIssuedQtyIsMore(inventoryDetails[i], issuedQty, shopOrderNumber);
+
+       //                 await _inventoryRepository.CreateInventory(wipInventory);
+
+
+       //                 //Add Data to inventory transaction
+
+       //                 InventoryTranction inventoryTransaction = new InventoryTranction();
+       //                 inventoryTransaction.PartNumber = inventoryDetails[i].PartNumber;
+       //                 inventoryTransaction.MftrPartNumber = inventoryDetails[i].MftrPartNumber;
+       //                 inventoryTransaction.LotNumber = inventoryDetails[i].LotNumber;
+       //                 inventoryTransaction.Description = inventoryDetails[i].Description;
+       //                 inventoryTransaction.PartType = inventoryDetails[i].PartType;
+       //                 inventoryTransaction.ProjectNumber = inventoryDetails[i].ProjectNumber;
+       //                 inventoryTransaction.Issued_Quantity = lotNoWiseIssuedQty;
+       //                 inventoryTransaction.UOM = inventoryDetails[i].UOM;
+       //                 inventoryTransaction.Issued_DateTime = DateTime.Now;
+       //                 inventoryTransaction.ReferenceID = inventoryDetails[i].ReferenceID;
+       //                 inventoryTransaction.ReferenceIDFrom = inventoryDetails[i].ReferenceIDFrom;
+       //                 inventoryTransaction.BOM_Version_No = 0;
+       //                 inventoryTransaction.From_Location = inventoryDetails[i].Location;
+       //                 inventoryTransaction.TO_Location = "WIP";
+       //                 inventoryTransaction.Unit = inventoryDetails[i].Unit;
+       //                 inventoryTransaction.GrinMaterialType = inventoryDetails[i].GrinMaterialType;
+       //                 inventoryTransaction.Remarks = "Issue Material";
+       //                 inventoryTransaction.IsStockAvailable = inventoryDetails[i].IsStockAvailable;
+       //                 inventoryTransaction.Warehouse = "WIP";
+       //                 inventoryTransaction.GrinNo = inventoryDetails[i].GrinNo;
+       //                 inventoryTransaction.GrinPartId = inventoryDetails[i].GrinPartId;
+       //                 inventoryTransaction.shopOrderNo = shopOrderNumber;
+
+       //                 await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransaction);
+
+
+
+       //                 /******* Dont Change the Position of IssuedQty and BalanceQty 
+       //                  * Code in this Method. it should be always last ***********************/
+
+       //                 issuedQty = 0;
+       //             }
+
+       //             string result = await _inventoryRepository.UpdateInventory(inventoryDetails[i]);
+
+       //             ///*********************************** Add data to Material Issue Tracker *************************/
+       //             ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = InsertDataToMaterialIssueTracker(dtoForMaterialIssue, inventoryDetails[i], lotNoWiseIssuedQty);
+       //             int transactionId = await _materialIssueTrackerRepository.AddDataToMaterialIssueTracker(shopOrderMaterialIssueTracker);
+
+       //             /*********************************** End of Add data to Material Issue Tracker *************************/
+
+       //             if (issuedQty <= 0)
+       //             {
+       //                 break;
+       //             }
+       //         }
+
+       //         _inventoryRepository.SaveAsync();
+       //         _inventoryTranctionRepository.SaveAsync();
+       //         _materialIssueTrackerRepository.SaveAsync();
+       //         serviceResponse.Data = null;
+       //         serviceResponse.Message = "Updated Successfully";
+       //         serviceResponse.Success = true;
+       //         serviceResponse.StatusCode = HttpStatusCode.OK;
+       //         return Ok(serviceResponse);
+
+       //     }
+       //     catch (Exception ex)
+       //     {
+       //         _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+       //         serviceResponse.Data = null;
+       //         serviceResponse.Message = "Internal Server Error";
+       //         serviceResponse.Success = false;
+       //         serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+       //         return StatusCode(500, serviceResponse);
+       //     }
+       // }
+
 
         [HttpPost]
         public async Task<IActionResult> MaterialReturnNoteInventoryBalanceQty([FromBody] List<MRNUpdateInventoryBalanceQty> updateInventoryBalanceQty)
