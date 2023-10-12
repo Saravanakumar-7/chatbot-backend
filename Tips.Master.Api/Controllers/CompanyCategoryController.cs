@@ -302,7 +302,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> DectivateCompanyCategory(int id)
+        public async Task<IActionResult> DeactivateCompanyCategory(int id)
         {
             ServiceResponse<CompanyCategory> serviceResponse = new ServiceResponse<CompanyCategory>();
 
@@ -333,7 +333,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside DectivateCompanyCategory action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeactivateCompanyCategory action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }

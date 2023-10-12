@@ -2277,9 +2277,8 @@ namespace Tips.SalesService.Api.Controllers
                 int flag = 0;
                 foreach (var itemList in rfqCustomerSupportUpdateDto.RfqCustomerSupportItems)
                 {
-                    bool releaseItem = oldRFQcsReleasedItems.Any(item => item == itemList.ItemNumber);
+                    bool releaseItem = oldRFQcsReleasedItems.Any(item => item == itemList.Id);
                     if (releaseItem)
-                    // if (releaseItem != null)
                     {
                         itemList.ReleaseStatus = true;
                         flag = 1;
@@ -2318,6 +2317,7 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         RfqCustomerSupportItems rfqCSItemDetail = _mapper.Map<RfqCustomerSupportItems>(rfqCSItemDto[i]);
                         rfqCSItemDetail.RfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqCSItemDto[i].RfqCSDeliverySchedule);
+                        rfqCSItemDetail.Id = 0;
                         rfqCsItemList.Add(rfqCSItemDetail);
                     }
                 }

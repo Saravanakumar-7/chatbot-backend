@@ -426,7 +426,7 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Dectivate Successfully";
+                serviceResponse.Message = "Deactivate Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

@@ -71,7 +71,7 @@ namespace Repository
 
         public async Task<string> UpdateBasisOfApproval(BasisOfApproval basisOfApproval)
         {
-            basisOfApproval.LastModifiedBy = _unitname;
+            basisOfApproval.LastModifiedBy = _createdBy;
             basisOfApproval.LastModifiedOn = DateTime.Now;
             Update(basisOfApproval);
             string result = $"Basis Of Approval of Detail {basisOfApproval.Id} is updated successfully!";

@@ -65,7 +65,7 @@ namespace Repository
 
         public async Task<string> UpdateUOM(UOM uom)
         {
-            uom.LastModifiedBy = "Admin";
+            uom.LastModifiedBy = _createdBy;
             uom.LastModifiedOn = DateTime.Now;
             Update(uom);
             string result = $"UOM details of {uom.Id} is updated successfully!";

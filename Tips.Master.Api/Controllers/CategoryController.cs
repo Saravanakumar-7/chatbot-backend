@@ -297,7 +297,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> DectivateCategory(int id)
+        public async Task<IActionResult> DeactivateCategory(int id)
         {
             ServiceResponse<CategoryDto> serviceResponse = new ServiceResponse<CategoryDto>();
             try
@@ -317,14 +317,14 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Returned DectivateCategory";
+                serviceResponse.Message = "Returned DeactivateCategory";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DectivateCategory action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeactivateCategory action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;

@@ -44,6 +44,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqCustomerSupportItemUpdateDto
     {
+        public int? Id { get; set; }
         [Required]
         public string RfqNumber { get; set; }
         public string? ItemNumber { get; set; }

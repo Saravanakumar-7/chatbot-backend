@@ -504,7 +504,7 @@ namespace Tips.SalesService.Api.Repository
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
 
         }
-        public async Task<List<string>> ForcastCsReleasedItemList(string forcastNumber)
+        public async Task<List<int>> ForcastCsReleasedItemList(string forcastNumber)
         {
             var latestforcastCsId = await _tipsSalesServiceDbContext.ForeCastCustomerSupports
             .Where(x => x.ForecastNumber == forcastNumber)
@@ -513,7 +513,7 @@ namespace Tips.SalesService.Api.Repository
             .FirstOrDefaultAsync();
 
             var releaseItemList = await _tipsSalesServiceDbContext.foreCastCustomerSupportItems
-              .Where(x => x.ForecastNumber == forcastNumber && x.ReleaseStatus == true && x.ForeCastCustomerSupportId == latestforcastCsId).Select(x => x.ItemNumber)
+              .Where(x => x.ForecastNumber == forcastNumber && x.ReleaseStatus == true && x.ForeCastCustomerSupportId == latestforcastCsId).Select(x => x.Id)
               .ToListAsync();
 
             return releaseItemList;

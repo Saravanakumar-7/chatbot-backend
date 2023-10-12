@@ -78,7 +78,7 @@ namespace Repository
 
         public async Task<string> UpdateTypeOfRoom(TypeOfRoom typeOfRoom)
         {
-            typeOfRoom.LastModifiedBy = "Admin";
+            typeOfRoom.LastModifiedBy = _createdBy;
             typeOfRoom.LastModifiedOn = DateTime.Now;
             Update(typeOfRoom);
             string result = $"UOM details of {typeOfRoom.Id} is updated successfully!";

@@ -1561,15 +1561,12 @@ namespace Tips.SalesService.Api.Controllers
                 oldversionRFQdetails.ReasonForModification = foreCastCustomerSupportUpdateDto.ReasonForModification;
                 oldversionRFQdetails.RevisionNumber = oldversionRFQdetails.RevisionNumber + 1;
 
-                var csReleasedItems = await _itemRepository.ForcastCsReleasedItemList(foreCastCustomerSupportUpdateDto.ForecastNumber);
-                //var forecastDetailsByForecastNumber = await _Forecastrepository.ForeCastCustomerSupportByForeCastNumber(forecastNumber);
-                //var version = 1;
-                //forecastDetailsByForecastNumber.RevisionNumber = forecastDetailsByForecastNumber.RevisionNumber + version;
+                var csReleasedItems = await _itemRepository.ForcastCsReleasedItemList(foreCastCustomerSupportUpdateDto.ForecastNumber);               
                 var updatedItems = new List<ForeCastCustomerSupportItemUpdateDto>();
                 int flag = 0;
                 foreach (var itemList in foreCastCustomerSupportUpdateDto.ForeCastCustomerSupportItems)
                 {
-                    bool releaseItem = csReleasedItems.Any(item => item == itemList.ItemNumber);
+                    bool releaseItem = csReleasedItems.Any(item => item == itemList.Id);
                     if (releaseItem)
                     {
                         itemList.ReleaseStatus = true;
@@ -1583,7 +1580,7 @@ namespace Tips.SalesService.Api.Controllers
                         oldversionRFQdetails.CsComplete = CsStatus.CsNotYetCompleted;
                         if (flag == 0)
                         {
-                            oldversionRFQdetails.IsCsRelease = CsRelease.PartiallyRelease;
+                            oldversionRFQdetails.IsCsRelease = CsRelease.NotYetReleased;
                         }
                         else
                         {
@@ -1605,6 +1602,7 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         ForeCastCustomerSupportItem forecastCSItemDetail = _mapper.Map<ForeCastCustomerSupportItem>(forecastCSItemDto[i]);
                         forecastCSItemDetail.ForeCastCSDeliverySchedule = _mapper.Map<List<ForeCastCSDeliverySchedule>>(forecastCSItemDto[i].ForeCastCSDeliverySchedule);
+                        forecastCSItemDetail.Id = 0;
                         forecastCsItemList.Add(forecastCSItemDetail);
                     }
                 }

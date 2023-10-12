@@ -387,7 +387,7 @@ namespace Tips.SalesService.Api.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<List<string>> RfqCsReleasedItemList(string rfqNumber)
+        public async Task<List<int>> RfqCsReleasedItemList(string rfqNumber)
         {
             var latestrfqCsId = await _tipsSalesServiceDbContext.RfqCustomerSupports
             .Where(x => x.RfqNumber == rfqNumber)
@@ -396,7 +396,7 @@ namespace Tips.SalesService.Api.Repository
             .FirstOrDefaultAsync();
 
             var releaseItemList = await _tipsSalesServiceDbContext.RfqCustomerSupportItems
-              .Where(x => x.RfqNumber == rfqNumber && x.ReleaseStatus == true && x.RfqCustomerSupportId == latestrfqCsId).Select(x => x.ItemNumber)
+              .Where(x => x.RfqNumber == rfqNumber && x.ReleaseStatus == true && x.RfqCustomerSupportId == latestrfqCsId).Select(x => x.Id)
               .ToListAsync();
 
             return releaseItemList;
