@@ -16,6 +16,7 @@ namespace Tips.Master.Api.Controllers
     public class CostingMethodController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
+        //
         private ILoggerManager _logger;
         private IMapper _mapper;
         public CostingMethodController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
