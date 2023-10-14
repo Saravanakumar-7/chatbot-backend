@@ -16,11 +16,13 @@ using Tips.Grin.Api.Repository;
 using Entities.DTOs;
 using MySqlX.XDevAPI.Common;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tips.Grin.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    
     public class BinningController : ControllerBase
     {
         private IBinningRepository _binningRepository;
