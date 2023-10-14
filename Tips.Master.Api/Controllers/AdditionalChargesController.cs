@@ -10,6 +10,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+
     public class AdditionalChargesController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;

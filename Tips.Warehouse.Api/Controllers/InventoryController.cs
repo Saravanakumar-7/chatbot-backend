@@ -1073,7 +1073,7 @@ namespace Tips.Warehouse.Api.Controllers
             return shopOrderMaterialIssueTracker;
         }
 
-        private static ShopOrderMaterialIssueTracker MRInsertDataToMaterialIssueTracker(string shopOrderNumber, Inventory inventoryDetail, decimal lotNoWiseIssuedQty)
+        private static ShopOrderMaterialIssueTracker MRInsertDataToMaterialIssueTracker(string mrNumber,string shopOrderNumber, Inventory inventoryDetail, decimal lotNoWiseIssuedQty)
         { 
             ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = new ShopOrderMaterialIssueTracker
             {
@@ -1092,7 +1092,7 @@ namespace Tips.Warehouse.Api.Controllers
                 Unit = inventoryDetail.Unit,
                 PartType = inventoryDetail.PartType,
                 DataFrom = "Material Request",
-                MRNumber = "NULL"
+                MRNumber = mrNumber
             };
             return shopOrderMaterialIssueTracker;
         }
@@ -1205,6 +1205,7 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 foreach (var materialIssueQty in updateInventoryBalanceQty)
                 {
+                    var mrNumber = materialIssueQty.MRNumber;
                     foreach (var Location in materialIssueQty.MRNWarehouseList)
                     {
                         decimal issuedQty = Location.Qty;
@@ -1293,7 +1294,7 @@ namespace Tips.Warehouse.Api.Controllers
                             }
                             await _inventoryRepository.UpdateInventory(invItem);
 
-                            ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = MRInsertDataToMaterialIssueTracker(shopOrderNumber,invItem, lotNoWiseIssuedQty);
+                            ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = MRInsertDataToMaterialIssueTracker(shopOrderNumber, mrNumber,invItem, lotNoWiseIssuedQty);
                             int transactionId = await _materialIssueTrackerRepository.AddDataToMaterialIssueTracker(shopOrderMaterialIssueTracker);
 
                             /*********************************** End of Add data to Material Issue Tracker *************************/

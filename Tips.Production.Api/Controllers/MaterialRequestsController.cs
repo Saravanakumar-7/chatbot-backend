@@ -470,7 +470,7 @@ namespace Tips.Production.Api.Controllers
 
                 var materialReqItemList = new List<MaterialRequestItems>();
                 var shopOrderNumber = materialRequestUpdateDto.ShopOrderNumber;
-                var projectNo = materialRequestUpdateDto.ProjectNumber;
+                var projectNo = materialRequestUpdateDto.ProjectNumber; 
 
                 List<InventoryDtoForMaterialRequest> inventoryDtos = new List<InventoryDtoForMaterialRequest>();
 
@@ -511,9 +511,10 @@ namespace Tips.Production.Api.Controllers
                 {
                     cfg.CreateMap<MaterialRequests, UpdateInventoryBalanceQty>()
                     .ForMember(dest => dest.ProjectNumber, opt => opt.MapFrom(src => src.ProjectNumber));
+                    cfg.CreateMap<MaterialRequests, UpdateInventoryBalanceQty>()
+                    .ForMember(dest => dest.MRNumber, opt => opt.MapFrom(src => src.MRNumber));
                     cfg.CreateMap<MaterialRequestItems, UpdateInventoryBalanceQty>()
                         .ForMember(dest => dest.PartNumber, opt => opt.MapFrom(src => src.PartNumber))
-
                         .ForMember(dest => dest.MRNWarehouseList, opt => opt.MapFrom(src => src.MRStockDetails.Select(detail => new InventoryUpdateDtoForMRWarehouse
                         {
                             Warehouse = detail.Warehouse,
