@@ -1204,9 +1204,10 @@ namespace Tips.SalesService.Api.Repository
         }
 
         public async Task<RfqEngg> GetRfqEnggByRfqNumber(string RfqNumber)
-        {
+        {           
             var getRfqEnggByRfqNumber = await _tipsSalesServiceDbContext.RfqEnggs
-                .Where(x => x.RFQNumber == RfqNumber)
+                .Where(x => (x.RFQNumber == RfqNumber)&&(x.RevisionNumber==_tipsSalesServiceDbContext.RfqEnggs.Where(r=>r.RFQNumber==x.RFQNumber)
+                .Max(r=>r.RevisionNumber)))
                 .Include(t => t.RfqEnggItems)                
                 .Include(m => m.RfqEnggRiskIdentifications)              
                         .FirstOrDefaultAsync();
