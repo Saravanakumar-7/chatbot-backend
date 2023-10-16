@@ -17,12 +17,13 @@ using Entities.DTOs;
 using MySqlX.XDevAPI.Common;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Http.Headers;
 
 namespace Tips.Grin.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    
+    //[Authorize]
     public class BinningController : ControllerBase
     {
         private IBinningRepository _binningRepository;
@@ -35,7 +36,8 @@ namespace Tips.Grin.Api.Controllers
         private IGrinPartsRepository _grinPartsRepository;
         private IIQCConfirmationRepository _iQCConfirmationRepository;
         private IIQCConfirmationItemsRepository _iQCConfirmationItemsRepository;
-        public BinningController(IIQCConfirmationItemsRepository iQCConfirmationItemsRepository,IIQCConfirmationRepository iQCConfirmationRepository, IGrinPartsRepository grinPartsRepository, IGrinRepository grinRepository, IBinningRepository binningRepository, IBinningItemsRepository binningItemsRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public BinningController(IIQCConfirmationItemsRepository iQCConfirmationItemsRepository,IIQCConfirmationRepository iQCConfirmationRepository, IGrinPartsRepository grinPartsRepository, IGrinRepository grinRepository, IBinningRepository binningRepository, IBinningItemsRepository binningItemsRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _binningRepository = binningRepository;
@@ -47,6 +49,7 @@ namespace Tips.Grin.Api.Controllers
             _grinPartsRepository = grinPartsRepository;
             _iQCConfirmationRepository = iQCConfirmationRepository;
            _iQCConfirmationItemsRepository = iQCConfirmationItemsRepository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
@@ -598,6 +601,13 @@ namespace Tips.Grin.Api.Controllers
 
                                 var json = JsonConvert.SerializeObject(inventoryObjectNew);
                                 var data = new StringContent(json, Encoding.UTF8, "application/json");
+                                // Include the token in the Authorization header
+                                var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                                if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+                                {
+                                    var token = tokenValues.Substring(7);
+                                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                                }
                                 var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
 
                             }
@@ -965,6 +975,13 @@ namespace Tips.Grin.Api.Controllers
 
                                     var json = JsonConvert.SerializeObject(inventoryObjectNew);
                                     var data = new StringContent(json, Encoding.UTF8, "application/json");
+                                    // Include the token in the Authorization header
+                                    var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                                    if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+                                    {
+                                        var token = tokenValues.Substring(7);
+                                        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                                    }
                                     var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
 
                                 }
@@ -1015,6 +1032,13 @@ namespace Tips.Grin.Api.Controllers
 
                                     var json = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
                                     var data = new StringContent(json, Encoding.UTF8, "application/json");
+                                    // Include the token in the Authorization header
+                                    var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                                    if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+                                    {
+                                        var token = tokenValues.Substring(7);
+                                        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                                    }
                                     var response = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data);
 
                                 }
@@ -1103,6 +1127,13 @@ namespace Tips.Grin.Api.Controllers
 
                                     var json = JsonConvert.SerializeObject(inventoryObjectNew);
                                     var data = new StringContent(json, Encoding.UTF8, "application/json");
+                                    // Include the token in the Authorization header
+                                    var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                                    if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+                                    {
+                                        var token = tokenValues.Substring(7);
+                                        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                                    }
                                     var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
 
                                 }
@@ -1153,6 +1184,13 @@ namespace Tips.Grin.Api.Controllers
 
                                     var json = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
                                     var data = new StringContent(json, Encoding.UTF8, "application/json");
+                                    // Include the token in the Authorization header
+                                    var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                                    if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+                                    {
+                                        var token = tokenValues.Substring(7);
+                                        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                                    }
                                     var response = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data);
 
                                 }
