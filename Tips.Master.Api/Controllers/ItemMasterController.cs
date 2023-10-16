@@ -251,7 +251,7 @@ namespace Tips.Master.Api.Controllers
                         foreach (var imageUploadDetails in itemMasterDto.ImageUpload)
                         {
                             ImageUploadDto imageUploadDto = _mapper.Map<ImageUploadDto>(imageUploadDetails);
-                            imageUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", imageUploadDto.FileName);
+                            imageUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", Uri.EscapeUriString(imageUploadDto.FileName));
                             imageUploads.Add(imageUploadDto);
                         }
                     }
