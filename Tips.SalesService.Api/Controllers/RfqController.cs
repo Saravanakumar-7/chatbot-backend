@@ -2004,8 +2004,8 @@ namespace Tips.SalesService.Api.Controllers
                 int flag = 0;
                 foreach (var itemList in rfqEnggDtoUpdate.RfqEnggItems)
                 {
-                    var releaseItem = enggReleasedItems.FirstOrDefault(item => item.ItemNumber == itemList.ItemNumber);
-                    if (releaseItem != null)
+                    bool releaseItem = enggReleasedItems.Any(item => item.Id == itemList.Id);
+                    if (releaseItem)
                     {
                         itemList.ReleaseStatus = true;
                         flag = 1;
@@ -2025,8 +2025,10 @@ namespace Tips.SalesService.Api.Controllers
                         rfqDetailsByRfqNumber.IsEnggComplete = false;
                         rfqDetailsByRfqNumber.EnggComplete = EnggStatus.EnggNotYetCompleted;
                     }
+                    itemList.Id = 0;
                     updatedItems.Add(itemList);
                 }
+                updateRfqEngg.RfqEnggItems = _mapper.Map<List<RfqEnggItem>>(updatedItems);                
                 await _rfqenggRepository.UpdateRfqEnggRevNo(updateRfqEngg);
                 rfqDetailsByRfqNumber.Id = 0;
                 _rfqRepository.Create(rfqDetailsByRfqNumber);

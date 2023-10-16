@@ -37,6 +37,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [DefaultValue(0)]
         public CsRelease ReleaseStatus { get; set; }
         public bool IsModified { get; set; } = false;
+        public string? ReasonForModification { get; set; }
         public string? Remarks { get; set; }
 
         public string Unit { get; set; }

@@ -34,8 +34,8 @@ namespace Repository
         {
             itemMaster.CreatedBy = _createdBy;
             itemMaster.CreatedOn = DateTime.Now;
-            itemMaster.LastModifiedBy = _createdBy;
-            itemMaster.LastModifiedOn = DateTime.Now;
+           // itemMaster.LastModifiedBy = _createdBy;
+           // itemMaster.LastModifiedOn = DateTime.Now;
             itemMaster.Unit = _unitname;
             var result = await Create(itemMaster);
             

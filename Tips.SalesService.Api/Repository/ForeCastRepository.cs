@@ -79,10 +79,12 @@ namespace Tips.SalesService.Api.Repository
         }
         public async Task<PagedList<ForeCast>> GetAllForeCast([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var getAllForecastDetails = FindAll().OrderByDescending(x => x.Id)
+            var getAllForecastDetails = FindAll()
               .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.ForeCastNumber.Contains(searchParammes.SearchValue) ||
-                 inv.CustomerName.Contains(searchParammes.SearchValue))));
-
+                 inv.CustomerName.Contains(searchParammes.SearchValue)))
+                &&(inv.RevisionNumber==_tipsSalesServiceDbContext.ForeCasts.Where(r=>r.ForeCastNumber==inv.ForeCastNumber)
+                .Max(r=>r.RevisionNumber))).OrderByDescending(x => x.Id);
+           
             return PagedList<ForeCast>.ToPagedList(getAllForecastDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
