@@ -1,11 +1,13 @@
 ﻿using System.Dynamic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -18,6 +20,7 @@ namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    //[Authorize]
     public class BTODeliveryOrderController : ControllerBase
     {
         private IBTODeliveryOrderRepository _repository;
@@ -28,10 +31,10 @@ namespace Tips.Warehouse.Api.Controllers
         private IInventoryRepository _inventoryRepository;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
 
-
-        public BTODeliveryOrderController(IBTODeliveryOrderRepository repository, IInventoryTranctionRepository inventoryTranctionRepository , IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, HttpClient httpClient, IConfiguration config, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
+        public BTODeliveryOrderController(IBTODeliveryOrderRepository repository, IInventoryTranctionRepository inventoryTranctionRepository , IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, HttpClient httpClient, IConfiguration config, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
             _logger = logger;
@@ -41,7 +44,7 @@ namespace Tips.Warehouse.Api.Controllers
             _config = config;
             _inventoryTranctionRepository = inventoryTranctionRepository;
             _bTODeliveryOrderHistoryRepository = bTODeliveryOrderHistoryRepository;
-
+            _httpContextAccessor = httpContextAccessor;
         }
 
 
@@ -549,6 +552,13 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
+                // Include the token in the Authorization header
+                var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+                {
+                    var token = tokenValues.Substring(7);
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }
                 var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchDetails"), data);
                 if((response.StatusCode == HttpStatusCode.OK))
                 {

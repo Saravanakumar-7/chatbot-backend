@@ -66,23 +66,15 @@ namespace Tips.Grin.Api.Controllers
             _httpClient = httpClient;
             _config = config;
 
-            var tokenValue = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-            if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
-            {
-                var token = tokenValue.Substring(7);
+            //var tokenValue = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+            //if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
+            //{
+            //    var token = tokenValue.Substring(7);
 
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var tokenObject = tokenHandler.ReadToken(token) as JwtSecurityToken;
+            //    var tokenHandler = new JwtSecurityTokenHandler();
+            //    var tokenObject = tokenHandler.ReadToken(token) as JwtSecurityToken;
 
-                //if (tokenObject != null)
-                //{
-                //    // Access the claims from the token
-                //    var claims = tokenObject.Claims.ToList();
-
-                //    // Example: Access a specific claim by its type (e.g., ClaimTypes.Name)
-                //    //_createdBy = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-                //}
-            }
+            //}
 
         }
         // GET: api/<GrinController>
@@ -742,26 +734,14 @@ namespace Tips.Grin.Api.Controllers
                             var json = JsonConvert.SerializeObject(grinInventoryDto);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
                             // Include the token in the Authorization header
-                            var tokenValue = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
-                            if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
+                            var tokenValuess = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                            if (!string.IsNullOrEmpty(tokenValuess) && tokenValuess.StartsWith("Bearer "))
                             {
-                                var token = tokenValue.Substring(7);
+                                var token = tokenValuess.Substring(7);
                                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                             }
                             var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), data);
-
-                            //var json = JsonConvert.SerializeObject(grinInventoryDto);
-                            //var data = new StringContent(json, Encoding.UTF8, "application/json");
-
-                            //var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"));
-                            //request.Content = data;
-
-                            //// Add the bearer token header
-                            //var accessToken = "YOUR_ACCESS_TOKEN_HERE"; // Replace with your actual access token
-                            //request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-                            //var response = await _httpClient.SendAsync(request);
-
+                             
                             // Handle the response here
 
 
@@ -798,7 +778,13 @@ namespace Tips.Grin.Api.Controllers
 
                             var json = JsonConvert.SerializeObject(grinInventoryTranctionDto);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
-
+                            // Include the token in the Authorization header
+                            var tokenValuesss = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                            if (!string.IsNullOrEmpty(tokenValuesss) && tokenValuesss.StartsWith("Bearer "))
+                            {
+                                var token = tokenValuesss.Substring(7);
+                                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                            }
                             var response = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranctionFromGrin"), data);
 
                         }
@@ -811,6 +797,13 @@ namespace Tips.Grin.Api.Controllers
                 //
                 var jsons = JsonConvert.SerializeObject(grinPartsDetail);
                 var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                // Include the token in the Authorization header
+                var tokenValue = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
+                {
+                    var token = tokenValue.Substring(7);
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }
                 var responses = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdateBalanceQtyDetails"), datas);
 
                 //Update PoStatus in Purchase order And PoItem table
@@ -818,6 +811,14 @@ namespace Tips.Grin.Api.Controllers
                 var grinPartsDetails = _mapper.Map<List<GrinQtyPoStatusUpdateDto>>(grinPartsDto);
                 var jsonCon = JsonConvert.SerializeObject(grinPartsDetails);
                 var datass = new StringContent(jsonCon, Encoding.UTF8, "application/json");
+                // Include the token in the Authorization header
+                var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+                {
+                    var token = tokenValues.Substring(7);
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }
+                
                 var result = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdatePoStatus"), datass);
 
 

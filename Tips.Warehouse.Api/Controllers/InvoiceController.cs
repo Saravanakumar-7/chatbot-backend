@@ -1,11 +1,13 @@
 ﻿using System.Dynamic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -20,6 +22,7 @@ namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    //[Authorize]
     public class InvoiceController : ControllerBase
     {
         private IInvoiceRepository _invoiceRepository;
@@ -29,9 +32,9 @@ namespace Tips.Warehouse.Api.Controllers
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-
-        public InvoiceController(IInvoiceRepository invoiceRepository, IInventoryTranctionRepository inventoryTranctionRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, ILoggerManager logger, IMapper mapper)
+        public InvoiceController(IInvoiceRepository invoiceRepository, IInventoryTranctionRepository inventoryTranctionRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _invoiceRepository = invoiceRepository;
             _logger = logger;
@@ -40,6 +43,8 @@ namespace Tips.Warehouse.Api.Controllers
             _inventoryTranctionRepository = inventoryTranctionRepository;
             _config = config;
             _bTODeliveryOrderItemsRepository = bTODeliveryOrderItemsRepository;
+            _httpContextAccessor = httpContextAccessor;
+
         }
 
         [HttpGet]
@@ -442,6 +447,13 @@ namespace Tips.Warehouse.Api.Controllers
 
             var soAdditionalChargeJson = JsonConvert.SerializeObject(salesOrderAdditionalChargesUpdates);
             var data = new StringContent(soAdditionalChargeJson, Encoding.UTF8, "application/json");
+            // Include the token in the Authorization header
+            var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+            {
+                var token = tokenValues.Substring(7);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
             var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "AdditionalChargeUpdateFromInvoice"), data);
         }
 
