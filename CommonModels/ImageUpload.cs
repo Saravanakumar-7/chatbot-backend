@@ -27,6 +27,9 @@ namespace Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
+        public long ItemMasterId { get; set; }
+        public ItemMaster? ItemMaster { get; set; }
+
         //public Grins? GrinsId { get; set; }
         //public GrinParts? GrinParts { get; set; }
 

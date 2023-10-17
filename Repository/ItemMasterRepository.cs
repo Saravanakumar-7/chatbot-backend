@@ -34,14 +34,28 @@ namespace Repository
         {
             itemMaster.CreatedBy = _createdBy;
             itemMaster.CreatedOn = DateTime.Now;
-            itemMaster.LastModifiedBy = _createdBy;
-            itemMaster.LastModifiedOn = DateTime.Now;
+           // itemMaster.LastModifiedBy = _createdBy;
+           // itemMaster.LastModifiedOn = DateTime.Now;
             itemMaster.Unit = _unitname;
             var result = await Create(itemMaster);
             
             return result.Id;
         }
+        public async Task<IEnumerable<GetDownloadUrlDtos>> GetDownloadUrlDetails(long itemMasterId)
+        { 
+            IEnumerable<GetDownloadUrlDtos> getDownloadDetails = await TipsMasterDbContext.imageUploads
+                                .Where(b => b.ItemMasterId == itemMasterId)
+                                .Select(x => new GetDownloadUrlDtos()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath
+                                })
+                              .ToListAsync();
 
+            return getDownloadDetails;
+        }
         public async Task<string> DeleteItemMaster(ItemMaster itemMaster)
         {
             Delete(itemMaster);

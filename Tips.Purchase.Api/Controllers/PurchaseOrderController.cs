@@ -1086,8 +1086,7 @@ namespace Tips.Purchase.Api.Controllers
 
             try
             {
-                var downloadUrl = $"{Request.Scheme}://{Request.Host}/TipsPurchasePublish/api/PurchaseOrder/DownloadFile?Filename={filename}";
-                //var downloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={filename}";
+                var downloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={filename}";
 
                 return Ok(new { FilePath = filePath, DownloadUrl = downloadUrl });
             }
@@ -1248,12 +1247,10 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError("Invalid PurchaseOrder UploadDocument sent from client.");
                     return BadRequest(serviceResponse);
                 }
-
                 foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
-                { 
-                    getDownloadUrlByFilename.DownloadUrl = Url.Action("DownloadFile", "PurchaseOrder", new { Filename = getDownloadUrlByFilename.FileName }, protocol: HttpContext.Request.Scheme);
-                    //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
- 
+                {
+                    var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
+                    getDownloadUrlByFilename.DownloadUrl = $"{baseUrl}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
                 } 
                     _logger.LogInfo($"Returned DownloadDetail with id: {poNumber}");
                     var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(getDownloadDetailByPoNumber);

@@ -20,6 +20,9 @@ namespace Contracts
         Task<IEnumerable<CustomerIdNameListDto>> GetAllActiveCustomerMasterIdNameList();
         Task<IEnumerable<CustomerIdNameListDto>> GetAllCustomerMasterIdNameList();
         Task<CustomerMaster> GetCSNumberAutoIncrementCount();
+        Task<string> GenerateCustomerNumberAvision();
+
+        
         Task<CustomerMaster> GetCustomerMasterByCustomerNo(string customerNumber);
 
     }

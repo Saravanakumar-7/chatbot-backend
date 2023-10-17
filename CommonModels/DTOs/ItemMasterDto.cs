@@ -330,7 +330,14 @@ namespace Entities.DTOs
         public List<ItemMasterRoutingDtoUpdate>? ItemMasterRouting { get; set; }
 
     }
-
+    public class GetDownloadUrlDtos
+    {
+        public int Id { get; set; }
+        public string FileName { get; set; }
+        public string FileExtension { get; set; }
+        public string FilePath { get; set; }
+        public string DownloadUrl { get; set; }
+    }
     public class ItemMasterIdNoListDto
     {
         public long id { get; set; }

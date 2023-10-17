@@ -6,8 +6,10 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Newtonsoft.Json;
 using Repository;
 
@@ -18,16 +20,22 @@ namespace Tips.Master.Api.Controllers
     public class ItemMasterController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
-        private ILoggerManager _logger; 
-
+        private ILoggerManager _logger;
+        private IConfiguration _config;
         private IMapper _mapper;
         private IFileUploadRepository _fileUploadRepository;
         private IImageUploadRepository _imageUploadRepository;
-        public ItemMasterController(IRepositoryWrapperForMaster repository, IImageUploadRepository imageUploadRepository, IFileUploadRepository fileUploadRepository,ILoggerManager logger, IMapper mapper)
+        private IWebHostEnvironment _webHostEnvironment;
+
+
+        public ItemMasterController(IRepositoryWrapperForMaster repository, IWebHostEnvironment webHostEnvironment, IConfiguration config, IImageUploadRepository imageUploadRepository, IFileUploadRepository fileUploadRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
-            _fileUploadRepository = fileUploadRepository; 
+            _config = config;
+            _webHostEnvironment = webHostEnvironment;
+
+            _fileUploadRepository = fileUploadRepository;
             _imageUploadRepository = imageUploadRepository;
             _mapper = mapper;
         }
@@ -217,6 +225,140 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //test file path 
+        [HttpGet("{filename}")]
+        public async Task<ActionResult> GetFilePath(string filename)
+        {
+            string path = _webHostEnvironment.ContentRootPath + "\\Upload\\ImageUpload\\";
+            var paths = Path.Combine(path, filename); // Use Path.Combine to combine paths
+
+            if (System.IO.File.Exists(paths))
+            {
+                byte[] fileBytes = System.IO.File.ReadAllBytes(paths);
+                return File(fileBytes, "image/jpeg");
+            }
+
+            return NotFound(); // Return a 404 response if the file doesn't exist
+        }
+
+        //test
+        [HttpGet("{filename}")]
+        public async Task<ActionResult> ViewImage1(string filename)
+        {
+            string baseUrl = $"{Request.Scheme}://{_config["ItemMasterBaseUrl"]}";
+            string FilePath = "/home/nayagam/GetaPcs/Aviation/Master/Upload/ImageUpload";
+            string ImagePath = Path.Combine(FilePath, filename);
+            //string patcho = GetFilePath();
+            if (System.IO.File.Exists(ImagePath))
+            {
+                return PhysicalFile(ImagePath, "image/jpeg");
+            }
+
+            var ImageUrl = baseUrl + "/Upload/ImageUpload/" + filename;
+            return Content(ImageUrl);
+        }
+
+        [HttpGet]
+        public FileContentResult showsdata()
+        {
+            // get strings from db
+            string base64image = "/9j/2wCEAAkGBxITEhITEhISFRUVFRcVFRUVFRUVFRUVFRUWFxUVFRUYHSggGBolHRUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OFRAQFSsZFR0tLS0tLSstLS0rLS0rLS0tLS0tKy0tLS0tNysrLTctNy0tKzc3LS0tLS0tNzc3NysrK//AABEIAOEA4QMBIgACEQEDEQH/xAAbAAABBQEBAA...WghBDURCECX/9k=";
+            byte[] Picture = Convert.FromBase64String(base64image);
+            return File(Picture, "image/png");
+        }
+
+
+
+        [HttpGet("{filename}")]
+        public async Task<ActionResult> ViewImage(string filename)
+        {
+            try
+            {
+                //string path = _web
+                //Environment.WebRootPath + "\\";
+                var baseUrl = $"{Request.Scheme}://{_config["ItemMasterBaseUrl"]}";
+                string imageUrl = $"{baseUrl}GetaPcs/Aviation/Master/Upload/ImageUpload/{Uri.EscapeUriString(filename)}";
+                return Ok(imageUrl);
+                //return imageUrl;
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex}");
+            }
+        }
+        
+
+
+        //Get download Url 
+
+        [HttpGet]
+        public async Task<IActionResult> GetDownloadUrlDetails(long itemMasterId)
+        {
+            ServiceResponse<IEnumerable<GetDownloadUrlDtos>> serviceResponse = new ServiceResponse<IEnumerable<GetDownloadUrlDtos>>();
+
+            try
+            {
+                var getDownloadDetailByPoNumber = await _repository.ItemMasterRepository.GetDownloadUrlDetails(itemMasterId);
+
+                if (getDownloadDetailByPoNumber.Count() == 0)
+                {
+                    _logger.LogError($"DownloadDetail with id: {itemMasterId}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {itemMasterId}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Itemmaster UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Itemmaster UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
+                {
+                    var baseUrl = $"{Request.Scheme}://{_config["ItemMasterBaseUrl"]}";
+                    getDownloadUrlByFilename.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+                } 
+                _logger.LogInfo($"Returned DownloadDetail with id: {itemMasterId}");
+                var result = _mapper.Map<IEnumerable<GetDownloadUrlDtos>>(getDownloadDetailByPoNumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside Itemmaster action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        [HttpGet]
+        public async Task<ActionResult> DownloadFile(string Filename)
+        {
+            ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", Filename);
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out var ContentType))
+            {
+                ContentType = "application/octet-stream";
+            }
+            var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+
+            return File(bytes, ContentType, Path.GetFileName(filePath));
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetItemMasterById(int id)
@@ -251,7 +393,10 @@ namespace Tips.Master.Api.Controllers
                         foreach (var imageUploadDetails in itemMasterDto.ImageUpload)
                         {
                             ImageUploadDto imageUploadDto = _mapper.Map<ImageUploadDto>(imageUploadDetails);
-                            imageUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", imageUploadDto.FileName);
+                            var baseUrl = $"{Request.Scheme}://{_config["ItemMasterBaseUrl"]}";
+                            imageUploadDto.FilePath = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={Uri.EscapeUriString(imageUploadDto.FileName)}";
+
+                            //imageUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", Uri.EscapeUriString(imageUploadDto.FileName));
                             imageUploads.Add(imageUploadDto);
                         }
                     }
@@ -262,7 +407,10 @@ namespace Tips.Master.Api.Controllers
                         foreach (var fileUploadDetails in itemMasterDto.FileUpload)
                         {
                             FileUploadDto fileUploadDto = _mapper.Map<FileUploadDto>(fileUploadDetails);
-                            fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileUploadDto.FileName);
+                            var baseUrl = $"{Request.Scheme}://{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.FilePath = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+
+                            //fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileUploadDto.FileName);
                             fileUploads.Add(fileUploadDto);
                         }
                     }

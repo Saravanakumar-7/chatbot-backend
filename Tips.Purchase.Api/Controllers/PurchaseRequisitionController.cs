@@ -29,17 +29,16 @@ namespace Tips.Purchase.Api.Controllers
         private IPurchaseRequisitionRepository _repository;
         private IPrItemsRepository _prItemRepository;
         private ILoggerManager _logger;
+        private IConfiguration _config;
         private IMapper _mapper;
         private IDocumentUploadRepository _prdocumentUploadRepository;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
-
-
-
-        public PurchaseRequisitionController(IPrItemsRepository prItemRepository,IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper)
+        public PurchaseRequisitionController(IPrItemsRepository prItemRepository,IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
             _prItemRepository = prItemRepository;
             _logger = logger;
+            _config = config;
             _mapper = mapper;
             _prdocumentUploadRepository = prdocumentUploadRepository;
             _webHostEnvironment = webHostEnvironment;
@@ -1114,10 +1113,8 @@ namespace Tips.Purchase.Api.Controllers
 
                 foreach (var getDownloadUrlByFilenames in downloadDetailByPrNumber)
                 {
- 
-                    getDownloadUrlByFilenames.DownloadUrl = Url.Action("DownloadFile", "PurchaseRequisition", new { Filename = getDownloadUrlByFilenames.FileName }, protocol: HttpContext.Request.Scheme);
-                    //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
-
+                    var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
+                    getDownloadUrlByFilenames.DownloadUrl = $"{baseUrl}/api/PurchaseRequisition/DownloadFile?Filename={getDownloadUrlByFilenames.FileName}";
                 } 
                     _logger.LogInfo($"Returned DownloadDetail with id: {prNumber}");
                     var result = _mapper.Map<IEnumerable<GetPRDownloadUrlDto>>(downloadDetailByPrNumber);
