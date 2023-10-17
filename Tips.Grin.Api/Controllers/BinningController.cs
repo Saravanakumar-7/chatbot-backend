@@ -684,6 +684,8 @@ namespace Tips.Grin.Api.Controllers
 
             }
         }
+         
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBinningDetailsbyId(int id)
@@ -715,7 +717,6 @@ namespace Tips.Grin.Api.Controllers
                         foreach (var grinDetails in grinDetailsbyGrinNo.GrinParts)
                         {
                             BinningItemsDto binningItemDtos = _mapper.Map<BinningItemsDto>(grinDetails);
-
                             var binningDetails = _mapper.Map<List<BinningLocationDto>>(binningItemDtos.binningLocations);
                             binningItemDtos.binningLocations = binningDetails;
                             binningItemDtos.ReceivedQty = grinDetails.Qty;

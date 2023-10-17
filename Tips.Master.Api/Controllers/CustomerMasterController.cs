@@ -220,6 +220,11 @@ namespace Tips.Master.Api.Controllers
                     }
 
                 }
+                else if (serverKey == "trasccon")
+                {
+                    var rfqNumber = await _repository.CustomerMasterRepository.GenerateCustomerNumberAvision();
+
+                }
                 await _repository.CustomerMasterRepository.CreateCustomerMaster(customerMaster);
 
 

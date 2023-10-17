@@ -1624,7 +1624,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     var dateFormat = days + months + years;
                     var rfqNumber = await _rfqRepository.GenerateRFQNumberAvision();
-                    createRfq.RfqNumber = dateFormat + rfqNumber;
+                    createRfq.RfqNumber = rfqNumber;
                     //var dateFormat = days + months + years;
                     //var rfqNumber = await _rfqRepository.GenerateRFQTrascconNumber();
                     //createRfq.RfqNumber = dateFormat + rfqNumber;

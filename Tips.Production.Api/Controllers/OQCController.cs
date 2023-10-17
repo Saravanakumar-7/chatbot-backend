@@ -1,6 +1,7 @@
 ﻿using System.Dynamic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using AutoMapper;
 using Contracts;
@@ -326,11 +327,11 @@ namespace Tips.Production.Api.Controllers
                     inventory.Description = Desc;
                     inventory.ProjectNumber = projectNo;
                     inventory.Balance_Quantity = oQCCreate.AcceptedQty;
-                    inventory.UOM = uom;
+                    inventory.UOM = "uom";
                     inventory.Warehouse = "FG";
                     inventory.Location = "FG";
                     inventory.GrinNo = "";
-                    //inventory.GrinMaterialType = "";
+                    inventory.GrinMaterialType = "Issue";
                     inventory.GrinPartId = oQCCreate.Id;
                     inventory.PartType = oQCCreate.ItemType; // we have to take parttype from grinparts model;
                     inventory.ReferenceID = oQCCreate.Id.ToString();
@@ -355,7 +356,7 @@ namespace Tips.Production.Api.Controllers
                     inventory1.Description = Desc;
                     inventory1.ProjectNumber = projectNo;
                     inventory1.Balance_Quantity = oQCCreate.RejectedQty;
-                    inventory1.UOM = uom;
+                    inventory1.UOM = "UOM";
                     inventory1.Warehouse = "Scrap";
                     inventory1.Location = "Reject";
                     inventory1.GrinNo = "";
@@ -367,8 +368,12 @@ namespace Tips.Production.Api.Controllers
                     inventory1.ShopOrderNo = oQCCreate.ShopOrderNumber;
 
                     _logger.LogInfo("getitemmasterdata" + Convert.ToString(inventory1));
+                    //var json1 = JsonConvert.SerializeObject(inventory1);
+                    //var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
+                    //var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
+
                     var json1 = JsonConvert.SerializeObject(inventory1);
-                    var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
+                    var data1 = new StringContent(json, Encoding.UTF8, "application/json"); 
                     var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
 
 
