@@ -602,6 +602,52 @@ namespace Tips.SalesService.Api.Repository
                 throw ex;
             }
         }
+
+        //for Avision Rfq Format
+        public async Task<string> GenerateRFQNumberAvision()
+        {
+            using var transaction = await _tipsSalesServiceDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var rfqNumberEntity = await _tipsSalesServiceDbContext.RFQNos.SingleAsync();
+                rfqNumberEntity.CurrentValue += 1;
+                _tipsSalesServiceDbContext.Update(rfqNumberEntity);
+                await _tipsSalesServiceDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
+                int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+
+                return $"ASPL|RFQ|{currentYear:D2}{nextYear:D2}-{rfqNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
+
+        //public async Task<string> GenerateRFQNumberAvision()
+        //{
+        //    using var transaction = await _tipsSalesServiceDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+        //    try
+        //    {
+        //        var rfqNumberEntity = await _tipsSalesServiceDbContext.RFQNos.SingleAsync();
+        //        rfqNumberEntity.CurrentValue += 1;
+        //        _tipsSalesServiceDbContext.Update(rfqNumberEntity);
+        //        await _tipsSalesServiceDbContext.SaveChangesAsync();
+        //        await transaction.CommitAsync();
+        //        return $"ASPL|RFQ|-{rfqNumberEntity.CurrentValue:D6}";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await transaction.RollbackAsync();
+        //        throw ex;
+        //    }
+        //}
         public async Task<string> GenerateRFQNumberForTransccon()
         {
             using var transaction = await _tipsSalesServiceDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);

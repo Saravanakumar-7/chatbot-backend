@@ -1623,7 +1623,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     var dateFormat = days + months + years;
-                    var rfqNumber = await _rfqRepository.GenerateRFQNumber();
+                    var rfqNumber = await _rfqRepository.GenerateRFQNumberAvision();
                     createRfq.RfqNumber = dateFormat + rfqNumber;
                     //var dateFormat = days + months + years;
                     //var rfqNumber = await _rfqRepository.GenerateRFQTrascconNumber();
