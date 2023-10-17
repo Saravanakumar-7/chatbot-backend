@@ -283,13 +283,13 @@ namespace Tips.Grin.Api.Repository
 
     }
 
-    public class BinningLocations : RepositoryBase<BinningLocation>, IBinningLocations
+    public class BinningLocationRepository : RepositoryBase<BinningLocation>, IBinningLocationRepository
     {
         private TipsGrinDbContext _tipsGrinDbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public BinningLocations(TipsGrinDbContext tipsGrinDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsGrinDbContext)
+        public BinningLocationRepository(TipsGrinDbContext tipsGrinDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsGrinDbContext)
         {
             _tipsGrinDbContext = tipsGrinDbContext;
             _httpContextAccessor = httpContextAccessor;
@@ -298,7 +298,14 @@ namespace Tips.Grin.Api.Repository
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
+        public async Task<IEnumerable<BinningLocation>> GetBinningLocationDetailsbyGrinPartId(int id)
+        {
+            var binningDetailsById = await _tipsGrinDbContext.BinningLocations.Where(x => x.BinningItemsId == id)
+                             
+                           .ToListAsync();
 
+            return binningDetailsById;
+        }
         public async Task<string> UpdateBinning(BinningLocation binningLocation)
         {
             binningLocation.LastModifiedBy = _createdBy;

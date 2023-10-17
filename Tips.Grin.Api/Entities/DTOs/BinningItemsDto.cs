@@ -84,7 +84,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         //[Precision(18, 3)]
         //public decimal? RejectedQty { get; set; }
 
-        public List<BinningLocationPostDto>? BinningLocations { get; set; }
+        public List<BinningLocationPostDto>? binningLocations { get; set; }
 
     }
     public class BinningItemsUpdateDto
@@ -125,7 +125,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<BinningLocationUpdateDto>? BinningLocations { get; set; }
+        public List<BinningLocationUpdateDto>? binningLocations { get; set; }
     }
     public class BinningItemsReportDto
     {
