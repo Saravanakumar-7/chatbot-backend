@@ -705,10 +705,11 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<List<Inventory>> GetInventoryByItemNumber(string ItemNumber)
         {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
             try
             {
                 var getInventoryDetails = await _tipsWarehouseDbContext.Inventories
-                     .Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true)
+                     .Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true && !skipWareHouse.Contains(x.Warehouse))
                               .ToListAsync();
                 return getInventoryDetails;
             }
