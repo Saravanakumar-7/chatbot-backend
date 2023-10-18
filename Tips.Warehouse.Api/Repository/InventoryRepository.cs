@@ -625,13 +625,13 @@ namespace Tips.Warehouse.Api.Repository
                           .FirstOrDefaultAsync();
 
             return inventoryDetails;
-        }
-
+        } 
         public async Task<IEnumerable<GetInventoryListByItemNo>> GetInventoryListByItemNo( string ItemNumber)
         {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
 
             IEnumerable<GetInventoryListByItemNo> getInventoryListByItemNo = await _tipsWarehouseDbContext.Inventories
-                .Where(x =>x.PartNumber == ItemNumber && x.IsStockAvailable == true)
+                .Where(x =>x.PartNumber == ItemNumber && !skipWareHouse.Contains(x.Warehouse) && x.IsStockAvailable == true)
                                 .Select(x => new GetInventoryListByItemNo()
                                 {
                                     InventoryId = x.Id,
