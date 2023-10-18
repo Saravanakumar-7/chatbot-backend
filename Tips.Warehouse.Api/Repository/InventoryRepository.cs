@@ -579,12 +579,16 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryDetail;
         }
-
+        //aravind
 
         public async Task<decimal> GetStockQtyForBtpSalesOrderItem(string ItemNumber,List<string> shopOrderNumbers)
         {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
+
             var inventoryDetail = _tipsWarehouseDbContext.Inventories
-                .Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true && shopOrderNumbers.Contains(x.shopOrderNo))
+                .Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true && shopOrderNumbers.Contains(x.shopOrderNo)
+                && !skipWareHouse.Contains(x.Warehouse)
+                )
                           .Sum(x => x.Balance_Quantity);
 
             return inventoryDetail;
@@ -628,10 +632,10 @@ namespace Tips.Warehouse.Api.Repository
         } 
         public async Task<IEnumerable<GetInventoryListByItemNo>> GetInventoryListByItemNo( string ItemNumber)
         {
-            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
+             
 
             IEnumerable<GetInventoryListByItemNo> getInventoryListByItemNo = await _tipsWarehouseDbContext.Inventories
-                .Where(x =>x.PartNumber == ItemNumber && !skipWareHouse.Contains(x.Warehouse) && x.IsStockAvailable == true)
+                .Where(x =>x.PartNumber == ItemNumber && x.IsStockAvailable == true)
                                 .Select(x => new GetInventoryListByItemNo()
                                 {
                                     InventoryId = x.Id,
