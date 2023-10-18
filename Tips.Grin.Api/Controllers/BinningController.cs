@@ -37,7 +37,8 @@ namespace Tips.Grin.Api.Controllers
         private IIQCConfirmationRepository _iQCConfirmationRepository;
         private IIQCConfirmationItemsRepository _iQCConfirmationItemsRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public BinningController(IIQCConfirmationItemsRepository iQCConfirmationItemsRepository,IIQCConfirmationRepository iQCConfirmationRepository, IGrinPartsRepository grinPartsRepository, IGrinRepository grinRepository, IBinningRepository binningRepository, IBinningItemsRepository binningItemsRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, IHttpContextAccessor httpContextAccessor)
+        private IBinningLocationRepository _binningLocationRepository;
+        public BinningController(IBinningLocationRepository binningLocationRepository, IIQCConfirmationItemsRepository iQCConfirmationItemsRepository,IIQCConfirmationRepository iQCConfirmationRepository, IGrinPartsRepository grinPartsRepository, IGrinRepository grinRepository, IBinningRepository binningRepository, IBinningItemsRepository binningItemsRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _binningRepository = binningRepository;
@@ -50,6 +51,7 @@ namespace Tips.Grin.Api.Controllers
             _iQCConfirmationRepository = iQCConfirmationRepository;
            _iQCConfirmationItemsRepository = iQCConfirmationItemsRepository;
             _httpContextAccessor = httpContextAccessor;
+            _binningLocationRepository = binningLocationRepository;
         }
 
         [HttpGet]
@@ -521,7 +523,7 @@ namespace Tips.Grin.Api.Controllers
                     {
 
                         BinningItems binningItems = _mapper.Map<BinningItems>(binningsItemsDto[i]);
-                        binningItems.binningLocations = _mapper.Map<List<BinningLocation>>(binningsItemsDto[i].BinningLocations);
+                        binningItems.binningLocations = _mapper.Map<List<BinningLocation>>(binningsItemsDto[i].binningLocations);
                         binningItemList.Add(binningItems);
 
 
@@ -554,7 +556,7 @@ namespace Tips.Grin.Api.Controllers
                 {
                     for (int i = 0; i < binningsItemsDto.Count; i++)
                     {
-                        var binningLocations = binningsItemsDto[i].BinningLocations;
+                        var binningLocations = binningsItemsDto[i].binningLocations;
 
                         int j = 0;
                         int k = 0;
@@ -709,6 +711,7 @@ namespace Tips.Grin.Api.Controllers
                     _logger.LogInfo($"Returned Binnings with id: {id}");
                     List<BinningItemsDto> binningItemList = new List<BinningItemsDto>();
                     var binningGrinNo = binningsById.GrinNumber;
+                    var binningItemDetails = binningsById.BinningItems;
                     var grinDetailsbyGrinNo = await _grinRepository.GetGrinByGrinNo(binningGrinNo);
                     var binningDetailsDto = _mapper.Map<BinningDto>(grinDetailsbyGrinNo);
 
@@ -725,6 +728,29 @@ namespace Tips.Grin.Api.Controllers
                             binningItemList.Add(binningItemDtos);
                         }
                     }
+                    //if (grinDetailsbyGrinNo.GrinParts.Count != 0)
+                    //{
+                    //    foreach (var grinDetails in grinDetailsbyGrinNo.GrinParts)
+                    //    {
+                    //        BinningItemsDto binningItemDtos = _mapper.Map<BinningItemsDto>(grinDetails);
+
+                    //        // Fetch BinningLocations for this BinningItems
+                    //        List<BinningLocationDto> binningLocationDtos = new List<BinningLocationDto>();
+                    //        foreach (var binningLocation in binningItemDetails[0].binningLocations)
+                    //        {
+                    //            BinningLocationDto binningLocationDto = _mapper.Map<BinningLocationDto>(binningLocation);
+                    //            binningLocationDtos.Add(binningLocationDto);
+                    //        }
+
+                    //        binningItemDtos.binningLocations = binningLocationDtos;
+
+                    //        binningItemDtos.ReceivedQty = grinDetails.Qty;
+                    //        binningItemDtos.AcceptedQty = grinDetails.AcceptedQty;
+                    //        binningItemDtos.RejectedQty = grinDetails.RejectedQty;
+
+                    //        binningItemList.Add(binningItemDtos);
+                    //    }
+                    //}
 
                     binningDetailsDto.BinningItems = binningItemList;
                     serviceResponse.Data = binningDetailsDto;

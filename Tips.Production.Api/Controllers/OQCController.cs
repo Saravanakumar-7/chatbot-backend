@@ -373,7 +373,7 @@ namespace Tips.Production.Api.Controllers
                     //var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
 
                     var json1 = JsonConvert.SerializeObject(inventory1);
-                    var data1 = new StringContent(json, Encoding.UTF8, "application/json"); 
+                    var data1 = new StringContent(json1, Encoding.UTF8, "application/json"); 
                     var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
 
 
