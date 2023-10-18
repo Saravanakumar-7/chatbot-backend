@@ -632,10 +632,10 @@ namespace Tips.Warehouse.Api.Repository
         } 
         public async Task<IEnumerable<GetInventoryListByItemNo>> GetInventoryListByItemNo( string ItemNumber)
         {
-             
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
 
             IEnumerable<GetInventoryListByItemNo> getInventoryListByItemNo = await _tipsWarehouseDbContext.Inventories
-                .Where(x =>x.PartNumber == ItemNumber && x.IsStockAvailable == true)
+                .Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true && !skipWareHouse.Contains(x.Warehouse))
                                 .Select(x => new GetInventoryListByItemNo()
                                 {
                                     InventoryId = x.Id,
@@ -644,10 +644,22 @@ namespace Tips.Warehouse.Api.Repository
 
                                 })
                                 .OrderBy(on => on.InventoryId)
-                              
-                              .ToListAsync();
-
+                                .ToListAsync();
             return getInventoryListByItemNo;
+            //IEnumerable<GetInventoryListByItemNo> getInventoryListByItemNo = await _tipsWarehouseDbContext.Inventories
+            //    .Where(x =>x.PartNumber == ItemNumber && x.IsStockAvailable == true)
+            //                    .Select(x => new GetInventoryListByItemNo()
+            //                    {
+            //                        InventoryId = x.Id,
+            //                        ItemNumber = x.PartNumber,
+            //                        Balance_Quantity = x.Balance_Quantity
+
+            //                    })
+            //                    .OrderBy(on => on.InventoryId)
+
+            //                  .ToListAsync();
+
+            //return getInventoryListByItemNo;
         }
         public async Task<Inventory> GetInventoryById(int id)
         {
