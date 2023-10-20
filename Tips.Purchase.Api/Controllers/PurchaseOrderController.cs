@@ -11,6 +11,7 @@ using Azure;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -628,6 +629,12 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //amount in words
+        private string GetTotalValueInWords(decimal totalValue)
+        {
+            string totalValueInWords = NumberToWordsConverter.Convert(totalValue);
+            return totalValueInWords;
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreatePurchaseOrder([FromBody] PurchaseOrderPostDto purchaseOrderPostDto)
@@ -657,6 +664,8 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
                 var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderPostDto);
+                var AmountInWords = GetTotalValueInWords(purchaseOrderDetails.TotalAmount);
+                purchaseOrderDetails.AmountInWords = AmountInWords;
                 var poItemDto = purchaseOrderPostDto.POItems;
                 var poFile = purchaseOrderPostDto.POFiles;
                 var poItemDtoList = new List<PoItem>();
@@ -697,6 +706,7 @@ namespace Tips.Purchase.Api.Controllers
                 //// Po Upload
 
                 var poUploadDetails = purchaseOrderPostDto.POFiles;
+                
                 foreach (var poUploadDetail in poUploadDetails)
                 {
                     var fileContent = poUploadDetail.FileByte;
