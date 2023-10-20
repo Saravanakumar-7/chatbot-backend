@@ -456,6 +456,25 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreatePurchaseRequisition([FromBody] PurchaseRequisitionPostDto purchaseRequistionPostDto)
@@ -463,6 +482,7 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<PurchaseRequisitionPostDto> serviceResponse = new ServiceResponse<PurchaseRequisitionPostDto>();
             try
             {
+                string serverKey = GetServerKey();
                 if (purchaseRequistionPostDto is null)
                 {
                     serviceResponse.Data = null;
@@ -507,9 +527,23 @@ namespace Tips.Purchase.Api.Controllers
                 //    purchaseRequisitionDetails.PrNumber = days + months + years + "PR" + (e);
                 //}
 
-                var dateFormat = days + months + years;
-                var prNumber = await _repository.GeneratePRNumber();
-                purchaseRequisitionDetails.PrNumber = dateFormat + prNumber;
+                if (serverKey == "trasccon")
+                {
+                    var dateFormat = days + months + years;
+                    var prNumber = await _repository.GeneratePRNumber();
+                    purchaseRequisitionDetails.PrNumber = dateFormat + prNumber;
+                }
+                else if (serverKey == "keus")
+                {
+                    var dateFormat = days + months + years;
+                    var prNumber = await _repository.GeneratePRNumber();
+                    purchaseRequisitionDetails.PrNumber = dateFormat + prNumber;
+                }
+                else
+                {
+                    var prNumber = await _repository.GeneratePRNumberAvision();
+                    purchaseRequisitionDetails.PrNumber = prNumber;
+                }
 
 
                 //// Pr Upload

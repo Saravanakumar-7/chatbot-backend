@@ -15,7 +15,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<long?> CreateInvoice(Invoice invoice);
         Task<string> UpdateInvoice(Invoice invoice);
         Task<string> DeleteInvoice(Invoice invoice);
-
+        Task<string> GenerateInvoiceNumberAvision();
         Task<Invoice> GetInvoiceById(int id);
         Task<IEnumerable<Invoice>> GetAllInvoiceWithItems(InvoiceSearchDto invoiceSearch);
         Task<IEnumerable<Invoice>> SearchInvoice([FromQuery] SearchParames searchParames);

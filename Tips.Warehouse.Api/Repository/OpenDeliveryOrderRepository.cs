@@ -36,7 +36,29 @@ namespace Tips.Warehouse.Api.Repository
 
             return getOpenDeliveryOrderDetailsByIds;
         }
+        public async Task<string> GenerateODONumberAvision()
+        {
+            using var transaction = await _tipsWarehouseDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
 
+            try
+            {
+                var rfqNumberEntity = await _tipsWarehouseDbContext.ODONumbers.SingleAsync();
+                rfqNumberEntity.CurrentValue += 1;
+                _tipsWarehouseDbContext.Update(rfqNumberEntity);
+                await _tipsWarehouseDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
+                int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+
+                return $"ASPL|ODO|{currentYear:D2}{nextYear:D2}-{rfqNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
         public async Task<string> GenerateODONumber()
         {
             using var transaction = await _tipsWarehouseDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);

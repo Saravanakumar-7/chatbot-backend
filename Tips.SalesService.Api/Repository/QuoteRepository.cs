@@ -58,7 +58,29 @@ namespace Tips.SalesService.Api.Repository
                 throw ex;
             }
         }
+        public async Task<string> GenerateQuoteNumberAvision()
+        {
+            using var transaction = await _tipsSalesServiceDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
 
+            try
+            {
+                var rfqNumberEntity = await _tipsSalesServiceDbContext.QuoteNumbers.SingleAsync();
+                rfqNumberEntity.CurrentValue += 1;
+                _tipsSalesServiceDbContext.Update(rfqNumberEntity);
+                await _tipsSalesServiceDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
+                int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+
+                return $"ASPL|QTN|{currentYear:D2}{nextYear:D2}-{rfqNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
         public async Task<int?> GetQuoteNumberAutoIncrementCount(DateTime date)
         {
             var getQuoteNumberAutoIncrementCount = _tipsSalesServiceDbContext.Quotes.Where(x => x.CreatedOn == date.Date).Count();

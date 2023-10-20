@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Grin.Api.Entities.DTOs
 {
@@ -93,5 +94,31 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal AcceptedQty { get; set; }
         public decimal RejectedQty { get; set; }
         public string? Remarks { get; set; }
+    }
+    public class IQCInventoryDto
+    {
+        public string PartNumber { get; set; }
+        public string? LotNumber { get; set; }
+
+        public string MftrPartNumber { get; set; }
+
+
+        public string Description { get; set; }
+
+
+        public string ProjectNumber { get; set; }
+        public decimal Balance_Quantity { get; set; }
+        public string? UOM { get; set; }
+
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public string? GrinNo { get; set; }
+        public int? GrinPartId { get; set; }
+        public PartType PartType { get; set; }
+        public string? GrinMaterialType { get; set; }
+        public string? ReferenceID { get; set; }
+        public string? ReferenceIDFrom { get; set; }
+        public string? ShopOrderNo { get; set; }
+
     }
 }

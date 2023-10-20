@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Mysqlx.Crud;
 using Newtonsoft.Json;
 using System.Dynamic;
 using System.IO;
@@ -445,7 +446,7 @@ namespace Tips.Grin.Api.Controllers
 
                 var iQCCreate = _mapper.Map<IQCConfirmation>(iQCConfirmationPostDto);
                 var iQCDto = iQCConfirmationPostDto.IQCConfirmationItemsPostDtos;
-
+                var iQcItemNo = iQCDto[0].ItemNumber;
                 var iQCItemList = new List<IQCConfirmationItems>();
 
                 for(int  i=0; i< iQCDto.Count;i++)
@@ -479,6 +480,41 @@ namespace Tips.Grin.Api.Controllers
                         return BadRequest(serviceResponse);
                     }
                     iQCItemList.Add(iQCConfirmationItems);
+
+                    var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
+                          "GetItemMasterByItemNumber?", "&ItemNumber=", iQcItemNo));
+                    var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                    dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                    dynamic itemMasterObject = itemMasterObjectData.data;
+
+                    IQCInventoryDto grinInventoryDto = new IQCInventoryDto();
+                    grinInventoryDto.PartNumber = iQCConfirmationItems.ItemNumber;
+                    grinInventoryDto.LotNumber = grinPartsDetails.LotNumber;
+                    grinInventoryDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
+                    grinInventoryDto.Description = grinPartsDetails.ItemDescription;
+                    grinInventoryDto.ProjectNumber = grinPartsDetails.ProjectNumbers[i].ProjectNumber;
+                    grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iQCConfirmationItems.RejectedQty);
+                    grinInventoryDto.UOM = grinPartsDetails.UOM;
+                    grinInventoryDto.Warehouse = "Rework";
+                    grinInventoryDto.Location = "Rework";
+                    grinInventoryDto.GrinNo = iQCCreate.GrinNumber;
+                    grinInventoryDto.GrinPartId = iQCConfirmationItems.GrinPartId;
+                    grinInventoryDto.PartType = itemMasterObject.itemType;  //We need to check this
+                    grinInventoryDto.ReferenceID = "GRIN"/*Convert.ToString(iQCConfirmationItems.Id)*/;
+                    grinInventoryDto.ReferenceIDFrom = "GRIN";
+                    grinInventoryDto.GrinMaterialType = "GRIN";
+                    grinInventoryDto.ShopOrderNo = "SHOP";
+
+                    var jsons = JsonConvert.SerializeObject(grinInventoryDto);
+                    var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                    // Include the token in the Authorization header
+                    var tokenValue = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                    if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
+                    {
+                        var token = tokenValue.Substring(7);
+                        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
+                    var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), datas);
 
                     //Inventory Update Code
                     decimal acceptedQty = iQCDto[i].AcceptedQty;

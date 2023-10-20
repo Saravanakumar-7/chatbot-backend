@@ -21,6 +21,7 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<MaterialReturnNote>> GetAllMaterialReturnNoteWithItems(MaterialReturnNoteSearchDto materialReturnNoteSearch);
         Task<IEnumerable<MaterialReturnNote>> SearchMaterialReturnNote([FromQuery] SearchParamess searchParammes);
         Task<IEnumerable<MaterialReturnNote>> SearchMaterialReturnNoteDate([FromQuery] SearchDateparames searchDatesParams);
+        Task<string> GenerateMRNNumberForAvision();
         public void SaveAsync();
     }
 }

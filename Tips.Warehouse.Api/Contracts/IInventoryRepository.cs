@@ -66,5 +66,6 @@ namespace Tips.Warehouse.Api.Contracts
         Task<List<Inventory>> GetWipInventoryDetailsByLotNumber(string itemNumber, string lotNumber);
         Task<IEnumerable<GetInventoryItemNoAndDescriptionList>> GetInventoryItemNoAndDescriptionByProjectNo(string projectNumber);
         Task<IEnumerable<GetInventoryItemNoAndDescriptionList>> GetInventoryItemNoAndDescriptionList();
+        Task<List<Inventory>> ReturnInventoryFGDetailsByItemNumber(string ItemNumber);
     }
 }

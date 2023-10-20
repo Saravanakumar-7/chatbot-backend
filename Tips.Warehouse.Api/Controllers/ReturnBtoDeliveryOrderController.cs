@@ -7,6 +7,7 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -414,7 +415,8 @@ namespace Tips.Warehouse.Api.Controllers
                             inventory.ReferenceID = returnBtoDeliveryOrderItems.BTONumber;
                             inventory.ReferenceIDFrom = "From BTO Delivery Order";
                             inventory.shopOrderNo = "";
-
+                            //inventory.PartType = returnBtoDeliveryOrderItems.PartType;
+                           
                             await _inventoryRepository.CreateInventory(inventory);
                             _inventoryRepository.SaveAsync();
                         }
@@ -433,6 +435,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTranction.TO_Location = "FG";
                         inventoryTranction.Remarks = "Return BTO";
                         inventoryTranction.Warehouse = "FG";
+                        //inventoryTranction.PartType = returnBtoDeliveryOrderItems.PartType;
 
                         var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 

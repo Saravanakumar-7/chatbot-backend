@@ -318,7 +318,25 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
 
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
         [HttpPost]
         public async Task< IActionResult> CreateInvoice([FromBody] InvoicePostDto invoicePostDto)
         {
@@ -326,6 +344,7 @@ namespace Tips.Warehouse.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
                 if (invoicePostDto == null)
                 {
                     _logger.LogError("Invoice object sent from client is null.");
@@ -377,9 +396,23 @@ namespace Tips.Warehouse.Api.Controllers
                 //    invoice.InvoiceNumber = days + months + years + "IN" + (e);
                 //}
 
-                var dateFormat = days + months + years;
-                var invoiceNumber = await _invoiceRepository.GenerateInvoiceNumber();
-                invoice.InvoiceNumber = dateFormat + invoiceNumber;
+                if (serverKey == "trasccon")
+                {
+                    var dateFormat = days + months + years;
+                    var invoiceNumber = await _invoiceRepository.GenerateInvoiceNumber();
+                    invoice.InvoiceNumber = dateFormat + invoiceNumber;
+                }
+                else if (serverKey == "keus")
+                {
+                    var dateFormat = days + months + years;
+                    var invoiceNumber = await _invoiceRepository.GenerateInvoiceNumber();
+                    invoice.InvoiceNumber = dateFormat + invoiceNumber;
+                }
+                else
+                {
+                    var invoiceNumber = await _invoiceRepository.GenerateInvoiceNumber();
+                    invoice.InvoiceNumber = invoiceNumber;
+                }
 
                 if (invoiceitemsDto != null)
                 {

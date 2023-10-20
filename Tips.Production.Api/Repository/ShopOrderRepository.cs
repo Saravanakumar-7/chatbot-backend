@@ -91,7 +91,11 @@ namespace Tips.Production.Api.Repository
                 _tipsProductionDbContext.Update(poNumberEntity);
                 await _tipsProductionDbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-                return $"AV-WO-{poNumberEntity.CurrentValue:D5}";
+
+                int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
+                int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+
+                return $"ASPL|PPC|SO|{currentYear:D2}{nextYear:D2}-{poNumberEntity.CurrentValue:D6}";
             }
             catch (Exception ex)
             {

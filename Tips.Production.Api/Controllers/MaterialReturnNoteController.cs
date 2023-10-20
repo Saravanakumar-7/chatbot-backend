@@ -200,7 +200,25 @@ namespace Tips.Production.Api.Controllers
             }
 
         }
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
 
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> CreateMaterialReturnNote([FromBody] MaterialReturnNotePostDto materialReturnNotePostDto)
         {
@@ -208,6 +226,7 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
                 if (materialReturnNotePostDto is null)
                 {
                     _logger.LogError("MaterialReturnNote object sent from client is null.");
@@ -226,20 +245,20 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var mrnNumber = await _materialReturnNoteRepository.GenerateMRNNumber();
-                if (mrnNumber == null)
-                {
-                    _logger.LogError("Something went wrong inside Service Method GenerateMRNNumber");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Something went wrong. please try again";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(serviceResponse);
-                }
+                //var mrnNumber = await _materialReturnNoteRepository.GenerateMRNNumber();
+                //if (mrnNumber == null)
+                //{
+                //    _logger.LogError("Something went wrong inside Service Method GenerateMRNNumber");
+                //    serviceResponse.Data = null;
+                //    serviceResponse.Message = "Something went wrong. please try again";
+                //    serviceResponse.Success = false;
+                //    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                //    return BadRequest(serviceResponse);
+                //}
 
                 var materialReturnNote = _mapper.Map<MaterialReturnNote>(materialReturnNotePostDto);
                 var materialReturnNoteItemDto = materialReturnNotePostDto.MaterialReturnNoteItems;
-
+                var materialReturnNoteItemList = new List<MaterialReturnNoteItem>();
 
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
@@ -263,10 +282,23 @@ namespace Tips.Production.Api.Controllers
                 //    materialReturnNote.MRNNumber = days + months + years + "MRN" + (e);
                 //}
 
-                var dateFormat = days + months + years;
-                var materialReturnNoteItemList = new List<MaterialReturnNoteItem>();
-
-                materialReturnNote.MRNNumber = dateFormat + mrnNumber;
+                if (serverKey == "trasccon")
+                {
+                    var dateFormat = days + months + years;
+                    var mrnNumber = await _materialReturnNoteRepository.GenerateMRNNumber();
+                    materialReturnNote.MRNNumber = dateFormat + mrnNumber;
+                }
+                else if (serverKey == "keus")
+                {
+                    var dateFormat = days + months + years;
+                    var mrnNumber = await _materialReturnNoteRepository.GenerateMRNNumber();
+                    materialReturnNote.MRNNumber = dateFormat + mrnNumber;
+                }
+                else
+                {
+                    var mrnNumber = await _materialReturnNoteRepository.GenerateMRNNumberForAvision();
+                    materialReturnNote.MRNNumber = mrnNumber;
+                }
 
                 if (materialReturnNoteItemDto != null)
                 {

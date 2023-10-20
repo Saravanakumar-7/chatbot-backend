@@ -573,11 +573,17 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<decimal> GetStockQtyForRetailSalesOrderItem(string ItemNumber)
         {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
             var inventoryDetail = _tipsWarehouseDbContext.Inventories
-                .Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true)
-                          .Sum(x=>x.Balance_Quantity);
+                .Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true && !skipWareHouse.Contains(x.Warehouse))
+                          .Sum(x => x.Balance_Quantity);
 
             return inventoryDetail;
+            //var inventoryDetail = _tipsWarehouseDbContext.Inventories
+            //    .Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true)
+            //              .Sum(x=>x.Balance_Quantity);
+
+            //return inventoryDetail;
         }
         //aravind
 
@@ -633,9 +639,10 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<IEnumerable<GetInventoryListByItemNo>> GetInventoryListByItemNo( string ItemNumber)
         {
             string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
-
+            var partTypes = new PartType[] { PartType.FG, PartType.TG, PartType.FRU };
+           
             IEnumerable<GetInventoryListByItemNo> getInventoryListByItemNo = await _tipsWarehouseDbContext.Inventories
-                .Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true && !skipWareHouse.Contains(x.Warehouse))
+                .Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true && !skipWareHouse.Contains(x.Warehouse) && partTypes.Contains(x.PartType))
                                 .Select(x => new GetInventoryListByItemNo()
                                 {
                                     InventoryId = x.Id,
@@ -692,24 +699,49 @@ namespace Tips.Warehouse.Api.Repository
         //get inventory details from fg partnumber
 
         public async Task<Inventory> GetInventoryFGDetailsByItemNumber(string ItemNumber)
-        { 
+        {
+            try
+            {
+                string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
+                var partTypes = new PartType[] { PartType.FG, PartType.TG, PartType.FRU };
 
+                var getSalesOrderDetailsBy = await _tipsWarehouseDbContext.Inventories
+                    .Where(x => x.PartNumber == ItemNumber && partTypes.Contains(x.PartType) && x.IsStockAvailable == true && !skipWareHouse.Contains(x.Warehouse) && x.Balance_Quantity > 0)
+                    .FirstOrDefaultAsync();
+
+                return getSalesOrderDetailsBy;
+            }
+            catch (Exception ex)
+            {
+                var data = ex.InnerException;
+                return null;
+            }
+
+            // return null;
+        }
+
+
+
+        public async Task<List<Inventory>> ReturnInventoryFGDetailsByItemNumber(string ItemNumber)
+        {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
             var partTypes = new PartType[] { PartType.FG, PartType.TG, PartType.FRU };
 
             var getSalesOrderDetailsBy = await _tipsWarehouseDbContext.Inventories
-                .Where(x => x.PartNumber == ItemNumber && partTypes.Contains(x.PartType) && x.IsStockAvailable== true && x.Balance_Quantity>0)
-                .FirstOrDefaultAsync();
+                .Where(x => x.PartNumber == ItemNumber && partTypes.Contains(x.PartType) && x.IsStockAvailable == true && !skipWareHouse.Contains(x.Warehouse) && x.Balance_Quantity > 0)
+                .ToListAsync();
 
             return getSalesOrderDetailsBy;
-        } 
+        }
 
         public async Task<List<Inventory>> GetInventoryByItemNumber(string ItemNumber)
         {
-            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
+            
             try
             {
+                string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
                 var getInventoryDetails = await _tipsWarehouseDbContext.Inventories
-                     .Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true && !skipWareHouse.Contains(x.Warehouse))
+                     .Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true && !skipWareHouse.Contains(x.Warehouse) && x.PartType == PartType.FG)
                               .ToListAsync();
                 return getInventoryDetails;
             }

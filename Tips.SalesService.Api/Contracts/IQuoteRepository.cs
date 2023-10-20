@@ -20,6 +20,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<PagedList<Quote>> GetAllActiveQuote(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<long> CreateQuote(Quote quote);       
         Task<Quote> ChangeQuoteVersion(Quote quote);
+        Task<string> GenerateQuoteNumberAvision();
          Task<string> UpdateQuote(Quote quote);
         Task<string> DeleteQuote(Quote quote);
     }

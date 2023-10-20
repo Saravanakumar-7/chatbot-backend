@@ -8,6 +8,7 @@ using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Contracts;
 using Newtonsoft.Json;
 using Tips.Warehouse.Api.Repository;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,9 +24,9 @@ namespace Tips.Warehouse.Api.Controllers
         private IInventoryRepository _inventoryRepository;
         private IInventoryTranctionRepository _inventoryTranctionRepository;
         private IOpenDeliveryOrderHistoryRepository _openDeliveryOrderHistoryRepository;
+        private readonly IConfiguration _config;
 
-
-        public OpenDeliveryOrderController(IOpenDeliveryOrderHistoryRepository openDeliveryOrderHistoryRepository, IInventoryTranctionRepository inventoryTranctionRepository, IOpenDeliveryOrderRepository repository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
+        public OpenDeliveryOrderController(IConfiguration config, IOpenDeliveryOrderHistoryRepository openDeliveryOrderHistoryRepository, IInventoryTranctionRepository inventoryTranctionRepository, IOpenDeliveryOrderRepository repository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
@@ -33,6 +34,7 @@ namespace Tips.Warehouse.Api.Controllers
             _inventoryRepository = inventoryRepository;
             _inventoryTranctionRepository = inventoryTranctionRepository;
             _openDeliveryOrderHistoryRepository = openDeliveryOrderHistoryRepository;
+            _config = config;
 
 
         }
@@ -284,7 +286,25 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
 
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreateOpenDeliveryOrder([FromBody] OpenDeliveryOrderDtoPost openDeliveryOrderDtoPost)
@@ -293,6 +313,7 @@ namespace Tips.Warehouse.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
                 if (openDeliveryOrderDtoPost is null)
                 {
                     _logger.LogError("OpenDeliveryOrderDetails object sent from client is null.");
@@ -325,9 +346,23 @@ namespace Tips.Warehouse.Api.Controllers
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
 
-                var dateFormat = days + months + years;
-                var odoNumber = await _repository.GenerateODONumber();
-                openDeliveryorder.OpenDONumber = dateFormat + odoNumber;
+                if (serverKey == "trasccon")
+                {
+                    var dateFormat = days + months + years;
+                    var odoNumber = await _repository.GenerateODONumber();
+                    openDeliveryorder.OpenDONumber = dateFormat + odoNumber;
+                }
+                else if (serverKey == "keus")
+                {
+                    var dateFormat = days + months + years;
+                    var odoNumber = await _repository.GenerateODONumber();
+                    openDeliveryorder.OpenDONumber = dateFormat + odoNumber;
+                }
+                else
+                {
+                    var odoNumber = await _repository.GenerateODONumberAvision();
+                    openDeliveryorder.OpenDONumber = odoNumber;
+                }
 
                 if (openDeliveryOrderitemsList != null)
                 {

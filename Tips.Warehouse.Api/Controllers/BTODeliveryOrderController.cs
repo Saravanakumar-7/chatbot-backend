@@ -26,6 +26,7 @@ namespace Tips.Warehouse.Api.Controllers
         private IBTODeliveryOrderRepository _repository;
         private IInventoryTranctionRepository _inventoryTranctionRepository;
         private IBTODeliveryOrderHistoryRepository _bTODeliveryOrderHistoryRepository;
+        private IBTODeliveryOrderInventoryHistoryRepository _bTODeliveryOrderInventoryHistoryRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IInventoryRepository _inventoryRepository;
@@ -34,7 +35,7 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
 
 
-        public BTODeliveryOrderController(IBTODeliveryOrderRepository repository, IInventoryTranctionRepository inventoryTranctionRepository , IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, HttpClient httpClient, IConfiguration config, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public BTODeliveryOrderController(IBTODeliveryOrderInventoryHistoryRepository bTODeliveryOrderInventoryHistoryRepository, IBTODeliveryOrderRepository repository, IInventoryTranctionRepository inventoryTranctionRepository , IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, HttpClient httpClient, IConfiguration config, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
             _logger = logger;
@@ -44,6 +45,7 @@ namespace Tips.Warehouse.Api.Controllers
             _config = config;
             _inventoryTranctionRepository = inventoryTranctionRepository;
             _bTODeliveryOrderHistoryRepository = bTODeliveryOrderHistoryRepository;
+            _bTODeliveryOrderInventoryHistoryRepository = bTODeliveryOrderInventoryHistoryRepository;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -372,13 +374,32 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
 
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> CreateBTODeliveryOrder([FromBody] BTODeliveryOrderDtoPost bTODeliveryOrderDtoPost)
         {
             ServiceResponse<BTODeliveryOrderDtoPost> serviceResponse = new ServiceResponse<BTODeliveryOrderDtoPost>();
             try
             {
+                string serverKey = GetServerKey();
                 if (bTODeliveryOrderDtoPost is null)
                 {
                     serviceResponse.Data = null;
@@ -424,9 +445,23 @@ namespace Tips.Warehouse.Api.Controllers
                 //    bTODeliveryOrder.BTONumber = days + months + years + "BTO" + (e);
                 //}
 
-                var dateFormat = days + months + years;
-                var btoNumber = await _repository.GenerateBTONumber();
-                bTODeliveryOrder.BTONumber = dateFormat + btoNumber;
+                if (serverKey == "trasccon")
+                {
+                    var dateFormat = days + months + years;
+                    var btoNumber = await _repository.GenerateBTONumber();
+                    bTODeliveryOrder.BTONumber = dateFormat + btoNumber;
+                }
+                else if (serverKey == "keus")
+                {
+                    var dateFormat = days + months + years;
+                    var btoNumber = await _repository.GenerateBTONumber();
+                    bTODeliveryOrder.BTONumber = dateFormat + btoNumber;
+                }
+                else
+                {
+                    var btoNumber = await _repository.GenerateBTONumberAvision();
+                    bTODeliveryOrder.BTONumber = btoNumber;
+                }
 
                 if (bTODeliveryOrderItemsListDto != null)
                 {
@@ -459,12 +494,77 @@ namespace Tips.Warehouse.Api.Controllers
                                     {
                                         inventory.IsStockAvailable = false;
                                     }
+                                    //BTODeliveryOrderInventoryHistory bTODeliveryOrderInventoryHistory = new BTODeliveryOrderInventoryHistory();
+                                    //bTODeliveryOrderInventoryHistory.BTONumber = bTODeliveryOrder.BTONumber;
+                                    //bTODeliveryOrderInventoryHistory.CustomerName = bTODeliveryOrder.CustomerName;
+                                    //bTODeliveryOrderInventoryHistory.CustomerAliasName = bTODeliveryOrder.CustomerAliasName;
+                                    //bTODeliveryOrderInventoryHistory.CustomerId = bTODeliveryOrder.CustomerId;
+                                    //bTODeliveryOrderInventoryHistory.PONumber = bTODeliveryOrder.PONumber;
+                                    //bTODeliveryOrderInventoryHistory.IssuedTo = bTODeliveryOrder.IssuedTo;
+                                    //bTODeliveryOrderInventoryHistory.DODate = bTODeliveryOrder.DODate;
+                                    //bTODeliveryOrderInventoryHistory.FGItemNumber = inventory.PartNumber;
+                                    //bTODeliveryOrderInventoryHistory.SalesOrderId = bTODoItemList[i].SalesOrderId;
+                                    //bTODeliveryOrderInventoryHistory.Description = inventory.Description;
+                                    //bTODeliveryOrderInventoryHistory.UnitPrice = bTODoItemList[i].UnitPrice;
+                                    //bTODeliveryOrderInventoryHistory.Location = inventory.Location;
+                                    //bTODeliveryOrderInventoryHistory.Warehouse = inventory.Warehouse;
+                                    //bTODeliveryOrderInventoryHistory.UOC = bTODoItemList[i].UOC;
+                                    //bTODeliveryOrderInventoryHistory.UOM = bTODoItemList[i].UOM;
+                                    //bTODeliveryOrderInventoryHistory.FGOrderQty = bTODoItemList[i].FGOrderQty;
+                                    //bTODeliveryOrderInventoryHistory.OrderBalanceQty = bTODoItemList[i].OrderBalanceQty;
+                                    //bTODeliveryOrderInventoryHistory.FGStock = bTODoItemList[i].FGStock;
+                                    //bTODeliveryOrderInventoryHistory.Discount = Convert.ToDecimal(bTODoItemList[i].Discount);
+                                    //bTODeliveryOrderInventoryHistory.NetValue = bTODoItemList[i].NetValue;
+                                    //bTODeliveryOrderInventoryHistory.DispatchQty = dispatchQuantity;
+                                    //bTODeliveryOrderInventoryHistory.InvoicedQty = bTODoItemList[i].InvoicedQty;
+                                    //bTODeliveryOrderInventoryHistory.SerialNo = bTODoItemList[i].SerialNo;
+                                    //bTODeliveryOrderInventoryHistory.CreatedBy = bTODoItemList[i].CreatedBy;
+                                    //bTODeliveryOrderInventoryHistory.LastModifiedOn = bTODoItemList[i].LastModifiedOn;
+                                    //bTODeliveryOrderInventoryHistory.Remark = "From Create BTO";
+
+                                    //var bTODeliveryOrderHistoryInventoryDetails = _mapper.Map<BTODeliveryOrderInventoryHistory>(bTODeliveryOrderInventoryHistory);
+
+                                    //await _bTODeliveryOrderInventoryHistoryRepository.CreateBTODeliveryOrderInventoryHistory(bTODeliveryOrderHistoryInventoryDetails);
+                                    //_bTODeliveryOrderInventoryHistoryRepository.SaveAsync();
                                 }
                                 else if (dispatchQuantity != 0 && stockAvailable < dispatchQuantity)
                                 {
                                     dispatchQuantity -= stockAvailable;
                                     inventory.Balance_Quantity = 0;
                                     inventory.IsStockAvailable = false;
+
+                                    //BTODeliveryOrderInventoryHistory bTODeliveryOrderInventoryHistory = new BTODeliveryOrderInventoryHistory();
+                                    //bTODeliveryOrderInventoryHistory.BTONumber = bTODeliveryOrder.BTONumber;
+                                    //bTODeliveryOrderInventoryHistory.CustomerName = bTODeliveryOrder.CustomerName;
+                                    //bTODeliveryOrderInventoryHistory.CustomerAliasName = bTODeliveryOrder.CustomerAliasName;
+                                    //bTODeliveryOrderInventoryHistory.CustomerId = bTODeliveryOrder.CustomerId;
+                                    //bTODeliveryOrderInventoryHistory.PONumber = bTODeliveryOrder.PONumber;
+                                    //bTODeliveryOrderInventoryHistory.IssuedTo = bTODeliveryOrder.IssuedTo;
+                                    //bTODeliveryOrderInventoryHistory.DODate = bTODeliveryOrder.DODate;
+                                    //bTODeliveryOrderInventoryHistory.FGItemNumber = inventory.PartNumber;
+                                    //bTODeliveryOrderInventoryHistory.SalesOrderId = bTODoItemList[i].SalesOrderId;
+                                    //bTODeliveryOrderInventoryHistory.Description = inventory.Description;
+                                    //bTODeliveryOrderInventoryHistory.UnitPrice = bTODoItemList[i].UnitPrice;
+                                    //bTODeliveryOrderInventoryHistory.Location = inventory.Location;
+                                    //bTODeliveryOrderInventoryHistory.Warehouse = inventory.Warehouse;
+                                    //bTODeliveryOrderInventoryHistory.UOC = bTODoItemList[i].UOC;
+                                    //bTODeliveryOrderInventoryHistory.UOM = bTODoItemList[i].UOM;
+                                    //bTODeliveryOrderInventoryHistory.FGOrderQty = bTODoItemList[i].FGOrderQty;
+                                    //bTODeliveryOrderInventoryHistory.OrderBalanceQty = bTODoItemList[i].OrderBalanceQty;
+                                    //bTODeliveryOrderInventoryHistory.FGStock = bTODoItemList[i].FGStock;
+                                    //bTODeliveryOrderInventoryHistory.Discount = Convert.ToDecimal(bTODoItemList[i].Discount);
+                                    //bTODeliveryOrderInventoryHistory.NetValue = bTODoItemList[i].NetValue;
+                                    //bTODeliveryOrderInventoryHistory.DispatchQty = dispatchQuantity;
+                                    //bTODeliveryOrderInventoryHistory.InvoicedQty = bTODoItemList[i].InvoicedQty;
+                                    //bTODeliveryOrderInventoryHistory.SerialNo = bTODoItemList[i].SerialNo;
+                                    //bTODeliveryOrderInventoryHistory.CreatedBy = bTODoItemList[i].CreatedBy;
+                                    //bTODeliveryOrderInventoryHistory.LastModifiedOn = bTODoItemList[i].LastModifiedOn;
+                                    //bTODeliveryOrderInventoryHistory.Remark = "From Create BTO";
+
+                                    //var bTODeliveryOrderHistoryInventoryDetails = _mapper.Map<BTODeliveryOrderInventoryHistory>(bTODeliveryOrderInventoryHistory);
+
+                                    //await _bTODeliveryOrderInventoryHistoryRepository.CreateBTODeliveryOrderInventoryHistory(bTODeliveryOrderHistoryInventoryDetails);
+                                    //_bTODeliveryOrderInventoryHistoryRepository.SaveAsync();
                                 }
 
                                 _inventoryRepository.Update(inventory);

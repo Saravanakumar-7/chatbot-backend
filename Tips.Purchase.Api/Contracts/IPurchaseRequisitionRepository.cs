@@ -30,5 +30,6 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PurchaseRequistionRevNoListDto>> GetAllRevisionNumberListByPRNumber(string prNumber);
 
         Task<PurchaseRequisition> GetPurchaseRequisitionByPRNoAndRevNo(string prNumber, int revisionNumber);
+        Task<string> GeneratePRNumberAvision();
     }
 }

@@ -47,7 +47,29 @@ namespace Tips.Purchase.Api.Repository
 
             return getPRNumberAutoIncrementCount;
         }
+        public async Task<string> GeneratePRNumberAvision()
+        {
+            using var transaction = await _tipsPurchaseDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
 
+            try
+            {
+                var rfqNumberEntity = await _tipsPurchaseDbContext.PRNumbers.SingleAsync();
+                rfqNumberEntity.CurrentValue += 1;
+                _tipsPurchaseDbContext.Update(rfqNumberEntity);
+                await _tipsPurchaseDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
+                int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+
+                return $"ASPL|PR|{currentYear:D2}{nextYear:D2}-{rfqNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
         public async Task<string> GeneratePRNumber()
         {
             using var transaction = await _tipsPurchaseDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);

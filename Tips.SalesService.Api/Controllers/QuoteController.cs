@@ -235,16 +235,35 @@ namespace Tips.SalesService.Api.Controllers
             }
 
         }
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
 
-            // POST api/<QuoteController>
-            [HttpPost]
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
+        // POST api/<QuoteController>
+        [HttpPost]
             public async Task<IActionResult> CreateQuote([FromBody] QuotePostDto quotePostDto)
             {
                 ServiceResponse<QuoteDto> serviceResponse = new ServiceResponse<QuoteDto>();
 
                 try
                 {
-                    if (quotePostDto is null)
+                string serverKey = GetServerKey();
+                if (quotePostDto is null)
                     {
                         _logger.LogError("QuoteDetails object sent from client is null.");
                         serviceResponse.Data = null;
@@ -291,10 +310,23 @@ namespace Tips.SalesService.Api.Controllers
                 //    quote.QuoteNumber = days + months + years + "QT" + (e);
                 //}
 
-                var dateFormat = days + months + years;
-                var quoteNumber = await _repository.GenerateQuoteNumber();
-                quote.QuoteNumber = dateFormat + quoteNumber;
-
+                if (serverKey == "trasccon")
+                {
+                    var dateFormat = days + months + years;
+                    var quoteNumber = await _repository.GenerateQuoteNumber();
+                    quote.QuoteNumber = dateFormat + quoteNumber;
+                }
+                else if (serverKey == "keus")
+                {
+                    var dateFormat = days + months + years;
+                    var quoteNumber = await _repository.GenerateQuoteNumber();
+                    quote.QuoteNumber = dateFormat + quoteNumber;
+                }
+                else
+                {
+                    var quoteNumber = await _repository.GenerateQuoteNumberAvision();
+                    quote.QuoteNumber = quoteNumber;
+                }
                 quote.QuoteGenerals = quoteGeneralList.ToList();
                     quote.QuoteAdditionalCharges = quoteAdditionalChargesList.ToList();
                     quote.QuoteOtherTerms = quoteOtherTermsList.ToList();

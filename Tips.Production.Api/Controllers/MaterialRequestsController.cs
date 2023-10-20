@@ -260,6 +260,25 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> CreateMaterialRequest([FromBody] MaterialRequestsPostDto materialRequestPostDto)
         {
@@ -267,6 +286,7 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
                 if (materialRequestPostDto is null)
                 {
                     _logger.LogError("MaterialRequest object sent from client is null.");
@@ -326,9 +346,23 @@ namespace Tips.Production.Api.Controllers
                 //    createMaterialReq.MRNumber = days + months + years + "MR" + (e);
                 //}
 
-                var dateFormat = days + months + years;
-                var mrNumber = await _materialRequestRepository.GenerateMRNumber();
-                createMaterialReq.MRNumber = mrNumber;
+                if (serverKey == "trasccon")
+                {
+                    var dateFormat = days + months + years;
+                    var mrNumber = await _materialRequestRepository.GenerateMRNumber();
+                    createMaterialReq.MRNumber = mrNumber;
+                }
+                else if (serverKey == "keus")
+                {
+                    var dateFormat = days + months + years;
+                    var mrNumber = await _materialRequestRepository.GenerateMRNumber();
+                    createMaterialReq.MRNumber = mrNumber;
+                }
+                else
+                {
+                    var mrNumber = await _materialRequestRepository.GenerateMRNumberForAvision();
+                    createMaterialReq.MRNumber = mrNumber;
+                }
 
                 await _materialRequestRepository.CreateMaterialRequest(createMaterialReq);
 

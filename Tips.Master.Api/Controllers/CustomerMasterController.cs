@@ -222,8 +222,13 @@ namespace Tips.Master.Api.Controllers
                 }
                 else if (serverKey == "trasccon")
                 {
-                    var rfqNumber = await _repository.CustomerMasterRepository.GenerateCustomerNumberAvision();
+                    var customerNumber = await _repository.CustomerMasterRepository.GenerateCustomerNumberAvision();
 
+                }
+                else if (serverKey == "avision")
+                {
+                    var customerNumber = await _repository.CustomerMasterRepository.GenerateCustomerNumberAvision();
+                    customerMaster.CustomerNumber = customerNumber;
                 }
                 await _repository.CustomerMasterRepository.CreateCustomerMaster(customerMaster);
 

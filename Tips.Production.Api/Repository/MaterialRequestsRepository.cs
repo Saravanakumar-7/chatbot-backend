@@ -123,7 +123,29 @@ namespace Tips.Production.Api.Repository
 
             return getMRNumberAutoIncrementCount;
         }
+        public async Task<string> GenerateMRNumberForAvision()
+        {
+            using var transaction = await _tipsProductionDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
 
+            try
+            {
+                var rfqNumberEntity = await _tipsProductionDbContext.MRNumbers.SingleAsync();
+                rfqNumberEntity.CurrentValue += 1;
+                _tipsProductionDbContext.Update(rfqNumberEntity);
+                await _tipsProductionDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
+                int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+
+                return $"ASPL|MIR|{currentYear:D2}{nextYear:D2}-{rfqNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
         public async Task<string> GenerateMRNumber()
         {
             using var transaction = await _tipsProductionDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
