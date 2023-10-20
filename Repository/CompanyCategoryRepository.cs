@@ -57,10 +57,10 @@ namespace Repository
         {
             var companyCategoryDetails = FindAll()
                                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CompanyCategoryName.Contains(searchParams.SearchValue) ||
-                                       inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+                                       inv.Description.Contains(searchParams.SearchValue))));
 
             return companyCategoryDetails;
-        }
+        } 
 
         public async Task<CompanyCategory> GetCompanyCategoryById(int id)
         {

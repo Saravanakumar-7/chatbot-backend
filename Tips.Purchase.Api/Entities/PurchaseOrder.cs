@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Entities
@@ -9,6 +10,9 @@ namespace Tips.Purchase.Api.Entities
         [Key]
         public int Id { get; set; }
         public string? PONumber { get; set; }
+        
+        public string? AmountInWords { get; set; }
+
         public DateTime PODate { get; set; }
         public int? RevisionNumber { get; set; }
         public string? ProcurementType { get; set; }

@@ -1598,21 +1598,7 @@ namespace Tips.SalesService.Api.Controllers
                 if (serverKey == "trasccon")
                 {
                     var rfqNumber = await _rfqRepository.GenerateRFQNumberForTransccon();
-                    createRfq.RfqNumber = rfqNumber;
-                    //var latestRfqNo = await _rfqRepository.GetRfqNumberAutoIncrementNumber();
-
-                    //if (latestRfqNo == null)
-                    //{
-                    //    int num = 0;
-                    //    createRfq.RfqNumber = "TISPL-" + (num + 1);
-                    //}
-                    //else
-                    //{
-                    //    //string result = latestRfqNo.Substring(0, latestRfqNo.IndexOf("-")).Trim();
-                    //    //string spliValue = latestRfqNo.Split('-').Last();
-                    //    //int num = Int32.Parse(spliValue);
-                    //    createRfq.RfqNumber = latestRfqNo;
-                    //}
+                    createRfq.RfqNumber = rfqNumber; 
                 }
                 else if (serverKey == "keus")
                 {
@@ -1624,10 +1610,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     var dateFormat = days + months + years;
                     var rfqNumber = await _rfqRepository.GenerateRFQNumberAvision();
-                    createRfq.RfqNumber = rfqNumber;
-                    //var dateFormat = days + months + years;
-                    //var rfqNumber = await _rfqRepository.GenerateRFQTrascconNumber();
-                    //createRfq.RfqNumber = dateFormat + rfqNumber;
+                    createRfq.RfqNumber = rfqNumber; 
                 }
 
                 await _rfqRepository.CreateRfq(createRfq);

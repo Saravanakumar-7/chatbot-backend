@@ -30,13 +30,13 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllCompanyCategory([FromQuery] SearchParames searchParams)
         {
-            ServiceResponse<IEnumerable<CompanyCategory>> serviceResponse = new ServiceResponse<IEnumerable<CompanyCategory>>();
+            ServiceResponse<IEnumerable<CompanyCategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<CompanyCategoryDto>>();
 
             try
             {
                 var companyCategories = await _repository.CompanyCategoryRepository.GetAllCompanyCategory(searchParams);
                 _logger.LogInfo("Returned all companyCategories");
-                var result = _mapper.Map<IEnumerable<CompanyCategory>>(companyCategories);
+                var result = _mapper.Map<IEnumerable<CompanyCategoryDto>>(companyCategories);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all companyCategories Successfully";
                 serviceResponse.Success = true;
