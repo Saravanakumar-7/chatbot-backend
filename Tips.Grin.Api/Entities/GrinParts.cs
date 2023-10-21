@@ -66,6 +66,7 @@ namespace Tips.Grin.Api.Entities
         [Required]
         public string UOM { get; set; }
         public string? UOC { get; set; }
+        public string? Remarks { get; set; }
         [DefaultValue(0)]
         public GrinStatus Status { get; set; }
 

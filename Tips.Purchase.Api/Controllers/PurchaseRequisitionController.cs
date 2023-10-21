@@ -31,9 +31,10 @@ namespace Tips.Purchase.Api.Controllers
         private ILoggerManager _logger;
         private IConfiguration _config;
         private IMapper _mapper;
+        private readonly HttpClient _httpClient;
         private IDocumentUploadRepository _prdocumentUploadRepository;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
-        public PurchaseRequisitionController(IPrItemsRepository prItemRepository,IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper, IConfiguration config)
+        public PurchaseRequisitionController(HttpClient httpClient, IPrItemsRepository prItemRepository,IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
             _prItemRepository = prItemRepository;
@@ -42,6 +43,7 @@ namespace Tips.Purchase.Api.Controllers
             _mapper = mapper;
             _prdocumentUploadRepository = prdocumentUploadRepository;
             _webHostEnvironment = webHostEnvironment;
+            _httpClient = httpClient;
         }
 
         [HttpGet]
@@ -816,6 +818,56 @@ namespace Tips.Purchase.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetAllActivePurchaseRequisitionNameList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetItemMasterFileUploadListByPRItemNumber(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<ItemMasterFileUploadDtoList>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterFileUploadDtoList>>();
+            try
+            {
+                var itemMasterDetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
+                    "GetItemMasterFileUploadListByItemNumber?", "&ItemNumber=", itemNumber));
+
+                var itemMasterObjectString = await itemMasterDetails.Content.ReadAsStringAsync();
+                dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+
+                dynamic itemMasterObject = itemMasterObjectData.data;
+                List<ItemMasterFileUploadDtoList> itemMasterFileUploadDtoList = new List<ItemMasterFileUploadDtoList>();
+
+                foreach (var item in itemMasterObject)
+                {
+                    ItemMasterFileUploadDtoList newItem = new ItemMasterFileUploadDtoList();
+                    
+                    newItem.Id = item.id;
+                    newItem.FileName = item.fileName;
+                    newItem.FileExtension = item.fileExtension;
+                    newItem.FilePath = item.filePath;
+                    newItem.DocumentFrom = item.documentFrom;
+                    newItem.ParentId = item.parentId;
+                    newItem.CreatedBy = item.createdBy;
+                    newItem.CreatedOn = item.createdOn;
+                    newItem.LastModifiedBy = item.lastModifiedBy;
+                    newItem.LastModifiedOn = item.lastModifiedOn;
+
+                    itemMasterFileUploadDtoList.Add(newItem);
+                }
+
+                serviceResponse.Data = itemMasterFileUploadDtoList;
+                serviceResponse.Message = "Returned all ItemMasterFileUploadList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetItemMasterFileUploadListByPRItemNumber action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

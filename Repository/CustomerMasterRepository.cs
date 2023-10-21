@@ -50,16 +50,16 @@ namespace Repository
 
             try
             {
-                var rfqNumberEntity = await TipsMasterDbContext.CSNOs.SingleAsync();
-                rfqNumberEntity.CurrentValue += 1;
-                TipsMasterDbContext.Update(rfqNumberEntity);
+                var customerNumberEntity = await TipsMasterDbContext.CSNOs.SingleAsync();
+                customerNumberEntity.CurrentValue += 1;
+                TipsMasterDbContext.Update(customerNumberEntity);
                 await TipsMasterDbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
                 int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
                 int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
 
-                return $"ASPL|CS|{currentYear:D2}{nextYear:D2}-{rfqNumberEntity.CurrentValue:D6}";
+                return $"ASPL|CS|{currentYear:D2}-{nextYear:D2}|{customerNumberEntity.CurrentValue:D6}";
             }
             catch (Exception ex)
             {

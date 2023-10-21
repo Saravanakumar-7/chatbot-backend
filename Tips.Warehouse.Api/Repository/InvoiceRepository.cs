@@ -44,16 +44,16 @@ namespace Tips.Warehouse.Api.Repository
 
             try
             {
-                var rfqNumberEntity = await _tipsWarehouseDbContext.InvoiceNumbers.SingleAsync();
-                rfqNumberEntity.CurrentValue += 1;
-                _tipsWarehouseDbContext.Update(rfqNumberEntity);
+                var invoiceNumberEntity = await _tipsWarehouseDbContext.InvoiceNumbers.SingleAsync();
+                invoiceNumberEntity.CurrentValue += 1;
+                _tipsWarehouseDbContext.Update(invoiceNumberEntity);
                 await _tipsWarehouseDbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
                 int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
                 int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
 
-                return $"ASPL|INV|{currentYear:D2}{nextYear:D2}-{rfqNumberEntity.CurrentValue:D6}";
+                return $"ASPL|INV|{currentYear:D2}-{nextYear:D2}|{invoiceNumberEntity.CurrentValue:D6}";
             }
             catch (Exception ex)
             {

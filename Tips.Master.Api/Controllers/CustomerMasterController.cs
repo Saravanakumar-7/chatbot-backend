@@ -202,9 +202,22 @@ namespace Tips.Master.Api.Controllers
                 customerMaster.RelatedCustomers= related.ToList();
                 customerMaster.CustomerBanking = banking.ToList();
                 customerMaster.CustomerMasterHeadCountings= headcount.ToList();
-                if (serverKey != "keus")
+               
+                if (serverKey == "trasccon")
                 {
-                    var customerDetails = await _repository.CustomerMasterRepository.GetCSNumberAutoIncrementCount();
+                    var customerNumber = await _repository.CustomerMasterRepository.GenerateCustomerNumberAvision();
+                    customerMaster.CustomerNumber = customerNumber;
+                }
+                else if (serverKey == "avision")
+                {
+                    var customerNumber = await _repository.CustomerMasterRepository.GenerateCustomerNumberAvision();
+                    customerMaster.CustomerNumber = customerNumber;
+                }
+                //if (serverKey != "keus")
+                //{
+                else 
+                { 
+                   var customerDetails = await _repository.CustomerMasterRepository.GetCSNumberAutoIncrementCount();
                     var newcount = customerDetails?.Id;
                     if (newcount > 0)
                     {
@@ -219,16 +232,6 @@ namespace Tips.Master.Api.Controllers
                         customerMaster.CustomerNumber = "CS" + (e);
                     }
 
-                }
-                else if (serverKey == "trasccon")
-                {
-                    var customerNumber = await _repository.CustomerMasterRepository.GenerateCustomerNumberAvision();
-
-                }
-                else if (serverKey == "avision")
-                {
-                    var customerNumber = await _repository.CustomerMasterRepository.GenerateCustomerNumberAvision();
-                    customerMaster.CustomerNumber = customerNumber;
                 }
                 await _repository.CustomerMasterRepository.CreateCustomerMaster(customerMaster);
 

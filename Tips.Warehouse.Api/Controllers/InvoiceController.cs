@@ -408,6 +408,11 @@ namespace Tips.Warehouse.Api.Controllers
                     var invoiceNumber = await _invoiceRepository.GenerateInvoiceNumber();
                     invoice.InvoiceNumber = dateFormat + invoiceNumber;
                 }
+                else if(serverKey == "avision")
+                {
+                    var invoiceNumber = await _invoiceRepository.GenerateInvoiceNumberAvision();
+                    invoice.InvoiceNumber = invoiceNumber;
+                }
                 else
                 {
                     var invoiceNumber = await _invoiceRepository.GenerateInvoiceNumber();

@@ -426,7 +426,10 @@ namespace Tips.Purchase.Api.Repository
                 _tipsPurchaseDbContext.Update(poNumberEntity);
                 await _tipsPurchaseDbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-                return $"AV-PO-{poNumberEntity.CurrentValue:D5}";
+                int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
+                int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+
+                return $"ASPL|PO|{currentYear:D2}-{nextYear:D2}|{poNumberEntity.CurrentValue:D6}";
             }
             catch (Exception ex)
             {

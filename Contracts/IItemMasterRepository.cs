@@ -31,7 +31,7 @@ namespace Contracts
         Task<IEnumerable<ItemMaster>> SearchItemMasterDate(SearchDateParamess searchDateParam);
         Task<IEnumerable<ItemMaster>> GetAllItemMasterWithItems(ItemMasterSearchDto itemMasterSearch);
         Task<IEnumerable<ItemMaster>> SearchItemMaster(SearchParames searchParames);
-
+        Task<IEnumerable<FileUpload>> GetAllItemMasterFileUploadList(string itemNumber);
         Task<IEnumerable<ItemMasterIdNoListDto>> GetAllFgTgItemMasterItemNoList();
         Task<IEnumerable<ItemNoListDto>> GetAllPurchasePartItemNoList();
 

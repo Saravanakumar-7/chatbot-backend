@@ -101,6 +101,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [NotMapped]
         [DefaultValue(false)]
         public bool IsReachItem { get; set; }
+        public string? Remarks { get; set; }
         [NotMapped]
         public List<DocumentUpload>? FileUpload { get; set; }
         public string? CreatedBy { get; set; }
@@ -156,7 +157,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? UOC { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
-
+        public string? Remarks { get; set; }
         public List<DocumentUploadPostDto> COCUpload { get; set; }
 
         //public string? COCUpload { get; set; }
@@ -216,7 +217,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? UOC { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
-
+        public string? Remarks { get; set; }
         public List<DocumentUploadDto> COCUpload { get; set; }
         //public string? COCUpload { get; set; }
         public decimal? SGST { get; set; }

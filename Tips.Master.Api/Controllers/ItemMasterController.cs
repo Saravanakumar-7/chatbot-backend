@@ -1241,6 +1241,45 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetItemMasterFileUploadListByItemNumber(string ItemNumber)
+        {
+            ServiceResponse<IEnumerable<FileUpload>> serviceResponse = new ServiceResponse<IEnumerable<FileUpload>>();
+
+            try
+            {
+                var itemMasterFileUploadByItemNumber = await _repository.ItemMasterRepository.GetAllItemMasterFileUploadList(ItemNumber);
+                if (itemMasterFileUploadByItemNumber == null)
+                {
+                    _logger.LogError($"Itemmasters fileUpload with itemNo: {ItemNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Itemmasters fileUpload with itemNo hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    //_logger.LogInfo("ItemmasterControlle" + Convert.ToString(itemMasterFileUploadByItemNumber));
+                    _logger.LogInfo($"Returned Itemmasters fileUpload with itemNo: {ItemNumber}");
+                    var result = _mapper.Map<IEnumerable<FileUpload>>(itemMasterFileUploadByItemNumber);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned All ItemMasterFileUploadList";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetItemMasterFileUploadListByItemNumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Internal server error: {ex.Message}{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         //get parttype by passing itemnumber
         [HttpPost]

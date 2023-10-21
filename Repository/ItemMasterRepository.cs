@@ -388,7 +388,28 @@ namespace Repository
 
             return itemMasterIdNoListDto;
         }
+        public async Task<IEnumerable<FileUpload>> GetAllItemMasterFileUploadList(string itemNumber)
+        {
+            IEnumerable<FileUpload> itemMasterFileUploadList = await TipsMasterDbContext.fileUploads
+                            .Where(x => x.ParentId == itemNumber)
+                                .Select(c => new FileUpload()
+                                {
+                                    Id = c.Id,
+                                    FileName = c.FileName,
+                                    FileExtension = c.FileExtension,
+                                    FilePath = c.FilePath,
+                                    DocumentFrom = c.DocumentFrom,
+                                    ParentId = c.ParentId,
+                                    CreatedBy = c.CreatedBy,
+                                    CreatedOn = c.CreatedOn,
+                                    LastModifiedBy = c.LastModifiedBy,
+                                    LastModifiedOn = c.LastModifiedOn,
+                                   
+                                })
+                              .ToListAsync();
 
+            return itemMasterFileUploadList;
+        }
         public async Task<ItemMaster> GetItemMasterByItemNumber(string ItemNumber)
         {
             var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == ItemNumber)

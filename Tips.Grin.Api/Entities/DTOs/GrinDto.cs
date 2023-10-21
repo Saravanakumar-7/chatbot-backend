@@ -60,7 +60,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public List<DocumentUploadDto>? GrinDocuments { get; set; }
 
         //public string? GrinDocuments { get; set; }
-
+        public string? GateEntryNo { get; set; }
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
@@ -123,6 +123,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? Transport { get; set; }
         [Precision(13, 3)]
         public decimal? BECurrencyValue { get; set; }
+        public string? GateEntryNo { get; set; }
         public List<DocumentUploadPostDto>? GrinDocuments { get; set; }
 
         //public string? GrinDocuments { get; set; }
@@ -179,6 +180,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? BECurrencyValue { get; set; }
         public List<DocumentUploadUpdateDto>? GrinDocuments { get; set; }
+        public string? GateEntryNo { get; set; }
 
         //public string? GrinDocuments { get; set; }
 
