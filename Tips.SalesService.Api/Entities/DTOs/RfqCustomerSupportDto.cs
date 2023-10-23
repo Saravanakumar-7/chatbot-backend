@@ -58,7 +58,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
         public DateTime? RequestReceivedate { get; set; }
-        public DateTime? QuoteExpectdate { get; set; }
+        public DateTime? QuoteExpectdate { get; set; } 
         public List<RfqCustomerSupportItemPostDto>? RfqCustomerSupportItems { get; set; }
         public List<RfqCustomerSupportNotesPostDto>? RfqCustomerSupportNotes { get; set; }
 

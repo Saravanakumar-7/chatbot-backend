@@ -13,7 +13,7 @@ namespace Tips.Purchase.Api.Entities
         public string? Description { get; set; }
         public string? UOM { get; set; }
         public PoPartType PartType { get; set; }
-
+        public List<PRItemsDocumentUpload>? Upload { get; set; }
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
         public PrStatus PrStatus { get; set; }

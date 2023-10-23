@@ -500,14 +500,13 @@ namespace Tips.Purchase.Api.Repository
         }
 
     }
-
-    public class PRUploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository
+    public class PRItemsUploadDocumentRepository : RepositoryBase<PRItemsDocumentUpload>, IPRItemsDocumentUploadRepository
     {
         private TipsPurchaseDbContext _tipsPurchaseDbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public PRUploadDocumentRepository(TipsPurchaseDbContext tipsPurchaseDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsPurchaseDbContext)
+        public PRItemsUploadDocumentRepository(TipsPurchaseDbContext tipsPurchaseDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsPurchaseDbContext)
         {
             _tipsPurchaseDbContext = tipsPurchaseDbContext;
             _httpContextAccessor = httpContextAccessor;
@@ -515,26 +514,24 @@ namespace Tips.Purchase.Api.Repository
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
-    }
+        }
 
-        public async Task<int?> CreateUploadDocumentPO(DocumentUpload documentUpload)
+        public async Task<int?> CreateUploadDocumentPO(PRItemsDocumentUpload documentUpload)
         {
             documentUpload.CreatedBy = _createdBy;
             documentUpload.CreatedOn = DateTime.Now;
-            documentUpload.LastModifiedBy = _createdBy;
-            documentUpload.LastModifiedOn = DateTime.Now;
 
             var result = await Create(documentUpload);
             return result.Id;
         }
-        public async Task<DocumentUpload> GetUploadDocById(int id)
+        public async Task<PRItemsDocumentUpload> GetUploadDocById(int id)
         {
-            var uploadDocFileNameById = await _tipsPurchaseDbContext.DocumentUploads
+            var uploadDocFileNameById = await _tipsPurchaseDbContext.PRItemsDocumentUpload
                 .Where(x => x.Id == id).FirstOrDefaultAsync();
 
             return uploadDocFileNameById;
         }
-        public async Task<string> DeleteUploadFile(DocumentUpload documentUpload)
+        public async Task<string> DeleteUploadFile(PRItemsDocumentUpload documentUpload)
         {
             Delete(documentUpload);
             string result = $"DocumentUpload details of {documentUpload.Id} is deleted successfully!";

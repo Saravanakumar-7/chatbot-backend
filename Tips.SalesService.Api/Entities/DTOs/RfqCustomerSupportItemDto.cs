@@ -39,6 +39,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
         public string? RoomName { get; set; }
+        public List<DocumentUploadPostDto> Upload { get; set; }
         public List<RfqCSDeliverySchedulePostDto>? RfqCSDeliverySchedule { get; set; }
 
     }

@@ -199,6 +199,9 @@ namespace Tips.Purchase.Api.Entities.DTOs
     {
         public string? PRNumber { get; set; }
         public decimal? Qty { get; set; }
+        public int? RevisionNumber { get; set; }
+
+        public List<PRItemsDocumentUpload> DocumentNames { get; set; } 
 
     }
     public class PurchaseOrderReportDto

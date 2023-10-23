@@ -33,9 +33,11 @@ namespace Tips.Purchase.Api.Controllers
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private IDocumentUploadRepository _prdocumentUploadRepository;
+        private IPRItemsDocumentUploadRepository _prItemsDocumentUploadRepository;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
-        public PurchaseRequisitionController(HttpClient httpClient, IPrItemsRepository prItemRepository,IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper, IConfiguration config)
+        public PurchaseRequisitionController(HttpClient httpClient, IPRItemsDocumentUploadRepository prItemsDocumentUploadRepository,IPrItemsRepository prItemRepository,IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
+            _prItemsDocumentUploadRepository = prItemsDocumentUploadRepository;
             _repository = repository;
             _prItemRepository = prItemRepository;
             _logger = logger;
@@ -477,6 +479,50 @@ namespace Tips.Purchase.Api.Controllers
                 return "trasccon";
             }
         }
+        private List<PRItemsDocumentUpload> CoCDocumentSave(List<PrItemsPostDto>? grinPartsDto, PurchaseRequisition grins, string number, int i, List<PRItemsDocumentUpload> grinPartsDocumentUploadDtoList)
+        {
+            var cocUploadDocs = grinPartsDto[i].Upload;
+
+            foreach (var cocUpload in cocUploadDocs)
+            {
+                var fileContent = cocUpload.FileByte;
+
+                string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
+                string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                Guid guid = Guid.NewGuid();
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument",guid.ToString() + "_" + fileName);
+                using (MemoryStream ms = new MemoryStream(fileContent))
+                {
+                    ms.Position = 0;
+                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                    {
+                        ms.WriteTo(fileStream);
+                    }
+                    var uploadedFile = new PRItemsDocumentUpload
+                    {
+                        FileName = fileName,
+                        FileExtension = FileExt,
+                        FilePath = filePath,
+                        ParentNumber = number,          //It Should be changed to GrinPartsId
+                        DocumentFrom = "PRItemDocument",
+                    };
+
+                    _prItemsDocumentUploadRepository.CreateUploadDocumentPO(uploadedFile);
+                    _prItemsDocumentUploadRepository.SaveAsync();
+
+                    if (uploadedFile != null)
+                    {
+                        PRItemsDocumentUpload poFileDetails = _mapper.Map<PRItemsDocumentUpload>(uploadedFile);
+                        grinPartsDocumentUploadDtoList.Add(poFileDetails);
+                    }
+
+                }
+                // grins.PrItemsDtoList[i].Upload = grinPartsDocumentUploadDtoList;
+
+            }
+            return grinPartsDocumentUploadDtoList;
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreatePurchaseRequisition([FromBody] PurchaseRequisitionPostDto purchaseRequistionPostDto)
@@ -590,11 +636,29 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
 
+                //if (prItemDto != null)
+                //{
+                //    for (int i = 0; i < prItemDto.Count; i++)
+                //    {
+                //        PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
+                //        prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoPostList);
+                //        prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoPostList);
+                //        prItemDetails.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstruction>>(prItemDto[i].prSpecialInstructionsPostList);
+                //        prItemDtoList.Add(prItemDetails);
+                //    }
+                //}
+                var CSitemDocumentUploadDtoList = new List<PRItemsDocumentUpload>();
                 if (prItemDto != null)
                 {
                     for (int i = 0; i < prItemDto.Count; i++)
                     {
+                        List<PRItemsDocumentUpload>? files = null;
                         PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
+                        if (prItemDto[i].Upload != null && prItemDto[i].Upload.Count > 0)
+                        {
+                            files = CoCDocumentSave(prItemDto, purchaseRequisitionDetails, prItemDetails.Id.ToString(), i, CSitemDocumentUploadDtoList);
+                        }
+                        prItemDetails.Upload = _mapper.Map<List<PRItemsDocumentUpload>>(files);
                         prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoPostList);
                         prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoPostList);
                         prItemDetails.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstruction>>(prItemDto[i].prSpecialInstructionsPostList);
@@ -625,6 +689,50 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         //Test
+        private List<PRItemsDocumentUpload> CocDocumentSave(List<PrItemsUpdateDto>? grinPartsDto, PurchaseRequisition grins, string number, int i, List<PRItemsDocumentUpload> grinPartsDocumentUploadDtoList)
+        {
+            var cocUploadDocs = grinPartsDto[i].Upload;
+
+            foreach (var cocUpload in cocUploadDocs)
+            {
+                var fileContent = cocUpload.FileByte;
+
+                string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
+                string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                //Guid guid = Guid.NewGuid();
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument",/* guid.ToString() + "_" +*/ fileName);
+                using (MemoryStream ms = new MemoryStream(fileContent))
+                {
+                    ms.Position = 0;
+                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                    {
+                        ms.WriteTo(fileStream);
+                    }
+                    var uploadedFile = new PRItemsDocumentUpload
+                    {
+                        FileName = fileName,
+                        FileExtension = FileExt,
+                        FilePath = filePath,
+                        ParentNumber = number,          //It Should be changed to GrinPartsId
+                        DocumentFrom = "PRItemDocument",
+                    };
+
+                    _prItemsDocumentUploadRepository.CreateUploadDocumentPO(uploadedFile);
+                    _prItemsDocumentUploadRepository.SaveAsync();
+
+                    if (uploadedFile != null)
+                    {
+                        PRItemsDocumentUpload poFileDetails = _mapper.Map<PRItemsDocumentUpload>(uploadedFile);
+                        grinPartsDocumentUploadDtoList.Add(poFileDetails);
+                    }
+
+                }
+                // grins.PrItemsDtoList[i].Upload = grinPartsDocumentUploadDtoList;
+
+            }
+            return grinPartsDocumentUploadDtoList;
+        }
 
 
         [HttpPut]
@@ -654,19 +762,36 @@ namespace Tips.Purchase.Api.Controllers
 
                 var purchaseRequisitionDetails = _mapper.Map<PurchaseRequisition>(purchaseRequistionPostDto);
                 var prItemDto = purchaseRequistionPostDto.PrItemsDtoUpdateList;
-                var prItemDtoList = new List<PrItem>();                 
-
+                var prItemDtoList = new List<PrItem>();
+                var CSitemDocumentUploadDtoList = new List<PRItemsDocumentUpload>();
                 if (prItemDto != null)
                 {
                     for (int i = 0; i < prItemDto.Count; i++)
                     {
+                        List<PRItemsDocumentUpload>? files = null;
                         PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
+                        if (prItemDto[i].Upload != null && prItemDto[i].Upload.Count > 0)
+                        {
+                            files = CocDocumentSave(prItemDto, purchaseRequisitionDetails, prItemDetails.Id.ToString(), i, CSitemDocumentUploadDtoList);
+                        }
+                        prItemDetails.Upload = _mapper.Map<List<PRItemsDocumentUpload>>(files);
                         prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoUpdateList);
                         prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoUpdateList);
                         prItemDetails.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstruction>>(prItemDto[i].prSpecialInstructionsUpdateList);
                         prItemDtoList.Add(prItemDetails);
                     }
                 }
+                //if (prItemDto != null)
+                //{
+                //    for (int i = 0; i < prItemDto.Count; i++)
+                //    {
+                //        PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
+                //        prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoUpdateList);
+                //        prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoUpdateList);
+                //        prItemDetails.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstruction>>(prItemDto[i].prSpecialInstructionsUpdateList);
+                //        prItemDtoList.Add(prItemDetails);
+                //    }
+                //}
                 purchaseRequisitionDetails.PrItemsDtoList = prItemDtoList;
                 await _repository.ChangePurchaseRequisitionVersion(purchaseRequisitionDetails);
                 _repository.SaveAsync();

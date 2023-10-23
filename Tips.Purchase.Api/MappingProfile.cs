@@ -82,6 +82,11 @@ namespace Tips.Purchase.Api
             CreateMap<PoConfirmationDate, PoConfirmationDateDto>().ReverseMap();
             CreateMap<PoConfirmationDate, PoConfirmationDatePostDto>().ReverseMap();
             CreateMap<PoConfirmationDate, PoConfirmationDateUpdateDto>().ReverseMap();
+            CreateMap<PRItemsDocumentUpload, PRItemsDocumentUploadDto>().ReverseMap();
+            CreateMap<PRItemsDocumentUpload, PRItemsDocumentUploadPostDto>().ReverseMap();
+            CreateMap<PRItemsDocumentUpload, PRItemsDocumentUploadUpdateDto>().ReverseMap();
+            CreateMap<PRItemsDocumentUpload, PRItemsGetDownloadUrlDto>().ReverseMap();
+            CreateMap<PRItemsDocumentUpload, GetPRItemsDownloadUrlDto>().ReverseMap();
 
         }
     }

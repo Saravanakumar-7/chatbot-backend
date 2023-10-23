@@ -40,14 +40,16 @@ namespace Tips.SalesService.Api.Controllers
         private IRfqCustomFieldRepository _rfqCustomFieldRepository;
         private IRfqCustomGroupRepository _rfqCustomGroupRepository;
         private readonly HttpClient _httpClient;
+        private IDocumentUploadRepository _documentUploadRepository;
         private readonly IConfiguration _config;
-        public RfqController(IRfqCustomGroupRepository rfqCustomGroupRepository, IItemPriceListRepository itemPriceListRepository, IRfqCustomFieldRepository rfqCustomFieldRepository
+        public RfqController(IRfqCustomGroupRepository rfqCustomGroupRepository, IDocumentUploadRepository documentUploadRepository,IItemPriceListRepository itemPriceListRepository, IRfqCustomFieldRepository rfqCustomFieldRepository
             , IRfqEnggItemRepository rfqenggItemRepository, IReleaseLpRepository releaseLpRepository, 
             IRfqCustomerSupportRepository repository, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository,
             IRfqRepository rfqRepository, IRfqLPCostingRepository rfqLPCostingRepository, IRfqEnggRepository rfqEnggRepository,
             ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _repository = repository;
+            _documentUploadRepository = documentUploadRepository;
             _logger = logger;
             _mapper = mapper;
             _rfqRepository = rfqRepository;
@@ -1437,7 +1439,51 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        //aravind
+        private List<DocumentUpload> CoCDocumentSave(List<RfqCustomerSupportItemPostDto>? grinPartsDto, RfqCustomerSupport grins, string number, int i, List<DocumentUpload> grinPartsDocumentUploadDtoList)
+        {
+            var cocUploadDocs = grinPartsDto[i].Upload;
+
+            foreach (var cocUpload in cocUploadDocs)
+            {
+                var fileContent = cocUpload.FileByte;
+
+                string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
+                string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                //Guid guid = Guid.NewGuid();
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "CSItems",/* guid.ToString() + "_" +*/ fileName);
+                using (MemoryStream ms = new MemoryStream(fileContent))
+                {
+                    ms.Position = 0;
+                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                    {
+                        ms.WriteTo(fileStream);
+                    }
+                    var uploadedFile = new DocumentUpload
+                    {
+                        FileName = fileName,
+                        FileExtension = FileExt,
+                        FilePath = filePath,
+                        ParentId = number,          //It Should be changed to GrinPartsId
+                        DocumentFrom = "CSItemDocument",
+                    };
+
+                    _documentUploadRepository.CreateUploadDocument(uploadedFile);
+                    _documentUploadRepository.SaveAsync();
+
+                    if (uploadedFile != null)
+                    {
+                        DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
+                        grinPartsDocumentUploadDtoList.Add(poFileDetails);
+                    }
+
+                }
+                grins.RfqCustomerSupportItems[i].Upload = grinPartsDocumentUploadDtoList;
+
+            }
+            return grinPartsDocumentUploadDtoList;
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateRfqCustomerSupport([FromBody] RfqCustomerSupportPostDto rfqCustomerSupportDto)
         {
@@ -1474,14 +1520,29 @@ namespace Tips.SalesService.Api.Controllers
 
                 var rfqCSItemDto = rfqCustomerSupportDto.RfqCustomerSupportItems;
 
+                var CSitemDocumentUploadDtoList = new List<DocumentUpload>();
                 var rfqCustomerSupportLists = new List<RfqCustomerSupportItems>();
                 for (int i = 0; i < rfqCSItemDto.Count; i++)
                 {
+                    List<DocumentUpload>? files = null;
                     RfqCustomerSupportItems rfqCSItems = _mapper.Map<RfqCustomerSupportItems>(rfqCSItemDto[i]);
+                    if (rfqCSItemDto[i].Upload != null && rfqCSItemDto[i].Upload.Count > 0)
+                    {
+                        files = CoCDocumentSave(rfqCSItemDto, createRfqCS, rfqCSItems.Id.ToString(), i, CSitemDocumentUploadDtoList);
+                    }
+                    rfqCSItems.Upload = _mapper.Map<List<DocumentUpload>>(files);
                     rfqCSItems.RfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqCSItemDto[i].RfqCSDeliverySchedule);
                     rfqCustomerSupportLists.Add(rfqCSItems);
 
                 }
+                //var rfqCustomerSupportLists = new List<RfqCustomerSupportItems>();
+                //for (int i = 0; i < rfqCSItemDto.Count; i++)
+                //{
+                //    RfqCustomerSupportItems rfqCSItems = _mapper.Map<RfqCustomerSupportItems>(rfqCSItemDto[i]);
+                //    rfqCSItems.RfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqCSItemDto[i].RfqCSDeliverySchedule);
+                //    rfqCustomerSupportLists.Add(rfqCSItems);
+
+                //}
                 createRfqCS.RfqCustomerSupportItems = rfqCustomerSupportLists;
 
                 _repository.CreateRfqCustomerSupport(createRfqCS);

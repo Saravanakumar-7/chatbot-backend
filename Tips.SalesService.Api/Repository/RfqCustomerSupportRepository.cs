@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Crypto.Macs;
 using Tips.SalesService.Api.Entities.Dto;
 using AutoMapper;
+using System.Security.Claims;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -1657,5 +1658,28 @@ namespace Tips.SalesService.Api.Repository
 
     }
 
- 
+    public class UploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository
+    {
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public UploadDocumentRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
+        {
+            _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+        }
+        public async Task<int?> CreateUploadDocument(DocumentUpload documentUpload)
+        {
+            documentUpload.CreatedBy = _createdBy;
+            documentUpload.CreatedOn = DateTime.Now;
+
+            var result = await Create(documentUpload);
+            return result.Id;
+        }
     }
+}
