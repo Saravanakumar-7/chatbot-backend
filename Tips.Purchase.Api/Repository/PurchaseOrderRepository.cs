@@ -483,6 +483,100 @@ namespace Tips.Purchase.Api.Repository
 
             return purchaseOrderNameList;
         }
+        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIList()
+        {
+            IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders
+            .Where(x => x.POApprovalI == false && x.IsDeleted == false && x.IsModified == false)
+            .Select(g => new PurchaseOrderIdNameListDto()
+            {
+                Id = g.Id,
+                PONumber = g.PONumber,
+                PODate = g.PODate,
+                RevisionNumber = g.RevisionNumber,
+                BillToId = g.BillToId,
+                ShipToId = g.ShipToId,
+                ProcurementType = g.ProcurementType,
+                Currency = g.Currency,
+                CompanyAliasName = g.CompanyAliasName,
+                PoConfirmationStatus = g.PoConfirmationStatus,
+                VendorName = g.VendorName,
+                VendorId = g.VendorId,
+                QuotationReferenceNumber = g.QuotationReferenceNumber,
+                QuotationDate = g.QuotationDate,
+                VendorAddress = g.VendorAddress,
+                DeliveryTerms = g.DeliveryTerms,
+                PaymentTerms = g.PaymentTerms,
+                ShippingMode = g.ShippingMode,
+                ShipTo = g.ShipTo,
+                BillTo = g.BillTo,
+                RetentionPeriod = g.RetentionPeriod,
+                SpecialTermsAndConditions = g.SpecialTermsAndConditions,
+                IsDeleted = g.IsDeleted,
+                IsShortClosed = g.IsShortClosed,
+                ShortClosedBy = g.ShortClosedBy,
+                ShortClosedOn = g.ShortClosedOn,
+                TotalAmount = g.TotalAmount,
+                POApprovalI = g.POApprovalI,
+                POApprovalII = g.POApprovalII,
+                Unit = g.Unit,
+                CreatedBy = g.CreatedBy,
+                CreatedOn = g.CreatedOn,
+                LastModifiedBy = g.LastModifiedBy,
+                LastModifiedOn = g.LastModifiedOn,
+
+            })
+            .ToListAsync();
+
+
+            return pendingPOApprovalINameList;
+        }
+        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIList()
+        {
+            IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalIINameList = await _tipsPurchaseDbContext.PurchaseOrders
+            .Where(x => x.POApprovalII == false && x.IsDeleted == false && x.IsModified == false)
+            .Select(g => new PurchaseOrderIdNameListDto()
+            {
+                Id = g.Id,
+                PONumber = g.PONumber,
+                PODate = g.PODate,
+                RevisionNumber = g.RevisionNumber,
+                BillToId = g.BillToId,
+                ShipToId = g.ShipToId,
+                ProcurementType = g.ProcurementType,
+                Currency = g.Currency,
+                CompanyAliasName = g.CompanyAliasName,
+                PoConfirmationStatus = g.PoConfirmationStatus,
+                VendorName = g.VendorName,
+                VendorId = g.VendorId,
+                QuotationReferenceNumber = g.QuotationReferenceNumber,
+                QuotationDate = g.QuotationDate,
+                VendorAddress = g.VendorAddress,
+                DeliveryTerms = g.DeliveryTerms,
+                PaymentTerms = g.PaymentTerms,
+                ShippingMode = g.ShippingMode,
+                ShipTo = g.ShipTo,
+                BillTo = g.BillTo,
+                RetentionPeriod = g.RetentionPeriod,
+                SpecialTermsAndConditions = g.SpecialTermsAndConditions,
+                IsDeleted = g.IsDeleted,
+                IsShortClosed = g.IsShortClosed,
+                ShortClosedBy = g.ShortClosedBy,
+                ShortClosedOn = g.ShortClosedOn,
+                TotalAmount = g.TotalAmount,
+                POApprovalI = g.POApprovalI,
+                POApprovalII = g.POApprovalII,
+                Unit = g.Unit,
+                CreatedBy = g.CreatedBy,
+                CreatedOn = g.CreatedOn,
+                LastModifiedBy = g.LastModifiedBy,
+                LastModifiedOn = g.LastModifiedOn,
+
+            })
+            .ToListAsync();
+
+
+            return pendingPOApprovalIINameList;
+        }
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalINameList()
         {
             //IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders
@@ -502,8 +596,6 @@ namespace Tips.Purchase.Api.Repository
             })
             .ToListAsync();
 
-
-
             return pendingPOApprovalINameList;
         }
 
@@ -515,7 +607,7 @@ namespace Tips.Purchase.Api.Repository
             .Select(g => new PurchaseOrderIdNameListDto()
             {
                 Id = g.OrderByDescending(x => x.RevisionNumber).FirstOrDefault().Id,
-                PONumber = g.Key
+                PONumber = g.Key,
             })
             .ToListAsync();
 

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Net;
 using AutoMapper;
 using Contracts;
@@ -226,21 +228,38 @@ namespace Tips.Master.Api.Controllers
             }
         }
         //test file path 
+        //[HttpGet("{filename}")]
+        //public async Task<ActionResult> GetFilePath(string filename)
+        //{
+        //    string path = _webHostEnvironment.ContentRootPath + "\\Upload\\ImageUpload\\";
+        //    var paths = Path.Combine(path, filename); // Use Path.Combine to combine paths
+
+        //    if (System.IO.File.Exists(paths))
+        //    {
+        //        byte[] fileBytes = System.IO.File.ReadAllBytes(paths);
+        //        return File(fileBytes, "image/jpeg");
+        //    }
+
+        //    return NotFound(); // Return a 404 response if the file doesn't exist
+        //}
         [HttpGet("{filename}")]
         public async Task<ActionResult> GetFilePath(string filename)
         {
-            string path = _webHostEnvironment.ContentRootPath + "\\Upload\\ImageUpload\\";
-            var paths = Path.Combine(path, filename); // Use Path.Combine to combine paths
-
-            if (System.IO.File.Exists(paths))
+            var fileByte = await _imageUploadRepository.GetImageFileByte(filename);
+            if (fileByte != null)
             {
-                byte[] fileBytes = System.IO.File.ReadAllBytes(paths);
-                return File(fileBytes, "image/jpeg");
+                byte[] imageBytes = Convert.FromBase64String(fileByte);
+                using (var ms = new MemoryStream(imageBytes))
+                using (var image = Image.FromStream(ms))
+                {
+                    var imageStream = new MemoryStream();
+                    image.Save(imageStream, ImageFormat.Jpeg); // You can change the format as needed
+
+                    return File(imageStream.ToArray(), "image/jpeg"); // Change the content type as needed
+                }
             }
-
-            return NotFound(); // Return a 404 response if the file doesn't exist
+            return NotFound();
         }
-
         //test
         [HttpGet("{filename}")]
         public async Task<ActionResult> ViewImage1(string filename)
@@ -846,7 +865,7 @@ namespace Tips.Master.Api.Controllers
                 var itemMasterAlternate = _mapper.Map<IEnumerable<ItemmasterAlternate>>(itemMasterDtoPost.ItemmasterAlternate);
                 var itemMasterApprovedVendor = _mapper.Map<IEnumerable<ItemMasterApprovedVendor>>(itemMasterDtoPost.ItemMasterApprovedVendor);
                 //var itemMasterFileUpload = _mapper.Map<IEnumerable<ItemMasterFileUpload>>(itemMasterDtoPost.ItemMasterFileUpload);
-                var itemMasterRouting=_mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoPost.ItemMasterRouting);
+                var itemMasterRouting = _mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoPost.ItemMasterRouting);
                 var itemMasterWarehouse = _mapper.Map<IEnumerable<ItemMasterWarehouse>>(itemMasterDtoPost.ItemMasterWarehouse);
 
 
@@ -859,14 +878,15 @@ namespace Tips.Master.Api.Controllers
 
                 foreach (var ImageUploadDetail in ImageUploadDetails)
                 {
-                    var imageContent = ImageUploadDetail.FileByte;
+
+                    byte[] imageContent = Convert.FromBase64String(ImageUploadDetail.FileByte);
                     var itemNumbers = itemMasterDtoPost.ItemNumber;
                     string imageName = ImageUploadDetail.FileName + "." + ImageUploadDetail.FileExtension;
                     string imageExt = Path.GetExtension(imageName).ToUpper();
                     if (imageExt == ".PNG" || imageExt == ".JPG" || imageExt == ".JPEG" || imageExt == ".GIF")
                     {
                         //Guid guid = Guid.NewGuid();
-                        string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", /*guid.ToString() + "_" +*/ imageName);
+                        string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", /*/ guid.ToString() + "_" +/*/ imageName);
                         using (MemoryStream ms = new MemoryStream(imageContent))
                         {
                             ms.Position = 0;
@@ -880,7 +900,8 @@ namespace Tips.Master.Api.Controllers
                                 FileExtension = imageExt,
                                 FilePath = $"{Request.Scheme}://{Request.Host}/api/ItemMaster/Upload/ImageUpload/{imageName}",
                                 ParentId = itemNumbers,
-                                DocumentFrom = "ItemMaster Image Document"
+                                DocumentFrom = "ItemMaster Image Document",
+                                FileByte = ImageUploadDetail.FileByte
                             };
                             _repository.ImageUploadRepository.ImageUploadDocument(uploadedFiles);
                             _repository.SaveAsync();
@@ -892,6 +913,7 @@ namespace Tips.Master.Api.Controllers
 
                         }
                     }
+             
                     else
                     {
                         _logger.LogError("Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....");
@@ -911,7 +933,7 @@ namespace Tips.Master.Api.Controllers
                 var FileUploadDetails = itemMasterDtoPost.FileUpload;
                 foreach (var FileUploadDetail in FileUploadDetails)
                 {
-                    var fileContent = FileUploadDetail.FileByte;
+                    byte[] fileContent = Convert.FromBase64String(FileUploadDetail.FileByte);
                     var itemNumber = itemMasterDtoPost.ItemNumber;
                     string fileName = FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
@@ -932,6 +954,7 @@ namespace Tips.Master.Api.Controllers
                             FilePath = filePath,
                             ParentId = itemNumber,
                             DocumentFrom = "ItemMaster File Document",
+                            FileByte = FileUploadDetail.FileByte
                         };
                         _repository.FileUploadRepository.CreateFileUploadDocument(uploadedFile);
                         _repository.SaveAsync();

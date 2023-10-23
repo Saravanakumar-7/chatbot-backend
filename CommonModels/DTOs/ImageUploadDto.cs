@@ -23,7 +23,7 @@ namespace Entities.DTOs
     {
         public string FileName { get; set; }
         public string FileExtension { get; set; }
-        public byte[] FileByte { get; set; }
+        public string? FileByte { get; set; }
 
     }
     public class ImageUploadUpdateDto
@@ -32,7 +32,7 @@ namespace Entities.DTOs
         public string FileName { get; set; }
         public string FileExtension { get; set; }
 
-        public byte[] FileByte { get; set; }
+        public string? FileByte { get; set; }
 
     }
 }

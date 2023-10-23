@@ -10,5 +10,6 @@ namespace Contracts
     public interface IImageUploadRepository : IRepositoryBase<ImageUpload>
     {
          Task<int?> ImageUploadDocument(ImageUpload imageUpload);
+        Task<string?> GetImageFileByte(string filename);
     }
 }

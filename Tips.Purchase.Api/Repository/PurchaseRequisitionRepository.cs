@@ -314,6 +314,66 @@ namespace Tips.Purchase.Api.Repository
 
             return pendingPRApprovalINameList;
         }
+        public async Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIList()
+        {
+            IEnumerable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIList = await _tipsPurchaseDbContext.PurchaseRequisitions
+           .Where(x => x.PrApprovalI == false && x.IsDeleted == false && x.IsModified == false)
+           .Select(pr => new PurchaseRequisitionIdNameListDto()
+           {
+               Id = pr.Id,
+               PrNumber = pr.PrNumber,
+               PrDate = pr.PrDate,
+               RevisionNumber = pr.RevisionNumber,
+               ProcurementType = pr.ProcurementType,
+               Purpose = pr.Purpose,
+               DeliveryTerms = pr.DeliveryTerms,
+               PrApprovalI = pr.PrApprovalI,
+               PrApprovalII = pr.PrApprovalII,
+               PaymentTerms = pr.PaymentTerms,
+               ShippingMode = pr.ShippingMode,
+               RetentionPeriod = pr.RetentionPeriod,
+               SpecialTermsConditions = pr.SpecialTermsConditions,
+               Unit = pr.Unit,
+               CreatedBy = pr.CreatedBy,
+               CreatedOn = pr.CreatedOn,
+               LastModifiedBy = pr.LastModifiedBy,
+               LastModifiedOn = pr.LastModifiedOn,
+
+           })
+           .ToListAsync();
+
+            return pendingPRApprovalIList;
+        }
+        public async Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIIList()
+        {
+            IEnumerable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIList = await _tipsPurchaseDbContext.PurchaseRequisitions
+           .Where(x => x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false)
+           .Select(pr => new PurchaseRequisitionIdNameListDto()
+           {
+               Id = pr.Id,
+               PrNumber = pr.PrNumber,
+               PrDate = pr.PrDate,
+               RevisionNumber = pr.RevisionNumber,
+               ProcurementType = pr.ProcurementType,
+               Purpose = pr.Purpose,
+               DeliveryTerms = pr.DeliveryTerms,
+               PrApprovalI = pr.PrApprovalI,
+               PrApprovalII = pr.PrApprovalII,
+               PaymentTerms = pr.PaymentTerms,
+               ShippingMode = pr.ShippingMode,
+               RetentionPeriod = pr.RetentionPeriod,
+               SpecialTermsConditions = pr.SpecialTermsConditions,
+               Unit = pr.Unit,
+               CreatedBy = pr.CreatedBy,
+               CreatedOn = pr.CreatedOn,
+               LastModifiedBy = pr.LastModifiedBy,
+               LastModifiedOn = pr.LastModifiedOn,
+
+           })
+           .ToListAsync();
+
+            return pendingPRApprovalIList;
+        }
 
         public async Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIINameList()
         {

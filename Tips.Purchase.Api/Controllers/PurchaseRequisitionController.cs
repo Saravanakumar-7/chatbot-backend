@@ -847,6 +847,7 @@ namespace Tips.Purchase.Api.Controllers
                     newItem.FileName = item.fileName;
                     newItem.FileExtension = item.fileExtension;
                     newItem.FilePath = item.filePath;
+                    newItem.FileByte = item.fileByte;
                     newItem.DocumentFrom = item.documentFrom;
                     newItem.ParentId = item.parentId;
                     newItem.CreatedBy = item.createdBy;
@@ -924,7 +925,6 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpGet]
         public async Task<IActionResult> GetAllPendingPurchaseRequisitionApprovalIINameList()
         {
@@ -932,6 +932,54 @@ namespace Tips.Purchase.Api.Controllers
             try
             {
                 var pendingPRApprovalIINameList = await _repository.GetAllPendingPRApprovalIINameList();
+                var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(pendingPRApprovalIINameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PendingApprovalIIPurchaseRequisition";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllPendingPRApprovalIINameList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllPendingPurchaseRequisitionApprovalIList()
+        {
+            ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>>();
+            try
+            {
+                var pendingPRApprovalINameList = await _repository.GetAllPendingPRApprovalIList();
+                var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(pendingPRApprovalINameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PendingApprovalIPurchaseRequisition";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllPendingPRApprovalINameList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllPendingPurchaseRequisitionApprovalIIList()
+        {
+            ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>>();
+            try
+            {
+                var pendingPRApprovalIINameList = await _repository.GetAllPendingPRApprovalIIList();
                 var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(pendingPRApprovalIINameList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PendingApprovalIIPurchaseRequisition";
