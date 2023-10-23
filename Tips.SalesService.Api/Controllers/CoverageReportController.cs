@@ -179,7 +179,7 @@ namespace Tips.SalesService.Api.Controllers
    
 
         [HttpGet] 
-        public async Task<IActionResult> GenerateCoverageReportForFgChildItems()
+        public async Task<IActionResult> GenerateCoverageReportForFgChildIt()
         {
             ServiceResponse<List<CoverageReportDtoForChildItem>> serviceResponse = new ServiceResponse<List<CoverageReportDtoForChildItem>>();
             

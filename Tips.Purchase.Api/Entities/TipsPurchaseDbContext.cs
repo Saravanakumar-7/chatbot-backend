@@ -31,5 +31,6 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PoConfirmationDate> PoConfirmationDates { get; set; }
         public DbSet<PoConfirmationDateHistory> PoConfirmationDateHistories { get; set; }
         public DbSet<PoConfirmationHistory> PoConfirmationHistories { get; set; }
+        public DbSet<PRItemsDocumentUpload> PRItemsDocumentUpload { get; set; }
     }
 }

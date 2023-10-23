@@ -297,6 +297,10 @@ namespace Tips.SalesService.Api
             CreateMap<SOBreakDown, SOBreakDownUpdateDto>().ReverseMap();
 
             CreateMap<Rfq, LatestRfqNumberListDto>().ReverseMap();
+
+            CreateMap<DocumentUpload, DocumentUploadDto>().ReverseMap();
+            CreateMap<DocumentUpload, DocumentUploadPostDto>().ReverseMap();
+            CreateMap<DocumentUpload, DocumentUploadUpdateDto>().ReverseMap();
         }
     }
 }

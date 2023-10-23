@@ -98,6 +98,8 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<SoConfirmationDate> SoConfirmationDates { get; set; }
         public DbSet<SoConfirmationDateHistory> SoConfirmationDateHistories { get; set; }
 
+        public DbSet<DocumentUpload> DocumentUploads { get; set; }
+
 
     }
 }
