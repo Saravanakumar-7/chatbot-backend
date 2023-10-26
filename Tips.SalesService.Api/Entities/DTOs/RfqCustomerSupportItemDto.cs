@@ -23,6 +23,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public bool ReleaseStatus { get; set; }       
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public List<DocumentUploadDto> Upload { get; set; }
         public List<RfqCSDeliveryScheduleDto>? RfqCSDeliverySchedule { get; set; }
 
     }
@@ -60,6 +61,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [NotMapped]
         public bool ReleaseStatus { get; set; }
+        public List<DocumentUploadUpdateDto> Upload { get; set; }
 
         public List<RfqCSDeliveryScheduleUpdateDto>? RfqCSDeliverySchedule { get; set; }
 

@@ -2278,6 +2278,51 @@ namespace Tips.SalesService.Api.Controllers
 
         //Delete RFq
 
+        private List<DocumentUpload> CocDocumentSave(List<RfqCustomerSupportItemUpdateDto>? grinPartsDto, RfqCustomerSupport grins, string number, int i, List<DocumentUpload> grinPartsDocumentUploadDtoList)
+        {
+            var cocUploadDocs = grinPartsDto[i].Upload;
+
+            foreach (var cocUpload in cocUploadDocs)
+            {
+                var fileContent = cocUpload.FileByte;
+
+                string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
+                string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                //Guid guid = Guid.NewGuid();
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "CSItems",/* guid.ToString() + "_" +*/ fileName);
+                using (MemoryStream ms = new MemoryStream(fileContent))
+                {
+                    ms.Position = 0;
+                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                    {
+                        ms.WriteTo(fileStream);
+                    }
+                    var uploadedFile = new DocumentUpload
+                    {
+                        FileName = fileName,
+                        FileExtension = FileExt,
+                        FilePath = filePath,
+                        ParentId = number,          //It Should be changed to GrinPartsId
+                        DocumentFrom = "CSItemDocument",
+                    };
+
+                    _documentUploadRepository.CreateUploadDocument(uploadedFile);
+                    _documentUploadRepository.SaveAsync();
+
+                    if (uploadedFile != null)
+                    {
+                        DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
+                        grinPartsDocumentUploadDtoList.Add(poFileDetails);
+                    }
+
+                }
+                //  grins.RfqCustomerSupportItems[i].Upload = grinPartsDocumentUploadDtoList;
+
+            }
+            return grinPartsDocumentUploadDtoList;
+        }
+
         [HttpPut]
         public async Task<IActionResult> UpdateRfqCustomerSupport([FromBody] RfqCustomerSupportUpdateDto rfqCustomerSupportUpdateDto)
         {
@@ -2302,7 +2347,6 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-
                 Rfq oldversionRFQdetails = await _rfqRepository.RfqDetailsById(rfqCustomerSupportUpdateDto.Id);
                 oldversionRFQdetails.RfqNumber = rfqCustomerSupportUpdateDto.RfqNumber;
                 oldversionRFQdetails.RevisionNumber = rfqCustomerSupportUpdateDto.RevisionNumber;
@@ -2317,7 +2361,6 @@ namespace Tips.SalesService.Api.Controllers
                 oldversionRFQdetails.Remarks = rfqCustomerSupportUpdateDto.Remarks;
                 oldversionRFQdetails.ReasonForModification = rfqCustomerSupportUpdateDto.ReasonForModification;
                 oldversionRFQdetails.RevisionNumber = oldversionRFQdetails.RevisionNumber + 1;
-
                 var oldRFQcsReleasedItems = await _itemRepository.RfqCsReleasedItemList(rfqCustomerSupportUpdateDto.RfqNumber);
                 var updatedItems = new List<RfqCustomerSupportItemUpdateDto>();
                 int flag = 0;
@@ -2354,20 +2397,26 @@ namespace Tips.SalesService.Api.Controllers
                 _rfqRepository.Create(oldversionRFQdetails);
                 rfqCustomerSupportUpdateDto.RfqCustomerSupportItems = null;
                 rfqCustomerSupportUpdateDto.RfqCustomerSupportItems = updatedItems;
-
+                RfqCustomerSupport CS = null;
                 var rfqCSItemDto = rfqCustomerSupportUpdateDto.RfqCustomerSupportItems;
                 var rfqCsItemList = new List<RfqCustomerSupportItems>();
+                var CSitemDocumentUploadDtoList = new List<DocumentUpload>();
                 if (rfqCSItemDto != null)
                 {
                     for (int i = 0; i < rfqCSItemDto.Count; i++)
                     {
+                        List<DocumentUpload>? files = null;
                         RfqCustomerSupportItems rfqCSItemDetail = _mapper.Map<RfqCustomerSupportItems>(rfqCSItemDto[i]);
+                        if (rfqCSItemDto[i].Upload != null && rfqCSItemDto[i].Upload.Count > 0)
+                        {
+                            files = CocDocumentSave(rfqCSItemDto, CS, rfqCSItemDetail.Id.ToString(), i, CSitemDocumentUploadDtoList);
+                        }
+                        rfqCSItemDetail.Upload = _mapper.Map<List<DocumentUpload>>(files);
                         rfqCSItemDetail.RfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqCSItemDto[i].RfqCSDeliverySchedule);
                         rfqCSItemDetail.Id = 0;
                         rfqCsItemList.Add(rfqCSItemDetail);
                     }
                 }
-
                 var rfqCSnotedto = rfqCustomerSupportUpdateDto.RfqCustomerSupportNotes;
                 var rfqCsnotelist = new List<RfqCustomerSupportNotes>();
                 if (rfqCSnotedto != null)
@@ -2378,7 +2427,6 @@ namespace Tips.SalesService.Api.Controllers
                         rfqCsnotelist.Add(rfqCSnoteDetail);
                     }
                 }
-
                 RfqCustomerSupport oldCSdetails = await _repository.GetRfqCustomerSupportDetailsbyrfqnumber(rfqCustomerSupportUpdateDto.RfqNumber);
                 oldCSdetails.Id = 0;
                 oldCSdetails.CustomerName = oldversionRFQdetails.CustomerName;
@@ -2392,10 +2440,7 @@ namespace Tips.SalesService.Api.Controllers
                 oldCSdetails.Unit = oldversionRFQdetails.Unit;
                 oldCSdetails.RfqCustomerSupportItems = rfqCsItemList;
                 oldCSdetails.RfqCustomerSupportNotes = rfqCsnotelist;
-
-
                 await _repository.UpdateRfqcsRevNo(oldCSdetails);
-
                 // creating engg for new RFQ version
                 //string serverKey = GetServerKey();
                 //if (!serverKey.Equals("keus"))
@@ -2403,7 +2448,6 @@ namespace Tips.SalesService.Api.Controllers
                 //    await _rfqenggRepository.UpdateRfqEnggRev(oldversionRFQdetails.RfqNumber, oldversionRFQdetails.RevisionNumber, oldversionRFQdetails);
                 //    _rfqenggRepository.SaveAsync();
                 //}
-
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Updated Successfully";
@@ -2421,6 +2465,148 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //public async Task<IActionResult> UpdateRfqCustomerSupport([FromBody] RfqCustomerSupportUpdateDto rfqCustomerSupportUpdateDto)
+        //{
+        //    ServiceResponse<RfqCustomerSupportUpdateDto> serviceResponse = new ServiceResponse<RfqCustomerSupportUpdateDto>();
+        //    try
+        //    {
+        //        if (rfqCustomerSupportUpdateDto is null)
+        //        {
+        //            _logger.LogError("RfqCustomerSupport object sent from client is null.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Update RfqCustomerSupport object is null";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _logger.LogError("Invalid RfqCustomerSupport object sent from client.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid Update RfqCustomerSupport object sent from client.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+
+        //        Rfq oldversionRFQdetails = await _rfqRepository.RfqDetailsById(rfqCustomerSupportUpdateDto.Id);
+        //        oldversionRFQdetails.RfqNumber = rfqCustomerSupportUpdateDto.RfqNumber;
+        //        oldversionRFQdetails.RevisionNumber = rfqCustomerSupportUpdateDto.RevisionNumber;
+        //        oldversionRFQdetails.CustomerId = rfqCustomerSupportUpdateDto.CustomerId;
+        //        oldversionRFQdetails.CustomerName = rfqCustomerSupportUpdateDto.CustomerName;
+        //        oldversionRFQdetails.CustomerAliasName = rfqCustomerSupportUpdateDto.CustomerAliasName;
+        //        oldversionRFQdetails.CustomerRfqNumber = rfqCustomerSupportUpdateDto.CustomerRfqNumber;
+        //        oldversionRFQdetails.RequestReceivedate = rfqCustomerSupportUpdateDto.RequestReceivedate;
+        //        oldversionRFQdetails.QuoteExpectdate = rfqCustomerSupportUpdateDto.QuoteExpectdate;
+        //        oldversionRFQdetails.TypeOfSolution = rfqCustomerSupportUpdateDto.TypeOfSolution;
+        //        oldversionRFQdetails.ProductType = rfqCustomerSupportUpdateDto.ProductType;
+        //        oldversionRFQdetails.Remarks = rfqCustomerSupportUpdateDto.Remarks;
+        //        oldversionRFQdetails.ReasonForModification = rfqCustomerSupportUpdateDto.ReasonForModification;
+        //        oldversionRFQdetails.RevisionNumber = oldversionRFQdetails.RevisionNumber + 1;
+
+        //        var oldRFQcsReleasedItems = await _itemRepository.RfqCsReleasedItemList(rfqCustomerSupportUpdateDto.RfqNumber);
+        //        var updatedItems = new List<RfqCustomerSupportItemUpdateDto>();
+        //        int flag = 0;
+        //        foreach (var itemList in rfqCustomerSupportUpdateDto.RfqCustomerSupportItems)
+        //        {
+        //            bool releaseItem = oldRFQcsReleasedItems.Any(item => item == itemList.Id);
+        //            if (releaseItem)
+        //            {
+        //                itemList.ReleaseStatus = true;
+        //                flag = 1;
+        //            }
+        //            else
+        //            {
+        //                itemList.ReleaseStatus = false;
+        //                oldversionRFQdetails.IsSourcing = false;
+        //                oldversionRFQdetails.IsCsComplete = false;
+        //                oldversionRFQdetails.CsComplete = CsStatus.CsNotYetCompleted;
+        //                if (flag == 0)
+        //                {
+        //                    oldversionRFQdetails.IsCsRelease = CsRelease.NotYetReleased;
+        //                    oldversionRFQdetails.IsEnggRelease = CsRelease.NotYetReleased;
+        //                }
+        //                else
+        //                {
+        //                    oldversionRFQdetails.IsCsRelease = CsRelease.PartiallyRelease;
+        //                    oldversionRFQdetails.IsEnggRelease = CsRelease.PartiallyRelease;
+        //                }
+        //                oldversionRFQdetails.IsEnggComplete = false;
+        //                oldversionRFQdetails.EnggComplete = EnggStatus.EnggNotYetCompleted;
+        //            }
+        //            updatedItems.Add(itemList);
+        //        }
+        //        oldversionRFQdetails.Id = 0;
+        //        _rfqRepository.Create(oldversionRFQdetails);
+        //        rfqCustomerSupportUpdateDto.RfqCustomerSupportItems = null;
+        //        rfqCustomerSupportUpdateDto.RfqCustomerSupportItems = updatedItems;
+
+        //        var rfqCSItemDto = rfqCustomerSupportUpdateDto.RfqCustomerSupportItems;
+        //        var rfqCsItemList = new List<RfqCustomerSupportItems>();
+        //        if (rfqCSItemDto != null)
+        //        {
+        //            for (int i = 0; i < rfqCSItemDto.Count; i++)
+        //            {
+        //                RfqCustomerSupportItems rfqCSItemDetail = _mapper.Map<RfqCustomerSupportItems>(rfqCSItemDto[i]);
+        //                rfqCSItemDetail.RfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqCSItemDto[i].RfqCSDeliverySchedule);
+        //                rfqCSItemDetail.Id = 0;
+        //                rfqCsItemList.Add(rfqCSItemDetail);
+        //            }
+        //        }
+
+        //        var rfqCSnotedto = rfqCustomerSupportUpdateDto.RfqCustomerSupportNotes;
+        //        var rfqCsnotelist = new List<RfqCustomerSupportNotes>();
+        //        if (rfqCSnotedto != null)
+        //        {
+        //            for (int i = 0; i < rfqCSnotedto.Count; i++)
+        //            {
+        //                RfqCustomerSupportNotes rfqCSnoteDetail = _mapper.Map<RfqCustomerSupportNotes>(rfqCSnotedto[i]);
+        //                rfqCsnotelist.Add(rfqCSnoteDetail);
+        //            }
+        //        }
+
+        //        RfqCustomerSupport oldCSdetails = await _repository.GetRfqCustomerSupportDetailsbyrfqnumber(rfqCustomerSupportUpdateDto.RfqNumber);
+        //        oldCSdetails.Id = 0;
+        //        oldCSdetails.CustomerName = oldversionRFQdetails.CustomerName;
+        //        oldCSdetails.RevisionNumber = oldversionRFQdetails.RevisionNumber;
+        //        oldCSdetails.CustomerAliasName = oldversionRFQdetails.CustomerAliasName;
+        //        oldCSdetails.CustomerRfqNumber = oldversionRFQdetails.CustomerRfqNumber;
+        //        oldCSdetails.RequestReceivedate = oldversionRFQdetails.RequestReceivedate;
+        //        oldCSdetails.QuoteExpectdate = oldversionRFQdetails.QuoteExpectdate;
+        //        oldCSdetails.TypeOfSolution = oldversionRFQdetails.TypeOfSolution;
+        //        oldCSdetails.ProductType = oldversionRFQdetails.ProductType;
+        //        oldCSdetails.Unit = oldversionRFQdetails.Unit;
+        //        oldCSdetails.RfqCustomerSupportItems = rfqCsItemList;
+        //        oldCSdetails.RfqCustomerSupportNotes = rfqCsnotelist;
+
+
+        //        await _repository.UpdateRfqcsRevNo(oldCSdetails);
+
+        //        // creating engg for new RFQ version
+        //        //string serverKey = GetServerKey();
+        //        //if (!serverKey.Equals("keus"))
+        //        //{
+        //        //    await _rfqenggRepository.UpdateRfqEnggRev(oldversionRFQdetails.RfqNumber, oldversionRFQdetails.RevisionNumber, oldversionRFQdetails);
+        //        //    _rfqenggRepository.SaveAsync();
+        //        //}
+
+        //        _repository.SaveAsync();
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Updated Successfully";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside UpdateRfqCustomerSupport action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRfq(int id)
         {
