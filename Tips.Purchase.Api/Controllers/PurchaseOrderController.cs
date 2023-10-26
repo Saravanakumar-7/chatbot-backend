@@ -41,11 +41,12 @@ namespace Tips.Purchase.Api.Controllers
         private IMapper _mapper;
         private IDocumentUploadRepository _documentUploadRepository;
         private IPoConfirmationDateRepository _poConfirmationDateRepository;
+        private IPRItemsDocumentUploadRepository _pRItemsDocumentUploadRepository;
         private IConfiguration _config;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
 
 
-        public PurchaseOrderController(IPoConfirmationDateRepository poConfirmationDateRepository,IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
+        public PurchaseOrderController(IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IPoConfirmationDateRepository poConfirmationDateRepository,IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
             _poItemsRepository = poItemsRepository;
@@ -57,6 +58,7 @@ namespace Tips.Purchase.Api.Controllers
             _poConfirmationDateHistoryRepository = poConfirmationDateHistoryRepository;
             _poConfirmationHistoryRepository = poConfirmationHistoryRepository;
             _poConfirmationDateRepository = poConfirmationDateRepository;
+            _pRItemsDocumentUploadRepository = pRItemsDocumentUploadRepository;
             _config = config;
         }
 
@@ -667,6 +669,7 @@ namespace Tips.Purchase.Api.Controllers
                 var AmountInWords = GetTotalValueInWords(purchaseOrderDetails.TotalAmount);
                 purchaseOrderDetails.AmountInWords = AmountInWords;
                 var poItemDto = purchaseOrderPostDto.POItems;
+                var prDetailsPostDto = poItemDto[0].PrDetails;
                 var poFile = purchaseOrderPostDto.POFiles;
                 var poItemDtoList = new List<PoItem>();
                 var poDocumentUploadDtoList = new List<DocumentUpload>();
@@ -715,7 +718,7 @@ namespace Tips.Purchase.Api.Controllers
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
                     Guid guid = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", guid.ToString() + "_" ,fileName);
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", guid.ToString() + "_" + fileName);
                     using (MemoryStream ms = new MemoryStream(fileContent))
                     {
                         ms.Position = 0;
@@ -785,6 +788,19 @@ namespace Tips.Purchase.Api.Controllers
                 //        }
                 //    }
                 //}
+
+                //Update PrUploadDocu
+                foreach(var prDetailsDto in prDetailsPostDto[0].PrDetailDocumentUploadPostDtos)
+                {
+                    var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
+                    if (prUploadDocument != null)
+                    {
+                        prUploadDocument.Checked = true;
+                        await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
+                    }
+                    _pRItemsDocumentUploadRepository.SaveAsync();
+
+                }
 
                 //Changing Status in Pr
                 foreach (var poItems in poItemDtoList)

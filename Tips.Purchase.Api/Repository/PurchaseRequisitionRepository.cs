@@ -584,6 +584,20 @@ namespace Tips.Purchase.Api.Repository
 
             return uploadDocFileNameById;
         }
+        public async Task<PRItemsDocumentUpload> GetUploadDocByFileName(string fileName)
+        {
+            var uploadDocFileNameById = await _tipsPurchaseDbContext.PRItemsDocumentUploads
+                .Where(x => x.FileName == fileName)
+                .FirstOrDefaultAsync();
+
+            return uploadDocFileNameById;
+        }
+        public async Task<string> UpdateUploadDoc(PRItemsDocumentUpload prItemsDocumentUpload)
+        {
+            Update(prItemsDocumentUpload);
+            string result = $"PRItemsDocumentUpload of Detail {prItemsDocumentUpload.Id} is updated successfully!";
+            return result;
+        }
         public async Task<string> DeleteUploadFile(PRItemsDocumentUpload documentUpload)
         {
             Delete(documentUpload);

@@ -7,5 +7,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<int?> CreateUploadDocumentPO(PRItemsDocumentUpload documentUpload);
         Task<PRItemsDocumentUpload> GetUploadDocById(int id);
         Task<string> DeleteUploadFile(PRItemsDocumentUpload documentUpload);
+        Task<PRItemsDocumentUpload> GetUploadDocByFileName(string fileName);
+        Task<string> UpdateUploadDoc(PRItemsDocumentUpload prItemsDocumentUpload);
     }
 }
