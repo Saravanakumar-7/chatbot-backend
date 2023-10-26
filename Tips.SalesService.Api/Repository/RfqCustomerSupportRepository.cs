@@ -151,10 +151,13 @@ namespace Tips.SalesService.Api.Repository
         {
             var rfqCsLatestRevNoByRfqNo = await _tipsSalesServiceDbContext.RfqCustomerSupports.Where(x => x.RfqNumber == rfqNumber)
                             .OrderByDescending(x => x.Id)
-                            .Include(x=>x.RfqCustomerSupportItems)
-                            .ThenInclude(x=>x.RfqCSDeliverySchedule)
-                            .Include(x=>x.RfqCustomerSupportNotes)
-                           .FirstOrDefaultAsync();
+                            .Include(x => x.RfqCustomerSupportItems)
+                            .ThenInclude(x => x.RfqCSDeliverySchedule)
+                            .Include(x => x.RfqCustomerSupportItems)
+                            .ThenInclude(x => x.Upload)
+                            .Include(x => x.RfqCustomerSupportNotes)
+
+                           .FirstOrDefaultAsync(); 
 
             return rfqCsLatestRevNoByRfqNo;
         }

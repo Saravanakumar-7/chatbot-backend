@@ -15,5 +15,6 @@ namespace Contracts
         Task<int?> CreatePriceList(PriceList priceList);
         Task<string> UpdatePriceList(PriceList priceList);
         Task<string> DeletePriceList(PriceList priceList);
+        Task<PriceList> GetLatestPriceLists();
     }
 }

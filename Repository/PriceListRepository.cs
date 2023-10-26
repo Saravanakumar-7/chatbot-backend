@@ -44,6 +44,11 @@ namespace Repository
             string result = $"PriceList details of {priceList.Id} is deleted successfully!";
             return result;
         }
+        public async Task<PriceList> GetLatestPriceLists()
+        {
+            var priceListDetails = await TipsMasterDbContext.PriceLists.OrderByDescending(x => x.Id).FirstOrDefaultAsync();
+            return priceListDetails;
+        }
 
         public async Task<IEnumerable<PriceList>> GetAllActivePriceLists([FromQuery] SearchParames searchParams)
         {
@@ -55,9 +60,9 @@ namespace Repository
 
         public async Task<IEnumerable<PriceList>> GetAllPriceLists([FromQuery] SearchParames searchParams)
         {
-            var priceListDetails = FindAll()
-                            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Pricelist.Contains(searchParams.SearchValue) ||
-                                 inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            var priceListDetails = FindAll().OrderByDescending(x => x.Id).Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
+            || inv.Pricelist.Contains(searchParams.SearchValue) || inv.Unit.Contains(searchParams.SearchValue)
+            || inv.Description.Contains(searchParams.SearchValue))));
             return priceListDetails;
         }
 

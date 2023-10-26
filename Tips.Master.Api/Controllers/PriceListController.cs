@@ -50,6 +50,33 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetLatestPriceLists()
+        {
+            ServiceResponse<PriceListDto> serviceResponse = new ServiceResponse<PriceListDto>();
+            try
+            {
+                var PriceList = await _repository.PriceListRepository.GetLatestPriceLists();
+                _logger.LogInfo("Returned Latest PriceLists");
+                var result = _mapper.Map<PriceListDto>(PriceList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned Latest PriceLists Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
 
         public async Task<IActionResult> GetAllActivePriceLists([FromQuery] SearchParames searchParams)
