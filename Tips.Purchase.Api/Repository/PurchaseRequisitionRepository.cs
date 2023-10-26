@@ -387,14 +387,17 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PurchaseRequisition> GetPurchaseRequisitionById(int id)
         {
             var purchaseRequistionDetailById = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.Id == id)
-                                .Include(o => o.PrFiles)
-                                .Include(t => t.PrItemsDtoList)
-                                .ThenInclude(x => x.prAddprojectsDtoList)
-                                .Include(m => m.PrItemsDtoList)
-                                .ThenInclude(i => i.prAddDeliverySchedulesDtoList)
-                                .Include(itm => itm.PrItemsDtoList)
-                                .ThenInclude(pr => pr.prSpecialInstructionsDtoList)
-                                .FirstOrDefaultAsync();
+                                 .Include(o => o.PrFiles)
+                                 .Include(itm => itm.PrItemsDtoList)
+                                 .ThenInclude(x => x.Upload)
+                                 .Include(t => t.PrItemsDtoList)
+                                 .ThenInclude(x => x.prAddprojectsDtoList)
+                                 .Include(m => m.PrItemsDtoList)
+                                 .ThenInclude(i => i.prAddDeliverySchedulesDtoList)
+                                 .Include(itm => itm.PrItemsDtoList)
+                                 .ThenInclude(pr => pr.prSpecialInstructionsDtoList)
+
+                                 .FirstOrDefaultAsync();
 
             return purchaseRequistionDetailById;
         }

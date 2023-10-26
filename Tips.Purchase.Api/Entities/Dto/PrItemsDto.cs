@@ -17,6 +17,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
         public PrStatus PrStatus { get; set; }
+        public List<PRItemsDocumentUploadDto>? Upload { get; set; }
         public List<PrAddProjectDto>? PrAddprojectsDtoList { get; set; }
         public List<PrAddDeliveryScheduleDto>? PrAddDeliverySchedulesDtoList { get; set; }
         public List<PrSpecialInstructionDto>? prSpecialInstructionsDtoList { get; set; }

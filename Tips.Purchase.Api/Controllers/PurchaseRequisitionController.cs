@@ -434,6 +434,17 @@ namespace Tips.Purchase.Api.Controllers
                         foreach (var itemDetails in purchaseRequisitionDetailById.PrItemsDtoList)
                         {
                             PrItemsDto prItemDtos = _mapper.Map<PrItemsDto>(itemDetails);
+                            List<PRItemsDocumentUploadDto> fileUploads = new List<PRItemsDocumentUploadDto>();
+                            if (prItemDtos.Upload.Count() != 0)
+                            {
+                                foreach (var fileUploadDetails in prItemDtos.Upload)
+                                {
+                                    PRItemsDocumentUploadDto fileUploadDto = _mapper.Map<PRItemsDocumentUploadDto>(fileUploadDetails);
+                                    fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", fileUploadDto.FileName);
+                                    fileUploads.Add(fileUploadDto);
+                                }
+                            }
+                            prItemDtos.Upload = _mapper.Map<List<PRItemsDocumentUploadDto>>(fileUploads);
                             prItemDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(itemDetails.prAddprojectsDtoList);
                             prItemDtos.PrAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliveryScheduleDto>>(itemDetails.prAddDeliverySchedulesDtoList);
                             prItemDtos.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstructionDto>>(itemDetails.prSpecialInstructionsDtoList);
