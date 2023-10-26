@@ -615,8 +615,8 @@ namespace Tips.Purchase.Api.Controllers
                     string fileName = prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                    //Guid guid = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", /*guid.ToString() + "_" +*/ fileName);
+                    Guid guid = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", guid.ToString() + "_" + fileName);
                     using (MemoryStream ms = new MemoryStream(fileContent))
                     {
                         ms.Position = 0;
