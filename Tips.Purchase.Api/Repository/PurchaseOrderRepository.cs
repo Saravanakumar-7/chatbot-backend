@@ -626,7 +626,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
             IQueryable<PurchaseOrderIdNameListDto> pendingPOApprovalIINameList =  _tipsPurchaseDbContext.PurchaseOrders
-            .Where(x => x.POApprovalII == false && x.IsDeleted == false && x.IsModified == false)
+            .Where(x => x.POApprovalI == true && x.POApprovalII == false && x.IsDeleted == false && x.IsModified == false)
             .Select(g => new PurchaseOrderIdNameListDto()
             {
                 Id = g.Id,

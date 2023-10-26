@@ -372,7 +372,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
             IQueryable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIIList =  _tipsPurchaseDbContext.PurchaseRequisitions
-           .Where(x => x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false)
+           .Where(x => x.PrApprovalI == true && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false)
            .Select(pr => new PurchaseRequisitionIdNameListDto()
            {
                Id = pr.Id,
