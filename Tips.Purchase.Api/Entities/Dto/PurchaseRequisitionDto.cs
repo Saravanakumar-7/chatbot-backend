@@ -131,7 +131,11 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public string? DeliveryTerms { get; set; }
         public bool PrApprovalI { get; set; }
+        public DateTime PrApprovedIDate { get; set; }
+        public string? PrApprovedIBy { get; set; }
         public bool PrApprovalII { get; set; }
+        public DateTime PrApprovedIIDate { get; set; }
+        public string? PrApprovedIIBy { get; set; }
         public string? PaymentTerms { get; set; }
 
         public string? ShippingMode { get; set; }

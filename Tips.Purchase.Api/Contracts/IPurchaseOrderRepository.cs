@@ -43,7 +43,7 @@ namespace Tips.Purchase.Api.Contracts
 
         Task<decimal> GetOpenPoQuantityByItemNumber(string itemNumber);
         Task<string> GeneratePONumberForAvision();
-        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIList();
-        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIList();
+        Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIList(PagingParameter pagingParameter,SearchParamess searchParams);
+        Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIList(PagingParameter pagingParameter,SearchParamess searchParams);
     }
 }

@@ -353,7 +353,7 @@ namespace Tips.Purchase.Api.Repository
 
         var Join = from pri in _tipsPurchaseDbContext.PrItems
                    where pri.ItemNumber == itemNumber
-                   join pdu in _tipsPurchaseDbContext.PRItemsDocumentUpload on pri.Id equals pdu.PrItemId
+                   join pdu in _tipsPurchaseDbContext.PRItemsDocumentUploads on pri.Id equals pdu.PrItemId
                    join pr in _tipsPurchaseDbContext.PurchaseRequisitions on pri.PurchaseRequistionId equals pr.Id
                    where pr.PrApprovalI == true && pr.PrApprovalII == true
                    group new { pri, pr, pdu } by new { pr.PrNumber, pri.ItemNumber,pr.RevisionNumber } into grouped
@@ -551,9 +551,10 @@ namespace Tips.Purchase.Api.Repository
 
             return purchaseOrderNameList;
         }
-        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIList()
+        public async Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
-            IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders
+
+            IQueryable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList =  _tipsPurchaseDbContext.PurchaseOrders
             .Where(x => x.POApprovalI == false && x.IsDeleted == false && x.IsModified == false)
             .Select(g => new PurchaseOrderIdNameListDto()
             {
@@ -585,22 +586,46 @@ namespace Tips.Purchase.Api.Repository
                 ShortClosedOn = g.ShortClosedOn,
                 TotalAmount = g.TotalAmount,
                 POApprovalI = g.POApprovalI,
+                POApprovedIDate = g.POApprovedIDate,
+                POApprovedIBy = g.POApprovedIBy,
                 POApprovalII = g.POApprovalII,
+                POApprovedIIDate = g.POApprovedIIDate,
+                POApprovedIIBy = g.POApprovedIIBy,
                 Unit = g.Unit,
                 CreatedBy = g.CreatedBy,
                 CreatedOn = g.CreatedOn,
                 LastModifiedBy = g.LastModifiedBy,
                 LastModifiedOn = g.LastModifiedOn,
 
-            })
-            .ToListAsync();
+            });
+            if (searchParams != null && !string.IsNullOrEmpty(searchParams.SearchValue))
+            {
+                string searchValue = searchParams.SearchValue.ToLower(); 
 
+                pendingPOApprovalINameList = pendingPOApprovalINameList
+                    .Where(item =>
+                        item.PONumber.ToLower().Contains(searchValue) ||
+                        item.VendorName.ToLower().Contains(searchValue) ||
+                        item.VendorId.ToLower().Contains(searchValue) ||
+                        item.VendorAddress.ToLower().Contains(searchValue) ||
+                        item.POApprovedIBy.ToLower().Contains(searchValue) ||
+                        item.POApprovedIIBy.ToLower().Contains(searchValue) ||
+                        item.ProcurementType.ToLower().Contains(searchValue)
+                    );
+            }
 
-            return pendingPOApprovalINameList;
+            int totalCount = await pendingPOApprovalINameList.CountAsync();
+
+            var result = await pendingPOApprovalINameList
+                .Skip((pagingParameter.PageNumber - 1) * pagingParameter.PageSize)
+                .Take(pagingParameter.PageSize)
+                .ToListAsync();
+
+            return new PagedList<PurchaseOrderIdNameListDto>(result, totalCount, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIList()
+        public async Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
-            IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalIINameList = await _tipsPurchaseDbContext.PurchaseOrders
+            IQueryable<PurchaseOrderIdNameListDto> pendingPOApprovalIINameList =  _tipsPurchaseDbContext.PurchaseOrders
             .Where(x => x.POApprovalII == false && x.IsDeleted == false && x.IsModified == false)
             .Select(g => new PurchaseOrderIdNameListDto()
             {
@@ -632,18 +657,45 @@ namespace Tips.Purchase.Api.Repository
                 ShortClosedOn = g.ShortClosedOn,
                 TotalAmount = g.TotalAmount,
                 POApprovalI = g.POApprovalI,
+                POApprovedIDate = g.POApprovedIDate,
+                POApprovedIBy = g.POApprovedIBy,
                 POApprovalII = g.POApprovalII,
+                POApprovedIIDate = g.POApprovedIIDate,
+                POApprovedIIBy = g.POApprovedIIBy,
                 Unit = g.Unit,
                 CreatedBy = g.CreatedBy,
                 CreatedOn = g.CreatedOn,
                 LastModifiedBy = g.LastModifiedBy,
                 LastModifiedOn = g.LastModifiedOn,
 
-            })
-            .ToListAsync();
+            });
 
+            if (searchParams != null && !string.IsNullOrEmpty(searchParams.SearchValue))
+            {
+                string searchValue = searchParams.SearchValue.ToLower();
 
-            return pendingPOApprovalIINameList;
+                pendingPOApprovalIINameList = pendingPOApprovalIINameList
+                    .Where(item =>
+                        item.PONumber.ToLower().Contains(searchValue) ||
+                        item.VendorName.ToLower().Contains(searchValue) ||
+                        item.VendorId.ToLower().Contains(searchValue) ||
+                        item.VendorAddress.ToLower().Contains(searchValue) ||
+                        item.POApprovedIBy.ToLower().Contains(searchValue) ||
+                        item.POApprovedIIBy.ToLower().Contains(searchValue) ||
+                        item.ProcurementType.ToLower().Contains(searchValue)
+                    );
+            }
+        
+
+            int totalCount = await pendingPOApprovalIINameList.CountAsync();
+
+            var result = await pendingPOApprovalIINameList
+                .Skip((pagingParameter.PageNumber - 1) * pagingParameter.PageSize)
+                .Take(pagingParameter.PageSize)
+                .ToListAsync();
+
+            return new PagedList<PurchaseOrderIdNameListDto>(result, totalCount, pagingParameter.PageNumber, pagingParameter.PageSize);
+
         }
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalINameList()
         {

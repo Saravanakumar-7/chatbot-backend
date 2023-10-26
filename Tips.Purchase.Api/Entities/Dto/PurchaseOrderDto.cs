@@ -174,7 +174,11 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? ShortClosedOn { get; set; }
         public decimal TotalAmount { get; set; }
         public bool POApprovalI { get; set; }
+        public DateTime POApprovedIDate { get; set; }
+        public string? POApprovedIBy { get; set; }
         public bool POApprovalII { get; set; }
+        public DateTime POApprovedIIDate { get; set; }
+        public string? POApprovedIIBy { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -243,7 +247,11 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? ShortClosedOn { get; set; }
         public decimal TotalAmount { get; set; }
         public bool POApprovalI { get; set; }
+        public DateTime POApprovedIDate { get; set; }
+        public string? POApprovedIBy { get; set; }
         public bool POApprovalII { get; set; }
+        public DateTime POApprovedIIDate { get; set; }
+        public string? POApprovedIIBy { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
