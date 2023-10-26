@@ -31,5 +31,7 @@ namespace Tips.Purchase.Api.Contracts
 
         Task<PurchaseRequisition> GetPurchaseRequisitionByPRNoAndRevNo(string prNumber, int revisionNumber);
         Task<string> GeneratePRNumberAvision();
+        Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIList(PagingParameter pagingParameter ,SearchParamess searchParams);
+        Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIIList(PagingParameter pagingParameter, SearchParamess searchParams);
     }
 }

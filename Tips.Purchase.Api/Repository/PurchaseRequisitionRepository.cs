@@ -314,6 +314,116 @@ namespace Tips.Purchase.Api.Repository
 
             return pendingPRApprovalINameList;
         }
+        public async Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            IQueryable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIList =  _tipsPurchaseDbContext.PurchaseRequisitions
+           .Where(x => x.PrApprovalI == false && x.IsDeleted == false && x.IsModified == false)
+           .Select(pr => new PurchaseRequisitionIdNameListDto()
+           {
+               Id = pr.Id,
+               PrNumber = pr.PrNumber,
+               PrDate = pr.PrDate,
+               RevisionNumber = pr.RevisionNumber,
+               ProcurementType = pr.ProcurementType,
+               Purpose = pr.Purpose,
+               DeliveryTerms = pr.DeliveryTerms,
+               PrApprovalI = pr.PrApprovalI,
+               PrApprovedIDate = pr.PrApprovedIDate,
+               PrApprovedIBy = pr.PrApprovedIBy,
+               PrApprovalII = pr.PrApprovalII,
+               PrApprovedIIDate = pr.PrApprovedIIDate,
+               PrApprovedIIBy = pr.PrApprovedIIBy,
+               PaymentTerms = pr.PaymentTerms,
+               ShippingMode = pr.ShippingMode,
+               RetentionPeriod = pr.RetentionPeriod,
+               SpecialTermsConditions = pr.SpecialTermsConditions,
+               Unit = pr.Unit,
+               CreatedBy = pr.CreatedBy,
+               CreatedOn = pr.CreatedOn,
+               LastModifiedBy = pr.LastModifiedBy,
+               LastModifiedOn = pr.LastModifiedOn,
+
+           });
+            if (searchParams != null && !string.IsNullOrEmpty(searchParams.SearchValue))
+            {
+                string searchValue = searchParams.SearchValue.ToLower();
+
+                pendingPRApprovalIList = pendingPRApprovalIList
+                    .Where(item =>
+                        item.PrNumber.ToLower().Contains(searchValue) ||
+                        item.Purpose.ToLower().Contains(searchValue) ||
+                        item.DeliveryTerms.ToLower().Contains(searchValue) ||
+                        item.ShippingMode.ToLower().Contains(searchValue) ||
+                        item.PrApprovedIBy.ToLower().Contains(searchValue) ||
+                        item.PrApprovedIIBy.ToLower().Contains(searchValue) ||
+                        item.ProcurementType.ToLower().Contains(searchValue)
+                    );
+            }
+
+            int totalCount = await pendingPRApprovalIList.CountAsync();
+
+            var result = await pendingPRApprovalIList
+                .Skip((pagingParameter.PageNumber - 1) * pagingParameter.PageSize)
+                .Take(pagingParameter.PageSize)
+                .ToListAsync();
+
+            return PagedList<PurchaseRequisitionIdNameListDto>.ToPagedList(pendingPRApprovalIList, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+        public async Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            IQueryable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIIList =  _tipsPurchaseDbContext.PurchaseRequisitions
+           .Where(x => x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false)
+           .Select(pr => new PurchaseRequisitionIdNameListDto()
+           {
+               Id = pr.Id,
+               PrNumber = pr.PrNumber,
+               PrDate = pr.PrDate,
+               RevisionNumber = pr.RevisionNumber,
+               ProcurementType = pr.ProcurementType,
+               Purpose = pr.Purpose,
+               DeliveryTerms = pr.DeliveryTerms,
+               PrApprovalI = pr.PrApprovalI,
+               PrApprovedIDate = pr.PrApprovedIDate,
+               PrApprovedIBy = pr.PrApprovedIBy,
+               PrApprovalII = pr.PrApprovalII,
+               PrApprovedIIDate = pr.PrApprovedIIDate,
+               PrApprovedIIBy = pr.PrApprovedIIBy,
+               PaymentTerms = pr.PaymentTerms,
+               ShippingMode = pr.ShippingMode,
+               RetentionPeriod = pr.RetentionPeriod,
+               SpecialTermsConditions = pr.SpecialTermsConditions,
+               Unit = pr.Unit,
+               CreatedBy = pr.CreatedBy,
+               CreatedOn = pr.CreatedOn,
+               LastModifiedBy = pr.LastModifiedBy,
+               LastModifiedOn = pr.LastModifiedOn,
+
+           });
+            if (searchParams != null && !string.IsNullOrEmpty(searchParams.SearchValue))
+            {
+                string searchValue = searchParams.SearchValue.ToLower();
+
+                pendingPRApprovalIIList = pendingPRApprovalIIList
+                    .Where(item =>
+                        item.PrNumber.ToLower().Contains(searchValue) ||
+                        item.Purpose.ToLower().Contains(searchValue) ||
+                        item.DeliveryTerms.ToLower().Contains(searchValue) ||
+                        item.ShippingMode.ToLower().Contains(searchValue) ||
+                        item.PrApprovedIBy.ToLower().Contains(searchValue) ||
+                        item.PrApprovedIIBy.ToLower().Contains(searchValue) ||
+                        item.ProcurementType.ToLower().Contains(searchValue)
+                    );
+            }
+
+            int totalCount = await pendingPRApprovalIIList.CountAsync();
+
+            var result = await pendingPRApprovalIIList
+                .Skip((pagingParameter.PageNumber - 1) * pagingParameter.PageSize)
+                .Take(pagingParameter.PageSize)
+                .ToListAsync();
+
+            return PagedList<PurchaseRequisitionIdNameListDto>.ToPagedList(pendingPRApprovalIIList, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
 
         public async Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIINameList()
         {
@@ -469,7 +579,7 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<PRItemsDocumentUpload> GetUploadDocById(int id)
         {
-            var uploadDocFileNameById = await _tipsPurchaseDbContext.PRItemsDocumentUpload
+            var uploadDocFileNameById = await _tipsPurchaseDbContext.PRItemsDocumentUploads
                 .Where(x => x.Id == id).FirstOrDefaultAsync();
 
             return uploadDocFileNameById;

@@ -398,6 +398,7 @@ namespace Repository
                                     FileName = c.FileName,
                                     FileExtension = c.FileExtension,
                                     FilePath = c.FilePath,
+                                    FileByte = c.FileByte,
                                     DocumentFrom = c.DocumentFrom,
                                     ParentId = c.ParentId,
                                     CreatedBy = c.CreatedBy,
@@ -525,6 +526,15 @@ namespace Repository
             imageUpload.LastModifiedOn = DateTime.Now;
             var result = await Create(imageUpload);
             return result.Id;
+        }
+        public async Task<string?> GetImageFileByte(string filename)
+        {
+            var fileByte = TipsMasterDbContext.imageUploads.Where(x => x.FileName == filename).Select(x => x.FileByte).FirstOrDefault();
+            if (fileByte != null)
+            {
+                return fileByte.ToString();
+            }
+            return null;
         }
 
     }

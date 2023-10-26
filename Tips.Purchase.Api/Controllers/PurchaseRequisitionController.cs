@@ -983,6 +983,7 @@ namespace Tips.Purchase.Api.Controllers
                     newItem.FileName = item.fileName;
                     newItem.FileExtension = item.fileExtension;
                     newItem.FilePath = item.filePath;
+                    newItem.FileByte = item.fileByte;
                     newItem.DocumentFrom = item.documentFrom;
                     newItem.ParentId = item.parentId;
                     newItem.CreatedBy = item.createdBy;
@@ -1060,7 +1061,6 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpGet]
         public async Task<IActionResult> GetAllPendingPurchaseRequisitionApprovalIINameList()
         {
@@ -1068,6 +1068,74 @@ namespace Tips.Purchase.Api.Controllers
             try
             {
                 var pendingPRApprovalIINameList = await _repository.GetAllPendingPRApprovalIINameList();
+                var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(pendingPRApprovalIINameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PendingApprovalIIPurchaseRequisition";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllPendingPRApprovalIINameList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllPendingPurchaseRequisitionApprovalIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>>();
+            try
+            {
+                var pendingPRApprovalINameList = await _repository.GetAllPendingPRApprovalIList(pagingParameter, searchParams);
+                var metadata = new
+                {
+                    pendingPRApprovalINameList.TotalCount,
+                    pendingPRApprovalINameList.PageSize,
+                    pendingPRApprovalINameList.CurrentPage,
+                    pendingPRApprovalINameList.HasNext,
+                    pendingPRApprovalINameList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(pendingPRApprovalINameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PendingApprovalIPurchaseRequisition";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllPendingPRApprovalINameList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllPendingPurchaseRequisitionApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionIdNameListDto>>();
+            try
+            {
+                var pendingPRApprovalIINameList = await _repository.GetAllPendingPRApprovalIIList(pagingParameter, searchParams);
+                var metadata = new
+                {
+                    pendingPRApprovalIINameList.TotalCount,
+                    pendingPRApprovalIINameList.PageSize,
+                    pendingPRApprovalIINameList.CurrentPage,
+                    pendingPRApprovalIINameList.HasNext,
+                    pendingPRApprovalIINameList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 var result = _mapper.Map<IEnumerable<PurchaseRequisitionIdNameListDto>>(pendingPRApprovalIINameList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PendingApprovalIIPurchaseRequisition";
