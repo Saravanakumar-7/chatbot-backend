@@ -17,6 +17,7 @@
         public string FileName { get; set; }
         public string FileExtension { get; set; }
         public byte[] FileByte { get; set; }
+        public bool NewFile { get; set; }
 
     }
     public class PRItemsDocumentUploadUpdateDto
