@@ -6,7 +6,6 @@
         public string? PRNumber { get; set; }
         public decimal? Qty { get; set; }
         public int POItemDetailId { get; set; }
-        public PoItem? POItemDetail { get; set; }
-        public List<PrDetailDocumentUpload>? PrDetailDocumentUploads { get; set; }
+        public PoItem? POItemDetail { get; set; } 
     }
 }
