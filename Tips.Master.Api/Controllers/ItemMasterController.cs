@@ -242,6 +242,36 @@ namespace Tips.Master.Api.Controllers
 
         //    return NotFound(); // Return a 404 response if the file doesn't exist
         //}
+        [HttpGet]
+        public async Task<ActionResult> DownloadFile(string Filename)
+        {
+            ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", Filename);
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out var ContentType))
+            {
+                ContentType = "application/octet-stream";
+            }
+            var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+
+            return File(bytes, ContentType, Path.GetFileName(filePath));
+        }
+        [HttpGet]
+        public async Task<ActionResult> DownloadImage(string Filename)
+        {
+            ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", Filename);
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out var ContentType))
+            {
+                ContentType = "application/octet-stream";
+            }
+            var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+
+            return File(bytes, ContentType, Path.GetFileName(filePath));
+        }
         [HttpGet("{filename}")]
         public async Task<ActionResult> GetFilePath(string filename)
         {

@@ -18,6 +18,7 @@ using Newtonsoft.Json.Linq;
 using System.Dynamic;
 using Tips.SalesService.Api.Entities.Enum;
 using System.Linq;
+using Microsoft.AspNetCore.StaticFiles;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -1696,6 +1697,21 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<ActionResult> DownloadFile(string Filename)
+        {
+            ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "CSItems", Filename);
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out var ContentType))
+            {
+                ContentType = "application/octet-stream";
+            }
+            var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+
+            return File(bytes, ContentType, Path.GetFileName(filePath));
+        }
         private string GetServerKey()
         {
             var serverName = Environment.MachineName;
