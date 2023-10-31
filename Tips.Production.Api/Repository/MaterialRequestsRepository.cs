@@ -138,7 +138,7 @@ namespace Tips.Production.Api.Repository
                 int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
                 int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
 
-                return $"ASPL|MIR|{currentYear:D2}-{nextYear:D2}|{rfqNumberEntity.CurrentValue:D6}";
+                return $"ASPL|MIR|{currentYear:D2}-{nextYear:D2}|{rfqNumberEntity.CurrentValue:D4}";
             }
             catch (Exception ex)
             {

@@ -273,7 +273,7 @@ namespace Tips.SalesService.Api.Repository
                 int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
                 int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
 
-                return $"ASPL|SO|{currentYear:D2}-{nextYear:D2}|{poNumberEntity.CurrentValue:D6}";
+                return $"ASPL|SO|{currentYear:D2}-{nextYear:D2}|{poNumberEntity.CurrentValue:D4}";
             }
             catch (Exception ex)
             {

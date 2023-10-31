@@ -393,21 +393,21 @@ namespace Tips.Master.Api.Controllers
         }
 
 
-        [HttpGet]
-        public async Task<ActionResult> DownloadFile(string Filename)
-        {
-            ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+        //[HttpGet]
+        //public async Task<ActionResult> DownloadFile(string Filename)
+        //{
+        //    ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
 
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", Filename);
-            var provider = new FileExtensionContentTypeProvider();
-            if (!provider.TryGetContentType(filePath, out var ContentType))
-            {
-                ContentType = "application/octet-stream";
-            }
-            var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+        //    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", Filename);
+        //    var provider = new FileExtensionContentTypeProvider();
+        //    if (!provider.TryGetContentType(filePath, out var ContentType))
+        //    {
+        //        ContentType = "application/octet-stream";
+        //    }
+        //    var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
 
-            return File(bytes, ContentType, Path.GetFileName(filePath));
-        }
+        //    return File(bytes, ContentType, Path.GetFileName(filePath));
+        //}
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetItemMasterById(int id)
@@ -443,7 +443,7 @@ namespace Tips.Master.Api.Controllers
                         {
                             ImageUploadDto imageUploadDto = _mapper.Map<ImageUploadDto>(imageUploadDetails);
                             var baseUrl = $"{Request.Scheme}://{_config["ItemMasterBaseUrl"]}";
-                            imageUploadDto.FilePath = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={Uri.EscapeUriString(imageUploadDto.FileName)}";
+                            imageUploadDto.FilePath = $"{baseUrl}/api/ItemMaster/DownloadImage?Filename={Uri.EscapeUriString(imageUploadDto.FileName)}";
 
                             //imageUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", Uri.EscapeUriString(imageUploadDto.FileName));
                             imageUploads.Add(imageUploadDto);

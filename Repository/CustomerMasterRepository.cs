@@ -59,7 +59,7 @@ namespace Repository
                 int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
                 int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
 
-                return $"ASPL|CS|{currentYear:D2}-{nextYear:D2}|{customerNumberEntity.CurrentValue:D6}";
+                return $"ASPL|CS|{currentYear:D2}-{nextYear:D2}|{customerNumberEntity.CurrentValue:D4}";
             }
             catch (Exception ex)
             {
