@@ -780,7 +780,7 @@ namespace Tips.Purchase.Api.Controllers
                 //            PoConfirmationDateHistory poConfirmationDateHistory = new PoConfirmationDateHistory();
                 //            poConfirmationDateHistory.ConfirmationDate = poConfirmationDate.ConfirmationDate;
                 //            poConfirmationDateHistory.Qty = poConfirmationDate.Qty;
-                      
+
                 //            var poConfirmationDateHistoryDetails = _mapper.Map<PoConfirmationDateHistory>(poConfirmationDateHistory);
 
                 //            await _poConfirmationDateHistoryRepository.CreatePoConfirmationDateHistory(poConfirmationDateHistoryDetails);
@@ -790,16 +790,19 @@ namespace Tips.Purchase.Api.Controllers
                 //}
 
                 //Update PrUploadDocu
-                foreach(var prDetailsDto in prDetailsPostDto[0].PrDetailDocumentUploadPostDtos)
+                if (prDetailsPostDto.Count != 0)
                 {
-                    var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
-                    if (prUploadDocument != null)
+                    foreach (var prDetailsDto in prDetailsPostDto[0].PrDetailDocumentUploadPostDtos)
                     {
-                        prUploadDocument.Checked = true;
-                        await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
-                    }
-                    _pRItemsDocumentUploadRepository.SaveAsync();
+                        var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
+                        if (prUploadDocument != null)
+                        {
+                            prUploadDocument.Checked = true;
+                            await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
+                        }
+                        _pRItemsDocumentUploadRepository.SaveAsync();
 
+                    }
                 }
 
                 //Changing Status in Pr
