@@ -516,6 +516,33 @@ namespace Tips.Grin.Api.Controllers
                     //}
                     //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), datas);
 
+                    var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
+                          "GetItemMasterByItemNumber?", "&ItemNumber=", iQcItemNo));
+                    var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                    dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                    dynamic itemMasterObject = itemMasterObjectData.data;
+
+                    IQCInventoryDto grinInventoryDto = new IQCInventoryDto();
+                    grinInventoryDto.PartNumber = iQCConfirmationItems.ItemNumber;
+                    grinInventoryDto.LotNumber = grinPartsDetails.LotNumber;
+                    grinInventoryDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
+                    grinInventoryDto.Description = grinPartsDetails.ItemDescription;
+                    grinInventoryDto.ProjectNumber = grinPartsDetails.ProjectNumbers[i].ProjectNumber;
+                    grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iQCConfirmationItems.RejectedQty);
+                    grinInventoryDto.UOM = grinPartsDetails.UOM;
+                    grinInventoryDto.Warehouse = "Reject";
+                    grinInventoryDto.Location = "Reject";
+                    grinInventoryDto.GrinNo = iQCCreate.GrinNumber;
+                    grinInventoryDto.GrinPartId = iQCConfirmationItems.GrinPartId;
+                    grinInventoryDto.PartType = itemMasterObject.itemType;  //We need to check this
+                    grinInventoryDto.ReferenceID = "GRIN"; /*/ Convert.ToString(iQCConfirmationItems.Id) /;*/
+                    grinInventoryDto.ReferenceIDFrom = "GRIN";
+                    grinInventoryDto.GrinMaterialType = "GRIN";
+                    grinInventoryDto.ShopOrderNo = "";
+
+                    var jsons = JsonConvert.SerializeObject(grinInventoryDto);
+                    var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+
                     //Inventory Update Code
                     decimal acceptedQty = iQCDto[i].AcceptedQty;
                     foreach (var projectNo in grinPartsDetails.ProjectNumbers)
