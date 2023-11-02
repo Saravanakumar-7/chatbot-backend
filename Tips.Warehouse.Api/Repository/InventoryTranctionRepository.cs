@@ -1,7 +1,9 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
@@ -10,15 +12,22 @@ namespace Tips.Warehouse.Api.Repository
 {
     public class InventoryTranctionRepository : RepositoryBase<InventoryTranction>, IInventoryTranctionRepository
     {
-        public InventoryTranctionRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public InventoryTranctionRepository(TipsWarehouseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<InventoryTranction> CreateInventoryTransaction(InventoryTranction inventoryTranction)
         {
-            inventoryTranction.CreatedBy = "Admin";
+            inventoryTranction.CreatedBy = _createdBy;
             inventoryTranction.CreatedOn = DateTime.Now;
-            inventoryTranction.Unit = "Bangalore";
+            inventoryTranction.Unit = _unitname;
             var result = await Create(inventoryTranction);
 
             return result;
@@ -123,7 +132,7 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<string> UpdateInventoryTraction(InventoryTranction inventoryTranction)
         {
-            inventoryTranction.LastModifiedBy = "Admin";
+            inventoryTranction.LastModifiedBy = _createdBy;
             inventoryTranction.LastModifiedOn = DateTime.Now;
             Update(inventoryTranction);
             string result = $"materialIssue of Detail {inventoryTranction.Id} is updated successfully!";

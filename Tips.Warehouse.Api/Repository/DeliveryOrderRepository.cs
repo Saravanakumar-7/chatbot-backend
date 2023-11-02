@@ -2,6 +2,7 @@
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
@@ -11,17 +12,24 @@ namespace Tips.Warehouse.Api.Repository
     public class DeliveryOrderRepository : RepositoryBase<DeliveryOrder>, IDeliveryOrderRepository
     {
         private TipsWarehouseDbContext _tipsWarehouseDbContext;
-        public DeliveryOrderRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public DeliveryOrderRepository(TipsWarehouseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsWarehouseDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<long> CreateDeliveryOrder(DeliveryOrder deliveryOrder)
         {
             var date = DateTime.Now;
-            deliveryOrder.CreatedBy = "Admin";
+            deliveryOrder.CreatedBy = _createdBy;
             deliveryOrder.CreatedOn = date.Date;
-            deliveryOrder.Unit = "Bangalore";
+            deliveryOrder.Unit = _unitname;
             //Guid deliveryOrderNumber = Guid.NewGuid();
             //deliveryOrder.DeliveryOrderNumber = " DO-" + deliveryOrderNumber.ToString();
             var result = await Create(deliveryOrder);
@@ -145,7 +153,7 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<string> UpdateDeliveryOrder(DeliveryOrder deliveryOrder)
         {
-            deliveryOrder.LastModifiedBy = "Admin";
+            deliveryOrder.LastModifiedBy = _createdBy;
             deliveryOrder.LastModifiedOn = DateTime.Now;
             Update(deliveryOrder);
             string result = $"DeliveryOrder of Detail {deliveryOrder.Id} is updated successfully!";

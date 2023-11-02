@@ -39,8 +39,8 @@ namespace Tips.Purchase.Api.Repository
             var date = DateTime.Now;
             purchaseOrder.CreatedBy = _createdBy;
             purchaseOrder.CreatedOn = date.Date;
-            purchaseOrder.LastModifiedBy = _createdBy;
-            purchaseOrder.LastModifiedOn = DateTime.Now;
+           // purchaseOrder.LastModifiedBy = _createdBy;
+            //purchaseOrder.LastModifiedOn = DateTime.Now;
             //Guid purchaseOrderNumber = Guid.NewGuid();
             //purchaseOrder.PONumber = "PO-" + purchaseOrderNumber.ToString();
             purchaseOrder.Unit = _unitname;
@@ -959,8 +959,8 @@ namespace Tips.Purchase.Api.Repository
         {
             documentUpload.CreatedBy = _createdBy;
             documentUpload.CreatedOn = DateTime.Now;
-            documentUpload.LastModifiedBy = _createdBy;
-            documentUpload.LastModifiedOn = DateTime.Now;
+           // documentUpload.LastModifiedBy = _createdBy;
+           // documentUpload.LastModifiedOn = DateTime.Now;
 
             var result = await Create(documentUpload);
             return result.Id;

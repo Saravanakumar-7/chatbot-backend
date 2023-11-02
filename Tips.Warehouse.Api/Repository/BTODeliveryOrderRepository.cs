@@ -12,23 +12,31 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Entities.DTOs;
 using Entities.Enums;
+using System.Security.Claims;
 
 namespace Tips.Warehouse.Api.Repository
 {
     public class BTODeliveryOrderRepository : RepositoryBase<BTODeliveryOrder>, IBTODeliveryOrderRepository
     {
         private TipsWarehouseDbContext _tipsWarehouseDbContext;
-        public BTODeliveryOrderRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public BTODeliveryOrderRepository(TipsWarehouseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsWarehouseDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<long> CreateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder)
         {
             var date = DateTime.Now;
-            bTODeliveryOrder.CreatedBy = "Admin";
+            bTODeliveryOrder.CreatedBy = _createdBy;
             bTODeliveryOrder.CreatedOn = date.Date;
-            bTODeliveryOrder.Unit = "Bangalore";
+            bTODeliveryOrder.Unit = _unitname;
             //Guid btoDeliveryOrderNumber = Guid.NewGuid();
             //bTODeliveryOrder.BTONumber = " BTO-" + btoDeliveryOrderNumber.ToString();
             var result = await Create(bTODeliveryOrder);
@@ -263,7 +271,7 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<string> UpdateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder)
         {
-            bTODeliveryOrder.LastModifiedBy = "Admin";
+            bTODeliveryOrder.LastModifiedBy = _createdBy;
             bTODeliveryOrder.LastModifiedOn = DateTime.Now;
             Update(bTODeliveryOrder);
             string result = $"BTODeliveryOrder of Detail {bTODeliveryOrder.Id} is updated successfully!";
@@ -291,9 +299,16 @@ namespace Tips.Warehouse.Api.Repository
     public class BTODeliveryOrderItemRepository : RepositoryBase<BTODeliveryOrderItems>, IBTODeliveryOrderItemsRepository
     {
         private TipsWarehouseDbContext _tipsWarehouseDbContexts;
-        public BTODeliveryOrderItemRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public BTODeliveryOrderItemRepository(TipsWarehouseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsWarehouseDbContexts = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<List<BTODeliveryOrderItems>> GetOpenDoItemDetailsByItemNoAndDoNo(string itemNumber, string BtoDeliveryNumber)
@@ -307,7 +322,7 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task UpdateBtoDelieveryOrderItem(BTODeliveryOrderItems btoDeliveryOrderItem)
         {
-            btoDeliveryOrderItem.LastModifiedBy = "Admin";
+            btoDeliveryOrderItem.LastModifiedBy = _createdBy;
             btoDeliveryOrderItem.LastModifiedOn = DateTime.Now;
             Update(btoDeliveryOrderItem);
         }
@@ -340,17 +355,24 @@ namespace Tips.Warehouse.Api.Repository
     public class BTODeliveryOrderHistoryRepository : RepositoryBase<BTODeliveryOrderHistory>, IBTODeliveryOrderHistoryRepository
     {
         private TipsWarehouseDbContext _tipsWarehouseDbContext;
-        public BTODeliveryOrderHistoryRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public BTODeliveryOrderHistoryRepository(TipsWarehouseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsWarehouseDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
          
 
         public async Task<long> CreateBTODeliveryOrderHistory(BTODeliveryOrderHistory bTODeliveryOrderHistory)
         {
-             bTODeliveryOrderHistory.CreatedBy = "Admin";
+             bTODeliveryOrderHistory.CreatedBy = _createdBy;
             bTODeliveryOrderHistory.CreatedOn = DateTime.Now;
-            bTODeliveryOrderHistory.Unit = "Banglore";
+            bTODeliveryOrderHistory.Unit = _unitname;
             var result = await Create(bTODeliveryOrderHistory);
             return result.Id;
         }

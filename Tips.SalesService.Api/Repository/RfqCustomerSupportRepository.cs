@@ -24,16 +24,23 @@ namespace Tips.SalesService.Api.Repository
     public class RfqCustomerSupportRepository : RepositoryBase<RfqCustomerSupport>, IRfqCustomerSupportRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-        public RfqCustomerSupportRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public RfqCustomerSupportRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport)
         {
-            rfqCustomerSupport.CreatedBy = "Admin";
+            rfqCustomerSupport.CreatedBy = _createdBy;
             rfqCustomerSupport.CreatedOn = DateTime.Now;
-            rfqCustomerSupport.Unit = "Bangalore";
+            rfqCustomerSupport.Unit = _unitname;
             rfqCustomerSupport.RevisionNumber = 1;
              var result = await Create(rfqCustomerSupport);
             return result.Id;
@@ -166,7 +173,7 @@ namespace Tips.SalesService.Api.Repository
 
             rfqCustomerSupport.CreatedBy = rfqCustomerSupport.CreatedBy;
             rfqCustomerSupport.CreatedOn = rfqCustomerSupport.CreatedOn;
-            rfqCustomerSupport.LastModifiedBy = "Admin";
+            rfqCustomerSupport.LastModifiedBy = _createdBy;
             rfqCustomerSupport.LastModifiedOn = DateTime.Now;
             //var getOldRevisionNumber = _tipsSalesServiceDbContext.RfqCustomerSupports
             //    .Where(x => x.RfqNumber == rfqCustomerSupport.RfqNumber)
@@ -194,7 +201,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateRfqCustomerSupport(RfqCustomerSupport rfqCustomerSupport)
         {
-            rfqCustomerSupport.LastModifiedBy = "Admin";
+            rfqCustomerSupport.LastModifiedBy = _createdBy;
             rfqCustomerSupport.LastModifiedOn = DateTime.Now;            
             Update(rfqCustomerSupport);
             string result = $"RFQ of Detail {rfqCustomerSupport.Id} is updated successfully!";
@@ -209,11 +216,16 @@ namespace Tips.SalesService.Api.Repository
     public class RfqCustomerSupportItemsRepository : RepositoryBase<RfqCustomerSupportItems>, IRfqCustomerSupportItemRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-
-        public RfqCustomerSupportItemsRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public RfqCustomerSupportItemsRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
-
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
         public async Task<IEnumerable<string>> GetRfqCsandForecastCsDetailListByItemNumber(string itemNumber)
         {
@@ -379,7 +391,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> ActivateRfqCustomerSupportItemById(RfqCustomerSupportItems rfqCustomerSupportItems)
         {
-            rfqCustomerSupportItems.LastModifiedBy = "Admin";
+            rfqCustomerSupportItems.LastModifiedBy = _createdBy;
             rfqCustomerSupportItems.LastModifiedOn = DateTime.Now;
             Update(rfqCustomerSupportItems);
             string result = $"CustomerSupport details of {rfqCustomerSupportItems.Id} is updated successfully!";
@@ -407,7 +419,7 @@ namespace Tips.SalesService.Api.Repository
         }
         public async Task<string> DeactivateRfqCustomerSupportItemById(RfqCustomerSupportItems rfqCustomerSupportItems)
         {
-            rfqCustomerSupportItems.LastModifiedBy = "Admin";
+            rfqCustomerSupportItems.LastModifiedBy = _createdBy;
             rfqCustomerSupportItems.LastModifiedOn = DateTime.Now;
             Update(rfqCustomerSupportItems);
             string result = $"CostCenter details of {rfqCustomerSupportItems.Id} is updated successfully!";
@@ -543,10 +555,17 @@ namespace Tips.SalesService.Api.Repository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
         private IMapper _mapper;
-        public RfqRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IMapper mapper) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public RfqRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
         public async Task<Rfq> RfqDetailsById(int rfqId)
         {
@@ -718,11 +737,11 @@ namespace Tips.SalesService.Api.Repository
         public async Task<int?> CreateRfq(Rfq rfq)
         {
             var date = DateTime.Now;
-            rfq.CreatedBy = "Admin";
+            rfq.CreatedBy = _createdBy;
             rfq.CreatedOn = date.Date;
             var version = 1;
             rfq.RevisionNumber = version;            
-            rfq.Unit = "Bangalore";
+            rfq.Unit = _createdBy;
             var result = await Create(rfq);
             return result.Id;
         }
@@ -823,7 +842,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateRfq(Rfq rfq)
         {
-            rfq.LastModifiedBy = "Admin";
+            rfq.LastModifiedBy = _createdBy;
             rfq.LastModifiedOn = DateTime.Now;
 
             Update(rfq);
@@ -975,14 +994,14 @@ namespace Tips.SalesService.Api.Repository
             if (getOldRfqDetails != null)
             {
                 getOldRfqDetails.IsModified = true;
-                getOldRfqDetails.LastModifiedBy = "Admin";
+                getOldRfqDetails.LastModifiedBy = _createdBy;
                 getOldRfqDetails.LastModifiedOn = DateTime.Now;
                 Update(getOldRfqDetails);
             }
 
             rfq.CreatedBy = rfq.CreatedBy;
             rfq.CreatedOn = rfq.CreatedOn;
-            rfq.LastModifiedBy = "Admin";
+            rfq.LastModifiedBy = _createdBy;
             rfq.LastModifiedOn = DateTime.Now;
             var getOldRevisionNumber = _tipsSalesServiceDbContext.Rfqs.Where(x => x.RfqNumber == rfq.RfqNumber).OrderByDescending(x => x.Id)
                 .Select(x => x.RevisionNumber).FirstOrDefault();
@@ -1103,16 +1122,23 @@ namespace Tips.SalesService.Api.Repository
     public class RfqEnggRepository : RepositoryBase<RfqEngg>, IRfqEnggRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-        public RfqEnggRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public RfqEnggRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateRfqEngg(RfqEngg rfqEngg)
         {
-            rfqEngg.CreatedBy = "Admin";
+            rfqEngg.CreatedBy = _createdBy;
             rfqEngg.CreatedOn = DateTime.Now;
-            rfqEngg.Unit = "Bangalore";            
+            rfqEngg.Unit = _unitname;            
             var result = await Create(rfqEngg);
             return result.Id;
         }
@@ -1238,7 +1264,7 @@ namespace Tips.SalesService.Api.Repository
 
             rfqEngg.CreatedBy = rfqEngg.CreatedBy;
             rfqEngg.CreatedOn = rfqEngg.CreatedOn;
-            rfqEngg.LastModifiedBy = "Admin";
+            rfqEngg.LastModifiedBy = _createdBy;
             rfqEngg.LastModifiedOn = DateTime.Now;
             var getOldRevisionNumber = _tipsSalesServiceDbContext.RfqEnggs
                 .Where(x => x.RFQNumber == rfqEngg.RFQNumber)
@@ -1285,7 +1311,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateRfqEngg(RfqEngg rfqEngg)
         {
-            rfqEngg.LastModifiedBy = "Admin";
+            rfqEngg.LastModifiedBy = _createdBy;
             rfqEngg.LastModifiedOn = DateTime.Now;
             Update(rfqEngg);
             string result = $"RFQEngg of Detail {rfqEngg.Id} is updated successfully!";
@@ -1435,17 +1461,22 @@ namespace Tips.SalesService.Api.Repository
     public class RfqLPCostingRepository : RepositoryBase<RfqLPCosting>, IRfqLPCostingRepository
         {
             private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-
-            public RfqLPCostingRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public RfqLPCostingRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
             {
                 _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
-
-            }
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+        }
             public async Task<int?> CreateRfqLPCosting(RfqLPCosting rfqLPCosting)
             {
-                rfqLPCosting.CreatedBy = "Admin";
+                rfqLPCosting.CreatedBy = _createdBy;
                 rfqLPCosting.CreatedOn = DateTime.Now;
-                rfqLPCosting.Unit = "Bangalore";
+                rfqLPCosting.Unit = _unitname;
                 var result = await Create(rfqLPCosting);
                 return result.Id;
             }
@@ -1490,7 +1521,7 @@ namespace Tips.SalesService.Api.Repository
 
             public async Task<string> UpdateRfqLPCosting(RfqLPCosting rfqLPCosting)
             {
-                rfqLPCosting.LastModifiedBy = "Admin";
+                rfqLPCosting.LastModifiedBy = _createdBy;
                 rfqLPCosting.LastModifiedOn = DateTime.Now;
                 Update(rfqLPCosting);
                 string result = $"RFQ of Detail {rfqLPCosting.Id} is updated successfully!";
@@ -1514,20 +1545,26 @@ namespace Tips.SalesService.Api.Repository
     public class RfqCustomGroupRepository : RepositoryBase<RfqCustomGroup>, IRfqCustomGroupRepository
         {
             private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-
-            public RfqCustomGroupRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public RfqCustomGroupRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
             {
                 _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
-            }
+        }
 
-            public async Task<int?> CreateRfqCustomGroup(RfqCustomGroup rfqCustomGroup)
+        public async Task<int?> CreateRfqCustomGroup(RfqCustomGroup rfqCustomGroup)
             {
-                rfqCustomGroup.CreatedBy = "Admin";
+                rfqCustomGroup.CreatedBy = _createdBy;
                 rfqCustomGroup.CreatedOn = DateTime.Now;
-                rfqCustomGroup.LastModifiedBy = "Admin";
-                rfqCustomGroup.LastModifiedOn = DateTime.Now;
-                rfqCustomGroup.Unit = "Bangalore";
+               // rfqCustomGroup.LastModifiedBy = "Admin";
+                //rfqCustomGroup.LastModifiedOn = DateTime.Now;
+                rfqCustomGroup.Unit = _unitname;
                 var result = await Create(rfqCustomGroup);
                 return result.Id;
             }
@@ -1568,7 +1605,7 @@ namespace Tips.SalesService.Api.Repository
 
             public async Task<string> UpdateRfqCustomGroup(RfqCustomGroup rfqCustomGroup)
             {
-                rfqCustomGroup.LastModifiedBy = "Admin";
+                rfqCustomGroup.LastModifiedBy = _createdBy;
                 rfqCustomGroup.LastModifiedOn = DateTime.Now;
                 Update(rfqCustomGroup);
                 string result = $"RfqCustomGroup Detail {rfqCustomGroup.Id} is updated successfully!";
@@ -1578,20 +1615,26 @@ namespace Tips.SalesService.Api.Repository
     public class RfqCustomFieldRepository : RepositoryBase<RfqCustomField>, IRfqCustomFieldRepository
         {
             private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-
-            public RfqCustomFieldRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public RfqCustomFieldRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
             {
                 _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
-            }
+        }
 
-            public async Task<int?> CreateRfqCustomField(RfqCustomField rfqCustomField)
+        public async Task<int?> CreateRfqCustomField(RfqCustomField rfqCustomField)
             {
-                rfqCustomField.CreatedBy = "Admin";
+                rfqCustomField.CreatedBy = _createdBy;
                 rfqCustomField.CreatedOn = DateTime.Now;
-                rfqCustomField.LastModifiedBy = "Admin";
-                rfqCustomField.LastModifiedOn = DateTime.Now;
-                rfqCustomField.Unit = "Bangalore";
+               // rfqCustomField.LastModifiedBy = "Admin";
+               // rfqCustomField.LastModifiedOn = DateTime.Now;
+                rfqCustomField.Unit = _unitname;
                 var result = await Create(rfqCustomField);
                 return result.Id;
             }
@@ -1625,7 +1668,7 @@ namespace Tips.SalesService.Api.Repository
 
             public async Task<string> UpdateRfqCustomField(RfqCustomField rfqCustomField)
             {
-                rfqCustomField.LastModifiedBy = "Admin";
+                rfqCustomField.LastModifiedBy = _createdBy;
                 rfqCustomField.LastModifiedOn = DateTime.Now;
                 Update(rfqCustomField);
                 string result = $"RfqCustomField Detail {rfqCustomField.Id} is updated successfully!";
@@ -1637,17 +1680,23 @@ namespace Tips.SalesService.Api.Repository
     public class RfqLPReleaseRepository : RepositoryBase<ReleaseLp>, IReleaseLpRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-
-        public RfqLPReleaseRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public RfqLPReleaseRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<ReleaseLp> BulkRelease(ReleaseLp releaseLp)
         {
-            releaseLp.CreatedBy = "Admin";
+            releaseLp.CreatedBy = _createdBy;
             releaseLp.CreatedOn = DateTime.Now;
-            releaseLp.Unit = "Bangalore";
+            releaseLp.Unit = _unitname;
             var result = await Create(releaseLp);
             return result;
         }

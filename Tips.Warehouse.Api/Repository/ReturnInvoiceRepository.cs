@@ -2,6 +2,7 @@
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 
@@ -9,16 +10,24 @@ namespace Tips.Warehouse.Api.Repository
 {
     public class ReturnInvoiceRepository : RepositoryBase<ReturnInvoice>, IReturnInvoiceRepository
     {
-        public ReturnInvoiceRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ReturnInvoiceRepository(TipsWarehouseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsWarehouseDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<long?> CreateReturnInvoice(ReturnInvoice returnInvoice)
         {
-            returnInvoice.CreatedBy = "Admin";
+            returnInvoice.CreatedBy = _createdBy;
             returnInvoice.CreatedOn = DateTime.Now;
-            returnInvoice.Unit = "Bangalore";
+            returnInvoice.Unit = _unitname;
             var result = await Create(returnInvoice);
             return result.Id;
         }
@@ -66,7 +75,7 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<string> UpdateReturnInvoice(ReturnInvoice returnInvoice)
         {
-            returnInvoice.LastModifiedBy = "Admin";
+            returnInvoice.LastModifiedBy = _createdBy;
             returnInvoice.LastModifiedOn = DateTime.Now;
             Update(returnInvoice);
             string result = $"returnInvoice details of {returnInvoice.Id} is updated successfully!";

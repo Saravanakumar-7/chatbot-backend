@@ -2,6 +2,7 @@
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
@@ -11,16 +12,24 @@ namespace Tips.Warehouse.Api.Repository
     public class ReturnBtoDeliveryOrderRepository : RepositoryBase<ReturnBtoDeliveryOrder>, IReturnBtoDeliveryOrderRepository
     {
         private TipsWarehouseDbContext _tipsWarehouseDbContext;
-        public ReturnBtoDeliveryOrderRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ReturnBtoDeliveryOrderRepository(TipsWarehouseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsWarehouseDbContext = repositoryContext;
+            var _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateReturnBtoDeliveryOrder(ReturnBtoDeliveryOrder returnBtoDeliveryOrder)
         {
-            returnBtoDeliveryOrder.CreatedBy = "Admin";
+            returnBtoDeliveryOrder.CreatedBy = _createdBy;
             returnBtoDeliveryOrder.CreatedOn = DateTime.Now;
-            returnBtoDeliveryOrder.Unit = "Bangalore";
+            returnBtoDeliveryOrder.Unit =_unitname;
             var result = await Create(returnBtoDeliveryOrder);
             return result.Id;
         }
@@ -64,7 +73,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<string> UpdateReturnBtoDeliveryOrder(ReturnBtoDeliveryOrder returnBtoDeliveryOrder)
         {
 
-            returnBtoDeliveryOrder.LastModifiedBy = "Admin";
+            returnBtoDeliveryOrder.LastModifiedBy = _createdBy;
             returnBtoDeliveryOrder.LastModifiedOn = DateTime.Now;
             Update(returnBtoDeliveryOrder);
             string result = $"returnBtoDeliveryOrder of Detail {returnBtoDeliveryOrder.Id} is updated successfully!";

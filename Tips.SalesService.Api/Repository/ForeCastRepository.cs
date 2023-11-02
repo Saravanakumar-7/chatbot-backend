@@ -14,6 +14,7 @@ using System.Collections.Immutable;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using System.Security.Claims;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -21,17 +22,24 @@ namespace Tips.SalesService.Api.Repository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
         private IMapper _mapper;
-        public ForeCastRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext,IMapper mapper) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ForeCastRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext,IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateForeCast(ForeCast foreCast)
         {
-            foreCast.CreatedBy = "Admin";
+            foreCast.CreatedBy = _createdBy;
             foreCast.CreatedOn = DateTime.Now;
-            foreCast.Unit = "Bangalore";
+            foreCast.Unit = _unitname;
             var result = await Create(foreCast);
             return result.Id;
         }
@@ -98,7 +106,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateForeCast(ForeCast foreCast)
         {
-            foreCast.LastModifiedBy = "Admin";
+            foreCast.LastModifiedBy = _createdBy;
             foreCast.LastModifiedOn = DateTime.Now;
             Update(foreCast);
             string result = $"ForeCast of Detail {foreCast.Id} is updated successfully!";
@@ -260,13 +268,13 @@ namespace Tips.SalesService.Api.Repository
             if (getOldForecastDetails != null)
             {
                 getOldForecastDetails.IsModified = true;
-                getOldForecastDetails.LastModifiedBy = "Admin";
+                getOldForecastDetails.LastModifiedBy = _createdBy;
                 getOldForecastDetails.LastModifiedOn = DateTime.Now;
                 Update(getOldForecastDetails);
             }
             forecast.CreatedBy = forecast.CreatedBy;
             forecast.CreatedOn = forecast.CreatedOn;
-            forecast.LastModifiedBy = "Admin";
+            forecast.LastModifiedBy = _createdBy;
             forecast.LastModifiedOn = DateTime.Now;
             var getOldRevisionNumber = _tipsSalesServiceDbContext.ForeCasts
                 .Where(x => x.ForeCastNumber == forecast.ForeCastNumber)
@@ -358,16 +366,23 @@ namespace Tips.SalesService.Api.Repository
     public class ForeCastCustomerSupportRepository : RepositoryBase<ForeCastCustomerSupport>, IForeCastCustomerSupportRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-        public ForeCastCustomerSupportRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ForeCastCustomerSupportRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateForeCastCustomerSupport(ForeCastCustomerSupport foreCastCustomerSupport)
         {
-            foreCastCustomerSupport.CreatedBy = "Admin";
+            foreCastCustomerSupport.CreatedBy = _createdBy;
             foreCastCustomerSupport.CreatedOn = DateTime.Now;
-            foreCastCustomerSupport.Unit = "Bangalore";
+            foreCastCustomerSupport.Unit = _unitname;
             var result = await Create(foreCastCustomerSupport);
             return result.Id;
         }
@@ -432,7 +447,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateForeCastCustomerSupport(ForeCastCustomerSupport foreCastCustomerSupport)
         {
-            foreCastCustomerSupport.LastModifiedBy = "Admin";
+            foreCastCustomerSupport.LastModifiedBy = _createdBy;
             foreCastCustomerSupport.LastModifiedOn = DateTime.Now;
             Update(foreCastCustomerSupport);
             string result = $"ForeCast of Detail {foreCastCustomerSupport.Id} is updated successfully!";
@@ -459,7 +474,7 @@ namespace Tips.SalesService.Api.Repository
         {
             foreCastCustomerSupport.CreatedBy = foreCastCustomerSupport.CreatedBy;
             foreCastCustomerSupport.CreatedOn = foreCastCustomerSupport.CreatedOn;
-            foreCastCustomerSupport.LastModifiedBy = "Admin";
+            foreCastCustomerSupport.LastModifiedBy = _createdBy;
             foreCastCustomerSupport.LastModifiedOn = DateTime.Now;
             //var getOldRevisionNumber = _tipsSalesServiceDbContext.ForeCastCustomerSupports
             //    .Where(x => x.ForecastNumber == foreCastCustomerSupport.ForecastNumber)
@@ -500,11 +515,16 @@ namespace Tips.SalesService.Api.Repository
     public class ForeCastCustomerSupportItemsRepository : RepositoryBase<ForeCastCustomerSupportItem>, IForeCastCustomerSupportItemRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-
-        public ForeCastCustomerSupportItemsRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ForeCastCustomerSupportItemsRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
-
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
         public async Task<List<int>> ForcastCsReleasedItemList(string forcastNumber)
         {
@@ -522,7 +542,7 @@ namespace Tips.SalesService.Api.Repository
         }
         public async Task<string> ActivateForeCastCustomerSupportItemById(ForeCastCustomerSupportItem foreCastCustomerSupportItem)
         {
-            foreCastCustomerSupportItem.LastModifiedBy = "Admin";
+            foreCastCustomerSupportItem.LastModifiedBy = _createdBy;
             foreCastCustomerSupportItem.LastModifiedOn = DateTime.Now;
             Update(foreCastCustomerSupportItem);
             string result = $"CostCenter details of {foreCastCustomerSupportItem.Id} is updated successfully!";
@@ -581,16 +601,23 @@ namespace Tips.SalesService.Api.Repository
     public class ForeCastEnggRepository : RepositoryBase<ForeCastEngg>, IForeCastEnggRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-        public ForeCastEnggRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ForeCastEnggRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateForeCastEngg(ForeCastEngg foreCastEngg)
         {
-            foreCastEngg.CreatedBy = "Admin";
+            foreCastEngg.CreatedBy = _createdBy;
             foreCastEngg.CreatedOn = DateTime.Now;
-            foreCastEngg.Unit = "Bangalore";
+            foreCastEngg.Unit = _unitname;
             var result = await Create(foreCastEngg);
             return result.Id;
         }
@@ -639,7 +666,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateForeCastEngg(ForeCastEngg foreCastEngg)
         {
-            foreCastEngg.LastModifiedBy = "Admin";
+            foreCastEngg.LastModifiedBy = _createdBy;
             foreCastEngg.LastModifiedOn = DateTime.Now;
             Update(foreCastEngg);
             string result = $"ForeCastEngg of Detail {foreCastEngg.Id} is updated successfully!";
@@ -651,18 +678,23 @@ namespace Tips.SalesService.Api.Repository
     public class ForeCastSourcingRepository : RepositoryBase<ForecastSourcing>, IForecastSourcingRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-
-        public ForeCastSourcingRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ForeCastSourcingRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
-
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateForeCastSourcing(ForecastSourcing forecastSourcing)
         {
-            forecastSourcing.CreatedBy = "Admin";
+            forecastSourcing.CreatedBy = _createdBy;
             forecastSourcing.CreatedOn = DateTime.Now;
-            forecastSourcing.Unit = "Bangalore";
+            forecastSourcing.Unit = _unitname;
             var result = await Create(forecastSourcing);
             return result.Id;
         }
@@ -698,7 +730,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateForeCastSourcing(ForecastSourcing forecastSourcing)
         {
-            forecastSourcing.LastModifiedBy = "Admin";
+            forecastSourcing.LastModifiedBy = _createdBy;
             forecastSourcing.LastModifiedOn = DateTime.Now;
             Update(forecastSourcing);
             string result = $"ForeCastSourcing of Detail {forecastSourcing.Id} is updated successfully!";
@@ -709,17 +741,23 @@ namespace Tips.SalesService.Api.Repository
     public class ForecastLpCostingRepository : RepositoryBase<ForecastLpCosting>, IForecastLpCostingRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-
-        public ForecastLpCostingRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ForecastLpCostingRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateForecastLpCosting(ForecastLpCosting forecastLpCosting)
         {
-            forecastLpCosting.CreatedBy = "Admin";
+            forecastLpCosting.CreatedBy = _createdBy;
             forecastLpCosting.CreatedOn = DateTime.Now;
-            forecastLpCosting.Unit = "Bangalore";
+            forecastLpCosting.Unit = _unitname;
             var result = await Create(forecastLpCosting);
             return result.Id;
         }
@@ -772,7 +810,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateForecastLpCosting(ForecastLpCosting forecastLpCosting)
         {
-            forecastLpCosting.LastModifiedBy = "Admin";
+            forecastLpCosting.LastModifiedBy = _createdBy;
             forecastLpCosting.LastModifiedOn = DateTime.Now;
             Update(forecastLpCosting);
             string result = $"forecastLpCosting of Detail {forecastLpCosting.Id} is updated successfully!";
@@ -783,17 +821,23 @@ namespace Tips.SalesService.Api.Repository
     public class ForeCastCustomGroupRepository : RepositoryBase<ForeCastCustomGroup>, IForeCastCustomGroupRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-
-        public ForeCastCustomGroupRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ForeCastCustomGroupRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateForeCastCustomGroup(ForeCastCustomGroup foreCastCustomGroup)
         {
-            foreCastCustomGroup.CreatedBy = "Admin";
+            foreCastCustomGroup.CreatedBy = _createdBy;
             foreCastCustomGroup.CreatedOn = DateTime.Now;
-            foreCastCustomGroup.Unit = "Banglore";
+            foreCastCustomGroup.Unit = _unitname;
             var result = await Create(foreCastCustomGroup);
             return result.Id;
         }
@@ -837,7 +881,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateForeCastCustomGroup(ForeCastCustomGroup foreCastCustomGroup)
         {
-            foreCastCustomGroup.LastModifiedBy = "Admin";
+            foreCastCustomGroup.LastModifiedBy = _createdBy;
             foreCastCustomGroup.LastModifiedOn = DateTime.Now;
             Update(foreCastCustomGroup);
             string result = $"ForeCastCustomGroup Detail {foreCastCustomGroup.Id} is updated successfully!";
@@ -848,17 +892,24 @@ namespace Tips.SalesService.Api.Repository
     public class ForeCastCustomFieldRepository : RepositoryBase<ForeCastCustomField>, IForeCastCustomFieldRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
 
-        public ForeCastCustomFieldRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        public ForeCastCustomFieldRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateForeCastCustomField(ForeCastCustomField foreCastCustomField)
         {
-            foreCastCustomField.CreatedBy = "Admin";
+            foreCastCustomField.CreatedBy = _createdBy;
             foreCastCustomField.CreatedOn = DateTime.Now;
-            foreCastCustomField.Unit = "Banglore";
+            foreCastCustomField.Unit = _unitname;
             var result = await Create(foreCastCustomField);
             return result.Id;
         }
@@ -894,7 +945,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateForeCastCustomField(ForeCastCustomField foreCastCustomField)
         {
-            foreCastCustomField.LastModifiedBy = "Admin";
+            foreCastCustomField.LastModifiedBy = _createdBy;
             foreCastCustomField.LastModifiedOn = DateTime.Now;
             Update(foreCastCustomField);
             string result = $"ForeCastCustomField Detail {foreCastCustomField.Id} is updated successfully!";
@@ -905,17 +956,24 @@ namespace Tips.SalesService.Api.Repository
     public class ForeCastLPReleaseRepository : RepositoryBase<ForeCastReleaseLp>, IForeCastReleaseLpRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
 
-        public ForeCastLPReleaseRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        public ForeCastLPReleaseRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<ForeCastReleaseLp> BulkRelease(ForeCastReleaseLp foreCastReleaseLp)
         {
-            foreCastReleaseLp.CreatedBy = "Admin";
+            foreCastReleaseLp.CreatedBy = _createdBy;
             foreCastReleaseLp.CreatedOn = DateTime.Now;
-            foreCastReleaseLp.Unit = "Bangalore";
+            foreCastReleaseLp.Unit = _unitname;
             var result = await Create(foreCastReleaseLp);
             return result;
         }

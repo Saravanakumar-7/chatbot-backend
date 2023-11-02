@@ -491,8 +491,8 @@ namespace Tips.Warehouse.Api.Controllers
                         openDeliveryOrderHistory.SerialNo = openDeliveryOrderItemsDtoList[i].SerialNo;
                         openDeliveryOrderHistory.Unit = openDeliveryOrderItemsDtoList[i].SerialNo;
                         openDeliveryOrderHistory.UniqeId = openDeliveryOrderItemsDtoList[i].SerialNo;
-                        openDeliveryOrderHistory.CreatedBy = openDeliveryOrderItemsDtoList[i].CreatedBy;
-                        openDeliveryOrderHistory.LastModifiedOn = openDeliveryOrderItemsDtoList[i].LastModifiedOn;
+                        //openDeliveryOrderHistory.CreatedBy = openDeliveryOrderItemsDtoList[i].CreatedBy;
+                        //openDeliveryOrderHistory.LastModifiedOn = openDeliveryOrderItemsDtoList[i].LastModifiedOn;
                         openDeliveryOrderHistory.Remark = "From Create ODO";
 
                         var openDeliveryOrderHistoryDetails = _mapper.Map<OpenDeliveryOrderHistory>(openDeliveryOrderHistory);

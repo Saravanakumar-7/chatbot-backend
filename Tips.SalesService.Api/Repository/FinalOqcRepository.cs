@@ -5,24 +5,30 @@ using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Tips.SalesService.Api.Repository
 {
     public class FinalOqcRepository : RepositoryBase<FinalOqc>, IFinalOqcRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-
-        public FinalOqcRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public FinalOqcRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
-
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateFinalOqc(FinalOqc finalOqc)
         {
-            finalOqc.CreatedBy = "Admin";
+            finalOqc.CreatedBy = _createdBy;
             finalOqc.CreatedOn = DateTime.Now;
-            finalOqc.Unit = "Bangalore";
+            finalOqc.Unit = _unitname;
             var result = await Create(finalOqc);           
             return result.Id;
         }
@@ -60,7 +66,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateFinalOqc(FinalOqc finalOqc)
         {
-            finalOqc.LastModifiedBy = "Admin";
+            finalOqc.LastModifiedBy = _createdBy;
             finalOqc.LastModifiedOn = DateTime.Now;
             Update(finalOqc);
             string result = $"fgOqc of Detail {finalOqc.Id} is updated successfully!";

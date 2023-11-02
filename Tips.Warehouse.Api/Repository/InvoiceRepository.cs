@@ -7,6 +7,7 @@ using Entities.Helper;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Tips.Warehouse.Api.Entities.DTOs;
+using System.Security.Claims;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -14,21 +15,27 @@ namespace Tips.Warehouse.Api.Repository
     {
         private TipsWarehouseDbContext _tipsWarehouseDbContext;
 
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
 
-
-    public InvoiceRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        public InvoiceRepository(TipsWarehouseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
     {
             _tipsWarehouseDbContext = repositoryContext;
-    }
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+        }
 
     public async Task<long?> CreateInvoice(Invoice invoice)
         {
             var date = DateTime.Now;
-        invoice.CreatedBy = "Admin";
+        invoice.CreatedBy = _createdBy;
         invoice.CreatedOn = date.Date;
         //Guid invoiceNumber = Guid.NewGuid();
         //invoice.InvoiceNo = " IN-" + invoiceNumber.ToString();
-        invoice.Unit = "Bangalore";
+        invoice.Unit = _unitname;
         var result = await Create(invoice);
         return result.Id;
         }
@@ -170,7 +177,7 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<string> UpdateInvoice(Invoice invoice)
         {
-        invoice.LastModifiedBy = "Admin";
+        invoice.LastModifiedBy = _createdBy;
         invoice.LastModifiedOn = DateTime.Now;
         Update(invoice);
         string result = $"Invoice details of {invoice.Id} is updated successfully!";

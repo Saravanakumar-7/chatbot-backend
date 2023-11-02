@@ -10,22 +10,31 @@ using Entities;
 using Entities.Helper;
 using Org.BouncyCastle.Ocsp;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Tips.SalesService.Api.Repository
 {
     public class MaterialTransactionNoteRepository : RepositoryBase<MaterialTransactionNote>, IMaterialTransactionNoteRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-        public MaterialTransactionNoteRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public MaterialTransactionNoteRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateMaterialTransactionNote(MaterialTransactionNote mtn)
         {
-            mtn.CreatedBy = "Admin";
+            mtn.CreatedBy = _createdBy;
             mtn.CreatedOn = DateTime.Now;
-            mtn.Unit = "Bangalore";
+            mtn.Unit = _unitname;
             var result = await Create(mtn);
             return result.Id;
         }
@@ -58,7 +67,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateMaterialTransactionNote(MaterialTransactionNote mtn)
         {
-            mtn.LastModifiedBy = "Admin";
+            mtn.LastModifiedBy = _createdBy;
             mtn.LastModifiedOn = DateTime.Now;
             Update(mtn);
             string result = $"MaterialTransactionNote of Detail {mtn.Id} is updated successfully!";

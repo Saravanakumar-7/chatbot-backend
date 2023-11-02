@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Security.Claims;
 using AutoMapper;
 using Contracts;
 using Entities;
@@ -22,7 +23,9 @@ namespace Tips.Warehouse.Api.Controllers
         private IOpenDeliveryOrderPartsRepository _openDeliveryOrderPartsRepository;
         private IReturnOpenDeliveryOrderPartsRepository _returnOpenDeliveryOrderPartsRepository;
         private IInventoryTranctionRepository _inventoryTranctionRepository;
-
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
@@ -31,7 +34,7 @@ namespace Tips.Warehouse.Api.Controllers
         public ReturnOpenDeliveryOrderController(IReturnOpenDeliveryOrderRepository repository, 
             IInventoryTranctionRepository inventoryTranctionRepository, IOpenDeliveryOrderHistoryRepository openDeliveryOrderHistoryRepository,
             IOpenDeliveryOrderPartsRepository openDeliveryOrderPartsRepository,IReturnOpenDeliveryOrderPartsRepository returnOpenDeliveryOrderPartsRepository
-            , IInventoryRepository inventoryRepository, HttpClient httpClient, 
+            , IInventoryRepository inventoryRepository, HttpClient httpClient, IHttpContextAccessor httpContextAccessor, 
             IConfiguration config, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
@@ -44,6 +47,11 @@ namespace Tips.Warehouse.Api.Controllers
             _openDeliveryOrderHistoryRepository = openDeliveryOrderHistoryRepository;
             _inventoryTranctionRepository = inventoryTranctionRepository;
             _returnOpenDeliveryOrderPartsRepository = returnOpenDeliveryOrderPartsRepository;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         [HttpGet]
@@ -308,7 +316,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTranction.Issued_DateTime = DateTime.Now;
                         inventoryTranction.ReferenceID = returnOpenDeliveryOrderParts.ODONumber;
                         inventoryTranction.ReferenceIDFrom = "Return ODO Delivery Order";
-                        inventoryTranction.Issued_By = "Admin";
+                        inventoryTranction.Issued_By = _createdBy;
                         inventoryTranction.From_Location = "BTO";
                         inventoryTranction.TO_Location = "FG";
                         inventoryTranction.Remarks = "Return BTO";
@@ -357,7 +365,7 @@ namespace Tips.Warehouse.Api.Controllers
                         openDeliveryOrderHistory.IssuedTo = returnOpenDeliveryOrder.IssuedTo;
                         openDeliveryOrderHistory.ODOType = returnOpenDeliveryOrder.ODOType;
                         openDeliveryOrderHistory.ODODate = Convert.ToDateTime(returnOpenDeliveryOrder.ODODate);
-                        openDeliveryOrderHistory.Unit = "Bangalore";
+                        openDeliveryOrderHistory.Unit = _unitname;
 
                         openDeliveryOrderHistory.ItemNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
                         openDeliveryOrderHistory.ItemDescription = returnOpenDeliveryOrderPartsDtoList[i].Description;                        
@@ -373,8 +381,8 @@ namespace Tips.Warehouse.Api.Controllers
                         openDeliveryOrderHistory.SerialNo = returnSerialNumber;
                         openDeliveryOrderHistory.DispatchQty = ReturnQty;
                         openDeliveryOrderHistory.UniqeId = guid.ToString();
-                        openDeliveryOrderHistory.CreatedOn = Convert.ToDateTime(returnOpenDeliveryOrder.CreatedOn);
-                        openDeliveryOrderHistory.CreatedBy = "Admin";
+                        //openDeliveryOrderHistory.CreatedOn = Convert.ToDateTime(returnOpenDeliveryOrder.CreatedOn);
+                        //openDeliveryOrderHistory.CreatedBy = "Admin";
 
                         var openDeliveryOrderHistoryDetails = _mapper.Map<OpenDeliveryOrderHistory>(openDeliveryOrderHistory);
 
