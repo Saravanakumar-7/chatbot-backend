@@ -47,12 +47,12 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllOpenDeliveryOrderHistoryDetails([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllOpenDeliveryOrderHistoryDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             ServiceResponse<IEnumerable<OpenDeliveryOrderHistory>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderHistory>>();
             try
             {
-                var openDeliveryOrderHistoryDetails = await _openDeliveryOrderHistoryRepository.GetAllOpenDeliveryOrderHistoryDetails(pagingParameter);
+                var openDeliveryOrderHistoryDetails = await _openDeliveryOrderHistoryRepository.GetAllOpenDeliveryOrderHistoryDetails(pagingParameter, searchParams);
                 var metadata = new
                 {
                     openDeliveryOrderHistoryDetails.TotalCount,
@@ -312,7 +312,16 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTranction.From_Location = "BTO";
                         inventoryTranction.TO_Location = "FG";
                         inventoryTranction.Remarks = "Return BTO";
-
+                        inventoryTranction.Warehouse = returnOpenDeliveryOrderPartsDtoList[i].Warehouse;
+                        inventoryTranction.PartType = returnOpenDeliveryOrderPartsDtoList[i].ItemType;
+                        if (returnOpenDeliveryOrderPartsDtoList[i].StockAvailable != null)
+                        {
+                            inventoryTranction.IsStockAvailable = true;
+                        }
+                        else
+                        {
+                            inventoryTranction.IsStockAvailable = false;
+                        }
 
                         var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
@@ -320,7 +329,7 @@ namespace Tips.Warehouse.Api.Controllers
                         _inventoryTranctionRepository.SaveAsync();
 
                         //update Dispatch Qty in Open Delivery Order Table
-                        int getODOPartsId = returnOpenDeliveryOrderPartsDtoList[i].ReturnOpenDeliveryOrderId;
+                        int getODOPartsId = returnOpenDeliveryOrderPartsDto[i].ODOPartId;
                         var getOpenDeliveryOrderPartsDetails = await _openDeliveryOrderPartsRepository.GetOpenDelieveryOrderPartDetails(getODOPartsId);
                         //getBtoDeliveryOrderDetails.BalanceDoQty -= ReturnQty;
                         //getBtoDeliveryOrderDetails.OrderBalanceQty += ReturnQty;

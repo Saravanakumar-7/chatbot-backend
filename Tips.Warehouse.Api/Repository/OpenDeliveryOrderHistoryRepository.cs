@@ -26,9 +26,11 @@ namespace Tips.Warehouse.Api.Repository
             return result.Id;
         }
 
-        public async Task<PagedList<OpenDeliveryOrderHistory>> GetAllOpenDeliveryOrderHistoryDetails(PagingParameter pagingParameter)
+        public async Task<PagedList<OpenDeliveryOrderHistory>> GetAllOpenDeliveryOrderHistoryDetails(PagingParameter pagingParameter,SearchParams searchParams)
         {
-            var odo = await _tipsWarehouseDbContext.ReturnOpenDeliveryOrders
+            var odo = await _tipsWarehouseDbContext.ReturnOpenDeliveryOrders.Where(odo => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || odo.CustomerId.Contains(searchParams.SearchValue) ||
+                odo.CustomerAliasName.Contains(searchParams.SearchValue) || odo.CustomerName.Contains(searchParams.SearchValue)
+                || odo.Description.Contains(searchParams.SearchValue))))
               .FirstOrDefaultAsync();
 
             var getAllOpenDetails = PagedList<OpenDeliveryOrderHistory>.ToPagedList(FindAll()
