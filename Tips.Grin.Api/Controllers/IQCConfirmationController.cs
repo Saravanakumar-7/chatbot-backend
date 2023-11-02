@@ -544,6 +544,13 @@ namespace Tips.Grin.Api.Controllers
                     var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
 
                     //Inventory Update Code
+                    var tokenValue = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                    if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
+                    {
+                        var token = tokenValue.Substring(7);
+                        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
+                    var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), datas);
                     decimal acceptedQty = iQCDto[i].AcceptedQty;
                     foreach (var projectNo in grinPartsDetails.ProjectNumbers)
                     {

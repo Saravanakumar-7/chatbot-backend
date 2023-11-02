@@ -371,8 +371,8 @@ namespace Tips.Grin.Api.Repository
         {
             documentUpload.CreatedBy = _createdBy;
             documentUpload.CreatedOn = DateTime.Now;
-            documentUpload.LastModifiedBy = _createdBy;
-            documentUpload.LastModifiedOn = DateTime.Now;
+           // documentUpload.LastModifiedBy = _createdBy;
+           // documentUpload.LastModifiedOn = DateTime.Now;
 
             var result = await Create(documentUpload);
             return result.Id;
