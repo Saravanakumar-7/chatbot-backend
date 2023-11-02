@@ -2,6 +2,7 @@
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
@@ -12,26 +13,34 @@ namespace Tips.SalesService.Api.Repository
     public class ItemPriceListRepository : RepositoryBase<ItemPriceList>, IItemPriceListRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-        public ItemPriceListRepository(TipsSalesServiceDbContext repositoryContext) : base(repositoryContext)
+
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ItemPriceListRepository(TipsSalesServiceDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsSalesServiceDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<long> CreateItemPriceList(ItemPriceList itemPriceList)
         {
 
-            itemPriceList.CreatedBy = "Admin";
+            itemPriceList.CreatedBy = _createdBy;
             itemPriceList.CreatedOn = DateTime.Now;
-            itemPriceList.Unit = "Banglore";
+            itemPriceList.Unit = _unitname;
             var result = await Create(itemPriceList);
             return result.Id;
         }
 
         public async Task<ItemPriceList> CreateFromReleaseLp(ItemPriceList itemPriceList)
         {
-            itemPriceList.CreatedBy = "Admin";
+            itemPriceList.CreatedBy = _createdBy;
             itemPriceList.CreatedOn = DateTime.Now;
-            itemPriceList.Unit = "Bangalore";
+            itemPriceList.Unit = _unitname;
             var result = await Create(itemPriceList);
             return result;
         }
@@ -134,7 +143,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateItemPriceList(ItemPriceList itemPriceList)
         {
-            itemPriceList.LastModifiedBy = "Admin";
+            itemPriceList.LastModifiedBy = _createdBy;
             itemPriceList.LastModifiedOn = DateTime.Now;
             Update(itemPriceList);
             string result = $"ItemPriceList details of {itemPriceList.Id} is updated successfully!";

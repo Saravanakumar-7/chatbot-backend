@@ -27,8 +27,8 @@ namespace Tips.Production.Api.Repository
 
         public async Task<long> CreateFGShopOrderMaterialIssue(FGShopOrderMaterialIssue fGShopOrderMaterialIssue)
         {
-            fGShopOrderMaterialIssue.LastModifiedBy = _createdBy;
-            fGShopOrderMaterialIssue.LastModifiedOn = DateTime.Now;
+            //fGShopOrderMaterialIssue.LastModifiedBy = _createdBy;
+            //fGShopOrderMaterialIssue.LastModifiedOn = DateTime.Now;
             fGShopOrderMaterialIssue.CreatedBy = _createdBy;
             fGShopOrderMaterialIssue.CreatedOn = DateTime.Now;
             fGShopOrderMaterialIssue.Unit = _unitname;

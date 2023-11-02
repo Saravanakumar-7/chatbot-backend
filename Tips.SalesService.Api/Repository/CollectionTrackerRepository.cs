@@ -1,7 +1,9 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
@@ -12,16 +14,23 @@ namespace Tips.SalesService.Api.Repository
     public class CollectionTrackerRepository : RepositoryBase<CollectionTracker>, ICollectionTrackerRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-        public CollectionTrackerRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public CollectionTrackerRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateCollectionTracker(CollectionTracker collectionTracker)
         {
-            collectionTracker.CreatedBy = "Admin";
+            collectionTracker.CreatedBy = _createdBy;
             collectionTracker.CreatedOn = DateTime.Now;
-            collectionTracker.Unit = "Bangalore";
+            collectionTracker.Unit = _unitname;
             var result = await Create(collectionTracker);
             return result.Id;
         }
@@ -227,7 +236,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateCollectionTracker(CollectionTracker collectionTracker)
         {
-            collectionTracker.LastModifiedBy = "Admin";
+            collectionTracker.LastModifiedBy = _createdBy;
             collectionTracker.LastModifiedOn = DateTime.Now;
             Update(collectionTracker);
             string result = $"CollectionTracker details of {collectionTracker.Id} is updated successfully!";

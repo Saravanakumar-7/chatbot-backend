@@ -30,8 +30,8 @@ namespace Tips.Production.Api.Repository
 
         public async Task<long> CreateSAShopOrder(SAShopOrder sAShopOrder)
         {
-            sAShopOrder.LastModifiedBy = _createdBy;
-            sAShopOrder.LastModifiedOn = DateTime.Now;
+           // sAShopOrder.LastModifiedBy = _createdBy;
+            //sAShopOrder.LastModifiedOn = DateTime.Now;
             sAShopOrder.CreatedBy = _createdBy;
             sAShopOrder.CreatedOn = DateTime.Now;
             sAShopOrder.Unit = _unitname;

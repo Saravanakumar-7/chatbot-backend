@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using AutoMapper;
 using Contracts;
@@ -35,6 +36,8 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
         public ReturnBtoDeliveryOrderController(IReturnBtoDeliveryOrderRepository repository, IInventoryTranctionRepository inventoryTranctionRepository , IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository , IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryRepository inventoryRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
@@ -47,7 +50,9 @@ namespace Tips.Warehouse.Api.Controllers
             _bTODeliveryOrderHistoryRepository = bTODeliveryOrderHistoryRepository;
             _inventoryTranctionRepository = inventoryTranctionRepository;
             _httpContextAccessor = httpContextAccessor;
-
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         [HttpGet]
@@ -430,7 +435,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTranction.Issued_DateTime = DateTime.Now;
                         inventoryTranction.ReferenceID = returnBtoDeliveryOrderItems.BTONumber;
                         inventoryTranction.ReferenceIDFrom = "Return BTO Delivery Order";
-                        inventoryTranction.Issued_By = "Admin";    
+                        inventoryTranction.Issued_By = _createdBy;    
                         inventoryTranction.From_Location = "BTO";
                         inventoryTranction.TO_Location = "FG";
                         inventoryTranction.Remarks = "Return BTO";

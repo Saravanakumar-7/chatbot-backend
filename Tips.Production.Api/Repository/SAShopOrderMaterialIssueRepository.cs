@@ -27,8 +27,8 @@ namespace Tips.Production.Api.Repository
 
         public async Task<long> CreateSAShopOrderMaterialIssue(SAShopOrderMaterialIssue sAShopOrderMaterialIssue)
         {
-            sAShopOrderMaterialIssue.LastModifiedBy = _createdBy;
-            sAShopOrderMaterialIssue.LastModifiedOn = DateTime.Now;
+           // sAShopOrderMaterialIssue.LastModifiedBy = _createdBy;
+           // sAShopOrderMaterialIssue.LastModifiedOn = DateTime.Now;
             sAShopOrderMaterialIssue.CreatedBy = _createdBy;
             sAShopOrderMaterialIssue.CreatedOn = DateTime.Now;
             sAShopOrderMaterialIssue.Unit = _unitname;

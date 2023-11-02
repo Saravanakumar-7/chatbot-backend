@@ -17,16 +17,23 @@ namespace Tips.Purchase.Api.Repository
     public class POCollectionTrackerRepository : RepositoryBase<POCollectionTracker>, IPOCollectionTrackerRepository
     {
         private TipsPurchaseDbContext _tipsPurchaseDbContext;
-        public POCollectionTrackerRepository(TipsPurchaseDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public POCollectionTrackerRepository(TipsPurchaseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsPurchaseDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreatePOCollectionTracker(POCollectionTracker pocollectionTracker)
         {
-            pocollectionTracker.CreatedBy = "Admin";
+            pocollectionTracker.CreatedBy =_createdBy;
             pocollectionTracker.CreatedOn = DateTime.Now;
-            pocollectionTracker.Unit = "Bangalore";
+            pocollectionTracker.Unit = _unitname;
             var result = await Create(pocollectionTracker);
             return result.Id;
         }
@@ -192,7 +199,7 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<string> UpdatePOCollectionTracker(POCollectionTracker pocollectionTracker)
         {
-            pocollectionTracker.LastModifiedBy = "Admin";
+            pocollectionTracker.LastModifiedBy = _createdBy;
             pocollectionTracker.LastModifiedOn = DateTime.Now;
             Update(pocollectionTracker);
             string result = $"POCollectionTracker details of {pocollectionTracker.Id} is updated successfully!";

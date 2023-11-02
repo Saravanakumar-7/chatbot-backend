@@ -627,8 +627,8 @@ namespace Tips.Warehouse.Api.Controllers
                         bTODeliveryOrderHistory.DispatchQty = bTODoItemList[i].DispatchQty;
                         bTODeliveryOrderHistory.InvoicedQty = bTODoItemList[i].InvoicedQty;
                         bTODeliveryOrderHistory.SerialNo = bTODoItemList[i].SerialNo;
-                        bTODeliveryOrderHistory.CreatedBy = bTODoItemList[i].CreatedBy;
-                        bTODeliveryOrderHistory.LastModifiedOn = bTODoItemList[i].LastModifiedOn;
+                        //bTODeliveryOrderHistory.CreatedBy = bTODoItemList[i].CreatedBy;
+                        //bTODeliveryOrderHistory.LastModifiedOn = bTODoItemList[i].LastModifiedOn;
                         bTODeliveryOrderHistory.Remark = "From Create BTO";
 
 

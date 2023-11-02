@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using AutoMapper;
 using Contracts;
@@ -33,7 +34,8 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
-
+        private readonly String _createdBy;
+        private readonly String _unitname;
         public InvoiceController(IInvoiceRepository invoiceRepository, IInventoryTranctionRepository inventoryTranctionRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _invoiceRepository = invoiceRepository;
@@ -44,6 +46,10 @@ namespace Tips.Warehouse.Api.Controllers
             _config = config;
             _bTODeliveryOrderItemsRepository = bTODeliveryOrderItemsRepository;
             _httpContextAccessor = httpContextAccessor;
+            
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
 
@@ -506,7 +512,7 @@ namespace Tips.Warehouse.Api.Controllers
             inventoryTranction.Issued_DateTime = DateTime.Now;
             inventoryTranction.ReferenceID = invoice.InvoiceNumber;
             inventoryTranction.ReferenceIDFrom = "Invoice Delivery Order";
-            inventoryTranction.Issued_By = "Admin";
+            inventoryTranction.Issued_By = _createdBy;
             inventoryTranction.CreatedOn = DateTime.Now;
             inventoryTranction.From_Location = "BTO";
             inventoryTranction.TO_Location = "Invoice";

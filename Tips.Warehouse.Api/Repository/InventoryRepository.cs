@@ -19,6 +19,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using Entities.Enums;
 using System.Collections;
+using System.Security.Claims;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -27,12 +28,18 @@ namespace Tips.Warehouse.Api.Repository
         private readonly string _connectionString;
         private readonly MySqlConnection _connection;
         private TipsWarehouseDbContext _tipsWarehouseDbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
 
-
-        public InventoryRepository(TipsWarehouseDbContext repositoryContext, MySqlConnection connection) : base(repositoryContext)
+        public InventoryRepository(TipsWarehouseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor, MySqlConnection connection) : base(repositoryContext)
         {
             _connection = connection;
             _tipsWarehouseDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
         public async Task<IEnumerable<Inventory>> SearchInventoryDetailsWithSumOfStock(InventoryItemNo inventoryItemNo)
         {
@@ -346,9 +353,9 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<int?> CreateInventory(Inventory inventory)
         {
-            inventory.CreatedBy = "Admin";
+            inventory.CreatedBy = _createdBy;
             inventory.CreatedOn = DateTime.Now;
-            inventory.Unit = "Bangalore"; 
+            inventory.Unit = _unitname; 
             var result = await Create(inventory);
 
             return result.Id;
@@ -680,7 +687,7 @@ namespace Tips.Warehouse.Api.Repository
          
         public async Task<string> UpdateInventory(Inventory inventory)
         {
-            inventory.LastModifiedBy = "Admin";
+            inventory.LastModifiedBy = _createdBy;
             inventory.LastModifiedOn = DateTime.Now;
             Update(inventory);
             string result = $"materialIssue of Detail {inventory.Id} is updated successfully!";

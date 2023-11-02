@@ -90,9 +90,9 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<Quote> ChangeQuoteVersion(Quote quote)
         {
-            quote.CreatedBy = "Admin";
+            quote.CreatedBy = _createdBy;
             quote.CreatedOn = DateTime.Now;            
-            quote.Unit = "Bangalore";
+            quote.Unit = _unitname;
             var getIdByRfqNumber = _tipsSalesServiceDbContext.Quotes
                 .Where(x => x.RFQNumber == quote.RFQNumber)
                 .OrderByDescending(x => x.Id)
@@ -413,8 +413,8 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateQuote(Quote quote)
         {
-            quote.CreatedBy = quote.CreatedBy;
-            quote.CreatedOn = quote.CreatedOn;
+            //quote.CreatedBy = quote.CreatedBy;
+            //quote.CreatedOn = quote.CreatedOn;
             quote.LastModifiedBy = _createdBy;
             quote.LastModifiedOn = DateTime.Now;
             Update(quote);

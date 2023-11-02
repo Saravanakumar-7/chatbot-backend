@@ -12,10 +12,10 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<long> CreatePoConfirmationHistory(PoConfirmationHistory poConfirmationHistory)
         {
-            poConfirmationHistory.CreatedBy = "Admin";
-            poConfirmationHistory.CreatedOn = DateTime.Now;
-            poConfirmationHistory.LastModifiedBy = "Admin";
-            poConfirmationHistory.LastModifiedOn = DateTime.Now;
+           // poConfirmationHistory.CreatedBy = "Admin";
+            //poConfirmationHistory.CreatedOn = DateTime.Now;
+           // poConfirmationHistory.LastModifiedBy = "Admin";
+          //  poConfirmationHistory.LastModifiedOn = DateTime.Now;
             var result = await Create(poConfirmationHistory);
             return result.Id;
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
@@ -11,23 +12,30 @@ namespace Tips.Warehouse.Api.Repository
     {
         private readonly string _connectionString;
         private readonly MySqlConnection _connection;
-        public MaterialIssueTrackerRepository(TipsWarehouseDbContext repositoryContext, MySqlConnection connection) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public MaterialIssueTrackerRepository(TipsWarehouseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor, MySqlConnection connection) : base(repositoryContext)
         {
             _connection = connection;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
         public async Task<long?> CreateMaterialIssueTracker(ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker)
         {
             var date = DateTime.Now;
-            shopOrderMaterialIssueTracker.CreatedBy = "Admin";
+            shopOrderMaterialIssueTracker.CreatedBy = _createdBy;
             shopOrderMaterialIssueTracker.CreatedOn = date.Date;  
             var result = await Create(shopOrderMaterialIssueTracker);
             return result.Id;
         }
         public async Task<int> AddDataToMaterialIssueTracker(ShopOrderMaterialIssueTracker shopOrderMaterialIssue)
         {
-            shopOrderMaterialIssue.CreatedBy = "Admin";
+            shopOrderMaterialIssue.CreatedBy = _createdBy;
             shopOrderMaterialIssue.CreatedOn = DateTime.Now;
-            shopOrderMaterialIssue.Unit = "Bangalore";
+            shopOrderMaterialIssue.Unit = _unitname;
             var result = await Create(shopOrderMaterialIssue);
 
             return result.Id;

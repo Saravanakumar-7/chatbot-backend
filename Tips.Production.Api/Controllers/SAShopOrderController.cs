@@ -193,10 +193,10 @@ namespace Tips.Production.Api.Controllers
                             materialIssueItem.RequiredQty = (bom.quantity * SaShopOrder.TotalSOReleaseQty);
                             materialIssueItem.IssuedQty = 0;
                             materialIssueItem.MaterialIssuedStatus = IssuedStatus.Open;
-                            materialIssueItem.CreatedBy = "Admin";
-                            materialIssueItem.CreatedOn = DateTime.Now;
-                            materialIssueItem.LastModifiedBy = "Admin";
-                            materialIssueItem.LastModifiedOn = DateTime.Now;
+                            //materialIssueItem.CreatedBy = "Admin";
+                            //materialIssueItem.CreatedOn = DateTime.Now;
+                            //materialIssueItem.LastModifiedBy = "Admin";
+                            //materialIssueItem.LastModifiedOn = DateTime.Now;
                             materialIssueItemList.Add(materialIssueItem);
                         }
 
@@ -212,10 +212,10 @@ namespace Tips.Production.Api.Controllers
                                 RequiredQty = group.Sum(item => item.RequiredQty),
                                 IssuedQty = 0, // Assuming IssuedQty remains 0 for grouped items
                                 MaterialIssuedStatus = IssuedStatus.Open,
-                                CreatedBy = "Admin",
-                                CreatedOn = DateTime.Now,
-                                LastModifiedBy = "Admin",
-                                LastModifiedOn = DateTime.Now
+                                //CreatedBy = "Admin",
+                                //CreatedOn = DateTime.Now,
+                                //LastModifiedBy = "Admin",
+                                //LastModifiedOn = DateTime.Now
                             })
                             .ToList();
                         materialIssue.materialIssueItems = groupedMaterialIssueItems;

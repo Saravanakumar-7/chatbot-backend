@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using AutoMapper;
@@ -36,8 +37,11 @@ namespace Tips.SalesService.Api.Controllers
         private ISalesOrderHistoryRepository _salesOrderHistory;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
         public SalesOrderController(ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository,IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
-            ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository,
+            ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, IHttpContextAccessor httpContextAccessor,
             ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
@@ -50,6 +54,10 @@ namespace Tips.SalesService.Api.Controllers
             _soConfirmationDateHistoryRepository = soConfirmationDateHistoryRepository;
             _httpClient = httpClient;
             _config = config;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         // GET: api/<SalesOrderController>
@@ -789,9 +797,9 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-
+                //
                 salesOrderShortCloseById.IsShortClosed = true;
-                salesOrderShortCloseById.ShortClosedBy = "Admin";
+                salesOrderShortCloseById.ShortClosedBy = _createdBy;
                 salesOrderShortCloseById.ShortClosedOn = DateTime.Now;
                 string result = await _repository.UpdateSalesOrder(salesOrderShortCloseById);
                 _repository.SaveAsync();

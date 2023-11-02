@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using AutoMapper;
 using Azure;
@@ -44,9 +45,10 @@ namespace Tips.Purchase.Api.Controllers
         private IPRItemsDocumentUploadRepository _pRItemsDocumentUploadRepository;
         private IConfiguration _config;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
-
-
-        public PurchaseOrderController(IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IPoConfirmationDateRepository poConfirmationDateRepository,IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public PurchaseOrderController(IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository,IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
             _poItemsRepository = poItemsRepository;
@@ -60,6 +62,10 @@ namespace Tips.Purchase.Api.Controllers
             _poConfirmationDateRepository = poConfirmationDateRepository;
             _pRItemsDocumentUploadRepository = pRItemsDocumentUploadRepository;
             _config = config;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         [HttpGet]
@@ -1802,9 +1808,9 @@ namespace Tips.Purchase.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"PurchaseOrderApprovalII with string: {PONumber}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
-                }
+                }//
                 purchaseOrderDetailByPONumber.POApprovalII = true;
-                purchaseOrderDetailByPONumber.POApprovedIIBy = "Admin";
+                purchaseOrderDetailByPONumber.POApprovedIIBy = _createdBy;
                 purchaseOrderDetailByPONumber.POApprovedIIDate = DateTime.Now;
                 string result = await _repository.UpdatePurchaseOrder(purchaseOrderDetailByPONumber);
                 _logger.LogInfo(result);
@@ -2014,10 +2020,10 @@ namespace Tips.Purchase.Api.Controllers
                         poConfirmationHistory.UTGST = purchaseOrderItemDetailById.UTGST;
                         poConfirmationHistory.SubTotal = purchaseOrderItemDetailById.SubTotal;
                         poConfirmationHistory.TotalWithTax = purchaseOrderItemDetailById.TotalWithTax;
-                        poConfirmationHistory.CreatedBy = purchaseOrderItemDetailById.CreatedBy;
-                        poConfirmationHistory.CreatedBy = purchaseOrderItemDetailById.CreatedBy;
-                        poConfirmationHistory.LastModifiedBy = purchaseOrderItemDetailById.LastModifiedBy;
-                        poConfirmationHistory.LastModifiedOn = purchaseOrderItemDetailById.LastModifiedOn;
+                        poConfirmationHistory.CreatedBy = _createdBy;
+                        poConfirmationHistory.CreatedOn = DateTime.Now;
+                        //poConfirmationHistory.LastModifiedBy = purchaseOrderItemDetailById.LastModifiedBy;
+                        //poConfirmationHistory.LastModifiedOn = purchaseOrderItemDetailById.LastModifiedOn;
 
                         await _poConfirmationHistoryRepository.CreatePoConfirmationHistory(poConfirmationHistory);
                     }

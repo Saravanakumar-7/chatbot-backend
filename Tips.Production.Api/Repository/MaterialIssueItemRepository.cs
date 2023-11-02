@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 
@@ -7,9 +8,16 @@ namespace Tips.Production.Api.Repository
     public class MaterialIssueItemRepository : RepositoryBase<MaterialIssueItem>, IMaterialIssueItemRepository
     {
         private TipsProductionDbContext _tipsProductionDbContext;
-        public MaterialIssueItemRepository(TipsProductionDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public MaterialIssueItemRepository(TipsProductionDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsProductionDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<IEnumerable<MaterialIssueItem>> GetMaterialIssueItemById(int id)
@@ -35,7 +43,7 @@ namespace Tips.Production.Api.Repository
 
         public async Task<string> UpdateMaterialIssueItem(MaterialIssueItem materialIssueItem)
         {
-            materialIssueItem.LastModifiedBy = "Admin";
+            materialIssueItem.LastModifiedBy = _createdBy;
             materialIssueItem.LastModifiedOn = DateTime.Now;
             Update(materialIssueItem);
             string result = $"MaterialIssueItem of Detail {materialIssueItem.Id} is updated successfully!";

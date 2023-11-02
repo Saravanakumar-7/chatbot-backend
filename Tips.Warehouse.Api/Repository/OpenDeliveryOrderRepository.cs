@@ -7,24 +7,33 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Tips.Warehouse.Api.Entities.DTOs;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Tips.Warehouse.Api.Repository
 {
     public class OpenDeliveryOrderRepository : RepositoryBase<OpenDeliveryOrder>, IOpenDeliveryOrderRepository
     {
         private TipsWarehouseDbContext _tipsWarehouseDbContext;
-        public OpenDeliveryOrderRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public OpenDeliveryOrderRepository(TipsWarehouseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsWarehouseDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder)
         {
             var date = DateTime.Now;
-            openDeliveryOrder.CreatedBy = "Admin";
+            openDeliveryOrder.CreatedBy = _createdBy;
             openDeliveryOrder.CreatedOn = date.Date;
 
-            openDeliveryOrder.Unit = "Bangalore";
+            openDeliveryOrder.Unit = _unitname;
             var result = await Create(openDeliveryOrder);
 
             return result.Id;
@@ -211,7 +220,7 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<string> UpdateOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder)
         {
-            openDeliveryOrder.LastModifiedBy = "Admin";
+            openDeliveryOrder.LastModifiedBy = _createdBy;
             openDeliveryOrder.LastModifiedOn = DateTime.Now;
             Update(openDeliveryOrder);
             string result = $"openDeliveryOrder of Detail {openDeliveryOrder.Id} is updated successfully!";

@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
@@ -10,7 +11,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ItemNumber { get; set; }
         public string? ODONumber { get; set; }
         public string Description { get; set; }
-        public PartTypes ItemType { get; set; }
+        public PartType ItemType { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal ReturnQty { get; set; }
         public decimal AlreadyReturnQty { get; set; }
@@ -26,10 +27,11 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     }
     public class ReturnOpenDeliveryOrderPartsPostDto
     {
+        public int ODOPartId { get; set; }
         public string ItemNumber { get; set; }
         public string? ODONumber { get; set; }
         public string Description { get; set; }
-        public PartTypes ItemType { get; set; }
+        public PartType ItemType { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal ReturnQty { get; set; }
         public decimal AlreadyReturnQty { get; set; }
@@ -50,7 +52,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ItemNumber { get; set; }
         public string? ODONumber { get; set; }
         public string Description { get; set; }
-        public PartTypes ItemType { get; set; }
+        public PartType ItemType { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal ReturnQty { get; set; }
         public decimal AlreadyReturnQty { get; set; }

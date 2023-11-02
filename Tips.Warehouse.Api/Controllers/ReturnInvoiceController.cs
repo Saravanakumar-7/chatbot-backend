@@ -303,8 +303,8 @@ namespace Tips.Warehouse.Api.Controllers
                         bTODeliveryOrderHistory.DispatchQty = ReturnQty;
                         bTODeliveryOrderHistory.InvoicedQty = btoDeliveryOrderItemDetails.InvoicedQty;
                         bTODeliveryOrderHistory.SerialNo = btoDeliveryOrderItemDetails.SerialNo;
-                        bTODeliveryOrderHistory.CreatedBy = returnInvoiceDetails.CreatedBy;
-                        bTODeliveryOrderHistory.LastModifiedOn = returnInvoiceDetails.LastModifiedOn;
+                        //bTODeliveryOrderHistory.CreatedBy = returnInvoiceDetails.CreatedBy;
+                        //bTODeliveryOrderHistory.LastModifiedOn = returnInvoiceDetails.LastModifiedOn;
                         bTODeliveryOrderHistory.Remark = "Return Invoice";
 
                         var bTODeliveryOrderHistoryDetails = _mapper.Map<BTODeliveryOrderHistory>(bTODeliveryOrderHistory);

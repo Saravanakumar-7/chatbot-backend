@@ -10,24 +10,31 @@ using Entities;
 using Entities.Helper;
 using Org.BouncyCastle.Ocsp;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Tips.SalesService.Api.Repository
 {
     public class RfqSourcingRepository : RepositoryBase<RfqSourcing>, IRfqSourcingRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
-
-        public RfqSourcingRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public RfqSourcingRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
 
         public async Task<int?> CreateRfqSourcing(RfqSourcing rfqSourcing)
         {
-            rfqSourcing.CreatedBy = "Admin";
+            rfqSourcing.CreatedBy = _createdBy;
             rfqSourcing.CreatedOn = DateTime.Now;
-            rfqSourcing.Unit = "Bangalore";            
+            rfqSourcing.Unit = _unitname;            
             var result = await Create(rfqSourcing);    
             
             return result.Id;
@@ -78,7 +85,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<string> UpdateRfqSourcing(RfqSourcing rfqSourcing)
         {
-            rfqSourcing.LastModifiedBy = "Admin";
+            rfqSourcing.LastModifiedBy = _createdBy;
             rfqSourcing.LastModifiedOn = DateTime.Now;
             Update(rfqSourcing);
             string result =$"rfqSourcing of Detail {rfqSourcing.Id} is updated successfully!";

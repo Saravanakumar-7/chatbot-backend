@@ -8,7 +8,7 @@ namespace Tips.Warehouse.Api.Contracts
     public interface IOpenDeliveryOrderHistoryRepository : IRepositoryBase<OpenDeliveryOrderHistory>
     {
         Task<long> CreateOpenDeliveryOrderHistory(OpenDeliveryOrderHistory openDeliveryOrderHistory);
-        Task<PagedList<OpenDeliveryOrderHistory>> GetAllOpenDeliveryOrderHistoryDetails(PagingParameter pagingParameter);
+        Task<PagedList<OpenDeliveryOrderHistory>> GetAllOpenDeliveryOrderHistoryDetails(PagingParameter pagingParameter, SearchParams searchParams);
 
         Task<OpenDeliveryOrderHistory> GetOpenDeliveryOrderHistoryDetailsById(int id);
 
