@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Tips.Warehouse.Api.Entities.DTOs;
+using System.Linq;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -28,18 +29,18 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<PagedList<OpenDeliveryOrderHistory>> GetAllOpenDeliveryOrderHistoryDetails(PagingParameter pagingParameter,SearchParams searchParams)
         {
-            var odo = await _tipsWarehouseDbContext.ReturnOpenDeliveryOrders.Where(odo => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || odo.CustomerId.Contains(searchParams.SearchValue) ||
+            var odo = FindAll().OrderByDescending(x=>x.Id).Where(odo => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || odo.CustomerId.Contains(searchParams.SearchValue) ||
                 odo.CustomerAliasName.Contains(searchParams.SearchValue) || odo.CustomerName.Contains(searchParams.SearchValue)
-                || odo.Description.Contains(searchParams.SearchValue))))
-              .FirstOrDefaultAsync();
+                || odo.Description.Contains(searchParams.SearchValue))));
+             
+            return PagedList<OpenDeliveryOrderHistory>.ToPagedList(odo, pagingParameter.PageNumber, pagingParameter.PageSize);
+            //var getAllOpenDetails = PagedList<OpenDeliveryOrderHistory>.ToPagedList(FindAll()
+            //        .Where(x => x.UniqeId != null)
+            //        .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            var getAllOpenDetails = PagedList<OpenDeliveryOrderHistory>.ToPagedList(FindAll()
-                    .Where(x => x.UniqeId != null)
-                    .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
-
-            return getAllOpenDetails;
+            //return getAllOpenDetails;
         }
 
         public async Task<IEnumerable<OpenDeliveryOrderHistory>> GetOpenDeliveryOrderHistoryDetailsByBtoNo(string odoNumber, string uniqueId)
