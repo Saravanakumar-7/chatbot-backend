@@ -4,11 +4,13 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using AutoMapper;
 using Azure;
 using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.IdentityModel.Tokens;
@@ -34,8 +36,11 @@ namespace Tips.Purchase.Api.Controllers
         private readonly HttpClient _httpClient;
         private IDocumentUploadRepository _prdocumentUploadRepository;
         private IPRItemsDocumentUploadRepository _prItemsDocumentUploadRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
-        public PurchaseRequisitionController(HttpClient httpClient, IPRItemsDocumentUploadRepository prItemsDocumentUploadRepository,IPrItemsRepository prItemRepository,IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper, IConfiguration config)
+        public PurchaseRequisitionController(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IPRItemsDocumentUploadRepository prItemsDocumentUploadRepository,IPrItemsRepository prItemRepository,IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _prItemsDocumentUploadRepository = prItemsDocumentUploadRepository;
             _repository = repository;
@@ -43,6 +48,10 @@ namespace Tips.Purchase.Api.Controllers
             _logger = logger;
             _config = config;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
             _prdocumentUploadRepository = prdocumentUploadRepository;
             _webHostEnvironment = webHostEnvironment;
             _httpClient = httpClient;
@@ -1186,7 +1195,7 @@ namespace Tips.Purchase.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 purchaseRequisitionDetailByPRNumber.PrApprovalI = true;
-                purchaseRequisitionDetailByPRNumber.PrApprovedIBy = "Admin";
+                purchaseRequisitionDetailByPRNumber.PrApprovedIBy = _createdBy;//
                 purchaseRequisitionDetailByPRNumber.PrApprovedIDate = DateTime.Now;
                 string result = await _repository.UpdatePurchaseRequisition(purchaseRequisitionDetailByPRNumber);
                 _logger.LogInfo(result);
@@ -1225,7 +1234,7 @@ namespace Tips.Purchase.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 purchaseRequisitionDetailByPRNumber.PrApprovalII = true;
-                purchaseRequisitionDetailByPRNumber.PrApprovedIIBy = "Admin";
+                purchaseRequisitionDetailByPRNumber.PrApprovedIIBy = _createdBy;
                 purchaseRequisitionDetailByPRNumber.PrApprovedIIDate = DateTime.Now;
                 string result = await _repository.UpdatePurchaseRequisition(purchaseRequisitionDetailByPRNumber);
                 _logger.LogInfo(result);

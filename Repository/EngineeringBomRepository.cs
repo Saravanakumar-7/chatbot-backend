@@ -909,8 +909,8 @@ namespace Repository
         {
             releaseProductBom.CreatedBy = _createdBy;
             releaseProductBom.CreatedOn = DateTime.Now;
-            releaseProductBom.LastModifiedBy = _createdBy;
-            releaseProductBom.LastModifiedOn = DateTime.Now;
+           // releaseProductBom.LastModifiedBy = _createdBy;
+           // releaseProductBom.LastModifiedOn = DateTime.Now;
             var result = await Create(releaseProductBom);
             return result.Id;
         }
@@ -1211,8 +1211,8 @@ namespace Repository
         {
             enggbomGroup.CreatedBy = _createdBy;
             enggbomGroup.CreatedOn = DateTime.Now;
-            enggbomGroup.LastModifiedBy = _createdBy;
-            enggbomGroup.LastModifiedOn = DateTime.Now;
+           // enggbomGroup.LastModifiedBy = _createdBy;
+            //enggbomGroup.LastModifiedOn = DateTime.Now;
             var result = await Create(enggbomGroup);
             return result.Id;
         }
@@ -1303,8 +1303,8 @@ namespace Repository
         {
             enggcustomFields.CreatedBy = _createdBy;
             enggcustomFields.CreatedOn = DateTime.Now;
-            enggcustomFields.LastModifiedBy = _createdBy;
-            enggcustomFields.LastModifiedOn = DateTime.Now;
+            //enggcustomFields.LastModifiedBy = _createdBy;
+           // enggcustomFields.LastModifiedOn = DateTime.Now;
             var result = await Create(enggcustomFields);
             return result.Id;
         }

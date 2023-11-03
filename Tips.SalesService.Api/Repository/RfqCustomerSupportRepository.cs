@@ -741,7 +741,7 @@ namespace Tips.SalesService.Api.Repository
             rfq.CreatedOn = date.Date;
             var version = 1;
             rfq.RevisionNumber = version;            
-            rfq.Unit = _createdBy;
+            rfq.Unit = _unitname;
             var result = await Create(rfq);
             return result.Id;
         }

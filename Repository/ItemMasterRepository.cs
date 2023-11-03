@@ -485,8 +485,8 @@ namespace Repository
         {
             fileUpload.CreatedBy = _createdBy;
             fileUpload.CreatedOn = DateTime.Now;
-            fileUpload.LastModifiedBy = _createdBy;
-            fileUpload.LastModifiedOn = DateTime.Now;
+           // fileUpload.LastModifiedBy = _createdBy;
+           // fileUpload.LastModifiedOn = DateTime.Now;
             var result = await Create(fileUpload);
             return result.Id;
         }
@@ -495,8 +495,8 @@ namespace Repository
         {
             fileUpload.CreatedBy = _createdBy;
             fileUpload.CreatedOn = DateTime.Now;
-            fileUpload.LastModifiedBy = _createdBy;
-            fileUpload.LastModifiedOn = DateTime.Now;
+           // fileUpload.LastModifiedBy = _createdBy;
+            //fileUpload.LastModifiedOn = DateTime.Now;
             var result = await Create(fileUpload);
             return result.Id;
         }
@@ -522,8 +522,8 @@ namespace Repository
         {
             imageUpload.CreatedBy = _createdBy;
             imageUpload.CreatedOn = DateTime.Now;
-            imageUpload.LastModifiedBy = _createdBy;
-            imageUpload.LastModifiedOn = DateTime.Now;
+          //  imageUpload.LastModifiedBy = _createdBy;
+           // imageUpload.LastModifiedOn = DateTime.Now;
             var result = await Create(imageUpload);
             return result.Id;
         }

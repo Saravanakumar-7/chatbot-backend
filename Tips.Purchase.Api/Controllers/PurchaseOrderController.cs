@@ -1770,7 +1770,7 @@ namespace Tips.Purchase.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 purchaseOrderDetailByPONumber.POApprovalI = true;
-                purchaseOrderDetailByPONumber.POApprovedIBy = "Admin";
+                purchaseOrderDetailByPONumber.POApprovedIBy = _createdBy;
                 purchaseOrderDetailByPONumber.POApprovedIDate = DateTime.Now;
                 string result = await _repository.UpdatePurchaseOrder(purchaseOrderDetailByPONumber);
                 _logger.LogInfo(result);
@@ -1900,7 +1900,7 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
                 purchaseOrderDetailById.IsShortClosed = true;
-                purchaseOrderDetailById.ShortClosedBy = "Admin";
+                purchaseOrderDetailById.ShortClosedBy = _createdBy;
                 purchaseOrderDetailById.ShortClosedOn = DateTime.Now;
                 string result = await _repository.UpdatePurchaseOrder(purchaseOrderDetailById);
                 _repository.SaveAsync();

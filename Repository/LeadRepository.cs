@@ -35,8 +35,8 @@ namespace Repository
             var date = DateTime.Now;
             lead.CreatedBy = _createdBy;
             lead.CreatedOn = date.Date;
-            lead.LastModifiedBy = _createdBy;
-            lead.LastModifiedOn = DateTime.Now;
+           // lead.LastModifiedBy = _createdBy;
+           // lead.LastModifiedOn = DateTime.Now;
             lead.Unit = _unitname;
             var result = await Create(lead);
             

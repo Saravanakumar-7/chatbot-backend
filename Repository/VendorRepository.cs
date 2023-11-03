@@ -33,8 +33,8 @@ namespace Repository
         {
                 vendorMaster.CreatedBy = _createdBy;
                 vendorMaster.CreatedOn = DateTime.Now;
-                vendorMaster.LastModifiedBy = _createdBy;
-                vendorMaster.LastModifiedOn = DateTime.Now;
+             //   vendorMaster.LastModifiedBy = _createdBy;
+              //  vendorMaster.LastModifiedOn = DateTime.Now;
                  vendorMaster.Unit = _unitname;
                  var result = await Create(vendorMaster);
            
