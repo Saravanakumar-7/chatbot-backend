@@ -7,7 +7,7 @@ using Tips.Warehouse.Api.Entities;
 
 namespace Tips.Warehouse.Api.Repository
 {
-    public class ReturnOpenDeliveryOrderPartsRepository : RepositoryBase<ReturnOpenDeliveryOrder>, IReturnOpenDeliveryOrderPartsRepository
+    public class ReturnOpenDeliveryOrderPartsRepository : RepositoryBase<ReturnOpenDeliveryOrderParts>, IReturnOpenDeliveryOrderPartsRepository
     {
         private TipsWarehouseDbContext _tipsWarehouseDbContext;
         public ReturnOpenDeliveryOrderPartsRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
