@@ -504,7 +504,8 @@ namespace Tips.Production.Api.Controllers
 
                 var materialReqItemList = new List<MaterialRequestItems>();
                 var shopOrderNumber = materialRequestUpdateDto.ShopOrderNumber;
-                var projectNo = materialRequestUpdateDto.ProjectNumber; 
+                var projectNo = materialRequestUpdateDto.ProjectNumber;
+                var mRNumber = materialRequestUpdateDto.MRNumber;
 
                 List<InventoryDtoForMaterialRequest> inventoryDtos = new List<InventoryDtoForMaterialRequest>();
 
@@ -565,6 +566,7 @@ namespace Tips.Production.Api.Controllers
                     {
                         var updateInventoryBalanceQty = mapper.Map<UpdateInventoryBalanceQty>(item);
                         updateInventoryBalanceQty.ProjectNumber = projectNo;
+                        updateInventoryBalanceQty.MRNumber = mRNumber;
                         return updateInventoryBalanceQty;
                     })
                     .ToList();
