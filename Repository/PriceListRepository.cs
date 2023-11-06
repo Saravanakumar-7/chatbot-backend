@@ -46,10 +46,25 @@ namespace Repository
         }
         public async Task<PriceList> GetLatestPriceLists()
         {
-            var priceListDetails = await TipsMasterDbContext.PriceLists.OrderByDescending(x => x.Id).FirstOrDefaultAsync();
+            var priceListDetails = await TipsMasterDbContext.PriceLists.Where(x => x.IsActive == true).OrderByDescending(x => x.CreatedOn).FirstOrDefaultAsync();
             return priceListDetails;
         }
 
+        //public async Task<IEnumerable<PriceList>> GetAllTruePriceListCount()
+        //{
+        //    var falsePriceListDetails = await TipsMasterDbContext.PriceLists.Where(x => x.IsActive == true).ToListAsync();
+        //    return falsePriceListDetails;
+        //}
+        public async Task<IEnumerable<PriceList>> GetAllTruePriceListCount()
+        {
+            var priceLists = await TipsMasterDbContext.PriceLists
+                .Where(x => x.IsActive == true)
+                .OrderByDescending(x => x.CreatedOn) // Assuming there is a CreatedDate field
+                .Skip(1) // Skip the last record
+                .ToListAsync();
+
+            return priceLists;
+        }
         public async Task<IEnumerable<PriceList>> GetAllActivePriceLists([FromQuery] SearchParames searchParams)
         {
             var priceListDetails = FindAll()
