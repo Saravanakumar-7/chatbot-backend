@@ -640,7 +640,8 @@ namespace Tips.Purchase.Api.Controllers
         //amount in words
         private string GetTotalValueInWords(decimal totalValue)
         {
-            string totalValueInWords = NumberToWordsConverter.Convert(totalValue);
+            RupeesToWords a= new RupeesToWords();
+            string totalValueInWords = a.words(Convert.ToDouble(totalValue),true); 
             return totalValueInWords;
         }
 
