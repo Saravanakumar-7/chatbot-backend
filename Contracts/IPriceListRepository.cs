@@ -16,5 +16,6 @@ namespace Contracts
         Task<string> UpdatePriceList(PriceList priceList);
         Task<string> DeletePriceList(PriceList priceList);
         Task<PriceList> GetLatestPriceLists();
+        Task<IEnumerable<PriceList>> GetAllTruePriceListCount();
     }
 }
