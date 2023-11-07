@@ -5,6 +5,7 @@ using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using System.Net;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,11 +18,13 @@ namespace Tips.Master.Api.Controllers
         private IRepositoryWrapperForMaster _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        public PriceListController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        private IConfiguration _config;
+        public PriceListController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _config = config;
         }
         // GET: api/<PriceListController>
         [HttpGet]
@@ -148,14 +151,36 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
+
         // POST api/<PriceListController>
         [HttpPost]
-        public IActionResult CreatePriceList([FromBody] PriceListDtoPost priceListDtoPost)
+        public async Task<IActionResult> CreatePriceList([FromBody] PriceListDtoPost priceListDtoPost)
         {
             ServiceResponse<PriceListDto> serviceResponse = new ServiceResponse<PriceListDto>();
 
             try
             {
+                //string serverKey = GetServerKey();
+
                 if (priceListDtoPost is null)
                 {
                     serviceResponse.Data = null;
@@ -176,9 +201,37 @@ namespace Tips.Master.Api.Controllers
                     //return BadRequest("Invalid model object");
                     return BadRequest(serviceResponse);
                 }
-                var PriceList = _mapper.Map<PriceList>(priceListDtoPost);
-                _repository.PriceListRepository.CreatePriceList(PriceList);
-                _repository.SaveAsync();
+                //if (serverKey == "keus")
+                //{
+
+                //    var PriceList = _mapper.Map<PriceList>(priceListDtoPost);
+                   
+                //        _repository.PriceListRepository.CreatePriceList(PriceList);
+                //        _repository.SaveAsync();
+
+                //        var latestPriceListCount = _repository.PriceListRepository.GetLatestPriceLists();
+
+                //        if (latestPriceListCount != null)
+                //        {
+                //            IEnumerable<PriceList> falsePriceListCount = await _repository.PriceListRepository.GetAllTruePriceListCount();
+                //            foreach (var price in falsePriceListCount)
+                //            {
+                //                price.IsActive = false;
+                //                _repository.PriceListRepository.UpdatePriceList(PriceList);
+                //            }
+                //            _repository.SaveAsync();
+                //        }
+                       
+                    
+                //}
+                //else
+                //{
+                    var PriceList = _mapper.Map<PriceList>(priceListDtoPost);
+                    _repository.PriceListRepository.CreatePriceList(PriceList);
+                    _repository.SaveAsync();
+
+                //}
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;

@@ -70,6 +70,11 @@ namespace Repository
                     {
                         if (fgitem.ItemNumber == FPPdetails.PPItemNumber)
                         {
+                            if (FPPdetails.VLandindPrice == null || FPPdetails.VMoqcost == null)
+                            {
+                                FPPdetails.VLandindPrice = 1;
+                                FPPdetails.VMoqcost = 1;
+                            }
                             decimal? landedprice = fgitem.Quantity * FPPdetails.VLandindPrice;
                             decimal? moqcost = fgitem.Quantity * FPPdetails.VMoqcost;
                             FGfsum = FGfsum + landedprice;
@@ -113,6 +118,11 @@ namespace Repository
                     {
                         if (saitem.ItemNumber == SPPdetails.PPItemNumber)
                         {
+                            if (SPPdetails.VLandindPrice==null || SPPdetails.VMoqcost==null)
+                            {
+                                SPPdetails.VLandindPrice = 1;
+                                SPPdetails.VMoqcost = 1;
+                            }
                             decimal? landedprice = saitem.Quantity * SPPdetails.VLandindPrice;
                             decimal? moqcost = saitem.Quantity * SPPdetails.VMoqcost;
                             SAfsum = SAfsum + landedprice;
