@@ -443,17 +443,33 @@ namespace Tips.Purchase.Api.Controllers
                         foreach (var itemDetails in purchaseRequisitionDetailById.PrItemsDtoList)
                         {
                             PrItemsDto prItemDtos = _mapper.Map<PrItemsDto>(itemDetails);
-                            List<PRItemsDocumentUploadDto> fileUploads = new List<PRItemsDocumentUploadDto>();
-                            if (prItemDtos.Upload.Count() != 0)
+                            //List<PRItemsDocumentUploadDto> fileUploads = new List<PRItemsDocumentUploadDto>();
+                            //if (prItemDtos.Upload.Count() != 0)
+                            //{
+                            //    foreach (var fileUploadDetails in prItemDtos.Upload)
+                            //    {
+                            //        PRItemsDocumentUploadDto fileUploadDto = _mapper.Map<PRItemsDocumentUploadDto>(fileUploadDetails);
+                            //        fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", fileUploadDto.FileName);
+                            //        fileUploads.Add(fileUploadDto);
+                            //    }
+                            //}
+                            if (itemDetails.PRFileIds == null)
                             {
-                                foreach (var fileUploadDetails in prItemDtos.Upload)
+                                List<PRItemsDocumentUploadDto> prd= new List<PRItemsDocumentUploadDto>();                            
+                                string[]? ids = itemDetails.PRFileIds.Split(',');
+                                for (int i = 0; i < ids.Count(); i++)
                                 {
-                                    PRItemsDocumentUploadDto fileUploadDto = _mapper.Map<PRItemsDocumentUploadDto>(fileUploadDetails);
-                                    fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", fileUploadDto.FileName);
-                                    fileUploads.Add(fileUploadDto);
+                                    var file1 = await _prItemsDocumentUploadRepository.GetUploadDocById(Convert.ToInt32(ids[i]));
+                                    PRItemsDocumentUploadDto doc = _mapper.Map<PRItemsDocumentUploadDto>(file1);
+                                    prd.Add(doc);
                                 }
+                                prItemDtos.PRItemFiles = prd;
                             }
-                            prItemDtos.Upload = _mapper.Map<List<PRItemsDocumentUploadDto>>(fileUploads);
+                            else
+                            {
+                                prItemDtos.PRItemFiles = null;
+                            }
+                           // prItemDtos.Upload = _mapper.Map<List<PRItemsDocumentUploadDto>>(fileUploads);
                             prItemDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(itemDetails.prAddprojectsDtoList);
                             prItemDtos.PrAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliveryScheduleDto>>(itemDetails.prAddDeliverySchedulesDtoList);
                             prItemDtos.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstructionDto>>(itemDetails.prSpecialInstructionsDtoList);
@@ -479,6 +495,7 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+       // [HttpGet]
         [HttpGet]
         public async Task<ActionResult> DownloadFile(string Filename)
         {
@@ -494,6 +511,7 @@ namespace Tips.Purchase.Api.Controllers
 
             return File(bytes, ContentType, Path.GetFileName(filePath));
         }
+
         private string GetServerKey()
         {
             var serverName = Environment.MachineName;
@@ -513,52 +531,125 @@ namespace Tips.Purchase.Api.Controllers
                 return "trasccon";
             }
         }
-        private List<PRItemsDocumentUpload> CoCDocumentSave(List<PrItemsPostDto>? grinPartsDto, PurchaseRequisition grins, string number, int i, List<PRItemsDocumentUpload> grinPartsDocumentUploadDtoList)
-        {
-            var cocUploadDocs = grinPartsDto[i].Upload;
+        //private List<PRItemsDocumentUpload> CoCDocumentSave(List<PrItemsPostDto>? grinPartsDto, PurchaseRequisition grins, string number, int i, List<PRItemsDocumentUpload> grinPartsDocumentUploadDtoList)
+        //{
+        //    var cocUploadDocs = grinPartsDto[i].Upload;
 
-            foreach (var cocUpload in cocUploadDocs)
-            {
-                var fileContent = cocUpload.FileByte;
+        //    foreach (var cocUpload in cocUploadDocs)
+        //    {
+        //        var fileContent = cocUpload.FileByte;
+        //        byte[] imageContent = Convert.FromBase64String(cocUpload.FileByte);
+        //        string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
+        //        string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
-                string FileExt = Path.GetExtension(fileName).ToUpper();
+        //        Guid guid = Guid.NewGuid();
+        //        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument",guid.ToString() + "_" + fileName);
+        //        using (MemoryStream ms = new MemoryStream(imageContent))
+        //        {
+        //            ms.Position = 0;
+        //            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+        //            {
+        //                ms.WriteTo(fileStream);
+        //            }
+        //            var uploadedFile = new PRItemsDocumentUpload
+        //            {
+        //                FileName = fileName,
+        //                FileExtension = FileExt,
+        //                FilePath = filePath,
+        //                ParentNumber = number,          //It Should be changed to GrinPartsId
+        //                DocumentFrom = "PRItemDocument",
+        //            };
 
-                Guid guid = Guid.NewGuid();
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument",guid.ToString() + "_" + fileName);
-                using (MemoryStream ms = new MemoryStream(fileContent))
-                {
-                    ms.Position = 0;
-                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                    {
-                        ms.WriteTo(fileStream);
-                    }
-                    var uploadedFile = new PRItemsDocumentUpload
-                    {
-                        FileName = fileName,
-                        FileExtension = FileExt,
-                        FilePath = filePath,
-                        ParentNumber = number,          //It Should be changed to GrinPartsId
-                        DocumentFrom = "PRItemDocument",
-                    };
+        //            _prItemsDocumentUploadRepository.CreateUploadDocumentPO(uploadedFile);
+        //            _prItemsDocumentUploadRepository.SaveAsync();
 
-                    _prItemsDocumentUploadRepository.CreateUploadDocumentPO(uploadedFile);
-                    _prItemsDocumentUploadRepository.SaveAsync();
+        //            if (uploadedFile != null)
+        //            {
+        //                PRItemsDocumentUpload poFileDetails = _mapper.Map<PRItemsDocumentUpload>(uploadedFile);
+        //                grinPartsDocumentUploadDtoList.Add(poFileDetails);
+        //            }
 
-                    if (uploadedFile != null)
-                    {
-                        PRItemsDocumentUpload poFileDetails = _mapper.Map<PRItemsDocumentUpload>(uploadedFile);
-                        grinPartsDocumentUploadDtoList.Add(poFileDetails);
-                    }
+        //        }
+        //        // grins.PrItemsDtoList[i].Upload = grinPartsDocumentUploadDtoList;
 
-                }
-                // grins.PrItemsDtoList[i].Upload = grinPartsDocumentUploadDtoList;
-
-            }
-            return grinPartsDocumentUploadDtoList;
-        }
-
+        //    }
+        //    return grinPartsDocumentUploadDtoList;
+        //}
         [HttpPost]
+        public async Task<IActionResult> CreatePRFileUpload([FromBody] List<PRItemsDocumentUploadPostDto> ListofFiles)
+        {
+            ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
+            try
+            {               
+                if (ListofFiles is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "PRFiles are null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("PurchaseRequisition object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PRFiles object.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseRequisition object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<string>? id_s= new List<string>();
+                foreach (var prUploadDetail in ListofFiles)
+                {
+                    var fileContent = prUploadDetail.FileByte;
+                    byte[] imageContent = Convert.FromBase64String(prUploadDetail.FileByte);                   
+                    string fileName = prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                    Guid guid = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", guid.ToString() + "_" + fileName);
+                    using (MemoryStream ms = new MemoryStream(imageContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                        var uploadedFile = new PRItemsDocumentUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            FileByte= fileContent,
+                            ParentNumber = "PRItems",
+                            DocumentFrom = "PRDocument",
+                        };
+
+                        _prItemsDocumentUploadRepository.CreateUploadDocumentPO(uploadedFile);
+                        _prdocumentUploadRepository.SaveAsync();
+                        //int k = Convert.ToInt32(ids);
+                        id_s.Add(uploadedFile.Id.ToString());
+                    }
+                }
+
+                serviceResponse.Data = id_s;
+                serviceResponse.Message = " PurchaseRequisition Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside PRFileUpload action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+            [HttpPost]
         public async Task<IActionResult> CreatePurchaseRequisition([FromBody] PurchaseRequisitionPostDto purchaseRequistionPostDto)
         {
             ServiceResponse<PurchaseRequisitionPostDto> serviceResponse = new ServiceResponse<PurchaseRequisitionPostDto>();
@@ -634,13 +725,14 @@ namespace Tips.Purchase.Api.Controllers
                 foreach (var prUploadDetail in prUploadDetails)
                 {
                     var fileContent = prUploadDetail.FileByte;
+                    byte[] imageContent = Convert.FromBase64String(prUploadDetail.FileByte);
                     var prNumbers = purchaseRequisitionDetails.PrNumber;
                     string fileName = prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
                     Guid guid = Guid.NewGuid();
                     string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", guid.ToString() + "_" + fileName);
-                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    using (MemoryStream ms = new MemoryStream(imageContent))
                     {
                         ms.Position = 0;
                         using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
@@ -681,18 +773,18 @@ namespace Tips.Purchase.Api.Controllers
                 //        prItemDtoList.Add(prItemDetails);
                 //    }
                 //}
-                var CSitemDocumentUploadDtoList = new List<PRItemsDocumentUpload>();
+               // var CSitemDocumentUploadDtoList = new List<PRItemsDocumentUpload>();
                 if (prItemDto != null)
                 {
                     for (int i = 0; i < prItemDto.Count; i++)
                     {
-                        List<PRItemsDocumentUpload>? files = null;
+                        //List<PRItemsDocumentUpload>? files = null;
                         PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
-                        if (prItemDto[i].Upload != null && prItemDto[i].Upload.Count > 0)
-                        {
-                            files = CoCDocumentSave(prItemDto, purchaseRequisitionDetails, prItemDetails.Id.ToString(), i, CSitemDocumentUploadDtoList);
-                        }
-                        prItemDetails.Upload = _mapper.Map<List<PRItemsDocumentUpload>>(files);
+                        //if (prItemDto[i].Upload != null && prItemDto[i].Upload.Count > 0)
+                        //{
+                        //    files = CoCDocumentSave(prItemDto, purchaseRequisitionDetails, prItemDetails.Id.ToString(), i, CSitemDocumentUploadDtoList);
+                        //}
+                        //prItemDetails.Upload = _mapper.Map<List<PRItemsDocumentUpload>>(files);
                         prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoPostList);
                         prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoPostList);
                         prItemDetails.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstruction>>(prItemDto[i].prSpecialInstructionsPostList);
@@ -723,50 +815,50 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         //Test
-        private List<PRItemsDocumentUpload> CocDocumentSave(List<PrItemsUpdateDto>? grinPartsDto, PurchaseRequisition grins, string number, int i, List<PRItemsDocumentUpload> grinPartsDocumentUploadDtoList)
-        {
-            var cocUploadDocs = grinPartsDto[i].Upload;
+        //private List<PRItemsDocumentUpload> CocDocumentSave(List<PrItemsUpdateDto>? grinPartsDto, PurchaseRequisition grins, string number, int i, List<PRItemsDocumentUpload> grinPartsDocumentUploadDtoList)
+        //{
+        //    var cocUploadDocs = grinPartsDto[i].Upload;
 
-            foreach (var cocUpload in cocUploadDocs)
-            {
-                var fileContent = cocUpload.FileByte;
+        //    foreach (var cocUpload in cocUploadDocs)
+        //    {
+        //        var fileContent = cocUpload.FileByte;
 
-                string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
-                string FileExt = Path.GetExtension(fileName).ToUpper();
+        //        string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
+        //        string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                //Guid guid = Guid.NewGuid();
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument",/* guid.ToString() + "_" +*/ fileName);
-                using (MemoryStream ms = new MemoryStream(fileContent))
-                {
-                    ms.Position = 0;
-                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                    {
-                        ms.WriteTo(fileStream);
-                    }
-                    var uploadedFile = new PRItemsDocumentUpload
-                    {
-                        FileName = fileName,
-                        FileExtension = FileExt,
-                        FilePath = filePath,
-                        ParentNumber = number,          //It Should be changed to GrinPartsId
-                        DocumentFrom = "PRItemDocument",
-                    };
+        //        //Guid guid = Guid.NewGuid();
+        //        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument",/* guid.ToString() + "_" +*/ fileName);
+        //        using (MemoryStream ms = new MemoryStream(fileContent))
+        //        {
+        //            ms.Position = 0;
+        //            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+        //            {
+        //                ms.WriteTo(fileStream);
+        //            }
+        //            var uploadedFile = new PRItemsDocumentUpload
+        //            {
+        //                FileName = fileName,
+        //                FileExtension = FileExt,
+        //                FilePath = filePath,
+        //                ParentNumber = number,          //It Should be changed to GrinPartsId
+        //                DocumentFrom = "PRItemDocument",
+        //            };
 
-                    _prItemsDocumentUploadRepository.CreateUploadDocumentPO(uploadedFile);
-                    _prItemsDocumentUploadRepository.SaveAsync();
+        //            _prItemsDocumentUploadRepository.CreateUploadDocumentPO(uploadedFile);
+        //            _prItemsDocumentUploadRepository.SaveAsync();
 
-                    if (uploadedFile != null)
-                    {
-                        PRItemsDocumentUpload poFileDetails = _mapper.Map<PRItemsDocumentUpload>(uploadedFile);
-                        grinPartsDocumentUploadDtoList.Add(poFileDetails);
-                    }
+        //            if (uploadedFile != null)
+        //            {
+        //                PRItemsDocumentUpload poFileDetails = _mapper.Map<PRItemsDocumentUpload>(uploadedFile);
+        //                grinPartsDocumentUploadDtoList.Add(poFileDetails);
+        //            }
 
-                }
-                // grins.PrItemsDtoList[i].Upload = grinPartsDocumentUploadDtoList;
+        //        }
+        //        // grins.PrItemsDtoList[i].Upload = grinPartsDocumentUploadDtoList;
 
-            }
-            return grinPartsDocumentUploadDtoList;
-        }
+        //    }
+        //    return grinPartsDocumentUploadDtoList;
+        //}
 
 
         [HttpPut]
@@ -797,18 +889,18 @@ namespace Tips.Purchase.Api.Controllers
                 var purchaseRequisitionDetails = _mapper.Map<PurchaseRequisition>(purchaseRequistionPostDto);
                 var prItemDto = purchaseRequistionPostDto.PrItemsDtoUpdateList;
                 var prItemDtoList = new List<PrItem>();
-                var CSitemDocumentUploadDtoList = new List<PRItemsDocumentUpload>();
+                //var CSitemDocumentUploadDtoList = new List<PRItemsDocumentUpload>();
                 if (prItemDto != null)
                 {
                     for (int i = 0; i < prItemDto.Count; i++)
                     {
-                        List<PRItemsDocumentUpload>? files = null;
+                       // List<PRItemsDocumentUpload>? files = null;
                         PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
-                        if (prItemDto[i].Upload != null && prItemDto[i].Upload.Count > 0)
-                        {
-                            files = CocDocumentSave(prItemDto, purchaseRequisitionDetails, prItemDetails.Id.ToString(), i, CSitemDocumentUploadDtoList);
-                        }
-                        prItemDetails.Upload = _mapper.Map<List<PRItemsDocumentUpload>>(files);
+                        //if (prItemDto[i].Upload != null && prItemDto[i].Upload.Count > 0)
+                        //{
+                        //    files = CocDocumentSave(prItemDto, purchaseRequisitionDetails, prItemDetails.Id.ToString(), i, CSitemDocumentUploadDtoList);
+                        //}
+                        //prItemDetails.Upload = _mapper.Map<List<PRItemsDocumentUpload>>(files);
                         prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoUpdateList);
                         prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoUpdateList);
                         prItemDetails.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstruction>>(prItemDto[i].prSpecialInstructionsUpdateList);
@@ -1289,12 +1381,13 @@ namespace Tips.Purchase.Api.Controllers
                 foreach (var prUploadDetail in uploadDocumentDto)
                 {
                     var fileContent = prUploadDetail.FileByte;
+                    byte[] imageContent = Convert.FromBase64String(prUploadDetail.FileByte);
                     string fileName = prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
                     Guid guid = Guid.NewGuid();
                     string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", guid.ToString() + "_" + fileName);
-                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    using (MemoryStream ms = new MemoryStream(imageContent))
                     {
                         ms.Position = 0;
                         using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))

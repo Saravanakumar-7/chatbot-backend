@@ -20,7 +20,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
     {
         public string FileName { get; set; }
         public string FileExtension { get; set; }
-        public byte[] FileByte { get; set; }
+        public string? FileByte { get; set; }
 
     }
     public class DocumentUploadUpdateDto
