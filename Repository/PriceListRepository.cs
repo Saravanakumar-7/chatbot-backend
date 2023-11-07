@@ -46,7 +46,7 @@ namespace Repository
         }
         public async Task<PriceList> GetLatestPriceLists()
         {
-            var priceListDetails = await TipsMasterDbContext.PriceLists.OrderByDescending(x => x.Id).FirstOrDefaultAsync();
+            var priceListDetails = await TipsMasterDbContext.PriceLists.OrderByDescending(x => x.CreatedOn).Where(x=>x.IsActive == true).FirstOrDefaultAsync();
             return priceListDetails;
         }
 
