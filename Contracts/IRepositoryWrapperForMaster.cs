@@ -146,6 +146,7 @@ namespace Contracts
         ICompanyFileUploadRepository CompanyFileUploadRepository { get; }
         INoOfRoomRepository NoOfRoomRepository { get; }
         ITypeOfRoomRepository TypeOfRoomRepository { get; }
+        IConvertionrateRepository ConvertionrateRepository { get; }
         void SaveAsync();
     }
 }

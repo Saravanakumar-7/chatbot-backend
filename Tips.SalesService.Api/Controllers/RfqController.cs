@@ -1670,9 +1670,9 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 else
                 {
-                    var dateFormat = days + months + years;
-                    var rfqNumber = await _rfqRepository.GenerateRFQNumberAvision();
-                    createRfq.RfqNumber = rfqNumber; 
+                    //var dateFormat = days + months + years;
+                    //var rfqNumber = await _rfqRepository.GenerateRFQNumberAvision();
+                    createRfq.RfqNumber = rfqPostDto.RfqNumber; 
                 }
 
                 await _rfqRepository.CreateRfq(createRfq);

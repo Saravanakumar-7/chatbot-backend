@@ -489,6 +489,10 @@ namespace Tips.Master.Api
             CreateMap<TypeOfRoom, TypeOfRoomPostDto>().ReverseMap();
             CreateMap<TypeOfRoom, TypeOfRoomUpdateDto>().ReverseMap();
 
+            CreateMap<Convertionrate, ConvertionrateDto>().ReverseMap();
+            CreateMap<Convertionrate, ConvertionratePostDto>().ReverseMap();
+            CreateMap<Convertionrate, ConvertionrateUpdateDto>().ReverseMap();
+
             CreateMap<GetBomQuantityDto, GetBomQuantityDto>().ReverseMap();
 
             
