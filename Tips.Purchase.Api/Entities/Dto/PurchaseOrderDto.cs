@@ -127,8 +127,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public decimal TotalAmount { get; set; }
 
         public string? Unit { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        //public string? LastModifiedBy { get; set; }
+        //public DateTime? LastModifiedOn { get; set; }
 
         public List<PoItemsUpdateDto>? POItems { get; set; }
         public List<PoIncoTermUpdateDto>? POIncoTerms { get; set; }

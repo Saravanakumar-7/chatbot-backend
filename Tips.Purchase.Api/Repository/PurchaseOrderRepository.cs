@@ -62,10 +62,10 @@ namespace Tips.Purchase.Api.Repository
                 Update(getOldPODetails);
             }
 
-            purchaseOrder.CreatedBy = purchaseOrder.CreatedBy;
-            purchaseOrder.CreatedOn = purchaseOrder.CreatedOn;
-            purchaseOrder.LastModifiedBy = _createdBy;
-            purchaseOrder.LastModifiedOn = DateTime.Now;
+            purchaseOrder.CreatedBy = _createdBy; 
+            purchaseOrder.CreatedOn = DateTime.Now;
+            //purchaseOrder.LastModifiedBy = 
+            //purchaseOrder.LastModifiedOn = 
             var getOldRevisionNumber = _tipsPurchaseDbContext.PurchaseOrders
                 .Where(x => x.PONumber == purchaseOrder.PONumber)
                 .OrderByDescending(x => x.Id)
