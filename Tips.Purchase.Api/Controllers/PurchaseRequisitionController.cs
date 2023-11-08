@@ -862,7 +862,7 @@ namespace Tips.Purchase.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetDownloadUrlDetails(string prNumber,string prItemNumber)
+        public async Task<IActionResult> GetDownloadUrlDetails_Pritems(string prNumber,string prItemNumber)
         {
             ServiceResponse<IEnumerable<GetDownloadUrlDto>> serviceResponse = new ServiceResponse<IEnumerable<GetDownloadUrlDto>>();
 
