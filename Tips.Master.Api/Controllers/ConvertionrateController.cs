@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Master.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class ConvertionrateController : ControllerBase
     {
@@ -215,6 +215,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteConvertionrate(int id)
         {
