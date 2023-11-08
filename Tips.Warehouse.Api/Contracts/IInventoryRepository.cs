@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities;
+using Entities.DTOs;
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -38,6 +39,10 @@ namespace Tips.Warehouse.Api.Contracts
         Task<List<Inventory>> GetInventoryDetailsByItemNoandProjectNo(string ItemNumber, string ProjectNo);
         Task<List<Inventory>> GetInventoryByItemNo(string itemNumber); 
         Task<ConsumptionInventoryDto> GetConsumptionInventoryByItemNo(string itemNumber);
+        //aravind
+        Task<List<ConsumptionInventoryDto>> GetConsumptionInventoryByItemNotest(List<string> ItemNumberList);
+
+
         Task<ConsumptionInventoryDto> GetConsumptionInventoryByItemNoAndProjectNo(string itemNumber, string projectNumber);
         Task<Inventory> GetInventoryDetailsByGrinNo(string GrinNo, string ItemNumber, string ProjectNumber);
         Task<Inventory> GetInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber);
@@ -67,5 +72,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<GetInventoryItemNoAndDescriptionList>> GetInventoryItemNoAndDescriptionByProjectNo(string projectNumber);
         Task<IEnumerable<GetInventoryItemNoAndDescriptionList>> GetInventoryItemNoAndDescriptionList();
         Task<List<Inventory>> ReturnInventoryFGDetailsByItemNumber(string ItemNumber);
+
+        
     }
 }

@@ -250,7 +250,13 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         public List<MRNInventoryUpdateDto> MRNDetails { get; set; }
     }
+    public class ItemNoWithPartTypeDto
+    {
+        public string ItemNumber { get; set; }
 
+        public PartType PartType { get; set; }
+
+    }
     public class MRNInventoryUpdateDto
     {
         public string? Warehouse { get; set; }

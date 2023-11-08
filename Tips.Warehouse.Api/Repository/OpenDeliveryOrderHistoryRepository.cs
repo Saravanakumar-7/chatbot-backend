@@ -42,14 +42,8 @@ namespace Tips.Warehouse.Api.Repository
                 || odo.Description.Contains(searchParams.SearchValue))));
              
             return PagedList<OpenDeliveryOrderHistory>.ToPagedList(odo, pagingParameter.PageNumber, pagingParameter.PageSize);
-            //var getAllOpenDetails = PagedList<OpenDeliveryOrderHistory>.ToPagedList(FindAll()
-            //        .Where(x => x.UniqeId != null)
-            //        .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-
-
-
-            //return getAllOpenDetails;
-        }
+         
+        } 
 
         public async Task<IEnumerable<OpenDeliveryOrderHistory>> GetOpenDeliveryOrderHistoryDetailsByBtoNo(string odoNumber, string uniqueId)
         {
@@ -65,6 +59,13 @@ namespace Tips.Warehouse.Api.Repository
                                  .FirstOrDefaultAsync();
 
             return openDeliveryOrderHistoryById;
+        }
+        public async Task<IEnumerable<OpenDeliveryOrderHistory>> GetOpenDeliveryOrderHistoryDetailsByODONo(string odoNumber)
+        {
+            var openDeliveryOrderHistoryByODONO = await _tipsWarehouseDbContext.OpenDeliveryOrderHistories.Where(x => x.ODONumber == odoNumber)
+                                 .ToListAsync();
+
+            return openDeliveryOrderHistoryByODONO;
         }
     }
 }

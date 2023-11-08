@@ -156,6 +156,7 @@ namespace Entities
         public DbSet<TypeOfRoom> TypeOfRooms { get; set; }
         public DbSet<VendorId> VendorIds { get; set; }
         public DbSet<CSNOs>? CSNOs { get; set; }
+        public DbSet<Convertionrate> Convertionrates { get; set; }
 
 
     }

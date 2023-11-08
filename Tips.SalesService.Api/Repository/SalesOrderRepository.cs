@@ -566,8 +566,9 @@ namespace Tips.SalesService.Api.Repository
                 var salesOrderIdList = await _tipsSalesServiceDbContexts.SalesOrders
                     .Where(so => (so.SalesOrderStatus == SalesOrderStatus.BuildToPrint || so.SalesOrderStatus == SalesOrderStatus.Forecast) &&
                                  (so.SOStatus == OrderStatus.Open || so.SOStatus == OrderStatus.PartiallyClosed) &&
-                                 so.IsShortClosed == false &&
-                                 so.ConfirmStatus == true && so.ApproveStatus == true).Select(x => x.Id).ToListAsync();
+                                 so.IsShortClosed == false // &&
+                                 //so.ConfirmStatus == true && so.ApproveStatus == true
+                                 ).Select(x => x.Id).ToListAsync();
 
                 var openSalesOrderQty = await _tipsSalesServiceDbContexts.SalesOrdersItems
                     .Where(x =>

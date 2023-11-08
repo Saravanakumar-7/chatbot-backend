@@ -340,7 +340,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public PartType PartType { get; set; }
 
 
-    }
+    } 
     public class SoItemConfirmationDateDto
     {
         public int SalesOrderId { get; set; }

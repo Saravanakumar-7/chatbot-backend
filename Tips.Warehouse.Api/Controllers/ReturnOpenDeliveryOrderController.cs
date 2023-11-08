@@ -166,6 +166,46 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        //passing ODO Number
+
+        [HttpGet("{odoNumber}")]
+        public async Task<IActionResult> GetODOHistoryDetailsByODONumber(string odoNumber)
+        {
+            ServiceResponse<OpenDeliveryOrderHistory> serviceResponse = new ServiceResponse<OpenDeliveryOrderHistory>();
+
+            try
+            {
+                var openDeliveryOrderHistoryDetailByODONo = await _openDeliveryOrderHistoryRepository.GetOpenDeliveryOrderHistoryDetailsByODONo(odoNumber);
+                if (openDeliveryOrderHistoryDetailByODONo == null)
+                {
+                    _logger.LogError($"openDeliveryOrderHistoryDetailByODONo hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"openDeliveryOrderHistoryDetailByODONo hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned openDeliveryOrderHistoryDetailByODONo : {odoNumber}");
+                    var result = _mapper.Map<OpenDeliveryOrderHistory>(openDeliveryOrderHistoryDetailByODONo);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned openDeliveryOrderHistoryDetailByODONo Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetODOHistoryDetailsById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetReturnOpenDeliveryOrderById(int id)
