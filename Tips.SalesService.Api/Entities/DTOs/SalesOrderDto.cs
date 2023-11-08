@@ -300,7 +300,15 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public PartType PartType { get; set; }
         public decimal? TotalRequiredQty { get; set; }
     }
+    public class CoverageReportChildItemReqQtyDataDto
+    {
+        public string ItemNumber { get; set; }
+        public PartType PartType { get; set; }
+        public decimal RequiredQty { get; set; }
+         
+    }
 
-   
+
+
 
 }

@@ -28,7 +28,7 @@ namespace Tips.SalesService.Api.Contracts
         //Task<string> UpdateSOBasedOnCreatingDO();
 
         //Task<string> UpdateSOBasedOnCreatingShopOrder();
-        Task<List<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber);
+        Task<List<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber, string projectType);
         Task<List<ProjectSOSADetailDto>> GetProjectDetailsBySAItemNo(string fgItemNumbers);
         Task<List<SalesOrderQtyDto>> GetSalesOrderQtyDetailsByItemNo(string itemNumber,string projectNo);
         Task<IEnumerable<SalesOrderIdNameListDto>> GetAllActiveSalesOrderNameList();
