@@ -1265,7 +1265,7 @@ namespace Tips.SalesService.Api.Controllers
         //getsalesorderdetailbyitemnoandsalesorderId
 
         [HttpGet]
-        public async Task<IActionResult> GetFGSalesOrderDetailsByItemNo(string itemNumber)
+        public async Task<IActionResult> GetFGSalesOrderDetailsByItemNo(string itemNumber,string projectType)
         {
             ServiceResponse<ItemDetailsForShopOrderDto> serviceResponse = new ServiceResponse<ItemDetailsForShopOrderDto>();
             try
@@ -1285,7 +1285,7 @@ namespace Tips.SalesService.Api.Controllers
                 itemDetailsDto.ItemType = bomData[0].itemType;
                 itemDetailsDto.BomVersionNo = bomVersionNo;
 
-                var projectSODetails = await _repository.GetProjectDetailsByItemNo(itemNumber);
+                var projectSODetails = await _repository.GetProjectDetailsByItemNo(itemNumber, projectType);
                 foreach (var project in projectSODetails)
                 {
                     project.SalesOrderQtyDetails = await _repository.GetSalesOrderQtyDetailsByItemNo(itemNumber, project.ProjectNumber);
