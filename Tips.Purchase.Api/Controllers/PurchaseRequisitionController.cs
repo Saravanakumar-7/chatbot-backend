@@ -861,6 +861,58 @@ namespace Tips.Purchase.Api.Controllers
         //}
 
 
+        [HttpGet]
+        public async Task<IActionResult> GetDownloadUrlDetails_Pritems(string prNumber,string prItemNumber)
+        {
+            ServiceResponse<IEnumerable<GetDownloadUrlDto>> serviceResponse = new ServiceResponse<IEnumerable<GetDownloadUrlDto>>();
+
+            try
+            {
+                var getDownloadDetailByPoNumber = await _repository.GetDownloadUrlDetails(prNumber, prItemNumber);
+
+                if (getDownloadDetailByPoNumber.Count() == 0)
+                {
+                    _logger.LogError($"DownloadDetail with id: {prItemNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {prItemNumber}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseRequisition UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseRequisition UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
+                {
+                    var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
+                    getDownloadUrlByFilename.DownloadUrl = $"{baseUrl}/api/PurchaseRequisition/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+                }
+                _logger.LogInfo($"Returned DownloadDetail with id: {prItemNumber}");
+                var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(getDownloadDetailByPoNumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside PRDetail action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPut]
         public async Task<IActionResult> UpdatePurchaseRequisition([FromBody] PurchaseRequisitionUpdateDto purchaseRequistionPostDto)
         {

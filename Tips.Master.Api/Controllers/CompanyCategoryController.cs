@@ -125,7 +125,7 @@ namespace Tips.Master.Api.Controllers
 
         // POST api/<VendorCategoryController>
         [HttpPost]
-        public IActionResult CreateCompanyCategory([FromBody] CompanyCategoryPostDto companyCategoryPostDto)
+        public async Task<IActionResult> CreateCompanyCategory([FromBody] CompanyCategoryPostDto companyCategoryPostDto)
         {
             ServiceResponse<CompanyCategoryPostDto> serviceResponse = new ServiceResponse<CompanyCategoryPostDto>();
 

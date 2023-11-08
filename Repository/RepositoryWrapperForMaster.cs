@@ -122,12 +122,25 @@ namespace Repository
         private ICompanyFileUploadRepository _companyFileUploadRepo;
         private INoOfRoomRepository? _noOfRoomRepo;
         private ITypeOfRoomRepository? _typeOfRoomRepo;
+        private IConvertionrateRepository? _convertionrateRepository;
 
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
             _httpContextAccessor = httpContextAccessor;
         }
+        public IConvertionrateRepository ConvertionrateRepository
+        {
+            get
+            {
+                if (_convertionrateRepository == null)
+                {
+                    _convertionrateRepository = new ConvertionrateRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _convertionrateRepository;
+            }
+        }
+
         public ITypeOfRoomRepository TypeOfRoomRepository
         {
             get

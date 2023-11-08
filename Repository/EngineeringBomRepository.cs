@@ -70,9 +70,12 @@ namespace Repository
                     {
                         if (fgitem.ItemNumber == FPPdetails.PPItemNumber)
                         {
-                            if (FPPdetails.VLandindPrice == null || FPPdetails.VMoqcost == null)
+                            if (FPPdetails.VLandindPrice == null )
                             {
-                                FPPdetails.VLandindPrice = 1;
+                                FPPdetails.VLandindPrice = 1;                               
+                            }
+                            if(FPPdetails.VMoqcost == null)
+                            {
                                 FPPdetails.VMoqcost = 1;
                             }
                             decimal? landedprice = fgitem.Quantity * FPPdetails.VLandindPrice;
@@ -118,9 +121,12 @@ namespace Repository
                     {
                         if (saitem.ItemNumber == SPPdetails.PPItemNumber)
                         {
-                            if (SPPdetails.VLandindPrice==null || SPPdetails.VMoqcost==null)
+                            if (SPPdetails.VLandindPrice==null)
                             {
-                                SPPdetails.VLandindPrice = 1;
+                                SPPdetails.VLandindPrice = 1;                                
+                            }
+                            if (SPPdetails.VMoqcost == null)
+                            {
                                 SPPdetails.VMoqcost = 1;
                             }
                             decimal? landedprice = saitem.Quantity * SPPdetails.VLandindPrice;

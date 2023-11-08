@@ -123,7 +123,7 @@ namespace Tips.Master.Api.Controllers
 
 
         [HttpPost]
-        public IActionResult CreateCustomerCategory([FromBody] CustomerCategoryPostDto customerCategoryPost)
+        public async Task<IActionResult> CreateCustomerCategory([FromBody] CustomerCategoryPostDto customerCategoryPost)
         {
             ServiceResponse<CustomerCategoryPostDto> serviceResponse = new ServiceResponse<CustomerCategoryPostDto>();
 
@@ -150,7 +150,7 @@ namespace Tips.Master.Api.Controllers
 
 
                 var companyCategory = _mapper.Map<CustomerCategory>(customerCategoryPost);
-                _repository.CustomerCategoryRepository.CreateCustomerCategory(companyCategory);
+                await _repository.CustomerCategoryRepository.CreateCustomerCategory(companyCategory);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";

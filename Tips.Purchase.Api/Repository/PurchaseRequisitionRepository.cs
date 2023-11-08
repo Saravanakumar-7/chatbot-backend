@@ -10,6 +10,7 @@ using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.DTOs;
 using System.Reflection;
 using Tips.Purchase.Api.Entities.Enums;
+using System.Collections.Generic;
 
 namespace Tips.Purchase.Api.Repository
 {
@@ -28,7 +29,35 @@ namespace Tips.Purchase.Api.Repository
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
+        public async Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string prNumber, string prItemNumber)
+        {
+            var PRid = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PrNumber == prNumber).Select(x=>x.Id).FirstOrDefaultAsync();
+            var FileIds = await _tipsPurchaseDbContext.PrItems.Where(x => x.PurchaseRequistionId == PRid && x.ItemNumber == prItemNumber).Select(x => x.PRFileIds).FirstOrDefaultAsync();
+            if (FileIds != null) {
+                string[]? ids = FileIds.Split(',');
+                List<GetDownloadUrlDto> getDownloadDetails = new List<GetDownloadUrlDto>();
+                for (int i = 0; i < ids.Count(); i++)
+                {
+                    GetDownloadUrlDto getDownloadDetails_1 = await _tipsPurchaseDbContext.PRItemsDocumentUploads
+                                    .Where(b => b.Id == Convert.ToInt32(ids[i]))
+                                    .Select(x => new GetDownloadUrlDto()
+                                    {
+                                        Id = x.Id,
+                                        FileName = x.FileName,
+                                        FileExtension = x.FileExtension,
+                                        FilePath = x.FilePath
+                                    })
+                                  .FirstOrDefaultAsync();
 
+                    getDownloadDetails.Add(getDownloadDetails_1);
+                }
+                return getDownloadDetails;
+            }
+            else
+            {
+                return null;
+            }
+        }
         public async Task<long> CreatePurchaseRequisition(PurchaseRequisition purchaseRequisitions)
         {
             var date = DateTime.Now;
@@ -214,10 +243,10 @@ namespace Tips.Purchase.Api.Repository
                 getOldPRDetails.LastModifiedOn = DateTime.Now;
                 Update(getOldPRDetails);
             }
-            purchaseRequisition.CreatedBy = purchaseRequisition.CreatedBy;
-            purchaseRequisition.CreatedOn = purchaseRequisition.CreatedOn;
-            purchaseRequisition.LastModifiedBy = _createdBy;
-            purchaseRequisition.LastModifiedOn = DateTime.Now;
+            purchaseRequisition.CreatedBy = _createdBy;
+            purchaseRequisition.CreatedOn = DateTime.Now;
+            // purchaseRequisition.LastModifiedBy = _createdBy;
+            // purchaseRequisition.LastModifiedOn = 
             var getOldRevisionNumber = _tipsPurchaseDbContext.PurchaseRequisitions
             .Where(x => x.PrNumber == purchaseRequisition.PrNumber)
             .OrderByDescending(x => x.Id)

@@ -1164,21 +1164,36 @@ namespace Tips.SalesService.Api.Controllers
             return Ok();
         }
         //Update shoporder Qty in salesorder while create shoporderUpdateShopOrderQty
+        //[HttpPost]
+        //public async Task<IActionResult> UpdateShopOrderQty([FromBody] ShopOrderReleaseQtyDto shopOrderReleaseQtyDto)
+        //{
+          
+        //        IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderBySalesOrderNoandItemNo(shopOrderReleaseQtyDto.SalesOrderNumber
+        //                                                                                     ,shopOrderReleaseQtyDto.FGItemNumber, shopOrderReleaseQtyDto.ProjectNumber);
+        //        var orderItem = salesOrderItems.FirstOrDefault();
+
+        //        orderItem.ShopOrderQty += shopOrderReleaseQtyDto.ReleaseQty;
+        //        await _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+            
+        //     _salesOrderItemsRepository.SaveAsync();
+        //     return Ok();
+        //}
         [HttpPost]
         public async Task<IActionResult> UpdateShopOrderQty([FromBody] ShopOrderReleaseQtyDto shopOrderReleaseQtyDto)
         {
-          
-                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderBySalesOrderNoandItemNo(shopOrderReleaseQtyDto.SalesOrderNumber
-                                                                                             ,shopOrderReleaseQtyDto.FGItemNumber, shopOrderReleaseQtyDto.ProjectNumber);
-                var orderItem = salesOrderItems.FirstOrDefault();
 
+            IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderBySalesOrderNoandItemNo(shopOrderReleaseQtyDto.SalesOrderNumber
+                                                                                             , shopOrderReleaseQtyDto.FGItemNumber, shopOrderReleaseQtyDto.ProjectNumber);
+            var orderItem = salesOrderItems.FirstOrDefault();
+            if (orderItem.OrderQty != orderItem.ShopOrderQty)
+            {
                 orderItem.ShopOrderQty += shopOrderReleaseQtyDto.ReleaseQty;
                 await _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
-            
-             _salesOrderItemsRepository.SaveAsync();
-             return Ok();
-        }
 
+                _salesOrderItemsRepository.SaveAsync();
+            }
+            return Ok();
+        }
         //Update Pending shoporder Qty in salesorder
         [HttpPost]
         public async Task<IActionResult> UpdatePendingShopOrderQty([FromBody] UpdatePendingShopOrderConfirmationQtyDto updatePendingShopOrderConfirmationQtyDto)

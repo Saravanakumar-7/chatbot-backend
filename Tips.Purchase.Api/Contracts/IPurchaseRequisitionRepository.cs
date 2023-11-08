@@ -28,7 +28,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIINameList();
         Task<int?> GetPRNumberAutoIncrementCount(DateTime date);
         Task<IEnumerable<PurchaseRequistionRevNoListDto>> GetAllRevisionNumberListByPRNumber(string prNumber);
-
+        Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string prNumber, string prItemNumber);
         Task<PurchaseRequisition> GetPurchaseRequisitionByPRNoAndRevNo(string prNumber, int revisionNumber);
         Task<string> GeneratePRNumberAvision();
         Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIList(PagingParameter pagingParameter ,SearchParamess searchParams);
