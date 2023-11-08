@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.Master.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class ConvertionrateController : ControllerBase
     {
@@ -324,6 +324,29 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
+        [HttpGet]
+        public async Task<IActionResult> GetLatestConvertionrateByUOC(string currency)
+        {
+            ServiceResponse<decimal> serviceResponse = new ServiceResponse<decimal>();
+            try
+            {
+                decimal currrentrate = await _repository.ConvertionrateRepository.GetLatestConvertionrateByUOC(currency);
+                _logger.LogInfo("Returned all Convertionrate");               
+                serviceResponse.Data = currrentrate;
+                serviceResponse.Message = "Returned all Active Convertionrate Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = 0;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside GetLatestConvertionrateByUOC action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

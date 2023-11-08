@@ -362,6 +362,18 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         if (ppvendor.Primary == true)
                         {
+                            if (ppvendor.Currency!= "INR")
+                            {
+                                var httpClientHandler = new HttpClientHandler();
+                                httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                                var httpClient = new HttpClient(httpClientHandler);                                
+                                var rfqApiUrl = _config["ConvertionrateAPI"];
+                                var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={ppvendor.Currency}");
+                                var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
+                                var vendorUOC = JsonConvert.DeserializeObject<decimal>(rfqCustomerIdString);
+                                ppvendor.LandingPrice=ppvendor.LandingPrice * vendorUOC;
+                                ppvendor.MoqCost= ppvendor.MoqCost* vendorUOC;
+                            }
                             rfqSourcingPPdetails.VLandindPrice = ppvendor.LandingPrice;
                             rfqSourcingPPdetails.VMoqcost = ppvendor.MoqCost;
                         }
