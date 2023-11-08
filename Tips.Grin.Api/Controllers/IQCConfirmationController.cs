@@ -418,6 +418,8 @@ namespace Tips.Grin.Api.Controllers
             }
         }
         //create Iqc
+
+
         [HttpPost]
         public async Task<IActionResult> CreateIqc([FromBody] IQCConfirmationPostDto iQCConfirmationPostDto)
         {
@@ -449,11 +451,11 @@ namespace Tips.Grin.Api.Controllers
                 var iQcItemNo = iQCDto[0].ItemNumber;
                 var iQCItemList = new List<IQCConfirmationItems>();
 
-                for(int  i=0; i< iQCDto.Count;i++)
+                for (int i = 0; i < iQCDto.Count; i++)
                 {
                     IQCConfirmationItems iQCConfirmationItems = _mapper.Map<IQCConfirmationItems>(iQCDto[i]);
                     var grinPartId = iQCDto[i].GrinPartId;
-                   
+
                     var grinPartsDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinPartId);
                     if (grinPartsDetails == null)
                     {
@@ -467,7 +469,7 @@ namespace Tips.Grin.Api.Controllers
                     if (grinPartsDetails.Qty <= (iQCConfirmationItems.AcceptedQty + iQCConfirmationItems.RejectedQty))
                     {
                         grinPartsDetails.AcceptedQty = iQCConfirmationItems.AcceptedQty;
-                        grinPartsDetails.RejectedQty = iQCConfirmationItems.RejectedQty;                      
+                        grinPartsDetails.RejectedQty = iQCConfirmationItems.RejectedQty;
                         _grinPartsRepository.SaveAsync();
                     }
                     else
@@ -493,7 +495,7 @@ namespace Tips.Grin.Api.Controllers
                     grinInventoryDto.LotNumber = grinPartsDetails.LotNumber;
                     grinInventoryDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
                     grinInventoryDto.Description = grinPartsDetails.ItemDescription;
-                    grinInventoryDto.ProjectNumber = grinPartsDetails.ProjectNumbers[i].ProjectNumber;
+                    grinInventoryDto.ProjectNumber = "";
                     grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iQCConfirmationItems.RejectedQty);
                     grinInventoryDto.UOM = grinPartsDetails.UOM;
                     grinInventoryDto.Warehouse = "Reject";
@@ -501,7 +503,7 @@ namespace Tips.Grin.Api.Controllers
                     grinInventoryDto.GrinNo = iQCCreate.GrinNumber;
                     grinInventoryDto.GrinPartId = iQCConfirmationItems.GrinPartId;
                     grinInventoryDto.PartType = itemMasterObject.itemType;  //We need to check this
-                    grinInventoryDto.ReferenceID = "GRIN" /*/ Convert.ToString(iQCConfirmationItems.Id) /*/;
+                    grinInventoryDto.ReferenceID = "GRIN"; // Convert.ToString(iQCConfirmationItems.Id) //;
                     grinInventoryDto.ReferenceIDFrom = "GRIN";
                     grinInventoryDto.GrinMaterialType = "GRIN";
                     grinInventoryDto.ShopOrderNo = "";
@@ -530,17 +532,17 @@ namespace Tips.Grin.Api.Controllers
                         var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                         dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                         dynamic inventoryObject = inventoryObjectData.data;
-                        if(inventoryObject !=null)
+                        if (inventoryObject != null)
                         {
                             decimal balanceQty = inventoryObject.balance_Quantity;
-                            
+
                             if (inventoryObject.balance_Quantity <= acceptedQty && inventoryObject.balance_Quantity != 0)
                             {
                                 inventoryObject.warehouse = "IQC";
                                 inventoryObject.location = "IQC";
                                 inventoryObject.referenceIDFrom = "GRIN";
                                 acceptedQty -= balanceQty;
-                                
+
                             }
                             else if (inventoryObject.balance_Quantity > acceptedQty)
                             {
@@ -688,6 +690,200 @@ namespace Tips.Grin.Api.Controllers
 
             }
         }
+
+        //[HttpPost]
+        //public async Task<IActionResult> CreateIqc([FromBody] IQCConfirmationPostDto iQCConfirmationPostDto)
+        //{
+        //    ServiceResponse<IQCConfirmationDto> serviceResponse = new ServiceResponse<IQCConfirmationDto>();
+
+        //    try
+        //    {
+        //        if (iQCConfirmationPostDto == null)
+        //        {
+        //            _logger.LogError("IQCConfirmation details object sent from client is null.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "IQCConfirmation details object is null";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest();
+        //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _logger.LogError("Invalid IQCConfirmation details object sent from client.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid model object";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+
+        //        var iQCCreate = _mapper.Map<IQCConfirmation>(iQCConfirmationPostDto);
+        //        var iQCDto = iQCConfirmationPostDto.IQCConfirmationItemsPostDtos;
+        //        var iQcItemNo = iQCDto[0].ItemNumber;
+        //        var iQCItemList = new List<IQCConfirmationItems>();
+
+        //        for(int  i=0; i< iQCDto.Count;i++)
+        //        {
+        //            IQCConfirmationItems iQCConfirmationItems = _mapper.Map<IQCConfirmationItems>(iQCDto[i]);
+        //            var grinPartId = iQCDto[i].GrinPartId;
+
+        //            var grinPartsDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinPartId);
+        //            if (grinPartsDetails == null)
+        //            {
+        //                _logger.LogError($"Invalid Grin Part Id {grinPartId}");
+        //                serviceResponse.Data = null;
+        //                serviceResponse.Message = $"Invalid Grin Part Id {grinPartId}";
+        //                serviceResponse.Success = false;
+        //                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //                return BadRequest(serviceResponse);
+        //            }
+        //            if (grinPartsDetails.Qty <= (iQCConfirmationItems.AcceptedQty + iQCConfirmationItems.RejectedQty))
+        //            {
+        //                grinPartsDetails.AcceptedQty = iQCConfirmationItems.AcceptedQty;
+        //                grinPartsDetails.RejectedQty = iQCConfirmationItems.RejectedQty;                      
+        //                _grinPartsRepository.SaveAsync();
+        //            }
+        //            else
+        //            {
+        //                _logger.LogError("Grinpart Quantity should not be lesser than accepted + rejected Quantity .");
+        //                serviceResponse.Data = null;
+        //                serviceResponse.Message = "Grinpart Quantity should not be lesser than accepted + rejected Quantity ";
+        //                serviceResponse.Success = false;
+        //                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //                return BadRequest(serviceResponse);
+        //            }
+        //            iQCItemList.Add(iQCConfirmationItems);
+
+
+        //            var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
+        //                  "GetItemMasterByItemNumber?", "&ItemNumber=", iQcItemNo));
+        //            var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+        //            dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+        //            dynamic itemMasterObject = itemMasterObjectData.data;
+
+        //            IQCInventoryDto grinInventoryDto = new IQCInventoryDto();
+        //            grinInventoryDto.PartNumber = iQCConfirmationItems.ItemNumber;
+        //            grinInventoryDto.LotNumber = grinPartsDetails.LotNumber;
+        //            grinInventoryDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
+        //            grinInventoryDto.Description = grinPartsDetails.ItemDescription;
+        //            grinInventoryDto.ProjectNumber = grinPartsDetails.ProjectNumbers[i].ProjectNumber;
+        //            grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iQCConfirmationItems.RejectedQty);
+        //            grinInventoryDto.UOM = grinPartsDetails.UOM;
+        //            grinInventoryDto.Warehouse = "Reject";
+        //            grinInventoryDto.Location = "Reject";
+        //            grinInventoryDto.GrinNo = iQCCreate.GrinNumber;
+        //            grinInventoryDto.GrinPartId = iQCConfirmationItems.GrinPartId;
+        //            grinInventoryDto.PartType = itemMasterObject.itemType;  //We need to check this
+        //            grinInventoryDto.ReferenceID = "GRIN"; /*/ Convert.ToString(iQCConfirmationItems.Id) /;*/
+        //            grinInventoryDto.ReferenceIDFrom = "GRIN";
+        //            grinInventoryDto.GrinMaterialType = "GRIN";
+        //            grinInventoryDto.ShopOrderNo = "";
+
+        //            var jsons = JsonConvert.SerializeObject(grinInventoryDto);
+        //            var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+
+        //            //Inventory Update Code
+        //            var tokenValue = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+        //            if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
+        //            {
+        //                var token = tokenValue.Substring(7);
+        //                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        //            }
+        //            var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), datas);
+        //            decimal acceptedQty = iQCDto[i].AcceptedQty;
+        //            foreach (var projectNo in grinPartsDetails.ProjectNumbers)
+        //            {
+        //                var grinNo = iQCCreate.GrinNumber;
+        //                var grinPartsId = projectNo.GrinPartsId;
+        //                var itemNo = iQCDto[i].ItemNumber;
+        //                var projectNos = projectNo.ProjectNumber;
+        //                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+        //                    "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", grinNo, "&GrinPartsId=",
+        //                    grinPartsId, "&ItemNumber=", itemNo, "&ProjectNumber=", projectNos));
+        //                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+        //                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+        //                dynamic inventoryObject = inventoryObjectData.data;
+        //                if(inventoryObject !=null)
+        //                {
+        //                    decimal balanceQty = inventoryObject.balance_Quantity;
+
+        //                    if (inventoryObject.balance_Quantity <= acceptedQty && inventoryObject.balance_Quantity != 0)
+        //                    {
+        //                        inventoryObject.warehouse = "IQC";
+        //                        inventoryObject.location = "IQC";
+        //                        inventoryObject.referenceIDFrom = "GRIN";
+        //                        acceptedQty -= balanceQty;
+
+        //                    }
+        //                    else if (inventoryObject.balance_Quantity > acceptedQty)
+        //                    {
+        //                        if (acceptedQty == 0)
+        //                        {
+        //                            inventoryObject.balance_Quantity = acceptedQty;
+        //                            inventoryObject.warehouse = "IQC";
+        //                            inventoryObject.location = "IQC";
+        //                            inventoryObject.referenceIDFrom = "GRIN";
+        //                            inventoryObject.isStockAvailable = false;
+        //                        }
+        //                        else
+        //                        {
+        //                            inventoryObject.balance_Quantity = acceptedQty;
+        //                            inventoryObject.warehouse = "IQC";
+        //                            inventoryObject.location = "IQC";
+        //                            inventoryObject.referenceIDFrom = "GRIN";
+        //                            acceptedQty = 0;
+        //                        }
+        //                    }
+
+        //                    var json = JsonConvert.SerializeObject(inventoryObject);
+        //                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+        //                    var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
+        //                        "UpdateInventory?id=", inventoryObject.id), data);
+        //                }
+
+        //            }
+
+        //            ////update accepted qty and rejected qty in grin model
+
+        //            var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iQCConfirmationItems.GrinPartId, iQCConfirmationItems.AcceptedQty.ToString(), iQCConfirmationItems.RejectedQty.ToString());
+
+        //            var iQCCreates = _mapper.Map<GrinParts>(updatedGrinPartsQty);
+
+        //            string result = await _grinPartsRepository.UpdateGrinQty(iQCCreates);
+
+        //            _grinPartsRepository.SaveAsync();
+        //        }
+
+        //        iQCCreate.IQCConfirmationItems = iQCItemList;
+        //        iQCCreate.IsIqcCompleted = true;
+        //        await _iQCConfirmationRepository.CreateIqc(iQCCreate);
+        //        _iQCConfirmationRepository.SaveAsync();
+
+        //        //Updating IQC Status in Grin
+        //        var grinNumber = iQCCreate.GrinNumber;
+        //        var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNumber);
+        //        grinDetails.IsIqcCompleted = true;
+        //        await _grinRepository.UpdateGrin(grinDetails);
+        //        _grinRepository.SaveAsync();
+
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "IQCConfirmation Successfully Created";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Created("IQCConfirmationById", serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside Create IQCConfirmation action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+
+
+        //    }
+        //}
 
         //check and enble the below code
 

@@ -720,13 +720,14 @@ namespace Tips.Purchase.Api.Controllers
                 foreach (var poUploadDetail in poUploadDetails)
                 {
                     var fileContent = poUploadDetail.FileByte;
+                    byte[] imageContent = Convert.FromBase64String(poUploadDetail.FileByte);
                     var poNumbers = purchaseOrderDetails.PONumber;
                     string fileName = poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
                     Guid guid = Guid.NewGuid();
                     string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", guid.ToString() + "_" + fileName);
-                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    using (MemoryStream ms = new MemoryStream(imageContent))
                     {
                         ms.Position = 0;
                         using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
@@ -846,7 +847,7 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         //download file api
-
+        //
         [HttpGet]
         public async Task<ActionResult> DownloadFile(string Filename)
         {
@@ -1162,12 +1163,13 @@ namespace Tips.Purchase.Api.Controllers
                 foreach (var poUploadDetail in uploadDocumentDto)
                 {
                     var fileContent = poUploadDetail.FileByte;
+                    byte[] imageContent = Convert.FromBase64String(poUploadDetail.FileByte);
                     string fileName = poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
                     Guid guid = Guid.NewGuid();
                     string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", /*guid.ToString() + "_" */ fileName);
-                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    using (MemoryStream ms = new MemoryStream(imageContent))
                     {
                         ms.Position = 0;
                         using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))

@@ -498,8 +498,8 @@ namespace Tips.Purchase.Api.Repository
         {
             var purchaseRequistionDetailById = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.Id == id)
                                  .Include(o => o.PrFiles)
-                                 .Include(itm => itm.PrItemsDtoList)
-                                 .ThenInclude(x => x.Upload)
+                                 //.Include(itm => itm.PrItemsDtoList)
+                                 //.ThenInclude(x => x.Upload)
                                  .Include(t => t.PrItemsDtoList)
                                  .ThenInclude(x => x.prAddprojectsDtoList)
                                  .Include(m => m.PrItemsDtoList)

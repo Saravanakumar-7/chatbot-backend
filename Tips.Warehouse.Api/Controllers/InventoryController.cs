@@ -18,7 +18,8 @@ using Microsoft.Extensions.Configuration;
 using System.Configuration;
 
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
- 
+using Entities.DTOs;
+
 namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
@@ -690,6 +691,47 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //passing list of item number in consumption report
+        [HttpPost]
+        public async Task<IActionResult> GetConsumptionInventoryByItemNotest1(List<string> itemNumberList)
+        {
+            ServiceResponse<List<ConsumptionInventoryDto>> serviceResponse = new ServiceResponse<List<ConsumptionInventoryDto>>();
+             
+            try
+            {
+                var InventoryDetails = await _inventoryRepository.GetConsumptionInventoryByItemNotest(itemNumberList);
+                if (InventoryDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory Details hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with itemNumber: {itemNumberList}, is invalid");
+                    return NotFound(serviceResponse);
+
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with Itemnumber: {itemNumberList}");
+                    var result = _mapper.Map<List<ConsumptionInventoryDto>>(InventoryDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned InventoryDetails with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         //consumption report by itemnumber
         [HttpGet]

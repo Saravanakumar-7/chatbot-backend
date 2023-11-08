@@ -88,14 +88,23 @@ namespace Tips.SalesService.Api.Controllers
 
             List<ItemNoWithPartTypeDto> itemNoWithPartType = new List<ItemNoWithPartTypeDto>();
 
+            //for this loop we need to check
             foreach (var item in itemNoPartTypeData.data)
             {
                 ItemNoWithPartTypeDto dto = JsonConvert.DeserializeObject<ItemNoWithPartTypeDto>(item.ToString());
                 itemNoWithPartType.Add(dto);
             }
 
+            var salesOrderItemListjson = JsonConvert.SerializeObject(itemNumberList);
+            var salesOrderItemDetailsString = new StringContent(salesOrderItemListjson, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionInventoryByItemNotest1"), salesOrderItemDetailsString);
+             
+
             foreach (var salesOrderItem in salesOrders)
             {
+                //
+              
+
                 // Calculate Stock
 
                 var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],

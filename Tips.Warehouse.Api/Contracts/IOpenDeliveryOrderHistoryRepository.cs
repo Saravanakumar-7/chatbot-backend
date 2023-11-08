@@ -12,6 +12,8 @@ namespace Tips.Warehouse.Api.Contracts
 
         Task<OpenDeliveryOrderHistory> GetOpenDeliveryOrderHistoryDetailsById(int id);
 
+        Task<IEnumerable<OpenDeliveryOrderHistory>> GetOpenDeliveryOrderHistoryDetailsByODONo(string odoNumber);
+
         Task<IEnumerable<OpenDeliveryOrderHistory>> GetOpenDeliveryOrderHistoryDetailsByBtoNo(string odoNumber, string uniqueId);
     }
 }
