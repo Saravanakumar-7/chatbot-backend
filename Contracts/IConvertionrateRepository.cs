@@ -15,5 +15,6 @@ namespace Contracts
         Task<int?> CreateConvertionrate(Convertionrate convertionrate);
         Task<string> UpdateConvertionrate(Convertionrate convertionrate);
         Task<string> DeleteConvertionrate(Convertionrate convertionrate);
+        Task<decimal> GetLatestConvertionrateByUOC(string currency);
     }
 }

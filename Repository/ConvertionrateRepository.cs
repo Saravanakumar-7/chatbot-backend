@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
-    internal class ConvertionrateRepository : RepositoryBase<Convertionrate>, IConvertionrateRepository
+    public class ConvertionrateRepository : RepositoryBase<Convertionrate>, IConvertionrateRepository
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
@@ -64,7 +64,12 @@ namespace Repository
             var convertionratebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
             return convertionratebyId;
         }
-
+        public async Task<decimal> GetLatestConvertionrateByUOC(string currency)
+        {
+            decimal currentrate = await FindByCondition(x => x.UOC == currency).OrderByDescending(x => x.Date).Select(x=>x.ConvertionRate)
+                .FirstOrDefaultAsync();
+            return currentrate;
+        }
         public async Task<string> UpdateConvertionrate(Convertionrate convertionrate)
         {
             convertionrate.LastModifiedBy = _createdBy;
