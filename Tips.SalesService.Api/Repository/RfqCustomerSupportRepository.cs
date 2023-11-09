@@ -171,10 +171,10 @@ namespace Tips.SalesService.Api.Repository
         public async Task<RfqCustomerSupport> UpdateRfqcsRevNo(RfqCustomerSupport rfqCustomerSupport)
         {
 
-            rfqCustomerSupport.CreatedBy = rfqCustomerSupport.CreatedBy;
-            rfqCustomerSupport.CreatedOn = rfqCustomerSupport.CreatedOn;
-            rfqCustomerSupport.LastModifiedBy = _createdBy;
-            rfqCustomerSupport.LastModifiedOn = DateTime.Now;
+            rfqCustomerSupport.CreatedBy = _createdBy; ;
+            rfqCustomerSupport.CreatedOn = DateTime.Now;
+           // rfqCustomerSupport.LastModifiedBy = _createdBy;
+            //rfqCustomerSupport.LastModifiedOn = DateTime.Now;
             //var getOldRevisionNumber = _tipsSalesServiceDbContext.RfqCustomerSupports
             //    .Where(x => x.RfqNumber == rfqCustomerSupport.RfqNumber)
             //    .OrderByDescending(x => x.Id)

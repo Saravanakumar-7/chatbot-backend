@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.Enums;
 
 namespace Tips.Warehouse.Api.Entities
 {
@@ -16,7 +17,7 @@ namespace Tips.Warehouse.Api.Entities
         [Precision(13,3)]
         public decimal InvoicedQty { get; set; }
         public string? UOM { get; set; }
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
         public string? SerialNumber { get; set; }
         public int BtoDeliveryOrderPartsId { get; set; }
 
