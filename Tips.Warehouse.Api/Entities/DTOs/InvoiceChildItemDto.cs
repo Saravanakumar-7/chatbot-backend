@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Tips.Warehouse.Api.Entities.Enums;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {
@@ -16,7 +17,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal InvoicedQty { get; set; }
         public string? UOM { get; set; }
 
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
 
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
@@ -60,7 +61,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal InvoicedQty { get; set; }
         public string? UOM { get; set; }
 
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
 
         public string? Description { get; set; }
 
@@ -108,7 +109,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal InvoicedQty { get; set; }
         public string? UOM { get; set; }
 
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
 
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
@@ -150,7 +151,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal InvoicedQty { get; set; }
         public string? UOM { get; set; }
 
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
 
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
