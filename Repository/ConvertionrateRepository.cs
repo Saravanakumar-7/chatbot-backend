@@ -64,10 +64,9 @@ namespace Repository
             var convertionratebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
             return convertionratebyId;
         }
-        public async Task<decimal> GetLatestConvertionrateByUOC(string currency)
+        public async Task<Convertionrate> GetLatestConvertionrateByUOC(string currency)
         {
-            decimal currentrate = await FindByCondition(x => x.UOC == currency).OrderByDescending(x => x.Date).Select(x=>x.ConvertionRate)
-                .FirstOrDefaultAsync();
+            var currentrate = await FindByCondition(x => x.UOC == currency).OrderByDescending(x => x.Date).FirstOrDefaultAsync();
             return currentrate;
         }
         public async Task<string> UpdateConvertionrate(Convertionrate convertionrate)

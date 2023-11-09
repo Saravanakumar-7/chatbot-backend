@@ -1,4 +1,6 @@
-﻿namespace Tips.SalesService.Api.Entities.DTOs
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Tips.SalesService.Api.Entities.DTOs
 {
     public class SourcingVendorDto
     {
@@ -7,16 +9,16 @@
         public string? SourcingVendors { get; set; }
 
         public string? SourcingCurrency { get; set; }
-
-        public string? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
 
         public DateTime? QuoteDate { get; set; }
 
         public string? UnitPrice { get; set; }
 
         public string? MOQ { get; set; }
-
-        public string? Duties { get; set; }
+        [Precision(13, 3)]
+        public decimal? Duties { get; set; }
 
         public DateTime? QuoteValidity { get; set; }
         public string? UnitPricePer { get; set; }
@@ -34,16 +36,16 @@
         public string? SourcingVendors { get; set; }
 
         public string? SourcingCurrency { get; set; }
-
-        public string? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
 
         public DateTime? QuoteDate { get; set; }
 
         public string? UnitPrice { get; set; }
 
         public string? MOQ { get; set; }
-
-        public string? Duties { get; set; }
+        [Precision(13, 3)]
+        public decimal? Duties { get; set; }
 
         public DateTime? QuoteValidity { get; set; }
         public string? UnitPricePer { get; set; }
@@ -63,16 +65,16 @@
         public string? SourcingVendors { get; set; }
 
         public string? SourcingCurrency { get; set; }
-
-        public string? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
 
         public DateTime? QuoteDate { get; set; }
 
         public string? UnitPrice { get; set; }
 
         public string? MOQ { get; set; }
-
-        public string? Duties { get; set; }
+        [Precision(13, 3)]
+        public decimal? Duties { get; set; }
 
         public DateTime? QuoteValidity { get; set; }
         public string? UnitPricePer { get; set; }
