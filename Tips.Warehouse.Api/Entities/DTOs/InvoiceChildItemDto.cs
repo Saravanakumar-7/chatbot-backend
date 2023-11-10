@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using Tips.Warehouse.Api.Entities.Enums;
+using Entities.Enums;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {

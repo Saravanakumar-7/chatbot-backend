@@ -28,6 +28,7 @@ namespace Tips.SalesService.Api.Entities.Dto
 
         [Precision(13, 3)]
         public decimal ShopOrderQty { get; set; }
+        public decimal ShopOrderReleaseQty { get; set; }
         public string? UOM { get; set; }
         public string? Currency { get; set; }
 

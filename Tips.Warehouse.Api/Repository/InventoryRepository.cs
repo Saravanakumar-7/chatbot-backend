@@ -663,7 +663,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<IEnumerable<GetInventoryListByItemNo>> GetInventoryListByItemNo( string ItemNumber)
         {
             string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
-            var partTypes = new PartType[] { PartType.FG, PartType.TG, PartType.FRU };
+            var partTypes = new PartType[] { PartType.FG, PartType.TG, PartType.FRU, PartType.PurchasePart };
            
             IEnumerable<GetInventoryListByItemNo> getInventoryListByItemNo = await _tipsWarehouseDbContext.Inventories
                 .Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true && !skipWareHouse.Contains(x.Warehouse) && partTypes.Contains(x.PartType))

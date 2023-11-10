@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using Tips.Warehouse.Api.Entities;
-using Tips.Warehouse.Api.Entities.Enums;
+using Entities.Enums;
 
 namespace Tips.Warehouse.Api.Entities
 {
