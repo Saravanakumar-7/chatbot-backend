@@ -370,9 +370,9 @@ namespace Tips.SalesService.Api.Controllers
                                 var rfqApiUrl = _config["ConvertionrateAPI"];
                                 var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={ppvendor.Currency}");
                                 var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
-                                var vendorUOC = JsonConvert.DeserializeObject<decimal>(rfqCustomerIdString);
-                                ppvendor.LandingPrice=ppvendor.LandingPrice * vendorUOC;
-                                ppvendor.MoqCost= ppvendor.MoqCost* vendorUOC;
+                                var vendorUOC = JsonConvert.DeserializeObject<RfqSourcingConvertionrateDto>(rfqCustomerIdString);
+                                ppvendor.LandingPrice=ppvendor.LandingPrice * vendorUOC.Data.ConvertionRate;
+                                ppvendor.MoqCost= ppvendor.MoqCost* vendorUOC.Data.ConvertionRate;
                             }
                             rfqSourcingPPdetails.VLandindPrice = ppvendor.LandingPrice;
                             rfqSourcingPPdetails.VMoqcost = ppvendor.MoqCost;

@@ -21,8 +21,10 @@ namespace Tips.SalesService.Api.Entities
         public string? Currency { get; set; }
         public string? MOQ { get; set; }
         public string? LeadTime { get; set; }
-        public string? Freight { get; set; }      
-        public string? Duties { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Duties { get; set; }
 
         [Precision(13,3)]
         public decimal? QuoteQty { get; set; }
