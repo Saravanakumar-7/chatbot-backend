@@ -23,7 +23,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public bool ReleaseStatus { get; set; }       
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<DocumentUploadDto> Upload { get; set; }
+        public List<DocumentUploadDto>? Upload { get; set; }
         public List<RfqCSDeliveryScheduleDto>? RfqCSDeliverySchedule { get; set; }
 
     }
@@ -40,7 +40,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
         public string? RoomName { get; set; }
-        public List<DocumentUploadPostDto> Upload { get; set; }
+        public List<DocumentUploadPostDto>? Upload { get; set; }
         public List<RfqCSDeliverySchedulePostDto>? RfqCSDeliverySchedule { get; set; }
 
     }
@@ -61,7 +61,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [NotMapped]
         public bool ReleaseStatus { get; set; }
-        public List<DocumentUploadUpdateDto> Upload { get; set; }
+        public List<DocumentUploadUpdateDto>? Upload { get; set; }
 
         public List<RfqCSDeliveryScheduleUpdateDto>? RfqCSDeliverySchedule { get; set; }
 

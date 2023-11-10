@@ -1265,11 +1265,11 @@ namespace Tips.SalesService.Api.Controllers
         //getsalesorderdetailbyitemnoandsalesorderId
 
         [HttpGet]
-        public async Task<IActionResult> GetFGSalesOrderDetailsByItemNo(string itemNumber,string projectType)
+        public async Task<IActionResult> GetFGSalesOrderDetailsByItemNo(string itemNumber, string projectType)
         {
             ServiceResponse<ItemDetailsForShopOrderDto> serviceResponse = new ServiceResponse<ItemDetailsForShopOrderDto>();
             try
-            {  
+            {
                 var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
                     "GetAllProductionBomFGListByItemNumber?", "itemNumber=", itemNumber));
 
@@ -1278,7 +1278,7 @@ namespace Tips.SalesService.Api.Controllers
                 dynamic bomData = bomDetailsStringData.data;
                 string jsonString = JsonConvert.SerializeObject(bomData[0].bomVersionNo);
                 JArray jArray = JArray.Parse(jsonString);
-                decimal[] bomVersionNo = jArray.ToObject<decimal[]>(); 
+                decimal[] bomVersionNo = jArray.ToObject<decimal[]>();
 
                 ItemDetailsForShopOrderDto itemDetailsDto = new ItemDetailsForShopOrderDto();
                 itemDetailsDto.ItemNumber = bomData[0].itemNumber;
@@ -1308,7 +1308,51 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-         
+
+        //[HttpGet]
+        //public async Task<IActionResult> GetFGSalesOrderDetailsByItemNo(string itemNumber)
+        //{
+        //    ServiceResponse<ItemDetailsForShopOrderDto> serviceResponse = new ServiceResponse<ItemDetailsForShopOrderDto>();
+        //    try
+        //    {
+        //        var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
+        //            "GetAllProductionBomFGListByItemNumber?", "itemNumber=", itemNumber));
+
+        //        var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
+        //        dynamic bomDetailsStringData = JsonConvert.DeserializeObject(bomDetailsString);
+        //        dynamic bomData = bomDetailsStringData.data;
+        //        string jsonString = JsonConvert.SerializeObject(bomData[0].bomVersionNo);
+        //        JArray jArray = JArray.Parse(jsonString);
+        //        decimal[] bomVersionNo = jArray.ToObject<decimal[]>();
+
+        //        ItemDetailsForShopOrderDto itemDetailsDto = new ItemDetailsForShopOrderDto();
+        //        itemDetailsDto.ItemNumber = bomData[0].itemNumber;
+        //        itemDetailsDto.ItemType = bomData[0].itemType;
+        //        itemDetailsDto.BomVersionNo = bomVersionNo;
+
+        //        var projectSODetails = await _repository.GetProjectDetailsByItemNo(itemNumber);
+        //        foreach (var project in projectSODetails)
+        //        {
+        //            project.SalesOrderQtyDetails = await _repository.GetSalesOrderQtyDetailsByItemNo(itemNumber, project.ProjectNumber);
+        //        }
+        //        itemDetailsDto.ProjectSODetails = projectSODetails;
+
+        //        serviceResponse.Data = itemDetailsDto;
+        //        serviceResponse.Message = "Returned all SalesOrderFGDetails";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong inside GetFGSalesOrderDetailsByItemNo action {ex.InnerException},{ex.Message}";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
 
 
         [HttpGet]

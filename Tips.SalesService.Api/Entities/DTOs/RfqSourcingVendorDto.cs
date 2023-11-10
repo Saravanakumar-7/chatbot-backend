@@ -20,8 +20,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? Currency { get; set; }
         public string? MOQ { get; set; }
         public string? LeadTime { get; set; }
-        public string? Freight { get; set; }
-        public string? Duties { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Duties { get; set; }
 
         [Precision(13, 3)]
         public decimal? QuoteQty { get; set; }
@@ -52,12 +54,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "LeadTime can't be longer than 500 characters")]
         public string? LeadTime { get; set; }
-
-        [StringLength(500, ErrorMessage = "Freight can't be longer than 500 characters")]
-        public string? Freight { get; set; }
-
-       [StringLength(500, ErrorMessage = "Duties can't be longer than 500 characters")]
-        public string? Duties { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Duties { get; set; }
 
         [Precision(13, 3)]
         public decimal? QuoteQty { get; set; }
@@ -90,11 +90,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [StringLength(500, ErrorMessage = "LeadTime can't be longer than 500 characters")]
         public string? LeadTime { get; set; }
 
-        [StringLength(500, ErrorMessage = "Freight can't be longer than 500 characters")]
-        public string? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
 
-        [StringLength(500, ErrorMessage = "Duties can't be longer than 500 characters")]
-        public string? Duties { get; set; }
+        [Precision(13, 3)]
+        public decimal? Duties { get; set; }
 
         [Precision(13, 3)]
         public decimal? QuoteQty { get; set; }
@@ -104,5 +104,26 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? MoqCost { get; set; }
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }        
+    }
+    public class RfqSourcingConvertionrateDto
+    {
+        public Data Data { get; set; }
+        public string Message { get; set; }
+        public bool Success { get; set; }
+        public int StatusCode { get; set; }
+    }
+
+    public class Data
+    {
+        public int Id { get; set; }
+        public decimal ConvertionRate { get; set; }
+        public string UOC { get; set; }
+        public DateTime Date { get; set; }
+        public bool ActiveStatus { get; set; }
+        public string Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
     }
 }

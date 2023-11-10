@@ -328,12 +328,13 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetLatestConvertionrateByUOC(string currency)
         {
-            ServiceResponse<decimal> serviceResponse = new ServiceResponse<decimal>();
+            ServiceResponse<ConvertionrateDto> serviceResponse = new ServiceResponse<ConvertionrateDto>();
             try
             {
-                decimal currrentrate = await _repository.ConvertionrateRepository.GetLatestConvertionrateByUOC(currency);
+                var currrentrate = await _repository.ConvertionrateRepository.GetLatestConvertionrateByUOC(currency);
+                var result = _mapper.Map<ConvertionrateDto>(currrentrate);
                 _logger.LogInfo("Returned all Convertionrate");               
-                serviceResponse.Data = currrentrate;
+                serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Active Convertionrate Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -341,7 +342,7 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                serviceResponse.Data = 0;
+                serviceResponse.Data =  null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
