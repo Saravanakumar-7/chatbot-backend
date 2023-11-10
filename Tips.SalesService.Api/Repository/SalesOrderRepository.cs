@@ -386,37 +386,15 @@ namespace Tips.SalesService.Api.Repository
 
             return projectSODetails;
         }
-        public async Task<List<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber)
-        {
-            var projectNumbers = await _tipsSalesServiceDbContext.SalesOrdersItems
-                                .Where(x => x.ItemNumber == itemNumber)
-                                .Select(m => m.ProjectNumber).Distinct().ToListAsync();
- 
-                var projectSODetails = await _tipsSalesServiceDbContext.SalesOrders
-                                    .Where(m => projectNumbers.Contains(m.ProjectNumber)
-                                    && m.SOStatus != OrderStatus.Closed && m.IsShortClosed == false)
-                                    .Select(s => new ProjectSODetailDto()
-                                    {
-                                        ProjectNumber = s.ProjectNumber,
-                                        CustomerName = s.CustomerName,
-                                        CustomerId = s.CustomerId
-                                    }).Distinct().ToListAsync();
-                return projectSODetails;
-           
-            
-        }
-
-        //public async Task<List<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber,string projectType)
+        //public async Task<List<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber)
         //{
         //    var projectNumbers = await _tipsSalesServiceDbContext.SalesOrdersItems
         //                        .Where(x => x.ItemNumber == itemNumber)
         //                        .Select(m => m.ProjectNumber).Distinct().ToListAsync();
 
-        //    if (projectType == "ForeCast")
-        //    {
         //        var projectSODetails = await _tipsSalesServiceDbContext.SalesOrders
         //                            .Where(m => projectNumbers.Contains(m.ProjectNumber)
-        //                            && m.SOStatus != OrderStatus.Closed && m.IsShortClosed == false && m.SalesOrderStatus == SalesOrderStatus.Forecast)
+        //                            && m.SOStatus != OrderStatus.Closed && m.IsShortClosed == false)
         //                            .Select(s => new ProjectSODetailDto()
         //                            {
         //                                ProjectNumber = s.ProjectNumber,
@@ -424,21 +402,43 @@ namespace Tips.SalesService.Api.Repository
         //                                CustomerId = s.CustomerId
         //                            }).Distinct().ToListAsync();
         //        return projectSODetails;
-        //    }
-        //    else
-        //    {
-        //        var projectSODetails = await _tipsSalesServiceDbContext.SalesOrders
-        //                        .Where(m => projectNumbers.Contains(m.ProjectNumber)
-        //                        && m.SOStatus != OrderStatus.Closed && m.IsShortClosed == false)
-        //                        .Select(s => new ProjectSODetailDto()
-        //                        {
-        //                            ProjectNumber = s.ProjectNumber,
-        //                            CustomerName = s.CustomerName,
-        //                            CustomerId = s.CustomerId
-        //                        }).Distinct().ToListAsync();
-        //        return projectSODetails;
-        //    }            
+
+
         //}
+
+        public async Task<List<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber, string projectType)
+        {
+            var projectNumbers = await _tipsSalesServiceDbContext.SalesOrdersItems
+                                .Where(x => x.ItemNumber == itemNumber)
+                                .Select(m => m.ProjectNumber).Distinct().ToListAsync();
+
+            if (projectType == "ForeCast")
+            {
+                var projectSODetails = await _tipsSalesServiceDbContext.SalesOrders
+                                    .Where(m => projectNumbers.Contains(m.ProjectNumber)
+                                    && m.SOStatus != OrderStatus.Closed && m.IsShortClosed == false && m.SalesOrderStatus == SalesOrderStatus.Forecast)
+                                    .Select(s => new ProjectSODetailDto()
+                                    {
+                                        ProjectNumber = s.ProjectNumber,
+                                        CustomerName = s.CustomerName,
+                                        CustomerId = s.CustomerId
+                                    }).Distinct().ToListAsync();
+                return projectSODetails;
+            }
+            else
+            {
+                var projectSODetails = await _tipsSalesServiceDbContext.SalesOrders
+                                .Where(m => projectNumbers.Contains(m.ProjectNumber)
+                                && m.SOStatus != OrderStatus.Closed && m.IsShortClosed == false)
+                                .Select(s => new ProjectSODetailDto()
+                                {
+                                    ProjectNumber = s.ProjectNumber,
+                                    CustomerName = s.CustomerName,
+                                    CustomerId = s.CustomerId
+                                }).Distinct().ToListAsync();
+                return projectSODetails;
+            }
+        }
 
 
 

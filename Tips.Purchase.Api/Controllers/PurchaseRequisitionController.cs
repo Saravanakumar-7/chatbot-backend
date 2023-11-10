@@ -453,7 +453,7 @@ namespace Tips.Purchase.Api.Controllers
                             //        fileUploads.Add(fileUploadDto);
                             //    }
                             //}
-                            if (itemDetails.PRFileIds == null)
+                            if (itemDetails.PRFileIds != null)
                             {
                                 List<PRItemsDocumentUploadDto> prd= new List<PRItemsDocumentUploadDto>();                            
                                 string[]? ids = itemDetails.PRFileIds.Split(',');

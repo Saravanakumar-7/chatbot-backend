@@ -25,8 +25,8 @@ namespace Tips.SalesService.Api.Contracts
         Task<PagedList<SalesOrder>> GetAllSalesOrderRfq(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<IEnumerable<SalesOrderIdNameListDto>> GetAllSalesOrderIdNameList();
          
-        //Task<List<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber, string projectType);
-        Task<List<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber);
+        Task<List<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber, string projectType);
+        //Task<List<ProjectSODetailDto>> GetProjectDetailsByItemNo(string itemNumber);
 
         Task<List<ProjectSOSADetailDto>> GetProjectDetailsBySAItemNo(string fgItemNumbers);
         Task<List<SalesOrderQtyDto>> GetSalesOrderQtyDetailsByItemNo(string itemNumber,string projectNo);
