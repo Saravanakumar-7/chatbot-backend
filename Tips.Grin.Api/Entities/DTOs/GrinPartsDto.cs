@@ -305,6 +305,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public List<DocumentUploadDto> COCUpload { get; set; }
 
+        public bool IsIqcCompleted { get; set; }
 
         [Precision(13, 3)]
         public decimal? SGST { get; set; }
@@ -334,7 +335,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public bool IsShelfLife { get; set; }
         [NotMapped]
         [DefaultValue(false)]
-        public bool IsReachItem { get; set; }
+        public bool IsReachItem { get; set; }        
         [NotMapped]
         public List<DocumentUpload>? FileUpload { get; set; }
         public string? CreatedBy { get; set; }
