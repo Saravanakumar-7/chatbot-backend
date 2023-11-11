@@ -162,8 +162,8 @@ namespace Repository
         {
             enggBom.CreatedBy = _createdBy;
             enggBom.CreatedOn = DateTime.Now;
-            enggBom.LastModifiedBy = _createdBy;
-            enggBom.LastModifiedOn = DateTime.Now;
+           // enggBom.LastModifiedBy = _createdBy;
+          //  enggBom.LastModifiedOn = DateTime.Now;
             enggBom.Unit = _unitname;
             var result = await Create(enggBom);
             return result.BOMId;
@@ -740,8 +740,8 @@ namespace Repository
         {
             releaseEnggBom.CreatedBy = _createdBy;
             releaseEnggBom.CreatedOn = DateTime.Now;
-            releaseEnggBom.LastModifiedBy = _createdBy;
-            releaseEnggBom.LastModifiedOn = DateTime.Now;
+           // releaseEnggBom.LastModifiedBy = _createdBy;
+           // releaseEnggBom.LastModifiedOn = DateTime.Now;
             var result = await Create(releaseEnggBom);
             return result.Id;
         }
@@ -840,8 +840,8 @@ namespace Repository
         {
             releaseCostBom.CreatedBy = _createdBy;
             releaseCostBom.CreatedOn = DateTime.Now;
-            releaseCostBom.LastModifiedBy = _createdBy;
-            releaseCostBom.LastModifiedOn = DateTime.Now;
+           // releaseCostBom.LastModifiedBy = _createdBy;
+           // releaseCostBom.LastModifiedOn = DateTime.Now;
             var result = await Create(releaseCostBom);
             return result.Id;
         }

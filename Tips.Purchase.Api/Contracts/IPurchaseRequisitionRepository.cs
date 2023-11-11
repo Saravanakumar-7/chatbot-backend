@@ -21,6 +21,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<long> CreatePurchaseRequisition(PurchaseRequisition purchaseRequisition);
         Task<PurchaseRequisition> ChangePurchaseRequisitionVersion(PurchaseRequisition purchaseRequisition);
         Task<string> UpdatePurchaseRequisition(PurchaseRequisition purchaseRequisition);
+        Task<string> UpdatePurchaseRequisition_ForApproval(PurchaseRequisition purchaseRequisitions);
         Task<string> DeletePurchaseRequisition(PurchaseRequisition purchaseRequisition);
         Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllActivePurchaseRequisitionNameList();
         Task<IEnumerable<PurchaseRequisitionIdNameListDto>> GetAllPurchaseRequisitionNameList();

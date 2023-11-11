@@ -95,34 +95,24 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
     public class InventoryGrinDtoPost
     {
-        [Required]
         public string PartNumber { get; set; }
         public string? LotNumber { get; set; }
 
-        [Required]
         public string MftrPartNumber { get; set; }
 
-        [Required]
         public string Description { get; set; }
 
-        [Required]
         public string ProjectNumber { get; set; }
-        [Required]
         public decimal Balance_Quantity { get; set; }
-        [Required]
         public string? UOM { get; set; }
 
-        [Required]
         public string? Warehouse { get; set; }
-        [Required]
         public string? Location { get; set; }
         public string? GrinNo { get; set; }
         public int? GrinPartId { get; set; }
         public PartType PartType { get; set; }
         public string? GrinMaterialType { get; set; }
-        [Required]
         public string? ReferenceID { get; set; }
-        [Required]
         public string? ReferenceIDFrom { get; set; }
         public string? ShopOrderNo { get; set; }
 
