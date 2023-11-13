@@ -513,6 +513,7 @@ namespace Tips.Warehouse.Api.Controllers
             inventoryTranction.ReferenceID = invoice.InvoiceNumber;
             inventoryTranction.ReferenceIDFrom = "Invoice Delivery Order";
             inventoryTranction.Issued_By = _createdBy;
+            inventoryTranction.CreatedBy = _createdBy;
             inventoryTranction.CreatedOn = DateTime.Now;
             inventoryTranction.From_Location = "BTO";
             inventoryTranction.TO_Location = "Invoice";

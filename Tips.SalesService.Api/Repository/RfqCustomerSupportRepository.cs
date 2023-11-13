@@ -1001,8 +1001,8 @@ namespace Tips.SalesService.Api.Repository
 
             rfq.CreatedBy = rfq.CreatedBy;
             rfq.CreatedOn = rfq.CreatedOn;
-            rfq.LastModifiedBy = _createdBy;
-            rfq.LastModifiedOn = DateTime.Now;
+           // rfq.LastModifiedBy = _createdBy;
+           // rfq.LastModifiedOn = DateTime.Now;
             var getOldRevisionNumber = _tipsSalesServiceDbContext.Rfqs.Where(x => x.RfqNumber == rfq.RfqNumber).OrderByDescending(x => x.Id)
                 .Select(x => x.RevisionNumber).FirstOrDefault();
 
