@@ -1737,7 +1737,8 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(enggbomGroupDtoUpdate, enggbomGroupEntity);
+                var dom= _mapper.Map<EnggBomGroup>(enggbomGroupEntity);
+                _mapper.Map(dom, enggbomGroupEntity);
                 string result = await _repository.EnggBomGroupRepository.UpdateEnggBomGroup(enggbomGroupEntity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();

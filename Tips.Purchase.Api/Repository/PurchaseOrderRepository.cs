@@ -885,6 +885,15 @@ namespace Tips.Purchase.Api.Repository
             return result;
         }
 
+        public async Task<string> UpdatePurchaseOrder_ForApproval(PurchaseOrder purchaseOrder)
+        {
+           // purchaseOrder.LastModifiedBy = _createdBy;
+           // purchaseOrder.LastModifiedOn = DateTime.Now;
+            Update(purchaseOrder);
+            string result = $"PurchaseOrder of Detail {purchaseOrder.Id} is updated successfully!";
+            return result;
+        }
+
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPONumberListByVendorName(string vendorName)
         {
             IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorName = await _tipsPurchaseDbContext.PurchaseOrders

@@ -99,12 +99,14 @@ namespace Tips.SalesService.Api.Repository
                 .Select(x => x.Id)
                 .FirstOrDefault();
             var getOldRevisionNumber = _tipsSalesServiceDbContext.Quotes
-                .Where(x => x.Id == getIdByRfqNumber)
-                .Select(x => x.RevisionNumber)
+                .Where(x => x.Id == getIdByRfqNumber)                
                 .FirstOrDefault();
+            getOldRevisionNumber.LastModifiedBy = _createdBy;
+            getOldRevisionNumber.LastModifiedOn = DateTime.Now;
+            Update(getOldRevisionNumber);
             var increaseVersionNumber = 1;
             var convertversionnumber = Convert.ToDecimal(increaseVersionNumber);
-            var version = getOldRevisionNumber + convertversionnumber;
+            var version = getOldRevisionNumber.RevisionNumber + convertversionnumber;
             quote.RevisionNumber = Convert.ToDecimal(version);
             var result = await Create(quote);
             return result;

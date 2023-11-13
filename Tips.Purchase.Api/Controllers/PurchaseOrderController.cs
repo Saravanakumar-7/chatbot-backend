@@ -798,7 +798,7 @@ namespace Tips.Purchase.Api.Controllers
                 //}
 
                 //Update PrUploadDocu
-                if (prDetailsPostDto.Count != 0)
+                if (prDetailsPostDto != null)
                 {
                     foreach (var prDetailsDto in prDetailsPostDto[0].PrDetailDocumentUploadPostDtos)
                     {
@@ -1775,7 +1775,7 @@ namespace Tips.Purchase.Api.Controllers
                 purchaseOrderDetailByPONumber.POApprovalI = true;
                 purchaseOrderDetailByPONumber.POApprovedIBy = _createdBy;
                 purchaseOrderDetailByPONumber.POApprovedIDate = DateTime.Now;
-                string result = await _repository.UpdatePurchaseOrder(purchaseOrderDetailByPONumber);
+                string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailByPONumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "PurchaseOrderApprovalI Activated Successfully";
@@ -1815,7 +1815,7 @@ namespace Tips.Purchase.Api.Controllers
                 purchaseOrderDetailByPONumber.POApprovalII = true;
                 purchaseOrderDetailByPONumber.POApprovedIIBy = _createdBy;
                 purchaseOrderDetailByPONumber.POApprovedIIDate = DateTime.Now;
-                string result = await _repository.UpdatePurchaseOrder(purchaseOrderDetailByPONumber);
+                string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailByPONumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "PurchaseOrderApprovalII Activated Successfully";

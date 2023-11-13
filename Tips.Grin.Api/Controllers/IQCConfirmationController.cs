@@ -483,13 +483,13 @@ namespace Tips.Grin.Api.Controllers
                     }
                     iQCItemList.Add(iQCConfirmationItems);
 
-
                     var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
                           "GetItemMasterByItemNumber?", "&ItemNumber=", iQcItemNo));
                     var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
                     dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                     dynamic itemMasterObject = itemMasterObjectData.data;
-
+                 if (iQCDto[i].RejectedQty!=0)
+                 { 
                     IQCInventoryDto grinInventoryDto = new IQCInventoryDto();
                     grinInventoryDto.PartNumber = iQCConfirmationItems.ItemNumber;
                     grinInventoryDto.LotNumber = grinPartsDetails.LotNumber;
@@ -508,17 +508,14 @@ namespace Tips.Grin.Api.Controllers
                     grinInventoryDto.GrinMaterialType = "GRIN";
                     grinInventoryDto.ShopOrderNo = "";
 
-                    var jsons = JsonConvert.SerializeObject(grinInventoryDto);
-                    var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                    // Include the token in the Authorization header
-                    var tokenValue = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
-                    if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
-                    {
-                        var token = tokenValue.Substring(7);
-                        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    }
-                    var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), datas);
-
+                    var httpClientHandler = new HttpClientHandler();
+                    httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                    var httpClient = new HttpClient(httpClientHandler);
+                    string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(grinInventoryDto);
+                    var rfqApiUrl = _config["InventoryAPI"];
+                    var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
+                    var rfqCustomerIdResponse = await _httpClient.PostAsync($"{rfqApiUrl}CreateInventoryFromGrin", content);
+                 }
                     decimal acceptedQty = iQCDto[i].AcceptedQty;
                     foreach (var projectNo in grinPartsDetails.ProjectNumbers)
                     {

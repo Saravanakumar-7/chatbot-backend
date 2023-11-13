@@ -565,6 +565,14 @@ namespace Tips.Purchase.Api.Repository
             string result = $"PurchaseRequisitions of Detail {purchaseRequisitions.Id} is updated successfully!";
             return result;
         }
+        public async Task<string> UpdatePurchaseRequisition_ForApproval(PurchaseRequisition purchaseRequisitions)
+        {
+           // purchaseRequisitions.LastModifiedBy = _createdBy;
+           // purchaseRequisitions.LastModifiedOn = DateTime.Now;
+            Update(purchaseRequisitions);
+            string result = $"PurchaseRequisitions of Detail {purchaseRequisitions.Id} is updated successfully!";
+            return result;
+        }
         public async Task<IEnumerable<GetPRDownloadUrlDto>> GetDownloadUrlDetail(string prNumber)
         { 
             IEnumerable<GetPRDownloadUrlDto> getDownloadDetails = await _tipsPurchaseDbContext.DocumentUploads

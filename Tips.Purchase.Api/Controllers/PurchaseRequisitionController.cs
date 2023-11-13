@@ -1339,9 +1339,9 @@ namespace Tips.Purchase.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 purchaseRequisitionDetailByPRNumber.PrApprovalI = true;
-                purchaseRequisitionDetailByPRNumber.PrApprovedIBy = _createdBy;//
+                purchaseRequisitionDetailByPRNumber.PrApprovedIBy = _createdBy;
                 purchaseRequisitionDetailByPRNumber.PrApprovedIDate = DateTime.Now;
-                string result = await _repository.UpdatePurchaseRequisition(purchaseRequisitionDetailByPRNumber);
+                string result = await _repository.UpdatePurchaseRequisition_ForApproval(purchaseRequisitionDetailByPRNumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "PurchaseRequisitionApprovalI Activated Successfully";
@@ -1380,7 +1380,7 @@ namespace Tips.Purchase.Api.Controllers
                 purchaseRequisitionDetailByPRNumber.PrApprovalII = true;
                 purchaseRequisitionDetailByPRNumber.PrApprovedIIBy = _createdBy;
                 purchaseRequisitionDetailByPRNumber.PrApprovedIIDate = DateTime.Now;
-                string result = await _repository.UpdatePurchaseRequisition(purchaseRequisitionDetailByPRNumber);
+                string result = await _repository.UpdatePurchaseRequisition_ForApproval(purchaseRequisitionDetailByPRNumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "PurchaseRequisitionApprovalII Activated Successfully";
