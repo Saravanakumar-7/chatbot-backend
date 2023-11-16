@@ -14,7 +14,17 @@ namespace Tips.Production.Api
             CreateMap<ShopOrder, ShopOrderPostDto>().ReverseMap();
             CreateMap<ShopOrder, ShopOrderUpdateDto>().ReverseMap();
             CreateMap<ShopOrder, ListOfShopOrderDto>().ReverseMap();
-            
+
+            CreateMap<OQCBinning, OQCBinningDto>().ReverseMap();
+            CreateMap<OQCBinning, OQCBinningPostDto>().ReverseMap();
+            CreateMap<OQCBinning, OQCBinningUpdateDto>().ReverseMap();
+
+            CreateMap<OQCBinningLocation, OQCBinningLocationPostDto>().ReverseMap();
+            CreateMap<OQCBinningLocation, OQCBinningLocationDto>().ReverseMap();
+            CreateMap<OQCBinningLocation, OQCBinningLocationUpdateDto>().ReverseMap();
+
+            CreateMap<OQCBinningInventoryUpdateDto, Data>().ReverseMap();
+
             CreateMap<ShopOrderItem, ShopOrderItemDto>().ReverseMap();
             CreateMap<ShopOrderItem, ShopOrderItemPostDto>().ReverseMap();
             CreateMap<ShopOrderItem, ShopOrderItemUpdateDto>().ReverseMap();
