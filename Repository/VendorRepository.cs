@@ -72,7 +72,7 @@ namespace Repository
                 TipsMasterDbContext.Update(poNumberEntity);
                 await TipsMasterDbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-                return $"VD-{poNumberEntity.CurrentValue:D5}";
+                return $"VD-{poNumberEntity.CurrentValue}";
             }
             catch (Exception ex)
             {
