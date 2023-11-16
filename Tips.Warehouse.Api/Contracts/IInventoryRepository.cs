@@ -13,7 +13,7 @@ namespace Tips.Warehouse.Api.Contracts
     public interface IInventoryRepository : IRepositoryBase<Inventory>
     {
         Task<PagedList<Inventory>> GetAllInventory(PagingParameter pagingParameter, SearchParams searchParams);
-
+        Task<Inventory> GetInventoryStockByItemAndShopOrderNo(string itemNumber, string shopordernumber);
         Task<int?> CreateInventory(Inventory inventory);
         Task<string> UpdateInventory(Inventory inventory);
         Task<string> DeleteInventory(Inventory inventory);
@@ -21,7 +21,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<List<InventoryItemNoStock>> GetItemNoByInventoryStock();
         Task<Inventory> GetInventoryById(int id);
         Task<List<InventoryDetailsLocationStock>> GetInventoryDetailsWithInventoryStock(string partNumber, string wareHouse, string location, string projectNumber);
-
+        Task<Inventory> GetFGInventoryStockByItem(string itemNumber);
         Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandLocationandwarehouse(string ItemNumber, string Location, string Warehouse, string projectNumber);
         Task<Inventory> GetInventoryDetails(string ItemNumber);
 

@@ -540,6 +540,7 @@ namespace Tips.Warehouse.Api.Repository
             return inventoryDetails;
         }
 
+
         //passing Project Number and itemnumber
         public async Task<ConsumptionInventoryDto> GetConsumptionInventoryByItemNoAndProjectNo(string itemNumber, string projectNumber)
         {
@@ -700,8 +701,22 @@ namespace Tips.Warehouse.Api.Repository
 
             return getInventoryById;
         }
-         
-         
+
+        public async Task<Inventory> GetInventoryStockByItemAndShopOrderNo(string itemNumber, string shopordernumber)
+        {
+            var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.shopOrderNo == shopordernumber)
+                          .FirstOrDefaultAsync();
+
+            return getInventoryById;
+        }
+        
+        public async Task<Inventory> GetFGInventoryStockByItem(string itemNumber)
+        {
+            var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.Warehouse == "FG" && x.Location=="FG")
+                          .FirstOrDefaultAsync();
+
+            return getInventoryById;
+        }
         public async Task<string> UpdateInventory(Inventory inventory)
         {
             inventory.LastModifiedBy = _createdBy;
