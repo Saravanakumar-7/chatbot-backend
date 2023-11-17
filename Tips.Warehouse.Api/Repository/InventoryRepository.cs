@@ -710,10 +710,17 @@ namespace Tips.Warehouse.Api.Repository
             return getInventoryById;
         }
         
-        public async Task<Inventory> GetFGInventoryStockByItem(string itemNumber)
+        public async Task<List<Inventory>> GetFGInventoryStockByItem(string itemNumber)
         {
             var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.Warehouse == "FG" && x.Location=="FG")
-                          .FirstOrDefaultAsync();
+                          .ToListAsync();
+
+            return getInventoryById;
+        }
+        public async Task<List<Inventory>> GetSAInventoryStockByItem(string itemNumber)
+        {
+            var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.Warehouse == "SA" && x.Location == "SA")
+                          .ToListAsync();
 
             return getInventoryById;
         }

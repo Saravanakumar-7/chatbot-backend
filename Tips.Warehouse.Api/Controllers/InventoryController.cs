@@ -403,7 +403,7 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetFGInventoryStockByItem([FromQuery] string itemNumber)
         {
-            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+            ServiceResponse<List<InventoryDto>> serviceResponse = new ServiceResponse<List<InventoryDto>>();
             try
             {
                 var InventoryDetails = await _inventoryRepository.GetFGInventoryStockByItem(itemNumber);
@@ -419,7 +419,44 @@ namespace Tips.Warehouse.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Inventory with Itemnumber : {itemNumber} ");
-                    var result = _mapper.Map<InventoryDto>(InventoryDetails);
+                    var result = _mapper.Map<List<InventoryDto>>(InventoryDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned Inventory with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Invalid inventory{ex.Message},{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetSAInventoryStockByItem([FromQuery] string itemNumber)
+        {
+            ServiceResponse<List<InventoryDto>> serviceResponse = new ServiceResponse<List<InventoryDto>>();
+            try
+            {
+                var InventoryDetails = await _inventoryRepository.GetSAInventoryStockByItem(itemNumber);
+                if (InventoryDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory with itemNumber: {itemNumber} , is invalid";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with itemNumber: {itemNumber} , is invalid");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with Itemnumber : {itemNumber} ");
+                    var result = _mapper.Map<List<InventoryDto>>(InventoryDetails);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned Inventory with id Successfully";
                     serviceResponse.Success = true;
