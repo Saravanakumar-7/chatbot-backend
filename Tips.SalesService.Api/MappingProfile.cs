@@ -39,7 +39,7 @@ namespace Tips.SalesService.Api
 
 
             CreateMap<RfqCustomGroup, RfqCustomGroupDto>().ReverseMap();
-            CreateMap<List<RfqCustomGroup>, RfqCustomGroupPostDto>().ReverseMap();
+            CreateMap<RfqCustomGroup, RfqCustomGroupPostDto>().ReverseMap();
             CreateMap<RfqCustomGroup, RfqCustomGroupUpdateDto>().ReverseMap();
             CreateMap<RfqCustomGroup, ListOfCustomGroupDto>().ReverseMap();
 

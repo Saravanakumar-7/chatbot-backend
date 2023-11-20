@@ -89,10 +89,7 @@ namespace Tips.SalesService.Api.Repository
         }
 
         public async Task<Quote> ChangeQuoteVersion(Quote quote)
-        {
-            quote.CreatedBy = _createdBy;
-            quote.CreatedOn = DateTime.Now;            
-            quote.Unit = _unitname;
+        {            
             var getIdByRfqNumber = _tipsSalesServiceDbContext.Quotes
                 .Where(x => x.RFQNumber == quote.RFQNumber)
                 .OrderByDescending(x => x.Id)
@@ -108,6 +105,9 @@ namespace Tips.SalesService.Api.Repository
             var convertversionnumber = Convert.ToDecimal(increaseVersionNumber);
             var version = getOldRevisionNumber.RevisionNumber + convertversionnumber;
             quote.RevisionNumber = Convert.ToDecimal(version);
+            quote.CreatedBy = _createdBy;
+            quote.CreatedOn = DateTime.Now;
+            quote.Unit = _unitname;
             var result = await Create(quote);
             return result;
         } 

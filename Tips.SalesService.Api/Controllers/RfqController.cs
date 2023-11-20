@@ -19,6 +19,7 @@ using System.Dynamic;
 using Tips.SalesService.Api.Entities.Enum;
 using System.Linq;
 using Microsoft.AspNetCore.StaticFiles;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -43,8 +44,11 @@ namespace Tips.SalesService.Api.Controllers
         private readonly HttpClient _httpClient;
         private IDocumentUploadRepository _documentUploadRepository;
         private readonly IConfiguration _config;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
         public RfqController(IRfqCustomGroupRepository rfqCustomGroupRepository, IDocumentUploadRepository documentUploadRepository,IItemPriceListRepository itemPriceListRepository, IRfqCustomFieldRepository rfqCustomFieldRepository
-            , IRfqEnggItemRepository rfqenggItemRepository, IReleaseLpRepository releaseLpRepository, 
+            , IRfqEnggItemRepository rfqenggItemRepository, IReleaseLpRepository releaseLpRepository, IHttpContextAccessor httpContextAccessor, 
             IRfqCustomerSupportRepository repository, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository,
             IRfqRepository rfqRepository, IRfqLPCostingRepository rfqLPCostingRepository, IRfqEnggRepository rfqEnggRepository,
             ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
@@ -64,6 +68,10 @@ namespace Tips.SalesService.Api.Controllers
             _itemPriceListRepository = itemPriceListRepository;
             _httpClient = httpClient;
             _config = config;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         //rfq getall 
@@ -2410,6 +2418,8 @@ namespace Tips.SalesService.Api.Controllers
                     updatedItems.Add(itemList);
                 }
                 oldversionRFQdetails.Id = 0;
+                oldversionRFQdetails.CreatedBy = _createdBy;
+                oldversionRFQdetails.CreatedOn = DateTime.Now;
                 _rfqRepository.Create(oldversionRFQdetails);
                 rfqCustomerSupportUpdateDto.RfqCustomerSupportItems = null;
                 rfqCustomerSupportUpdateDto.RfqCustomerSupportItems = updatedItems;
@@ -3091,14 +3101,14 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogError("Invalid RfqCustomGroup object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var cteateRfqCustomGroup = _mapper.Map<List<RfqCustomGroup>>(rfqCustomGroupPostDto);
+                var cteateRfqCustomGroup = _mapper.Map<RfqCustomGroup>(rfqCustomGroupPostDto);
 
-                foreach (var customGroupdetails in cteateRfqCustomGroup)
-                {
+                //foreach (var customGroupdetails in cteateRfqCustomGroup)
+                //{
 
-                    _rfqCustomGroupRepository.CreateRfqCustomGroup(customGroupdetails);
+                    _rfqCustomGroupRepository.CreateRfqCustomGroup(cteateRfqCustomGroup);
 
-                }
+                //}
 
                 _rfqCustomGroupRepository.SaveAsync();
                 serviceResponse.Message = "RfqCustomGroup Successfully Created";
