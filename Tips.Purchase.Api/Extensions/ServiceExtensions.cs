@@ -3,12 +3,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Contracts;
 using Tips.Purchase.Api.Entities;
+using Microsoft.Extensions.Configuration; // Make sure to add this using statement
 using Tips.Purchase.Api.Repository;
 using Entities;
 using MySql.EntityFrameworkCore.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Configuration;
 
 namespace Tips.Purchase.Api.Extensions
 {
@@ -32,7 +34,7 @@ namespace Tips.Purchase.Api.Extensions
             {
 
             });
-        }
+        } 
 
         public static void ConfigureLoggerService(this IServiceCollection services)
         {
@@ -60,7 +62,7 @@ namespace Tips.Purchase.Api.Extensions
                 new EntityFrameworkRelationalDesignServicesBuilder(serviceCollection)
                     .TryAddCoreServices();
             }
-        }
+        }  
         public static void AuthenticateByJwtToken(this IServiceCollection services, IConfiguration config)
         {
             var key = config["Jwt:key"];
