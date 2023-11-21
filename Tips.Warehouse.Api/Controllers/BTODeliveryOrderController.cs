@@ -469,7 +469,7 @@ namespace Tips.Warehouse.Api.Controllers
                     for (int i = 0; i < bTODeliveryOrderItemsListDto.Count; i++)
                     {
                         BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderItemsListDto[i]);
-                        bTODeliveryOrderItemsDetails.QtyDistridution = _mapper.Map<List<BtoDeliveryOrderItemQtyDistribution>>(bTODeliveryOrderItemsListDto[i].QtyDistridution);
+                        bTODeliveryOrderItemsDetails.QtyDistribution = _mapper.Map<List<BtoDeliveryOrderItemQtyDistribution>>(bTODeliveryOrderItemsListDto[i].QtyDistridution);
                         //foreach(var dis in bTODeliveryOrderItemsDetails.QtyDistridution)
                         //{
                         //    dis.PartNumber = bTODeliveryOrderItemsDetails.FGItemNumber;
@@ -483,7 +483,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                         //Update Inventory balanced Quantity 
 
-                        await _inventoryRepository.UpdateInventoryforBTO(bTODeliveryOrderItemsDetails.QtyDistridution);
+                        await _inventoryRepository.UpdateInventoryforBTO(bTODeliveryOrderItemsDetails.QtyDistribution);
 
                         //var ItemNumber = bTODoItemList[i].FGItemNumber; 
                         //var getInventoryFGDetailsByItemnumber = await _inventoryRepository.GetInventoryByItemNumber(ItemNumber); //pass projectNo
