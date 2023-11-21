@@ -671,8 +671,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchDetails"), data);
                 if((response.StatusCode == HttpStatusCode.OK))
                 {
-                    _inventoryRepository.SaveAsync();
-                    //_inventoryTranctionRepository.SaveAsync();
+                    _inventoryRepository.SaveAsync(); 
                     _bTODeliveryOrderHistoryRepository.SaveAsync();
                     _repository.SaveAsync();
                 }
