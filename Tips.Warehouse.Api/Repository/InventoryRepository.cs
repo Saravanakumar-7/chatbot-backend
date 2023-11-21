@@ -389,9 +389,9 @@ namespace Tips.Warehouse.Api.Repository
                 {
                     if(eachinv.Warehouse == eachDis.Warehouse && eachinv.Location == eachDis.Location)
                     {
-                        if (eachDis.BalanceQty<= eachinv.Balance_Quantity)
+                        if (eachDis.DistributingQty <= eachinv.Balance_Quantity)
                         {
-                            eachinv.Balance_Quantity = eachinv.Balance_Quantity - eachDis.BalanceQty;
+                            eachinv.Balance_Quantity = eachinv.Balance_Quantity - eachDis.DistributingQty;
                             if (eachinv.Balance_Quantity == 0)
                             {
                                 eachinv.IsStockAvailable = false;
@@ -401,9 +401,9 @@ namespace Tips.Warehouse.Api.Repository
                           
                             //invdetails.Remove(eachinv);
                         }
-                        else if (eachDis.BalanceQty > eachinv.Balance_Quantity)
+                        else if (eachDis.DistributingQty > eachinv.Balance_Quantity)
                         {
-                            eachDis.BalanceQty = eachDis.BalanceQty - eachinv.Balance_Quantity;
+                            eachDis.DistributingQty = eachDis.DistributingQty - eachinv.Balance_Quantity;
                             eachinv.Balance_Quantity = 0;
                             eachinv.IsStockAvailable = false;
                             Update(eachinv);
