@@ -367,7 +367,54 @@ namespace Tips.Warehouse.Api.Repository
             string result = $"NaterialIssue details of {inventory.Id} is deleted successfully!";
             return result;
         }
-       public async Task<PagedList<Inventory>> GetAllInventory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        public async Task<List<InventoryQtyforDO>> GetInventorybyItemandProject(string itemNumber,string projectNumber)
+        {
+            var invdetails = await FindAll().Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber).Select(x => new InventoryQtyforDO()
+            {
+                Warehouse = x.Warehouse,
+                Location=x.Location,
+                BalanceQty=x.Balance_Quantity
+            }
+            ).ToListAsync();
+            return invdetails;
+        }
+        public async Task UpdateInventoryforBTO(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis)
+        {
+            var itemNumber = bToitemDis.Select(x =>x.PartNumber).FirstOrDefault();
+            var projectNumber = bToitemDis.Select(x => x.ProjectNumber).FirstOrDefault();
+            var invdetails = await FindAll().Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber).ToListAsync();
+            foreach (var eachDis in bToitemDis)
+            {
+                foreach(var eachinv in invdetails)
+                {
+                    if(eachinv.Warehouse == eachDis.Warehouse && eachinv.Location == eachDis.Location)
+                    {
+                        if (eachDis.BalanceQty<= eachinv.Balance_Quantity)
+                        {
+                            eachinv.Balance_Quantity = eachinv.Balance_Quantity - eachDis.BalanceQty;
+                            if (eachinv.Balance_Quantity == 0)
+                            {
+                                eachinv.IsStockAvailable = false;
+                            }
+                            Update(eachinv);
+                            SaveAsync();
+                          
+                            //invdetails.Remove(eachinv);
+                        }
+                        else if (eachDis.BalanceQty > eachinv.Balance_Quantity)
+                        {
+                            eachDis.BalanceQty = eachDis.BalanceQty - eachinv.Balance_Quantity;
+                            eachinv.Balance_Quantity = 0;
+                            eachinv.IsStockAvailable = false;
+                            Update(eachinv);
+                            SaveAsync();
+                            //invdetails.Remove(eachinv);
+                        }
+                    }
+                }
+            }
+        }
+            public async Task<PagedList<Inventory>> GetAllInventory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
          {
             var query = FindAll();
             if (!string.IsNullOrWhiteSpace(searchParams.SearchValue))

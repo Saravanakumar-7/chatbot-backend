@@ -216,21 +216,31 @@ namespace Tips.Master.Api.Controllers
                 //if (serverKey != "keus")
                 //{
                 else 
-                { 
-                   var customerDetails = await _repository.CustomerMasterRepository.GetCSNumberAutoIncrementCount();
-                    var newcount = customerDetails?.Id;
-                    if (newcount > 0)
+                {
+                    //var customerDetails = await _repository.CustomerMasterRepository.GetCSNumberAutoIncrementCount();
+                    // var newcount = customerDetails?.Id;
+                    // if (newcount > 0)
+                    // {
+                    //     var number = newcount + 1;
+                    //     string e = String.Format("{0:D4}", number);
+                    //     customerMaster.CustomerNumber = "CS" + (e);
+                    // }
+                    // else
+                    // {
+                    //     var count = 1;
+                    //     var e = count.ToString("D4");
+                    //     customerMaster.CustomerNumber = "CS" + (e);
+                    // }
+                    var customerex = await _repository.CustomerMasterRepository.GetCustomerbyCustomerNumber(customerMaster.CustomerNumber);
+
+                    if (customerex==1)
                     {
-                        var number = newcount + 1;
-                        string e = String.Format("{0:D4}", number);
-                        customerMaster.CustomerNumber = "CS" + (e);
-                    }
-                    else
-                    {
-                        var count = 1;
-                        var e = count.ToString("D4");
-                        customerMaster.CustomerNumber = "CS" + (e);
-                    }
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "CustomerNumber Already Exists";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                        return StatusCode(406, serviceResponse);
+                    }                   
 
                 }
                 await _repository.CustomerMasterRepository.CreateCustomerMaster(customerMaster);

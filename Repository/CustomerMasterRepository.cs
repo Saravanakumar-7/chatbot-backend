@@ -94,6 +94,18 @@ namespace Repository
 
             return getAllActiveCustomerIdNameList;
         }
+        public async Task<int?> GetCustomerbyCustomerNumber(string customerNumber)
+        {
+            CustomerMaster? cus = await TipsMasterDbContext.CustomerMasters.Where(x => x.CustomerNumber == customerNumber).FirstOrDefaultAsync();
+            if (cus == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
+        }
 
         public async Task<IEnumerable<CustomerIdNameListDto>> GetAllActiveCustomerMasterIdNameList()
         {
