@@ -726,6 +726,7 @@ namespace Tips.Purchase.Api.Controllers
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
                     Guid guid = Guid.NewGuid();
+                    string filename_1 = guid.ToString() + "_" + fileName;
                     string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", guid.ToString() + "_" + fileName);
                     using (MemoryStream ms = new MemoryStream(imageContent))
                     {
@@ -736,7 +737,7 @@ namespace Tips.Purchase.Api.Controllers
                         }
                         var uploadedFile = new DocumentUpload
                         {
-                            FileName = fileName,
+                            FileName = filename_1,
                             FileExtension = FileExt,
                             FilePath = filePath,
                             ParentNumber = poNumbers,
