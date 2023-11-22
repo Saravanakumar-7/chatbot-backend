@@ -212,6 +212,14 @@ namespace Repository
             .FirstOrDefaultAsync();
             return getalllatestReleaseEnggBom;
         }
+        public async Task<EnggBom> GetAllLatestRevBOMIsReleaseEnggBom(string itemNumber)
+        {
+            var latestBomData = await FindByCondition(x => x.IsActive == true && x.IsEnggBomRelease == true)
+             .OrderByDescending(bom => bom.RevisionNumber)
+             .Where(x => x.ItemNumber == itemNumber)
+            .FirstOrDefaultAsync();
+            return latestBomData;
+        }
         public async Task<PagedList<EnggBom>> GetAllEnggBOM([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             PartType? check;
@@ -599,9 +607,8 @@ namespace Repository
       .Select(x => x.ItemNumber)
       .ToListAsync();
             return (IEnumerable<EnggBomFGItemNumber>)fgParentItemNumbers;
-        }
-
-        public async Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber)
+        } 
+            public async Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber)
         {
             var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber)
                                 .Include(t => t.EnggChildItems)
@@ -920,13 +927,29 @@ namespace Repository
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
+        //get latest production bom by
+
+        //public async Task<int> GetLatestProBomCountByItemNumber(string itemNumber)
+        //{
+        //    var latestReleaseVersionsCount = await _tipsMasterDbContext.ProductionBoms
+        //        .Where(x => x.ItemNumber == itemNumber)
+        //        .CountAsync();
+
+        //    return latestReleaseVersionsCount;
+        //}
+        public async Task<List<ProductionBom>?> GetLatestProBomCountByItemNumber(string itemNumber)
+        {
+           List<ProductionBom>? latestReleaseVersionsCount = await _tipsMasterDbContext.ProductionBoms
+                .Where(x => x.ItemNumber == itemNumber)
+                .ToListAsync();
+
+            return latestReleaseVersionsCount;
+        }
 
         public async Task<int?> CreateReleaseProductBom(ProductionBom releaseProductBom)
         {
             releaseProductBom.CreatedBy = _createdBy;
-            releaseProductBom.CreatedOn = DateTime.Now;
-           // releaseProductBom.LastModifiedBy = _createdBy;
-           // releaseProductBom.LastModifiedOn = DateTime.Now;
+            releaseProductBom.CreatedOn = DateTime.Now; 
             var result = await Create(releaseProductBom);
             return result.Id;
         }
@@ -1001,6 +1024,7 @@ namespace Repository
             return maxRevisionNumber;
         }
 
+        
 
         public async Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber)
         {
@@ -1167,7 +1191,12 @@ namespace Repository
             return fgItemNumberList;
         }
 
-     
+        public Task<IEnumerable<ProductionBom>> GetLatestProBomByItemNumber(string itemNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+
         //public async Task<IEnumerable<ProductionBomRevisionNumber>> GetAllProductionBomSAListByItemNumber(string itemNumber)
         //{
         //    var releaseProductBomDetails = _tipsMasterDbContext.ProductionBoms
