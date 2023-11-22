@@ -320,7 +320,9 @@ namespace Entities.DTOs
 
         [Required(ErrorMessage = "Unit is required")]
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
+        public string Unit { get; set; }            
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
         public List<ItemmasterAlternateDtoUpdate>? ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouseDtoUpdate>? ItemMasterWarehouse { get; set; }
         public List<ItemMasterApprovedVendorDtoUpdate>? ItemMasterApprovedVendor { get; set; }
