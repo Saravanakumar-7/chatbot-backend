@@ -210,9 +210,9 @@ namespace Tips.Master.Api.Controllers
 
         // PUT api/<CompanyMasterController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCompanyMaster(int id, [FromBody] CompanyMasterDto companyMasterDtoUpdate)
+        public async Task<IActionResult> UpdateCompanyMaster(int id, [FromBody] CompanyMasterDtoUpdate companyMasterDtoUpdate)
         {
-            ServiceResponse<CompanyMasterDto> serviceResponse = new ServiceResponse<CompanyMasterDto>();
+            ServiceResponse<CompanyMasterDtoUpdate> serviceResponse = new ServiceResponse<CompanyMasterDtoUpdate>();
             try
             {
                 if (companyMasterDtoUpdate is null)

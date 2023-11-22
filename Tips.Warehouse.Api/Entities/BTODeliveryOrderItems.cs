@@ -2,6 +2,7 @@
 using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Entities
 {
@@ -36,8 +37,10 @@ namespace Tips.Warehouse.Api.Entities
         public DateTime? LastModifiedOn { get; set; }
         public int BTODeliveryOrderId { get; set; }
         public Status DoStatus { get; set; } = Status.Open;
+        public List<BtoDeliveryOrderItemQtyDistribution>? QtyDistribution { get; set; }
         public BTODeliveryOrder? BTODeliveryOrder { get; set; }
-        
+       // public List<BtoDeliveryOrderItemQtyDistribution>? QtyDistridution { get; set; }
+
         // public List<BTOSerialNumber> BTOSerialNumbers { get; set; }   
     }
 }

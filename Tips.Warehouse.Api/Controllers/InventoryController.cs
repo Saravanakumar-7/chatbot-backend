@@ -46,6 +46,31 @@ namespace Tips.Warehouse.Api.Controllers
             _materialIssueTrackerRepository = materialIssueTrackerRepository;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetInventorybyItemandProject([FromQuery]string itemNumber,[FromQuery]string projectNumber)
+        {
+            ServiceResponse<IEnumerable<InventoryQtyforDO>> serviceResponse = new ServiceResponse<IEnumerable<InventoryQtyforDO>>();
+            try
+            {
+                var getAlldetails = await _inventoryRepository.GetInventorybyItemandProject(itemNumber, projectNumber);
+                 
+                serviceResponse.Data = getAlldetails;
+                serviceResponse.Message = "Returned all Inventory";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
 
         // GET: api/<InventoryController>
         [HttpGet]
@@ -437,6 +462,7 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> GetSAInventoryStockByItem([FromQuery] string itemNumber)
         {

@@ -148,11 +148,12 @@ namespace Repository
             enggBom.Unit = _unitname;
             var getOldRevisionNumber = _tipsMasterDbContext.EnggBoms
                 .Where(x => x.ItemNumber == enggBom.ItemNumber)
-                .OrderByDescending(x => x.BOMId)
-                .Select(x => x.RevisionNumber)
+                .OrderByDescending(x => x.BOMId)                
                 .FirstOrDefault();
-
-            enggBom.RevisionNumber = getOldRevisionNumber;
+            getOldRevisionNumber.LastModifiedBy = _createdBy;
+            getOldRevisionNumber.LastModifiedOn = DateTime.Now;
+            Update(getOldRevisionNumber);
+            enggBom.RevisionNumber = getOldRevisionNumber.RevisionNumber;
             var result = await Create(enggBom);
             return result;
 

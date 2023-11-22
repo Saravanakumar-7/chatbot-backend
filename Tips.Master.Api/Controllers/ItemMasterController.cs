@@ -1021,9 +1021,9 @@ namespace Tips.Master.Api.Controllers
 
         
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateItemMaster(int id, [FromBody] ItemMasterDto itemMasterDtoUpdate)
+        public async Task<IActionResult> UpdateItemMaster(int id, [FromBody] ItemMasterDtoUpdate itemMasterDtoUpdate)
         {
-            ServiceResponse<ItemMasterDto> serviceResponse = new ServiceResponse<ItemMasterDto>();
+            ServiceResponse<ItemMasterDtoUpdate> serviceResponse = new ServiceResponse<ItemMasterDtoUpdate>();
 
             try
             {
