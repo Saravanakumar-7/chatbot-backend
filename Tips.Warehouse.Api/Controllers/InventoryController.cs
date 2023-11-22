@@ -53,24 +53,8 @@ namespace Tips.Warehouse.Api.Controllers
             try
             {
                 var getAlldetails = await _inventoryRepository.GetInventorybyItemandProject(itemNumber, projectNumber);
-                var result = new List<InventoryQtyforDO>();
-                foreach (var item in getAlldetails)
-                {
-                    int flag = 0;
-                    foreach (var data in result)
-                    {
-                        if (item.Warehouse == data.Warehouse && item.Location == data.Location)
-                        {
-                            flag = 1;
-                            data.BalanceQty = data.BalanceQty+item.BalanceQty;
-                        }                        
-                    }
-                    if (flag == 0)
-                    {
-                        result.Add(item);
-                    }
-                }               
-                serviceResponse.Data = result;
+                 
+                serviceResponse.Data = getAlldetails;
                 serviceResponse.Message = "Returned all Inventory";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;

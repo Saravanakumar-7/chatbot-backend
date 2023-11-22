@@ -109,11 +109,9 @@ namespace Entities.DTOs
         public string? RemarksToVendor { get; set; }
 
         public string? CreatedBy { get; set; }
-        [DisplayFormat(DataFormatString = "{dd-MM-yyyy HH:mm:ss}")]
-        public DateTime CreatedOn { get; set; }
+        public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
-        [DisplayFormat(DataFormatString = "{dd-MM-yyyy HH:mm:ss}")]
-        public DateTime LastModifiedOn { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
         public List<ItemmasterAlternateDto>? ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouseDto>? ItemMasterWarehouse { get; set; }
         public List<ItemMasterApprovedVendorDto>? ItemMasterApprovedVendor { get; set; }
