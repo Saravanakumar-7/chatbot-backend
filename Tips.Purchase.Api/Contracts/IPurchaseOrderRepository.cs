@@ -19,7 +19,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string poNumber);
 
         Task<IEnumerable<PurchaseOrder>> GetAllActivePurchaseOrders();
-        Task<IEnumerable<PRNoandQtyListDto>> GetPRNumberandQtyListByItemNumber(string itemNumber);
+        Task<List<PRNoandQtyListDocsDto>> GetPRNumberandQtyListByItemNumber(string itemNumber);
         Task<string> GeneratePONumber();
         Task<long> CreatePurchaseOrder(PurchaseOrder purchaseOrder);
 

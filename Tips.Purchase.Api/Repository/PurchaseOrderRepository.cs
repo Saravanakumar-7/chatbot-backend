@@ -348,7 +348,7 @@ namespace Tips.Purchase.Api.Repository
 
             return prDetails;
         }
-        public async Task<IEnumerable<PRNoandQtyListDto>> GetPRNumberandQtyListByItemNumber(string itemNumber)
+        public async Task<List<PRNoandQtyListDocsDto>> GetPRNumberandQtyListByItemNumber(string itemNumber)
         {
 
         var Join = from pri in _tipsPurchaseDbContext.PrItems
@@ -357,12 +357,12 @@ namespace Tips.Purchase.Api.Repository
                    join pr in _tipsPurchaseDbContext.PurchaseRequisitions on pri.PurchaseRequistionId equals pr.Id
                    where pr.PrApprovalI == true && pr.PrApprovalII == true
                    group new { pri, pr, pdu } by new { pr.PrNumber, pri.ItemNumber,pr.RevisionNumber } into grouped
-                   select new PRNoandQtyListDto
+                   select new PRNoandQtyListDocsDto
                    {
                        PRNumber = grouped.Key.PrNumber,
                        RevisionNumber = grouped.Key.RevisionNumber,
                        Qty = grouped.Sum(item => item.pri.Qty),
-                       DocumentNames = grouped.Select(item => new PRItemsDocumentUpload
+                       DocumentNames = grouped.Select(item => new PRItemsDocumentUploadDocsDto
                        {
                            FileName = item.pdu.FileName,
                            FileExtension = item.pdu.FileExtension,
@@ -375,6 +375,7 @@ namespace Tips.Purchase.Api.Repository
                            LastModifiedBy = item.pdu.LastModifiedBy,
                            LastModifiedOn = item.pdu.LastModifiedOn,
                            PrItemId = item.pdu.PrItemId,
+                           FileUrl = ""
                        }).ToList()
                    };
 

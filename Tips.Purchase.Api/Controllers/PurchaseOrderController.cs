@@ -297,12 +297,18 @@ namespace Tips.Purchase.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPRNumberandQtyListByItemNumber(string itemMaster)
         {
-            ServiceResponse<IEnumerable<PRNoandQtyListDto>> serviceResponse = new ServiceResponse<IEnumerable<PRNoandQtyListDto>>();
+            ServiceResponse<List<PRNoandQtyListDocsDto>> serviceResponse = new ServiceResponse<List<PRNoandQtyListDocsDto>>();
             try
             {
-                var revNumberDetailsbyPONumber = await _repository.GetPRNumberandQtyListByItemNumber(itemMaster);
-                var result = _mapper.Map<IEnumerable<PRNoandQtyListDto>>(revNumberDetailsbyPONumber);
-                serviceResponse.Data = result;
+                var prItemsDetailsbyItemNumber = await _repository.GetPRNumberandQtyListByItemNumber(itemMaster);
+                var itemDocList = prItemsDetailsbyItemNumber[0].DocumentNames;
+                var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
+                foreach (var itemDoc in itemDocList)
+                {
+                   itemDoc.FileUrl = $"{baseUrl}/api/PurchaseRequisition/DownloadFile?Filename={itemDoc.FileName}";
+                }
+                
+                serviceResponse.Data = prItemsDetailsbyItemNumber;
                 serviceResponse.Message = "Returned all PRNumberandQtyList";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -798,19 +804,21 @@ namespace Tips.Purchase.Api.Controllers
                 //}
 
                 //Update PrUploadDocu
-                if (prDetailsPostDto != null)
+                if (prDetailsPostDto.Count > 0)
                 {
-                    foreach (var prDetailsDto in prDetailsPostDto[0].PrDetailDocumentUploadPostDtos)
-                    {
-                        var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
-                        if (prUploadDocument != null)
+                    
+                        foreach (var prDetailsDto in prDetailsPostDto[0].PrDetailDocumentUploadPostDtos)
                         {
-                            prUploadDocument.Checked = true;
-                            await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
-                        }
-                        _pRItemsDocumentUploadRepository.SaveAsync();
+                            var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
+                            if (prUploadDocument != null)
+                            {
+                                prUploadDocument.Checked = true;
+                                await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
+                            }
+                            _pRItemsDocumentUploadRepository.SaveAsync();
 
-                    }
+                        }
+                    
                 }
 
                 //Changing Status in Pr
