@@ -799,7 +799,7 @@ namespace Tips.Purchase.Api.Controllers
                 //}
 
                 //Update PrUploadDocu
-                if (prDetailsPostDto.Count > 0)
+                if (prDetailsPostDto.Count > 0 && prDetailsPostDto[0].PrDetailDocumentUploadPostDtos !=null)
                 {
                     
                         foreach (var prDetailsDto in prDetailsPostDto[0].PrDetailDocumentUploadPostDtos)
