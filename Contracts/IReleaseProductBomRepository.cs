@@ -14,9 +14,13 @@ namespace Contracts
         Task<PagedList<ProductionBom>> GetAllProductionBom(PagingParameter pagingParameter,SearchParames searchParams);
         Task<ProductionBom> GetProductionBomById(int id);
         Task<int?> CreateReleaseProductBom(ProductionBom releaseProductBom);
+        //Task<int> GetLatestProBomCountByItemNumber(string itemNumber);
+        Task<List<ProductionBom>?> GetLatestProBomCountByItemNumber(string itemNumber);
+        //Task<int> GetLatestProBomCountByItemNumber(string itemNumber); 
         Task<decimal> GetLatestProductionBomByItemNumber(string itemNumber);
+        Task<IEnumerable<ProductionBom>> GetLatestProBomByItemNumber(string itemNumber); 
         Task<IEnumerable<object>> GetAllReleaseProductBomItemNumberVersionList(); 
-        Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber);
+        Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber); 
         Task<IEnumerable<ProductionBomRevisionNumber>> GetAllProductionBomFGListByItemNumber(string itemNumber);
         Task<ProductionBomRevisionNumberAndQty> GetAllProductionBomSAListByItemNumber(string itemNumber); 
         Task<EnggBom> GetProductionBomByItemAndBomVersionNo(string itemNumber, decimal bomVersionNo);

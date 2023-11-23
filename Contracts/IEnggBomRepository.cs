@@ -38,6 +38,7 @@ namespace Contracts
         Task<List<EnggChildItem>> GetEnggChildItemNumberByEnggbom(int bomId);
         Task<IEnumerable<EnggBomFGItemNumber>> GetAllEnggBomChildFGItemNoListByItemNumber(string itemNumber);
         Task<EnggBom> GetAllLatestRevAndIsReleaseEnggBom(string itemNumber);
+        Task<EnggBom> GetAllLatestRevBOMIsReleaseEnggBom(string itemNumber);
         Task<FGFinalLandedandMoqPrice> GetEngganditsPP(string FGItemNumber, decimal FGRevno, List<RfqSourcingPPdetailsforEngg> rfqSourcingPPdetails);
         Task<SAFinalLandedandMoqPrice> GetEnggFGSA(string SAItemNumber, decimal SAQty, List<RfqSourcingPPdetailsforEngg> rfqSourcingPPdetails);
     }

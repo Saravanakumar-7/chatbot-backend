@@ -42,7 +42,7 @@
         public string? SerialNo { get; set; }
         
        // public List<BTOSerialNumberDtoPost> BTOSerialNumberDtoPost { get; set; }
-
+       public List<BtoDeliveryOrderItemQtyDistributionPostDto>? QtyDistridution { get; set; }
     }
     public class BTODeliveryOrderItemsDtoUpdate
     {

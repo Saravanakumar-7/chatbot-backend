@@ -2414,7 +2414,14 @@ namespace Tips.Master.Api.Controllers
 
                     foreach (var item in openFGCoverageDetails)
                     {
-                        await ChildItemRequiredQtyForCoverage(bomCoverageList, item.ItemNumber,item.BalanceToOrder);
+                        var itemNo = item.ItemNumber;
+                        var productionBomMaxVersion = await _releaseProductBomRepository.GetLatestProBomCountByItemNumber(itemNo);
+
+                        //var enggDetail = _enggBomRepository.GetAllLatestRevBOMIsReleaseEnggBom(itemNo);
+                        if (productionBomMaxVersion != null)
+                        {
+                            await ChildItemRequiredQtyForCoverage(bomCoverageList, item.ItemNumber, item.BalanceToOrder);
+                        } 
                     }
                     //changed
                     
@@ -2450,31 +2457,34 @@ namespace Tips.Master.Api.Controllers
         {
             var productionBomMaxVersion = await _releaseProductBomRepository
                                         .GetLatestProductionBomByItemNumber(itemNumber);
-            var enggBomDetail = await _enggBomRepository
-                  .GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);
-            if (enggBomDetail != null)
+            if (productionBomMaxVersion != null)
             {
-                foreach (var enggChildItem in enggBomDetail?.EnggChildItems)
+                var enggBomDetail = await _enggBomRepository
+                      .GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);
+                if (enggBomDetail != null)
                 {
-                    if (enggChildItem.PartType != PartType.SA)
+                    foreach (var enggChildItem in enggBomDetail?.EnggChildItems)
                     {
-                        BomCoverageReportChildItemReqQtyDto bomCoverageReportChildItemReqQty = new BomCoverageReportChildItemReqQtyDto
+                        if (enggChildItem.PartType != PartType.SA)
                         {
-                            ItemNumber = enggChildItem.ItemNumber,
-                            PartType = enggChildItem.PartType,
-                            RequiredQty = enggChildItem.Quantity * requiredQty
+                            BomCoverageReportChildItemReqQtyDto bomCoverageReportChildItemReqQty = new BomCoverageReportChildItemReqQtyDto
+                            {
+                                ItemNumber = enggChildItem.ItemNumber,
+                                PartType = enggChildItem.PartType,
+                                RequiredQty = enggChildItem.Quantity * requiredQty
 
-                        };
-                        bomCoverageList.Add(bomCoverageReportChildItemReqQty);
-                    }
-                    else
-                    {
-                        decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
-                        await ChildItemRequiredQtyForCoverage(bomCoverageList, enggChildItem.ItemNumber, requiredQtySA);
-                    }
+                            };
+                            bomCoverageList.Add(bomCoverageReportChildItemReqQty);
+                        }
+                        else
+                        {
+                            decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
+                            await ChildItemRequiredQtyForCoverage(bomCoverageList, enggChildItem.ItemNumber, requiredQtySA);
+                        }
 
+                    }
                 }
-            }
+            } 
         }
 
         //public async Task<decimal> CalculateTotalRequiredQtyForItem(string itemNumber, decimal balanceToOrderQty)

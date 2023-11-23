@@ -349,6 +349,22 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal BalanceQty { get; set; }
 
     }
+    public class InventoryQtyforDO
+    {
+        public string Warehouse { get; set; }       
+        public List<InventoryQtyforDOLocation>? inventoryQtyforDOLocations { get; set; }
+    }
+    public class InventoryQtyforDOLocation
+    {
+        public string Location { get; set; }
+        public decimal BalanceQty { get; set; }
+    }
+    public class GetInventoryQtyforDO
+    {
+        public string Warehouse { get; set; }
+        public string Location { get; set; }
+        public decimal BalanceQty { get; set; }
+    }
     public class GetInventoryItemNoAndDescriptionList
     {
         public string PartNumber { get; set; }

@@ -617,6 +617,8 @@ namespace Tips.SalesService.Api.Repository
                 return openSalesOrderQty;          
 
         }
+         
+
         //update shoporderQty
         public async Task<IEnumerable<SalesOrderItems>> UpdateShopOrderBySalesOrderNoandItemNo(string salesOrderNumber, string itemNumber,string projectNumber)
         {

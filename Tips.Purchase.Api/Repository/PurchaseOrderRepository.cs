@@ -39,7 +39,7 @@ namespace Tips.Purchase.Api.Repository
             var date = DateTime.Now;
             purchaseOrder.CreatedBy = _createdBy;
             purchaseOrder.CreatedOn = date.Date;
-           // purchaseOrder.LastModifiedBy = _createdBy;
+            // purchaseOrder.LastModifiedBy = _createdBy;
             //purchaseOrder.LastModifiedOn = DateTime.Now;
             //Guid purchaseOrderNumber = Guid.NewGuid();
             //purchaseOrder.PONumber = "PO-" + purchaseOrderNumber.ToString();
@@ -62,7 +62,7 @@ namespace Tips.Purchase.Api.Repository
                 Update(getOldPODetails);
             }
 
-            purchaseOrder.CreatedBy = _createdBy; 
+            purchaseOrder.CreatedBy = _createdBy;
             purchaseOrder.CreatedOn = DateTime.Now;
             //purchaseOrder.LastModifiedBy = 
             //purchaseOrder.LastModifiedOn = 
@@ -348,40 +348,86 @@ namespace Tips.Purchase.Api.Repository
 
             return prDetails;
         }
-        public async Task<List<PRNoandQtyListDocsDto>> GetPRNumberandQtyListByItemNumber(string itemNumber)
+
+        public async Task<IEnumerable<PRNoandQtyListDto>> GetPRNumberandQtyListByItemNumber(string itemNumber)
         {
 
-        var Join = from pri in _tipsPurchaseDbContext.PrItems
-                   where pri.ItemNumber == itemNumber
-                   join pdu in _tipsPurchaseDbContext.PRItemsDocumentUploads on pri.Id equals pdu.PrItemId
-                   join pr in _tipsPurchaseDbContext.PurchaseRequisitions on pri.PurchaseRequistionId equals pr.Id
-                   where pr.PrApprovalI == true && pr.PrApprovalII == true
-                   group new { pri, pr, pdu } by new { pr.PrNumber, pri.ItemNumber,pr.RevisionNumber } into grouped
-                   select new PRNoandQtyListDocsDto
-                   {
-                       PRNumber = grouped.Key.PrNumber,
-                       RevisionNumber = grouped.Key.RevisionNumber,
-                       Qty = grouped.Sum(item => item.pri.Qty),
-                       DocumentNames = grouped.Select(item => new PRItemsDocumentUploadDocsDto
-                       {
-                           FileName = item.pdu.FileName,
-                           FileExtension = item.pdu.FileExtension,
-                           FilePath = item.pdu.FilePath,
-                           DocumentFrom = item.pdu.DocumentFrom,
-                           ParentNumber = item.pdu.ParentNumber,
-                           Checked = item.pdu.Checked,
-                           CreatedBy = item.pdu.CreatedBy,
-                           CreatedOn = item.pdu.CreatedOn,
-                           LastModifiedBy = item.pdu.LastModifiedBy,
-                           LastModifiedOn = item.pdu.LastModifiedOn,
-                           PrItemId = item.pdu.PrItemId,
-                           FileUrl = ""
-                       }).ToList()
-                   };
+            var query = from pri in _tipsPurchaseDbContext.PrItems
+                        join pdu in _tipsPurchaseDbContext.PRItemsDocumentUploads on pri.Id equals pdu.PrItemId into documentUploads
+                        from pdu in documentUploads.DefaultIfEmpty() // Left join handling no matching records
+                        join pr in _tipsPurchaseDbContext.PurchaseRequisitions on pri.PurchaseRequistionId equals pr.Id
+                    where pri.ItemNumber == itemNumber && pr.PrApprovalI && pr.PrApprovalII
+                    group new { pri, pr } by new { pr.PrNumber, pri.ItemNumber, pr.RevisionNumber } into grouped
+                    select new 
+                    {
+                        grouped.Key.PrNumber, 
+                        grouped.Key.RevisionNumber,
+                        Qty = grouped.Sum(item => item.pri.Qty),
+                    };
+             
 
-        var postdata = Join.ToList();
-            return postdata;
+// Materialize the query to a list
+                var result = query.ToList();             
+
+                var prNoAndQtyList = result.Select(x => new PRNoandQtyListDto
+            {
+                PRNumber = x.PrNumber,
+                RevisionNumber = x.RevisionNumber,
+                Qty = x.Qty,
+                DocumentNames = _tipsPurchaseDbContext.PRItemsDocumentUploads
+        //.Where(pdu => pdu.PrItemId == x.pri.Id)  // as
+        .Select(pdu => new PRItemsDocumentUpload
+        {
+            FileName = pdu.FileName,
+            FileExtension = pdu.FileExtension,
+            FilePath = pdu.FilePath,
+            DocumentFrom = pdu.DocumentFrom,
+            ParentNumber = pdu.ParentNumber,
+            Checked = pdu.Checked,
+            CreatedBy = pdu.CreatedBy,
+            CreatedOn = pdu.CreatedOn,
+            LastModifiedBy = pdu.LastModifiedBy,
+            LastModifiedOn = pdu.LastModifiedOn,
+            PrItemId = pdu.PrItemId,
+        }).ToList()
+            }).ToList();
+
+            return prNoAndQtyList;
     }
+
+        //    public async Task<IEnumerable<PRNoandQtyListDto>> GetPRNumberandQtyListByItemNumber(string itemNumber)
+        //    {
+
+        //    var Join = from pri in _tipsPurchaseDbContext.PrItems
+        //               where pri.ItemNumber == itemNumber
+        //               join pdu in _tipsPurchaseDbContext.PRItemsDocumentUploads on pri.Id equals pdu.PrItemId
+        //               join pr in _tipsPurchaseDbContext.PurchaseRequisitions on pri.PurchaseRequistionId equals pr.Id
+        //               where pr.PrApprovalI == true && pr.PrApprovalII == true
+        //               group new { pri, pr, pdu } by new { pr.PrNumber, pri.ItemNumber,pr.RevisionNumber } into grouped
+        //               select new PRNoandQtyListDto
+        //               {
+        //                   PRNumber = grouped.Key.PrNumber,
+        //                   RevisionNumber = grouped.Key.RevisionNumber,
+        //                   Qty = grouped.Sum(item => item.pri.Qty),
+        //                   //DocumentNames = grouped.Select(item => new PRItemsDocumentUpload
+        //                   //{
+        //                   //    FileName = item.pdu.FileName,
+        //                   //    FileExtension = item.pdu.FileExtension,
+        //                   //    FilePath = item.pdu.FilePath,
+        //                   //    DocumentFrom = item.pdu.DocumentFrom,
+        //                   //    ParentNumber = item.pdu.ParentNumber,
+        //                   //    Checked = item.pdu.Checked,
+        //                   //    CreatedBy = item.pdu.CreatedBy,
+        //                   //    CreatedOn = item.pdu.CreatedOn,
+        //                   //    LastModifiedBy = item.pdu.LastModifiedBy,
+        //                   //    LastModifiedOn = item.pdu.LastModifiedOn,
+        //                   //    PrItemId = item.pdu.PrItemId,
+        //                   //}).ToList()
+        //               };
+
+        //    var postdata = Join.ToList();
+        //        return postdata;
+        //}
 
         //public async Task<IEnumerable<PRNoandQtyListDto>> GetPRNumberandQtyListByItemNumber(string itemNumber)
         //{

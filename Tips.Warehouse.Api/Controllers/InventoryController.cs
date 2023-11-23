@@ -46,6 +46,31 @@ namespace Tips.Warehouse.Api.Controllers
             _materialIssueTrackerRepository = materialIssueTrackerRepository;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetInventorybyItemandProject([FromQuery]string itemNumber,[FromQuery]string projectNumber)
+        {
+            ServiceResponse<IEnumerable<InventoryQtyforDO>> serviceResponse = new ServiceResponse<IEnumerable<InventoryQtyforDO>>();
+            try
+            {
+                var getAlldetails = await _inventoryRepository.GetInventorybyItemandProject(itemNumber, projectNumber);
+                 
+                serviceResponse.Data = getAlldetails;
+                serviceResponse.Message = "Returned all Inventory";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
 
         // GET: api/<InventoryController>
         [HttpGet]
@@ -344,6 +369,120 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     _logger.LogInfo($"Returned Inventory with Itemnumber and ProjectNumber: {itemNumber} {projectNumber}");
                     var result = _mapper.Map<InventoryDto>(InventoryDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned Inventory with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Invalid inventory{ex.Message},{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetInventoryStockByItemAndShopOrderNo([FromQuery]string itemNumber, [FromQuery]string shopordernumber)
+        {
+            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+            try
+            {
+                var InventoryDetails = await _inventoryRepository.GetInventoryStockByItemAndShopOrderNo(itemNumber, shopordernumber);
+                if (InventoryDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory with itemNumber and ProjectNumber: {itemNumber} {shopordernumber}, is invalid";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with itemNumber and ProjectNumber: {itemNumber} {shopordernumber}, is invalid");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with Itemnumber and ProjectNumber: {itemNumber} {shopordernumber}");
+                    var result = _mapper.Map<InventoryDto>(InventoryDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned Inventory with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Invalid inventory{ex.Message},{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFGInventoryStockByItem([FromQuery] string itemNumber)
+        {
+            ServiceResponse<List<InventoryDto>> serviceResponse = new ServiceResponse<List<InventoryDto>>();
+            try
+            {
+                var InventoryDetails = await _inventoryRepository.GetFGInventoryStockByItem(itemNumber);
+                if (InventoryDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory with itemNumber: {itemNumber} , is invalid";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with itemNumber: {itemNumber} , is invalid");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with Itemnumber : {itemNumber} ");
+                    var result = _mapper.Map<List<InventoryDto>>(InventoryDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned Inventory with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Invalid inventory{ex.Message},{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSAInventoryStockByItem([FromQuery] string itemNumber)
+        {
+            ServiceResponse<List<InventoryDto>> serviceResponse = new ServiceResponse<List<InventoryDto>>();
+            try
+            {
+                var InventoryDetails = await _inventoryRepository.GetSAInventoryStockByItem(itemNumber);
+                if (InventoryDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory with itemNumber: {itemNumber} , is invalid";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with itemNumber: {itemNumber} , is invalid");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with Itemnumber : {itemNumber} ");
+                    var result = _mapper.Map<List<InventoryDto>>(InventoryDetails);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned Inventory with id Successfully";
                     serviceResponse.Success = true;
