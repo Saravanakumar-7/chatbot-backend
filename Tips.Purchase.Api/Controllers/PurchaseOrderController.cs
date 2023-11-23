@@ -297,18 +297,12 @@ namespace Tips.Purchase.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPRNumberandQtyListByItemNumber(string itemMaster)
         {
-            ServiceResponse<List<PRNoandQtyListDocsDto>> serviceResponse = new ServiceResponse<List<PRNoandQtyListDocsDto>>();
+            ServiceResponse<IEnumerable<PRNoandQtyListDto>> serviceResponse = new ServiceResponse<IEnumerable<PRNoandQtyListDto>>();
             try
             {
-                var prItemsDetailsbyItemNumber = await _repository.GetPRNumberandQtyListByItemNumber(itemMaster);
-                var itemDocList = prItemsDetailsbyItemNumber[0].DocumentNames;
-                var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
-                foreach (var itemDoc in itemDocList)
-                {
-                   itemDoc.FileUrl = $"{baseUrl}/api/PurchaseRequisition/DownloadFile?Filename={itemDoc.FileName}";
-                }
-                
-                serviceResponse.Data = prItemsDetailsbyItemNumber;
+                var revNumberDetailsbyPONumber = await _repository.GetPRNumberandQtyListByItemNumber(itemMaster);
+                var result = _mapper.Map<IEnumerable<PRNoandQtyListDto>>(revNumberDetailsbyPONumber);
+                serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PRNumberandQtyList";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;

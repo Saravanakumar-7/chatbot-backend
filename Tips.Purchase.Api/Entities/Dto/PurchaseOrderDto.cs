@@ -205,7 +205,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public decimal? Qty { get; set; }
         public int? RevisionNumber { get; set; }
 
-        public List<PRItemsDocumentUploadDto> DocumentNames { get; set; } 
+        public List<PRItemsDocumentUpload> DocumentNames { get; set; } 
 
     }
 
