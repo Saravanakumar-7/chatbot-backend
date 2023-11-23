@@ -453,9 +453,13 @@ namespace Tips.Purchase.Api.Controllers
                             //        fileUploads.Add(fileUploadDto);
                             //    }
                             //}
-                            if (itemDetails.PRFileIds != null)
+                            if (itemDetails.PRFileIds == null || itemDetails.PRFileIds == "")
                             {
-                                List<PRItemsDocumentUploadDto> prd= new List<PRItemsDocumentUploadDto>();                            
+                                prItemDtos.PRItemFiles = null;
+                            }
+                            else
+                            {
+                                List<PRItemsDocumentUploadDto> prd = new List<PRItemsDocumentUploadDto>();
                                 string[]? ids = itemDetails.PRFileIds.Split(',');
                                 for (int i = 0; i < ids.Count(); i++)
                                 {
@@ -464,10 +468,6 @@ namespace Tips.Purchase.Api.Controllers
                                     prd.Add(doc);
                                 }
                                 prItemDtos.PRItemFiles = prd;
-                            }
-                            else
-                            {
-                                prItemDtos.PRItemFiles = null;
                             }
                            // prItemDtos.Upload = _mapper.Map<List<PRItemsDocumentUploadDto>>(fileUploads);
                             prItemDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(itemDetails.prAddprojectsDtoList);

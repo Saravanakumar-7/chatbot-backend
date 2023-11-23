@@ -60,7 +60,7 @@ namespace Tips.Warehouse.Api.Repository
                 int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
                 int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
 
-                return $"ASPL|INV|{currentYear:D2}-{nextYear:D2}|{invoiceNumberEntity.CurrentValue:D4}";
+                return $"ASPL|INV|{currentYear:D2}-{nextYear:D2}|{invoiceNumberEntity.CurrentValue:D3}";
             }
             catch (Exception ex)
             {

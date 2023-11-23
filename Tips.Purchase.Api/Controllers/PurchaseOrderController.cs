@@ -726,6 +726,7 @@ namespace Tips.Purchase.Api.Controllers
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
                     Guid guid = Guid.NewGuid();
+                    string filename_1 = guid.ToString() + "_" + fileName;
                     string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", guid.ToString() + "_" + fileName);
                     using (MemoryStream ms = new MemoryStream(imageContent))
                     {
@@ -736,7 +737,7 @@ namespace Tips.Purchase.Api.Controllers
                         }
                         var uploadedFile = new DocumentUpload
                         {
-                            FileName = fileName,
+                            FileName = filename_1,
                             FileExtension = FileExt,
                             FilePath = filePath,
                             ParentNumber = poNumbers,
@@ -798,19 +799,21 @@ namespace Tips.Purchase.Api.Controllers
                 //}
 
                 //Update PrUploadDocu
-                if (prDetailsPostDto != null)
+                if (prDetailsPostDto.Count > 0)
                 {
-                    foreach (var prDetailsDto in prDetailsPostDto[0].PrDetailDocumentUploadPostDtos)
-                    {
-                        var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
-                        if (prUploadDocument != null)
+                    
+                        foreach (var prDetailsDto in prDetailsPostDto[0].PrDetailDocumentUploadPostDtos)
                         {
-                            prUploadDocument.Checked = true;
-                            await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
-                        }
-                        _pRItemsDocumentUploadRepository.SaveAsync();
+                            var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
+                            if (prUploadDocument != null)
+                            {
+                                prUploadDocument.Checked = true;
+                                await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
+                            }
+                            _pRItemsDocumentUploadRepository.SaveAsync();
 
-                    }
+                        }
+                    
                 }
 
                 //Changing Status in Pr

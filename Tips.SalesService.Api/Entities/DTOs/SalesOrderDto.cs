@@ -12,6 +12,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string? LeadId { get; set; }
         public string? SalesOrderNumber { get; set; }
+        public string? SalesPerson { get; set; }
         public string? ProjectNumber { get; set; }
         public string? QuoteNumber { get; set; }
 
@@ -87,6 +88,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class SalesOrderPostDto
     {
         public string? LeadId { get; set; }
+        public string? SalesPerson { get; set; }
         public string? ProjectNumber { get; set; }
         public string? QuoteNumber { get; set; }
 
@@ -137,6 +139,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? LeadId { get; set; }
+        public string? SalesPerson { get; set; }
         public string? ProjectNumber { get; set; }
         public string? QuoteNumber { get; set; } 
 
@@ -219,6 +222,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string? LeadId { get; set; }
         public string? SalesOrderNumber { get; set; }
+        public string? SalesPerson { get; set; }
         public string? ProjectNumber { get; set; }
         public string? QuoteNumber { get; set; }
 

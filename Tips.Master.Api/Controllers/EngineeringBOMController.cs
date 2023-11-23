@@ -2414,7 +2414,14 @@ namespace Tips.Master.Api.Controllers
 
                     foreach (var item in openFGCoverageDetails)
                     {
-                        await ChildItemRequiredQtyForCoverage(bomCoverageList, item.ItemNumber,item.BalanceToOrder);
+                        var itemNo = item.ItemNumber;
+                        var productionBomMaxVersion = await _releaseProductBomRepository.GetLatestProBomCountByItemNumber(itemNo);
+
+                        //var enggDetail = _enggBomRepository.GetAllLatestRevBOMIsReleaseEnggBom(itemNo);
+                        if (productionBomMaxVersion != null)
+                        {
+                            await ChildItemRequiredQtyForCoverage(bomCoverageList, item.ItemNumber, item.BalanceToOrder);
+                        } 
                     }
                     //changed
                     

@@ -208,6 +208,17 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public List<PRItemsDocumentUpload> DocumentNames { get; set; } 
 
     }
+
+    public class PRNoandQtyListDocsDto
+    {
+        public string? PRNumber { get; set; }
+        public decimal? Qty { get; set; }
+        public int? RevisionNumber { get; set; }
+
+        public List<PRItemsDocumentUploadDocsDto> DocumentNames { get; set; }
+
+    }
+
     public class PurchaseOrderReportDto
     {
         public int Id { get; set; }
