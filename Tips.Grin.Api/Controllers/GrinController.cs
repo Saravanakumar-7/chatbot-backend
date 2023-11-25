@@ -451,8 +451,10 @@ namespace Tips.Grin.Api.Controllers
 
                         //Add ItemMasterEnggDetails in GrinParts
                         var ItemNumber = grinPartsItemMasterEnggDto.ItemNumber;
+                        var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+
                         var itemMasterDetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
-                            "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
+                            "GetItemMasterByItemNumber?", "&ItemNumber=", encodedItemNumber));
 
                         var inventoryObjectString = await itemMasterDetails.Content.ReadAsStringAsync();
                         dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);

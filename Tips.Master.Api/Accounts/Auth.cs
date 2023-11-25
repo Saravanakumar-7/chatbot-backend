@@ -30,7 +30,7 @@ namespace Accounts
             _tipsMasterDbContext = tipsMasterDbContext; 
             _configuration = configuration;
         }
-        public async Task<(LoginResult Result, string Token, int UserId)> GetToken(LoginDto loginDto)
+        public async Task<(LoginResult Result, string Token, int UserId, string UserName)> GetToken(LoginDto loginDto)
         {
             var userDetail = await _tipsMasterDbContext.RegistrationForms
                 .Where(m => m.EmailId == loginDto.UserName)
@@ -38,16 +38,16 @@ namespace Accounts
 
             if (userDetail == null)
             {
-                return (LoginResult.UserNotFound, null, 0);
+                return (LoginResult.UserNotFound, null, 0,null);
             }
 
             if (userDetail.Password != loginDto.Password)
             {
-                return (LoginResult.InvalidPassword, null, 0);
+                return (LoginResult.InvalidPassword, null, 0, null);
             }
             if (userDetail.Unit != loginDto.UnitName)
             {
-                return (LoginResult.InvalidUnit, null, 0);
+                return (LoginResult.InvalidUnit, null, 0, null);
             }
 
             var key = _configuration["Jwt:key"];
@@ -60,7 +60,7 @@ namespace Accounts
                     {
                 new Claim(ClaimTypes.Name, userDetail.UserName),
                 new Claim(ClaimTypes.Email, userDetail.EmailId),
-                new Claim("UnitName", userDetail.Unit),
+                new Claim("UnitName", userDetail.Unit), 
                 new Claim("UserId", userDetail.Id.ToString()),
                     }),
                 Expires = DateTime.UtcNow.AddHours(1),
@@ -69,7 +69,7 @@ namespace Accounts
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return (LoginResult.Success, tokenHandler.WriteToken(token), userDetail.Id);
+            return (LoginResult.Success, tokenHandler.WriteToken(token), userDetail.Id, userDetail.UserName);
         }
     //    public async Task<(string token, int userId)> GetToken(string userName, string password)
 
