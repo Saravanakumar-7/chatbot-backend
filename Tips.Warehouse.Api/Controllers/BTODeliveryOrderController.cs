@@ -469,7 +469,7 @@ namespace Tips.Warehouse.Api.Controllers
                     for (int i = 0; i < bTODeliveryOrderItemsListDto.Count; i++)
                     {
                         BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderItemsListDto[i]);
-                        bTODeliveryOrderItemsDetails.QtyDistribution = _mapper.Map<List<BtoDeliveryOrderItemQtyDistribution>>(bTODeliveryOrderItemsListDto[i].QtyDistridution);
+                        bTODeliveryOrderItemsDetails.QtyDistribution = _mapper.Map<List<BtoDeliveryOrderItemQtyDistribution>>(bTODeliveryOrderItemsListDto[i].QtyDistribution);
                         //foreach(var dis in bTODeliveryOrderItemsDetails.QtyDistridution)
                         //{
                         //    dis.PartNumber = bTODeliveryOrderItemsDetails.FGItemNumber;
