@@ -171,7 +171,7 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet("{odoNumber}")]
         public async Task<IActionResult> GetODOHistoryDetailsByODONumber(string odoNumber)
         {
-            ServiceResponse<OpenDeliveryOrderHistory> serviceResponse = new ServiceResponse<OpenDeliveryOrderHistory>();
+            ServiceResponse<IEnumerable<OpenDeliveryOrderHistory>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderHistory>>();
 
             try
             {
@@ -188,7 +188,7 @@ namespace Tips.Warehouse.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned openDeliveryOrderHistoryDetailByODONo : {odoNumber}");
-                    var result = _mapper.Map<OpenDeliveryOrderHistory>(openDeliveryOrderHistoryDetailByODONo);
+                    var result = _mapper.Map<IEnumerable<OpenDeliveryOrderHistory>>(openDeliveryOrderHistoryDetailByODONo);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned openDeliveryOrderHistoryDetailByODONo Successfully";
                     serviceResponse.Success = true;
@@ -436,7 +436,7 @@ namespace Tips.Warehouse.Api.Controllers
                     }
                 }
                 returnOpenDeliveryOrder.ReturnOpenDeliveryOrderParts = returnOpenDeliveryOrderPartsDtoList;
-
+                
                 serviceResponse.Data = null;
                 serviceResponse.Message = " ReturnODODeliveryOrder created Successfully";
                 serviceResponse.Success = true;
