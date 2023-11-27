@@ -943,7 +943,15 @@ namespace Tips.Purchase.Api.Controllers
                             PODeliveryQty = PoAddDeliverySchedule.PODeliveryQty
                         })
                             )
-                        );
+                        )
+                        .ForMember(dest => dest.POConfirmationDates, opt => opt.MapFrom(src => src.POConfirmationDates
+                        .Select(PoConfirmationDate => new PoConfirmationDateReportDto
+                        {
+                            Id = PoConfirmationDate.Id,
+                            ConfirmationDate = PoConfirmationDate.ConfirmationDate,
+                            Qty = PoConfirmationDate.Qty
+                        })
+                        ));
                 });
                 var mapper = config.CreateMapper();
 
@@ -1019,7 +1027,15 @@ namespace Tips.Purchase.Api.Controllers
                             PODeliveryQty = PoAddDeliverySchedule.PODeliveryQty
                         })
                             )
-                        );
+                        )
+                        .ForMember(dest => dest.POConfirmationDates, opt => opt.MapFrom(src => src.POConfirmationDates
+                        .Select(PoConfirmationDate => new PoConfirmationDateReportDto
+                        {
+                            Id = PoConfirmationDate.Id,
+                            ConfirmationDate = PoConfirmationDate.ConfirmationDate,
+                            Qty = PoConfirmationDate.Qty
+                        })
+                        ));
                 });
                 var mapper = config.CreateMapper();
                 var result = mapper.Map<IEnumerable<PurchaseOrderReportDto>>(purchaseOrderList);
@@ -1093,7 +1109,15 @@ namespace Tips.Purchase.Api.Controllers
                             PODeliveryQty = PoAddDeliverySchedule.PODeliveryQty
                         })
                             )
-                        );
+                        )
+                        .ForMember(dest => dest.POConfirmationDates, opt => opt.MapFrom(src => src.POConfirmationDates
+                        .Select(PoConfirmationDate => new PoConfirmationDateReportDto
+                        {
+                            Id = PoConfirmationDate.Id,
+                            ConfirmationDate = PoConfirmationDate.ConfirmationDate,
+                            Qty = PoConfirmationDate.Qty
+                        })
+                        ));
                 });
                 var mapper = config.CreateMapper();
                 var result = mapper.Map<IEnumerable<PurchaseOrderReportDto>>(purchaseOrderList);

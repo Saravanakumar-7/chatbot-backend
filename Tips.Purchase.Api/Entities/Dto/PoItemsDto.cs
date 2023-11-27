@@ -208,7 +208,7 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         public List<PoAddProjectReportDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleReportDto>? POAddDeliverySchedules { get; set; }
-        public List<PoConfirmationDateDto>? POConfirmationDates { get; set; }
+        public List<PoConfirmationDateReportDto>? POConfirmationDates { get; set; }
         public List<PoSpecialInstructionDto>? POSpecialInstructions { get; set; }
         public List<PrDetailsDto>? PrDetails { get; set; }
 

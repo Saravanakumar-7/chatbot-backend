@@ -216,12 +216,35 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateOpenGrin([FromBody] OpenGrinPostDto openGrinPostDto)
         {
             ServiceResponse<OpenGrinPostDto> serviceResponse = new ServiceResponse<OpenGrinPostDto>();
             try
             {
+                string serverKey = GetServerKey();
+
                 if (openGrinPostDto is null)
                 {
                     serviceResponse.Data = null;
@@ -265,10 +288,18 @@ namespace Tips.Grin.Api.Controllers
                 var days = Convert.ToString(date.Day.ToString("D2"));
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
-                var dateFormat = days + months + years;
-                var openGrinNumber = await _openGrinRepository.GenerateOpenGrinNumber();
-                openGrinDetails.OpenGrinNumber = dateFormat + openGrinNumber;
 
+                if (serverKey == "avision")
+                {
+                    var openGrinNumber = await _openGrinRepository.GenerateOpenGrinNumberForAvision();
+                    openGrinDetails.OpenGrinNumber = openGrinNumber;
+                }
+                else
+                {
+                    var dateFormat = days + months + years;
+                    var openGrinNumber = await _openGrinRepository.GenerateOpenGrinNumber();
+                    openGrinDetails.OpenGrinNumber = dateFormat + openGrinNumber;
+                }
 
                 await _openGrinRepository.CreateOpenGrin(openGrinDetails);
                     _openGrinRepository.SaveAsync();
