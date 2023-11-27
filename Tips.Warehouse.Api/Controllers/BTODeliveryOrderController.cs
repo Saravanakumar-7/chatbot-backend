@@ -119,6 +119,7 @@ namespace Tips.Warehouse.Api.Controllers
                         foreach (var deliveryOrderitemDetails in getBTODeliveryOrderDetailById.bTODeliveryOrderItems)
                         {
                             BTODeliveryOrderItemsDto bTODeliveryOrderItemsDtos = _mapper.Map<BTODeliveryOrderItemsDto>(deliveryOrderitemDetails);
+                            bTODeliveryOrderItemsDtos.QtyDistribution = _mapper.Map<List<BtoDeliveryOrderItemQtyDistributionDto>>(deliveryOrderitemDetails.QtyDistribution);
                             //bTODeliveryOrderItemsDtos.BTOSerialNumberDto = _mapper.Map<List<BTOSerialNumberDto>>(deliveryOrderitemDetails.BTOSerialNumbers);
                             bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDtos);
                         }
@@ -469,7 +470,7 @@ namespace Tips.Warehouse.Api.Controllers
                     for (int i = 0; i < bTODeliveryOrderItemsListDto.Count; i++)
                     {
                         BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderItemsListDto[i]);
-                        bTODeliveryOrderItemsDetails.QtyDistribution = _mapper.Map<List<BtoDeliveryOrderItemQtyDistribution>>(bTODeliveryOrderItemsListDto[i].QtyDistridution);
+                        bTODeliveryOrderItemsDetails.QtyDistribution = _mapper.Map<List<BtoDeliveryOrderItemQtyDistribution>>(bTODeliveryOrderItemsListDto[i].QtyDistribution);
                         //foreach(var dis in bTODeliveryOrderItemsDetails.QtyDistridution)
                         //{
                         //    dis.PartNumber = bTODeliveryOrderItemsDetails.FGItemNumber;

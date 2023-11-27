@@ -52,11 +52,12 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid User Data sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
-                var (loginResult, token, userId) = await _jwtAuth.GetToken(loginDto);
+                var (loginResult, token, userId, userName) = await _jwtAuth.GetToken(loginDto);
 
                 LoginResponseDto loginResponseDto = new LoginResponseDto();
                 loginResponseDto.Name = loginDto.UserName;
                 loginResponseDto.UnitName = loginDto.UnitName;
+                loginResponseDto.UserName = userName; 
 
                 switch (loginResult)
                 {

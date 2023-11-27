@@ -62,21 +62,22 @@ namespace Tips.Grin.Api.Repository
             .ToList();
             return iQcDetails;
         }
-        public async Task<IEnumerable<IQCConfirmation>> GetAllIQCConfirmationWithItems(IQCConfirmationSearchDto iQCConfirmationSearch)
-        {           
-                var query = _tipsGrinDbContext.IQCConfirmations.Include("IQCConfirmationItems");
-                if (iQCConfirmationSearch != null || (iQCConfirmationSearch.InvoiceNumber.Any())
-               && iQCConfirmationSearch.GrinNumber.Any() && iQCConfirmationSearch.VendorName.Any() 
-               && iQCConfirmationSearch.VendorId.Any())
 
-                {
-                    query = query.Where
-                    (po => (iQCConfirmationSearch.GrinNumber.Any() ? iQCConfirmationSearch.GrinNumber.Contains(po.GrinNumber) : true));
+        public async Task<IEnumerable<IQCConfirmation>> GetAllIQCConfirmationWithItems(IQCConfirmationSearchDto iQCConfirmationSearch)
+        {
+            var query = _tipsGrinDbContext.IQCConfirmations.Include("IQCConfirmationItems");
+            if (iQCConfirmationSearch != null || (iQCConfirmationSearch.InvoiceNumber.Any())
+           && iQCConfirmationSearch.GrinNumber.Any() && iQCConfirmationSearch.VendorName.Any()
+           && iQCConfirmationSearch.VendorId.Any())
+
+            {
+                query = query.Where
+                (po => (iQCConfirmationSearch.GrinNumber.Any() ? iQCConfirmationSearch.GrinNumber.Contains(po.GrinNumber) : true));
                    //&& (iQCConfirmationSearch.InvoiceNumber.Any() ? iQCConfirmationSearch.InvoiceNumber.Contains(po.InvoiceNumber) : true)
                    //&& (iQCConfirmationSearch.VendorName.Any() ? iQCConfirmationSearch.VendorName.Contains(po.VendorName) : true)
                    //&& (iQCConfirmationSearch.VendorId.Any() ? iQCConfirmationSearch.VendorId.Contains(po.VendorId) : true));
-                }
-                return query.ToList();
+            }
+            return query.ToList();
         }
 
         //public async Task<PagedList<IQCConfirmation>> GetAllIqcDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
