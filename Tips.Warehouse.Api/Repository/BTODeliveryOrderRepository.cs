@@ -259,7 +259,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<BTODeliveryOrder> GetBTODeliveryOrderById(int id)
         {
             var getBTODeliveryOrderDetailsbyId = await _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.Id == id)
-                                .Include(t => t.bTODeliveryOrderItems)
+                                .Include(t => t.bTODeliveryOrderItems).ThenInclude(x=>x.QtyDistribution)
                                 //.ThenInclude(s => s.BTOSerialNumbers)
                                 .FirstOrDefaultAsync();
 

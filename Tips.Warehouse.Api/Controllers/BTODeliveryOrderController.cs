@@ -119,6 +119,7 @@ namespace Tips.Warehouse.Api.Controllers
                         foreach (var deliveryOrderitemDetails in getBTODeliveryOrderDetailById.bTODeliveryOrderItems)
                         {
                             BTODeliveryOrderItemsDto bTODeliveryOrderItemsDtos = _mapper.Map<BTODeliveryOrderItemsDto>(deliveryOrderitemDetails);
+                            bTODeliveryOrderItemsDtos.QtyDistribution = _mapper.Map<List<BtoDeliveryOrderItemQtyDistributionDto>>(deliveryOrderitemDetails.QtyDistribution);
                             //bTODeliveryOrderItemsDtos.BTOSerialNumberDto = _mapper.Map<List<BTOSerialNumberDto>>(deliveryOrderitemDetails.BTOSerialNumbers);
                             bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDtos);
                         }
