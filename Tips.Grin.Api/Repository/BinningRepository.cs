@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Tips.Grin.Api.Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using System.Linq;
 
 namespace Tips.Grin.Api.Repository
 {
@@ -102,17 +103,30 @@ namespace Tips.Grin.Api.Repository
 
             var grinNumbers = binningGrinNoList.Select(b => b.GrinNumber).ToList();
 
-            var grinDetails = grinNumbers
-                                .Select(grinNumber => new GrinAndBinningDetailsDto
-                                {
-                                    Id = binningGrinNoList.FirstOrDefault(b => b.GrinNumber == grinNumber)?.Id ?? 0,
-                                    GrinNumber = grinNumber,
-                                    InvoiceNumber = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.InvoiceNumber,
-                                    VendorName = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.VendorName,
-                                    LastModifiedOn = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.LastModifiedOn,
-                                    LastModifiedBy = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.LastModifiedBy
-                                })
-                                .ToList();
+            //var grinDetails = grinNumbers
+            //                    .Select(grinNumber => new GrinAndBinningDetailsDto
+            //                    {
+            //                        Id = binningGrinNoList.FirstOrDefault(b => b.GrinNumber == grinNumber)?.Id ?? 0,
+            //                        GrinNumber = grinNumber,
+            //                        InvoiceNumber = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.InvoiceNumber,
+            //                        VendorName = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.VendorName,
+            //                        LastModifiedOn = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.LastModifiedOn,
+            //                        LastModifiedBy = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.LastModifiedBy
+            //                    })
+            //                    .ToList();
+
+            var grinDetails_1 = await _tipsGrinDbContext.Grins.Where(x => grinNumbers.Contains(x.GrinNumber)).ToListAsync();
+            var grinDetails = grinDetails_1.Select(grinNumber => new GrinAndBinningDetailsDto
+            {
+                Id = grinNumber.Id,
+                GrinNumber = grinNumber.GrinNumber,
+                InvoiceNumber = grinNumber.InvoiceNumber,
+                VendorName = grinNumber.VendorName,
+                CreatedBy = grinNumber.CreatedBy,
+                CreatedOn = grinNumber.CreatedOn,
+                LastModifiedBy = grinNumber.LastModifiedBy,
+                LastModifiedOn = grinNumber.LastModifiedOn
+            }).ToList();
 
             if (!string.IsNullOrWhiteSpace(searchParams.SearchValue))
             {

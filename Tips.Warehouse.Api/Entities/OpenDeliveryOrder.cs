@@ -23,8 +23,6 @@ namespace Tips.Warehouse.Api.Entities
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
-
-        [DataType(DataType.DateTime)]
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
