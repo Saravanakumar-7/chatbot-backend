@@ -378,25 +378,25 @@ namespace Tips.Warehouse.Api.Repository
             ).ToListAsync();
 
             List<InventoryQtyforDO> exists = new List<InventoryQtyforDO>();
-            foreach(var getitem in invdetails)
+            foreach (var getitem in invdetails)
             {
                 InventoryQtyforDO newly = new InventoryQtyforDO();
                 List<InventoryQtyforDOLocation> newlocations = new List<InventoryQtyforDOLocation>();
                 int existflag = 0;
                 foreach (var ex in exists)
-                {                
+                {
                     if (getitem.Warehouse == ex.Warehouse)
-                    {     
+                    {
                         existflag = 1;
                         int locflag = 0;
                         InventoryQtyforDOLocation locations = new InventoryQtyforDOLocation();
                         foreach (var exloco in ex.inventoryQtyforDOLocations)
-                        { 
-                            if (getitem.Location==exloco.Location)
+                        {
+                            if (getitem.Location == exloco.Location)
                             {
                                 locflag = 1;
-                                exloco.BalanceQty = exloco.BalanceQty+getitem.BalanceQty;
-                            }                            
+                                exloco.BalanceQty = exloco.BalanceQty + getitem.BalanceQty;
+                            }
                         }
                         if (locflag == 0)
                         {
@@ -404,7 +404,7 @@ namespace Tips.Warehouse.Api.Repository
                             locations.BalanceQty = getitem.BalanceQty;
                             ex.inventoryQtyforDOLocations.Add(locations);
                         }
-                    }                    
+                    }
                 }
                 if (existflag == 0)
                 {
@@ -417,7 +417,61 @@ namespace Tips.Warehouse.Api.Repository
                     exists.Add(newly);
                 }
             }
-            
+
+
+            return exists;
+        }
+        public async Task<List<InventoryQtyforDO>> GetInventorybyItem(string itemNumber)
+        {
+            var invdetails = await FindAll().Where(x => x.PartNumber == itemNumber).Select(x => new GetInventoryQtyforDO()
+            {
+                Warehouse = x.Warehouse,
+                Location = x.Location,
+                BalanceQty = x.Balance_Quantity
+            }
+            ).ToListAsync();
+
+            List<InventoryQtyforDO> exists = new List<InventoryQtyforDO>();
+            foreach (var getitem in invdetails)
+            {
+                InventoryQtyforDO newly = new InventoryQtyforDO();
+                List<InventoryQtyforDOLocation> newlocations = new List<InventoryQtyforDOLocation>();
+                int existflag = 0;
+                foreach (var ex in exists)
+                {
+                    if (getitem.Warehouse == ex.Warehouse)
+                    {
+                        existflag = 1;
+                        int locflag = 0;
+                        InventoryQtyforDOLocation locations = new InventoryQtyforDOLocation();
+                        foreach (var exloco in ex.inventoryQtyforDOLocations)
+                        {
+                            if (getitem.Location == exloco.Location)
+                            {
+                                locflag = 1;
+                                exloco.BalanceQty = exloco.BalanceQty + getitem.BalanceQty;
+                            }
+                        }
+                        if (locflag == 0)
+                        {
+                            locations.Location = getitem.Location;
+                            locations.BalanceQty = getitem.BalanceQty;
+                            ex.inventoryQtyforDOLocations.Add(locations);
+                        }
+                    }
+                }
+                if (existflag == 0)
+                {
+                    InventoryQtyforDOLocation newlylocations = new InventoryQtyforDOLocation();
+                    newly.Warehouse = getitem.Warehouse;
+                    newlylocations.Location = getitem.Location;
+                    newlylocations.BalanceQty = getitem.BalanceQty;
+                    newlocations.Add(newlylocations);
+                    newly.inventoryQtyforDOLocations = newlocations;
+                    exists.Add(newly);
+                }
+            }
+
 
             return exists;
         }
