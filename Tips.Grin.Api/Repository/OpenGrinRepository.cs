@@ -60,6 +60,29 @@ namespace Tips.Grin.Api.Repository
                 throw ex;
             }
         }
+        public async Task<string> GenerateOpenGrinNumberForAvision()
+        {
+            using var transaction = await _tipsGrinDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var poNumberEntity = await _tipsGrinDbContext.OpenGrinNumbers.SingleAsync();
+                poNumberEntity.CurrentValue += 1;
+                _tipsGrinDbContext.Update(poNumberEntity);
+                await _tipsGrinDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
+                int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+
+                return $"ASPL|OGRIN|{currentYear:D2}-{nextYear:D2}|{poNumberEntity.CurrentValue:D4}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
         public async Task<PagedList<OpenGrin>> GetAllOpenGrinDetails(PagingParameter pagingParameter, SearchParams searchParams)
         {
             var openGrinDetails = FindAll()
