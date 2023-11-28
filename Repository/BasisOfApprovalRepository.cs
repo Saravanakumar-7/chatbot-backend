@@ -46,7 +46,7 @@ namespace Repository
 
         public async Task<IEnumerable<BasisOfApproval>> GetAllBasisOfApproval([FromQuery] SearchParames searchParams)
         {
-            var basisOfApprovalDetails = FindAll()
+            var basisOfApprovalDetails = FindAll().OrderByDescending(x => x.Id)
            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BasisOfApprovalName.Contains(searchParams.SearchValue) ||
           inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 

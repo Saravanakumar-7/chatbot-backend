@@ -55,7 +55,7 @@ namespace Repository
 
         public async Task<IEnumerable<PreferredFreightForwarder>> GetAllPreferredFreightForwarders([FromQuery] SearchParames searchParams)
         {
-            var preferredFreightForwarderDetails = FindAll()
+            var preferredFreightForwarderDetails = FindAll().OrderByDescending(x => x.Id)
                                            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PreferredFreightforwarder.Contains(searchParams.SearchValue) ||
                                      inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return preferredFreightForwarderDetails;

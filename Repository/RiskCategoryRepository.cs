@@ -54,7 +54,7 @@ namespace Repository
 
         public async Task<IEnumerable<RiskCategory>> GetAllRiskCategory([FromQuery] SearchParames searchParams)
         {
-            var riskCategoryDetails = FindAll()
+            var riskCategoryDetails = FindAll().OrderByDescending(x => x.Id)
                                        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.RiskCategoryName.Contains(searchParams.SearchValue) ||
                                  inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return riskCategoryDetails;

@@ -56,7 +56,7 @@ namespace Repository
 
         public async Task<IEnumerable<NatureOfRelationship>> GetAllNatureOfRelationships([FromQuery] SearchParames searchParams)
         {
-            var natureOfRelationshipDetails = FindAll()
+            var natureOfRelationshipDetails = FindAll().OrderByDescending(x => x.Id)
                                    .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.NatureOfRelationshipName.Contains(searchParams.SearchValue) ||
                                   inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return natureOfRelationshipDetails;

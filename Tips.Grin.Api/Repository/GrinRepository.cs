@@ -198,14 +198,21 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<IEnumerable<GrinNoForIqcAndBinning>> GetAllGrinNumberForBinning()
         {
-            IEnumerable<GrinNoForIqcAndBinning> grinNoForBinning = await _tipsGrinDbContext.Grins
-                .Where(x => x.IsGrinCompleted == true && x.IsIqcCompleted == true && x.IsBinningCompleted == false)
-                                .Select(x => new GrinNoForIqcAndBinning()
-                                {
-                                    GrinNumber = x.GrinNumber,
-                                    GrinId = x.Id
-                                })
-                              .ToListAsync();
+            //IEnumerable<GrinNoForIqcAndBinning> grinNoForBinning = await _tipsGrinDbContext.Grins
+            //    .Where(x => x.IsGrinCompleted == true && x.IsIqcCompleted == true && x.IsBinningCompleted == false)
+            //                    .Select(x => new GrinNoForIqcAndBinning()
+            //                    {
+            //                        GrinNumber = x.GrinNumber,
+            //                        GrinId = x.Id
+            //                    })
+            //                  .ToListAsync();
+            var grinparts = await _tipsGrinDbContext.GrinParts.Where(x => x.IsIqcCompleted == true).Select(x => x.GrinsId).ToListAsync();
+            var gId = grinparts.Distinct().ToList();
+            List<GrinNoForIqcAndBinning> grinNoForBinning = await _tipsGrinDbContext.Grins.Where(x=> gId.Contains(x.Id)).Select(x => new GrinNoForIqcAndBinning()
+            {
+                GrinNumber = x.GrinNumber,
+                GrinId = x.Id
+            }).ToListAsync();
 
             return grinNoForBinning;
         }

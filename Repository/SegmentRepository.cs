@@ -55,7 +55,7 @@ namespace Repository
 
         public async Task<IEnumerable<Segment>> GetAllSegment([FromQuery] SearchParames searchParams)
         {
-            var segmentDetails = FindAll()
+            var segmentDetails = FindAll().OrderByDescending(x => x.Id)
                                         .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.SegmentName.Contains(searchParams.SearchValue) ||
                                   inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return segmentDetails;

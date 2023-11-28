@@ -55,7 +55,7 @@ namespace Repository
 
         public async Task<IEnumerable<DeliveryTerm>> GetAllDeliveryTerms([FromQuery] SearchParames searchParams)
         {
-            var deliveryTermDetails = FindAll()
+            var deliveryTermDetails = FindAll().OrderByDescending(x => x.Id)
                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DeliveryTermName.Contains(searchParams.SearchValue) ||
                      inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 

@@ -55,7 +55,7 @@ namespace Repository
 
         public async Task<IEnumerable<GST_Percentage>> GetAllGST_Percentages([FromQuery] SearchParames searchParams)
         {
-            var gstPercentageDetails = FindAll()
+            var gstPercentageDetails = FindAll().OrderByDescending(x => x.Id)
                                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.GSTPercentage.Contains(searchParams.SearchValue) ||
                                 inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return gstPercentageDetails;

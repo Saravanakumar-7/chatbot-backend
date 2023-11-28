@@ -56,7 +56,7 @@ namespace Repository
 
         public async Task<IEnumerable<PaymentTerm>> GetAllpaymentTerms([FromQuery] SearchParames searchParams)
         {
-            var paymentTermDetails = FindAll()
+            var paymentTermDetails = FindAll().OrderByDescending(x => x.Id)
                               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PaymentTerms.Contains(searchParams.SearchValue) ||
                         inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return paymentTermDetails;

@@ -58,7 +58,7 @@ namespace Repository
 
         public async Task<IEnumerable<Locations>> GetAllLocations([FromQuery] SearchParames searchParams)
         {
-            var LocationsDetails = FindAll()
+            var LocationsDetails = FindAll().OrderByDescending(x => x.Id)
            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LocationName.Contains(searchParams.SearchValue) ||
           inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 

@@ -54,7 +54,7 @@ namespace Repository
 
         public async Task<IEnumerable<Commodity>> GetAllCommodity([FromQuery] SearchParames searchParams)
         {
-            var commodityDetails = FindAll()
+            var commodityDetails = FindAll().OrderByDescending(x => x.Id)
           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CommodityType.Contains(searchParams.SearchValue) ||
          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             

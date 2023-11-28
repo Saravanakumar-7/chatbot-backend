@@ -56,7 +56,7 @@ namespace Repository
 
         public async Task<IEnumerable<Salutations>> GetAllSalutations([FromQuery] SearchParames searchParams)
         {
-            var salutationDetails = FindAll()
+            var salutationDetails = FindAll().OrderByDescending(x => x.Id)
                                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.SalutationsName.Contains(searchParams.SearchValue) ||
                            inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return salutationDetails;

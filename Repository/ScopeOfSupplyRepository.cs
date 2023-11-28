@@ -56,7 +56,7 @@ namespace Repository
 
         public async Task<IEnumerable<ScopeOfSupply>> GetAllScopeOfSupply([FromQuery] SearchParames searchParams)
         {
-            var scopeOfSuppliesDetials = FindAll()
+            var scopeOfSuppliesDetials = FindAll().OrderByDescending(x => x.Id)
            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ScopeOfSupplyName.Contains(searchParams.SearchValue) ||
           inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 

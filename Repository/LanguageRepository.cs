@@ -58,7 +58,7 @@ namespace Repository
 
         public async Task<IEnumerable<Language>> GetAllLanguages([FromQuery] SearchParames searchParams)
         {
-            var languageDetails = FindAll()
+            var languageDetails = FindAll().OrderByDescending(x => x.Id)
                                    .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LanguageName.Contains(searchParams.SearchValue) ||
                                   inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 

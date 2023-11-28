@@ -57,7 +57,7 @@ namespace Repository
 
         public async Task<IEnumerable<AuditFrequency>> GetAllAuditFrequencies([FromQuery] SearchParames searchParams)
         {
-            var auditFrequencyDetails = FindAll()
+            var auditFrequencyDetails = FindAll().OrderByDescending(x => x.Id)
                                   .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.AuditFrequencyName.Contains(searchParams.SearchValue) ||
                                  inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 

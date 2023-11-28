@@ -55,7 +55,7 @@ namespace Repository
 
         public async Task<IEnumerable<CompanyCategory>> GetAllCompanyCategory([FromQuery] SearchParames searchParams)
         {
-            var companyCategoryDetails = FindAll()
+            var companyCategoryDetails = FindAll().OrderByDescending(x => x.Id)
                                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CompanyCategoryName.Contains(searchParams.SearchValue) ||
                                        inv.Description.Contains(searchParams.SearchValue))));
 
