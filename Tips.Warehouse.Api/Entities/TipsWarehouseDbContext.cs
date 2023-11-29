@@ -10,7 +10,7 @@ namespace Tips.Warehouse.Api.Entities
         { 
         }
         public DbSet<BtoDeliveryOrderItemQtyDistribution> BtoDeliveryOrderItemQtyDistribution { get; set; }
-
+        public DbSet<OpenDeliveryOrderPartsQtyDistribution> OpenDeliveryOrderPartsQtyDistribution { get; set; }
         public DbSet<OpenDeliveryOrder> OpenDeliveryOrders { get; set; }
         public DbSet<OpenDeliveryOrderParts> OpenDeliveryOrderParts { get; set; }
         public DbSet<OpenDeliveryOrderHistory> OpenDeliveryOrderHistories { get; set; }

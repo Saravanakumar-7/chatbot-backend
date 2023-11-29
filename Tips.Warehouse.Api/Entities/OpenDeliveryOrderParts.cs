@@ -28,9 +28,8 @@ namespace Tips.Warehouse.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+        public List<OpenDeliveryOrderPartsQtyDistribution>? QtyDistribution { get; set; }
         public int OpenDeliveryOrderId { get; set; }
-
         public OpenDeliveryOrder? OpenDeliveryOrder { get; set; }
     }
 }
