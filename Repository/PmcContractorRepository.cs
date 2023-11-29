@@ -44,7 +44,7 @@ namespace Repository
         }
         public async Task<IEnumerable<PmcContractor>> GetAllPmcContractor()
         {
-            var GetallpmcContractor = await FindAll().ToListAsync(); return GetallpmcContractor;
+            var GetallpmcContractor = await FindAll().OrderByDescending(x => x.Id).ToListAsync(); return GetallpmcContractor;
         }
         public async Task<PmcContractor> GetPmcContractorById(int id)
         {

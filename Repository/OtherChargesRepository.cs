@@ -50,7 +50,7 @@ namespace Repository
 
         public async Task<IEnumerable<OtherCharges>> GetAllOtherCharges()
         {
-            var otherChargesDetails = await FindAll().ToListAsync();
+            var otherChargesDetails = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
             return otherChargesDetails;
         }
 

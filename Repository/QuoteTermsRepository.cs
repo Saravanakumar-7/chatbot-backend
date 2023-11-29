@@ -54,7 +54,7 @@ namespace Repository
 
         public async Task<IEnumerable<QuoteTerms>> GetAllQuoteTerms([FromQuery] SearchParames searchParams)
         {
-            var quoteTermDetails = FindAll()
+            var quoteTermDetails = FindAll().OrderByDescending(x => x.Id)
                                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.QuoteTermsName.Contains(searchParams.SearchValue) ||
                                 inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return quoteTermDetails;

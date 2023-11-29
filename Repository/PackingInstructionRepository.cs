@@ -56,7 +56,7 @@ namespace Repository
 
         public async Task<IEnumerable<PackingInstruction>> GetAllPackingInstruction([FromQuery] SearchParames searchParams)
         {
-            var packingInstructionDetails = FindAll()
+            var packingInstructionDetails = FindAll().OrderByDescending(x => x.Id)
                                          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PackingInstructionsName.Contains(searchParams.SearchValue) ||
                                    inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return packingInstructionDetails;

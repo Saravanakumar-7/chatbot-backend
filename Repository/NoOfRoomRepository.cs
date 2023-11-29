@@ -49,7 +49,7 @@ namespace Repository
 
         public async Task<IEnumerable<NoOfRoom>> GetAllNoOfRoom()
         {
-            var GetallNoOfRoom = await FindAll().ToListAsync();
+            var GetallNoOfRoom = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
             return GetallNoOfRoom;
         }
 

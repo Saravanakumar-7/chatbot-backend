@@ -46,7 +46,7 @@ namespace Repository
 
         public async Task<IEnumerable<Bank>> GetAllActiveBank([FromQuery] SearchParames searchParams)
         {
-            var bankDetails = FindAll()
+            var bankDetails = FindAll().OrderByDescending(x => x.Id)
             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.BankName.Contains(searchParams.SearchValue) ||
            inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 

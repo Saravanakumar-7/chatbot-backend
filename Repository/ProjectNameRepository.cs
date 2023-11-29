@@ -43,7 +43,7 @@ namespace Repository
         }
         public async Task<IEnumerable<ProjectName>> GetAllProjectName()
         {
-            var GetallProjectname = await FindAll().ToListAsync(); return GetallProjectname;
+            var GetallProjectname = await FindAll().OrderByDescending(x => x.Id).ToListAsync(); return GetallProjectname;
         }
         public async Task<ProjectName> GetProjectNameById(int id)
         {

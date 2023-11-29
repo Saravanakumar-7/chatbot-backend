@@ -53,7 +53,7 @@ namespace Repository
 
         public async Task<IEnumerable<Convertionrate>> GetAllConvertionrate(SearchParames searchParams)
         {
-            var convertionrateDetails = FindAll()
+            var convertionrateDetails = FindAll().OrderByDescending(x => x.Id)
             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.UOC.Contains(searchParams.SearchValue) ||
           inv.Unit.Contains(searchParams.SearchValue))));
             return convertionrateDetails;

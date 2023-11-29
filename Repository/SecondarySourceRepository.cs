@@ -54,7 +54,7 @@ namespace Repository
         public async Task<IEnumerable<SecondarySource>> GetAllSecondarySources()
         {
 
-            var GetallSecondarySourcesList = await FindAll().ToListAsync();
+            var GetallSecondarySourcesList = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
 
             return GetallSecondarySourcesList;
         }

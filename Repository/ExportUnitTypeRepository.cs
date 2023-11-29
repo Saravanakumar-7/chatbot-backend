@@ -55,7 +55,7 @@ namespace Repository
 
         public async Task<IEnumerable<ExportUnitType>> GetAllExportUnitTypes([FromQuery] SearchParames searchParams)
         {
-            var exportUnitDetails = FindAll()
+            var exportUnitDetails = FindAll().OrderByDescending(x => x.Id)
                                           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ExportUnitTypeName.Contains(searchParams.SearchValue) ||
                                     inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return exportUnitDetails;

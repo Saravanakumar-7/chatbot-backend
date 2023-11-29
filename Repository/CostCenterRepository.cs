@@ -57,7 +57,7 @@ namespace Repository
 
         public async Task<IEnumerable<CostCenter>> GetAllCostCenters([FromQuery] SearchParames searchParams)
         {
-            var costCenterDetails = FindAll()
+            var costCenterDetails = FindAll().OrderByDescending(x => x.Id)
                        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CostCenterName.Contains(searchParams.SearchValue) ||
                       inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 

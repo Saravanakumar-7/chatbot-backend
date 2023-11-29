@@ -56,7 +56,7 @@ namespace Repository
 
         public async Task<IEnumerable<Department>> GetAllDepartment([FromQuery] SearchParames searchParams)
         {
-            var departmentDetails = FindAll()
+            var departmentDetails = FindAll().OrderByDescending(x => x.Id)
          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DepartmentName.Contains(searchParams.SearchValue) ||
         inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 

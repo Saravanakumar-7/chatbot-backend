@@ -57,7 +57,7 @@ namespace Repository
 
         public async Task<IEnumerable<CustomerType>> GetAllCustomerTypes([FromQuery] SearchParames searchParams)
         {
-            var customerTypeDetails = FindAll()
+            var customerTypeDetails = FindAll().OrderByDescending(x => x.Id)
            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerTypeName.Contains(searchParams.SearchValue) ||
           inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 

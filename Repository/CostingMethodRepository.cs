@@ -55,7 +55,7 @@ namespace Repository
 
         public async Task<IEnumerable<CostingMethod>> GetAllCostingMethods([FromQuery] SearchParames searchParams)
         {
-            var costingMethodDetails = FindAll()
+            var costingMethodDetails = FindAll().OrderByDescending(x => x.Id)
            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CostingMethodName.Contains(searchParams.SearchValue) ||
           inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 

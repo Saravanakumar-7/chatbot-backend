@@ -58,7 +58,7 @@ namespace Repository
 
         public async Task<IEnumerable<MaterialType>> GetAllMaterialType([FromQuery] SearchParames searchParams)
         {
-            var materialTypeDetails = FindAll()
+            var materialTypeDetails = FindAll().OrderByDescending(x => x.Id)
          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.MaterialTypeName.Contains(searchParams.SearchValue) ||
         inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 

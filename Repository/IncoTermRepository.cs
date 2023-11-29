@@ -56,7 +56,7 @@ namespace Repository
 
         public async Task<IEnumerable<IncoTerm>> GetAllIncoTerm([FromQuery] SearchParames searchParams)
         {
-            var incoTermDetails = FindAll()
+            var incoTermDetails = FindAll().OrderByDescending(x => x.Id)
            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.IncoTermName.Contains(searchParams.SearchValue) ||
           inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 

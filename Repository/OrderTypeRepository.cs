@@ -55,7 +55,7 @@ namespace Repository
 
         public async Task<IEnumerable<OrderType>> GetAllOrderType([FromQuery] SearchParames searchParams)
         {
-            var orderTypeDetails = FindAll()
+            var orderTypeDetails = FindAll().OrderByDescending(x => x.Id)
                               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.OrderTypeName.Contains(searchParams.SearchValue) ||
                                      inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return orderTypeDetails;

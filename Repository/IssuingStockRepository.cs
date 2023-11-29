@@ -54,7 +54,7 @@ namespace Repository
 
         public async Task<IEnumerable<IssuingStock>> GetAllIssuingStock([FromQuery] SearchParames searchParams)
         {
-            var issuingStockDetails = FindAll()
+            var issuingStockDetails = FindAll().OrderByDescending(x => x.Id)
                                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.IssuingStockName.Contains(searchParams.SearchValue) ||
                                       inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return issuingStockDetails;

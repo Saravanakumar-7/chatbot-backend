@@ -55,7 +55,7 @@ namespace Repository
 
         public async Task<IEnumerable<ProcurementType>> GetAllProcurementType([FromQuery] SearchParames searchParams)
         {
-            var procurementTypeDetails = FindAll()
+            var procurementTypeDetails = FindAll().OrderByDescending(x => x.Id)
         .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProcurementName.Contains(searchParams.SearchValue) ||
        inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 

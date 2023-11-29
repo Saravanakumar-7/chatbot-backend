@@ -59,7 +59,7 @@ namespace Repository
 
         public async Task<IEnumerable<AdditionalCharges>> GetAllAdditionalCharges([FromQuery] SearchParames searchParams)
         {
-            var additionalChargesActiveDetails = FindAll()
+            var additionalChargesActiveDetails = FindAll().OrderByDescending(x=>x.Id)
                                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.AdditionalChargesLabelName.Contains(searchParams.SearchValue) ||
                                       inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return additionalChargesActiveDetails;
