@@ -15,8 +15,8 @@ namespace Contracts
         IFileUploadRepository FileUploadRepository { get; } 
 
  IUnitRepository unitRepository { get; }
-    IImageUploadRepository ImageUploadRepository { get; } 
-
+    IImageUploadRepository ImageUploadRepository { get; }
+        IUserRepository userRepository { get; }
         ILeadWebsiteRepository leadWebsiteRepository { get; }
         IStageOfConstructionRepository StageOfConstructionRepository { get; }
         ICustomerTypeRepository CustomerTypeRepository { get; }

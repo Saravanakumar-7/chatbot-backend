@@ -28,6 +28,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<List<InventoryQtyforDO>> GetInventorybyItemandProject(string itemNumber, string projectNumber);
         Task<List<InventoryQtyforDO>> GetInventorybyItem(string itemNumber);
         Task UpdateInventoryforBTO(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis);
+        Task UpdateInventoryforODO(List<OpenDeliveryOrderPartsQtyDistribution> ODOitemDis);
         Task<Inventory> GetInventoryFGDetailsByItemNumber(string ItemNumber);
 
         //Task<Inventory> UpdateInventoryBalanceQty(string partNumber, string Qty);

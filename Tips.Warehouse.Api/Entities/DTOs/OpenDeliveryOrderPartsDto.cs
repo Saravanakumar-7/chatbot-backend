@@ -38,6 +38,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public List<OpenDeliveryOrderPartsQtyDistributionDto>? QtyDistribution { get; set; }
+
     }
     public class OpenDeliveryOrderPartsDtoPost
     {
@@ -69,8 +71,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? SerialNo { get; set; }
 
         public bool IsActive { get; set; } = true;
-        
-        
+
+        public List<OpenDeliveryOrderPartsQtyDistributionPostDto>? QtyDistribution { get; set; }
+
     }
     public class OpenDeliveryOrderPartsDtoUpdate
     {

@@ -26,4 +26,14 @@ namespace Entities.DTOs
         public int UserId { get; set; }
 
     }
+    public class ResetPW
+    {
+        [Required]
+        public string UserName { get; set; }
+        [Required]
+        public string Password { get; set; }
+        public string UnitName { get; set; }
+        public string NewPW { get; set; }
+        public string ConfirmPW { get; set; }
+    }
 }

@@ -370,11 +370,238 @@ namespace Tips.Warehouse.Api.Controllers
                     for (int i = 0; i < openDeliveryOrderitemsList.Count; i++)
                     {
                         OpenDeliveryOrderParts OpenDeliveryOrderItemsDetails = _mapper.Map<OpenDeliveryOrderParts>(openDeliveryOrderitemsList[i]);
+                        OpenDeliveryOrderItemsDetails.QtyDistribution= _mapper.Map<List<OpenDeliveryOrderPartsQtyDistribution>>(openDeliveryOrderitemsList[i].QtyDistribution);
                         OpenDeliveryOrderItemsDetails.ODONumber = openDeliveryorder.OpenDONumber;
                         openDeliveryOrderItemsDtoList.Add(OpenDeliveryOrderItemsDetails);
 
                         //Update Inventory balanced Quantity 
+                        await _inventoryRepository.UpdateInventoryforODO(OpenDeliveryOrderItemsDetails.QtyDistribution);
 
+
+                        //Old Code [
+                        //var PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                        //var getInventoryFGDetailsByItemnumber = await _inventoryRepository.GetInventoryDetailsByItemNoandPartTypes(PartNumber);
+                        //decimal Quantity = Convert.ToDecimal(openDeliveryOrderitemsList[i].DispatchQty);
+
+                        //if (getInventoryFGDetailsByItemnumber != null)
+                        //{
+                        //    foreach (var item in getInventoryFGDetailsByItemnumber)
+                        //    {
+                        //        if (Quantity != 0 && item.Balance_Quantity >= Quantity)
+                        //        {
+                        //            item.Balance_Quantity = item.Balance_Quantity - Quantity;
+                        //            Quantity = 0;
+                        //            if (item.Balance_Quantity == 0)
+                        //            {
+                        //                item.IsStockAvailable = false;
+                        //            }
+
+                        //        }
+                        //        if (Quantity != 0 && item.Balance_Quantity < Quantity)
+                        //        {
+                        //            Quantity = Quantity - item.Balance_Quantity;
+                        //            item.Balance_Quantity = 0;
+                        //            item.IsStockAvailable = false;                                     
+                        //        }
+
+                        //        _inventoryRepository.UpdateInventory(item);
+                        //        _inventoryRepository.SaveAsync();
+
+                        //        if (Quantity <= 0)
+                        //        {
+                        //            break;
+                        //        }
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    Inventory inventory = new Inventory();
+                        //    inventory.PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                        //    inventory.MftrPartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                        //    inventory.Description = openDeliveryOrderItemsDtoList[i].ItemDescription;
+                        //    inventory.ProjectNumber = "";
+                        //    inventory.Balance_Quantity = openDeliveryOrderItemsDtoList[i].DispatchQty;
+                        //    inventory.UOM = openDeliveryOrderItemsDtoList[i].UOM;
+                        //    inventory.IsStockAvailable = true;
+                        //    inventory.Warehouse = openDeliveryOrderItemsDtoList[i].Warehouse;
+                        //    inventory.Location = openDeliveryOrderItemsDtoList[i].Location;
+                        //    inventory.GrinNo = openDeliveryorder.OpenDONumber;
+                        //    inventory.GrinPartId = 0;
+                        //    inventory.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
+                        //    inventory.GrinMaterialType = "";
+                        //    inventory.ReferenceID = openDeliveryorder.OpenDONumber;
+                        //    inventory.ReferenceIDFrom = "Create Open Delivery Order";
+                        //    inventory.shopOrderNo = "";
+
+                        //    await _inventoryRepository.CreateInventory(inventory);
+                        //    _inventoryRepository.SaveAsync();
+                        //}
+                        //]
+
+                        ////Add BTO Detail Into Inventory transaction Table
+
+                        //InventoryTranction inventoryTranction = new InventoryTranction();
+                        //inventoryTranction.PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                        //inventoryTranction.MftrPartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                        //inventoryTranction.Description = openDeliveryOrderItemsDtoList[i].ItemDescription;
+                        //inventoryTranction.Issued_Quantity = Convert.ToDecimal(openDeliveryOrderItemsDtoList[i].DispatchQty);
+                        //inventoryTranction.UOM = openDeliveryOrderItemsDtoList[i].UOM;
+                        //inventoryTranction.Issued_DateTime = DateTime.Now;
+                        //inventoryTranction.ReferenceID = openDeliveryorder.OpenDONumber;
+                        //inventoryTranction.ReferenceIDFrom = "Open Delivery Order";
+                        //inventoryTranction.Issued_By = "Admin";
+                        //inventoryTranction.CreatedOn = DateTime.Now;
+                        //inventoryTranction.Unit = "Bangalore";
+                        //inventoryTranction.CreatedBy = "Admin";
+                        //inventoryTranction.LastModifiedBy = "Admin";
+                        //inventoryTranction.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
+                        //inventoryTranction.LastModifiedOn = DateTime.Now;
+                        //inventoryTranction.ModifiedStatus = false;
+                        //inventoryTranction.From_Location = openDeliveryOrderItemsDtoList[i].Location;
+                        //inventoryTranction.TO_Location = "ODO";
+                        //inventoryTranction.Remarks = "Create ODO";
+
+                        //var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+
+
+                        //await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                        //_inventoryTranctionRepository.SaveAsync();
+
+
+                        //// Add Bto detail in to opendeliveryorderhistory table
+
+                        OpenDeliveryOrderHistory openDeliveryOrderHistory = new OpenDeliveryOrderHistory();
+                        openDeliveryOrderHistory.ODONumber = openDeliveryorder.OpenDONumber;
+                        openDeliveryOrderHistory.CustomerName = openDeliveryorder.CustomerName;
+                        openDeliveryOrderHistory.CustomerAliasName = openDeliveryorder.CustomerAliasName;
+                        openDeliveryOrderHistory.CustomerId = openDeliveryorder.CustomerId;
+                        openDeliveryOrderHistory.Description = openDeliveryorder.Description;
+                        openDeliveryOrderHistory.ResponsiblePerson = openDeliveryorder.ResponsiblePerson;
+                        openDeliveryOrderHistory.ReasonForIssuingStock = openDeliveryorder.ReasonforIssuingStock;
+                        openDeliveryOrderHistory.IssuedTo = openDeliveryorder.IssuedTo;
+                        openDeliveryOrderHistory.ODOType = openDeliveryorder.IssuedTo;
+                        openDeliveryOrderHistory.ODODate = openDeliveryorder.OpenDODate;
+                        openDeliveryOrderHistory.ItemNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                        openDeliveryOrderHistory.ItemDescription = openDeliveryOrderItemsDtoList[i].ItemDescription;
+                        openDeliveryOrderHistory.ItemType = openDeliveryOrderItemsDtoList[i].ItemType;
+                        openDeliveryOrderHistory.UnitPrice = openDeliveryOrderItemsDtoList[i].UnitPrice;
+                        openDeliveryOrderHistory.UOC = openDeliveryOrderItemsDtoList[i].UOC;
+                        openDeliveryOrderHistory.UOM = openDeliveryOrderItemsDtoList[i].UOM;
+                        openDeliveryOrderHistory.Warehouse = openDeliveryOrderItemsDtoList[i].Warehouse;
+                        openDeliveryOrderHistory.StockAvailable = openDeliveryOrderItemsDtoList[i].StockAvailable;
+                        openDeliveryOrderHistory.Location = openDeliveryOrderItemsDtoList[i].Location;
+                        openDeliveryOrderHistory.LocationStock = openDeliveryOrderItemsDtoList[i].LocationStock;
+                        openDeliveryOrderHistory.DispatchQty = openDeliveryOrderItemsDtoList[i].DispatchQty;
+                        openDeliveryOrderHistory.SerialNo = openDeliveryOrderItemsDtoList[i].SerialNo;
+                        openDeliveryOrderHistory.Unit = openDeliveryOrderItemsDtoList[i].SerialNo;
+                        openDeliveryOrderHistory.UniqeId = openDeliveryOrderItemsDtoList[i].SerialNo;
+                        //openDeliveryOrderHistory.CreatedBy = openDeliveryOrderItemsDtoList[i].CreatedBy;
+                        //openDeliveryOrderHistory.LastModifiedOn = openDeliveryOrderItemsDtoList[i].LastModifiedOn;
+                        openDeliveryOrderHistory.Remark = "From Create ODO";
+
+                        var openDeliveryOrderHistoryDetails = _mapper.Map<OpenDeliveryOrderHistory>(openDeliveryOrderHistory);
+
+
+                        await _openDeliveryOrderHistoryRepository.CreateOpenDeliveryOrderHistory(openDeliveryOrderHistoryDetails);
+                        _openDeliveryOrderHistoryRepository.SaveAsync();
+
+                    }
+                }
+                openDeliveryorder.OpenDeliveryOrderParts = openDeliveryOrderItemsDtoList;
+
+                await _repository.CreateOpenDeliveryOrder(openDeliveryorder);
+
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "OpenDeliveryorder Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("GetOpenDeliveryOrderById", serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateOpenDeliveryOrder action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateOpenDeliveryOrder_AV([FromBody] OpenDeliveryOrderDtoPost openDeliveryOrderDtoPost)
+        {
+            ServiceResponse<OpenDeliveryOrderDto> serviceResponse = new ServiceResponse<OpenDeliveryOrderDto>();
+
+            try
+            {
+                string serverKey = GetServerKey();
+                if (openDeliveryOrderDtoPost is null)
+                {
+                    _logger.LogError("OpenDeliveryOrderDetails object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "OpenDeliveryOrderDetails object sent from client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid OpenDeliveryOrderDetails object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid OpenDeliveryOrderDetails object sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                var openDeliveryOrderparts = _mapper.Map<IEnumerable<OpenDeliveryOrderParts>>(openDeliveryOrderDtoPost.OpenDeliveryOrderParts);
+
+                var openDeliveryOrderitemsList = openDeliveryOrderDtoPost.OpenDeliveryOrderParts;
+
+                var openDeliveryorder = _mapper.Map<OpenDeliveryOrder>(openDeliveryOrderDtoPost);
+                var openDeliveryOrderItemsDtoList = new List<OpenDeliveryOrderParts>();
+
+                openDeliveryorder.OpenDeliveryOrderParts = openDeliveryOrderparts.ToList();
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
+
+                if (serverKey == "trasccon")
+                {
+                    var dateFormat = days + months + years;
+                    var odoNumber = await _repository.GenerateODONumber();
+                    openDeliveryorder.OpenDONumber = dateFormat + odoNumber;
+                }
+                else if (serverKey == "keus")
+                {
+                    var dateFormat = days + months + years;
+                    var odoNumber = await _repository.GenerateODONumber();
+                    openDeliveryorder.OpenDONumber = dateFormat + odoNumber;
+                }
+                else
+                {
+                    var odoNumber = await _repository.GenerateODONumberAvision();
+                    openDeliveryorder.OpenDONumber = odoNumber;
+                }
+
+                if (openDeliveryOrderitemsList != null)
+                {
+
+                    for (int i = 0; i < openDeliveryOrderitemsList.Count; i++)
+                    {
+                        OpenDeliveryOrderParts OpenDeliveryOrderItemsDetails = _mapper.Map<OpenDeliveryOrderParts>(openDeliveryOrderitemsList[i]);
+                        //OpenDeliveryOrderItemsDetails.QtyDistribution = _mapper.Map<List<OpenDeliveryOrderPartsQtyDistribution>>(openDeliveryOrderitemsList[i].QtyDistribution);
+                        OpenDeliveryOrderItemsDetails.ODONumber = openDeliveryorder.OpenDONumber;
+                        openDeliveryOrderItemsDtoList.Add(OpenDeliveryOrderItemsDetails);
+
+                        //Update Inventory balanced Quantity 
+                        //await _inventoryRepository.UpdateInventoryforODO(OpenDeliveryOrderItemsDetails.QtyDistribution);
+
+
+                        //Old Code [
                         var PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
                         var getInventoryFGDetailsByItemnumber = await _inventoryRepository.GetInventoryDetailsByItemNoandPartTypes(PartNumber);
                         decimal Quantity = Convert.ToDecimal(openDeliveryOrderitemsList[i].DispatchQty);
@@ -391,13 +618,13 @@ namespace Tips.Warehouse.Api.Controllers
                                     {
                                         item.IsStockAvailable = false;
                                     }
-                                 
+
                                 }
                                 if (Quantity != 0 && item.Balance_Quantity < Quantity)
                                 {
                                     Quantity = Quantity - item.Balance_Quantity;
                                     item.Balance_Quantity = 0;
-                                    item.IsStockAvailable = false;                                     
+                                    item.IsStockAvailable = false;
                                 }
 
                                 _inventoryRepository.UpdateInventory(item);
@@ -409,30 +636,30 @@ namespace Tips.Warehouse.Api.Controllers
                                 }
                             }
                         }
-                        else
-                        {
-                            Inventory inventory = new Inventory();
-                            inventory.PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
-                            inventory.MftrPartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
-                            inventory.Description = openDeliveryOrderItemsDtoList[i].ItemDescription;
-                            inventory.ProjectNumber = "";
-                            inventory.Balance_Quantity = openDeliveryOrderItemsDtoList[i].DispatchQty;
-                            inventory.UOM = openDeliveryOrderItemsDtoList[i].UOM;
-                            inventory.IsStockAvailable = true;
-                            inventory.Warehouse = openDeliveryOrderItemsDtoList[i].Warehouse;
-                            inventory.Location = openDeliveryOrderItemsDtoList[i].Location;
-                            inventory.GrinNo = openDeliveryorder.OpenDONumber;
-                            inventory.GrinPartId = 0;
-                            inventory.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
-                            inventory.GrinMaterialType = "";
-                            inventory.ReferenceID = openDeliveryorder.OpenDONumber;
-                            inventory.ReferenceIDFrom = "Create Open Delivery Order";
-                            inventory.shopOrderNo = "";
+                        //else
+                        //{
+                        //    Inventory inventory = new Inventory();
+                        //    inventory.PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                        //    inventory.MftrPartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                        //    inventory.Description = openDeliveryOrderItemsDtoList[i].ItemDescription;
+                        //    inventory.ProjectNumber = "";
+                        //    inventory.Balance_Quantity = openDeliveryOrderItemsDtoList[i].DispatchQty;
+                        //    inventory.UOM = openDeliveryOrderItemsDtoList[i].UOM;
+                        //    inventory.IsStockAvailable = true;
+                        //    inventory.Warehouse = openDeliveryOrderItemsDtoList[i].Warehouse;
+                        //    inventory.Location = openDeliveryOrderItemsDtoList[i].Location;
+                        //    inventory.GrinNo = openDeliveryorder.OpenDONumber;
+                        //    inventory.GrinPartId = 0;
+                        //    inventory.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
+                        //    inventory.GrinMaterialType = "";
+                        //    inventory.ReferenceID = openDeliveryorder.OpenDONumber;
+                        //    inventory.ReferenceIDFrom = "Create Open Delivery Order";
+                        //    inventory.shopOrderNo = "";
 
-                            await _inventoryRepository.CreateInventory(inventory);
-                            _inventoryRepository.SaveAsync();
-                        }
-
+                        //    await _inventoryRepository.CreateInventory(inventory);
+                        //    _inventoryRepository.SaveAsync();
+                        //}
+                        //]
 
                         ////Add BTO Detail Into Inventory transaction Table
 

@@ -511,6 +511,42 @@ namespace Tips.Warehouse.Api.Repository
                 }
             }
         }
+        public async Task UpdateInventoryforODO(List<OpenDeliveryOrderPartsQtyDistribution> ODOitemDis)
+        {
+            var itemNumber = ODOitemDis.Select(x => x.PartNumber).FirstOrDefault();
+            var projectNumber = ODOitemDis.Select(x => x.ProjectNumber).FirstOrDefault();
+            var invdetails = await FindAll().Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber).ToListAsync();
+            foreach (var eachDis in ODOitemDis)
+            {
+                foreach (var eachinv in invdetails)
+                {
+                    if (eachinv.Warehouse == eachDis.Warehouse && eachinv.Location == eachDis.Location)
+                    {
+                        if (eachDis.DistributingQty <= eachinv.Balance_Quantity)
+                        {
+                            eachinv.Balance_Quantity = eachinv.Balance_Quantity - eachDis.DistributingQty;
+                            if (eachinv.Balance_Quantity == 0)
+                            {
+                                eachinv.IsStockAvailable = false;
+                            }
+                            Update(eachinv);
+                            SaveAsync();
+
+                            //invdetails.Remove(eachinv);
+                        }
+                        else if (eachDis.DistributingQty > eachinv.Balance_Quantity)
+                        {
+                            eachDis.DistributingQty = eachDis.DistributingQty - eachinv.Balance_Quantity;
+                            eachinv.Balance_Quantity = 0;
+                            eachinv.IsStockAvailable = false;
+                            Update(eachinv);
+                            SaveAsync();
+                            //invdetails.Remove(eachinv);
+                        }
+                    }
+                }
+            }
+        }
         public async Task<PagedList<Inventory>> GetAllInventory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             var query = FindAll();
