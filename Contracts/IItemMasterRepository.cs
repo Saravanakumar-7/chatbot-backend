@@ -33,7 +33,7 @@ namespace Contracts
         Task<IEnumerable<ItemMaster>> SearchItemMaster(SearchParames searchParames);
         Task<IEnumerable<FileUpload>> GetAllItemMasterFileUploadList(string itemNumber);
         Task<IEnumerable<ItemMasterIdNoListDto>> GetAllFgTgItemMasterItemNoList();
-        Task<IEnumerable<ItemNoListDto>> GetAllPurchasePartItemNoList();
+        Task<IEnumerable<ItemNoListDtos>> GetAllPurchasePartItemNoList();
 
     }
 }
