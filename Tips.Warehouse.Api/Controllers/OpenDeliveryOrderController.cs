@@ -529,7 +529,7 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
+        [HttpPost]
         public async Task<IActionResult> CreateOpenDeliveryOrder_AV([FromBody] OpenDeliveryOrderDtoPost openDeliveryOrderDtoPost)
         {
             ServiceResponse<OpenDeliveryOrderDto> serviceResponse = new ServiceResponse<OpenDeliveryOrderDto>();

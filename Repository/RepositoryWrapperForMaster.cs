@@ -18,7 +18,7 @@ namespace Repository
         private ICustomerTypeRepository _customerTypeRepo;
         private IUnitRepository _unitRepository;
         private IHttpContextAccessor _httpContextAccessor;
-
+        private IUserRepository _userRepository;
 
         private IMaterialTypeRepository _materialTypeRepo;
         private IProcurementTypeRepository _procurementTypeRepo;
@@ -1208,6 +1208,18 @@ namespace Repository
             }
         }
 
+        public IUserRepository UserRepository
+        {
+            get
+            {
+                if (_userRepository == null)
+                {
+                    _userRepository = new UserRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _userRepository;
+            }
+        }
+
         public IFormsAccessRepository FormsAccessRepository
         {
             get
@@ -1264,6 +1276,9 @@ namespace Repository
         public ICustomerRelatedCustomerRepository CustomerRelatedCustomerRepository => throw new NotImplementedException();
 
         public ICompanyApprovalRepository CompanyApprovalRepository => throw new NotImplementedException();
+
+        public IUserRepository userRepository => throw new NotImplementedException();
+
         //public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
 
         //add new
