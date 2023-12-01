@@ -217,13 +217,14 @@ namespace Repository
             }
 
         }
-        public async Task<IEnumerable<ItemNoListDto>> GetAllPurchasePartItemNoList()
+        public async Task<IEnumerable<ItemNoListDtos>> GetAllPurchasePartItemNoList()
         {
-            IEnumerable<ItemNoListDto> itemNumberListDto = await TipsMasterDbContext.ItemMasters
+            IEnumerable<ItemNoListDtos> itemNumberListDto = await TipsMasterDbContext.ItemMasters
                                .Where(x => x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG)
-                               .Select(c => new ItemNoListDto()
+                               .Select(c => new ItemNoListDtos()
                                {
                                    ItemNumber = c.ItemNumber,
+                                   Description = c.Description,
                                })
                              .ToListAsync();
 
