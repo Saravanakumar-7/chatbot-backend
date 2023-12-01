@@ -21,9 +21,10 @@ namespace Repository
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-
+        private readonly TipsMasterDbContext _tipsMasterDbContext;
         public RegistrationFormRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _tipsMasterDbContext= repositoryContext;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
 
@@ -34,6 +35,11 @@ namespace Repository
 
         public async Task<int?> CreateRegistrationForm(RegistrationForm registrationForm)
         {
+            var User= await _tipsMasterDbContext.RegistrationForms.Where(f => f.EmailId == registrationForm.EmailId).CountAsync();
+            if (User > 0)
+            {
+                return -1;
+            }
             registrationForm.CreatedBy = _createdBy;
             registrationForm.CreatedOn = DateTime.Now;
             //registrationForm.Unit = _unitname;

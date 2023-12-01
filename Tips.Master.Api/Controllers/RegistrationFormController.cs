@@ -25,7 +25,7 @@ namespace Tips.Master.Api.Controllers
 
         [HttpGet]
         //public async Task<IActionResult> GetAllRegistrationForm([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
-             public async Task<IActionResult> GetAllRegistrationForm([FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllRegistrationForm([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<RegistrationFormDto>> serviceResponse = new ServiceResponse<IEnumerable<RegistrationFormDto>>();
             try
@@ -204,7 +204,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateRegistrationForm([FromBody] RegistrationFormPostDto registrationFormPostDto)
+        public async Task<IActionResult> CreateRegistrationForm([FromBody] RegistrationFormPostDto registrationFormPostDto)
         {
             ServiceResponse<RegistrationFormPostDto> serviceResponse = new ServiceResponse<RegistrationFormPostDto>();
 
@@ -229,7 +229,15 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var roles = _mapper.Map<RegistrationForm>(registrationFormPostDto);
-                _repository.RegistrationFormRepository.CreateRegistrationForm(roles);
+                var res = await _repository.RegistrationFormRepository.CreateRegistrationForm(roles);
+                if (res == -1)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "EmailId Already Exists";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.Forbidden;
+                    return StatusCode(403, serviceResponse);
+                }
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "RegistrationForm Created Successfully";
