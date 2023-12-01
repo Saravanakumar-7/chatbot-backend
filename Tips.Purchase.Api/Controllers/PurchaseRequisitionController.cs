@@ -868,6 +868,8 @@ namespace Tips.Purchase.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
+
                 var getDownloadDetailByPoNumber = await _repository.GetDownloadUrlDetails(prNumber, prItemNumber);
 
                 if (getDownloadDetailByPoNumber.Count() == 0)
@@ -890,8 +892,16 @@ namespace Tips.Purchase.Api.Controllers
                 }
                 foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
                 {
-                    var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
-                    getDownloadUrlByFilename.DownloadUrl = $"{baseUrl}/api/PurchaseRequisition/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+                    if (serverKey == "avision")
+                    {
+                        var baseUrl = $"{_config["PurchaseBaseUrl"]}";
+                        getDownloadUrlByFilename.DownloadUrl = $"{baseUrl}/apigateway/tips/PurchaseRequisition/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+                    }
+                    else
+                    {
+                        var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
+                        getDownloadUrlByFilename.DownloadUrl = $"{baseUrl}/api/PurchaseRequisition/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+                    }
                 }
                 _logger.LogInfo($"Returned DownloadDetail with id: {prItemNumber}");
                 var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(getDownloadDetailByPoNumber);
