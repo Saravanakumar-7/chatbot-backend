@@ -10,12 +10,12 @@ namespace Tips.SalesService.Api.Contracts
         Task<PagedList<Quote>> GetAllQuote(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<Quote> GetQuoteById(int id);
         Task<string> GenerateQuoteNumber();
-
-        Task<IEnumerable<CsItemDetailsForQuoteDto>> GetCsItemDetailsForQuote(string rfqNumber);
+         
         Task CreateShortClosed(ShortClosedDto shortClosedDto);
         Task<IEnumerable<rfqEnggItemDetailsForQuoteDto>> GetAllRfqEnggDetailsByRfqNo(string rfqNumber);
 
         Task<int?> GetQuoteNumberAutoIncrementCount(DateTime date);
+        Task<IEnumerable<CsItemDetailsForQuoteDto>> GetCsItemDetailsForQuote(string rfqNumber, List<string> latestPriceListName);
 
         Task<PagedList<Quote>> GetAllActiveQuote(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<long> CreateQuote(Quote quote);       

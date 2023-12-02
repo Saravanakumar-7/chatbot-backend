@@ -3,12 +3,15 @@ using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using Newtonsoft.Json;
 using Org.BouncyCastle.Ocsp;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.DTOs;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -18,10 +21,14 @@ namespace Tips.SalesService.Api.Repository
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public QuoteRepository(TipsSalesServiceDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
+        public QuoteRepository(TipsSalesServiceDbContext repositoryContext, HttpClient httpClient, IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsSalesServiceDbContext = repositoryContext;
             _httpContextAccessor = httpContextAccessor;
+            _httpClient = httpClient;
+            _config = config;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
@@ -150,7 +157,7 @@ namespace Tips.SalesService.Api.Repository
             return PagedList<Quote>.ToPagedList(activeQuote, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<CsItemDetailsForQuoteDto>> GetCsItemDetailsForQuote(string rfqNumber)
+        public async Task<IEnumerable<CsItemDetailsForQuoteDto>> GetCsItemDetailsForQuote(string rfqNumber, List<string> latestPriceListName)
         {
 
             var rfqDetail = await _tipsSalesServiceDbContext.Rfqs
@@ -181,11 +188,19 @@ namespace Tips.SalesService.Api.Repository
 
                 foreach (var rfqItem in items)
                 {
-                    var itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
-                        .Where(d => d.ItemNumber == rfqItem.ItemNumber)
-                        .OrderByDescending(d => d.CreatedOn)
-                        .FirstOrDefault();
+                    ItemPriceList itemPriceList = null;
 
+                    foreach (var priceListName in latestPriceListName)
+                    {
+                        itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
+                            .Where(d => d.ItemNumber == rfqItem.ItemNumber && d.PriceListName == priceListName)
+                            .OrderByDescending(d => d.CreatedOn)
+                            .FirstOrDefault();
+                        if (itemPriceList != null)
+                        {
+                            break;
+                        }
+                    }
                     if (itemPriceList != null)
                     {
                         var itemDetails = new CsItemDetailsForQuoteDto
@@ -212,7 +227,8 @@ namespace Tips.SalesService.Api.Repository
                         };
 
                         postdata.Add(itemDetails);
-                    }
+                   
+                }
                 }
             }
 
