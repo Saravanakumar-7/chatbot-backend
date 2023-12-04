@@ -249,6 +249,48 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        //get latest pricelist name
+        [HttpGet]
+        public async Task<IActionResult> GetLatestPriceListName()
+
+        {
+            ServiceResponse<IEnumerable<PriceListDto>> serviceResponse = new ServiceResponse<IEnumerable<PriceListDto>>();
+
+            try
+            {
+                var latestPriceList = await _repository.PriceListRepository.GetLatestPriceListName();
+                if (latestPriceList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"latestPriceList hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"latestPriceList hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned latestPriceList");
+                    var result = _mapper.Map<IEnumerable<PriceListDto>>(latestPriceList);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned latestPriceList";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong latestPriceList: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         // PUT api/<PriceListController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePriceList(int id, [FromBody] PriceListDtoUpdate priceListDtoUpdate)

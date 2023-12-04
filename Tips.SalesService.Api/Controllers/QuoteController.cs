@@ -5,8 +5,10 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc; 
+using Newtonsoft.Json; 
+
+using Newtonsoft.Json.Linq;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
@@ -167,7 +169,29 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var getItemPriceList = await _repository.GetCsItemDetailsForQuote(rfqNumber);
+
+                //get latest price list name from master
+
+                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["PriceListAPI"],
+                             "GetLatestPriceListName?"));
+
+                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                dynamic inventoryObject = inventoryObjectData.data;
+
+                List<string> priceListNames = new List<string>();
+
+                foreach (var item in inventoryObject)
+                {
+                    // Assuming "pricelistname" is a property of each item
+                    string priceListName = item.pricelist;
+
+                    // Add the priceListName to the list
+                    priceListNames.Add(priceListName);
+                }
+
+                // Now, you have a list of priceListNames that you can pass to the repository  
+                var getItemPriceList = await _repository.GetCsItemDetailsForQuote(rfqNumber, priceListNames);
 
                 if (getItemPriceList == null)
                 {

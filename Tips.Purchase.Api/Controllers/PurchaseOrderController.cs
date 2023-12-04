@@ -1318,7 +1318,7 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     if (serverKey == "avision")
                     {
-                        var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
+                        var baseUrl = $"{_config["PurchaseBaseUrl"]}";
                         getDownloadUrlByFilename.DownloadUrl = $"{baseUrl}/apigateway/tips/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
                     }
                     else
