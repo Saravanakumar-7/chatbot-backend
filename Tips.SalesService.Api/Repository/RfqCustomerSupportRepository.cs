@@ -787,6 +787,7 @@ namespace Tips.SalesService.Api.Repository
                 {
                     Id = x.Id,
                     RfqNumber = x.RfqNumber,
+                    SalesPerson = x.SalesPerson,
                     CustomerName = x.CustomerName,
                     RevisionNumber = x.RevisionNumber
                 }).OrderByDescending(x => x.Id).ToListAsync();
@@ -801,6 +802,7 @@ namespace Tips.SalesService.Api.Repository
                                 {
                                     Id = x.Id,
                                     RfqNumber = x.RfqNumber,
+                                    SalesPerson = x.SalesPerson,
                                     CustomerName = x.CustomerName
                                 })
                               .OrderByDescending(x => x.Id).ToListAsync();
@@ -881,6 +883,7 @@ namespace Tips.SalesService.Api.Repository
                 {
                     Id = x.Id,
                     RfqNumber = x.RfqNumber,
+                    SalesPerson = x.SalesPerson,
                     CustomerName = x.CustomerName,
                     CustomerId = x.CustomerId,
                     RevisionNumber = x.RevisionNumber
@@ -1113,6 +1116,7 @@ namespace Tips.SalesService.Api.Repository
               .Select(x => new LatestRfqNumberListDto
               {
                   RfqNumber = x.RfqNumber,
+                  SalesPerson = x.SalesPerson,
                   RevisionNumber = x.RevisionNumber
               });
             return getAllActiveRfqNumberList;
