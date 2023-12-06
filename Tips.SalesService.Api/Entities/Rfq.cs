@@ -20,6 +20,7 @@ namespace Tips.SalesService.Api.Entities
         public string? CustomerAliasName { get; set; }
         public int RevisionNumber { get; set; }
         public string RfqNumber { get; set; }
+        public string? SalesPerson { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public string? CustomerId { get; set; }
         public DateTime? RequestReceivedate { get; set; }

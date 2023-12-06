@@ -13,7 +13,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? LotNumber { get; set; }
         public string? MftrPartNumber { get; set; }
         public string? Description { get; set; }
-        public PartType PartType { get; set; }
+        public PartType? PartType { get; set; }
         public string? ProjectNumber { get; set; }
          
         [Precision(18, 2)]

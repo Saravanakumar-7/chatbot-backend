@@ -314,6 +314,7 @@ namespace Tips.Warehouse.Api.Controllers
                         foreach (var btoDeliveryOrderitemDetails in getReturnBtoDeliveryOrderDetailById.ReturnBtoDeliveryOrderItems)
                         {
                             ReturnBtoDeliveryOrderItemsDto returnBtoDeliveryOrderItemsDtos = _mapper.Map<ReturnBtoDeliveryOrderItemsDto>(btoDeliveryOrderitemDetails);
+                            returnBtoDeliveryOrderItemsDtos.QtyDistribution = _mapper.Map<List<ReturnDeliveryOrderItemQtyDistributionDto>>(btoDeliveryOrderitemDetails.QtyDistribution);
                             returnBtoDeliveryOrderItemsDtoList.Add(returnBtoDeliveryOrderItemsDtos);
                         }
                     }
@@ -378,6 +379,291 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     Guid guid = Guid.NewGuid();
                     var btohistoryNo = await _bTODeliveryOrderHistoryRepository.GetBTONumberCount(returnBtoDeliveryOrder.BTONumber);
+                    
+                    for (int i = 0; i < returnBtoDeliveryOrderitemsDto.Count; i++)
+                    {
+
+                        ReturnBtoDeliveryOrderItems returnBtoDeliveryOrderItems = _mapper.Map<ReturnBtoDeliveryOrderItems>(returnBtoDeliveryOrderitemsDto[i]);
+                        returnBtoDeliveryOrderItems.QtyDistribution = _mapper.Map<List<ReturnDeliveryOrderItemQtyDistribution>>(returnBtoDeliveryOrderitemsDto[i].QtyDistribution);
+                        returnBtoDeliveryOrderItems.ReturnQty = returnBtoDeliveryOrderItems.AlreadyReturnQty + returnBtoDeliveryOrderItems.ReturnQty;
+                        returnBtoDeliveryOrderItems.AlreadyReturnQty = returnBtoDeliveryOrderItems.AlreadyReturnQty + returnBtoDeliveryOrderItems.ReturnQty;
+                        returnBtoDeliveryOrderItems.DispatchQty = returnBtoDeliveryOrderItems.DispatchQty - returnBtoDeliveryOrderItems.ReturnQty;
+                        returnBtoDeliveryOrderItemsDtoList.Add(returnBtoDeliveryOrderItems);
+                        BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
+                        if (btohistoryNo != null)
+                        {
+                            int suffixNumber = int.Parse(btohistoryNo.Substring(btohistoryNo.LastIndexOf("-R") + 2)) + 1;
+                            string suffix = "-R" + suffixNumber;
+                            returnBtoDeliveryOrderItems.BTONumber += suffix;
+                            bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                            returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                        }
+                        else
+                        {
+                            returnBtoDeliveryOrderItems.BTONumber += "-R1";
+                            bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                            returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                        }
+                        //Update Inventory balanced Quantity
+
+                        //var PartNumber = returnBtoDeliveryOrderitemsDto[i].FGPartNumber;
+                        //var BtoNumber = returnBtoDeliveryOrderitemsDto[i].BTONumber;
+                        //var getInventoryFGDetailsByItemnumber = await _inventoryRepository.GetInventoryFGDetailsByItemNumber(PartNumber);
+                        // decimal ReturnQty = Convert.ToDecimal(returnBtoDeliveryOrderitemsDto[i].ReturnQty);
+
+                        //if (getInventoryFGDetailsByItemnumber != null)
+                        //{
+                        //    getInventoryFGDetailsByItemnumber.Balance_Quantity = getInventoryFGDetailsByItemnumber.Balance_Quantity + ReturnQty;
+
+                        //    _inventoryRepository.Update(getInventoryFGDetailsByItemnumber);
+                        //    _inventoryRepository.SaveAsync();
+                        //}
+                        //else
+                        //{
+                        foreach (var eachbin in returnBtoDeliveryOrderItems.QtyDistribution)
+                        {
+                            var exInv = await _inventoryRepository.GetInventorybyItemProjectWarehouseLocation(returnBtoDeliveryOrderItems.FGPartNumber, eachbin.ProjectNumber, eachbin.Warehouse,eachbin.Location);
+                            if (exInv == null)
+                            {
+                                Inventory inventory = new Inventory();
+                                inventory.PartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
+                                inventory.MftrPartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
+                                inventory.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
+                                inventory.ProjectNumber = eachbin.ProjectNumber;
+                                inventory.Balance_Quantity = eachbin.DistributingQty;
+                                inventory.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
+                                inventory.IsStockAvailable = true;
+                                inventory.Warehouse = eachbin.Warehouse;
+                                inventory.Location = eachbin.Location;
+                                inventory.GrinNo = returnBtoDeliveryOrderItems.BTONumber;
+                                inventory.GrinPartId = 0;
+                                inventory.PartType = PartType.FG;
+                                inventory.GrinMaterialType = "";
+                                inventory.ReferenceID = returnBtoDeliveryOrderItems.BTONumber;
+                                inventory.ReferenceIDFrom = "Return BTO Delivery Order";
+                                inventory.shopOrderNo = "";
+                                //inventory.PartType = returnBtoDeliveryOrderItems.PartType;
+
+                                await _inventoryRepository.CreateInventory(inventory);
+                                _inventoryRepository.SaveAsync();
+                            }
+                            else
+                            {
+                                exInv.ReferenceID = returnBtoDeliveryOrderItems.BTONumber;
+                                exInv.ReferenceIDFrom = "Return BTO Delivery Order";
+                                exInv.IsStockAvailable = true;
+                                exInv.Balance_Quantity += eachbin.DistributingQty;
+                                await _inventoryRepository.UpdateInventory(exInv);
+                                _inventoryRepository.SaveAsync();
+
+                            }
+                            //}
+
+                            InventoryTranction inventoryTranction = new InventoryTranction();
+                            inventoryTranction.PartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
+                            inventoryTranction.MftrPartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
+                            inventoryTranction.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
+                            inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
+                            inventoryTranction.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
+                            inventoryTranction.Issued_DateTime = DateTime.Now;
+                            inventoryTranction.ReferenceID = returnBtoDeliveryOrderItems.BTONumber;
+                            inventoryTranction.ReferenceIDFrom = "Return BTO Delivery Order";
+                            inventoryTranction.Issued_By = _createdBy;
+                            inventoryTranction.From_Location = "BTO";
+                            inventoryTranction.TO_Location = eachbin.Location;
+                            inventoryTranction.Remarks = "Return BTO Delivery Order";
+                            inventoryTranction.Warehouse = eachbin.Warehouse;
+                            inventoryTranction.PartType = PartType.FG;
+
+                            var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+
+                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                            _inventoryTranctionRepository.SaveAsync();
+
+
+                            //update Dispatch Qty in Bto Delivery Order Table
+                            int getBtoPartsId = returnBtoDeliveryOrderitemsDto[i].BtoDeliveryOrderPartsId;
+                            var getBtoDeliveryOrderDetails = await _bTODeliveryOrderItemsRepository.GetBtoDelieveryOrderItemDetails(getBtoPartsId);
+                            getBtoDeliveryOrderDetails.BalanceDoQty -= eachbin.DistributingQty;
+                            getBtoDeliveryOrderDetails.OrderBalanceQty += eachbin.DistributingQty;
+                            getBtoDeliveryOrderDetails.DispatchQty -= eachbin.DistributingQty;
+
+                            string[] strs1 = getBtoDeliveryOrderDetails.SerialNo.Split(",");
+                            string[] strs2 = returnBtoDeliveryOrderitemsDto[i].SerialNo.Split(",");
+
+                            List<string> result = new List<string>();
+
+                            foreach (string elem in strs1)
+                            {
+                                if (strs2.Contains(elem))
+                                {
+                                    strs2 = strs2.Where(e => e != elem).ToArray();
+                                }
+                                else
+                                {
+                                    result.Add(elem);
+                                }
+                            }
+
+                            string resultd = string.Join(",", result);
+                            //String[] strs1 = getBtoDeliveryOrderDetails.SerialNo.Split(",");
+                            //String[] strs2 = returnBtoDeliveryOrderitemsDto[i].SerialNo.Split(",");
+                            //var res = strs1.Except(strs2).Union(strs2.Except(strs1));
+                            //String resultd = String.Join(",", res);
+                            getBtoDeliveryOrderDetails.SerialNo = resultd;
+
+                            // Add return details in to btodeliveryorderhistory table
+
+                            var returnSerialNumber = returnBtoDeliveryOrderitemsDto[i].SerialNo;
+
+                            // BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
+                            bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
+
+                            // Implement the logic to Add suffix -R for BTO exists in history
+
+                            //if (btohistoryNo != null)
+                            //{
+
+                            //    string suffix = "-R1" + (btohistoryNo + 1);
+                            //    returnBtoDeliveryOrderItems.BTONumber += suffix;
+                            //    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                            //}
+                            //else
+                            //{
+
+                            //    returnBtoDeliveryOrderItems.BTONumber += "-R";
+                            //    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                            //}
+
+                            //if (btohistoryNo != null)
+                            //{
+                            //    int suffixNumber = int.Parse(btohistoryNo.Substring(btohistoryNo.LastIndexOf("-R") + 2)) + 1;
+                            //    string suffix = "-R" + suffixNumber;
+                            //    returnBtoDeliveryOrderItems.BTONumber += suffix;
+                            bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                            //}
+                            //else
+                            //{
+                            //    returnBtoDeliveryOrderItems.BTONumber += "-R1";
+                            //    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                            //}
+                            bTODeliveryOrderHistory.CustomerName = returnBtoDeliveryOrder.CustomerName;
+                            bTODeliveryOrderHistory.CustomerAliasName = returnBtoDeliveryOrder.CustomerAliasName;
+                            bTODeliveryOrderHistory.CustomerId = returnBtoDeliveryOrder.CustomerId;
+                            bTODeliveryOrderHistory.PONumber = returnBtoDeliveryOrder.PONumber;
+                            bTODeliveryOrderHistory.IssuedTo = returnBtoDeliveryOrder.IssuedTo;
+                            bTODeliveryOrderHistory.DODate = Convert.ToDateTime(returnBtoDeliveryOrder.CreatedOn);
+                            bTODeliveryOrderHistory.FGItemNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
+                            bTODeliveryOrderHistory.SalesOrderId = getBtoDeliveryOrderDetails.SalesOrderId;
+                            bTODeliveryOrderHistory.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
+                            bTODeliveryOrderHistory.BalanceDoQty = Convert.ToDecimal(returnBtoDeliveryOrderItemsDtoList[i].BalanceQty);
+                            bTODeliveryOrderHistory.UnitPrice = Convert.ToDecimal(returnBtoDeliveryOrderItemsDtoList[i].UnitPrice);
+                            bTODeliveryOrderHistory.UOC = returnBtoDeliveryOrderItemsDtoList[i].UOC;
+                            bTODeliveryOrderHistory.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
+                            bTODeliveryOrderHistory.FGOrderQty = Convert.ToDecimal(returnBtoDeliveryOrderItemsDtoList[i].FGOrderQty);
+                            bTODeliveryOrderHistory.OrderBalanceQty = Convert.ToDecimal(returnBtoDeliveryOrderItemsDtoList[i].OrderBalanceQty);
+                            bTODeliveryOrderHistory.FGStock = Convert.ToDecimal(returnBtoDeliveryOrderItemsDtoList[i].FGStock);
+                            bTODeliveryOrderHistory.Discount = getBtoDeliveryOrderDetails.Discount;
+                            bTODeliveryOrderHistory.NetValue = getBtoDeliveryOrderDetails.NetValue;
+                            bTODeliveryOrderHistory.Location = eachbin.Location;
+                            bTODeliveryOrderHistory.Warehouse= eachbin.Warehouse;
+                            bTODeliveryOrderHistory.DispatchQty = eachbin.DistributingQty;
+                            bTODeliveryOrderHistory.InvoicedQty = getBtoDeliveryOrderDetails.InvoicedQty;
+                            bTODeliveryOrderHistory.SerialNo = returnSerialNumber;
+                            bTODeliveryOrderHistory.Remark = returnBtoDeliveryOrderitemsDto[i].Remarks;
+                            bTODeliveryOrderHistory.UniqeId = guid.ToString();
+
+                            var bTODeliveryOrderHistoryDetails = _mapper.Map<BTODeliveryOrderHistory>(bTODeliveryOrderHistory);
+
+                            await _bTODeliveryOrderHistoryRepository.CreateBTODeliveryOrderHistory(bTODeliveryOrderHistoryDetails);
+                            _bTODeliveryOrderHistoryRepository.SaveAsync();
+
+
+                            _bTODeliveryOrderItemsRepository.Update(getBtoDeliveryOrderDetails);
+                            _bTODeliveryOrderItemsRepository.SaveAsync();
+
+                        }
+                    }
+                }
+
+                returnBtoDeliveryOrder.ReturnBtoDeliveryOrderItems = returnBtoDeliveryOrderItemsDtoList;
+
+                await _repository.CreateReturnBtoDeliveryOrder(returnBtoDeliveryOrder);
+                _repository.SaveAsync();
+
+
+                //update balance qty and dispatch qty in sales order table for return bto concept
+
+                var btoDeliveryReturnDetails = _mapper.Map<List<BtoDOReturnQtyDetailsDto>>(returnBtoDeliveryOrderitemsDto);
+
+                var json = JsonConvert.SerializeObject(btoDeliveryReturnDetails);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                // Include the token in the Authorization header
+                var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+                {
+                    var token = tokenValues.Substring(7);
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }
+                var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"],"ReturnDOUpdateDispatchDetails"), data);
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = " ReturnBTODeliveryOrder created Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateReturnBtoDeliveryOrder action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateReturnBtoDeliveryOrder_AV([FromBody] ReturnBtoDeliveryOrderPostDto returnBtoDeliveryOrderPostDto)
+        {
+            ServiceResponse<ReturnBtoDeliveryOrderPostDto> serviceResponse = new ServiceResponse<ReturnBtoDeliveryOrderPostDto>();
+            try
+            {
+                if (returnBtoDeliveryOrderPostDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ReturnBtoDeliveryOrder object sent from client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("ReturnBtoDeliveryOrder object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid ReturnBtoDeliveryOrder object sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid ReturnBtoDeliveryOrder object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+
+
+                var returnBtoDeliveryOrder = _mapper.Map<ReturnBtoDeliveryOrder>(returnBtoDeliveryOrderPostDto);
+
+                var returnBtoDeliveryOrderitemsDto = returnBtoDeliveryOrderPostDto.ReturnBtoDeliveryOrderItemsPostDtos;
+                //var getBtoNumber = returnBtoDeliveryOrderPostDto.BTONumber;
+                //var returnBtoNumberCount = await _repository.GetReturnBtoDeliveryOrderByBtoNo(getBtoNumber);
+
+
+                var returnBtoDeliveryOrderItemsDtoList = new List<ReturnBtoDeliveryOrderItems>();
+
+                if (returnBtoDeliveryOrderitemsDto != null)
+                {
+                    Guid guid = Guid.NewGuid();
+                    var btohistoryNo = await _bTODeliveryOrderHistoryRepository.GetBTONumberCount(returnBtoDeliveryOrder.BTONumber);
                     for (int i = 0; i < returnBtoDeliveryOrderitemsDto.Count; i++)
                     {
 
@@ -413,7 +699,7 @@ namespace Tips.Warehouse.Api.Controllers
                             inventory.IsStockAvailable = true;
                             inventory.Warehouse = "FG";
                             inventory.Location = "FG";
-                            inventory.GrinNo= returnBtoDeliveryOrderItems.BTONumber;
+                            inventory.GrinNo = returnBtoDeliveryOrderItems.BTONumber;
                             inventory.GrinPartId = 0;
                             //inventory.PartType = "";
                             inventory.GrinMaterialType = "";
@@ -421,7 +707,7 @@ namespace Tips.Warehouse.Api.Controllers
                             inventory.ReferenceIDFrom = "From BTO Delivery Order";
                             inventory.shopOrderNo = "";
                             //inventory.PartType = returnBtoDeliveryOrderItems.PartType;
-                           
+
                             await _inventoryRepository.CreateInventory(inventory);
                             _inventoryRepository.SaveAsync();
                         }
@@ -435,7 +721,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTranction.Issued_DateTime = DateTime.Now;
                         inventoryTranction.ReferenceID = returnBtoDeliveryOrderItems.BTONumber;
                         inventoryTranction.ReferenceIDFrom = "Return BTO Delivery Order";
-                        inventoryTranction.Issued_By = _createdBy;    
+                        inventoryTranction.Issued_By = _createdBy;
                         inventoryTranction.From_Location = "BTO";
                         inventoryTranction.TO_Location = "FG";
                         inventoryTranction.Remarks = "Return BTO";
@@ -533,8 +819,8 @@ namespace Tips.Warehouse.Api.Controllers
                         bTODeliveryOrderHistory.NetValue = getBtoDeliveryOrderDetails.NetValue;
                         bTODeliveryOrderHistory.DispatchQty = ReturnQty;
                         bTODeliveryOrderHistory.InvoicedQty = getBtoDeliveryOrderDetails.InvoicedQty;
-                        bTODeliveryOrderHistory.SerialNo = returnSerialNumber; 
-                        bTODeliveryOrderHistory.Remark = returnBtoDeliveryOrderitemsDto[i].Remarks; 
+                        bTODeliveryOrderHistory.SerialNo = returnSerialNumber;
+                        bTODeliveryOrderHistory.Remark = returnBtoDeliveryOrderitemsDto[i].Remarks;
                         bTODeliveryOrderHistory.UniqeId = guid.ToString();
 
                         var bTODeliveryOrderHistoryDetails = _mapper.Map<BTODeliveryOrderHistory>(bTODeliveryOrderHistory);
@@ -544,7 +830,7 @@ namespace Tips.Warehouse.Api.Controllers
 
 
                         _bTODeliveryOrderItemsRepository.Update(getBtoDeliveryOrderDetails);
-                        _bTODeliveryOrderItemsRepository.SaveAsync();      
+                        _bTODeliveryOrderItemsRepository.SaveAsync();
 
                     }
                 }
@@ -554,7 +840,7 @@ namespace Tips.Warehouse.Api.Controllers
                 //await _repository.CreateReturnBtoDeliveryOrder(returnBtoDeliveryOrder);
                 //_repository.SaveAsync();
 
-                 
+
                 //update balance qty and dispatch qty in sales order table for return bto concept
 
                 var btoDeliveryReturnDetails = _mapper.Map<List<BtoDOReturnQtyDetailsDto>>(returnBtoDeliveryOrderitemsDto);
@@ -568,7 +854,7 @@ namespace Tips.Warehouse.Api.Controllers
                     var token = tokenValues.Substring(7);
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 }
-                var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"],"ReturnDOUpdateDispatchDetails"), data);
+                var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnDOUpdateDispatchDetails"), data);
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = " ReturnBTODeliveryOrder created Successfully";

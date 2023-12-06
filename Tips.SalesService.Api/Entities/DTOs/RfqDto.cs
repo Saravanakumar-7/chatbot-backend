@@ -21,6 +21,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
         public string RfqNumber { get; set; }
+        public string? SalesPerson { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public string? CustomerId { get; set; }
         public bool? isSourcingAvailable { get; set; }
@@ -59,6 +60,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerAliasName { get; set; }
         //[Required]
         public string? RfqNumber { get; set; }
+        public string? SalesPerson { get; set; }
         public string? CustomerId { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceivedate { get; set; }
@@ -74,6 +76,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerAliasName { get; set; }
         //[Required]
         public string RfqNumber { get; set; }
+        public string? SalesPerson { get; set; }
         public string? ReasonForModification { get; set; }
 
         public string? CustomerId { get; set; }
@@ -90,6 +93,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int Id { get; set; }       
         public string RfqNumber { get; set; }
+        public string? SalesPerson { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerId { get; set; }
         public decimal? RevisionNumber { get; set; }
@@ -103,8 +107,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class LatestRfqNumberListDto
     {
         public decimal? RevisionNumber { get; set; }
-
         public string RfqNumber { get; set; }
-
+        public string? SalesPerson { get; set; }
     }
 }

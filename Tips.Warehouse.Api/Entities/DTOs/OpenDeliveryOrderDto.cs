@@ -80,7 +80,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class ODODetailsDto
     {
         public string ItemNumber { get; set; }
-        public PartType ItemType { get; set; }
+        public PartType? ItemType { get; set; }
         public string? UOM { get; set; }
         public decimal? StockAvailable { get; set; }
 

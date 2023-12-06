@@ -16,7 +16,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal UnitPrice { get; set; }
         public string UOC { get; set; }
         public string? UOM { get; set; }
-        public string? PartType { get; set; }
+        public PartType? PartType { get; set; }
 
 
         [Precision(13, 2)]
@@ -46,6 +46,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? CreatedBy { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public List<ReturnDeliveryOrderItemQtyDistributionDto>? QtyDistribution { get; set; }
 
 
     }
@@ -60,7 +61,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal UnitPrice { get; set; }
         public string UOC { get; set; }
         public string? UOM { get; set; }
-        public string? PartType { get; set; }
+        public PartType? PartType { get; set; }
 
         public int SalesOrderId { get; set; }
         public int BtoDeliveryOrderPartsId { get; set; }
@@ -86,8 +87,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         public string? Remarks { get; set; }
         public string? SerialNo { get; set; }
-
-
+        public List<ReturnDeliveryOrderItemQtyDistributionPostDto>? QtyDistribution { get; set; }
     }
 
     public class ReturnBtoDeliveryOrderItemsUpdateDto

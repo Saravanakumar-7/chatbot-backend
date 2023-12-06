@@ -15,6 +15,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? Currency { get; set; }
         public string? CompanyAliasName { get; set; }
         public bool PoConfirmationStatus { get; set; }
+        public string? PoTransports { get; set; }
+        public string? Other { get; set; }
 
         //VendorDetails
         public string? VendorName { get; set; }
@@ -70,6 +72,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         //public string? POFiles { get; set; }
         public string? CompanyAliasName { get; set; }
+        public string? PoTransports { get; set; }
+        public string? Other { get; set; }
 
         //VendorDetails
         public string? VendorName { get; set; }
@@ -102,6 +106,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime PODate { get; set; }
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
+        public string? PoTransports { get; set; }
+        public string? Other { get; set; }
         //public List<DocumentUploadUpdateDto> POFiles { get; set; }
 
         //VendorDetails
@@ -228,6 +234,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
         public string? CompanyAliasName { get; set; }
+        public string? PoTransports { get; set; }
+        public string? Other { get; set; }
 
         //VendorDetails
         public string? VendorName { get; set; }
