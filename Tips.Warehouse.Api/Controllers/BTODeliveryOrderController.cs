@@ -2,11 +2,13 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -33,9 +35,10 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
 
-
-        public BTODeliveryOrderController(IBTODeliveryOrderInventoryHistoryRepository bTODeliveryOrderInventoryHistoryRepository, IBTODeliveryOrderRepository repository, IInventoryTranctionRepository inventoryTranctionRepository , IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, HttpClient httpClient, IConfiguration config, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public BTODeliveryOrderController(IBTODeliveryOrderInventoryHistoryRepository bTODeliveryOrderInventoryHistoryRepository, IBTODeliveryOrderRepository repository, IInventoryTranctionRepository inventoryTranctionRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, HttpClient httpClient, IConfiguration config, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
             _logger = logger;
@@ -47,6 +50,9 @@ namespace Tips.Warehouse.Api.Controllers
             _bTODeliveryOrderHistoryRepository = bTODeliveryOrderHistoryRepository;
             _bTODeliveryOrderInventoryHistoryRepository = bTODeliveryOrderInventoryHistoryRepository;
             _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
 
@@ -56,7 +62,7 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<IEnumerable<BTODeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<BTODeliveryOrderDto>>();
             try
             {
-                var getAllBTODeliveryOrdersDetails = await _repository.GetAllBTODeliveryOrders(pagingParameter,searchParams);
+                var getAllBTODeliveryOrdersDetails = await _repository.GetAllBTODeliveryOrders(pagingParameter, searchParams);
                 var metadata = new
                 {
                     getAllBTODeliveryOrdersDetails.TotalCount,
@@ -87,7 +93,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-       
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBTODeliveryOrderById(int id)
         {
@@ -356,7 +362,7 @@ namespace Tips.Warehouse.Api.Controllers
                     _logger.LogInfo($"Returned owner with id: {customerLeadId}");
 
                     var bTODeliveryNumberList = _mapper.Map<IEnumerable<ListOfBtoNumberDetails>>(getBTONumberList);
-                      
+
 
                     serviceResponse.Data = bTODeliveryNumberList;
                     serviceResponse.Message = "Returned BTODeliveryNumberList Successfully";
@@ -588,68 +594,70 @@ namespace Tips.Warehouse.Api.Controllers
 
 
                         ////Add BTO Detail Into Inventory transaction Table
+                        foreach (var eachbin in bTODeliveryOrderItemsDetails.QtyDistribution)
+                        {
+                            InventoryTranction inventoryTranction = new InventoryTranction();
+                            inventoryTranction.PartNumber = bTODoItemList[i].FGItemNumber;
+                            inventoryTranction.MftrPartNumber = bTODoItemList[i].FGItemNumber;
+                            inventoryTranction.PartType = PartType.FG;
+                            inventoryTranction.Description = bTODoItemList[i].Description;
+                            inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
+                            inventoryTranction.UOM = bTODoItemList[i].UOM;
+                            inventoryTranction.Issued_DateTime = DateTime.Now;
+                            inventoryTranction.ReferenceID = bTODeliveryOrder.BTONumber;
+                            inventoryTranction.ReferenceIDFrom = "BTO Delivery Order";
+                            inventoryTranction.Issued_By = _createdBy;
+                            inventoryTranction.From_Location = eachbin.Location;
+                            inventoryTranction.TO_Location = "BTO";
+                            inventoryTranction.Warehouse = eachbin.Warehouse;
+                            inventoryTranction.Remarks = "Create BTO";
 
-                        //InventoryTranction inventoryTranction = new InventoryTranction();
-                        //inventoryTranction.PartNumber = bTODoItemList[i].FGItemNumber;
-                        //inventoryTranction.MftrPartNumber = bTODoItemList[i].FGItemNumber;
-                        //inventoryTranction.PartType = bTODoItemList[i].PartType;
-                        //inventoryTranction.Description = bTODoItemList[i].Description;
-                        //inventoryTranction.Issued_Quantity = Convert.ToDecimal(bTODoItemList[i].DispatchQty);
-                        //inventoryTranction.UOM = bTODoItemList[i].UOM;
-                        //inventoryTranction.Issued_DateTime = DateTime.Now;
-                        //inventoryTranction.ReferenceID = bTODeliveryOrder.BTONumber;
-                        //inventoryTranction.ReferenceIDFrom = "BTO Delivery Order";
-                        //inventoryTranction.Issued_By = "Admin";
-                        //inventoryTranction.From_Location = "FG";
-                        //inventoryTranction.TO_Location = "BTO";
-                        //inventoryTranction.Warehouse = "BTO";
-                        //inventoryTranction.Remarks = "Create BTO";
-
-                        //var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
-
-
-                        //await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                            var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
 
-
-                        // Add Bto detail in to btodeliveryorderhistory table
-
-                        BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
-                        bTODeliveryOrderHistory.BTONumber = bTODeliveryOrder.BTONumber;
-                        bTODeliveryOrderHistory.CustomerName = bTODeliveryOrder.CustomerName;
-                        bTODeliveryOrderHistory.CustomerAliasName = bTODeliveryOrder.CustomerAliasName;
-                        bTODeliveryOrderHistory.CustomerId = bTODeliveryOrder.CustomerId;
-                        bTODeliveryOrderHistory.PONumber = bTODeliveryOrder.PONumber;
-                        bTODeliveryOrderHistory.IssuedTo = bTODeliveryOrder.IssuedTo;
-                        bTODeliveryOrderHistory.DODate = bTODeliveryOrder.DODate;
-                        bTODeliveryOrderHistory.FGItemNumber = bTODoItemList[i].FGItemNumber;
-                        bTODeliveryOrderHistory.SalesOrderId = bTODoItemList[i].SalesOrderId;
-                        bTODeliveryOrderHistory.Description = bTODoItemList[i].Description;
-                        bTODeliveryOrderHistory.BalanceDoQty = bTODoItemList[i].BalanceDoQty;
-                        bTODeliveryOrderHistory.UnitPrice = bTODoItemList[i].UnitPrice;
-                        bTODeliveryOrderHistory.UOC = bTODoItemList[i].UOC;
-                        bTODeliveryOrderHistory.UOM = bTODoItemList[i].UOM;
-                        bTODeliveryOrderHistory.FGOrderQty = bTODoItemList[i].FGOrderQty;
-                        bTODeliveryOrderHistory.OrderBalanceQty = bTODoItemList[i].OrderBalanceQty;
-                        bTODeliveryOrderHistory.FGStock = bTODoItemList[i].FGStock;
-                        bTODeliveryOrderHistory.Discount = Convert.ToDecimal(bTODoItemList[i].Discount);
-                        bTODeliveryOrderHistory.NetValue = bTODoItemList[i].NetValue;
-                        bTODeliveryOrderHistory.DispatchQty = bTODoItemList[i].DispatchQty;
-                        bTODeliveryOrderHistory.InvoicedQty = bTODoItemList[i].InvoicedQty;
-                        bTODeliveryOrderHistory.SerialNo = bTODoItemList[i].SerialNo;
-                        //bTODeliveryOrderHistory.CreatedBy = bTODoItemList[i].CreatedBy;
-                        //bTODeliveryOrderHistory.LastModifiedOn = bTODoItemList[i].LastModifiedOn;
-                        bTODeliveryOrderHistory.Remark = "From Create BTO";
+                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
 
 
-                        var bTODeliveryOrderHistoryDetails = _mapper.Map<BTODeliveryOrderHistory>(bTODeliveryOrderHistory);
+
+                            // Add Bto detail in to btodeliveryorderhistory table
+
+                            BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
+                            bTODeliveryOrderHistory.BTONumber = bTODeliveryOrder.BTONumber;
+                            bTODeliveryOrderHistory.CustomerName = bTODeliveryOrder.CustomerName;
+                            bTODeliveryOrderHistory.CustomerAliasName = bTODeliveryOrder.CustomerAliasName;
+                            bTODeliveryOrderHistory.CustomerId = bTODeliveryOrder.CustomerId;
+                            bTODeliveryOrderHistory.PONumber = bTODeliveryOrder.PONumber;
+                            bTODeliveryOrderHistory.IssuedTo = bTODeliveryOrder.IssuedTo;
+                            bTODeliveryOrderHistory.DODate = bTODeliveryOrder.DODate;
+                            bTODeliveryOrderHistory.FGItemNumber = bTODoItemList[i].FGItemNumber;
+                            bTODeliveryOrderHistory.SalesOrderId = bTODoItemList[i].SalesOrderId;
+                            bTODeliveryOrderHistory.Description = bTODoItemList[i].Description;
+                            bTODeliveryOrderHistory.BalanceDoQty = bTODoItemList[i].BalanceDoQty;
+                            bTODeliveryOrderHistory.UnitPrice = bTODoItemList[i].UnitPrice;
+                            bTODeliveryOrderHistory.UOC = bTODoItemList[i].UOC;
+                            bTODeliveryOrderHistory.UOM = bTODoItemList[i].UOM;
+                            bTODeliveryOrderHistory.FGOrderQty = bTODoItemList[i].FGOrderQty;
+                            bTODeliveryOrderHistory.OrderBalanceQty = bTODoItemList[i].OrderBalanceQty;
+                            bTODeliveryOrderHistory.FGStock = bTODoItemList[i].FGStock;
+                            bTODeliveryOrderHistory.Discount = Convert.ToDecimal(bTODoItemList[i].Discount);
+                            bTODeliveryOrderHistory.NetValue = bTODoItemList[i].NetValue;
+                            bTODeliveryOrderHistory.DispatchQty = eachbin.DistributingQty;
+                            bTODeliveryOrderHistory.InvoicedQty = bTODoItemList[i].InvoicedQty;
+                            bTODeliveryOrderHistory.SerialNo = bTODoItemList[i].SerialNo;
+                            bTODeliveryOrderHistory.Location = eachbin.Location;
+                            bTODeliveryOrderHistory.Warehouse = eachbin.Warehouse;
+                            //bTODeliveryOrderHistory.CreatedBy = bTODoItemList[i].CreatedBy;
+                            //bTODeliveryOrderHistory.LastModifiedOn = bTODoItemList[i].LastModifiedOn;
+                            bTODeliveryOrderHistory.Remark = "From Create BTO";
 
 
-                        await _bTODeliveryOrderHistoryRepository.CreateBTODeliveryOrderHistory(bTODeliveryOrderHistoryDetails);
+                            var bTODeliveryOrderHistoryDetails = _mapper.Map<BTODeliveryOrderHistory>(bTODeliveryOrderHistory);
 
 
+                            await _bTODeliveryOrderHistoryRepository.CreateBTODeliveryOrderHistory(bTODeliveryOrderHistoryDetails);
+
+                        }
                     }
-
                 }
 
                 bTODeliveryOrder.bTODeliveryOrderItems = bTODoItemList;
@@ -1090,7 +1098,7 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                 
+
 
                 var bTODeliveryOrder = _mapper.Map<BTODeliveryOrder>(bTODeliveryOrderbyId);
 
@@ -1102,11 +1110,11 @@ namespace Tips.Warehouse.Api.Controllers
                 if (bTODeliveryOrderitemsDto != null)
                 {
                     for (int j = 0; j < getOldbtoDeliveryOrderItemsDetails.Count; j++)
-                    { 
+                    {
                         for (int i = 0; i < bTODeliveryOrderitemsDto.Count; i++)
                         {
                             BTODeliveryOrderItems bTODeliveryOrderItems = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderitemsDto[i]);
-                           // bTODeliveryOrderItems.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDtoUpdate);
+                            // bTODeliveryOrderItems.BTOSerialNumbers = _mapper.Map<List<BTOSerialNumber>>(bTODeliveryOrderitemsDto[i].BTOSerialNumberDtoUpdate);
                             bTODeliveryOrderitemsList.Add(bTODeliveryOrderItems);
 
                             //Update Inventory balanced Quantity 
@@ -1119,9 +1127,9 @@ namespace Tips.Warehouse.Api.Controllers
                             //    if (getOldbtoDeliveryOrderItemsDetails[j].DispatchQty > Quantity && Quantity !=0)
                             //    {
                             //        var diff = getOldbtoDeliveryOrderItemsDetails[j].DispatchQty - Quantity;
-                                   
+
                             //            getInventoryDetails.Balance_Quantity = getInventoryDetails.Balance_Quantity + diff;
-                                        
+
                             //            if (getInventoryDetails.Balance_Quantity != 0)
                             //            {
                             //                getInventoryDetails.IsStockAvailable = true;
@@ -1161,7 +1169,7 @@ namespace Tips.Warehouse.Api.Controllers
                             //        if (getInventoryDetails.Balance_Quantity >= diff)
                             //        {
                             //            getInventoryDetails.Balance_Quantity = getInventoryDetails.Balance_Quantity - diff;
-                                        
+
                             //            if (getInventoryDetails.Balance_Quantity == 0)
                             //            {
                             //                getInventoryDetails.IsStockAvailable = false;
@@ -1209,12 +1217,12 @@ namespace Tips.Warehouse.Api.Controllers
                             //    Quantity = 0;
                             //    bTODeliveryOrderitemsDto[i].DispatchQty = diff;
                             //    var btoDeliveryDispatchDetails = _mapper.Map<List<BtoDeliveryOrderDispatchQtyDetailsDto>>(bTODeliveryOrderitemsDto);
-                                
+
                             //    var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
                             //    var data = new StringContent(json, Encoding.UTF8, "application/json");
                             //    var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchQtyGreaterThenNewDispatchQty"), data);
                             //}
-                             
+
 
                             //if (getOldbtoDeliveryOrderItemsDetails[j].DispatchQty < Quantity && Quantity != 0)
                             //{
@@ -1222,7 +1230,7 @@ namespace Tips.Warehouse.Api.Controllers
                             //    Quantity = 0;
                             //    bTODeliveryOrderitemsDto[i].DispatchQty = diff;
                             //    var btoDeliveryDispatchDetails = _mapper.Map<List<BtoDeliveryOrderDispatchQtyDetailsDto>>(bTODeliveryOrderitemsDto);
-                                
+
                             //    var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
                             //    var data = new StringContent(json, Encoding.UTF8, "application/json");
                             //    var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchQtySmallerThenNewDispatchQty"), data);

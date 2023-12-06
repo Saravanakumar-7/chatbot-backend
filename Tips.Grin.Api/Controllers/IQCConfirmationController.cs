@@ -481,6 +481,7 @@ namespace Tips.Grin.Api.Controllers
                         serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                         return BadRequest(serviceResponse);
                     }
+                   // iQCConfirmationItems.IsIqcCompleted = true;
                     iQCItemList.Add(iQCConfirmationItems);
 
                     var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
@@ -665,6 +666,10 @@ namespace Tips.Grin.Api.Controllers
                 //Updating IQC Status in Grin
                 var grinNumber = iQCCreate.GrinNumber;
                 var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNumber);
+                foreach (var gParts in grinDetails.GrinParts)
+                {
+                    gParts.IsIqcCompleted = true;
+                }
                 grinDetails.IsIqcCompleted = true;
                 await _grinRepository.UpdateGrin(grinDetails);
                 _grinRepository.SaveAsync();

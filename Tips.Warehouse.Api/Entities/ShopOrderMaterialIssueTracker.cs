@@ -28,7 +28,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? Location { get; set; }
         public string? DataFrom { get; set; }
         public string Unit { get; set; }
-        public PartType PartType { get; set; }
+        public PartType? PartType { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         

@@ -63,7 +63,7 @@ namespace Accounts
                 new Claim("UnitName", userDetail.Unit), 
                 new Claim("UserId", userDetail.Id.ToString()),
                     }),
-                Expires = DateTime.UtcNow.AddHours(2),
+                Expires = DateTime.UtcNow.AddHours(5),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256Signature)
             };

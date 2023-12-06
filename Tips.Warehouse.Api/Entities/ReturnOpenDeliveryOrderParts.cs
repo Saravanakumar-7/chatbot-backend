@@ -31,7 +31,7 @@ namespace Tips.Warehouse.Api.Entities
         public decimal DispatchQty { get; set; }
         public string Remarks { get; set; }
         public string? SerialNo { get; set; }
-
+        public List<ReturnOpenDeliveryOrderItemQtyDistribution>? QtyDistribution { get; set; }
         public int ReturnOpenDeliveryOrderId { get; set; }
         public ReturnOpenDeliveryOrder? ReturnOpenDeliveryOrder { get; set; }
     }

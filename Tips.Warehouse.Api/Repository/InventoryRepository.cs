@@ -367,6 +367,11 @@ namespace Tips.Warehouse.Api.Repository
             string result = $"NaterialIssue details of {inventory.Id} is deleted successfully!";
             return result;
         }
+        public async Task<Inventory?> GetInventorybyItemProjectWarehouseLocation(string itemNumber, string projectNumber, string warehouse, string location)
+        {
+            var invdetails = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber && x.Warehouse == warehouse && x.Location == location).FirstOrDefaultAsync();
+            return invdetails;
+        }
         public async Task<List<InventoryQtyforDO>> GetInventorybyItemandProject(string itemNumber, string projectNumber)
         {
             var invdetails = await FindAll().Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber).Select(x => new GetInventoryQtyforDO()
@@ -494,7 +499,7 @@ namespace Tips.Warehouse.Api.Repository
                                 eachinv.IsStockAvailable = false;
                             }
                             Update(eachinv);
-                            SaveAsync();
+                            //SaveAsync();
 
                             //invdetails.Remove(eachinv);
                         }
@@ -504,7 +509,7 @@ namespace Tips.Warehouse.Api.Repository
                             eachinv.Balance_Quantity = 0;
                             eachinv.IsStockAvailable = false;
                             Update(eachinv);
-                            SaveAsync();
+                            //SaveAsync();
                             //invdetails.Remove(eachinv);
                         }
                     }
@@ -686,7 +691,7 @@ namespace Tips.Warehouse.Api.Repository
         //aravind
         public async Task<List<ConsumptionInventoryDto>> GetConsumptionInventoryByItemNotest(List<string> ItemNumberList)
         {
-            var partTypes = new PartType[] { PartType.FG, PartType.TG };
+            List<PartType>? partTypes = new List<PartType> { PartType.FG, PartType.TG };
 
             var inventoryDetails = await _tipsWarehouseDbContext.Inventories
             .Where(x => ItemNumberList.Contains(x.PartNumber) && x.IsStockAvailable == true && x.Balance_Quantity > 0

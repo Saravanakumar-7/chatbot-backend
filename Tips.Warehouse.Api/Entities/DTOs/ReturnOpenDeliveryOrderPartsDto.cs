@@ -24,6 +24,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal DispatchQty { get; set; }
         public string Remarks { get; set; }
         public string? SerialNo { get; set; }
+        public List<ReturnOpenDeliveryOrderItemQtyDistributionDto>? QtyDistribution { get; set; }
     }
     public class ReturnOpenDeliveryOrderPartsPostDto
     {
@@ -44,6 +45,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal DispatchQty { get; set; }
         public string Remarks { get; set; }
         public string? SerialNo { get; set; }
+        public List<ReturnOpenDeliveryOrderItemQtyDistributionPostDto>? QtyDistribution { get; set; }
     }
     public class ReturnOpenDeliveryOrderPartsUpdateDto
     {

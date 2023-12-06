@@ -14,7 +14,7 @@ namespace Tips.Warehouse.Api.Entities
         public decimal UnitPrice { get; set; }
         public string UOC { get; set; }
         public string? UOM { get; set; }
-        public string? PartType { get; set; }
+        public PartType PartType { get; set; }
 
         [Precision(13, 2)]
         public decimal? FGOrderQty { get; set; }
@@ -42,7 +42,7 @@ namespace Tips.Warehouse.Api.Entities
         public DateTime? LastModifiedOn { get; set; }
         public int ReturnDeliveryOrderId { get; set; }
         public ReturnBtoDeliveryOrder? ReturnDeliveryOrder { get; set; }
-
+        public List<ReturnDeliveryOrderItemQtyDistribution>? QtyDistribution { get; set; }
     }
 }
 
