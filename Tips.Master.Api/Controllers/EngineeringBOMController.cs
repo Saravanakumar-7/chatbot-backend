@@ -2457,7 +2457,7 @@ namespace Tips.Master.Api.Controllers
         {
             var productionBomMaxVersion = await _releaseProductBomRepository
                                         .GetLatestProductionBomByItemNumber(itemNumber);
-            if (productionBomMaxVersion != null)
+            if (productionBomMaxVersion >= 0)
             {
                 var enggBomDetail = await _enggBomRepository
                       .GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);

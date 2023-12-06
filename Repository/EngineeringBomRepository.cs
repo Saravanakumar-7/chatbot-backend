@@ -1015,17 +1015,26 @@ namespace Repository
             return productionBomDetail;
         }
 
+        //public async Task<decimal> GetLatestProductionBomByItemNumber(string itemNumber)
+        //{
+
+        //    decimal maxRevisionNumber = await _tipsMasterDbContext.ProductionBoms
+        //    .Where(x => x.ItemNumber == itemNumber)
+        //    .MaxAsync(x => x.ReleaseVersion);
+
+        //    return maxRevisionNumber;
+        //}
+
         public async Task<decimal> GetLatestProductionBomByItemNumber(string itemNumber)
         {
-
             decimal maxRevisionNumber = await _tipsMasterDbContext.ProductionBoms
-            .Where(x => x.ItemNumber == itemNumber)
-            .MaxAsync(x => x.ReleaseVersion);
+                .Where(x => x.ItemNumber == itemNumber)
+                .MaxAsync(x => (decimal?)x.ReleaseVersion) ?? -1;
 
             return maxRevisionNumber;
         }
 
-        
+
 
         public async Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber)
         {
@@ -1095,32 +1104,6 @@ namespace Repository
         private async Task<Dictionary<string, decimal>> GetFgItemNoListForAnSaItemNo(string itemNumber, Dictionary<string, decimal> fgItemNumberList, decimal requiredQty)
         {
             var fgSaItemNoWithItemTypeDict = new Dictionary<string, Dictionary<int, PartType>>();
-            //var enggBomIdsWithQty = await _tipsMasterDbContext.EnggChildItems
-            //    .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
-            //    .GroupBy(x => x.EnggBomId)  // Group by BomId
-            //    .Select(group => new
-            //    {
-            //        BomId = group.Key,
-            //        TotalQuantity = group.Sum(x => x.Quantity)
-            //    })
-            //    .ToListAsync();
-
-            //var enggBomIdsWithQty = await _tipsMasterDbContext.EnggChildItems
-            //                         .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
-            //                         .GroupBy(x => x.ItemNumber) // Group by ItemNumber
-            //                         .Select(group => new
-            //                         {
-            //                             ItemNumber = group.Key,
-            //                             BomId = group
-            //                                 .Select(x => x.EnggBomId)
-            //                                 .OrderByDescending(bomId => _tipsMasterDbContext.EnggBoms
-            //                                     .Where(e => e.BOMId == bomId)
-            //                                     .Max(e => e.RevisionNumber)
-            //                                 )
-            //                                 .FirstOrDefault(),
-            //                             TotalQuantity = group.Sum(x => x.Quantity)
-            //                         })
-            //                         .ToListAsync();
 
             var enggBomIdsWithQty = await _tipsMasterDbContext.EnggChildItems
                                     .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
