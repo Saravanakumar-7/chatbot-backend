@@ -1380,6 +1380,7 @@ namespace Tips.SalesService.Api.Controllers
                 //Dictionary<string, decimal> fgItemNumberWithSqBomQty = jsonArray.ToObject<Dictionary<string, decimal>>();
                 //List<string> fgItemNoList= fgItemNumberWithSqBomQty.Select(x=>x.Key).ToList();
                 SARevisionNumber itemDetailsDto = new SARevisionNumber();
+                List<ProjectSOSADetailDto>? projectSOSADetailDtos = new List<ProjectSOSADetailDto>();
                 itemDetailsDto.ItemNumber = saFgItemDetailWithBomQty.itemNumber;
                 itemDetailsDto.FGItemNumber = fgItemNoList;
                 itemDetailsDto.ItemType = saFgItemDetailWithBomQty.itemType;
@@ -1392,9 +1393,11 @@ namespace Tips.SalesService.Api.Controllers
                     foreach (var project in projectSODetails)
                     {
                         project.SalesOrderQtyDetails = await _repository.GetSASalesOrderQtyDetailsByItemNo(fgItemNo.Key, project.ProjectNumber, BomQty);
-                        itemDetailsDto.ProjectSODetails = projectSODetails;
+                        // itemDetailsDto.ProjectSODetails = projectSODetails;
+                        projectSOSADetailDtos.Add(project);
                     }
                 }
+                itemDetailsDto.ProjectSODetails = projectSOSADetailDtos;
                 serviceResponse.Data = itemDetailsDto;
                 serviceResponse.Message = "Returned all SalesOrderSADetails";
                 serviceResponse.Success = true;
