@@ -89,6 +89,15 @@ namespace Repository
             return PriceListbyId;
         }
 
+        public async Task<IEnumerable<PriceList>> GetLatestPriceListName()
+        {
+
+            var itemPriceList = FindAll().OrderByDescending(d => d.CreatedOn)
+                        .ToList();
+
+             return itemPriceList;
+        }
+
         public async Task<string> UpdatePriceList(PriceList priceList)
         {
             priceList.LastModifiedBy = _createdBy;

@@ -11,6 +11,8 @@ namespace Contracts
     {
         Task<IEnumerable<PriceList>> GetAllPriceLists(SearchParames searchParams);
         Task<PriceList> GetPriceListById(int id);
+
+        Task<IEnumerable<PriceList>> GetLatestPriceListName();
         Task<IEnumerable<PriceList>> GetAllActivePriceLists(SearchParames searchParams);
         Task<int?> CreatePriceList(PriceList priceList);
         Task<string> UpdatePriceList(PriceList priceList);
