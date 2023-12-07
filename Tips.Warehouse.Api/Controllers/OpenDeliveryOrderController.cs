@@ -9,6 +9,7 @@ using Tips.Warehouse.Api.Contracts;
 using Newtonsoft.Json;
 using Tips.Warehouse.Api.Repository;
 using static Org.BouncyCastle.Math.EC.ECCurve;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,8 +26,10 @@ namespace Tips.Warehouse.Api.Controllers
         private IInventoryTranctionRepository _inventoryTranctionRepository;
         private IOpenDeliveryOrderHistoryRepository _openDeliveryOrderHistoryRepository;
         private readonly IConfiguration _config;
-
-        public OpenDeliveryOrderController(IConfiguration config, IOpenDeliveryOrderHistoryRepository openDeliveryOrderHistoryRepository, IInventoryTranctionRepository inventoryTranctionRepository, IOpenDeliveryOrderRepository repository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public OpenDeliveryOrderController(IConfiguration config, IOpenDeliveryOrderHistoryRepository openDeliveryOrderHistoryRepository, IInventoryTranctionRepository inventoryTranctionRepository, IOpenDeliveryOrderRepository repository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
             _logger = logger;
@@ -35,8 +38,10 @@ namespace Tips.Warehouse.Api.Controllers
             _inventoryTranctionRepository = inventoryTranctionRepository;
             _openDeliveryOrderHistoryRepository = openDeliveryOrderHistoryRepository;
             _config = config;
-
-
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
         // GET: api/<OpenDeliveryOrderController>
         [HttpGet]
@@ -333,7 +338,7 @@ namespace Tips.Warehouse.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var openDeliveryOrderparts = _mapper.Map<IEnumerable<OpenDeliveryOrderParts>>(openDeliveryOrderDtoPost.OpenDeliveryOrderParts);
+                var openDeliveryOrderparts = _mapper.Map<List<OpenDeliveryOrderParts>>(openDeliveryOrderDtoPost.OpenDeliveryOrderParts);
 
                 var openDeliveryOrderitemsList = openDeliveryOrderDtoPost.OpenDeliveryOrderParts;
 
@@ -439,72 +444,93 @@ namespace Tips.Warehouse.Api.Controllers
                         //]
 
                         ////Add BTO Detail Into Inventory transaction Table
+                        foreach (var eachbin in OpenDeliveryOrderItemsDetails.QtyDistribution)
+                        {
+                            //InventoryTranction inventoryTranction = new InventoryTranction();
+                            //inventoryTranction.PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                            //inventoryTranction.MftrPartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                            //inventoryTranction.Description = openDeliveryOrderItemsDtoList[i].ItemDescription;
+                            //inventoryTranction.Issued_Quantity = Convert.ToDecimal(openDeliveryOrderItemsDtoList[i].DispatchQty);
+                            //inventoryTranction.UOM = openDeliveryOrderItemsDtoList[i].UOM;
+                            //inventoryTranction.Issued_DateTime = DateTime.Now;
+                            //inventoryTranction.ReferenceID = openDeliveryorder.OpenDONumber;
+                            //inventoryTranction.ReferenceIDFrom = "Open Delivery Order";
+                            //inventoryTranction.Issued_By = "Admin";
+                            //inventoryTranction.CreatedOn = DateTime.Now;
+                            //inventoryTranction.Unit = "Bangalore";
+                            //inventoryTranction.CreatedBy = "Admin";
+                            //inventoryTranction.LastModifiedBy = "Admin";
+                            //inventoryTranction.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
+                            //inventoryTranction.LastModifiedOn = DateTime.Now;
+                            //inventoryTranction.ModifiedStatus = false;
+                            //inventoryTranction.From_Location = openDeliveryOrderItemsDtoList[i].Location;
+                            //inventoryTranction.TO_Location = "ODO";
+                            //inventoryTranction.Remarks = "Create ODO";
 
-                        //InventoryTranction inventoryTranction = new InventoryTranction();
-                        //inventoryTranction.PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
-                        //inventoryTranction.MftrPartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
-                        //inventoryTranction.Description = openDeliveryOrderItemsDtoList[i].ItemDescription;
-                        //inventoryTranction.Issued_Quantity = Convert.ToDecimal(openDeliveryOrderItemsDtoList[i].DispatchQty);
-                        //inventoryTranction.UOM = openDeliveryOrderItemsDtoList[i].UOM;
-                        //inventoryTranction.Issued_DateTime = DateTime.Now;
-                        //inventoryTranction.ReferenceID = openDeliveryorder.OpenDONumber;
-                        //inventoryTranction.ReferenceIDFrom = "Open Delivery Order";
-                        //inventoryTranction.Issued_By = "Admin";
-                        //inventoryTranction.CreatedOn = DateTime.Now;
-                        //inventoryTranction.Unit = "Bangalore";
-                        //inventoryTranction.CreatedBy = "Admin";
-                        //inventoryTranction.LastModifiedBy = "Admin";
-                        //inventoryTranction.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
-                        //inventoryTranction.LastModifiedOn = DateTime.Now;
-                        //inventoryTranction.ModifiedStatus = false;
-                        //inventoryTranction.From_Location = openDeliveryOrderItemsDtoList[i].Location;
-                        //inventoryTranction.TO_Location = "ODO";
-                        //inventoryTranction.Remarks = "Create ODO";
-
-                        //var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
-
-
-                        //await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
-                        //_inventoryTranctionRepository.SaveAsync();
+                            //var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
 
-                        //// Add Bto detail in to opendeliveryorderhistory table
+                            //await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                            //_inventoryTranctionRepository.SaveAsync();
+                            InventoryTranction inventoryTranction = new InventoryTranction();
+                            inventoryTranction.PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                            inventoryTranction.MftrPartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                            inventoryTranction.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
+                            inventoryTranction.Description = openDeliveryOrderItemsDtoList[i].ItemDescription;
+                            inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
+                            inventoryTranction.UOM = openDeliveryOrderItemsDtoList[i].UOM;
+                            inventoryTranction.Issued_DateTime = DateTime.Now;
+                            inventoryTranction.ReferenceID = openDeliveryOrderItemsDtoList[i].ODONumber;
+                            inventoryTranction.ReferenceIDFrom = "Open Delivery Order";
+                            inventoryTranction.Issued_By = _createdBy;
+                            inventoryTranction.From_Location = eachbin.Location;
+                            inventoryTranction.TO_Location = "ODO";
+                            inventoryTranction.Warehouse = eachbin.Warehouse;
+                            inventoryTranction.Remarks = "Create ODO";
 
-                        OpenDeliveryOrderHistory openDeliveryOrderHistory = new OpenDeliveryOrderHistory();
-                        openDeliveryOrderHistory.ODONumber = openDeliveryorder.OpenDONumber;
-                        openDeliveryOrderHistory.CustomerName = openDeliveryorder.CustomerName;
-                        openDeliveryOrderHistory.CustomerAliasName = openDeliveryorder.CustomerAliasName;
-                        openDeliveryOrderHistory.CustomerId = openDeliveryorder.CustomerId;
-                        openDeliveryOrderHistory.Description = openDeliveryorder.Description;
-                        openDeliveryOrderHistory.ResponsiblePerson = openDeliveryorder.ResponsiblePerson;
-                        openDeliveryOrderHistory.ReasonForIssuingStock = openDeliveryorder.ReasonforIssuingStock;
-                        openDeliveryOrderHistory.IssuedTo = openDeliveryorder.IssuedTo;
-                        openDeliveryOrderHistory.ODOType = openDeliveryorder.IssuedTo;
-                        openDeliveryOrderHistory.ODODate = openDeliveryorder.OpenDODate;
-                        openDeliveryOrderHistory.ItemNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
-                        openDeliveryOrderHistory.ItemDescription = openDeliveryOrderItemsDtoList[i].ItemDescription;
-                        openDeliveryOrderHistory.ItemType = openDeliveryOrderItemsDtoList[i].ItemType;
-                        openDeliveryOrderHistory.UnitPrice = openDeliveryOrderItemsDtoList[i].UnitPrice;
-                        openDeliveryOrderHistory.UOC = openDeliveryOrderItemsDtoList[i].UOC;
-                        openDeliveryOrderHistory.UOM = openDeliveryOrderItemsDtoList[i].UOM;
-                        openDeliveryOrderHistory.Warehouse = openDeliveryOrderItemsDtoList[i].Warehouse;
-                        openDeliveryOrderHistory.StockAvailable = openDeliveryOrderItemsDtoList[i].StockAvailable;
-                        openDeliveryOrderHistory.Location = openDeliveryOrderItemsDtoList[i].Location;
-                        openDeliveryOrderHistory.LocationStock = openDeliveryOrderItemsDtoList[i].LocationStock;
-                        openDeliveryOrderHistory.DispatchQty = openDeliveryOrderItemsDtoList[i].DispatchQty;
-                        openDeliveryOrderHistory.SerialNo = openDeliveryOrderItemsDtoList[i].SerialNo;
-                        openDeliveryOrderHistory.Unit = openDeliveryOrderItemsDtoList[i].SerialNo;
-                        openDeliveryOrderHistory.UniqeId = openDeliveryOrderItemsDtoList[i].SerialNo;
-                        //openDeliveryOrderHistory.CreatedBy = openDeliveryOrderItemsDtoList[i].CreatedBy;
-                        //openDeliveryOrderHistory.LastModifiedOn = openDeliveryOrderItemsDtoList[i].LastModifiedOn;
-                        openDeliveryOrderHistory.Remark = "From Create ODO";
-
-                        var openDeliveryOrderHistoryDetails = _mapper.Map<OpenDeliveryOrderHistory>(openDeliveryOrderHistory);
+                            var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
 
-                        await _openDeliveryOrderHistoryRepository.CreateOpenDeliveryOrderHistory(openDeliveryOrderHistoryDetails);
-                        _openDeliveryOrderHistoryRepository.SaveAsync();
+                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                            _inventoryTranctionRepository.SaveAsync();
 
+                            //// Add Bto detail in to opendeliveryorderhistory table
+
+                            OpenDeliveryOrderHistory openDeliveryOrderHistory = new OpenDeliveryOrderHistory();
+                            openDeliveryOrderHistory.ODONumber = openDeliveryorder.OpenDONumber;
+                            openDeliveryOrderHistory.CustomerName = openDeliveryorder.CustomerName;
+                            openDeliveryOrderHistory.CustomerAliasName = openDeliveryorder.CustomerAliasName;
+                            openDeliveryOrderHistory.CustomerId = openDeliveryorder.CustomerId;
+                            openDeliveryOrderHistory.Description = openDeliveryorder.Description;
+                            openDeliveryOrderHistory.ResponsiblePerson = openDeliveryorder.ResponsiblePerson;
+                            openDeliveryOrderHistory.ReasonForIssuingStock = openDeliveryorder.ReasonforIssuingStock;
+                            openDeliveryOrderHistory.IssuedTo = openDeliveryorder.IssuedTo;
+                            openDeliveryOrderHistory.ODOType = openDeliveryorder.IssuedTo;
+                            openDeliveryOrderHistory.ODODate = openDeliveryorder.OpenDODate;
+                            openDeliveryOrderHistory.ItemNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                            openDeliveryOrderHistory.ItemDescription = openDeliveryOrderItemsDtoList[i].ItemDescription;
+                            openDeliveryOrderHistory.ItemType = openDeliveryOrderItemsDtoList[i].ItemType;
+                            openDeliveryOrderHistory.UnitPrice = openDeliveryOrderItemsDtoList[i].UnitPrice;
+                            openDeliveryOrderHistory.UOC = openDeliveryOrderItemsDtoList[i].UOC;
+                            openDeliveryOrderHistory.UOM = openDeliveryOrderItemsDtoList[i].UOM;
+                            openDeliveryOrderHistory.Warehouse = eachbin.Warehouse;
+                            openDeliveryOrderHistory.StockAvailable = openDeliveryOrderItemsDtoList[i].StockAvailable;
+                            openDeliveryOrderHistory.Location = eachbin.Location;
+                            openDeliveryOrderHistory.LocationStock = openDeliveryOrderItemsDtoList[i].LocationStock;
+                            openDeliveryOrderHistory.DispatchQty = eachbin.DistributingQty;
+                            openDeliveryOrderHistory.SerialNo = openDeliveryOrderItemsDtoList[i].SerialNo;
+                            openDeliveryOrderHistory.Unit = openDeliveryOrderItemsDtoList[i].SerialNo;
+                            openDeliveryOrderHistory.UniqeId = openDeliveryOrderItemsDtoList[i].SerialNo;
+                            //openDeliveryOrderHistory.CreatedBy = openDeliveryOrderItemsDtoList[i].CreatedBy;
+                            //openDeliveryOrderHistory.LastModifiedOn = openDeliveryOrderItemsDtoList[i].LastModifiedOn;
+                            openDeliveryOrderHistory.Remark = "From Create ODO";
+
+                            var openDeliveryOrderHistoryDetails = _mapper.Map<OpenDeliveryOrderHistory>(openDeliveryOrderHistory);
+
+
+                            await _openDeliveryOrderHistoryRepository.CreateOpenDeliveryOrderHistory(openDeliveryOrderHistoryDetails);
+                            _openDeliveryOrderHistoryRepository.SaveAsync();
+                        }
                     }
                 }
                 openDeliveryorder.OpenDeliveryOrderParts = openDeliveryOrderItemsDtoList;

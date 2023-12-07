@@ -9,6 +9,8 @@ namespace Tips.Warehouse.Api.Entities
         public TipsWarehouseDbContext(DbContextOptions<TipsWarehouseDbContext> options) : base(options)
         { 
         }
+        public DbSet<ReturnOpenDeliveryOrderItemQtyDistribution> ReturnOpenDeliveryOrderItemQtyDistribution { get; set; }
+        public DbSet<ReturnDeliveryOrderItemQtyDistribution> ReturnDeliveryOrderItemQtyDistribution { get; set; }
         public DbSet<BtoDeliveryOrderItemQtyDistribution> BtoDeliveryOrderItemQtyDistribution { get; set; }
         public DbSet<OpenDeliveryOrderPartsQtyDistribution> OpenDeliveryOrderPartsQtyDistribution { get; set; }
         public DbSet<OpenDeliveryOrder> OpenDeliveryOrders { get; set; }

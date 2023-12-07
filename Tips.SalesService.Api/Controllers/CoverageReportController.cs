@@ -252,10 +252,22 @@ namespace Tips.SalesService.Api.Controllers
 
                                     //test
                                     
-                                    coverageDetailOfChildItem.BalanceToOrder = (coverageDetailOfChildItem.Stock
+                                    var balanceToOrder = (coverageDetailOfChildItem.Stock
                                         + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty) - coverageDetailOfChildItem.RequiredQty;
-                                    //coverageDetailOfChildItem.BalanceToOrder = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
-                                    //    + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
+                                    if(balanceToOrder >= 0)
+                                    {
+                                        coverageDetailOfChildItem.BalanceToOrder = (coverageDetailOfChildItem.Stock
+                                           + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty) - coverageDetailOfChildItem.RequiredQty;
+
+                                    }
+                                    else
+                                    {
+                                        coverageDetailOfChildItem.BalanceToOrder = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
+                                        + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
+                                    }
+
+                                     //coverageDetailOfChildItem.BalanceToOrder = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
+                                     //   + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
                                     coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
                                 }
                             }

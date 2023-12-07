@@ -70,11 +70,11 @@ namespace Repository
                     {
                         if (fgitem.ItemNumber == FPPdetails.PPItemNumber)
                         {
-                            if (FPPdetails.VLandindPrice == null )
+                            if (FPPdetails.VLandindPrice == null)
                             {
-                                FPPdetails.VLandindPrice = 1;                               
+                                FPPdetails.VLandindPrice = 1;
                             }
-                            if(FPPdetails.VMoqcost == null)
+                            if (FPPdetails.VMoqcost == null)
                             {
                                 FPPdetails.VMoqcost = 1;
                             }
@@ -121,9 +121,9 @@ namespace Repository
                     {
                         if (saitem.ItemNumber == SPPdetails.PPItemNumber)
                         {
-                            if (SPPdetails.VLandindPrice==null)
+                            if (SPPdetails.VLandindPrice == null)
                             {
-                                SPPdetails.VLandindPrice = 1;                                
+                                SPPdetails.VLandindPrice = 1;
                             }
                             if (SPPdetails.VMoqcost == null)
                             {
@@ -148,7 +148,7 @@ namespace Repository
             enggBom.Unit = _unitname;
             var getOldRevisionNumber = _tipsMasterDbContext.EnggBoms
                 .Where(x => x.ItemNumber == enggBom.ItemNumber)
-                .OrderByDescending(x => x.BOMId)                
+                .OrderByDescending(x => x.BOMId)
                 .FirstOrDefault();
             getOldRevisionNumber.LastModifiedBy = _createdBy;
             getOldRevisionNumber.LastModifiedOn = DateTime.Now;
@@ -163,8 +163,8 @@ namespace Repository
         {
             enggBom.CreatedBy = _createdBy;
             enggBom.CreatedOn = DateTime.Now;
-           // enggBom.LastModifiedBy = _createdBy;
-          //  enggBom.LastModifiedOn = DateTime.Now;
+            // enggBom.LastModifiedBy = _createdBy;
+            //  enggBom.LastModifiedOn = DateTime.Now;
             enggBom.Unit = _unitname;
             var result = await Create(enggBom);
             return result.BOMId;
@@ -297,7 +297,7 @@ namespace Repository
             List<EnggBomFGItemNumberWithQtyDto> enggBomFGItemNumberWithQtyDtos = new List<EnggBomFGItemNumberWithQtyDto>();
             foreach (var rfqfgitem in itemNumberList)
             {
-                int fgdetails = await _tipsMasterDbContext.EnggBoms.Where(x=>x.ItemNumber==rfqfgitem.ItemNumber && x.RevisionNumber == rfqfgitem.CostingBomVersionNo)
+                int fgdetails = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == rfqfgitem.ItemNumber && x.RevisionNumber == rfqfgitem.CostingBomVersionNo)
                     .Select(x => x.BOMId)
                     .FirstOrDefaultAsync();
                 var fgbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == fgdetails).OrderByDescending(x => x.PartType).ToListAsync();
@@ -359,7 +359,7 @@ namespace Repository
         public async Task<List<EnggBomFGItemNumberWithQtyDto>> GetSABomItemsChildDetails(string SAitemnumber, decimal SAQty)//, string SAversion)
         {
             List<EnggBomFGItemNumberWithQtyDto> enggBomSAItemNumberWithQtyDtos = new List<EnggBomFGItemNumberWithQtyDto>();
-            int sadetails = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == SAitemnumber).OrderByDescending(x=>x.RevisionNumber)
+            int sadetails = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == SAitemnumber).OrderByDescending(x => x.RevisionNumber)
                 //&& x.RevisionNumber == decimal.Parse(SAversion))
                 .Select(x => x.BOMId).FirstOrDefaultAsync();
             var sabomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == sadetails).OrderByDescending(x => x.PartType).ToListAsync();
@@ -425,11 +425,11 @@ namespace Repository
                     .MaxAsync(x => x.RevisionNumber);
 
             var bomId = await _tipsMasterDbContext.EnggBoms
-                .Where(x => x.ItemNumber == fgPartNumber && x.ItemType == PartType.FG 
+                .Where(x => x.ItemNumber == fgPartNumber && x.ItemType == PartType.FG
                         && x.RevisionNumber == maxRevisionNumber)
                 .Select(x => x.BOMId)
                 .FirstOrDefaultAsync();
-             
+
 
             var sumOfQuantity = await _tipsMasterDbContext.EnggChildItems
                  .Where(x => x.EnggBomId == bomId && x.ItemNumber == saItemNumber && x.IsActive == true)
@@ -608,8 +608,8 @@ namespace Repository
       .Select(x => x.ItemNumber)
       .ToListAsync();
             return (IEnumerable<EnggBomFGItemNumber>)fgParentItemNumbers;
-        } 
-            public async Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber)
+        }
+        public async Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber)
         {
             var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber)
                                 .Include(t => t.EnggChildItems)
@@ -748,8 +748,8 @@ namespace Repository
         {
             releaseEnggBom.CreatedBy = _createdBy;
             releaseEnggBom.CreatedOn = DateTime.Now;
-           // releaseEnggBom.LastModifiedBy = _createdBy;
-           // releaseEnggBom.LastModifiedOn = DateTime.Now;
+            // releaseEnggBom.LastModifiedBy = _createdBy;
+            // releaseEnggBom.LastModifiedOn = DateTime.Now;
             var result = await Create(releaseEnggBom);
             return result.Id;
         }
@@ -848,8 +848,8 @@ namespace Repository
         {
             releaseCostBom.CreatedBy = _createdBy;
             releaseCostBom.CreatedOn = DateTime.Now;
-           // releaseCostBom.LastModifiedBy = _createdBy;
-           // releaseCostBom.LastModifiedOn = DateTime.Now;
+            // releaseCostBom.LastModifiedBy = _createdBy;
+            // releaseCostBom.LastModifiedOn = DateTime.Now;
             var result = await Create(releaseCostBom);
             return result.Id;
         }
@@ -940,9 +940,9 @@ namespace Repository
         //}
         public async Task<List<ProductionBom>?> GetLatestProBomCountByItemNumber(string itemNumber)
         {
-           List<ProductionBom>? latestReleaseVersionsCount = await _tipsMasterDbContext.ProductionBoms
-                .Where(x => x.ItemNumber == itemNumber)
-                .ToListAsync();
+            List<ProductionBom>? latestReleaseVersionsCount = await _tipsMasterDbContext.ProductionBoms
+                 .Where(x => x.ItemNumber == itemNumber)
+                 .ToListAsync();
 
             return latestReleaseVersionsCount;
         }
@@ -950,7 +950,7 @@ namespace Repository
         public async Task<int?> CreateReleaseProductBom(ProductionBom releaseProductBom)
         {
             releaseProductBom.CreatedBy = _createdBy;
-            releaseProductBom.CreatedOn = DateTime.Now; 
+            releaseProductBom.CreatedOn = DateTime.Now;
             var result = await Create(releaseProductBom);
             return result.Id;
         }
@@ -1015,17 +1015,26 @@ namespace Repository
             return productionBomDetail;
         }
 
+        //public async Task<decimal> GetLatestProductionBomByItemNumber(string itemNumber)
+        //{
+
+        //    decimal maxRevisionNumber = await _tipsMasterDbContext.ProductionBoms
+        //    .Where(x => x.ItemNumber == itemNumber)
+        //    .MaxAsync(x => x.ReleaseVersion);
+
+        //    return maxRevisionNumber;
+        //}
+
         public async Task<decimal> GetLatestProductionBomByItemNumber(string itemNumber)
         {
-
             decimal maxRevisionNumber = await _tipsMasterDbContext.ProductionBoms
-            .Where(x => x.ItemNumber == itemNumber)
-            .MaxAsync(x => x.ReleaseVersion);
+                .Where(x => x.ItemNumber == itemNumber)
+                .MaxAsync(x => (decimal?)x.ReleaseVersion) ?? -1;
 
             return maxRevisionNumber;
         }
 
-        
+
 
         public async Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber)
         {
@@ -1092,62 +1101,109 @@ namespace Repository
             return saItemDetailsWithRequiredQty;
         }
 
+        //private async Task<Dictionary<string, decimal>> GetFgItemNoListForAnSaItemNo(string itemNumber, Dictionary<string, decimal> fgItemNumberList, decimal requiredQty)
+        //{
+        //    var fgSaItemNoWithItemTypeDict = new Dictionary<string, Dictionary<int, PartType>>();
+
+        //var enggBomIdsWithQty = await _tipsMasterDbContext.EnggChildItems
+        //                        .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
+        //                        .GroupBy(x => x.ItemNumber) // Group by ItemNumber
+        //                        .Select(group => new
+        //                        {
+        //                            ItemNumber = group.Key,
+        //                            BomId = group
+        //                                .Select(x => x.EnggBomId)
+        //                                .OrderByDescending(bomId => _tipsMasterDbContext.EnggBoms
+        //                                    .Where(e => e.BOMId == bomId)
+        //                                    .Max(e => e.RevisionNumber)
+        //                                )
+        //                                .FirstOrDefault(),
+        //                            TotalQuantity = group
+        //                                .OrderByDescending(x => _tipsMasterDbContext.EnggBoms
+        //                                    .Where(e => e.BOMId == x.EnggBomId)
+        //                                    .Max(e => e.RevisionNumber)
+        //                                )
+        //                                .Select(x => x.Quantity)
+        //                                .FirstOrDefault()
+        //                        })
+        //                        .ToListAsync();
+
+        //    var enggBomIds = enggBomIdsWithQty.Select(x => x.BomId).ToList();
+        //    var enggBomIdsWithQtyDict = enggBomIdsWithQty.ToDictionary(x=> x.BomId,(x=>x.TotalQuantity * requiredQty));
+
+        //    if (enggBomIdsWithQty.Count > 0)
+        //    {
+        //        var fgParents = await _tipsMasterDbContext.EnggBoms
+        //            .Where(x => enggBomIds.Contains(x.BOMId))
+        //            .Select(x => new { x.ItemNumber, x.ItemType, x.BOMId })
+        //            .Distinct()
+        //            .ToListAsync();
+
+        //        foreach (var fgitem in fgParents)
+        //        {
+        //            Dictionary<int, PartType> bomIdWithItemTypeDict = new Dictionary<int, PartType>();
+
+        //            if (!fgSaItemNoWithItemTypeDict.ContainsKey(fgitem.ItemNumber))
+        //            {
+        //                bomIdWithItemTypeDict.Add(fgitem.BOMId, fgitem.ItemType);
+        //                fgSaItemNoWithItemTypeDict[fgitem.ItemNumber] = bomIdWithItemTypeDict;
+        //            }
+        //            else
+        //            {
+        //                fgSaItemNoWithItemTypeDict[fgitem.ItemNumber].Add(fgitem.BOMId, fgitem.ItemType);
+        //            }
+        //        }
+        //    }
+
+
+        //    foreach (var item in fgSaItemNoWithItemTypeDict)
+        //    {
+        //        var itemTypeDetails = item.Value;
+        //        foreach (var itemType in itemTypeDetails)
+        //        {
+        //            if (itemType.Value == PartType.SA)
+        //            {
+        //                await GetFgItemNoListForAnSaItemNo(item.Key, fgItemNumberList, enggBomIdsWithQtyDict[itemType.Key]);
+        //            }
+        //            else
+        //            {
+        //                fgItemNumberList.Add(item.Key, enggBomIdsWithQtyDict[itemType.Key]);
+        //            }
+        //        }
+        //    }
+
+        //    return fgItemNumberList;
+        //}
         private async Task<Dictionary<string, decimal>> GetFgItemNoListForAnSaItemNo(string itemNumber, Dictionary<string, decimal> fgItemNumberList, decimal requiredQty)
         {
             var fgSaItemNoWithItemTypeDict = new Dictionary<string, Dictionary<int, PartType>>();
-            //var enggBomIdsWithQty = await _tipsMasterDbContext.EnggChildItems
-            //    .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
-            //    .GroupBy(x => x.EnggBomId)  // Group by BomId
-            //    .Select(group => new
-            //    {
-            //        BomId = group.Key,
-            //        TotalQuantity = group.Sum(x => x.Quantity)
-            //    })
-            //    .ToListAsync();
-
-            //var enggBomIdsWithQty = await _tipsMasterDbContext.EnggChildItems
-            //                         .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
-            //                         .GroupBy(x => x.ItemNumber) // Group by ItemNumber
-            //                         .Select(group => new
-            //                         {
-            //                             ItemNumber = group.Key,
-            //                             BomId = group
-            //                                 .Select(x => x.EnggBomId)
-            //                                 .OrderByDescending(bomId => _tipsMasterDbContext.EnggBoms
-            //                                     .Where(e => e.BOMId == bomId)
-            //                                     .Max(e => e.RevisionNumber)
-            //                                 )
-            //                                 .FirstOrDefault(),
-            //                             TotalQuantity = group.Sum(x => x.Quantity)
-            //                         })
-            //                         .ToListAsync();
 
             var enggBomIdsWithQty = await _tipsMasterDbContext.EnggChildItems
                                     .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
-                                    .GroupBy(x => x.ItemNumber) // Group by ItemNumber
-                                    .Select(group => new
+                                    //.GroupBy(x => x.ItemNumber) // Group by ItemNumber
+                                    .Select(x => new
                                     {
-                                        ItemNumber = group.Key,
-                                        BomId = group
-                                            .Select(x => x.EnggBomId)
-                                            .OrderByDescending(bomId => _tipsMasterDbContext.EnggBoms
-                                                .Where(e => e.BOMId == bomId)
-                                                .Max(e => e.RevisionNumber)
-                                            )
-                                            .FirstOrDefault(),
-                                        TotalQuantity = group
-                                            .OrderByDescending(x => _tipsMasterDbContext.EnggBoms
-                                                .Where(e => e.BOMId == x.EnggBomId)
-                                                .Max(e => e.RevisionNumber)
-                                            )
-                                            .Select(x => x.Quantity)
-                                            .FirstOrDefault()
+                                        ItemNumber = x.ItemNumber,
+                                        BomId = x.EnggBomId,
+                                            //.Select(x => x.EnggBomId)
+                                            //.OrderByDescending(bomId => _tipsMasterDbContext.EnggBoms
+                                            //    .Where(e => e.BOMId == bomId)
+                                            //    .Max(e => e.RevisionNumber)
+                                            //)
+                                            //.FirstOrDefault(),
+                                        TotalQuantity = x.Quantity
+                                            //.OrderByDescending(x => _tipsMasterDbContext.EnggBoms
+                                            //    .Where(e => e.BOMId == x.EnggBomId)
+                                            //    .Max(e => e.RevisionNumber)
+                                            //)
+                                            //.Select(x => x.Quantity)
+                                            //.FirstOrDefault()
                                     })
                                     .ToListAsync();
 
             var enggBomIds = enggBomIdsWithQty.Select(x => x.BomId).ToList();
-            var enggBomIdsWithQtyDict = enggBomIdsWithQty.ToDictionary(x=> x.BomId,(x=>x.TotalQuantity * requiredQty));
-             
+            var enggBomIdsWithQtyDict = enggBomIdsWithQty.ToDictionary(x => x.BomId, (x => x.TotalQuantity * requiredQty));
+
             if (enggBomIdsWithQty.Count > 0)
             {
                 var fgParents = await _tipsMasterDbContext.EnggBoms
@@ -1191,6 +1247,8 @@ namespace Repository
 
             return fgItemNumberList;
         }
+       
+
 
         public Task<IEnumerable<ProductionBom>> GetLatestProBomByItemNumber(string itemNumber)
         {
@@ -1257,7 +1315,7 @@ namespace Repository
         {
             enggbomGroup.CreatedBy = _createdBy;
             enggbomGroup.CreatedOn = DateTime.Now;
-           // enggbomGroup.LastModifiedBy = _createdBy;
+            // enggbomGroup.LastModifiedBy = _createdBy;
             //enggbomGroup.LastModifiedOn = DateTime.Now;
             var result = await Create(enggbomGroup);
             return result.Id;
@@ -1350,7 +1408,7 @@ namespace Repository
             enggcustomFields.CreatedBy = _createdBy;
             enggcustomFields.CreatedOn = DateTime.Now;
             //enggcustomFields.LastModifiedBy = _createdBy;
-           // enggcustomFields.LastModifiedOn = DateTime.Now;
+            // enggcustomFields.LastModifiedOn = DateTime.Now;
             var result = await Create(enggcustomFields);
             return result.Id;
         }
