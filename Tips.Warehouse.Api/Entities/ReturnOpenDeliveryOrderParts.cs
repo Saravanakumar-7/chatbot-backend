@@ -23,10 +23,10 @@ namespace Tips.Warehouse.Api.Entities
         public string UOM { get; set; }
         [Precision(13, 3)]
         public decimal StockAvailable { get; set; }
-        public string Warehouse { get; set; }
-        public string Location { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
         [Precision(13, 3)]
-        public decimal LocationStock { get; set; }
+        public decimal? LocationStock { get; set; }
         [Precision(13, 3)]
         public decimal DispatchQty { get; set; }
         public string Remarks { get; set; }
