@@ -107,7 +107,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
         public List<InvoiceChildItemReportDto>? invoiceChildItems { get; set; }
-        public List<InvoiceAdditionalChargesDto>? InvoiceAdditionalCharges { get; set; }
+        public List<InvoiceAdditionalChargesReportDto>? InvoiceAdditionalCharges { get; set; }
 
     }
 }
