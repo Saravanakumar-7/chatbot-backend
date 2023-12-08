@@ -9,6 +9,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualBasic;
 using MySqlX.XDevAPI.Common;
@@ -40,7 +41,7 @@ namespace Tips.SalesService.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public SalesOrderController(ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository,IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
+        public SalesOrderController(ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
             ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, IHttpContextAccessor httpContextAccessor,
             ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
@@ -90,7 +91,7 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogInfo($"Returned owner with id: {ex.Message}{ex.InnerException}");
-                 
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = ($"Returned owner with id: {ex.Message}{ex.InnerException}");
                 serviceResponse.Success = false;
@@ -220,20 +221,20 @@ namespace Tips.SalesService.Api.Controllers
                     //int salesOrderStatus = 1;
                     int salesOrderStatus = (int)salesOrderStatus1;
 
-                    List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x=> x.ItemNumber).Distinct().ToList();
+                    List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x => x.ItemNumber).Distinct().ToList();
 
-                     
+
                     if (itemNumberList != null)
                     {
                         var json = JsonConvert.SerializeObject(itemNumberList);
                         var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        var inventoryQtyResponse = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetAvailableStockQtyForSalesOrderItems?", "salesOrderNo=", salesOrderNo, "&salesOrderStatus=", salesOrderStatus), data); 
+                        var inventoryQtyResponse = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetAvailableStockQtyForSalesOrderItems?", "salesOrderNo=", salesOrderNo, "&salesOrderStatus=", salesOrderStatus), data);
 
                         var inventoryItemQtyDetails = await inventoryQtyResponse.Content.ReadAsStringAsync();
-                    
+
 
                         Dictionary<string, decimal> inventoryItemWithStockDetails = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(inventoryItemQtyDetails);
-                         
+
 
                         foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
                         {
@@ -429,15 +430,15 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     cfg.AddProfile<MappingProfile>();
                     cfg.CreateMap<SalesOrderItems, SalesOrderItemsReportDto>()
-                        .ForMember(dest => dest.ScheduleDates, opt => opt.MapFrom(src =>src.ScheduleDates
+                        .ForMember(dest => dest.ScheduleDates, opt => opt.MapFrom(src => src.ScheduleDates
                         .Select(scheduleDate => new ScheduleDateReportDto
-                                {
-                                    Id = scheduleDate.Id,
-                                    ItemNumber = src.ItemNumber,
-                                    SalesOrderNumber = src.SalesOrderNumber,
-                                    Date = scheduleDate.Date,
-                                    Quantity = scheduleDate.Quantity
-                                })
+                        {
+                            Id = scheduleDate.Id,
+                            ItemNumber = src.ItemNumber,
+                            SalesOrderNumber = src.SalesOrderNumber,
+                            Date = scheduleDate.Date,
+                            Quantity = scheduleDate.Quantity
+                        })
                             )
                         );
                 });
@@ -567,7 +568,7 @@ namespace Tips.SalesService.Api.Controllers
             {
                 var salesOrderList = await _repository.GetAllSalesOrderWithItems(salesOrderSearch);
 
-                _logger.LogInfo("Returned all SalesOrders"); 
+                _logger.LogInfo("Returned all SalesOrders");
 
                 var config = new MapperConfiguration(cfg =>
                 {
@@ -644,13 +645,13 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
                 var salesOrderDetails = _mapper.Map<SalesOrder>(salesOrderDtoUpdate);
-                var salesOrderItemsDto = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos;                
+                var salesOrderItemsDto = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos;
                 var salesAdditionalChargesDto = salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos;
                 var salesOrderItemsList = new List<SalesOrderItems>();
                 var salesAdditionalChargesList = new List<SalesOrderAdditionalCharges>();
-                if(salesAdditionalChargesDto != null)
+                if (salesAdditionalChargesDto != null)
                 {
-                    for(int i = 0; i < salesAdditionalChargesDto.Count; i++)
+                    for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
                     {
                         SalesOrderAdditionalCharges additionalChargesDetails = _mapper.Map<SalesOrderAdditionalCharges>(salesAdditionalChargesDto[i]);
                         salesAdditionalChargesList.Add(additionalChargesDetails);
@@ -661,7 +662,7 @@ namespace Tips.SalesService.Api.Controllers
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
                     {
                         SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
-                        salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty -salesOrderItemsDetail.DispatchQty;
+                        salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty - salesOrderItemsDetail.DispatchQty;
                         salesOrderItemsDetail.SalesOrderNumber = salesOrderNumber;
                         salesOrderItemsList.Add(salesOrderItemsDetail);
 
@@ -1054,15 +1055,15 @@ namespace Tips.SalesService.Api.Controllers
                         return StatusCode(500, serviceResponse);
                     }
                 }
-                    _salesOrderItemsRepository.SaveAsync();
+                _salesOrderItemsRepository.SaveAsync();
 
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "SalesOrder Successfully Updated";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                
-                
+                serviceResponse.Data = null;
+                serviceResponse.Message = "SalesOrder Successfully Updated";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+
             }
             catch (Exception ex)
             {
@@ -1167,14 +1168,14 @@ namespace Tips.SalesService.Api.Controllers
         //[HttpPost]
         //public async Task<IActionResult> UpdateShopOrderQty([FromBody] ShopOrderReleaseQtyDto shopOrderReleaseQtyDto)
         //{
-          
+
         //        IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderBySalesOrderNoandItemNo(shopOrderReleaseQtyDto.SalesOrderNumber
         //                                                                                     ,shopOrderReleaseQtyDto.FGItemNumber, shopOrderReleaseQtyDto.ProjectNumber);
         //        var orderItem = salesOrderItems.FirstOrDefault();
 
         //        orderItem.ShopOrderQty += shopOrderReleaseQtyDto.ReleaseQty;
         //        await _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
-            
+
         //     _salesOrderItemsRepository.SaveAsync();
         //     return Ok();
         //}
@@ -1238,17 +1239,17 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 foreach (var item in soAdditionalChargeUpdateDto)
                 {
-                  var salesAdditionalCharges = await _salesAdditionalChargesRepository.GetSalesAdditionalChargesById(item.SalesOrderId,item.SalesAdditionalChargeId);
+                    var salesAdditionalCharges = await _salesAdditionalChargesRepository.GetSalesAdditionalChargesById(item.SalesOrderId, item.SalesAdditionalChargeId);
 
                     salesAdditionalCharges.InvoicedValue += item.InvoicedValue;
                     await _salesAdditionalChargesRepository.UpdateSalesAdditionalCharges(salesAdditionalCharges);
                     _salesAdditionalChargesRepository.SaveAsync();
                 }
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "SalesOrder Successfully Updated";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "SalesOrder Successfully Updated";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
@@ -1397,7 +1398,25 @@ namespace Tips.SalesService.Api.Controllers
                         projectSOSADetailDtos.Add(project);
                     }
                 }
-                itemDetailsDto.ProjectSODetails = projectSOSADetailDtos;
+                var allProj = projectSOSADetailDtos.DistinctBy(x => x.ProjectNumber).ToList();
+                List<ProjectSOSADetailDto>? projectSOSADetailUniq = new List<ProjectSOSADetailDto>();
+                foreach (var pros in projectSOSADetailDtos)
+                {
+                    int flag = 0;
+                    foreach (var proj in projectSOSADetailUniq)
+                    {
+                        if (proj.ProjectNumber == pros.ProjectNumber)
+                        {
+                            flag = 1;
+                            proj.SalesOrderQtyDetails.AddRange(pros.SalesOrderQtyDetails);
+                        }
+                    }
+                    if (flag == 0)
+                    {
+                        projectSOSADetailUniq.Add(pros);
+                    }
+                }
+                itemDetailsDto.ProjectSODetails = projectSOSADetailUniq;
                 serviceResponse.Data = itemDetailsDto;
                 serviceResponse.Message = "Returned all SalesOrderSADetails";
                 serviceResponse.Success = true;
@@ -1426,6 +1445,16 @@ namespace Tips.SalesService.Api.Controllers
             dynamic enggBomQtyObject = enggBomQtyObjectData.data;
 
             return enggBomQtyObject;
+        }
+
+        //receivable report 
+
+        [HttpGet]
+        public async Task<IActionResult> GetReceivableReports()
+        {
+            var products = await _repository.GetRecievableCustomers();
+
+            return Ok(products);
         }
 
         [HttpGet]
@@ -1486,7 +1515,7 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var salesOrderDetails= await _repository.GetSalesOrderDetailsBySONumber(salesOrderNumber);
+                var salesOrderDetails = await _repository.GetSalesOrderDetailsBySONumber(salesOrderNumber);
                 if (salesOrderDetails is null)
                 {
                     serviceResponse.Data = null;
@@ -1516,7 +1545,7 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
         [HttpPut]
-        public async Task<IActionResult> ActivateSalesOrderConfirmStatus(string salesOrderNumber,DateTime confirmDate)
+        public async Task<IActionResult> ActivateSalesOrderConfirmStatus(string salesOrderNumber, DateTime confirmDate)
         {
             ServiceResponse<SalesOrderDto> serviceResponse = new ServiceResponse<SalesOrderDto>();
 
@@ -1584,7 +1613,7 @@ namespace Tips.SalesService.Api.Controllers
                     salesOrderDetails.SOStatus = OrderStatus.ShortClosed;
                     await _repository.UpdateSalesOrder(salesOrderDetails);
                     _repository.SaveAsync();
-                } 
+                }
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SalesOrderItems Status have been closed";

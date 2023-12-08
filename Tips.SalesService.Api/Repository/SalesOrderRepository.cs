@@ -226,6 +226,16 @@ namespace Tips.SalesService.Api.Repository
             }
 
         }
+        //recieveable report 
+
+        public async Task<IEnumerable<RecievableCustomer>> GetRecievableCustomers()
+        {
+            var results = _tipsSalesServiceDbContext.Set<RecievableCustomer>()
+   .FromSqlInterpolated($"CALL Recievable_Report_forCustomer")
+   .ToList(); 
+
+            return results;
+        }
 
         public async Task<IEnumerable<SalesOrderIdNameListDto>> GetAllActiveSalesOrderNameList()
         {

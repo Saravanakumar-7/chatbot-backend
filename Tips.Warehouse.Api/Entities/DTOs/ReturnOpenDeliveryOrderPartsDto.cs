@@ -18,9 +18,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string UOC { get; set; }
         public string UOM { get; set; }
         public decimal StockAvailable { get; set; }
-        public string Warehouse { get; set; }
-        public string Location { get; set; }
-        public decimal LocationStock { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public decimal? LocationStock { get; set; }
         public decimal DispatchQty { get; set; }
         public string Remarks { get; set; }
         public string? SerialNo { get; set; }
@@ -39,9 +39,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string UOC { get; set; }
         public string UOM { get; set; }
         public decimal StockAvailable { get; set; }
-        public string Warehouse { get; set; }
-        public string Location { get; set; }
-        public decimal LocationStock { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public decimal? LocationStock { get; set; }
         public decimal DispatchQty { get; set; }
         public string Remarks { get; set; }
         public string? SerialNo { get; set; }
@@ -61,9 +61,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string UOC { get; set; }
         public string UOM { get; set; }
         public decimal StockAvailable { get; set; }
-        public string Warehouse { get; set; }
-        public string Location { get; set; }
-        public decimal LocationStock { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public decimal? LocationStock { get; set; }
         public decimal DispatchQty { get; set; }
         public string Remarks { get; set; }
         public string? SerialNo { get; set; }
