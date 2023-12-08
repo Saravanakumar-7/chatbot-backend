@@ -9,6 +9,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualBasic;
 using MySqlX.XDevAPI.Common;
@@ -1426,6 +1427,16 @@ namespace Tips.SalesService.Api.Controllers
             dynamic enggBomQtyObject = enggBomQtyObjectData.data;
 
             return enggBomQtyObject;
+        }
+
+        //receivable report 
+
+        [HttpGet]
+        public async Task<IActionResult> GetReceivableReports()
+        {
+            var products = await _repository.GetRecievableCustomers();
+
+            return Ok(products);
         }
 
         [HttpGet]

@@ -90,6 +90,7 @@ namespace Tips.SalesService.Api.Entities
 
         public DbSet<SalesOrderHistory> salesOrderHistories { get; set; }
         public DbSet<SONumber> SONumbers { get; set; }
+        public DbSet<RecievableCustomer> RecievableCustomers { get; set; }
 
         public DbSet<CollectionTracker> CollectionTrackers { get; set; }
         public DbSet<SOBreakDown> SOBreakDowns { get; set; }
@@ -100,6 +101,10 @@ namespace Tips.SalesService.Api.Entities
 
         public DbSet<DocumentUpload> DocumentUploads { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<RecievableCustomer>().HasNoKey();
+        }
 
     }
 }

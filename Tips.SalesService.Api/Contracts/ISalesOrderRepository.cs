@@ -31,6 +31,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<List<ProjectSOSADetailDto>> GetProjectDetailsBySAItemNo(string fgItemNumbers);
         Task<List<SalesOrderQtyDto>> GetSalesOrderQtyDetailsByItemNo(string itemNumber,string projectNo);
         Task<IEnumerable<SalesOrderIdNameListDto>> GetAllActiveSalesOrderNameList();
+        Task<IEnumerable<RecievableCustomer>> GetRecievableCustomers();
         Task<string> GenerateSONumber();
         Task<object> GetSalesOrderTotalBySalesOrderId(int salesOrderId);
         Task<IEnumerable<SalesOrder>> GetAllSalesOrderWithItems(SalesOrderSearchDto salesOrderSearch);
