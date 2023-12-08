@@ -158,7 +158,7 @@ namespace Tips.Grin.Api.Controllers
                                 POUnitPrice = grinParts.POUnitPrice,
                                 AcceptedQty = grinParts.AcceptedQty,
                                 RejectedQty = grinParts.RejectedQty,
-                                WeightedAverage = grinParts.WeightedAverage,
+                                AverageCost = grinParts.AverageCost,
                                 UOM = grinParts.UOM,
                                 UOC = grinParts.UOC,
                                 ExpiryDate = grinParts.ExpiryDate,
@@ -253,7 +253,7 @@ namespace Tips.Grin.Api.Controllers
                                 POUnitPrice = grinParts.POUnitPrice,
                                 AcceptedQty = grinParts.AcceptedQty,
                                 RejectedQty = grinParts.RejectedQty,
-                                WeightedAverage = grinParts.WeightedAverage,
+                                AverageCost = grinParts.AverageCost,
                                 UOM = grinParts.UOM,
                                 UOC = grinParts.UOC,
                                 ExpiryDate = grinParts.ExpiryDate,
@@ -349,7 +349,7 @@ namespace Tips.Grin.Api.Controllers
                                 POUnitPrice = grinParts.POUnitPrice,
                                 AcceptedQty = grinParts.AcceptedQty,
                                 RejectedQty = grinParts.RejectedQty,
-                                WeightedAverage = grinParts.WeightedAverage,
+                                AverageCost = grinParts.AverageCost,
                                 UOM = grinParts.UOM,
                                 UOC = grinParts.UOC,
                                 ExpiryDate = grinParts.ExpiryDate,
@@ -618,59 +618,66 @@ namespace Tips.Grin.Api.Controllers
                 //}
 
                 //end cocupload
-
-                //if (grinPartsDto != null)
-                //{
-                //    for (int i = 0; i < grinPartsDto.Count; i++)
-                //    {
-                //        GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
-                //        grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
-                //        grinPartsList.Add(grinParts);
-
-                //    }
-                //}
+                var totalGrinCost = (grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.Transport)*grins.CurrencyConversion;
                 if (grinPartsDto != null)
                 {
-                    decimal? sumOfTotal = 0;
-                    decimal? total = 0;
-
                     for (int i = 0; i < grinPartsDto.Count; i++)
                     {
                         GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
-                        sumOfTotal += grinParts.Qty * grinParts.UnitPrice;
-                    }
-                    var totalGrinCost = grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.CurrencyConversion + grins.Transport + grins.BECurrencyValue;
-                    if (totalGrinCost != 0)
-                    {
-                        for (int i = 0; i < grinPartsDto.Count; i++)
-                        { 
+                        grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
+                        decimal? EP = grinParts.Qty * grinParts.UnitPrice;
+                        decimal? a = totalGrinCost * grinParts.Qty;
+                        decimal? b = (EP / a) * totalGrinCost;
+                        decimal? c = EP + b;
+                        grinParts.AverageCost = c / grinParts.Qty;
 
-                            GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
-                            total = grinParts.Qty * grinParts.UnitPrice;
-                            var Cost = totalGrinCost * total / sumOfTotal;
-                            var finalCost = Cost / grinParts.Qty;
-                            var weightageCost = grinParts.UnitPrice + finalCost;
-                            total = 0;
-                            grinParts.WeightedAverage = weightageCost;
-                            grinParts.ItemType = grinPartsDto[i].ItemType;
-                            grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
-                            grinPartsList.Add(grinParts);
-
-                        }
-                    }
-                    else
-                    {
-                        for (int i = 0; i < grinPartsDto.Count; i++)
-                        {
-                            GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);                    
-                            grinParts.ItemType = grinPartsDto[i].ItemType;
-                            grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
-                            grinPartsList.Add(grinParts);
-
-                        }
+                        grinPartsList.Add(grinParts);
 
                     }
                 }
+                //if (grinPartsDto != null)
+                //{
+                //    decimal? sumOfTotal = 0;
+                //    decimal? total = 0;
+
+                //    for (int i = 0; i < grinPartsDto.Count; i++)
+                //    {
+                //        GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
+                //        sumOfTotal += grinParts.Qty * grinParts.UnitPrice;
+                //    }
+                //    var totalGrinCost = grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.CurrencyConversion + grins.Transport + grins.BECurrencyValue;
+                //    if (totalGrinCost != 0)
+                //    {
+                //        for (int i = 0; i < grinPartsDto.Count; i++)
+                //        { 
+
+                //            GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
+                //            total = grinParts.Qty * grinParts.UnitPrice;
+                //            var Cost = totalGrinCost * total / sumOfTotal;
+                //            var finalCost = Cost / grinParts.Qty;
+                //            var weightageCost = grinParts.UnitPrice + finalCost;
+                //            total = 0;
+                //            grinParts.WeightedAverage = weightageCost;
+                //            grinParts.ItemType = grinPartsDto[i].ItemType;
+                //            grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
+                //            grinPartsList.Add(grinParts);
+
+                //        }
+                //    }
+                //    else
+                //    {
+                //        for (int i = 0; i < grinPartsDto.Count; i++)
+                //        {
+                //            GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);                    
+                //            grinParts.ItemType = grinPartsDto[i].ItemType;
+                //            grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
+                //            grinPartsList.Add(grinParts);
+
+                //        }
+
+                //    }
+                //}
+
                 grins.GrinParts = grinPartsList;
                 grins.IsGrinCompleted = true;
                 //grins.GrinDocuments = grinDocumentUploadDtoList;
@@ -994,16 +1001,32 @@ namespace Tips.Grin.Api.Controllers
                 var grinPartsDto = grinDto.GrinParts;
 
                 var GrinpartsList = new List<GrinParts>();
-                for (int i = 0; i < grinPartsDto.Count; i++)
+                //for (int i = 0; i < grinPartsDto.Count; i++)
+                //{
+                //    GrinParts grinPartsDetail = _mapper.Map<GrinParts>(grinPartsDto[i]);
+                //    grinPartsDetail.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
+
+                //    GrinpartsList.Add(grinPartsDetail);
+                //    //
+
+                //}
+                var totalGrinCost = (grinList.Freight + grinList.Insurance + grinList.LoadingorUnLoading + grinList.Transport) * grinList.CurrencyConversion;
+                if (grinPartsDto != null)
                 {
-                    GrinParts grinPartsDetail = _mapper.Map<GrinParts>(grinPartsDto[i]);
-                    grinPartsDetail.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
+                    for (int i = 0; i < grinPartsDto.Count; i++)
+                    {
+                        GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
+                        grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
+                        decimal? EP = grinParts.Qty * grinParts.UnitPrice;
+                        decimal? a = totalGrinCost * grinParts.Qty;
+                        decimal? b = (EP / a) * totalGrinCost;
+                        decimal? c = EP + b;
+                        grinParts.AverageCost = c / grinParts.Qty;
 
-                    GrinpartsList.Add(grinPartsDetail);
+                        GrinpartsList.Add(grinParts);
 
-
+                    }
                 }
-
 
 
                 var data = _mapper.Map(grinDto, updategrin);

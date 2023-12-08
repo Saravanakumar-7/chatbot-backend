@@ -128,6 +128,27 @@ namespace Tips.Warehouse.Api.Controllers
                            InvoiceId = invoiceChildItem.InvoiceId,
                        })
                            )
+                       )
+                       .ForMember(dest => dest.InvoiceAdditionalCharges, opt => opt.MapFrom(src => src.InvoiceAdditionalCharges
+                       .Select(invoiceAdditionalCharges => new InvoiceAdditionalChargesReportDto
+                       {
+                           Id = invoiceAdditionalCharges.Id,
+                           InvoiceNumber = src.InvoiceNumber,
+                           SalesOrderId = invoiceAdditionalCharges.SalesOrderId,
+                           DONumber = invoiceAdditionalCharges.DONumber,
+                           AdditionalChargesLabelName = invoiceAdditionalCharges.AdditionalChargesLabelName,
+                           AddtionalChargesValueType = invoiceAdditionalCharges.AddtionalChargesValueType,
+                           AddtionalChargesValueAmount = invoiceAdditionalCharges.AddtionalChargesValueAmount,
+                           TotalValue = invoiceAdditionalCharges.TotalValue,
+                           InvoicedValue = invoiceAdditionalCharges.InvoicedValue,
+                           IGST = invoiceAdditionalCharges.IGST,
+                           CGST = invoiceAdditionalCharges.CGST,
+                           UTGST = invoiceAdditionalCharges.UTGST,
+                           SGST = invoiceAdditionalCharges.SGST,
+                           SalesAdditionalChargeId = invoiceAdditionalCharges.SalesAdditionalChargeId,
+
+                       })
+                           )
                        );
                 });
                 var mapper = config.CreateMapper();
@@ -197,6 +218,27 @@ namespace Tips.Warehouse.Api.Controllers
                            InvoiceId = invoiceChildItem.InvoiceId,
                        })
                            )
+                       )
+                       .ForMember(dest => dest.InvoiceAdditionalCharges, opt => opt.MapFrom(src => src.InvoiceAdditionalCharges
+                       .Select(invoiceAdditionalCharges => new InvoiceAdditionalChargesReportDto
+                       {
+                           Id = invoiceAdditionalCharges.Id,
+                           InvoiceNumber = src.InvoiceNumber,
+                           SalesOrderId = invoiceAdditionalCharges.SalesOrderId,
+                           DONumber = invoiceAdditionalCharges.DONumber,
+                           AdditionalChargesLabelName = invoiceAdditionalCharges.AdditionalChargesLabelName,
+                           AddtionalChargesValueType = invoiceAdditionalCharges.AddtionalChargesValueType,
+                           AddtionalChargesValueAmount = invoiceAdditionalCharges.AddtionalChargesValueAmount,
+                           TotalValue = invoiceAdditionalCharges.TotalValue,
+                           InvoicedValue = invoiceAdditionalCharges.InvoicedValue,
+                           IGST = invoiceAdditionalCharges.IGST,
+                           CGST = invoiceAdditionalCharges.CGST,
+                           UTGST = invoiceAdditionalCharges.UTGST,
+                           SGST = invoiceAdditionalCharges.SGST,
+                           SalesAdditionalChargeId = invoiceAdditionalCharges.SalesAdditionalChargeId,
+
+                       })
+                           )
                        );
                 });
                 var mapper = config.CreateMapper();
@@ -263,6 +305,27 @@ namespace Tips.Warehouse.Api.Controllers
                            DiscountType = invoiceChildItem.DiscountType,
                            BtoDeliveryOrderPartsId = invoiceChildItem.BtoDeliveryOrderPartsId,
                            InvoiceId = invoiceChildItem.InvoiceId,
+                       })
+                           )
+                       )
+                        .ForMember(dest => dest.InvoiceAdditionalCharges, opt => opt.MapFrom(src => src.InvoiceAdditionalCharges
+                       .Select(invoiceAdditionalCharges => new InvoiceAdditionalChargesReportDto
+                       {
+                           Id = invoiceAdditionalCharges.Id,
+                           InvoiceNumber = src.InvoiceNumber,
+                           SalesOrderId = invoiceAdditionalCharges.SalesOrderId,
+                           DONumber = invoiceAdditionalCharges.DONumber,
+                           AdditionalChargesLabelName = invoiceAdditionalCharges.AdditionalChargesLabelName,
+                           AddtionalChargesValueType = invoiceAdditionalCharges.AddtionalChargesValueType,               
+                           AddtionalChargesValueAmount = invoiceAdditionalCharges.AddtionalChargesValueAmount,
+                           TotalValue = invoiceAdditionalCharges.TotalValue,
+                           InvoicedValue = invoiceAdditionalCharges.InvoicedValue,
+                           IGST = invoiceAdditionalCharges.IGST,
+                           CGST = invoiceAdditionalCharges.CGST,
+                           UTGST = invoiceAdditionalCharges.UTGST,
+                           SGST = invoiceAdditionalCharges.SGST,
+                           SalesAdditionalChargeId = invoiceAdditionalCharges.SalesAdditionalChargeId,
+                         
                        })
                            )
                        );
