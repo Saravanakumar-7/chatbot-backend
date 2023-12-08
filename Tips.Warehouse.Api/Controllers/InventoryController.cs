@@ -821,7 +821,7 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetInventoryByItemNo(string itemNumber)
         {
-            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+            ServiceResponse<IEnumerable<InventoryDto>> serviceResponse = new ServiceResponse<IEnumerable<InventoryDto>>();
             try
             {
                 var InventoryDetails = await _inventoryRepository.GetInventoryByItemNo(itemNumber);
@@ -837,7 +837,7 @@ namespace Tips.Warehouse.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Inventory with Itemnumber: {itemNumber}");
-                    var result = _mapper.Map<InventoryDto>(InventoryDetails);
+                    var result = _mapper.Map<IEnumerable<InventoryDto>>(InventoryDetails);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned InventoryDetails with id Successfully";
                     serviceResponse.Success = true;

@@ -35,7 +35,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public List<DocumentUploadDto>? POFiles { get; set; }
 
         //Terms
-        public string? RetentionPeriod { get; set; }
+        public string? RetentionPeriod { get; set; } 
         public string? SpecialTermsAndConditions { get; set; }
         public bool IsDeleted { get; set; } = false;
 
@@ -92,6 +92,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         //Terms
         public string? RetentionPeriod { get; set; }
         public string? SpecialTermsAndConditions { get; set; }
+        public string? Transport { get; set; }
+        public string? Others { get; set; }
         public decimal TotalAmount { get; set; }
 
 
@@ -129,7 +131,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         //Terms
         public string? RetentionPeriod { get; set; }
-        public string? SpecialTermsAndConditions { get; set; }
+        public string? SpecialTermsAndConditions { get; set; } 
         public decimal TotalAmount { get; set; }
 
         public string? Unit { get; set; }
@@ -171,6 +173,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         //Terms
         public string? RetentionPeriod { get; set; }
+        public string? Transport { get; set; }
+        public string? Others { get; set; }
         public string? SpecialTermsAndConditions { get; set; }
         public bool IsDeleted { get; set; } = false;
 
@@ -257,6 +261,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         //Terms
         public string? RetentionPeriod { get; set; }
+        public string? Transport { get; set; }
+        public string? Others { get; set; }
         public string? SpecialTermsAndConditions { get; set; }
         public bool IsDeleted { get; set; } = false;
 
