@@ -11,5 +11,6 @@ namespace Contracts
     {
          Task<int?> ImageUploadDocument(ImageUpload imageUpload);
         Task<string?> GetImageFileByte(string filename);
+        Task DeleteImage(int Id);
     }
 }
