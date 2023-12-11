@@ -1064,20 +1064,7 @@ namespace Repository
                    BomVersionNo = releaseProductBomDetails
                }).ToList();
             return releaseProductBomItemNumberList;
-
-            //var releaseProductBomDetails = _tipsMasterDbContext.ProductionBoms
-            //     .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
-            //     .Select(x => x.ReleaseVersion).ToArray();
-
-
-            //var releaseProductBomItemNumberList = releaseProductBomDetails
-            //   .Select(bom => new ProductionBomRevisionNumber
-            //   {
-            //       ItemNumber = itemNumber,
-            //       ItemType = PartType.FG,
-            //       BomVersionNo = releaseProductBomDetails
-            //   }).ToList();
-            //return releaseProductBomItemNumberList;
+             
 
         }
 

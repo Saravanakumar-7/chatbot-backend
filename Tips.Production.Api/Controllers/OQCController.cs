@@ -246,7 +246,7 @@ namespace Tips.Production.Api.Controllers
                 _oQCRepository.SaveAsync();
 
                 var shopOrderDetails = await _shopOrderRepo.GetShopOrderByShopOrderNo(oQCPostDto.ShopOrderNumber);               
-                shopOrderDetails.OqcQty = oQCPostDto.AcceptedQty+oQCPostDto.RejectedQty;                
+                shopOrderDetails.OqcQty = shopOrderDetails.OqcQty + oQCPostDto.AcceptedQty;                
                 await _shopOrderRepo.UpdateShopOrder(shopOrderDetails);
                 _shopOrderRepo.SaveAsync();
                 var shopOrderItemDetail = shopOrderDetails?.ShopOrderItems?.FirstOrDefault();
