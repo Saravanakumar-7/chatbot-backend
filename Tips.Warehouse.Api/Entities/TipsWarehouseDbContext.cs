@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Entities
 {
@@ -7,8 +8,9 @@ namespace Tips.Warehouse.Api.Entities
     {
 
         public TipsWarehouseDbContext(DbContextOptions<TipsWarehouseDbContext> options) : base(options)
-        { 
+        {
         }
+        public DbSet<ReturnInvoiceItemQtyDistribution> ReturnInvoiceItemQtyDistribution { get; set; }
         public DbSet<ReturnOpenDeliveryOrderItemQtyDistribution> ReturnOpenDeliveryOrderItemQtyDistribution { get; set; }
         public DbSet<ReturnDeliveryOrderItemQtyDistribution> ReturnDeliveryOrderItemQtyDistribution { get; set; }
         public DbSet<BtoDeliveryOrderItemQtyDistribution> BtoDeliveryOrderItemQtyDistribution { get; set; }

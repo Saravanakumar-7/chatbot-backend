@@ -41,12 +41,11 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal TotalValueWithTax { get; set; }
-
         [Precision(13, 3)]
         public decimal ReturnQty { get; set; }
         public string? SerialNumber { get; set; }
-
         public string? Remarks { get; set; }
+        public List<ReturnInvoiceItemQtyDistributionDto>? QtyDistribution { get; set; }
     }
 
     public class ReturnInvoiceItemDtoPost
@@ -92,9 +91,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal ReturnQty { get; set; }
-         
-
         public string? Remarks { get; set; }
+        public List<ReturnInvoiceItemQtyDistributionPostDto>? QtyDistribution { get; set; }
     }
 
     public class ReturnInvoiceItemDtoUpdate

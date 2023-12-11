@@ -582,7 +582,7 @@ namespace Tips.Warehouse.Api.Controllers
             inventoryTranction.TO_Location = "Invoice";
             inventoryTranction.Warehouse = "Invoice";
             inventoryTranction.Remarks = "Create - Invoice";
-
+            inventoryTranction.PartType = PartType.FG;
             var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
 
