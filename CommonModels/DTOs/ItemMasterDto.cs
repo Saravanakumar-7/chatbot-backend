@@ -171,7 +171,7 @@ namespace Entities.DTOs
 
         public List<FileUploadPostDto>? FileUpload { get; set; }
 
-        public List<ImageUploadPostDto>? ImageUpload { get; set; }
+        public ImageUploadPostDto? ImageUpload { get; set; }
 
         public decimal NetWeight { get; set; }
         public string? NetUom { get; set; }
@@ -276,7 +276,7 @@ namespace Entities.DTOs
 
         public List<FileUploadUpdateDto>? FileUpload { get; set; }
 
-        public List<ImageUploadUpdateDto>? ImageUpload { get; set; }
+        public ImageUploadUpdateDto? ImageUpload { get; set; }
 
         public decimal NetWeight { get; set; }
         public string? NetUom { get; set; }

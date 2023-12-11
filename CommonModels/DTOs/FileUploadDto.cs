@@ -29,7 +29,7 @@ namespace Entities.DTOs
     }
     public class FileUploadUpdateDto
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string FileName { get; set; }
         public string FileExtension { get; set; }
 

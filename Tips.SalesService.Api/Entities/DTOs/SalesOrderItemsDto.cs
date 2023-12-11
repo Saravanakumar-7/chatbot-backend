@@ -247,6 +247,13 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal[] BomVersionNo { get; set; }
         public List<ProjectSODetailDto>? ProjectSODetails { get; set; }
     }
+    public class ItemDetailsForShopOrderBomDto
+    {
+        public string ItemNumber { get; set; }
+        public PartType ItemType { get; set; }
+        public string? BomVersionNo { get; set; }
+        public List<ProjectSODetailDto>? ProjectSODetails { get; set; }
+    }
     public class ProjectSODetailDto
     {
         public string ProjectNumber { get; set; }

@@ -331,6 +331,8 @@ namespace Tips.Grin.Api.Controllers
                             inventory.ReferenceID = Convert.ToString(openGrinParts.Id);
                             inventory.ReferenceIDFrom = "OpenGrin";
                             inventory.ShopOrderNo = "";
+                            inventory.Unit = "";
+                            inventory.LotNumber = "";
 
 
                             var json = JsonConvert.SerializeObject(inventory);
