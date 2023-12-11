@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using Tips.Purchase.Api.Entities.Dto;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Entities.DTOs
 {
@@ -17,6 +18,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public bool PoConfirmationStatus { get; set; }
         public string? PoTransports { get; set; }
         public string? Other { get; set; }
+        public PoStatus PoStatus { get; set; }
 
         //VendorDetails
         public string? VendorName { get; set; }
