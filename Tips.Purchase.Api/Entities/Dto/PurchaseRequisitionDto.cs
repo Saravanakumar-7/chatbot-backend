@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tips.Purchase.Api.Entities.Dto;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Entities.DTOs
 {
@@ -34,7 +35,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? PaymentTerms { get; set; }
 
         public string? ShippingMode { get; set; }
-         
+        public PrStatus PrStatus { get; set; }
 
         public string? RetentionPeriod { get; set; }
 

@@ -123,6 +123,14 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> LocationTransferSPReport()
+        {
+            var products = await _locationTransferRepository.LocationTransferSPReport();
+
+            return Ok(products);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> SearchLocationTransferDate([FromQuery] SearchDateParam searchDatesParams)
         {
             ServiceResponse<IEnumerable<LocationTransferDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferDto>>();

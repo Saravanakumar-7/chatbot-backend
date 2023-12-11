@@ -1289,8 +1289,9 @@ namespace Tips.SalesService.Api.Controllers
 
                 ItemDetailsForShopOrderDto itemDetailsDto = new ItemDetailsForShopOrderDto();
                 itemDetailsDto.ItemNumber = bomData[0].itemNumber;
-                itemDetailsDto.ItemType = bomData[0].itemType;
-                itemDetailsDto.BomVersionNo = bomVersionNo;
+                itemDetailsDto.ItemType = bomData[0].itemType; 
+                itemDetailsDto.BomVersionNo = bomVersionNo[0] == 0 ? null : bomVersionNo;
+
 
                 var projectSODetails = await _repository.GetProjectDetailsByItemNo(itemNumber, projectType);
                 foreach (var project in projectSODetails)

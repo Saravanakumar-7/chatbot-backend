@@ -48,6 +48,8 @@ namespace Tips.SalesService.Api.Entities
 
         [Precision(13, 3)]
         public decimal? GeneralDiscount { get; set; }
+        
+        public string? SalesPerson { get; set; }
 
         public string Unit { get; set; }
         public string? Remarks { get; set; }

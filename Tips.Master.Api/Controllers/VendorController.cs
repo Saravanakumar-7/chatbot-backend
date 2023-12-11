@@ -141,9 +141,8 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-
-
-                var address = _mapper.Map<IEnumerable<VendorAddress>>(vendorMasterPost.Addresses);
+                
+                 var address = _mapper.Map<IEnumerable<VendorAddress>>(vendorMasterPost.Addresses);
                 var contact = _mapper.Map<IEnumerable<VendorContacts>>(vendorMasterPost.Contacts);
                 var banking = _mapper.Map<IEnumerable<VendorBanking>>(vendorMasterPost.VendorBankings);
                 var related = _mapper.Map<IEnumerable<VendorRelatedVendor>>(vendorMasterPost.RelatedVendors);
@@ -152,8 +151,8 @@ namespace Tips.Master.Api.Controllers
 
                 if (serverKey == "avision")
                 {
-                    var vendorNumber = await _repository.VendorRepository.GenerateVendorIdForAvision();
-                    vendorMaster.VendorId = vendorNumber;
+                    var vendorNo = vendorMasterPost.VendorId;
+                    vendorMaster.VendorId = vendorNo;
                 }
                 else
                 {

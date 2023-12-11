@@ -26,7 +26,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<OpenDeliveryOrder>> GetAllOpenDeliveryOrderWithItems(OpenDeliveryOrderSearchDto OpenDeliveryOrderSearch);
         Task<IEnumerable<OpenDeliveryOrder>> SearchOpenDeliveryOrder([FromQuery] SearchParames searchParames);
         Task<IEnumerable<OpenDeliveryOrder>> SearchOpenDeliveryOrderDate([FromQuery] SearchsDateParms searchsDateParms);
-
+        Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReport();
 
     }
 

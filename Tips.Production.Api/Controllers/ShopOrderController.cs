@@ -82,6 +82,14 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> ShopOrderNumberSPReport()
+        {
+            var products = await _shopOrderRepository.ShopOrderNumberSPReport();
+
+            return Ok(products);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> SearchShopOrderDate([FromQuery] SearchDateparames searchDateParam)
         {
             ServiceResponse<IEnumerable<ShopOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderReportDto>>();
@@ -509,6 +517,18 @@ namespace Tips.Production.Api.Controllers
             try
             {
                 dynamic bomData = null;
+
+                // Create MaterialIssue object outside the loop
+                MaterialIssue materialIssue = new MaterialIssue();
+                materialIssue.ShopOrderNumber = shopOrder.ShopOrderNumber;
+                materialIssue.ShopOrderDate = shopOrder.CreatedOn;
+                materialIssue.ProjectType = ProjectType.RFQ;
+                materialIssue.ItemType = shopOrder.ItemType;
+                materialIssue.ShopOrderQty = shopOrder.TotalSOReleaseQty;
+                materialIssue.ItemNumber = shopOrder.ItemNumber;
+                materialIssue.MaterialIssuedStatus = IssuedStatus.Open;
+                List<MaterialIssueItem> materialIssueItemList = new List<MaterialIssueItem>();
+
                 for (int i = 0; i < shopOrder.ShopOrderItems.Count(); i++)
                 {
                     if (i == 0)
@@ -523,15 +543,6 @@ namespace Tips.Production.Api.Controllers
 
                     if (bomData != null)
                     {
-                        MaterialIssue materialIssue = new MaterialIssue();
-                        materialIssue.ShopOrderNumber = shopOrder.ShopOrderNumber;
-                        materialIssue.ShopOrderDate = shopOrder.CreatedOn;
-                        materialIssue.ProjectType = ProjectType.RFQ;
-                        materialIssue.ItemType = shopOrder.ItemType;
-                        materialIssue.ShopOrderQty = shopOrder.TotalSOReleaseQty;
-                        materialIssue.ItemNumber = shopOrder.ItemNumber;
-                        materialIssue.MaterialIssuedStatus = IssuedStatus.Open;
-                        List<MaterialIssueItem> materialIssueItemList = new List<MaterialIssueItem>();
                         foreach (var bom in bomData.enggChildItemDtos)
                         {
                             var projectNo = shopOrder.ShopOrderItems[i].ProjectNumber;
@@ -544,38 +555,32 @@ namespace Tips.Production.Api.Controllers
                             materialIssueItem.RequiredQty = (bom.quantity * shopOrder.TotalSOReleaseQty);
                             materialIssueItem.IssuedQty = 0;
                             materialIssueItem.MaterialIssuedStatus = IssuedStatus.Open;
-                            //materialIssueItem.CreatedBy = "Admin";
-                            //materialIssueItem.CreatedOn = DateTime.Now;
-                            //materialIssueItem.LastModifiedBy = "Admin";
-                            //materialIssueItem.LastModifiedOn = DateTime.Now;
                             materialIssueItemList.Add(materialIssueItem);
-
-
                         }
-
-                        var groupedMaterialIssueItems = materialIssueItemList
-                            .GroupBy(item => item.PartNumber)
-                            .Select(group => new MaterialIssueItem
-                            {
-                                PartNumber = group.Key,
-                                Description = group.First().Description,
-                                ProjectNumber = group.First().ProjectNumber,
-                                PartType = group.First().PartType,
-                                UOM = group.First().UOM,
-                                RequiredQty = group.Sum(item => item.RequiredQty),
-                                IssuedQty = 0, // Assuming IssuedQty remains 0 for grouped items
-                                MaterialIssuedStatus = IssuedStatus.Open,
-                                //CreatedBy = "Admin",
-                                //CreatedOn = DateTime.Now,
-                                //LastModifiedBy = "Admin",
-                                //LastModifiedOn = DateTime.Now
-                            })
-                            .ToList();
-                        materialIssue.materialIssueItems = groupedMaterialIssueItems;
-                        await _materialIssueRepository.CreateMaterialIssue(materialIssue);
-                        _materialIssueRepository.SaveAsync();
                     }
                 }
+
+                // Group and assign items to the MaterialIssue object
+                var groupedMaterialIssueItems = materialIssueItemList
+                    .GroupBy(item => item.PartNumber)
+                    .Select(group => new MaterialIssueItem
+                    {
+                        PartNumber = group.Key,
+                        Description = group.First().Description,
+                        ProjectNumber = group.First().ProjectNumber,
+                        PartType = group.First().PartType,
+                        UOM = group.First().UOM,
+                        RequiredQty = group.Sum(item => item.RequiredQty),
+                        IssuedQty = 0,
+                        MaterialIssuedStatus = IssuedStatus.Open,
+                    })
+                    .ToList();
+                materialIssue.materialIssueItems = groupedMaterialIssueItems;
+
+                // Create only one MaterialIssue record
+                await _materialIssueRepository.CreateMaterialIssue(materialIssue);
+                _materialIssueRepository.SaveAsync();
+
                 return Ok();
             }
             catch (Exception ex)
@@ -587,7 +592,85 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
-          }
+        }
+
+        //private async Task<IActionResult> CreateMaterialIssueDetails(ShopOrder shopOrder)
+        //{
+        //    ServiceResponse<MaterialIssueDto> serviceResponse = new ServiceResponse<MaterialIssueDto>();
+        //    try
+        //    {
+        //        dynamic bomData = null;
+        //        for (int i = 0; i < shopOrder.ShopOrderItems.Count(); i++)
+        //        {
+        //            if (i == 0)
+        //            {
+        //                var fgNumber = shopOrder.ItemNumber;
+        //                decimal bomversion = shopOrder.BomRevisionNo;
+        //                var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetProductionBomByItemAndBomVersionNo?", "ItemNumber=", fgNumber, "&bomVersionNo=", bomversion));
+        //                var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
+        //                dynamic bomDetailsData = JsonConvert.DeserializeObject(bomDetailsString);
+        //                bomData = bomDetailsData.data;
+        //            }
+
+        //            if (bomData != null)
+        //            {
+        //                MaterialIssue materialIssue = new MaterialIssue();
+        //                materialIssue.ShopOrderNumber = shopOrder.ShopOrderNumber;
+        //                materialIssue.ShopOrderDate = shopOrder.CreatedOn;
+        //                materialIssue.ProjectType = ProjectType.RFQ;
+        //                materialIssue.ItemType = shopOrder.ItemType;
+        //                materialIssue.ShopOrderQty = shopOrder.TotalSOReleaseQty;
+        //                materialIssue.ItemNumber = shopOrder.ItemNumber;
+        //                materialIssue.MaterialIssuedStatus = IssuedStatus.Open;
+        //                List<MaterialIssueItem> materialIssueItemList = new List<MaterialIssueItem>();
+        //                foreach (var bom in bomData.enggChildItemDtos)
+        //                {
+        //                    var projectNo = shopOrder.ShopOrderItems[i].ProjectNumber;
+        //                    MaterialIssueItem materialIssueItem = new MaterialIssueItem();
+        //                    materialIssueItem.PartNumber = bom.itemNumber;
+        //                    materialIssueItem.Description = bom.description;
+        //                    materialIssueItem.ProjectNumber = projectNo;
+        //                    materialIssueItem.PartType = bom.partType;
+        //                    materialIssueItem.UOM = bom.uom;
+        //                    materialIssueItem.RequiredQty = (bom.quantity * shopOrder.TotalSOReleaseQty);
+        //                    materialIssueItem.IssuedQty = 0;
+        //                    materialIssueItem.MaterialIssuedStatus = IssuedStatus.Open; 
+        //                    materialIssueItemList.Add(materialIssueItem);
+
+
+        //                }
+
+        //                var groupedMaterialIssueItems = materialIssueItemList
+        //                    .GroupBy(item => item.PartNumber)
+        //                    .Select(group => new MaterialIssueItem
+        //                    {
+        //                        PartNumber = group.Key,
+        //                        Description = group.First().Description,
+        //                        ProjectNumber = group.First().ProjectNumber,
+        //                        PartType = group.First().PartType,
+        //                        UOM = group.First().UOM,
+        //                        RequiredQty = group.Sum(item => item.RequiredQty),
+        //                        IssuedQty = 0, // Assuming IssuedQty remains 0 for grouped items
+        //                        MaterialIssuedStatus = IssuedStatus.Open
+        //                    })
+        //                    .ToList();
+        //                materialIssue.materialIssueItems = groupedMaterialIssueItems;
+        //                await _materialIssueRepository.CreateMaterialIssue(materialIssue);
+        //                _materialIssueRepository.SaveAsync();
+        //            }
+        //        } 
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside CreateShopOrder action: {ex.Message},{ex.InnerException}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong {ex.Message},{ex.InnerException}";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //  }
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateShopOrder(int id, [FromBody] ShopOrderUpdateDto ShopOrderDtoUpdate)
         {

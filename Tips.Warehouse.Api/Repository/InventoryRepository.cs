@@ -118,12 +118,16 @@ namespace Tips.Warehouse.Api.Repository
 
                     if (inventoryDetailsBalQty.Warehouse != null && inventoryDetailsBalQty.Warehouse.Any())
                     {
-                        query = query.Where(inv => inventoryDetailsBalQty.Warehouse.Contains(inv.Warehouse));
+                        //query = query.Where(inv => inventoryDetailsBalQty.Warehouse.Contains(inv.Warehouse));
+                        query = query.Where(inv => inventoryDetailsBalQty.Warehouse.Contains(inv.Warehouse) && inv.Warehouse != "WIP");
+
                     }
 
                     if (inventoryDetailsBalQty.Location != null && inventoryDetailsBalQty.Location.Any())
                     {
-                        query = query.Where(inv => inventoryDetailsBalQty.Location.Contains(inv.Location));
+                        //query = query.Where(inv => inventoryDetailsBalQty.Location.Contains(inv.Location));
+                        query = query.Where(inv => inventoryDetailsBalQty.Location.Contains(inv.Location) && inv.Location != "WIP");
+
                     }
 
                     if (inventoryDetailsBalQty.ProjectNumber != null && inventoryDetailsBalQty.ProjectNumber.Any())
@@ -131,11 +135,9 @@ namespace Tips.Warehouse.Api.Repository
                         query = query.Where(inv => inventoryDetailsBalQty.ProjectNumber.Contains(inv.ProjectNumber));
                     }
                 }
-
-                // Retrieve the filtered inventory items
+                 
                 var inventoryItems = await query.ToListAsync();
-
-                // Group the inventory items by PartNumber, Warehouse, Location, and ProjectNumber
+                 
                 var groupedItems = new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<string, List<Inventory>>>>>();
 
                 foreach (var item in inventoryItems)
@@ -167,8 +169,7 @@ namespace Tips.Warehouse.Api.Repository
 
                     groupedItems[partNumber][warehouse][location][projectNumber].Add(item);
                 }
-
-                // Calculate the sum of Balance_Quantity for each group and update the first item in each group
+                 
                 foreach (var partNumberGroup in groupedItems.Values)
                 {
                     foreach (var warehouseGroup in partNumberGroup.Values)
@@ -184,8 +185,7 @@ namespace Tips.Warehouse.Api.Repository
                         }
                     }
                 }
-
-                // Return the updated first items from each group
+                 
                 return groupedItems.Values
                     .SelectMany(partNumberGroup => partNumberGroup.Values
                         .SelectMany(warehouseGroup => warehouseGroup.Values

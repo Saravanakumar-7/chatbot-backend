@@ -24,6 +24,7 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<MaterialRequests>> SearchMaterialRequestsDate([FromQuery] SearchDateparames searchDatesParams);
         Task<string> GenerateMRNumberForAvision();
         Task<MaterialRequests> GetMaterialReqByShopOrderNumber(string ShopOrderNo);
+        Task<IEnumerable<MaterialRequestSPReport>> MaterialRequestSPReport();
         public void SaveAsync();
     }
 }

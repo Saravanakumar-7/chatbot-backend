@@ -18,6 +18,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<LocationTransfer>> SearchLocationTransferDate([FromQuery] SearchDateParam searchDatesParams);
         Task<IEnumerable<LocationTransfer>> GetAllLocationTransferWithItems(LocationTransferSearchDto locationTransferSearchDto);
         Task<IEnumerable<LocationTransferIdNameList>> GetAllLocationTransferIdNameList();
+        Task<IEnumerable<LocationTransferSPReport>> LocationTransferSPReport();
 
     }
 }

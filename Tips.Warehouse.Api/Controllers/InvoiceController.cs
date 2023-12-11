@@ -387,6 +387,15 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> InvoiceSPReport()
+        {
+            var products = await _invoiceRepository.InvoiceSPReport();
+
+            return Ok(products);
+        }
+
         private string GetServerKey()
         {
             var serverName = Environment.MachineName;

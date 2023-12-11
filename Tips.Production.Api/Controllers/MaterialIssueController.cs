@@ -85,6 +85,15 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> MaterialIssueSPReport()
+        {
+            var products = await _materialIssueRepository.MaterialIssueSPReport();
+
+            return Ok(products);
+        }
+
         private string GetServerKey()
         {
             var serverName = Environment.MachineName;

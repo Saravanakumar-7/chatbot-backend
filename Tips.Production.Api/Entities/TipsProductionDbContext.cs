@@ -37,7 +37,18 @@ namespace Tips.Production.Api.Entities
         public DbSet<MaterialRequestItems> MaterialRequestItems { get; set; }
         public DbSet<MaterialIssueHistory> MaterialIssueHistories { get; set; }
         public DbSet<SONumber> SONumbers { get; set; }
+        public DbSet<ShopOrderNumberSPReport> ShopOrderNumberSPReports { get; set; }
+        public DbSet<MaterialIssueSPReport> MaterialIssueSPReports { get; set; }
+        public DbSet<MaterialRequestSPReport> MaterialRequestSPReports { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ShopOrderNumberSPReport>().HasNoKey();
+            modelBuilder.Entity<MaterialIssueSPReport>().HasNoKey();
+            modelBuilder.Entity<MaterialRequestSPReport>().HasNoKey();
+            // Other entity configurations can be added here
 
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
