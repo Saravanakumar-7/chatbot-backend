@@ -75,7 +75,7 @@ namespace Tips.Grin.Api.Repository
                 int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
                 int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
 
-                return $"ASPL|OGRIN|{currentYear:D2}-{nextYear:D2}|{poNumberEntity.CurrentValue:D4}";
+                return $"ASPL|OPGN|{currentYear:D2}-{nextYear:D2}|{poNumberEntity.CurrentValue:D3}";
             }
             catch (Exception ex)
             {

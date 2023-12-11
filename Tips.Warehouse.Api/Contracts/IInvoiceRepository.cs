@@ -21,7 +21,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<Invoice>> SearchInvoice([FromQuery] SearchParames searchParames);
         Task<IEnumerable<Invoice>> SearchInvoiceDate([FromQuery] SearchsDateParms searchsDateParms);
         Task<IEnumerable<InvoiceIdNameList>> GetAllInvoiceIdNameList();
-
+        Task<IEnumerable<InvoiceSPReport>> InvoiceSPReport();
 
     }
 }

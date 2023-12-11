@@ -84,7 +84,13 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> OpenDeliveryOrderSPReport()
+        {
+            var products = await _repository.OpenDeliveryOrderSPReport();
 
+            return Ok(products);
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOpenDeliveryOrderById(int id)

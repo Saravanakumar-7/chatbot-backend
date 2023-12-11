@@ -104,6 +104,15 @@ namespace Tips.Warehouse.Api.Repository
             }
         }
 
+        public async Task<IEnumerable<LocationTransferSPReport>> LocationTransferSPReport()
+        {
+            var results = _tipsWarehouseDbContext.Set<LocationTransferSPReport>()
+                        .FromSqlInterpolated($"CALL Location_Transfer_Report")
+                        .ToList();
+
+            return results;
+        }
+
         public async Task<IEnumerable<LocationTransfer>> SearchLocationTransferDate([FromQuery] SearchDateParam searchDatesParams)
         {
             var locationTransferDetails = _tipsWarehouseDbContext.locationTransfers

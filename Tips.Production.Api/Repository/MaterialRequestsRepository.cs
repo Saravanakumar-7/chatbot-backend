@@ -36,7 +36,14 @@ namespace Tips.Production.Api.Repository
             var result = await Create(request);
             return result.Id;
         }
+        public async Task<IEnumerable<MaterialRequestSPReport>> MaterialRequestSPReport()
+        {
+            var results = _tipsProductionDbContext.Set<MaterialRequestSPReport>()
+                        .FromSqlInterpolated($"CALL Material_Request_Report")
+                        .ToList();
 
+            return results;
+        }
         public async Task<string> DeleteMaterialRequest(MaterialRequests request)
         {
             Delete(request);

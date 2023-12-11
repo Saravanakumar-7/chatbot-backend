@@ -90,6 +90,16 @@ namespace Tips.Warehouse.Api.Repository
                 throw ex;
             }
         }
+
+        public async Task<IEnumerable<DeliveryOrderSPReport>> DeliveryOrderSPReport()
+        {
+            var results = _tipsWarehouseDbContext.Set<DeliveryOrderSPReport>()
+                        .FromSqlInterpolated($"CALL Delivery_Order_Report")
+                        .ToList();
+
+            return results;
+        }
+
         public async Task<IEnumerable<ListOfBtoNumberDetails>> GetBtoNumberListBySalesOrderId(int salesOrderId)
         {
 

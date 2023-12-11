@@ -81,7 +81,13 @@ namespace Tips.Production.Api.Controllers
             }
 
         }
+        [HttpGet]
+        public async Task<IActionResult> MaterialRequestSPReport()
+        {
+            var products = await _materialRequestRepository.MaterialRequestSPReport();
 
+            return Ok(products);
+        }
         [HttpGet]
         public async Task<IActionResult> GetAllMROpenStatus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParammes)
         {

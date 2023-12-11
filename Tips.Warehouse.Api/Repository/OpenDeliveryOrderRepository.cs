@@ -160,6 +160,14 @@ namespace Tips.Warehouse.Api.Repository
 
         }
 
+        public async Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReport()
+        {
+            var results = _tipsWarehouseDbContext.Set<OpenDeliveryOrderSPReport>()
+                        .FromSqlInterpolated($"CALL Open_Delivery_Order_Report")
+                        .ToList();
+
+            return results;
+        }
 
         public async Task<OpenDeliveryOrder> GetOpenDeliveryOrderById(int id)
         {

@@ -82,6 +82,14 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> ShopOrderNumberSPReport()
+        {
+            var products = await _shopOrderRepository.ShopOrderNumberSPReport();
+
+            return Ok(products);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> SearchShopOrderDate([FromQuery] SearchDateparames searchDateParam)
         {
             ServiceResponse<IEnumerable<ShopOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderReportDto>>();

@@ -40,7 +40,16 @@ namespace Tips.Production.Api.Repository
             shopOrder.Unit = _unitname;
             var result = await Create(shopOrder);
             return result.Id;
-        }   
+        }
+        public async Task<IEnumerable<ShopOrderNumberSPReport>> ShopOrderNumberSPReport()
+        {
+            var results = _tipsProductionDbContext.Set<ShopOrderNumberSPReport>()
+                        .FromSqlInterpolated($"CALL Shop_Order_Report")
+                        .ToList();
+
+            return results;
+        }
+
         public async Task<string> GenerateSONumber()
         {
             using var transaction = await _tipsProductionDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);

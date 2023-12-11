@@ -34,6 +34,7 @@ namespace Tips.Production.Api.Contracts
         Task<string> GenerateSONumberForAvision();
         Task<string> GenerateSONumber();
         Task<string> GenerateSONumberForKeus();
+        Task<IEnumerable<ShopOrderNumberSPReport>> ShopOrderNumberSPReport();
         public void SaveAsync();
     }
 }

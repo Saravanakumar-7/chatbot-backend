@@ -43,16 +43,22 @@ namespace Tips.Warehouse.Api.Entities
         //public DbSet<ConsumptionReport> ConsumptionReport { get; set; }
 
         public DbSet<ConsumptionReport> ConsumptionReport { get; set; }
-
+        public DbSet<DeliveryOrderSPReport> RecievableBTOs { get; set; }
+        public DbSet<InvoiceSPReport> RecievableInvoices { get; set; }
+        public DbSet<LocationTransferSPReport> RecievableLocationTransfers { get; set; }
+        public DbSet<OpenDeliveryOrderSPReport> RecievableODOs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ConsumptionReport>().HasNoKey();
-
+            modelBuilder.Entity<DeliveryOrderSPReport>().HasNoKey();
+            modelBuilder.Entity<InvoiceSPReport>().HasNoKey();
+            modelBuilder.Entity<LocationTransferSPReport>().HasNoKey();
+            modelBuilder.Entity<OpenDeliveryOrderSPReport>().HasNoKey();
             // Other entity configurations can be added here
 
             base.OnModelCreating(modelBuilder);
         }
-
+        
 
 
     }

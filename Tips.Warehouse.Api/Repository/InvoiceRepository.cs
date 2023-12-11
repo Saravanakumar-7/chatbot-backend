@@ -87,6 +87,16 @@ namespace Tips.Warehouse.Api.Repository
                 throw ex;
             }
         }
+
+        public async Task<IEnumerable<InvoiceSPReport>> InvoiceSPReport()
+        {
+            var results = _tipsWarehouseDbContext.Set<InvoiceSPReport>()
+                        .FromSqlInterpolated($"CALL Invoice_Report")
+                        .ToList();
+
+            return results;
+        }
+
         public async Task<PagedList<Invoice>> GetAllInvoices([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
 
