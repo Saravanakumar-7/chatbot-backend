@@ -489,9 +489,14 @@ namespace Tips.Warehouse.Api.Controllers
 
 
                         //Update Inventory balanced Quantity 
-
-                        await _inventoryRepository.UpdateInventoryforBTO(bTODeliveryOrderItemsDetails.QtyDistribution);
-
+                        if (serverKey == "keus")
+                        {
+                            await _inventoryRepository.UpdateInventoryforBTO_Keus(bTODeliveryOrderItemsDetails.QtyDistribution);
+                        }
+                        else
+                        {
+                            await _inventoryRepository.UpdateInventoryforBTO(bTODeliveryOrderItemsDetails.QtyDistribution);
+                        }
                         //var ItemNumber = bTODoItemList[i].FGItemNumber; 
                         //var getInventoryFGDetailsByItemnumber = await _inventoryRepository.GetInventoryByItemNumber(ItemNumber); //pass projectNo
                         //decimal dispatchQuantity = Convert.ToDecimal(bTODeliveryOrderItemsListDto[i].DispatchQty);

@@ -344,8 +344,7 @@ namespace Repository
                             .Include(x => x.ItemMasterApprovedVendor)
                             //.Include(m => m.ItemMasterFileUpload)
                             .Include(s => s.ItemMasterRouting)
-                            .Include(p => p.ItemMasterWarehouse)
-                            .FirstOrDefaultAsync();
+                            .Include(p => p.ItemMasterWarehouse).FirstOrDefaultAsync();
 
 
             return getItemMasterById;
@@ -518,7 +517,17 @@ namespace Repository
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
-
+        public async Task DeleteImage(int Id)
+        {
+                // Retrieve the record to delete
+                var imageToDelete = TipsMasterDbContext.imageUploads.FirstOrDefault(i => i.Id == Id);
+                if (imageToDelete != null)
+                {
+                // Remove the record from the context and then save changes
+                TipsMasterDbContext.imageUploads.Remove(imageToDelete);
+                //TipsMasterDbContext.SaveChanges();
+                }           
+        }
         public async Task<int?> ImageUploadDocument(ImageUpload imageUpload)
         {
             imageUpload.CreatedBy = _createdBy;

@@ -27,7 +27,8 @@ namespace Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+        //public int? ItemMasterId { get; set; }
+        //public ItemMaster? ItemMaster { get; set; }
         //public Grins? GrinsId { get; set; }
         //public GrinParts? GrinParts { get; set; }
 
