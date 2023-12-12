@@ -320,7 +320,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<SalesOrder> GetSalesOrderDetailsBySONumber(string salesOrderNumber)
         {
             var salesOrderDetails = await _tipsSalesServiceDbContext.SalesOrders
-                .Where(x => x.SalesOrderNumber == salesOrderNumber && x.IsShortClosed == false)
+                .Where(x => x.SalesOrderNumber == salesOrderNumber && x.IsShortClosed == false && x.SOStatus != OrderStatus.ShortClosed)
                 .Include(o => o.SalesOrdersItems)
                 .ThenInclude(x => x.ScheduleDates)
                 .Include(t => t.SalesOrderAdditionalCharges)
