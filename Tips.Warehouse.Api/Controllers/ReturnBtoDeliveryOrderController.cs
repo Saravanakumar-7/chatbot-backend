@@ -550,6 +550,7 @@ namespace Tips.Warehouse.Api.Controllers
                             bTODeliveryOrderHistory.CustomerName = returnBtoDeliveryOrder.CustomerName;
                             bTODeliveryOrderHistory.CustomerAliasName = returnBtoDeliveryOrder.CustomerAliasName;
                             bTODeliveryOrderHistory.CustomerId = returnBtoDeliveryOrder.CustomerId;
+                            bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrder.BTONumber;
                             bTODeliveryOrderHistory.PONumber = returnBtoDeliveryOrder.PONumber;
                             bTODeliveryOrderHistory.IssuedTo = returnBtoDeliveryOrder.IssuedTo;
                             bTODeliveryOrderHistory.DODate = Convert.ToDateTime(returnBtoDeliveryOrder.CreatedOn);
@@ -568,7 +569,7 @@ namespace Tips.Warehouse.Api.Controllers
                             bTODeliveryOrderHistory.Location = eachbin.Location;
                             bTODeliveryOrderHistory.Warehouse= eachbin.Warehouse;
                             bTODeliveryOrderHistory.DispatchQty = eachbin.DistributingQty;
-                            bTODeliveryOrderHistory.InvoicedQty = getBtoDeliveryOrderDetails.InvoicedQty;
+                            //bTODeliveryOrderHistory.InvoicedQty = getBtoDeliveryOrderDetails.InvoicedQty;
                             bTODeliveryOrderHistory.SerialNo = returnSerialNumber;
                             bTODeliveryOrderHistory.Remark = returnBtoDeliveryOrderitemsDto[i].Remarks;
                             bTODeliveryOrderHistory.UniqeId = guid.ToString();
