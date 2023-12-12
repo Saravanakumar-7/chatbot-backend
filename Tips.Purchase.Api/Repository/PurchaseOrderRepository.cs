@@ -602,7 +602,7 @@ namespace Tips.Purchase.Api.Repository
         {
 
             IQueryable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList =  _tipsPurchaseDbContext.PurchaseOrders
-            .Where(x => x.POApprovalI == false && x.IsDeleted == false && x.IsModified == false)
+            .Where(x => x.POApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed)
             .Select(g => new PurchaseOrderIdNameListDto()
             {
                 Id = g.Id,
@@ -673,7 +673,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
             IQueryable<PurchaseOrderIdNameListDto> pendingPOApprovalIINameList =  _tipsPurchaseDbContext.PurchaseOrders
-            .Where(x => x.POApprovalI == true && x.POApprovalII == false && x.IsDeleted == false && x.IsModified == false)
+            .Where(x => x.POApprovalI == true && x.POApprovalII == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed)
             .Select(g => new PurchaseOrderIdNameListDto()
             {
                 Id = g.Id,
@@ -754,7 +754,7 @@ namespace Tips.Purchase.Api.Repository
             //                }).Distinct().ToListAsync();
 
             IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders
-            .Where(x => x.POApprovalI == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed)
+            .Where(x => x.POApprovalI == false && x.IsModified == false)
             .GroupBy(x => x.PONumber)
             .Select(g => new PurchaseOrderIdNameListDto()
             {
@@ -769,7 +769,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIINameList()
         { 
             IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalIINameList = await _tipsPurchaseDbContext.PurchaseOrders
-            .Where(x => x.POApprovalII == false && x.POApprovalI == true && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed)
+            .Where(x => x.POApprovalII == false && x.POApprovalI == true && x.IsDeleted == false && x.IsModified == false)
             .GroupBy(x => x.PONumber)
             .Select(g => new PurchaseOrderIdNameListDto()
             {

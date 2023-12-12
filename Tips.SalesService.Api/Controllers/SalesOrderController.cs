@@ -1134,11 +1134,14 @@ namespace Tips.SalesService.Api.Controllers
             //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
             foreach (var item in salesOrderDispatchQtyDto)
             {
-                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
+                IEnumerable<SalesOrderItems>? salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
                 var orderItem = salesOrderItems.FirstOrDefault();
-                orderItem.BalanceQty = orderItem.BalanceQty + item.ReturnQty;
-                orderItem.DispatchQty -= item.ReturnQty;
-                _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+                if (orderItem != null)
+                {
+                    orderItem.BalanceQty = orderItem.BalanceQty + item.ReturnQty;
+                    orderItem.DispatchQty -= item.ReturnQty;
+                    _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+                }
             }
 
             _salesOrderItemsRepository.SaveAsync();
@@ -1152,13 +1155,16 @@ namespace Tips.SalesService.Api.Controllers
             {
                 IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
                 var orderItem = salesOrderItems.FirstOrDefault();
-                orderItem.BalanceQty += item.ReturnQty;
-                orderItem.DispatchQty -= item.ReturnQty;
-                if (orderItem.BalanceQty == orderItem.OrderQty)
+                if (orderItem != null)
                 {
-                    orderItem.StatusEnum = OrderStatus.Open;
+                    orderItem.BalanceQty += item.ReturnQty;
+                    orderItem.DispatchQty -= item.ReturnQty;
+                    if (orderItem.BalanceQty == orderItem.OrderQty)
+                    {
+                        orderItem.StatusEnum = OrderStatus.Open;
+                    }
+                    _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
                 }
-                _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
             }
 
             _salesOrderItemsRepository.SaveAsync();

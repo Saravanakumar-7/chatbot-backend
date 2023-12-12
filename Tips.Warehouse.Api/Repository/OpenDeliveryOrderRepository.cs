@@ -173,7 +173,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var getOpenDeliveryOrderDetailsById = await _tipsWarehouseDbContext.OpenDeliveryOrders
                                 .Where(x => x.Id == id)
-                               .Include(x => x.OpenDeliveryOrderParts)
+                               .Include(x => x.OpenDeliveryOrderParts).ThenInclude(x=>x.QtyDistribution)
                                .FirstOrDefaultAsync();
 
             return getOpenDeliveryOrderDetailsById;
