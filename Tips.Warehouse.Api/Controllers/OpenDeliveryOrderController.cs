@@ -125,6 +125,7 @@ namespace Tips.Warehouse.Api.Controllers
                         foreach (var openDeliveryOrderitemDetails in getOpenDeliveryOrderById.OpenDeliveryOrderParts)
                         {
                             OpenDeliveryOrderPartsDto openDeliveryOrderItemsDtos = _mapper.Map<OpenDeliveryOrderPartsDto>(openDeliveryOrderitemDetails);
+                            openDeliveryOrderItemsDtos.QtyDistribution = _mapper.Map<List<OpenDeliveryOrderPartsQtyDistributionDto>>(openDeliveryOrderitemDetails.QtyDistribution);
                             OpenDeliveryOrderItemsDtoList.Add(openDeliveryOrderItemsDtos);
                         }
                     }

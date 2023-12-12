@@ -123,6 +123,17 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     _logger.LogInfo($"Returned OpenDeliveryOrdersDetails with id: {id}");
                     var result = _mapper.Map<ReturnInvoiceDto>(getReturnInvoiceDetailById);
+                    List<ReturnInvoiceItemDto> returnInvoiceItemDtos = new List<ReturnInvoiceItemDto>();
+                    if (getReturnInvoiceDetailById.ReturnInvoiceItems != null)
+                    {
+                        foreach (var returnInvoiceitemDetails in getReturnInvoiceDetailById.ReturnInvoiceItems)
+                        {
+                            ReturnInvoiceItemDto returnInvoiceItemDto= _mapper.Map<ReturnInvoiceItemDto>(returnInvoiceitemDetails);
+                            returnInvoiceItemDto.QtyDistribution = _mapper.Map<List<ReturnInvoiceItemQtyDistributionDto>>(returnInvoiceitemDetails.QtyDistribution);
+                            returnInvoiceItemDtos.Add(returnInvoiceItemDto);
+                        }
+                    }
+                    result.ReturnInvoiceItems = returnInvoiceItemDtos;
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned GetReturnInvoiceById Successfully";
                     serviceResponse.Success = true;
