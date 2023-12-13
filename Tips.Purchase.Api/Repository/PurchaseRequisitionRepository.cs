@@ -332,7 +332,7 @@ namespace Tips.Purchase.Api.Repository
             //                    PrNumber = x.PrNumber,
             //                }).ToListAsync();
             IEnumerable<PurchaseRequisitionIdNameListDto> pendingPRApprovalINameList = await _tipsPurchaseDbContext.PurchaseRequisitions
-           .Where(x => x.PrApprovalI == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed)
+           .Where(x => x.PrApprovalI == false && x.IsModified == false)
            .GroupBy(x => x.PrNumber)
            .Select(pr => new PurchaseRequisitionIdNameListDto()
            {
@@ -346,7 +346,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
             IQueryable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIList =  _tipsPurchaseDbContext.PurchaseRequisitions
-           .Where(x => x.PrApprovalI == false && x.IsDeleted == false && x.IsModified == false)
+           .Where(x => x.PrApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed)
            .Select(pr => new PurchaseRequisitionIdNameListDto()
            {
                Id = pr.Id,
@@ -401,7 +401,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
             IQueryable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIIList =  _tipsPurchaseDbContext.PurchaseRequisitions
-           .Where(x => x.PrApprovalI == true && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false)
+           .Where(x => x.PrApprovalI == true && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed)
            .Select(pr => new PurchaseRequisitionIdNameListDto()
            {
                Id = pr.Id,
@@ -463,7 +463,7 @@ namespace Tips.Purchase.Api.Repository
             //                    PrNumber = x.PrNumber,
             //                }).ToListAsync();
             IEnumerable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIINameList = await _tipsPurchaseDbContext.PurchaseRequisitions
-            .Where(x => x.PrApprovalI == true  && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed)
+            .Where(x => x.PrApprovalI == true  && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false)
             .GroupBy(x => x.PrNumber)
             .Select(pr => new PurchaseRequisitionIdNameListDto()
             {
