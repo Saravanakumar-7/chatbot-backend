@@ -500,7 +500,7 @@ namespace Tips.Warehouse.Api.Repository
                             }
                             Update(eachinv);
                             //SaveAsync();
-
+                            break;
                             //invdetails.Remove(eachinv);
                         }
                         else if (eachDis.DistributingQty > eachinv.Balance_Quantity)
@@ -536,7 +536,7 @@ namespace Tips.Warehouse.Api.Repository
                             }
                             Update(eachinv);
                             //SaveAsync();
-
+                            break;
                             //invdetails.Remove(eachinv);
                         }
                         else if (eachDis.DistributingQty > eachinv.Balance_Quantity)
@@ -572,7 +572,7 @@ namespace Tips.Warehouse.Api.Repository
                             }
                             Update(eachinv);
                             SaveAsync();
-
+                            break;
                             //invdetails.Remove(eachinv);
                         }
                         else if (eachDis.DistributingQty > eachinv.Balance_Quantity)

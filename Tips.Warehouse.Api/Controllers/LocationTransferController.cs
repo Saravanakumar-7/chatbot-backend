@@ -251,18 +251,17 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     await _locationTransferRepository.CreateLocationTransfer(loca);
                     _locationTransferRepository.SaveAsync();
-                    foreach (var loco in locationTransferPostDto)
-                    {
-                        var fromPartNumber = loco.FromPartNumber;
-                        var toPartNumber = loco.ToPartNumber;
-                        var fromProjectNumber = loco.FromProjectNumber;
-                        var toProjectNumber = loco.ToProjectNumber;
-                        var fromLocation = loco.FromLocation;
-                        var toLocation = loco.ToLocation;
-                        var fromWarehouse = loco.FromWarehouse;
-                        var toWarehouse = loco.ToWarehouse;
-                        var availstock = loco.AvailableStockInLocation;
-                        var transferQty = loco.TransferQty;
+                    
+                        var fromPartNumber = loca.FromPartNumber;
+                        var toPartNumber = loca.ToPartNumber;
+                        var fromProjectNumber = loca.FromProjectNumber;
+                        var toProjectNumber = loca.ToProjectNumber;
+                        var fromLocation = loca.FromLocation;
+                        var toLocation = loca.ToLocation;
+                        var fromWarehouse = loca.FromWarehouse;
+                        var toWarehouse = loca.ToWarehouse;
+                        var availstock = loca.AvailableStockInLocation;
+                        var transferQty = loca.TransferQty;
                         var itemDetailFromItemmaster = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"], "GetItemMasterByItemNumber?", "&ItemNumber=", toPartNumber));
                         _logger.LogInfo("getitemmasterdata" + Convert.ToString(itemDetailFromItemmaster));
                         var itemDetail = await itemDetailFromItemmaster.Content.ReadAsStringAsync();
@@ -274,7 +273,8 @@ namespace Tips.Warehouse.Api.Controllers
                         {
                             foreach (var inventoryItem in inventoryDetails)
                             {
-                                if (transferQty >= inventoryItem.Balance_Quantity)
+                                var balQty= inventoryItem.Balance_Quantity;
+                                if (transferQty >= balQty)
                                 {
                                     inventoryItem.PartNumber = toPartNumber;
                                     inventoryItem.ProjectNumber = toProjectNumber;
@@ -287,40 +287,42 @@ namespace Tips.Warehouse.Api.Controllers
                                     inventoryItem.ReferenceID = Convert.ToString(loca.Id);
                                     inventoryItem.ReferenceIDFrom = "LocationTransfer";
                                     await _inventoryRepository.UpdateInventory(inventoryItem);
-                                    _inventoryRepository.SaveAsync();
-                                    transferQty -= inventoryItem.Balance_Quantity;
+                                    
+                                    transferQty -= balQty;
+                                    balQty = 0;
                                 }
                                 else
                                 {
-                                    inventoryItem.Balance_Quantity -= transferQty;
+                                    inventoryItem.Balance_Quantity -= Convert.ToDecimal(transferQty);
                                     await _inventoryRepository.UpdateInventory(inventoryItem);
                                     Inventory inventoryPost = new Inventory();
                                     inventoryPost.PartNumber = toPartNumber;
                                     inventoryPost.MftrPartNumber = toPartNumber;
                                     inventoryPost.ProjectNumber = toProjectNumber;
                                     inventoryPost.Description = itemObject.description;
-                                    inventoryPost.Balance_Quantity = transferQty;
+                                    inventoryPost.Balance_Quantity = Convert.ToDecimal(transferQty);
                                     inventoryPost.UOM = itemObject?.uom;
                                     inventoryPost.GrinMaterialType = "";
                                     inventoryPost.shopOrderNo = "";
                                     inventoryPost.Unit = itemObject?.unit;
                                     inventoryPost.GrinNo = "";
                                     inventoryPost.GrinPartId = 0;
+                                    inventoryPost.LotNumber = inventoryItem.LotNumber;
                                     inventoryPost.IsStockAvailable = true;
                                     inventoryPost.Warehouse = toWarehouse;
                                     inventoryPost.Location = toLocation;
                                     inventoryPost.PartType = itemObject.itemType;
                                     inventoryPost.ReferenceID = Convert.ToString(loca.Id);
                                     inventoryPost.ReferenceIDFrom = "LocationTransfer";
-                                    await _inventoryRepository.CreateInventory(inventoryPost);
+                                    await _inventoryRepository.CreateInventory(inventoryPost);                                    
                                     transferQty = 0;
-                                    _inventoryRepository.SaveAsync();
                                 }
                                 if (transferQty <= 0)
                                 {
                                     break;
                                 }
                             }
+                            _inventoryRepository.SaveAsync();
                         }
                         else
                         {
@@ -362,7 +364,7 @@ namespace Tips.Warehouse.Api.Controllers
                                     inventoryTranctionPost.MftrPartNumber = toPartNumber;
                                     inventoryTranctionPost.ProjectNumber = toProjectNumber;
                                     inventoryTranctionPost.Description = itemObject.description;
-                                    inventoryTranctionPost.Issued_Quantity = transferQty;
+                                    inventoryTranctionPost.Issued_Quantity = Convert.ToDecimal(transferQty);
                                     inventoryTranctionPost.UOM = itemObject?.uom;
                                     inventoryTranctionPost.GrinMaterialType = "";
                                     inventoryTranctionPost.shopOrderNo = "";
@@ -387,7 +389,7 @@ namespace Tips.Warehouse.Api.Controllers
                            //}
                         //}
                          
-                    }
+                    
                 }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "locationTransfer Successfully Created";

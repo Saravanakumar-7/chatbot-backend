@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Contracts
     public interface IFileUploadRepository : IRepositoryBase<FileUpload>
     {
         Task<int?> CreateFileUploadDocument(FileUpload fileUpload);
-        Task<int?> CreateImageUploadDocument(FileUpload fileUpload);        
-
+        Task<int?> CreateImageUploadDocument(FileUpload fileUpload);
+        Task<List<FileUploadDto>> GetDownloadUrlDetails(string FileIds);
     } 
 }
