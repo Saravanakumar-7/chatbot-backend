@@ -44,7 +44,7 @@ namespace Repository
         public async Task<IEnumerable<GetDownloadUrlDtos>> GetDownloadUrlDetails(long itemMasterId)
         { 
             IEnumerable<GetDownloadUrlDtos> getDownloadDetails = await TipsMasterDbContext.imageUploads
-                                .Where(b => b.ItemMasterId == itemMasterId)
+                                .Where(b => b.Id == itemMasterId)
                                 .Select(x => new GetDownloadUrlDtos()
                                 {
                                     Id = x.Id,
@@ -338,8 +338,8 @@ namespace Repository
         {
             var getItemMasterById = await TipsMasterDbContext.ItemMasters
                             .Where(x => x.Id == id)
-                            .Include(c=>c.FileUpload)
-                            .Include(b=>b.ImageUpload)
+                            //.Include(c=>c.FileUpload)
+                            //.Include(b=>b.ImageUpload)
                             .Include(t => t.ItemmasterAlternate)
                             .Include(x => x.ItemMasterApprovedVendor)
                             //.Include(m => m.ItemMasterFileUpload)
@@ -500,7 +500,30 @@ namespace Repository
             var result = await Create(fileUpload);
             return result.Id;
         }
-
+        public async Task<List<FileUploadDto>> GetDownloadUrlDetails(string FileIds)
+        {
+            List<FileUploadDto> fileUploads = new List<FileUploadDto>();
+            if (FileIds != null)
+            {
+                string[]? ids = FileIds.Split(',');
+                
+                for (int i = 0; i < ids.Count(); i++)
+                {
+                    FileUploadDto getDownloadDetails = await TipsMasterDbContext.fileUploads
+                                .Where(b => b.Id == Convert.ToInt32(ids[i]))
+                                .Select(x => new FileUploadDto()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath
+                                }).FirstOrDefaultAsync();
+                    if (getDownloadDetails != null)
+                    fileUploads.Add(getDownloadDetails);
+                }
+            }
+            return fileUploads;
+        }
     }
 
     public class ImageUploadDocumentRepository : RepositoryBase<ImageUpload>, IImageUploadRepository
