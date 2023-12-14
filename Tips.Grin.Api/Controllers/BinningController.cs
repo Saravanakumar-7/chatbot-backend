@@ -715,19 +715,40 @@ namespace Tips.Grin.Api.Controllers
                     var grinDetailsbyGrinNo = await _grinRepository.GetGrinByGrinNo(binningGrinNo);
                     var binningDetailsDto = _mapper.Map<BinningDto>(grinDetailsbyGrinNo);
 
-                    if (grinDetailsbyGrinNo.GrinParts.Count != 0)
+                    if (binningsById.BinningItems!=null)
                     {
-                        foreach (var grinDetails in grinDetailsbyGrinNo.GrinParts)
+                        foreach (var binItem in binningsById.BinningItems)
                         {
-                            BinningItemsDto binningItemDtos = _mapper.Map<BinningItemsDto>(grinDetails);
-                            var binningDetails = _mapper.Map<List<BinningLocationDto>>(binningItemDtos.binningLocations);
-                            binningItemDtos.binningLocations = binningDetails;
-                            binningItemDtos.ReceivedQty = grinDetails.Qty;
-                            binningItemDtos.AcceptedQty = grinDetails.AcceptedQty;
-                            binningItemDtos.RejectedQty = grinDetails.RejectedQty;
-                            binningItemList.Add(binningItemDtos);
+                            foreach (var grinItem in grinDetailsbyGrinNo.GrinParts)
+                            {
+                                if (binItem.GrinPartId==grinItem.Id)
+                                {
+                                    BinningItemsDto binningItemDtos = _mapper.Map<BinningItemsDto>(grinItem);
+                                    var binningDetails = _mapper.Map<List<BinningLocationDto>>(binItem.binningLocations);
+                                    binningItemDtos.binningLocations = binningDetails;
+                                    binningItemDtos.ReceivedQty = grinItem.Qty;
+                                    binningItemDtos.AcceptedQty = grinItem.AcceptedQty;
+                                    binningItemDtos.RejectedQty = grinItem.RejectedQty;
+                                    binningItemList.Add(binningItemDtos);
+                                    break;
+                                }
+                            }
                         }
                     }
+
+                    //if (grinDetailsbyGrinNo.GrinParts.Count != 0)
+                    //{
+                    //    foreach (var grinDetails in grinDetailsbyGrinNo.GrinParts)
+                    //    {
+                    //        BinningItemsDto binningItemDtos = _mapper.Map<BinningItemsDto>(grinDetails);
+                    //        var binningDetails = _mapper.Map<List<BinningLocationDto>>(binningItemDtos.binningLocations);
+                    //        binningItemDtos.binningLocations = binningDetails;
+                    //        binningItemDtos.ReceivedQty = grinDetails.Qty;
+                    //        binningItemDtos.AcceptedQty = grinDetails.AcceptedQty;
+                    //        binningItemDtos.RejectedQty = grinDetails.RejectedQty;
+                    //        binningItemList.Add(binningItemDtos);
+                    //    }
+                    //}
                     //if (grinDetailsbyGrinNo.GrinParts.Count != 0)
                     //{
                     //    foreach (var grinDetails in grinDetailsbyGrinNo.GrinParts)
