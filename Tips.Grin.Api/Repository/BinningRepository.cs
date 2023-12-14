@@ -136,7 +136,7 @@ namespace Tips.Grin.Api.Repository
                               .Where(dto =>
                                   dto.GrinNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                                   dto.InvoiceNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                                  dto.VendorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                                  dto.VendorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).OrderByDescending(x => x.Id).ToList();
             }
             return PagedList<GrinAndBinningDetailsDto>.ToPagedList(grinDetails.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
 

@@ -50,7 +50,8 @@ namespace Repository
                                     Id = x.Id,
                                     FileName = x.FileName,
                                     FileExtension = x.FileExtension,
-                                    FilePath = x.FilePath
+                                    FilePath = x.FilePath,
+                                    FileByte=x.FileByte
                                 })
                               .ToListAsync();
 
@@ -414,8 +415,8 @@ namespace Repository
         public async Task<ItemMaster> GetItemMasterByItemNumber(string ItemNumber)
         {
             var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == ItemNumber)
-                 .Include(c => c.FileUpload)
-                .Include(x => x.ImageUpload)
+                // .Include(c => c.FileUpload)
+               // .Include(x => x.ImageUpload)
                  .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 //.Include(m => m.ItemMasterFileUpload)

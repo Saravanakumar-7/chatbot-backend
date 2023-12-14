@@ -657,7 +657,7 @@ namespace Tips.Grin.Api.Controllers
                 //            var finalCost = Cost / grinParts.Qty;
                 //            var weightageCost = grinParts.UnitPrice + finalCost;
                 //            total = 0;
-                //            grinParts.WeightedAverage = weightageCost;
+                //            grinParts.AverageCost = weightageCost;
                 //            grinParts.ItemType = grinPartsDto[i].ItemType;
                 //            grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
                 //            grinPartsList.Add(grinParts);
