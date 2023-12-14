@@ -118,7 +118,7 @@ namespace Tips.Grin.Api.Repository
             var grinDetails_1 = await _tipsGrinDbContext.Grins.Where(x => grinNumbers.Contains(x.GrinNumber)).ToListAsync();
             var grinDetails = grinDetails_1.Select(grinNumber => new GrinAndBinningDetailsDto
             {
-                Id = grinNumber.Id,
+                Id = binningGrinNoList.Where(b => b.GrinNumber == grinNumber.GrinNumber).Select(x=>x.Id).FirstOrDefault(),
                 GrinNumber = grinNumber.GrinNumber,
                 InvoiceNumber = grinNumber.InvoiceNumber,
                 VendorName = grinNumber.VendorName,
