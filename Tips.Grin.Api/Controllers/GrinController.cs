@@ -619,7 +619,7 @@ namespace Tips.Grin.Api.Controllers
 
                 //end cocupload
                 var totalGrinCost = (grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.Transport)*grins.CurrencyConversion;
-                if (grinPartsDto != null)
+                if (grinPartsDto != null && totalGrinCost != 0)
                 {
                     for (int i = 0; i < grinPartsDto.Count; i++)
                     {
