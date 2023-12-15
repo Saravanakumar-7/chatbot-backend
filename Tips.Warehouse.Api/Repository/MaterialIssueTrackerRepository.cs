@@ -60,7 +60,7 @@ namespace Tips.Warehouse.Api.Repository
                                   Bomversion = g.Key.Bomversion,
                                   IssuedQty = g.Sum(st => st.IssuedQty),
                                   ConvertedToFgQty = g.Sum(st => st.ConvertedToFgQty),
-                                  BalanceQty = g.Sum(st => st.IssuedQty) - g.Sum(st => st.ConvertedToFgQty)
+                                  BalanceQty = (g.Sum(st => st.IssuedQty) - g.Sum(st => st.ConvertedToFgQty))
                               }).ToList();
 
             return resultList;

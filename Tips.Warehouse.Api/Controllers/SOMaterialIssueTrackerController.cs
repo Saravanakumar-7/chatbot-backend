@@ -5,7 +5,7 @@ using System.Net;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
- 
+
 
 namespace Tips.Warehouse.Api.Controllers
 {
@@ -40,11 +40,11 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var groupedMaterialIssueItemDtoList = shopOrderMaterialIssueTrackers
                     .GroupBy(item => item.PartNumber)
-                    .Select(group => new ShopOrderMaterialIssueTrackerDto 
+                    .Select(group => new ShopOrderMaterialIssueTrackerDto
                     {
                         PartNumber = group.Key,
                         ShopOrderNumber = group.First().ShopOrderNumber,
-                        Description = group.First().Description, 
+                        Description = group.First().Description,
                         Bomversion = group.First().Bomversion,
                         IssuedQty = group.Sum(item => item.IssuedQty),
                         ConvertedToFgQty = group.Sum(item => item.ConvertedToFgQty),
@@ -52,9 +52,9 @@ namespace Tips.Warehouse.Api.Controllers
                         DataFrom = group.First().DataFrom
                     })
             .ToList();
-                
-                   // if (shopOrderMaterialIssueTrackers.Count() == 0)
-                    if (groupedMaterialIssueItemDtoList.Count() == 0)
+
+                // if (shopOrderMaterialIssueTrackers.Count() == 0)
+                if (groupedMaterialIssueItemDtoList.Count() == 0)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"SOMaterialTrackerIssue with itemNumber: {ShopOrderNo}, is invalid";
@@ -136,9 +136,9 @@ namespace Tips.Warehouse.Api.Controllers
                     };
 
                     await _materialIssueTrackerRepository.CreateMaterialIssueTracker(shopOrderMaterialIssueTracker);
-                    _materialIssueTrackerRepository.SaveAsync(); 
-                } 
-                 
+                    _materialIssueTrackerRepository.SaveAsync();
+                }
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "CreateMaterialIssueTracker Successfully Created";
                 serviceResponse.Success = true;

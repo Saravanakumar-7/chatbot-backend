@@ -1,0 +1,48 @@
+DTO Files
+
+1.post dto -->remove id and unit,created by ,createdon,lastmodifiedby,lastmodified on 
+
+2.update dto-->remove createdon,created by
+
+3.child for all dto not required -->createdon,created by,lastmodifiedby,lastmodified on ,unit
+
+4.inside child update and post dto --> remove id
+
+5.
+
+i)In model we need to check all names,datatypes(ex:Number(bto,po,do,odo -->string),
+Qty(decimal(13,3)),price(decimal(18,3))).inital letter should be caps..
+uoc and uom should be string in model as well as dtos..
+
+ii)we need to give proper requred field for all model and dto compare with our new tips UI link(http://syn.wyzmindz.com:4504/sales/lp-release)
+
+6.we need to check both all models and all dtos(post,update,getdto) field should be match...
+
+7.In dbcontext files you need to mention all the models include child model..
+
+8.model name should be meaningfull and camelcase for all dtos and models... 
+
+9.In mapping file we need to given meaningfull name end with dto 
+(CreateMap<BinningLocation, BinningLocationDto>().ReverseMap();)
+ and in dto(post,update,get) child class
+meaning full name like (public List<BinningLocationPostDto>? BinningLocationPostDto { get; set; })
+
+10.In program file we need to check the repository is mentioned or not and also check repositoryname
+
+11.in repository create method we need to given unit name above the create();
+
+12.in repository varaible name, method name,result message should be meaning full/camelcase and properly use 
+await and asyn keys...
+
+13.in repository in getallmethod need to give order by decanding order in where condition (OrderByDescending(x=>x.Id))
+
+14.In IRepository method name,parameter name and data type should be meaningfull....
+
+15.in controller methodname,varaible name ,error message,passing responce properly,in return you need to pass service responce....
+
+
+
+
+
+
+

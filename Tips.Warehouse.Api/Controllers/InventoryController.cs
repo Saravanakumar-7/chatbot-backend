@@ -1500,7 +1500,7 @@ namespace Tips.Warehouse.Api.Controllers
                             }
                             await _inventoryRepository.UpdateInventory(invItem);
 
-                            ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = MRInsertDataToMaterialIssueTracker(shopOrderNumber, mrNumber,invItem, lotNoWiseIssuedQty);
+                            ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = MRInsertDataToMaterialIssueTracker(mrNumber, shopOrderNumber,invItem, lotNoWiseIssuedQty);
                             int transactionId = await _materialIssueTrackerRepository.AddDataToMaterialIssueTracker(shopOrderMaterialIssueTracker);
 
                             /*********************************** End of Add data to Material Issue Tracker *************************/

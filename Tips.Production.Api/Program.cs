@@ -37,7 +37,7 @@ builder.Services.AddScoped<IMaterialRequestsRepository, MaterialRequestsReposito
 builder.Services.AddScoped<IOQCRepository, OQCRepository>();
 builder.Services.AddScoped<IMaterialIssueHistoryRepository, MaterialIssueHistoryRepository>();
 builder.Services.AddScoped<IMaterialIssueItemRepository, MaterialIssueItemRepository>();
-
+builder.Services.AddScoped<IOQCBinningRepository, OQCBinningRepository>();
 
 //builder.Services.AddTransient<IMaterialReturnNoteItemRepository, Mater>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -37,8 +37,8 @@ builder.Services.AddScoped<IEnggBomRepository, EngineeringBomRepository>();
 builder.Services.AddScoped<ILeadRepository, LeadRepository>();
 builder.Services.AddScoped<IFileUploadRepository, FileUploadDocumentRepository>();
 builder.Services.AddScoped<IUOMRepository, UOMRepository>();
-
-
+builder.Services.AddScoped<IConvertionrateRepository, ConvertionrateRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IImageUploadRepository, ImageUploadDocumentRepository>();
 builder.Services.AddScoped<ILeadWebsiteRepository, LeadWebsiteRepository>();
@@ -59,6 +59,7 @@ builder.Services.AddScoped<IRoomNameRepository, RoomNameRepository>();
 builder.Services.AddScoped<IProductTypeRepository, ProductTypeRepository>();
 builder.Services.AddScoped<ITypeSolutionRepository, TypeSolutionRepository>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

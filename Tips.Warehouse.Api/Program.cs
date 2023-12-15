@@ -23,7 +23,7 @@ LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nl
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
-
+builder.Services.AddHttpContextAccessor();
 
 //builder.Services.ConfigureMSSqlContext(builder.Configuration);
 builder.Services.ConfigureMySqlContext(builder.Configuration);
@@ -33,13 +33,13 @@ builder.Services.AddControllers().AddJsonOptions(opt =>
 {
     opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
-builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
-builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();
+//builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+//builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();
+//builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();
 builder.Services.AddScoped<IBTODeliveryOrderRepository, BTODeliveryOrderRepository>();
 builder.Services.AddScoped<IDeliveryOrderRepository, DeliveryOrderRepository>();
 builder.Services.AddScoped<IOpenDeliveryOrderHistoryRepository, OpenDeliveryOrderHistoryRepository>();
@@ -52,8 +52,15 @@ builder.Services.AddScoped<IInvoiceChildRepository, InvoiceChildRepository>();
 builder.Services.AddScoped<ILocationTransferRepository, LocationTransferRepository>();
 builder.Services.AddScoped<IMaterialIssueTrackerRepository, MaterialIssueTrackerRepository>();
 builder.Services.AddScoped<IBTODeliveryOrderHistoryRepository, BTODeliveryOrderHistoryRepository>();
-builder.Services.AddScoped<MySqlConnection>();
+builder.Services.AddScoped<IReturnOpenDeliveryOrderRepository, ReturnOpenDeliveryOrderRepository>();
+builder.Services.AddScoped<IOpenDeliveryOrderPartsRepository, OpenDeliveryOrderPartsRepository>();
+builder.Services.AddScoped<IReturnOpenDeliveryOrderPartsRepository, ReturnOpenDeliveryOrderPartsRepository>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();
+builder.Services.AddScoped<IBTODeliveryOrderInventoryHistoryRepository, BTODeliveryOrderInventoryHistoryRepository>();
 
+
+builder.Services.AddScoped<MySqlConnection>();
 
 
 

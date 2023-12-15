@@ -323,8 +323,8 @@ namespace Repository
         {
             var itemmasterFgSaFRUDetails = FindAll().OrderByDescending(a => a.Id)
                .Where(a=>a.ItemType == PartType.SA || a.ItemType == PartType.FG || a.ItemType == PartType.FRU)
-                         .Include(c => c.FileUpload)
-                            .Include(x => x.ImageUpload)
+                         //.Include(c => c.FileUpload)
+                          //  .Include(x => x.ImageUpload)
                             .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 //.Include(m => m.ItemMasterFileUpload)

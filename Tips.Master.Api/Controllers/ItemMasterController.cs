@@ -425,7 +425,7 @@ namespace Tips.Master.Api.Controllers
                     {
                         FileUploadDto fileUploadDto = _mapper.Map<FileUploadDto>(fileUploadDetails);
                         var baseUrl = $"{Request.Scheme}://{_config["ItemMasterBaseUrl"]}";
-                        fileUploadDto.FilePath = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                        fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
 
                         //fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileUploadDto.FileName);
                         fileUploads.Add(fileUploadDto);

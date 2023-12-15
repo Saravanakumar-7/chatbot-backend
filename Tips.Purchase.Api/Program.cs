@@ -22,11 +22,14 @@ builder.Services.ConfigureJwtToken(builder.Configuration);
 builder.Services.AddScoped<IPurchaseRequisitionRepository, PurchaseRequisitionRepository>();
 builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
 builder.Services.AddScoped<IDocumentUploadRepository, UploadDocumentRepository>();
-builder.Services.AddScoped<IDocumentUploadRepository, PRUploadDocumentRepository>();
+builder.Services.AddScoped<IPRItemsDocumentUploadRepository, PRItemsUploadDocumentRepository>();
 builder.Services.AddScoped<IPoItemsRepository, PurchaseOrderItemRepository>();
 builder.Services.AddScoped<IPOCollectionTrackerRepository, POCollectionTrackerRepository>();
 builder.Services.AddScoped<IPOBreakDownRepository, POBreakDownRepository>();
 builder.Services.AddScoped<IPoConfirmationDateHistoryRepository, PoConfirmationDateHistoryRepository>();
+builder.Services.AddScoped<IPoConfirmationDateRepository, PoConfirmationDateRepository>();
+builder.Services.AddScoped<IPoConfirmationHistoryRepository, PoConfirmationHistoryRepository>();
+builder.Services.AddScoped<IPrItemsRepository, PurchaseRequisitionItemRepository>();
 
 
 builder.Services.AddControllers();

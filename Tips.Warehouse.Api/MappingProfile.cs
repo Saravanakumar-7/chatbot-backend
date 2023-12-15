@@ -18,7 +18,18 @@ namespace Tips.Warehouse.Api
 
             CreateMap<BtoDeliveryOrderItemQtyDistribution, BtoDeliveryOrderItemQtyDistributionPostDto>().ReverseMap();
             CreateMap<BtoDeliveryOrderItemQtyDistribution, BtoDeliveryOrderItemQtyDistributionDto>().ReverseMap();
-             
+
+            CreateMap<ReturnInvoiceItemQtyDistribution, ReturnInvoiceItemQtyDistributionPostDto>().ReverseMap();
+            CreateMap<ReturnInvoiceItemQtyDistribution, ReturnInvoiceItemQtyDistributionDto>().ReverseMap();
+
+            CreateMap<ReturnDeliveryOrderItemQtyDistribution, ReturnDeliveryOrderItemQtyDistributionPostDto>().ReverseMap();
+            CreateMap<ReturnDeliveryOrderItemQtyDistribution, ReturnDeliveryOrderItemQtyDistributionDto>().ReverseMap();
+
+            CreateMap<ReturnOpenDeliveryOrderItemQtyDistribution, ReturnOpenDeliveryOrderItemQtyDistributionPostDto>().ReverseMap();
+            CreateMap<ReturnOpenDeliveryOrderItemQtyDistribution, ReturnOpenDeliveryOrderItemQtyDistributionDto>().ReverseMap();
+
+            CreateMap<OpenDeliveryOrderPartsQtyDistribution, OpenDeliveryOrderPartsQtyDistributionPostDto>().ReverseMap();
+            CreateMap<OpenDeliveryOrderPartsQtyDistribution, OpenDeliveryOrderPartsQtyDistributionDto>().ReverseMap();
 
             CreateMap<InvoiceChildItem, InvoiceChildItemDto>().ReverseMap();
             CreateMap<InvoiceChildItem, InvoiceChildItemPostDto>().ReverseMap();
@@ -35,8 +46,6 @@ namespace Tips.Warehouse.Api
             CreateMap<ReturnOpenDeliveryOrderParts, ReturnOpenDeliveryOrderPartsPostDto>().ReverseMap();
             CreateMap<ReturnOpenDeliveryOrderParts, ReturnOpenDeliveryOrderPartsDto>().ReverseMap();
             CreateMap<ReturnOpenDeliveryOrderParts, ReturnOpenDeliveryOrderPartsUpdateDto>().ReverseMap();
-
-
 
             CreateMap<OpenDeliveryOrderParts, OpenDeliveryOrderPartsDto>().ReverseMap();
             CreateMap<OpenDeliveryOrderParts, OpenDeliveryOrderPartsDtoPost>().ReverseMap();
