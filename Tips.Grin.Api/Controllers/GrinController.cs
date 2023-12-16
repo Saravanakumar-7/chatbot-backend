@@ -30,6 +30,7 @@ using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Azure;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -720,10 +721,11 @@ namespace Tips.Grin.Api.Controllers
                         var grinPartsId = await _grinPartsRepository.GetGrinPartsById(grinPart.Id);
                         grinPartsId.LotNumber = grins.GrinNumber + grinPartsId.Id;
                         await _grinPartsRepository.UpdateGrinQty(grinPartsId);
-                        _grinPartsRepository.SaveAsync();
+                       
                     }
                 }
-
+                HttpStatusCode createinvResp = HttpStatusCode.OK;
+                HttpStatusCode createinvTrancResp = HttpStatusCode.OK;
                 foreach (var parts in grinPartsList)
                 {
                     if (parts.ProjectNumbers != null)
@@ -760,7 +762,10 @@ namespace Tips.Grin.Api.Controllers
                                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                             }
                             var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), data);
-                             
+                            if (response.StatusCode!=HttpStatusCode.OK)
+                            {
+                                createinvResp = response.StatusCode;
+                            }
                             // Handle the response here
 
 
@@ -805,7 +810,10 @@ namespace Tips.Grin.Api.Controllers
                                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                             }
                             var response = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranctionFromGrin"), data);
-
+                            if (response.StatusCode != HttpStatusCode.OK)
+                            {
+                                createinvTrancResp = response.StatusCode;
+                            }
                         }
                     }
                 }
@@ -839,7 +847,11 @@ namespace Tips.Grin.Api.Controllers
                 }
                 
                 var result = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdatePoStatus"), datass);
-
+                if(responses.StatusCode == HttpStatusCode.OK && result.StatusCode == HttpStatusCode.OK && createinvTrancResp== HttpStatusCode.OK && createinvResp==HttpStatusCode.OK)
+                {
+                    _repository.SaveAsync();
+                    _grinPartsRepository.SaveAsync();
+                }
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Grin Successfully Created";

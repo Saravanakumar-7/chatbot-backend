@@ -532,7 +532,7 @@ namespace Tips.Grin.Api.Controllers
                 binningDetail.BinningItems = binningItemList;
                 binningDetail.IsBinningCompleted = true;
                 binningDetails = await _binningRepository.CreateBinning(binningDetail);
-                _binningRepository.SaveAsync();
+               
 
                 //Updating Binning Status in Grin
 
@@ -540,18 +540,20 @@ namespace Tips.Grin.Api.Controllers
                 var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNumber);
                 grinDetails.IsBinningCompleted = true;
                 await _grinRepository.UpdateGrin(grinDetails);
-                _grinRepository.SaveAsync();
+               
 
                 //Updating Binning Status in IQC
 
                 var iqcDetails = await _iQCConfirmationRepository.GetIqcDetailsbyGrinNo(grinNumber);
                 iqcDetails.IsBinningCompleted = true;
                 await _iQCConfirmationRepository.UpdateIqc(iqcDetails);
-                _iQCConfirmationRepository.SaveAsync();
+                
 
                 // Inventory Update Code
                 string grinPartId = "";
-
+                HttpStatusCode getInvGrinId = HttpStatusCode.OK;
+                HttpStatusCode updateInv = HttpStatusCode.OK;
+                HttpStatusCode createInv = HttpStatusCode.OK;
                 if (binningsItemsDto != null)
                 {
                     for (int i = 0; i < binningsItemsDto.Count; i++)
@@ -567,6 +569,7 @@ namespace Tips.Grin.Api.Controllers
                                 var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
                               "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", binningDetail.GrinNumber, "&GrinPartsId=", binningsItemsDto[i].GrinPartId,
                               "&ItemNumber=", binningsItemsDto[i].ItemNumber, "&ProjectNumber=", location.ProjectNumber));
+                                if (inventoryObjectResult.StatusCode!=HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
 
                                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
@@ -577,8 +580,9 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryObject.location = location.Location;
                                 var json = JsonConvert.SerializeObject(inventoryObject);
                                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-                                var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
+                                HttpResponseMessage response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
                                     "UpdateInventory?id=", inventoryObject.id), data);
+                                if (response.StatusCode != HttpStatusCode.OK) updateInv = response.StatusCode;
                                 j++;
                             }
                             else
@@ -611,7 +615,7 @@ namespace Tips.Grin.Api.Controllers
                                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                                 }
                                 var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
-
+                                if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
                             }
 
                             //InventoryTranction Update Code
@@ -667,6 +671,12 @@ namespace Tips.Grin.Api.Controllers
                     }
                 }
 
+                if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK)
+                {
+                    _binningRepository.SaveAsync();
+                    _grinRepository.SaveAsync();
+                    _iQCConfirmationRepository.SaveAsync();
+                }
                 serviceResponse.Data = binningDetails;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;

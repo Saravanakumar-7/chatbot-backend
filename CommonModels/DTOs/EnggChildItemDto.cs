@@ -15,7 +15,7 @@ namespace Entities.DTOs
         public int Id { get; set; }
 
         public string ItemNumber { get; set; }
-
+        public string? MftrItemNumbers { get; set; }
         public string? UOM { get; set; }
 
         [Precision(13, 3)]
@@ -51,7 +51,7 @@ namespace Entities.DTOs
     {
         [Required(ErrorMessage = "ItemNumber is required")]
         public string ItemNumber { get; set; }
-
+        public string? MftrItemNumbers { get; set; }
         public string? UOM { get; set; }
 
         [Required(ErrorMessage = "Quantity is required")]
@@ -84,7 +84,7 @@ namespace Entities.DTOs
 
         [Required(ErrorMessage = "ItemNumber is required")]
         public string ItemNumber { get; set; }
-
+        public string? MftrItemNumbers { get; set; }
         public string? UOM { get; set; }
 
         [Required(ErrorMessage = "Quantity is required")]
