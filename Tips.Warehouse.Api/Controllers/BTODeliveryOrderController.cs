@@ -17,8 +17,8 @@ using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
 using Tips.Warehouse.Api.Repository;
-
-namespace Tips.Warehouse.Api.Controllers
+//aravind
+namespace Tips.Warehouse.Api.Controllers 
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
