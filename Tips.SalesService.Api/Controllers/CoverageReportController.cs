@@ -251,23 +251,14 @@ namespace Tips.SalesService.Api.Controllers
                                     };
 
                                     //test
+
                                     
-                                    var balanceToOrder = (coverageDetailOfChildItem.Stock
-                                        + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty) - coverageDetailOfChildItem.RequiredQty;
-                                    if(balanceToOrder >= 0)
-                                    {
-                                        coverageDetailOfChildItem.BalanceToOrder = (coverageDetailOfChildItem.Stock
-                                           + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty) - coverageDetailOfChildItem.RequiredQty;
 
-                                    }
-                                    else
-                                    {
-                                        coverageDetailOfChildItem.BalanceToOrder = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
-                                        + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
-                                    }
+                                    decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
+                                       + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
 
-                                     //coverageDetailOfChildItem.BalanceToOrder = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
-                                     //   + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
+                                    coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : balanceRequiredQty;
+
                                     coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
                                 }
                             }

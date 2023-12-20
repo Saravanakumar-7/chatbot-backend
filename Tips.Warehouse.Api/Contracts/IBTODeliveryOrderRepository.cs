@@ -28,6 +28,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<BTODeliveryOrder>> SearchBTODeliveryOrderDate([FromQuery] SearchsDateParms searchsDateParms);
         Task<string> GenerateBTONumberAvision();
         Task<IEnumerable<DeliveryOrderSPReport>> DeliveryOrderSPReport();
+        Task<IEnumerable<DeliveryOrderSPReport>> DeliveryOrderSPReportdate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<DeliveryOrderSPReport>> GetDeliveryOrderSPReports(string DONumber, string CustomerName, string CustomerAliasName, string CustomerID, string SalesOrderNumber, string ProductType, string Warehouse, string Location, string KPN, string MPN);
 
     }
 }

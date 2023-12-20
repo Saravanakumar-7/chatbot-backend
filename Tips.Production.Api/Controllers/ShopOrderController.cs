@@ -530,7 +530,7 @@ namespace Tips.Production.Api.Controllers
                 List<MaterialIssueItem> materialIssueItemList = new List<MaterialIssueItem>();
 
                 for (int i = 0; i < shopOrder.ShopOrderItems.Count(); i++)
-                {
+                {                   
                     if (i == 0)
                     {
                         var fgNumber = shopOrder.ItemNumber;
@@ -540,8 +540,11 @@ namespace Tips.Production.Api.Controllers
                         dynamic bomDetailsData = JsonConvert.DeserializeObject(bomDetailsString);
                         bomData = bomDetailsData.data;
                     }
-
-                    if (bomData != null)
+                    if (shopOrder.ShopOrderItems[i].ReleaseQty <= 0)
+                    {
+                        continue;
+                    }
+                        if (bomData != null)
                     {
                         foreach (var bom in bomData.enggChildItemDtos)
                         {

@@ -22,6 +22,9 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<Invoice>> SearchInvoiceDate([FromQuery] SearchsDateParms searchsDateParms);
         Task<IEnumerable<InvoiceIdNameList>> GetAllInvoiceIdNameList();
         Task<IEnumerable<InvoiceSPReport>> InvoiceSPReport();
+        Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportWithParameter(string InvoiceNumber, string DONumber, string LeadId, string CustomerName,
+        string CustomerAliasName, string SalesOrderNumber, string Location, string Warehouse, string KPN, string MPN);
 
     }
 }

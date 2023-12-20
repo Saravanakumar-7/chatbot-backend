@@ -100,6 +100,32 @@ namespace Tips.Warehouse.Api.Controllers
 
             return Ok(products);
         }
+        [HttpGet("DeliveryOrderSPReportdate")] // Adjust your route as needed
+        public async Task<IActionResult> DeliveryOrderSPReportdate([FromQuery] DateTime? FromDate,[FromQuery] DateTime? ToDate)
+        {
+            var products = await _repository.DeliveryOrderSPReportdate(FromDate, ToDate);
+
+            return Ok(products);
+        }
+        [HttpGet("GetDeliveryOrderSPReports")] // Adjust your route as needed
+        public async Task<IActionResult> GetDeliveryOrderSPReports(
+
+    [FromQuery] string? DONumber,
+    [FromQuery] string? CustomerName,
+    [FromQuery] string? CustomerAliasName,
+    [FromQuery] string? CustomerID,
+    [FromQuery] string? SalesOrderNumber,
+    [FromQuery] string? ProductType,
+    [FromQuery] string? Warehouse,
+    [FromQuery] string? Location,
+    [FromQuery] string? KPN,
+    [FromQuery] string? MPN
+    )
+        {
+            var products = await _repository.GetDeliveryOrderSPReports(DONumber, CustomerName, CustomerAliasName, CustomerID, SalesOrderNumber, ProductType, Warehouse, Location, KPN, MPN);
+
+            return Ok(products);
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBTODeliveryOrderById(int id)
