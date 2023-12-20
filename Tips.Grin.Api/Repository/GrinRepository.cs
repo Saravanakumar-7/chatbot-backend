@@ -206,7 +206,7 @@ namespace Tips.Grin.Api.Repository
             //                        GrinId = x.Id
             //                    })
             //                  .ToListAsync();
-            var grinparts = await _tipsGrinDbContext.GrinParts.Where(x => x.IsIqcCompleted == true).Select(x => x.GrinsId).ToListAsync();
+            var grinparts = await _tipsGrinDbContext.GrinParts.Where(x => x.IsIqcCompleted == true && x.IsBinningCompleted==false).Select(x => x.GrinsId).ToListAsync();
             var gId = grinparts.Distinct().ToList();
             List<GrinNoForIqcAndBinning> grinNoForBinning = await _tipsGrinDbContext.Grins.Where(x=> gId.Contains(x.Id)).Select(x => new GrinNoForIqcAndBinning()
             {
