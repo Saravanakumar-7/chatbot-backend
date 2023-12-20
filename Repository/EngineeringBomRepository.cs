@@ -1064,7 +1064,7 @@ namespace Repository
                    BomVersionNo = releaseProductBomDetails
                }).ToList();
             return releaseProductBomItemNumberList;
-             
+
 
         }
 
@@ -1172,19 +1172,19 @@ namespace Repository
                                     {
                                         ItemNumber = x.ItemNumber,
                                         BomId = x.EnggBomId,
-                                            //.Select(x => x.EnggBomId)
-                                            //.OrderByDescending(bomId => _tipsMasterDbContext.EnggBoms
-                                            //    .Where(e => e.BOMId == bomId)
-                                            //    .Max(e => e.RevisionNumber)
-                                            //)
-                                            //.FirstOrDefault(),
+                                        //.Select(x => x.EnggBomId)
+                                        //.OrderByDescending(bomId => _tipsMasterDbContext.EnggBoms
+                                        //    .Where(e => e.BOMId == bomId)
+                                        //    .Max(e => e.RevisionNumber)
+                                        //)
+                                        //.FirstOrDefault(),
                                         TotalQuantity = x.Quantity
-                                            //.OrderByDescending(x => _tipsMasterDbContext.EnggBoms
-                                            //    .Where(e => e.BOMId == x.EnggBomId)
-                                            //    .Max(e => e.RevisionNumber)
-                                            //)
-                                            //.Select(x => x.Quantity)
-                                            //.FirstOrDefault()
+                                        //.OrderByDescending(x => _tipsMasterDbContext.EnggBoms
+                                        //    .Where(e => e.BOMId == x.EnggBomId)
+                                        //    .Max(e => e.RevisionNumber)
+                                        //)
+                                        //.Select(x => x.Quantity)
+                                        //.FirstOrDefault()
                                     })
                                     .ToListAsync();
 
@@ -1195,11 +1195,14 @@ namespace Repository
             {
                 var fgParents = await _tipsMasterDbContext.EnggBoms
                     .Where(x => enggBomIds.Contains(x.BOMId))
-                    .Select(x => new { x.ItemNumber, x.ItemType, x.BOMId })
-                    .Distinct()
+                    .Select(x => new { x.ItemNumber, x.ItemType, x.BOMId, x.RevisionNumber })
                     .ToListAsync();
 
-                foreach (var fgitem in fgParents)
+                var result = fgParents
+            .GroupBy(item => item.ItemNumber)
+            .Select(group => group.OrderByDescending(item => item.RevisionNumber).First())
+            .ToList();
+                foreach (var fgitem in result)
                 {
                     Dictionary<int, PartType> bomIdWithItemTypeDict = new Dictionary<int, PartType>();
 
@@ -1234,7 +1237,7 @@ namespace Repository
 
             return fgItemNumberList;
         }
-       
+
 
 
         public Task<IEnumerable<ProductionBom>> GetLatestProBomByItemNumber(string itemNumber)
