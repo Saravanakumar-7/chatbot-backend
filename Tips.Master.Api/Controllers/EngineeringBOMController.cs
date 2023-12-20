@@ -2457,6 +2457,7 @@ namespace Tips.Master.Api.Controllers
         {
             var productionBomMaxVersion = await _releaseProductBomRepository
                                         .GetLatestProductionBomByItemNumber(itemNumber);
+            Dictionary<string, decimal> saItemOpenStock = new Dictionary<string, decimal>();
             if (productionBomMaxVersion >= 0)
             {
                 var enggBomDetail = await _enggBomRepository
@@ -2478,7 +2479,13 @@ namespace Tips.Master.Api.Controllers
                         }
                         else
                         {
+                            //if()
+                            //decimal openSAQty = 0; // get stock from inventory
                             decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
+                            //requiredQtySA -= openSAQty;
+                            //requiredQtySA = requiredQtySA <= 0 ? 0 : requiredQtySA;
+                            //openSAQty = requiredQtySA > openSAQty ? 0 : (requiredQtySA- openSAQty);
+                            //saItemOpenStock.Add(enggChildItem.ItemNumber, openSAQty);
                             await ChildItemRequiredQtyForCoverage(bomCoverageList, enggChildItem.ItemNumber, requiredQtySA);
                         }
 

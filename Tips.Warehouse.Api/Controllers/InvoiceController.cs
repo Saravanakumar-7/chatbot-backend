@@ -387,6 +387,21 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        [HttpGet("InvoiceSPReport")] // Adjust your route as needed
+        public async Task<IActionResult> InvoiceSPReportWithParameter([FromQuery] string? InvoiceNumber,[FromQuery] string? DONumber,[FromQuery] string? LeadId,[FromQuery] string? CustomerName,[FromQuery] string? CustomerAliasName,[FromQuery] string? SalesOrderNumber,[FromQuery] string? Location,[FromQuery] string? Warehouse,[FromQuery] string? KPN,[FromQuery] string? MPN)
+        {
+            var products = await _invoiceRepository.InvoiceSPReportWithParameter(InvoiceNumber, DONumber, LeadId, CustomerName, CustomerAliasName, SalesOrderNumber, Location, Warehouse, KPN, MPN);
+
+            return Ok(products);
+        }
+
+        [HttpGet("InvoiceSPReportDate")] // Adjust your route as needed
+        public async Task<IActionResult> InvoiceSPReportDate([FromQuery] DateTime? FromDate,[FromQuery] DateTime? ToDate)
+        {
+            var products = await _invoiceRepository.InvoiceSPReportDate(FromDate, ToDate);
+
+            return Ok(products);
+        }
 
         [HttpGet]
         public async Task<IActionResult> InvoiceSPReport()

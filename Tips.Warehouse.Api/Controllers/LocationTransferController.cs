@@ -724,6 +724,22 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet("LocationTransferSPReport")] // Adjust your route as needed
+        public async Task<IActionResult> LocationTransferSPReportWithParam([FromQuery] string? FromPartNumber,[FromQuery] string? FromPartType,[FromQuery] string? FromWarehouse,[FromQuery] string? FromLocation,[FromQuery] string? FromProjectNumber,[FromQuery] string? ToPartnumber,[FromQuery] string? ToPartType,[FromQuery] string? ToWarehouse,[FromQuery] string? ToLocation,[FromQuery] string? ToProjectNumber)
+        {
+            var products = await _locationTransferRepository.LocationTransferSPReportWithParam(FromPartNumber, FromPartType, FromWarehouse, FromLocation, FromProjectNumber, ToPartnumber, ToPartType, ToWarehouse, ToLocation, ToProjectNumber);
+
+            return Ok(products);
+        }
+
+        [HttpGet("LocationTransferSPReportDates")] // Adjust your route as needed
+        public async Task<IActionResult> LocationTransferSPReportDates([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            var products = await _locationTransferRepository.LocationTransferSPReportDates(FromDate, ToDate);
+
+            return Ok(products);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLocationTransfer(int id)
         {

@@ -319,7 +319,7 @@ namespace Tips.Grin.Api.Controllers
                             inventory.MftrPartNumber = openGrinParts.ItemNumber;
                             inventory.Description = openGrinParts.Description;
                             inventory.ProjectNumber = openGrinParts.ReferenceSONumber;
-                            inventory.Balance_Quantity = openGrinParts.Qty;
+                            inventory.Balance_Quantity = openGrinDetail.Qty;
                             inventory.IsStockAvailable = true;
                             inventory.UOM = openGrinParts.UOM;
                             inventory.Warehouse = openGrinDetail.Warehouse;
