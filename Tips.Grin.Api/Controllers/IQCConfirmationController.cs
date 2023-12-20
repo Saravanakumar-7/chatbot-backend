@@ -1371,7 +1371,7 @@ namespace Tips.Grin.Api.Controllers
                     var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iqcConfirmationItems.GrinPartId, iqcConfirmationItems.AcceptedQty.ToString(), iqcConfirmationItems.RejectedQty.ToString());
 
                     var iQCCreates = _mapper.Map<GrinParts>(updatedGrinPartsQty);
-
+                    iQCCreates.IsIqcCompleted= true;
                     string result = await _grinPartsRepository.UpdateGrinQty(iQCCreates);
                     if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && getInvTrancGrinId == HttpStatusCode.OK && updateInvTranc == HttpStatusCode.OK && createInvTranc == HttpStatusCode.OK) {
                         _grinPartsRepository.SaveAsync();
