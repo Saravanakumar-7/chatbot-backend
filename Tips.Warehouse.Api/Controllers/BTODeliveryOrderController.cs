@@ -372,7 +372,20 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetDailyDeliveryOrderReports(
 
+         [FromQuery] string? LeadId,
+         [FromQuery] string? SONumber,
+         [FromQuery] string? DOnumber,
+         [FromQuery] string? DispatchKPN
+
+         )
+        {
+            var products = await _repository.GetDailyDeliveryOrderReports(LeadId, SONumber, DOnumber, DispatchKPN);
+
+            return Ok(products);
+        }
         [HttpGet]
         public async Task<IActionResult> GetBtoNumberListByCustomerId(string customerLeadId)
         {

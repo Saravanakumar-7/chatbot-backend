@@ -53,6 +53,42 @@ namespace Tips.SalesService.Api.Repository
 
             return getSONumberAutoIncrementCount;
         }
+        public async Task<IEnumerable<SalesOrderSPResport>> GetSalesOrderSPResport()
+        {
+            var results = _tipsSalesServiceDbContext.Set<SalesOrderSPResport>()
+                      .FromSqlInterpolated($"CALL Sales_Order_without_parameter_Report")
+                      .ToList();
+
+            return results;
+        }
+
+        public async Task<IEnumerable<SalesOrderSPResport>> GetSalesorderReportWithParam(string CustomerName, string SalesOrderNumber, string PartNumber)
+        {
+            {
+
+                if (string.IsNullOrWhiteSpace(CustomerName)
+              || string.IsNullOrWhiteSpace(SalesOrderNumber)
+              || string.IsNullOrWhiteSpace(PartNumber)) ;
+
+
+                var result = _tipsSalesServiceDbContext
+                .Set<SalesOrderSPResport>()
+                .FromSqlInterpolated($"CALL SalesOrder_withparameter_Report({CustomerName},{SalesOrderNumber},{PartNumber})")
+                .ToList();
+
+                return result;
+            }
+        }
+
+        public async Task<IEnumerable<SalesOrderSPResport>> GetSalesorderReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<SalesOrderSPResport>()
+                        .FromSqlInterpolated($"CALL SalesOrder_withparameter_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
         public async Task<string> DeleteSalesOrder(SalesOrder salesOrder)
         {
             Delete(salesOrder);
@@ -590,6 +626,7 @@ namespace Tips.SalesService.Api.Repository
 
         }
         //serach by item level
+
         public async Task<IEnumerable<SalesOrderItems>> SearchSalesOrderItem([FromQuery] SearchParammes searchParams)
         {
             var getSalesOrderItemDetails = await _tipsSalesServiceDbContexts.SalesOrdersItems

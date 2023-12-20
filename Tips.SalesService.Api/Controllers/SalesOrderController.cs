@@ -1361,7 +1361,32 @@ namespace Tips.SalesService.Api.Controllers
         //        return StatusCode(500, serviceResponse);
         //    }
         //}
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetSalesorderReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            var products = await _repository.GetSalesorderReportWithDate(FromDate, ToDate);
 
+            return Ok(products);
+        }
+
+
+
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetSalesorderReportWithParam([FromQuery] string? CustomerName,[FromQuery] string? SalesOrderNumber,[FromQuery] string? PartNumber)
+        {
+            var products = await _repository.GetSalesorderReportWithParam(CustomerName, SalesOrderNumber, PartNumber);
+
+            return Ok(products);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetSalesOrderSPResport()
+        {
+            var products = await _repository.GetSalesOrderSPResport();
+
+            return Ok(products);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetSASalesOrderDetailsByItemNo(string itemNumber)

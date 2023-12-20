@@ -1,4 +1,4 @@
-﻿using Entities; 
+﻿    using Entities; 
 using Tips.Grin.Api.Entities.DTOs;
 using Entities.Helper;
 using System;
@@ -33,5 +33,8 @@ namespace Tips.Grin.Api.Contracts
         Task<int?> GetGrinIqcStatusCount(string grinNo);
         Task<int?> GetGrinbinningStatusCount(string grinNo);
         Task<string> GenerateGrinNumberForAvision();
+        Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string GrinNumber, string VendorName, string PONumber, string KPN, string MPN, string Warehouse, string Location);
+        Task<IEnumerable<Grin_ReportSP>> GetGrinSPReport();
+        Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
     }
 }
