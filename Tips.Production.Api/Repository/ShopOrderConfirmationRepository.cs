@@ -142,7 +142,8 @@ namespace Tips.Production.Api.Repository
                     ShopOrderNumber = s.ShopOrderNumber,
                     ShopOrderReleaseQty = s.TotalSOReleaseQty,
                     WipQty = s.WipQty,
-                    OqcQty = s.OqcQty
+                    OqcQty = s.OqcQty,
+                    BOMVersion=s.BomRevisionNo
                 })
                 .ToListAsync();
 

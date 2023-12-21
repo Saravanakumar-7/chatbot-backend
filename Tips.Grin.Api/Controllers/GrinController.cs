@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tips.Grin.Api.Entities.DTOs;
-using Tips.Grin.Api.Entities;  
+using Tips.Grin.Api.Entities;
 using AutoMapper;
 using Tips.Grin.Api.Contracts;
 using Contracts;
 using Microsoft.EntityFrameworkCore;
-using System.Net; 
+using System.Net;
 using Entities;
 using Newtonsoft.Json;
 using System.Text.Json.Serialization;
@@ -37,7 +37,7 @@ using Azure;
 
 namespace Tips.Grin.Api.Controllers
 {
-    
+
     [Route("api/[controller]/[action]")]
     [ApiController]
     //[Authorize]
@@ -52,13 +52,13 @@ namespace Tips.Grin.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
- 
+
 
         public GrinController(IGrinRepository repository, IHttpContextAccessor httpContextAccessor, IDocumentUploadRepository documentUploadRepository, IGrinPartsRepository grinPartsRepository,
-            IWebHostEnvironment webHostEnvironment, ILoggerManager logger, IMapper mapper, HttpClient httpClient,IConfiguration config)
+            IWebHostEnvironment webHostEnvironment, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _repository = repository;
-            _httpContextAccessor = httpContextAccessor;          
+            _httpContextAccessor = httpContextAccessor;
             _grinPartsRepository = grinPartsRepository;
             _logger = logger;
             _mapper = mapper;
@@ -80,14 +80,14 @@ namespace Tips.Grin.Api.Controllers
         }
         // GET: api/<GrinController>
         [HttpGet]
-         public async Task<IActionResult> GetAllGrin([FromQuery] PagingParameter pagingParameter,[FromQuery] SearchParams searchParams)
+        public async Task<IActionResult> GetAllGrin([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
 
         {
             ServiceResponse<IEnumerable<GrinDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinDto>>();
 
             try
             {
-                var GetallGrins = await _repository.GetAllGrin(pagingParameter,searchParams);
+                var GetallGrins = await _repository.GetAllGrin(pagingParameter, searchParams);
 
                 if (GetallGrins == null)
                 {
@@ -122,7 +122,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Internal server error { ex.Message}{ex.InnerException}";
+                serviceResponse.Message = $"Internal server error {ex.Message}{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -222,7 +222,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 var grinsList = await _repository.SearchGrins(searchParams);
 
-              _logger.LogInfo("Returned all Grins");
+                _logger.LogInfo("Returned all Grins");
                 //var config = new MapperConfiguration(cfg =>
                 //{
                 //    cfg.AddProfile<MappingProfile>();
@@ -430,7 +430,7 @@ namespace Tips.Grin.Api.Controllers
                     _logger.LogInfo($"Returned GrinDetailsById with id: {id}");
                     GrinItemMasterEnggDto grinItemMasterEnggDto = _mapper.Map<GrinItemMasterEnggDto>(GrinDetailsbyId);
 
-                    
+
                     List<GrinPartsItemMasterEnggDto> grinPartsItemMasterEnggList = new List<GrinPartsItemMasterEnggDto>();
 
 
@@ -464,16 +464,16 @@ namespace Tips.Grin.Api.Controllers
                         //inventoryObject = inventoryObjectData;
                         //foreach (var item in inventoryObject)
                         //{
-                            grinPartsItemMasterEnggDto.DrawingNo = inventoryObject.drawingNo;
-                            grinPartsItemMasterEnggDto.DocRet = inventoryObject.docRet;
-                            grinPartsItemMasterEnggDto.RevNo = inventoryObject.revNo;
-                            grinPartsItemMasterEnggDto.IsCocRequired = inventoryObject.isCocRequired;
-                            grinPartsItemMasterEnggDto.IsRohsItem = inventoryObject.isRohsItem;
-                            grinPartsItemMasterEnggDto.IsShelfLife = inventoryObject.isShelfLife;
-                            grinPartsItemMasterEnggDto.IsReachItem = inventoryObject.isReachItem;
-                            grinPartsItemMasterEnggDto.FileUpload = inventoryObject.fileUpload.ToObject<List<DocumentUpload>>();
+                        grinPartsItemMasterEnggDto.DrawingNo = inventoryObject.drawingNo;
+                        grinPartsItemMasterEnggDto.DocRet = inventoryObject.docRet;
+                        grinPartsItemMasterEnggDto.RevNo = inventoryObject.revNo;
+                        grinPartsItemMasterEnggDto.IsCocRequired = inventoryObject.isCocRequired;
+                        grinPartsItemMasterEnggDto.IsRohsItem = inventoryObject.isRohsItem;
+                        grinPartsItemMasterEnggDto.IsShelfLife = inventoryObject.isShelfLife;
+                        grinPartsItemMasterEnggDto.IsReachItem = inventoryObject.isReachItem;
+                        grinPartsItemMasterEnggDto.FileUpload = inventoryObject.fileUpload.ToObject<List<DocumentUpload>>();
 
-                            grinPartsItemMasterEnggList.Add(grinPartsItemMasterEnggDto);
+                        grinPartsItemMasterEnggList.Add(grinPartsItemMasterEnggDto);
                         //}
 
                     }
@@ -485,7 +485,7 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-                }
+            }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetGrinById action: {ex.Message}");
@@ -498,7 +498,7 @@ namespace Tips.Grin.Api.Controllers
         }
 
 
-   
+
         [HttpPost]
         public async Task<IActionResult> CreateGrin([FromBody] GrinPostDto grinPostDto)
         {
@@ -562,7 +562,7 @@ namespace Tips.Grin.Api.Controllers
                 }
                 var grinPartsDto = grinPostDto.GrinParts;
 
-                List<GrinParts> grinPartsList  = new List<GrinParts>();
+                List<GrinParts> grinPartsList = new List<GrinParts>();
                 //var grinPartsList = new List<GrinParts>();
                 var grinDocumentUploadDtoList = new List<DocumentUpload>();
                 var grinPartsDocumentUploadDtoList = new List<DocumentUpload>();
@@ -619,7 +619,7 @@ namespace Tips.Grin.Api.Controllers
                 //}
 
                 //end cocupload
-                var totalGrinCost = (grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.Transport)*grins.CurrencyConversion;
+                var totalGrinCost = (grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.Transport) * grins.CurrencyConversion;
                 if (grinPartsDto != null)//&& totalGrinCost != 0
                 {
                     decimal? EP = 0;
@@ -632,7 +632,8 @@ namespace Tips.Grin.Api.Controllers
                     {
                         GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
                         grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
-                        if (EP != 0) {
+                        if (EP != 0)
+                        {
                             decimal? a = (grinParts.Qty * grinParts.UnitPrice);
                             decimal? b = (a / EP) * totalGrinCost;
                             decimal? c = a + b;
@@ -705,7 +706,7 @@ namespace Tips.Grin.Api.Controllers
                     {
                         if (grinPartsDto[i].COCUpload != null && grinPartsDto[i].COCUpload.Count > 0)
                         {
-                            CoCDocumentSave(grinPartsDto, grins, grins.GrinNumber, i, grinPartsDocumentUploadDtoList); 
+                            CoCDocumentSave(grinPartsDto, grins, grins.GrinNumber, i, grinPartsDocumentUploadDtoList);
                         }
 
                     }
@@ -721,7 +722,7 @@ namespace Tips.Grin.Api.Controllers
                         var grinPartsId = await _grinPartsRepository.GetGrinPartsById(grinPart.Id);
                         grinPartsId.LotNumber = grins.GrinNumber + grinPartsId.Id;
                         await _grinPartsRepository.UpdateGrinQty(grinPartsId);
-                       
+
                     }
                 }
                 HttpStatusCode createinvResp = HttpStatusCode.OK;
@@ -741,10 +742,10 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryDto.Description = parts.ItemDescription;
                             grinInventoryDto.ProjectNumber = project.ProjectNumber;
                             grinInventoryDto.Balance_Quantity = Convert.ToDecimal(project.ProjectQty);
-                            grinInventoryDto.UOM = parts.UOM; 
+                            grinInventoryDto.UOM = parts.UOM;
                             grinInventoryDto.Warehouse = "GRIN";
                             grinInventoryDto.Location = "GRIN";
-                            grinInventoryDto.GrinNo = grins.GrinNumber; 
+                            grinInventoryDto.GrinNo = grins.GrinNumber;
                             grinInventoryDto.GrinPartId = parts.Id;
                             grinInventoryDto.PartType = parts.ItemType;  //We need to check this
                             grinInventoryDto.ReferenceID = Convert.ToString(parts.Id);
@@ -762,7 +763,7 @@ namespace Tips.Grin.Api.Controllers
                                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                             }
                             var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), data);
-                            if (response.StatusCode!=HttpStatusCode.OK)
+                            if (response.StatusCode != HttpStatusCode.OK)
                             {
                                 createinvResp = response.StatusCode;
                             }
@@ -845,9 +846,9 @@ namespace Tips.Grin.Api.Controllers
                     var token = tokenValues.Substring(7);
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 }
-                
+
                 var result = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdatePoStatus"), datass);
-                if(responses.StatusCode == HttpStatusCode.OK && result.StatusCode == HttpStatusCode.OK && createinvTrancResp== HttpStatusCode.OK && createinvResp==HttpStatusCode.OK)
+                if (responses.StatusCode == HttpStatusCode.OK && result.StatusCode == HttpStatusCode.OK && createinvTrancResp == HttpStatusCode.OK && createinvResp == HttpStatusCode.OK)
                 {
                     _repository.SaveAsync();
                     _grinPartsRepository.SaveAsync();
@@ -1014,7 +1015,7 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-               
+
 
                 var grinparts = _mapper.Map<IEnumerable<GrinParts>>(grinDto.GrinParts);
 
@@ -1616,7 +1617,7 @@ namespace Tips.Grin.Api.Controllers
                 var documentDetails = await _documentUploadRepository.GetDocumentDetailsByGrinNo(grinnumber);
                 for (int i = 0; i < documentDetails; i++)
                 {
-                    
+
                     var uploaddocuments = await _documentUploadRepository.DeleteGrinPartsUploadDocByGrinNo(grinnumbers);
                     _documentUploadRepository.SaveAsync();
                 }
@@ -1720,14 +1721,14 @@ namespace Tips.Grin.Api.Controllers
 
         [HttpGet]
 
-        public async Task<IActionResult> GetAllGrinParts([FromQuery] PagingParameter pagingParameter,[FromQuery] SearchParams searchParams)
+        public async Task<IActionResult> GetAllGrinParts([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
 
         {
             ServiceResponse<IEnumerable<GrinPartsDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinPartsDto>>();
 
             try
             {
-                var GetallGrinsParts = await _grinPartsRepository.GetAllGrinParts(pagingParameter,searchParams);
+                var GetallGrinsParts = await _grinPartsRepository.GetAllGrinParts(pagingParameter, searchParams);
 
                 var metadata = new
                 {

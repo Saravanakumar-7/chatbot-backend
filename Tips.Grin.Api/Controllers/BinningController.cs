@@ -38,7 +38,7 @@ namespace Tips.Grin.Api.Controllers
         private IIQCConfirmationItemsRepository _iQCConfirmationItemsRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IBinningLocationRepository _binningLocationRepository;
-        public BinningController(IBinningLocationRepository binningLocationRepository, IIQCConfirmationItemsRepository iQCConfirmationItemsRepository,IIQCConfirmationRepository iQCConfirmationRepository, IGrinPartsRepository grinPartsRepository, IGrinRepository grinRepository, IBinningRepository binningRepository, IBinningItemsRepository binningItemsRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, IHttpContextAccessor httpContextAccessor)
+        public BinningController(IBinningLocationRepository binningLocationRepository, IIQCConfirmationItemsRepository iQCConfirmationItemsRepository, IIQCConfirmationRepository iQCConfirmationRepository, IGrinPartsRepository grinPartsRepository, IGrinRepository grinRepository, IBinningRepository binningRepository, IBinningItemsRepository binningItemsRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _binningRepository = binningRepository;
@@ -49,7 +49,7 @@ namespace Tips.Grin.Api.Controllers
             _grinRepository = grinRepository;
             _grinPartsRepository = grinPartsRepository;
             _iQCConfirmationRepository = iQCConfirmationRepository;
-           _iQCConfirmationItemsRepository = iQCConfirmationItemsRepository;
+            _iQCConfirmationItemsRepository = iQCConfirmationItemsRepository;
             _httpContextAccessor = httpContextAccessor;
             _binningLocationRepository = binningLocationRepository;
         }
@@ -532,22 +532,24 @@ namespace Tips.Grin.Api.Controllers
                 binningDetail.BinningItems = binningItemList;
                 binningDetail.IsBinningCompleted = true;
                 binningDetails = await _binningRepository.CreateBinning(binningDetail);
-               
+
 
                 //Updating Binning Status in Grin
 
                 var grinNumber = binningDetail.GrinNumber;
                 var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNumber);
                 grinDetails.IsBinningCompleted = true;
+                foreach (var part in grinDetails.GrinParts) part.IsBinningCompleted = true;
                 await _grinRepository.UpdateGrin(grinDetails);
-               
+
 
                 //Updating Binning Status in IQC
 
                 var iqcDetails = await _iQCConfirmationRepository.GetIqcDetailsbyGrinNo(grinNumber);
                 iqcDetails.IsBinningCompleted = true;
+                foreach (var part in iqcDetails.IQCConfirmationItems) part.IsBinningCompleted = true;
                 await _iQCConfirmationRepository.UpdateIqc(iqcDetails);
-                
+
 
                 // Inventory Update Code
                 string grinPartId = "";
@@ -569,7 +571,7 @@ namespace Tips.Grin.Api.Controllers
                                 var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
                               "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", binningDetail.GrinNumber, "&GrinPartsId=", binningsItemsDto[i].GrinPartId,
                               "&ItemNumber=", binningsItemsDto[i].ItemNumber, "&ProjectNumber=", location.ProjectNumber));
-                                if (inventoryObjectResult.StatusCode!=HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
+                                if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
 
                                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
@@ -696,7 +698,7 @@ namespace Tips.Grin.Api.Controllers
 
             }
         }
-         
+
 
 
         [HttpGet("{id}")]
@@ -725,13 +727,13 @@ namespace Tips.Grin.Api.Controllers
                     var grinDetailsbyGrinNo = await _grinRepository.GetGrinByGrinNo(binningGrinNo);
                     var binningDetailsDto = _mapper.Map<BinningDto>(grinDetailsbyGrinNo);
 
-                    if (binningsById.BinningItems!=null)
+                    if (binningsById.BinningItems != null)
                     {
                         foreach (var binItem in binningsById.BinningItems)
                         {
                             foreach (var grinItem in grinDetailsbyGrinNo.GrinParts)
                             {
-                                if (binItem.GrinPartId==grinItem.Id)
+                                if (binItem.GrinPartId == grinItem.Id)
                                 {
                                     BinningItemsDto binningItemDtos = _mapper.Map<BinningItemsDto>(grinItem);
                                     var binningDetails = _mapper.Map<List<BinningLocationDto>>(binItem.binningLocations);
@@ -1197,7 +1199,7 @@ namespace Tips.Grin.Api.Controllers
                                 }
 
                                 //InventoryTranction Update Code
-                               
+
                                 if (k == 0)
                                 {
                                     var inventoryTranctionObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryTranctionAPI"],
