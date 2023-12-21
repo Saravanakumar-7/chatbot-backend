@@ -94,6 +94,38 @@ namespace Tips.Warehouse.Api.Repository
             string result = $"OpenDeliveryOrder details of {openDeliveryOrder.Id} is deleted successfully!";
             return result;
         }
+        public async Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReportWithParam(string OpenDONumber, string CustomerName, string CustomerAliasName, string LeadId, string IssuedTo, string KPN, string MPN, string Warehouse, string Location, string ODOType)
+        {
+            {
+                if (string.IsNullOrWhiteSpace(OpenDONumber)
+           || string.IsNullOrWhiteSpace(CustomerName)
+           || string.IsNullOrWhiteSpace(CustomerAliasName)
+           || string.IsNullOrWhiteSpace(LeadId)
+           || string.IsNullOrWhiteSpace(IssuedTo)
+           || string.IsNullOrWhiteSpace(KPN)
+           || string.IsNullOrWhiteSpace(MPN)
+           || string.IsNullOrWhiteSpace(Warehouse)
+           || string.IsNullOrWhiteSpace(Location)
+           || string.IsNullOrWhiteSpace(ODOType)) ;
+
+                var result = _tipsWarehouseDbContext
+                .Set<OpenDeliveryOrderSPReport>()
+                .FromSqlInterpolated($"CALL Open_Delivery_Order_Report_withparameter({OpenDONumber},{CustomerName},{CustomerAliasName},{LeadId},{IssuedTo},{KPN},{MPN},{Warehouse},{Location},{ODOType})")
+                .ToList();
+
+                return result;
+            }
+
+        }
+
+        public async Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReportDates(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<OpenDeliveryOrderSPReport>()
+                          .FromSqlInterpolated($"CALL Open_Delivery_Order_Report_withparameter_withdate({FromDate},{ToDate})")
+                          .ToList();
+
+            return results;
+        }
 
         public async Task<IEnumerable<OpenDeliveryOrder>> SearchOpenDeliveryOrderDate([FromQuery] SearchsDateParms searchsDateParms)
         {

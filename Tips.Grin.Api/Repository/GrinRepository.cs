@@ -89,6 +89,46 @@ namespace Tips.Grin.Api.Repository
                 throw ex;
             }
         }
+        public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string GrinNumber, string VendorName, string PONumber, string KPN, string MPN, string Warehouse, string Location)
+        {
+            {
+
+                if (string.IsNullOrWhiteSpace(GrinNumber)
+              || string.IsNullOrWhiteSpace(VendorName)
+              || string.IsNullOrWhiteSpace(PONumber)
+              || string.IsNullOrWhiteSpace(KPN)
+              || string.IsNullOrWhiteSpace(MPN)
+              || string.IsNullOrWhiteSpace(Warehouse)
+              || string.IsNullOrWhiteSpace(Location)) ;
+
+
+                var result = _tipsGrinDbContext
+                .Set<Grin_ReportSP>()
+                .FromSqlInterpolated($"CALL Grin_Report_withparameter({GrinNumber},{VendorName},{PONumber},{KPN},{MPN},{Warehouse},{Location})")
+                .ToList();
+
+                return result;
+            }
+        }
+
+        public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReport()
+        {
+
+            var results = _tipsGrinDbContext.Set<Grin_ReportSP>()
+                      .FromSqlInterpolated($"CALL Grin_Report")
+                      .ToList();
+
+            return results;
+        }
+
+        public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<Grin_ReportSP>()
+                      .FromSqlInterpolated($"CALL Grin_Report_withparameter_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
         public async Task<string> GenerateGrinNumberForAvision()
         {
             using var transaction = await _tipsGrinDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);

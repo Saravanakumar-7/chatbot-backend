@@ -90,6 +90,20 @@ namespace Tips.Warehouse.Api.Repository
                 throw ex;
             }
         }
+        public async Task<IEnumerable<DailyDOReport>> GetDailyDeliveryOrderReports(string LeadId, string SONumber, string DOnumber, string DispatchKPN)
+        {
+            if (string.IsNullOrWhiteSpace(LeadId)
+     || string.IsNullOrWhiteSpace(SONumber)
+     || string.IsNullOrWhiteSpace(DOnumber)
+     || string.IsNullOrWhiteSpace(DispatchKPN)) ;
+
+            var result = _tipsWarehouseDbContext
+            .Set<DailyDOReport>()
+            .FromSqlInterpolated($"CALL Daily_report_Delivery_Order_withparameter({LeadId},{SONumber},{DOnumber},{DispatchKPN})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<DeliveryOrderSPReport>> GetDeliveryOrderSPReports(string DONumber, string CustomerName, string CustomerAliasName, string CustomerID, string SalesOrderNumber, string ProductType, string Warehouse, string Location, string KPN, string MPN)
         {
 

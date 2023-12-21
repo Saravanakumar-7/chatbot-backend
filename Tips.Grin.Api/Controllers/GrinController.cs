@@ -1077,6 +1077,30 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+        [HttpGet()]
+        public async Task<IActionResult> GetGrinSPReportWithParam([FromQuery] string? GrinNumber,[FromQuery] string? VendorName,[FromQuery] string? PONumber,[FromQuery] string? KPN,[FromQuery] string? MPN,[FromQuery] string? Warehouse,[FromQuery] string? Location)
+        {
+            var products = await _repository.GetGrinSPReportWithParam(GrinNumber, VendorName, PONumber, KPN, MPN, Warehouse, Location);
+
+            return Ok(products);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetGrinSPReport()
+        {
+            var products = await _repository.GetGrinSPReport();
+
+            return Ok(products);
+        }
+
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetGrinSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            var products = await _repository.GetGrinSPReportWithDate(FromDate, ToDate);
+
+            return Ok(products);
+        }
+
         //get all grin number based bining is completed
 
         [HttpGet]
