@@ -90,7 +90,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal ShopOrderReleaseQty { get; set; }
         public decimal WipQty { get; set; }
         public decimal OqcQty { get; set; }
-
+        public decimal BOMVersion { get; set; }        
     } 
     public class InventoryDtoForShopOrderConfirmation
     { 
