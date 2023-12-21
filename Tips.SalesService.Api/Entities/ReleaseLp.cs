@@ -12,7 +12,7 @@ namespace Tips.SalesService.Api.Entities
         public string? CustomerName { get; set; }
         public string? Rev { get; set; }
         public DateTime? DateOnLpCreation { get; set; }
-        public string? ItemNo { get; set; }
+        public string? ItemNumber { get; set; }
         public string? RLpItemNo { get; set; }
         public string? Description { get; set; }
 
@@ -38,7 +38,7 @@ namespace Tips.SalesService.Api.Entities
 
         [Precision(18, 3)]
         public decimal? Markup { get; set; }
-        public string? PriceList { get; set; }
+        public string? PriceListName { get; set; }
         public DateTime? ValidThrough { get; set; }
         public bool? IsDiscountApplicable { get; set; }
         public string Unit { get; set; }

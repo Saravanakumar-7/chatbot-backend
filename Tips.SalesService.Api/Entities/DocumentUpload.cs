@@ -13,6 +13,7 @@ namespace Tips.SalesService.Api.Entities
         public string? FileExtension { get; set; }
 
         public string? FilePath { get; set; }
+        public byte[] FileByte { get; set; }
 
         public string? DocumentFrom { get; set; }
 

@@ -315,6 +315,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? Transport { get; set; }
         [Precision(13, 3)]
         public decimal? BECurrencyValue { get; set; }
+        public string? GateEntryNo { get; set; }
         public List<DocumentUploadDto>? GrinDocuments { get; set; }
 
         //public string? GrinDocuments { get; set; }
