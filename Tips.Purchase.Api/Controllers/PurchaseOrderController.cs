@@ -267,7 +267,36 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            var products = await _repository.GetPurchaseOrderSPReportWithDate(FromDate, ToDate);
 
+            return Ok(products);
+        }
+
+
+
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderSPReportWithParam(
+                [FromQuery] string? VendorName,
+                [FromQuery] string? PONumber,
+                [FromQuery] string? PartNumber
+)
+        {
+            var products = await _repository.GetPurchaseOrderSPReportWithParam(VendorName, PONumber, PartNumber);
+
+            return Ok(products);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetPurchaseOrderSPResport()
+        {
+            var products = await _repository.GetPurchaseOrderSPResport();
+
+            return Ok(products);
+        }
         [HttpPost]
         public async Task<IActionResult> GetListOfOpenPOQtyByItemNoList(List<string> itemNumberList)
         {

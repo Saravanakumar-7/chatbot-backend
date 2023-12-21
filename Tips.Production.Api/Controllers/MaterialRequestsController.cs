@@ -521,7 +521,8 @@ namespace Tips.Production.Api.Controllers
                     MaterialRequestItems materialItemDetail = _mapper.Map<MaterialRequestItems>(materialReqItemDto[i]);
                     List<MRStockDetails> mrStockDetails = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
                     materialItemDetail.MRStockDetails = mrStockDetails;
-                    materialItemDetail.IssuedQty = mrStockDetails.Select(x=> x.Qty).Sum();
+                    var issuestock = mrStockDetails.Select(x => x.Qty).ToArray();
+                    materialItemDetail.IssuedQty = issuestock.Sum();
                     materialReqItemList.Add(materialItemDetail);
                     foreach (var item in mrStockDetails)
                     {

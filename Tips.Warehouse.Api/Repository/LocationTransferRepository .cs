@@ -146,7 +146,7 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryDetails;
         }
-         
+
 
         //public async Task<List<LocationTransferFromDto>> GetProjectLocWareFromInventoryByItemNo(string itemNumber)
         //{
@@ -163,7 +163,35 @@ namespace Tips.Warehouse.Api.Repository
         //    // Assuming you only want to return the first item from the list, if there are multiple matching entries
         //    return inventoryDetails;
         //}
+        public async Task<IEnumerable<LocationTransferSPReport>> LocationTransferSPReportWithParam(string FromPartNumber, string FromPartType, string FromWarehouse, string FromLocation, string FromProjectNumber, string ToPartnumber, string ToPartType, string ToWarehouse, string ToLocation, string ToProjectNumber)
+        {
+            {
+                if (string.IsNullOrWhiteSpace(FromPartNumber)
+           || string.IsNullOrWhiteSpace(FromPartType)
+           || string.IsNullOrWhiteSpace(FromWarehouse)
+           || string.IsNullOrWhiteSpace(FromLocation)
+           || string.IsNullOrWhiteSpace(FromProjectNumber)
+           || string.IsNullOrWhiteSpace(ToPartnumber)
+           || string.IsNullOrWhiteSpace(ToPartType)
+           || string.IsNullOrWhiteSpace(ToWarehouse)
+           || string.IsNullOrWhiteSpace(ToLocation)
+           || string.IsNullOrWhiteSpace(ToProjectNumber));
+                var result = _tipsWarehouseDbContext
+                .Set<LocationTransferSPReport>()
+                .FromSqlInterpolated($"CALL Location_Transfer_Report_withparameter({FromPartNumber},{FromPartType},{FromWarehouse},{FromLocation},{FromProjectNumber},{ToPartnumber},{ToPartType},{ToWarehouse},{ToLocation},{ToProjectNumber})")
+                .ToList();
+                return result;
+            }
 
+        }
+        public async Task<IEnumerable<LocationTransferSPReport>> LocationTransferSPReportDates(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<LocationTransferSPReport>()
+                         .FromSqlInterpolated($"CALL Location_Transfer_Report_withparameter_withdate({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
         public async Task<IEnumerable<LocationTransfer>> GetAllLocationTransferWithItems(LocationTransferSearchDto locationTransferSearchDto)
         {
             using (var context = _tipsWarehouseDbContext)

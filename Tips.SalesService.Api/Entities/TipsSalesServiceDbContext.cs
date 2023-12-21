@@ -98,12 +98,12 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<CoverageReport> CoverageReports { get; set; }
         public DbSet<SoConfirmationDate> SoConfirmationDates { get; set; }
         public DbSet<SoConfirmationDateHistory> SoConfirmationDateHistories { get; set; }
-
+        public DbSet<SalesOrderSPResport> SalesOrderSPResports { get; set; }
         public DbSet<DocumentUpload> DocumentUploads { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RecievableCustomer>().HasNoKey();
+            modelBuilder.Entity<SalesOrderSPResport>().HasNoKey();
         }
 
     }

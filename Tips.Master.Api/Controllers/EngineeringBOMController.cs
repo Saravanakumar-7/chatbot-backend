@@ -2457,6 +2457,7 @@ namespace Tips.Master.Api.Controllers
         {
             var productionBomMaxVersion = await _releaseProductBomRepository
                                         .GetLatestProductionBomByItemNumber(itemNumber);
+            Dictionary<string, decimal> saItemOpenStock = new Dictionary<string, decimal>();
             if (productionBomMaxVersion >= 0)
             {
                 var enggBomDetail = await _enggBomRepository
@@ -2478,8 +2479,41 @@ namespace Tips.Master.Api.Controllers
                         }
                         else
                         {
+                            decimal openSAQty = 0;
+                            string saItemNumber = enggChildItem.ItemNumber;
+                            if (saItemOpenStock.ContainsKey(saItemNumber))
+                            {
+                                openSAQty = saItemOpenStock[saItemNumber];
+                            }
+                            else
+                            {
+                                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                                  "GetTotalStockOfItemNumber?", "itemNumber=", saItemNumber));
+
+                                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                                dynamic inventoryObject = inventoryObjectData.data;
+                                openSAQty = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject): 0;
+                            }
+
+                             // get stock from inventory
                             decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
-                            await ChildItemRequiredQtyForCoverage(bomCoverageList, enggChildItem.ItemNumber, requiredQtySA);
+                            decimal newRequiredQtySA = requiredQtySA - openSAQty;
+                            newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
+                            decimal newOpenSAQty = requiredQtySA >= openSAQty ? 0 : (openSAQty- requiredQtySA);
+                            if (saItemOpenStock.ContainsKey(saItemNumber))
+                            {
+                                saItemOpenStock[saItemNumber] = newOpenSAQty;
+                            }
+                            else
+                            {
+                                saItemOpenStock.Add(saItemNumber, newOpenSAQty);
+                            }
+
+                            if (newRequiredQtySA <=0) {
+                                continue;
+                            }
+                            await ChildItemRequiredQtyForCoverage(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA);
                         }
 
                     }

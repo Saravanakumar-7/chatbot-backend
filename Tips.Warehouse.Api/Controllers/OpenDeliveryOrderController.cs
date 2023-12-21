@@ -785,6 +785,32 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> OpenDeliveryOrderSPReportDates([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            var products = await _repository.OpenDeliveryOrderSPReportDates(FromDate, ToDate);
+
+            return Ok(products);
+        }
+
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> OpenDeliveryOrderSPReportWithParam(
+            [FromQuery] string? OpenDONumber,
+            [FromQuery] string? CustomerName,
+            [FromQuery] string? CustomerAliasName,
+            [FromQuery] string? LeadId,
+            [FromQuery] string? IssuedTo,
+            [FromQuery] string? KPN,
+            [FromQuery] string? MPN,
+            [FromQuery] string? Warehouse,
+            [FromQuery] string? Location,
+            [FromQuery] string? ODOType
+)
+        {
+            var products = await _repository.OpenDeliveryOrderSPReportWithParam(OpenDONumber, CustomerName, CustomerAliasName, LeadId, IssuedTo, KPN, MPN, Warehouse, Location, ODOType);
+
+            return Ok(products);
+        }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOpenDeliveryOrder(int id, [FromBody] OpenDeliveryOrderDtoUpdate openDeliveryOrderDtoUpdate)

@@ -16,7 +16,7 @@ namespace Entities
         public int Id { get; set; }
 
         public string ItemNumber { get; set; }
-
+        public string? MftrItemNumbers { get; set; }
         public string? UOM { get; set; }
 
         [Precision(13,3)]

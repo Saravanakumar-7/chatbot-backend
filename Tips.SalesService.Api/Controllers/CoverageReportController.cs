@@ -160,8 +160,14 @@ namespace Tips.SalesService.Api.Controllers
                                     }
 
                                     // Calculate BalanceToOrder
+
                                     var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
-                                    coverageReport.BalanceToOrder = balanceToOrderQty.HasValue && balanceToOrderQty.Value > 0 ? balanceToOrderQty.Value : 0;
+
+                                    coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
+
+
+                                    //var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
+                                    //coverageReport.BalanceToOrder = balanceToOrderQty.HasValue && balanceToOrderQty.Value > 0 ? balanceToOrderQty.Value : 0;
                                      
                                     openSalesCoverageReports.Add(coverageReport);
                                 }
@@ -251,23 +257,14 @@ namespace Tips.SalesService.Api.Controllers
                                     };
 
                                     //test
+
                                     
-                                    var balanceToOrder = (coverageDetailOfChildItem.Stock
-                                        + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty) - coverageDetailOfChildItem.RequiredQty;
-                                    if(balanceToOrder >= 0)
-                                    {
-                                        coverageDetailOfChildItem.BalanceToOrder = (coverageDetailOfChildItem.Stock
-                                           + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty) - coverageDetailOfChildItem.RequiredQty;
 
-                                    }
-                                    else
-                                    {
-                                        coverageDetailOfChildItem.BalanceToOrder = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
-                                        + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
-                                    }
+                                    decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
+                                       + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
 
-                                     //coverageDetailOfChildItem.BalanceToOrder = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
-                                     //   + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
+                                    coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : balanceRequiredQty;
+
                                     coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
                                 }
                             }

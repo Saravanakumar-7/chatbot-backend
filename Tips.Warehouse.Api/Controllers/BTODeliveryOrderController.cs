@@ -17,8 +17,8 @@ using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
 using Tips.Warehouse.Api.Repository;
-
-namespace Tips.Warehouse.Api.Controllers
+//aravind
+namespace Tips.Warehouse.Api.Controllers 
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
@@ -97,6 +97,31 @@ namespace Tips.Warehouse.Api.Controllers
         public async Task<IActionResult> DeliveryOrderSPReport()
         {
             var products = await _repository.DeliveryOrderSPReport();
+
+            return Ok(products);
+        }
+        [HttpGet("DeliveryOrderSPReportdate")] // Adjust your route as needed
+        public async Task<IActionResult> DeliveryOrderSPReportdate([FromQuery] DateTime? FromDate,[FromQuery] DateTime? ToDate)
+        {
+            var products = await _repository.DeliveryOrderSPReportdate(FromDate, ToDate);
+
+            return Ok(products);
+        }
+        [HttpGet("GetDeliveryOrderSPReports")] // Adjust your route as needed
+        public async Task<IActionResult> GetDeliveryOrderSPReports(
+    [FromQuery] string? DONumber,
+    [FromQuery] string? CustomerName,
+    [FromQuery] string? CustomerAliasName,
+    [FromQuery] string? CustomerID,
+    [FromQuery] string? SalesOrderNumber,
+    [FromQuery] string? ProductType,
+    [FromQuery] string? Warehouse,
+    [FromQuery] string? Location,
+    [FromQuery] string? KPN,
+    [FromQuery] string? MPN
+    )
+        {
+            var products = await _repository.GetDeliveryOrderSPReports(DONumber, CustomerName, CustomerAliasName, CustomerID, SalesOrderNumber, ProductType, Warehouse, Location, KPN, MPN);
 
             return Ok(products);
         }
@@ -346,7 +371,18 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetDailyDeliveryOrderReports(
+         [FromQuery] string? LeadId,
+         [FromQuery] string? SONumber,
+         [FromQuery] string? DOnumber,
+         [FromQuery] string? DispatchKPN
+         )
+        {
+            var products = await _repository.GetDailyDeliveryOrderReports(LeadId, SONumber, DOnumber, DispatchKPN);
 
+            return Ok(products);
+        }
         [HttpGet]
         public async Task<IActionResult> GetBtoNumberListByCustomerId(string customerLeadId)
         {
@@ -1034,6 +1070,13 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetAllDailyDeliveryOrderReports()
+        {
+            var products = await _repository.GetDailyDeliveryOrderReports();
+
+            return Ok(products);
+        }
         [HttpGet]
         public async Task<IActionResult> GetBTONumberListBySalesOrderId(int salesOrderId)
         {

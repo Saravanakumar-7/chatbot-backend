@@ -39,5 +39,8 @@ namespace Tips.SalesService.Api.Contracts
         Task<decimal> GetOpenSalesOrderQuantityByItemNumber(string salesOrderNumber);
         Task<List<SalesOrderQtyForSADto>> GetSASalesOrderQtyDetailsByItemNo(string fgItemNumber, string projectNo, decimal BomQty);
         Task<string> GenerateSONumberForAvision();
+        Task<IEnumerable<SalesOrderSPResport>> GetSalesOrderSPResport();
+        Task<IEnumerable<SalesOrderSPResport>> GetSalesorderReportWithParam(string CustomerName, string SalesOrderNumber, string PartNumber);
+        Task<IEnumerable<SalesOrderSPResport>> GetSalesorderReportWithDate(DateTime? FromDate, DateTime? ToDate);
     }
 }

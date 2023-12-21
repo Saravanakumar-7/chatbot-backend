@@ -90,12 +90,62 @@ namespace Tips.Warehouse.Api.Repository
                 throw ex;
             }
         }
+        public async Task<IEnumerable<DailyDOReport>> GetDailyDeliveryOrderReports()
+        {
 
+            var result = _tipsWarehouseDbContext
+            .Set<DailyDOReport>()
+            .FromSqlInterpolated($"CALL Daily_report_Delivery_Order()")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<DailyDOReport>> GetDailyDeliveryOrderReports(string LeadId, string SONumber, string DOnumber, string DispatchKPN)
+        {
+            if (string.IsNullOrWhiteSpace(LeadId)
+     || string.IsNullOrWhiteSpace(SONumber)
+     || string.IsNullOrWhiteSpace(DOnumber)
+     || string.IsNullOrWhiteSpace(DispatchKPN)) ;
+
+            var result = _tipsWarehouseDbContext
+            .Set<DailyDOReport>()
+            .FromSqlInterpolated($"CALL Daily_report_Delivery_Order_withparameter({LeadId},{SONumber},{DOnumber},{DispatchKPN})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<DeliveryOrderSPReport>> GetDeliveryOrderSPReports(string DONumber, string CustomerName, string CustomerAliasName, string CustomerID, string SalesOrderNumber, string ProductType, string Warehouse, string Location, string KPN, string MPN)
+        {
+
+            if (string.IsNullOrWhiteSpace(DONumber) || string.IsNullOrWhiteSpace(CustomerName)|| string.IsNullOrWhiteSpace(CustomerAliasName)
+       || string.IsNullOrWhiteSpace(CustomerID)
+       || string.IsNullOrWhiteSpace(SalesOrderNumber)
+       || string.IsNullOrWhiteSpace(ProductType)
+       || string.IsNullOrWhiteSpace(Warehouse)
+       || string.IsNullOrWhiteSpace(Location)
+       || string.IsNullOrWhiteSpace(KPN)
+       || string.IsNullOrWhiteSpace(MPN));
+
+            var result = _tipsWarehouseDbContext
+            .Set<DeliveryOrderSPReport>()
+            .FromSqlInterpolated($"CALL Delivery_Order_Report_withparameter({DONumber},{CustomerName},{CustomerAliasName},{CustomerID},{SalesOrderNumber},{ProductType},{Warehouse},{Location},{KPN},{MPN})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<DeliveryOrderSPReport>> DeliveryOrderSPReport()
         {
             var results = _tipsWarehouseDbContext.Set<DeliveryOrderSPReport>()
                         .FromSqlInterpolated($"CALL Delivery_Order_Report")
                         .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<DeliveryOrderSPReport>> DeliveryOrderSPReportdate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<DeliveryOrderSPReport>()
+                         .FromSqlInterpolated($"CALL Delivery_Order_Report_withparameter_withdate({FromDate},{ToDate})")
+                         .ToList();
 
             return results;
         }

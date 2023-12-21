@@ -87,6 +87,35 @@ namespace Tips.Warehouse.Api.Repository
                 throw ex;
             }
         }
+        public async Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportWithParameter(string InvoiceNumber, string DONumber, string LeadId, string CustomerName, string CustomerAliasName, string SalesOrderNumber, string Location, string Warehouse, string KPN, string MPN)
+        {
+            {
+                if (string.IsNullOrWhiteSpace(InvoiceNumber)
+           || string.IsNullOrWhiteSpace(DONumber)
+           || string.IsNullOrWhiteSpace(LeadId)
+           || string.IsNullOrWhiteSpace(CustomerName)
+           || string.IsNullOrWhiteSpace(CustomerAliasName)
+           || string.IsNullOrWhiteSpace(Location)
+           || string.IsNullOrWhiteSpace(Warehouse)
+           || string.IsNullOrWhiteSpace(KPN)
+           || string.IsNullOrWhiteSpace(MPN)) ;
+
+                var result = _tipsWarehouseDbContext
+                .Set<InvoiceSPReport>()
+                .FromSqlInterpolated($"CALL Invoice_Report_withparameter({InvoiceNumber},{DONumber},{LeadId},{CustomerName},{SalesOrderNumber},{CustomerAliasName},{Location},{Warehouse},{KPN},{MPN})")
+                .ToList();
+
+                return result;
+            }
+        }
+            public async Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<InvoiceSPReport>()
+                         .FromSqlInterpolated($"CALL Invoice_Report_withparameter_invoicedate({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
 
         public async Task<IEnumerable<InvoiceSPReport>> InvoiceSPReport()
         {
