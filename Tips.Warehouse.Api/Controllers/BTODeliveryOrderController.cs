@@ -109,7 +109,6 @@ namespace Tips.Warehouse.Api.Controllers
         }
         [HttpGet("GetDeliveryOrderSPReports")] // Adjust your route as needed
         public async Task<IActionResult> GetDeliveryOrderSPReports(
-
     [FromQuery] string? DONumber,
     [FromQuery] string? CustomerName,
     [FromQuery] string? CustomerAliasName,
@@ -374,12 +373,10 @@ namespace Tips.Warehouse.Api.Controllers
         }
         [HttpGet()] // Adjust your route as needed
         public async Task<IActionResult> GetDailyDeliveryOrderReports(
-
          [FromQuery] string? LeadId,
          [FromQuery] string? SONumber,
          [FromQuery] string? DOnumber,
          [FromQuery] string? DispatchKPN
-
          )
         {
             var products = await _repository.GetDailyDeliveryOrderReports(LeadId, SONumber, DOnumber, DispatchKPN);
@@ -1073,6 +1070,13 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetAllDailyDeliveryOrderReports()
+        {
+            var products = await _repository.GetDailyDeliveryOrderReports();
+
+            return Ok(products);
+        }
         [HttpGet]
         public async Task<IActionResult> GetBTONumberListBySalesOrderId(int salesOrderId)
         {

@@ -670,6 +670,38 @@ namespace Tips.Purchase.Api.Repository
 
             return new PagedList<PurchaseOrderIdNameListDto>(result, totalCount, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPResport()
+        {
+            var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReport>()
+                     .FromSqlInterpolated($"CALL Purchase_Order_without_parameter")
+                     .ToList();
+
+            return results;
+        }
+
+        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParam(string VendorName, string PONumber, string PartNumber)
+        {
+            if (string.IsNullOrWhiteSpace(VendorName)
+             || string.IsNullOrWhiteSpace(PONumber)
+             || string.IsNullOrWhiteSpace(PartNumber)) ;
+
+
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseOrderSPReport>()
+            .FromSqlInterpolated($"CALL Purchase_Order_withparameter({VendorName},{PONumber},{PartNumber})")
+            .ToList();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReport>()
+                        .FromSqlInterpolated($"CALL Purchase_Order_withparameter_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+        }
         public async Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
             IQueryable<PurchaseOrderIdNameListDto> pendingPOApprovalIINameList =  _tipsPurchaseDbContext.PurchaseOrders
