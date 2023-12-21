@@ -2176,6 +2176,7 @@ namespace Tips.Warehouse.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                 var updateInventory = _mapper.Map(inventoryDtoUpdate, getInventoryById);
+                if (updateInventory.Balance_Quantity == 0) updateInventory.IsStockAvailable = false;
                  string result = await _inventoryRepository.UpdateInventory(updateInventory);
                 _logger.LogInfo(result);
                 _inventoryRepository.SaveAsync();
