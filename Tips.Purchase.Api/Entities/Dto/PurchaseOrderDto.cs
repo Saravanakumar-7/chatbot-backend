@@ -23,6 +23,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         //VendorDetails
         public string? VendorName { get; set; }
         public string? VendorId { get; set; }
+        public string? VendorNumber { get; set; }
         public string? QuotationReferenceNumber { get; set; }
         public DateTime? QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
@@ -80,6 +81,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         //VendorDetails
         public string? VendorName { get; set; }
         public string? VendorId { get; set; }
+        public string? VendorNumber { get; set; }
         public string? QuotationReferenceNumber { get; set; }
         public DateTime? QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
@@ -119,6 +121,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public int? BillToId { get; set; }
         public int? ShipToId { get; set; }
         public string? VendorId { get; set; }
+        public string? VendorNumber { get; set; }
         public string? QuotationReferenceNumber { get; set; }
         public DateTime? QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
@@ -160,6 +163,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         //VendorDetails
         public string? VendorName { get; set; }
         public string? VendorId { get; set; }
+        public string? VendorNumber { get; set; }
         public string? QuotationReferenceNumber { get; set; }
         public DateTime? QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
@@ -246,6 +250,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         //VendorDetails
         public string? VendorName { get; set; }
         public string? VendorId { get; set; }
+        public string? VendorNumber { get; set; }
         public string? QuotationReferenceNumber { get; set; }
         public DateTime? QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
