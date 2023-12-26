@@ -53,6 +53,19 @@ namespace Tips.SalesService.Api.Repository
 
             return getSONumberAutoIncrementCount;
         }
+        //recieveable report 
+
+        public async Task<IEnumerable<RecievableCustomer>> GetRecievableCustomersWithCustomerID(string CustomerId)
+        {
+            if (string.IsNullOrWhiteSpace(CustomerId));
+            {
+                var results = _tipsSalesServiceDbContext.Set<RecievableCustomer>()
+       .FromSqlInterpolated($"CALL Recievable_Report_forCustomer({CustomerId})")
+       .ToList();
+
+                return results;
+            }
+        }
         public async Task<IEnumerable<SalesOrderSPResport>> GetSalesOrderSPResport()
         {
             var results = _tipsSalesServiceDbContext.Set<SalesOrderSPResport>()
@@ -262,18 +275,8 @@ namespace Tips.SalesService.Api.Repository
             }
 
         }
-        //recieveable report 
-
-        public async Task<IEnumerable<RecievableCustomer>> GetRecievableCustomers()
-        {
-            var results = _tipsSalesServiceDbContext.Set<RecievableCustomer>()
-   .FromSqlInterpolated($"CALL Recievable_Report_forCustomer")
-   .ToList(); 
-
-            return results;
-        }
-
-        public async Task<IEnumerable<SalesOrderIdNameListDto>> GetAllActiveSalesOrderNameList()
+     
+            public async Task<IEnumerable<SalesOrderIdNameListDto>> GetAllActiveSalesOrderNameList()
         {
             IEnumerable<SalesOrderIdNameListDto> activeSalesOrderNameList = await _tipsSalesServiceDbContext.SalesOrders
                                 .Select(x => new SalesOrderIdNameListDto()
@@ -567,8 +570,6 @@ namespace Tips.SalesService.Api.Repository
             return salesOrderQtyDtos;
         }
 
-
-
         public async Task<decimal> GetOpenSalesOrderQuantityByItemNumber(string itemNumber)
         {
             return await _tipsSalesServiceDbContext.SalesOrdersItems
@@ -576,6 +577,7 @@ namespace Tips.SalesService.Api.Repository
                 && soi.SalesOrder.IsShortClosed ==false)
             .SumAsync(soi => soi.BalanceQty);
         }
+         
     }
     public class SalesOrderItemRepository : RepositoryBase<SalesOrderItems>, ISalesOrderItemsRepository
     {

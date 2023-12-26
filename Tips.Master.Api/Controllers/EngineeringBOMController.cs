@@ -2349,7 +2349,7 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<ProductionBomRevisionNumberAndQty> serviceResponse = new ServiceResponse<ProductionBomRevisionNumberAndQty>();
             try
             {
-                var productionBomDetails = await _releaseProductBomRepository.GetAllProductionBomSAListByItemNumber(itemNumber);
+                 var productionBomDetails = await _releaseProductBomRepository.GetAllProductionBomSAListByItemNumber(itemNumber);
                 if (productionBomDetails == null)
                 {
                     serviceResponse.Data = null;

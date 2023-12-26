@@ -50,10 +50,11 @@ namespace Tips.Warehouse.Api.Repository
         {
             var resultList = (from st in _tipsWarehouseDbContext.ShopOrderMaterialIssueTrackers
                               where st.ShopOrderNumber == ShopOrderNo
-                              group st by new { st.PartNumber, st.Description,st.Bomversion, st.ShopOrderNumber, st.DataFrom } into g
+                              group st by new { st.PartNumber,st.MRNumber, st.Description,st.Bomversion, st.ShopOrderNumber, st.DataFrom } into g
                               select new ShopOrderMaterialIssueTrackerDto
                               {
                                   PartNumber = g.Key.PartNumber,
+                                  MRNumber = g.Key.MRNumber,
                                   Description = g.Key.Description,
                                   ShopOrderNumber = g.Key.ShopOrderNumber,
                                   DataFrom = g.Key.DataFrom,
