@@ -306,7 +306,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public List<DocumentUploadDto> COCUpload { get; set; }
 
         public bool IsIqcCompleted { get; set; }
-
+        public bool IsBinningCompleted { get; set; }
         [Precision(13, 3)]
         public decimal? SGST { get; set; }
 

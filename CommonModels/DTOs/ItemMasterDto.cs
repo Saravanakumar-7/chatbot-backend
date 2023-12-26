@@ -422,9 +422,9 @@ namespace Entities.DTOs
         [DefaultValue(false)]
         public bool IsReachItem { get; set; }
 
-        public List<ImageUploadDto>? ImageUpload { get; set; }
+        public int? ImageUpload { get; set; }
 
-        public List<FileUploadDto>? FileUpload { get; set; }
+        public string? FileUpload { get; set; }
 
         public decimal NetWeight { get; set; }
         public string? NetUom { get; set; }
