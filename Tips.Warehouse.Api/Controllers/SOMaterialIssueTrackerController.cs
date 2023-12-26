@@ -38,20 +38,37 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 var shopOrderMaterialIssueTrackers = await _materialIssueTrackerRepository.SOMaterialIssueTrackerDetailsByShopOrderNo(ShopOrderNo);
 
+                //    var groupedMaterialIssueItemDtoList = shopOrderMaterialIssueTrackers
+                //        .GroupBy(item => item.PartNumber)
+                //        .Select(group => new ShopOrderMaterialIssueTrackerDto
+                //        {
+                //            PartNumber = group.Key,
+                //            ShopOrderNumber = group.First().ShopOrderNumber,
+                //            Description = group.First().Description,
+                //            Bomversion = group.First().Bomversion,
+                //            IssuedQty = group.Sum(item => item.IssuedQty),
+                //            ConvertedToFgQty = group.Sum(item => item.ConvertedToFgQty),
+                //            BalanceQty = group.Sum(item => item.BalanceQty),
+                //            DataFrom = group.First().DataFrom
+                //        })
+                //.ToList();
                 var groupedMaterialIssueItemDtoList = shopOrderMaterialIssueTrackers
-                    .GroupBy(item => item.PartNumber)
-                    .Select(group => new ShopOrderMaterialIssueTrackerDto
-                    {
-                        PartNumber = group.Key,
-                        ShopOrderNumber = group.First().ShopOrderNumber,
-                        Description = group.First().Description,
-                        Bomversion = group.First().Bomversion,
-                        IssuedQty = group.Sum(item => item.IssuedQty),
-                        ConvertedToFgQty = group.Sum(item => item.ConvertedToFgQty),
-                        BalanceQty = group.Sum(item => item.BalanceQty),
-                        DataFrom = group.First().DataFrom
-                    })
-            .ToList();
+    .Where(item => item.PartNumber != null) // Exclude items with null PartNumber
+    .GroupBy(item => new { item.PartNumber, item.MRNumber, item.ShopOrderNumber, item.DataFrom }) // Group by multiple fields
+    .Select(group => new ShopOrderMaterialIssueTrackerDto
+    {
+        PartNumber = group.Key.PartNumber,
+        ShopOrderNumber = group.Key.ShopOrderNumber,
+        Description = group.First().Description,
+        Bomversion = group.First().Bomversion,
+        MRNumber = group.First().MRNumber,
+        IssuedQty = group.Sum(item => item.IssuedQty),
+        ConvertedToFgQty = group.Sum(item => item.ConvertedToFgQty),
+        BalanceQty = group.Sum(item => item.BalanceQty),
+        DataFrom = group.Key.DataFrom // Use the DataFrom from the grouping key
+    })
+    .ToList();
+
 
                 // if (shopOrderMaterialIssueTrackers.Count() == 0)
                 if (groupedMaterialIssueItemDtoList.Count() == 0)

@@ -1372,21 +1372,23 @@ namespace Tips.SalesService.Api.Controllers
 
 
         [HttpGet()] // Adjust your route as needed
-        public async Task<IActionResult> GetSalesorderReportWithParam([FromQuery] string? CustomerName,[FromQuery] string? SalesOrderNumber,[FromQuery] string? PartNumber)
+        public async Task<IActionResult> GetSalesorderReportWithParam([FromQuery] string? CustomerName,[FromQuery] string? SalesOrderNumber,
+                [FromQuery] string? PartNumber
+)
         {
             var products = await _repository.GetSalesorderReportWithParam(CustomerName, SalesOrderNumber, PartNumber);
 
             return Ok(products);
         }
 
-
         [HttpGet]
-        public async Task<IActionResult> GetSalesOrderSPResport()
+        public async Task<IActionResult> GetReceivableReportsWithCustomerID(string CustomerId)
         {
-            var products = await _repository.GetSalesOrderSPResport();
+            var products = await _repository.GetRecievableCustomersWithCustomerID(CustomerId);
 
             return Ok(products);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetSASalesOrderDetailsByItemNo(string itemNumber)
@@ -1480,14 +1482,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         //receivable report 
-
-        [HttpGet]
-        public async Task<IActionResult> GetReceivableReports()
-        {
-            var products = await _repository.GetRecievableCustomers();
-
-            return Ok(products);
-        }
+         
 
         [HttpGet]
         public async Task<IActionResult> GetAllActiveSalesOrderIdNameList()
