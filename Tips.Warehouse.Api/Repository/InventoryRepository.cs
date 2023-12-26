@@ -96,6 +96,103 @@ namespace Tips.Warehouse.Api.Repository
             return result;
 
         }
+        //public async Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfBalQty(InventoryDetailsBalQty inventoryDetailsBalQty)
+        //{
+        //    using (var context = _tipsWarehouseDbContext)
+        //    {
+        //        var query = _tipsWarehouseDbContext.Inventories.AsQueryable();
+
+        //        // Check if inventoryBalQty object is not null
+        //        if (inventoryDetailsBalQty == null || (inventoryDetailsBalQty.PartNumber.Count == 0 && inventoryDetailsBalQty.Warehouse.Count == 0 && inventoryDetailsBalQty.Location.Count == 0 && inventoryDetailsBalQty.ProjectNumber.Count == 0))
+        //        {
+        //            query = FindAll().OrderByDescending(x => x.Id);
+
+        //        }
+        //        else
+        //        {
+        //            // Apply filtering based on the inventoryBalQty properties if they are not null
+        //            if (inventoryDetailsBalQty.PartNumber != null && inventoryDetailsBalQty.PartNumber.Any())
+        //            {
+        //                query = query.Where(inv => inventoryDetailsBalQty.PartNumber.Contains(inv.PartNumber));
+        //            }
+
+        //            if (inventoryDetailsBalQty.Warehouse != null && inventoryDetailsBalQty.Warehouse.Any())
+        //            {
+        //                //query = query.Where(inv => inventoryDetailsBalQty.Warehouse.Contains(inv.Warehouse));
+        //                query = query.Where(inv => inventoryDetailsBalQty.Warehouse.Contains(inv.Warehouse) && inv.Warehouse != "WIP");
+
+        //            }
+
+        //            if (inventoryDetailsBalQty.Location != null && inventoryDetailsBalQty.Location.Any())
+        //            {
+        //                //query = query.Where(inv => inventoryDetailsBalQty.Location.Contains(inv.Location));
+        //                query = query.Where(inv => inventoryDetailsBalQty.Location.Contains(inv.Location) && inv.Location != "WIP");
+
+        //            }
+
+        //            if (inventoryDetailsBalQty.ProjectNumber != null && inventoryDetailsBalQty.ProjectNumber.Any())
+        //            {
+        //                query = query.Where(inv => inventoryDetailsBalQty.ProjectNumber.Contains(inv.ProjectNumber));
+        //            }
+        //        }
+
+        //        var inventoryItems = await query.ToListAsync();
+
+        //        var groupedItems = new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<string, List<Inventory>>>>>();
+
+        //        foreach (var item in inventoryItems)
+        //        {
+        //            var partNumber = item.PartNumber;
+        //            var warehouse = item.Warehouse;
+        //            var location = item.Location;
+        //            var projectNumber = item.ProjectNumber;
+
+        //            if (!groupedItems.ContainsKey(partNumber))
+        //            {
+        //                groupedItems[partNumber] = new Dictionary<string, Dictionary<string, Dictionary<string, List<Inventory>>>>();
+        //            }
+
+        //            if (!groupedItems[partNumber].ContainsKey(warehouse))
+        //            {
+        //                groupedItems[partNumber][warehouse] = new Dictionary<string, Dictionary<string, List<Inventory>>>();
+        //            }
+
+        //            if (!groupedItems[partNumber][warehouse].ContainsKey(location))
+        //            {
+        //                groupedItems[partNumber][warehouse][location] = new Dictionary<string, List<Inventory>>();
+        //            }
+
+        //            if (!groupedItems[partNumber][warehouse][location].ContainsKey(projectNumber))
+        //            {
+        //                groupedItems[partNumber][warehouse][location][projectNumber] = new List<Inventory>();
+        //            }
+
+        //            groupedItems[partNumber][warehouse][location][projectNumber].Add(item);
+        //        }
+
+        //        foreach (var partNumberGroup in groupedItems.Values)
+        //        {
+        //            foreach (var warehouseGroup in partNumberGroup.Values)
+        //            {
+        //                foreach (var locationGroup in warehouseGroup.Values)
+        //                {
+        //                    foreach (var projectGroup in locationGroup.Values)
+        //                    {
+        //                        var sum = projectGroup.Sum(inv => inv.Balance_Quantity);
+        //                        var firstItem = projectGroup.First();
+        //                        firstItem.Balance_Quantity = sum;
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //        return groupedItems.Values
+        //            .SelectMany(partNumberGroup => partNumberGroup.Values
+        //                .SelectMany(warehouseGroup => warehouseGroup.Values
+        //                    .SelectMany(locationGroup => locationGroup.Values
+        //                        .Select(projectGroup => projectGroup.First()))));
+        //    }
+        //}
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfBalQty(InventoryDetailsBalQty inventoryDetailsBalQty)
         {
             using (var context = _tipsWarehouseDbContext)
@@ -106,7 +203,6 @@ namespace Tips.Warehouse.Api.Repository
                 if (inventoryDetailsBalQty == null || (inventoryDetailsBalQty.PartNumber.Count == 0 && inventoryDetailsBalQty.Warehouse.Count == 0 && inventoryDetailsBalQty.Location.Count == 0 && inventoryDetailsBalQty.ProjectNumber.Count == 0))
                 {
                     query = FindAll().OrderByDescending(x => x.Id);
-
                 }
                 else
                 {
@@ -118,16 +214,12 @@ namespace Tips.Warehouse.Api.Repository
 
                     if (inventoryDetailsBalQty.Warehouse != null && inventoryDetailsBalQty.Warehouse.Any())
                     {
-                        //query = query.Where(inv => inventoryDetailsBalQty.Warehouse.Contains(inv.Warehouse));
                         query = query.Where(inv => inventoryDetailsBalQty.Warehouse.Contains(inv.Warehouse) && inv.Warehouse != "WIP");
-
                     }
 
                     if (inventoryDetailsBalQty.Location != null && inventoryDetailsBalQty.Location.Any())
                     {
-                        //query = query.Where(inv => inventoryDetailsBalQty.Location.Contains(inv.Location));
                         query = query.Where(inv => inventoryDetailsBalQty.Location.Contains(inv.Location) && inv.Location != "WIP");
-
                     }
 
                     if (inventoryDetailsBalQty.ProjectNumber != null && inventoryDetailsBalQty.ProjectNumber.Any())
@@ -135,9 +227,9 @@ namespace Tips.Warehouse.Api.Repository
                         query = query.Where(inv => inventoryDetailsBalQty.ProjectNumber.Contains(inv.ProjectNumber));
                     }
                 }
-                 
+
                 var inventoryItems = await query.ToListAsync();
-                 
+
                 var groupedItems = new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<string, List<Inventory>>>>>();
 
                 foreach (var item in inventoryItems)
@@ -146,6 +238,12 @@ namespace Tips.Warehouse.Api.Repository
                     var warehouse = item.Warehouse;
                     var location = item.Location;
                     var projectNumber = item.ProjectNumber;
+
+                    // Skip items with 'WIP' Location or Warehouse
+                    if (warehouse == "WIP" || location == "WIP")
+                    {
+                        continue;
+                    }
 
                     if (!groupedItems.ContainsKey(partNumber))
                     {
@@ -169,7 +267,7 @@ namespace Tips.Warehouse.Api.Repository
 
                     groupedItems[partNumber][warehouse][location][projectNumber].Add(item);
                 }
-                 
+
                 foreach (var partNumberGroup in groupedItems.Values)
                 {
                     foreach (var warehouseGroup in partNumberGroup.Values)
@@ -185,7 +283,7 @@ namespace Tips.Warehouse.Api.Repository
                         }
                     }
                 }
-                 
+
                 return groupedItems.Values
                     .SelectMany(partNumberGroup => partNumberGroup.Values
                         .SelectMany(warehouseGroup => warehouseGroup.Values
@@ -193,6 +291,7 @@ namespace Tips.Warehouse.Api.Repository
                                 .Select(projectGroup => projectGroup.First()))));
             }
         }
+
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfStock(InventoryBalQty inventoryBalQty)
         {
             using (var context = _tipsWarehouseDbContext)

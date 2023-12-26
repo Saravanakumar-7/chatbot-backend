@@ -12,7 +12,6 @@ namespace Entities.DTOs
     public class VendorMasterDto
     {
         public int Id { get; set; }
-        [Required(ErrorMessage = "VendorId is required")]
         public string? VendorId { get; set; }
         [Required(ErrorMessage = "VendorName is required")]
         public string? VendorName { get; set; }
@@ -147,7 +146,6 @@ namespace Entities.DTOs
     public class VendorMasterPostDto
     {
  
-        [Required(ErrorMessage = "VendorId is required")]
         [StringLength(100, ErrorMessage = "VendorId can't be longer than 100 characters")]
         public string? VendorId { get; set; }
 
@@ -282,7 +280,6 @@ namespace Entities.DTOs
     public class VendorMasterUpdateDto
     {
         public int Id { get; set; }
-        [Required(ErrorMessage = "VendorId is required")]
         [StringLength(100, ErrorMessage = "VendorId can't be longer than 100 characters")]
 
         public string? VendorId { get; set; }

@@ -23,7 +23,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Required]
         public string VendorId { get; set; }
-
+        public string? VendorNumber { get; set; }
         [Required]
         public string InvoiceNumber { get; set; }
 
@@ -88,6 +88,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
 
         public string VendorId { get; set; }
+        public string? VendorNumber { get; set; }
 
         [Required(ErrorMessage = "InvoiceNumber is required")]
         [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
@@ -145,6 +146,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Required(ErrorMessage = "VendorId is required")]
         public string VendorId { get; set; }
+        public string? VendorNumber { get; set; }
 
         [Required(ErrorMessage = "InvoiceNumber is required")]
 
@@ -281,7 +283,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Required]
         public string VendorId { get; set; }
-
+        public string? VendorNumber { get; set; }
         [Required]
         public string InvoiceNumber { get; set; }
 
@@ -315,6 +317,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? Transport { get; set; }
         [Precision(13, 3)]
         public decimal? BECurrencyValue { get; set; }
+        public string? GateEntryNo { get; set; }
         public List<DocumentUploadDto>? GrinDocuments { get; set; }
 
         //public string? GrinDocuments { get; set; }
@@ -343,6 +346,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Required]
         public string VendorId { get; set; }
+        public string? VendorNumber { get; set; }
 
         [Required]
         public string InvoiceNumber { get; set; }

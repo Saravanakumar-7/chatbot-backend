@@ -24,6 +24,7 @@ namespace Tips.Purchase.Api.Entities
         //VendorDetails
         public string? VendorName { get; set; }
         public string? VendorId { get; set; }
+        public string? VendorNumber { get; set; }
         public string? QuotationReferenceNumber { get; set; }
         public DateTime? QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
