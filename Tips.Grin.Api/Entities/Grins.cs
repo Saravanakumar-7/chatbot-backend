@@ -21,7 +21,7 @@ namespace Tips.Grin.Api.Entities
 
         [Required]
         public string VendorId { get; set; }
-        public string VendorNumber { get; set; }
+        public string? VendorNumber { get; set; }
 
         [Required]
         public string InvoiceNumber { get; set; }
