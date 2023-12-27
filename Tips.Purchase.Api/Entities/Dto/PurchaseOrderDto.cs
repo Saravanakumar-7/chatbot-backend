@@ -294,5 +294,13 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public List<PoIncoTermReportDto>? POIncoTerms { get; set; }
 
     }
+    public class PurchaseOrderSPReportDTO
+    {
+        public string? VendorName { get; set; }
+        public string? PONumber { get; set; }
+        public string? PartNumber { get; set; }
+
+
+    }
 
 }

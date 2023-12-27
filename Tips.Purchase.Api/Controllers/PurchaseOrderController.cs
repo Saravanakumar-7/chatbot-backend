@@ -306,17 +306,54 @@ namespace Tips.Purchase.Api.Controllers
 
 
 
-        [HttpGet()] // Adjust your route as needed
-        public async Task<IActionResult> GetPurchaseOrderSPReportWithParam(
-                [FromQuery] string? VendorName,
-                [FromQuery] string? PONumber,
-                [FromQuery] string? PartNumber
-)
+        //        [HttpGet()] // Adjust your route as needed
+        //        public async Task<IActionResult> GetPurchaseOrderSPReportWithParam(
+        //                [FromQuery] string? VendorName,
+        //                [FromQuery] string? PONumber,
+        //                [FromQuery] string? PartNumber
+        //)
+        //        {
+        //            ServiceResponse<IEnumerable<PurchaseOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReport>>();
+        //            try
+        //            {
+        //                var products = await _repository.GetPurchaseOrderSPReportWithParam(VendorName, PONumber, PartNumber);
+
+        //                if (products == null)
+        //                {
+        //                    serviceResponse.Data = null;
+        //                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+        //                    serviceResponse.Success = false;
+        //                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+        //                    return NotFound(serviceResponse);
+        //                }
+        //                else
+        //                {
+        //                    serviceResponse.Data = products;
+        //                    serviceResponse.Message = "Returned PurchaseOrder Details";
+        //                    serviceResponse.Success = true;
+        //                    serviceResponse.StatusCode = HttpStatusCode.OK;
+        //                    return Ok(serviceResponse);
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                _logger.LogError(ex.Message);
+        //                serviceResponse.Data = null;
+        //                serviceResponse.Message = $"Something went wrong inside PurchaseOrder action";
+        //                serviceResponse.Success = false;
+        //                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //                return StatusCode(500, serviceResponse);
+        //            }
+        //        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderSPReportWithParam([FromBody] PurchaseOrderSPReportDTO purchaseOrderSPReport)
+
         {
             ServiceResponse<IEnumerable<PurchaseOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReport>>();
             try
             {
-                var products = await _repository.GetPurchaseOrderSPReportWithParam(VendorName, PONumber, PartNumber);
+                var products = await _repository.GetPurchaseOrderSPReportWithParam(purchaseOrderSPReport.VendorName, purchaseOrderSPReport.PONumber, purchaseOrderSPReport.PartNumber);
 
                 if (products == null)
                 {
@@ -329,6 +366,8 @@ namespace Tips.Purchase.Api.Controllers
                 }
                 else
                 {
+                    var result = _mapper.Map<IEnumerable<PurchaseOrderSPReportDTO>>(products);
+
                     serviceResponse.Data = products;
                     serviceResponse.Message = "Returned PurchaseOrder Details";
                     serviceResponse.Success = true;
@@ -346,7 +385,6 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
 
         [HttpGet]
         public async Task<IActionResult> GetPurchaseOrderSPResport()
