@@ -42,8 +42,7 @@ namespace Tips.Master.Api.Controllers
             _fileUploadRepository = fileUploadRepository;
             _imageUploadRepository = imageUploadRepository;
             _mapper = mapper;
-        }
-
+        } 
         // GET: api/<ItemMasterController>
         [HttpGet]
         public async Task<IActionResult> GetAllItemMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)

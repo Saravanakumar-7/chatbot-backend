@@ -87,9 +87,38 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> OpenDeliveryOrderSPReport()
         {
-            var products = await _repository.OpenDeliveryOrderSPReport();
+            ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>>();
+            try
+            {
+                var products = await _repository.OpenDeliveryOrderSPReport();
 
-            return Ok(products);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OpenDeliveryOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OpenDeliveryOrder hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OpenDeliveryOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside OpenDeliveryOrder action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
         }
 
         [HttpGet("{id}")]
@@ -788,9 +817,38 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> OpenDeliveryOrderSPReportDates([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            var products = await _repository.OpenDeliveryOrderSPReportDates(FromDate, ToDate);
+            ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>>();
+            try
+            {
+                var products = await _repository.OpenDeliveryOrderSPReportDates(FromDate, ToDate);
 
-            return Ok(products);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside PurchaseOrder action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
         }
 
         [HttpGet()] // Adjust your route as needed
@@ -807,10 +865,39 @@ namespace Tips.Warehouse.Api.Controllers
             [FromQuery] string? ODOType
 )
         {
-            var products = await _repository.OpenDeliveryOrderSPReportWithParam(OpenDONumber, CustomerName, CustomerAliasName, LeadId, IssuedTo, KPN, MPN, Warehouse, Location, ODOType);
+            ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>>();
+            try
+            {
+                var products = await _repository.OpenDeliveryOrderSPReportWithParam(OpenDONumber, CustomerName, CustomerAliasName, LeadId, IssuedTo, KPN, MPN, Warehouse, Location, ODOType);
 
-            return Ok(products);
+            if (products == null)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                return NotFound(serviceResponse);
+            }
+            else
+            {
+                serviceResponse.Data = products;
+                serviceResponse.Message = "Returned PurchaseOrder Details";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
         }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside PurchaseOrder action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+    }
+}
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOpenDeliveryOrder(int id, [FromBody] OpenDeliveryOrderDtoUpdate openDeliveryOrderDtoUpdate)
