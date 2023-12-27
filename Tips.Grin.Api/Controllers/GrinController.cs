@@ -1077,13 +1077,13 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-        [HttpGet()]
-        public async Task<IActionResult> GetGrinSPReportWithParam([FromQuery] string? GrinNumber,[FromQuery] string? VendorName,[FromQuery] string? PONumber,[FromQuery] string? KPN,[FromQuery] string? MPN,[FromQuery] string? Warehouse,[FromQuery] string? Location)
+        [HttpPost]
+        public async Task<IActionResult> GetGrinSPReportWithParam([FromBody] GrinReportWithParam grinReportWithParam)
         {
-            ServiceResponse<IEnumerable<Grin_ReportSP>> serviceResponse = new ServiceResponse<IEnumerable<Grin_ReportSP>>();
+            ServiceResponse<IEnumerable<GrinReportWithParam>> serviceResponse = new ServiceResponse<IEnumerable<GrinReportWithParam>>();
             try
             {
-                var products = await _repository.GetGrinSPReportWithParam(GrinNumber, VendorName, PONumber, KPN, MPN, Warehouse, Location);
+                var products = await _repository.GetGrinSPReportWithParam(grinReportWithParam.GrinNumber, grinReportWithParam.VendorName, grinReportWithParam.PONumber, grinReportWithParam.KPN, grinReportWithParam.MPN, grinReportWithParam.Warehouse, grinReportWithParam.Location);
                 if (products == null)
                 {
                     serviceResponse.Data = null;
@@ -1095,7 +1095,8 @@ namespace Tips.Grin.Api.Controllers
                 }
                 else
                 {
-                    serviceResponse.Data = products;
+                    var result = _mapper.Map<IEnumerable<GrinReportWithParam>>(products);
+                    serviceResponse.Data = result;
                     serviceResponse.Message = "Returned Grin Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -1110,8 +1111,44 @@ namespace Tips.Grin.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
-            } 
+            }
         }
+
+        //[HttpGet()]
+        //public async Task<IActionResult> GetGrinSPReportWithParam([FromQuery] string? GrinNumber,[FromQuery] string? VendorName,[FromQuery] string? PONumber,[FromQuery] string? KPN,[FromQuery] string? MPN,[FromQuery] string? Warehouse,[FromQuery] string? Location)
+        //{
+        //    ServiceResponse<IEnumerable<Grin_ReportSP>> serviceResponse = new ServiceResponse<IEnumerable<Grin_ReportSP>>();
+        //    try
+        //    {
+        //        var products = await _repository.GetGrinSPReportWithParam(GrinNumber, VendorName, PONumber, KPN, MPN, Warehouse, Location);
+        //        if (products == null)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"Grin hasn't been found.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            _logger.LogError($"Grin hasn't been found in db.");
+        //            return NotFound(serviceResponse);
+        //        }
+        //        else
+        //        {
+        //            serviceResponse.Data = products;
+        //            serviceResponse.Message = "Returned Grin Details";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(serviceResponse);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong inside Grin action";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    } 
+        //}
 
         [HttpGet]
         public async Task<IActionResult> GetGrinSPReport()
