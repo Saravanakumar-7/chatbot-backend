@@ -18,7 +18,7 @@ namespace Tips.Purchase.Api.Entities
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
         public string? CompanyAliasName { get; set; }
-        public string? PoTransports { get; set; }
+        public string? Transports { get; set; }
         public string? Other { get; set; }
 
         //VendorDetails
