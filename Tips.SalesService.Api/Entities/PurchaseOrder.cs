@@ -46,7 +46,7 @@ namespace Tips.SalesService.Api.Entities
 
         //Terms
         public string RetentionPeriod { get; set; }
-        public string? PoTransports { get; set; }
+        public string? Transports { get; set; }
         public string? Other { get; set; }
         public string SpecialTermsAndConditions { get; set; }
 
