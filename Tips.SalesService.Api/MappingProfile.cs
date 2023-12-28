@@ -10,6 +10,7 @@ namespace Tips.SalesService.Api
     {
         public MappingProfile()
         {
+            CreateMap<SalesOrderSPResport, SalesOrderSPResportDTO>().ReverseMap();
             CreateMap<RfqCustomerSupport, RfqCustomerSupportDto>().ReverseMap();
             CreateMap<RfqCustomerSupport, RfqCustomerSupportPostDto>().ReverseMap();
             CreateMap<RfqCustomerSupport, RfqCustomerSupportUpdateDto>().ReverseMap();

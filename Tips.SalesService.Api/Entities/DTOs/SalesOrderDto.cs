@@ -313,6 +313,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
 
 
-
+    public class SalesOrderSPResportDTO
+    {
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? PartNumber { get; set; }
+    }
 
 }
