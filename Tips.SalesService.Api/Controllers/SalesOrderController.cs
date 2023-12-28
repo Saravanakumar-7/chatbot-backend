@@ -179,7 +179,44 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetSalesOrderSPResport()
+        {
+            ServiceResponse<IEnumerable<SalesOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPResport>>();
+            try
+            {
+                var products = await _repository.GetSalesOrderSPResport();
 
+            if (products == null)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                return NotFound(serviceResponse);
+            }
+            else
+            {
+                var result = _mapper.Map<IEnumerable<SalesOrderSPResport>>(products);
+
+                serviceResponse.Data = products;
+                serviceResponse.Message = "Returned PurchaseOrder Details";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+        }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside PurchaseOrder action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+    }
+}
 
         // GET api/<PurchaseOrderController>/5
         [HttpGet("{id}")]
@@ -1400,15 +1437,52 @@ namespace Tips.SalesService.Api.Controllers
 
 
 
-        [HttpGet()] // Adjust your route as needed
-        public async Task<IActionResult> GetSalesorderReportWithParam([FromQuery] string? CustomerName,[FromQuery] string? SalesOrderNumber,
-                [FromQuery] string? PartNumber
-)
+//        [HttpGet()] // Adjust your route as needed
+//        public async Task<IActionResult> GetSalesorderReportWithParam([FromQuery] string? CustomerName,[FromQuery] string? SalesOrderNumber,
+//                [FromQuery] string? PartNumber
+//)
+//        {
+//            ServiceResponse<IEnumerable<SalesOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPResport>>();
+//            try
+//            {
+//                var products = await _repository.GetSalesorderReportWithParam(CustomerName, SalesOrderNumber, PartNumber);
+
+//                if (products == null)
+//                {
+//                    serviceResponse.Data = null;
+//                    serviceResponse.Message = $"SalesOrder hasn't been found.";
+//                    serviceResponse.Success = false;
+//                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+//                    _logger.LogError($"SalesOrder hasn't been found in db.");
+//                    return NotFound(serviceResponse);
+//                }
+//                else
+//                {
+//                    serviceResponse.Data = products;
+//                    serviceResponse.Message = "Returned SalesOrder Details";
+//                    serviceResponse.Success = true;
+//                    serviceResponse.StatusCode = HttpStatusCode.OK;
+//                    return Ok(serviceResponse);
+//                }
+//            }
+//            catch (Exception ex)
+//            {
+//                _logger.LogError(ex.Message);
+//                serviceResponse.Data = null;
+//                serviceResponse.Message = $"Something went wrong inside GetSASalesOrderDetailsByItemNo action";
+//                serviceResponse.Success = false;
+//                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+//                return StatusCode(500, serviceResponse);
+//            }
+//        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetSalesorderReportWithParam([FromBody] SalesOrderSPResportDTO salesOrderSPResport)
+
         {
             ServiceResponse<IEnumerable<SalesOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPResport>>();
             try
             {
-                var products = await _repository.GetSalesorderReportWithParam(CustomerName, SalesOrderNumber, PartNumber);
+                var products = await _repository.GetSalesorderReportWithParam(salesOrderSPResport.CustomerName, salesOrderSPResport.SalesOrderNumber, salesOrderSPResport.PartNumber);
 
                 if (products == null)
                 {
@@ -1421,6 +1495,8 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 else
                 {
+                    var result = _mapper.Map<IEnumerable<SalesOrderSPResportDTO>>(products);
+
                     serviceResponse.Data = products;
                     serviceResponse.Message = "Returned SalesOrder Details";
                     serviceResponse.Success = true;
@@ -1432,13 +1508,12 @@ namespace Tips.SalesService.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetSASalesOrderDetailsByItemNo action";
+                serviceResponse.Message = $"Something went wrong inside SalesOrderSPResport action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpGet]
         public async Task<IActionResult> GetReceivableReportsWithCustomerID(string CustomerId)
         {

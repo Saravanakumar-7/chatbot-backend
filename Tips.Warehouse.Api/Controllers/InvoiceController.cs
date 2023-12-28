@@ -170,6 +170,44 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> InvoiceSPReportWithParameter([FromBody] InvoiceSPReportDTO invoiceSPReport)
+        {
+            ServiceResponse<IEnumerable<InvoiceSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSPReport>>();
+            try
+            {
+                var products = await _invoiceRepository.InvoiceSPReportWithParameter(invoiceSPReport.InvoiceNumber, invoiceSPReport.DONumber, invoiceSPReport.LeadId, invoiceSPReport.CustomerName, invoiceSPReport.CustomerAliasName, invoiceSPReport.SalesOrderNumber, invoiceSPReport.Location, invoiceSPReport.Warehouse, invoiceSPReport.KPN, invoiceSPReport.MPN, invoiceSPReport.IssuedTo);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Invoice hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Invoice hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var result = _mapper.Map<IEnumerable<InvoiceSPReportDTO>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Invoice Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside Invoice action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> SearchInvoice([FromQuery] SearchParames searchParams)
         {
@@ -387,43 +425,8 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        [HttpGet("InvoiceSPReport")] // Adjust your route as needed
-        public async Task<IActionResult> InvoiceSPReportWithParameter([FromQuery] string? InvoiceNumber,[FromQuery] string? DONumber,[FromQuery] string? LeadId,[FromQuery] string? CustomerName,[FromQuery] string? CustomerAliasName,[FromQuery] string? SalesOrderNumber,[FromQuery] string? Location,[FromQuery] string? Warehouse,[FromQuery] string? KPN,[FromQuery] string? MPN)
-        {
-            ServiceResponse<IEnumerable<InvoiceSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSPReport>>();
-            try
-            {
-                var products = await _invoiceRepository.InvoiceSPReportWithParameter(InvoiceNumber, DONumber, LeadId, CustomerName, CustomerAliasName, SalesOrderNumber, Location, Warehouse, KPN, MPN);
-                if (products == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"Invoice hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"Invoice hasn't been found in db.");
-                    return NotFound(serviceResponse);
-                }
-            else
-                {
-                    serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned Invoice Details";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside Invoice action";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
-
-        [HttpGet("InvoiceSPReportDate")] // Adjust your route as needed
+         
+        [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> InvoiceSPReportDate([FromQuery] DateTime? FromDate,[FromQuery] DateTime? ToDate)
         {
             ServiceResponse<IEnumerable<InvoiceSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSPReport>>();

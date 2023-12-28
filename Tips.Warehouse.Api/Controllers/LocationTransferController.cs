@@ -752,14 +752,13 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
-        [HttpGet("LocationTransferSPReport")] // Adjust your route as needed
-        public async Task<IActionResult> LocationTransferSPReportWithParam([FromQuery] string? FromPartNumber,[FromQuery] string? FromPartType,[FromQuery] string? FromWarehouse,[FromQuery] string? FromLocation,[FromQuery] string? FromProjectNumber,[FromQuery] string? ToPartnumber,[FromQuery] string? ToPartType,[FromQuery] string? ToWarehouse,[FromQuery] string? ToLocation,[FromQuery] string? ToProjectNumber)
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> LocationTransferSPReportWithParam([FromBody] LocationTransferSPReportDTO locationTransferSPReport)
         {
             ServiceResponse<IEnumerable<LocationTransferSPReport>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSPReport>>();
             try
             {
-                var products = await _locationTransferRepository.LocationTransferSPReportWithParam(FromPartNumber, FromPartType, FromWarehouse, FromLocation, FromProjectNumber, ToPartnumber, ToPartType, ToWarehouse, ToLocation, ToProjectNumber);
+                var products = await _locationTransferRepository.LocationTransferSPReportWithParam(locationTransferSPReport.FromPartNumber, locationTransferSPReport.FromPartType, locationTransferSPReport.FromWarehouse, locationTransferSPReport.FromLocation, locationTransferSPReport.FromProjectNumber, locationTransferSPReport.ToPartNumber, locationTransferSPReport.ToPartType, locationTransferSPReport.ToWarehouse, locationTransferSPReport.ToLocation, locationTransferSPReport.ToProjectNumber);
 
                 if (products == null)
                 {
@@ -772,6 +771,8 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 else
                 {
+                    var result = _mapper.Map<IEnumerable<LocationTransferSPReportDTO>>(products);
+
                     serviceResponse.Data = products;
                     serviceResponse.Message = "Returned LocationTransfer Details";
                     serviceResponse.Success = true;
@@ -789,6 +790,8 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+         
 
         [HttpGet("LocationTransferSPReportDates")] // Adjust your route as needed
         public async Task<IActionResult> LocationTransferSPReportDates([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
