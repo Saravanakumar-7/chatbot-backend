@@ -180,44 +180,47 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetSalesOrderSPResport()
+        public async Task<IActionResult> GetSalesOrderSPResport([FromQuery] PagingParameter pagingParameter)
         {
+            //var products = await _repository.GetSalesOrderSPResport(pagingParameter);
+
             ServiceResponse<IEnumerable<SalesOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPResport>>();
+
             try
             {
-                var products = await _repository.GetSalesOrderSPResport();
+                var products = await _repository.GetSalesOrderSPResport(pagingParameter);
 
-            if (products == null)
-            {
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"PurchaseOrder hasn't been found.";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                _logger.LogError($"PurchaseOrder hasn't been found in db.");
-                return NotFound(serviceResponse);
-            }
-            else
-            {
+                var metadata = new
+                {
+                    products.TotalCount,
+                    products.PageSize,
+                    products.CurrentPage,
+                    products.HasNext,
+                    products.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
+                _logger.LogInfo("Returned all SalesOrderSPResport");
                 var result = _mapper.Map<IEnumerable<SalesOrderSPResport>>(products);
-
-                serviceResponse.Data = products;
-                serviceResponse.Message = "Returned PurchaseOrder Details";
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all SalesOrderSPResport Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
-        }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside PurchaseOrder action";
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
-    }
-}
-
+            }
+        }
+        
         // GET api/<PurchaseOrderController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSalesOrderById(int id)

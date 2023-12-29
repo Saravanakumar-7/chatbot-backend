@@ -68,15 +68,17 @@ namespace Tips.SalesService.Api.Repository
                 return results;
             }
         }
-        public async Task<IEnumerable<SalesOrderSPResport>> GetSalesOrderSPResport()
-        { 
-                var results = _tipsSalesServiceDbContext.Set<SalesOrderSPResport>()
+         
+        public async Task<PagedList<SalesOrderSPResport>> GetSalesOrderSPResport(PagingParameter pagingParameter)
+        {
+            var results = _tipsSalesServiceDbContext.Set<SalesOrderSPResport>()
                       .FromSqlInterpolated($"CALL Sales_Order_without_parameter_Report")
                       .ToList();
 
-            return results;
+            return PagedList<SalesOrderSPResport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+
+
         }
-         
         public async Task<IEnumerable<SalesOrderSPResport>> GetSalesorderReportWithParam(string CustomerName, string SalesOrderNumber, string PartNumber)
         {
             {
