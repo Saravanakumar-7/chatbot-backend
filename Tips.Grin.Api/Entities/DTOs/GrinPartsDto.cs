@@ -83,6 +83,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? UTGST { get; set; }
+        public decimal? Duties { get; set; }
         [NotMapped]
         public string? DrawingNo { get; set; }
         [NotMapped]
@@ -112,6 +113,51 @@ namespace Tips.Grin.Api.Entities.DTOs
         public List<ProjectNumbersDto>? ProjectNumbers { get; set; }
        
 
+    }
+    public class GrinPartscalculationofAvgcost
+    {        
+        public int Id { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? LotNumber { get; set; }
+        public PartType ItemType { get; set; }
+        public decimal? Qty { get; set; }
+        public string ItemDescription { get; set; }
+        public string? PONumber { get; set; }
+        public string MftrItemNumber { get; set; }
+        public string ManufactureBatchNumber { get; set; }
+        public bool IsIqcCompleted { get; set; }
+        public bool IsBinningCompleted { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal POOrderQty { get; set; }
+        public decimal POBalancedQty { get; set; }
+        public decimal POUnitPrice { get; set; }
+        public decimal AcceptedQty { get; set; }
+        public decimal RejectedQty { get; set; }
+        [NotMapped]
+        public decimal? EPwithTax { get; set; }
+        [NotMapped]
+        public decimal? EPforSingleQty { get; set; }
+        public decimal? AverageCost { get; set; }
+        public string UOM { get; set; }
+        public string? UOC { get; set; }
+        public string? Remarks { get; set; }
+        public GrinStatus Status { get; set; }
+        public DateTime? ExpiryDate { get; set; }
+        public DateTime? ManufactureDate { get; set; }
+        public bool IsCOCUploaded { get; set; } = false;
+        public List<DocumentUpload>? CoCUpload { get; set; }
+        public decimal? SGST { get; set; }
+        public decimal? IGST { get; set; }
+        public decimal? CGST { get; set; }
+        public decimal? UTGST { get; set; }
+        public decimal? Duties { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public Grins? Grins { get; set; }
+
+        public List<ProjectNumbers>? ProjectNumbers { get; set; }
     }
     public class GrinPartsPostDto
     {
@@ -168,7 +214,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? CGST { get; set; }
 
         public decimal? UTGST { get; set; }
-
+        public decimal? Duties { get; set; }
         public List<ProjectNumbersDtoPost>? ProjectNumbers { get; set; }
     }
     public class GrinPartsUpdateDto
@@ -227,7 +273,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? CGST { get; set; }
 
         public decimal? UTGST { get; set; }
-
+        public decimal? Duties { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -318,7 +364,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? UTGST { get; set; }
-         
+        public decimal? Duties { get; set; }
         public string? DrawingNo { get; set; }
         [NotMapped]
         public string? DocRet { get; set; }
@@ -425,7 +471,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? UTGST { get; set; }
-        
+        public decimal? Duties { get; set; }
         public List<ProjectNumbersReportDto>? ProjectNumbers { get; set; }
 
 
