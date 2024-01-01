@@ -93,7 +93,7 @@ namespace Tips.Grin.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+        public string? SerialNo { get; set; }
         public int GrinsId { get; set; }
         public Grins? Grins { get; set; }
 

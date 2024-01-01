@@ -67,7 +67,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ManufactureDate { get; set; }
 
         public List<DocumentUploadDto> COCUpload { get; set; }
-
+        public string? SerialNo { get; set; }
         public bool IsIqcCompleted { get; set; }
 
         public bool IsBinningCompleted { get; set; }
@@ -156,7 +156,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public Grins? Grins { get; set; }
-
+        public string? SerialNo { get; set; }
         public List<ProjectNumbers>? ProjectNumbers { get; set; }
     }
     public class GrinPartsPostDto
@@ -215,6 +215,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public decimal? UTGST { get; set; }
         public decimal? Duties { get; set; }
+        public string? SerialNo { get; set; }
         public List<ProjectNumbersDtoPost>? ProjectNumbers { get; set; }
     }
     public class GrinPartsUpdateDto
@@ -278,8 +279,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public string? SerialNo { get; set; }
 
-        
         public List<ProjectNumbersDtoUpdate>? ProjectNumbers { get; set; }
     }
     //for this model code we are going to reduce balance qty in po while create grin parts
@@ -348,7 +349,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? UOC { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
-
+        public string? SerialNo { get; set; }
         public List<DocumentUploadDto> COCUpload { get; set; }
 
         public bool IsIqcCompleted { get; set; }
@@ -456,7 +457,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? UOC { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
-
+        public string? SerialNo { get; set; }
         public List<DocumentUploadDto> COCUpload { get; set; }
 
 
