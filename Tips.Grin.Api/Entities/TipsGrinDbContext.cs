@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace Tips.Grin.Api.Entities
 {
@@ -33,8 +34,9 @@ namespace Tips.Grin.Api.Entities
         public DbSet<Grin_ReportSP> Grin_ReportSPs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Grin_ReportSP>().HasNoKey();
-        }
+            modelBuilder.Entity<Grin_ReportSP>().HasNoKey(); 
+          }
+
 
     }
 }

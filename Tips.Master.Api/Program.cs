@@ -1,6 +1,8 @@
 using Accounts;
 using Contracts;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore.Internal;
 using NLog;
 using Repository;
@@ -19,7 +21,14 @@ builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.ConfigureRepositoryWrapper();
 builder.Services.AddAutoMapper(typeof(Program));
-
+builder.Services.Configure<KestrelServerOptions>(option =>
+{
+    option.Limits.MaxRequestBodySize = 1073741824;
+});
+builder.Services.Configure<IISServerOptions>(option =>
+{
+    option.MaxRequestBodySize = 1073741824;
+});
 var key = builder.Configuration["Jwt:key"];
 builder.Services.ConfigureJwtToken(builder.Configuration);
 builder.Services.AddTransient<IJwtAuth, Auth>();
@@ -59,8 +68,7 @@ builder.Services.AddScoped<IRoomNameRepository, RoomNameRepository>();
 builder.Services.AddScoped<IProductTypeRepository, ProductTypeRepository>();
 builder.Services.AddScoped<ITypeSolutionRepository, TypeSolutionRepository>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddHttpClient();
-
+builder.Services.AddHttpClient(); 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -78,7 +86,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
-
+ 
 
 app.UseCors("CorsPolicy");
 app.UseAuthentication();

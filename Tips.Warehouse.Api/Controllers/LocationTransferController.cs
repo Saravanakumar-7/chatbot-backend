@@ -125,10 +125,39 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> LocationTransferSPReport()
         {
-            var products = await _locationTransferRepository.LocationTransferSPReport();
+            ServiceResponse<IEnumerable<LocationTransferSPReport>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSPReport>>();
+            try
+            {
+                var products = await _locationTransferRepository.LocationTransferSPReport();
 
-            return Ok(products);
+            if (products == null)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"LocationTransfer hasn't been found.";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                _logger.LogError($"LocationTransfer hasn't been found in db.");
+                return NotFound(serviceResponse);
+            }
+            else
+            {
+                serviceResponse.Data = products;
+                serviceResponse.Message = "Returned LocationTransfer Details";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
         }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside LocationTransfer action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+    }
+}
 
         [HttpGet]
         public async Task<IActionResult> SearchLocationTransferDate([FromQuery] SearchDateParam searchDatesParams)
@@ -723,21 +752,82 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
-        [HttpGet("LocationTransferSPReport")] // Adjust your route as needed
-        public async Task<IActionResult> LocationTransferSPReportWithParam([FromQuery] string? FromPartNumber,[FromQuery] string? FromPartType,[FromQuery] string? FromWarehouse,[FromQuery] string? FromLocation,[FromQuery] string? FromProjectNumber,[FromQuery] string? ToPartnumber,[FromQuery] string? ToPartType,[FromQuery] string? ToWarehouse,[FromQuery] string? ToLocation,[FromQuery] string? ToProjectNumber)
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> LocationTransferSPReportWithParam([FromBody] LocationTransferSPReportDTO locationTransferSPReport)
         {
-            var products = await _locationTransferRepository.LocationTransferSPReportWithParam(FromPartNumber, FromPartType, FromWarehouse, FromLocation, FromProjectNumber, ToPartnumber, ToPartType, ToWarehouse, ToLocation, ToProjectNumber);
+            ServiceResponse<IEnumerable<LocationTransferSPReport>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSPReport>>();
+            try
+            {
+                var products = await _locationTransferRepository.LocationTransferSPReportWithParam(locationTransferSPReport.FromPartNumber, locationTransferSPReport.FromPartType, locationTransferSPReport.FromWarehouse, locationTransferSPReport.FromLocation, locationTransferSPReport.FromProjectNumber, locationTransferSPReport.ToPartNumber, locationTransferSPReport.ToPartType, locationTransferSPReport.ToWarehouse, locationTransferSPReport.ToLocation, locationTransferSPReport.ToProjectNumber);
 
-            return Ok(products);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"LocationTransfer hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"LocationTransfer hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var result = _mapper.Map<IEnumerable<LocationTransferSPReportDTO>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned LocationTransfer Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside LocationTransfer action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
         }
+
+         
 
         [HttpGet("LocationTransferSPReportDates")] // Adjust your route as needed
         public async Task<IActionResult> LocationTransferSPReportDates([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            var products = await _locationTransferRepository.LocationTransferSPReportDates(FromDate, ToDate);
+                ServiceResponse<IEnumerable<LocationTransferSPReport>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSPReport>>();
+                try
+                {
+                    var products = await _locationTransferRepository.LocationTransferSPReportDates(FromDate, ToDate);
 
-            return Ok(products);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"LocationTransfer hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"LocationTransfer hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned LocationTransfer Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside LocationTransfer action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
         }
 
         [HttpDelete("{id}")]

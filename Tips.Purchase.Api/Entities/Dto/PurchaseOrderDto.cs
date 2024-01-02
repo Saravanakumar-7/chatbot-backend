@@ -16,7 +16,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? Currency { get; set; }
         public string? CompanyAliasName { get; set; }
         public bool PoConfirmationStatus { get; set; }
-        public string? PoTransports { get; set; }
+        public string? Transports { get; set; }
         public string? Other { get; set; }
         public PoStatus PoStatus { get; set; }
 
@@ -75,7 +75,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         //public string? POFiles { get; set; }
         public string? CompanyAliasName { get; set; }
-        public string? PoTransports { get; set; }
+        public string? Transports { get; set; }
         public string? Other { get; set; }
 
         //VendorDetails
@@ -96,7 +96,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         //Terms
         public string? RetentionPeriod { get; set; }
         public string? SpecialTermsAndConditions { get; set; }
-        public string? Transport { get; set; }
+        //public string? Transport { get; set; }
         public string? Others { get; set; }
         public decimal TotalAmount { get; set; }
 
@@ -112,7 +112,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime PODate { get; set; }
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
-        public string? PoTransports { get; set; }
+        public string? Transports { get; set; }
         public string? Other { get; set; }
         //public List<DocumentUploadUpdateDto> POFiles { get; set; }
 
@@ -244,7 +244,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
         public string? CompanyAliasName { get; set; }
-        public string? PoTransports { get; set; }
+        public string? Transports { get; set; }
         public string? Other { get; set; }
 
         //VendorDetails
@@ -292,6 +292,14 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public List<PoItemsReportDto>? POItems { get; set; }
         public List<PoIncoTermReportDto>? POIncoTerms { get; set; }
+
+    }
+    public class PurchaseOrderSPReportDTO
+    {
+        public string? VendorName { get; set; }
+        public string? PONumber { get; set; }
+        public string? PartNumber { get; set; }
+
 
     }
 

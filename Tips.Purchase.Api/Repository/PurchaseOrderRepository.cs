@@ -670,15 +670,7 @@ namespace Tips.Purchase.Api.Repository
                 .ToListAsync();
 
             return new PagedList<PurchaseOrderIdNameListDto>(result, totalCount, pagingParameter.PageNumber, pagingParameter.PageSize);
-        }
-        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPResport()
-        {
-            var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReport>()
-                     .FromSqlInterpolated($"CALL Purchase_Order_without_parameter")
-                     .ToList();
-
-            return results;
-        }
+        } 
 
         public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParam(string VendorName, string PONumber, string PartNumber)
         {
@@ -693,6 +685,14 @@ namespace Tips.Purchase.Api.Repository
             .ToList();
 
             return result;
+        }
+        public async Task<PagedList<PurchaseOrderSPReport>> GetPurchaseOrderSPResport(PagingParameter pagingParameter)
+        {
+            var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReport>()
+                     .FromSqlInterpolated($"CALL Purchase_Order_without_parameter")
+                     .ToList();
+
+            return PagedList<PurchaseOrderSPReport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)

@@ -616,7 +616,7 @@ namespace Tips.Grin.Api.Controllers
                                     var token = tokenValues.Substring(7);
                                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                                 }
-                                var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+                                HttpResponseMessage response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
                                 if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
                             }
 

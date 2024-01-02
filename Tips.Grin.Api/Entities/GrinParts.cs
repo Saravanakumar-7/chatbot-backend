@@ -88,12 +88,12 @@ namespace Tips.Grin.Api.Entities
 
         [Precision(13, 3)]
         public decimal? UTGST { get; set; }
-
+        public decimal? Duties { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+        public string? SerialNo { get; set; }
         public int GrinsId { get; set; }
         public Grins? Grins { get; set; }
 

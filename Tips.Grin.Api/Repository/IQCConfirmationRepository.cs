@@ -97,7 +97,7 @@ namespace Tips.Grin.Api.Repository
             var getallIQCList = FindAll()
                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || (inv.GrinNumber != null && inv.GrinNumber.Contains(searchParams.SearchValue)) ||
                    (inv.Id != null && inv.Id.ToString().Contains(searchParams.SearchValue))
-                )));
+                ))).OrderByDescending(x=>x.Id);
                  
 
             return PagedList<IQCConfirmation>.ToPagedList(getallIQCList, pagingParameter.PageNumber, pagingParameter.PageSize);

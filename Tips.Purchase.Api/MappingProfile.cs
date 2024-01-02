@@ -9,6 +9,8 @@ namespace Tips.Purchase.Api
     {
         public MappingProfile()
         {
+            CreateMap<PurchaseOrderSPReport, PurchaseOrderSPReportDTO>().ReverseMap();
+
             CreateMap<PurchaseOrder, PurchaseOrderDto>().ReverseMap();
             CreateMap<PurchaseOrder, PurchaseOrderPostDto>().ReverseMap();
             CreateMap<PurchaseOrder, PurchaseOrderUpdateDto>().ReverseMap();

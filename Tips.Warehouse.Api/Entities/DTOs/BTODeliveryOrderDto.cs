@@ -138,4 +138,18 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
         public List<BTODeliveryOrderItemsReportDto>? bTODeliveryOrderItems { get; set; }
     }
+    public class DeliveryOrderSPReportDTO
+    {
+        public string DoNumber { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
+        public string? CustomerId { get; set; }
+        public string SalesOrderNumber { get; set; }
+        public string? Location { get; set; }
+        public string? Warehouse { get; set; }
+        public string? ProductType { get; set; }
+        public string? KPN { get; set; }
+        public string? MPN { get; set; }
+
+    }
 }

@@ -89,6 +89,37 @@ namespace Tips.Grin.Api.Repository
                 throw ex;
             }
         }
+        //public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string GrinNumber, string VendorName, string PONumber, string KPN, string MPN, string Warehouse, string Location)
+        //{
+        //    {
+
+        //        if (string.IsNullOrWhiteSpace(GrinNumber)
+        //      || string.IsNullOrWhiteSpace(VendorName)
+        //      || string.IsNullOrWhiteSpace(PONumber)
+        //      || string.IsNullOrWhiteSpace(KPN)
+        //      || string.IsNullOrWhiteSpace(MPN)
+        //      || string.IsNullOrWhiteSpace(Warehouse)
+        //      || string.IsNullOrWhiteSpace(Location)) ;
+
+
+        //        var result = _tipsGrinDbContext
+        //        .Set<Grin_ReportSP>()
+        //        .FromSqlInterpolated($"CALL Grin_Report_withparameter({GrinNumber},{VendorName},{PONumber},{KPN},{MPN},{Warehouse},{Location})")
+        //        .ToList();
+
+        //        return result;
+        //    }
+        //}
+
+        public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReport()
+        {
+
+            var results = _tipsGrinDbContext.Set<Grin_ReportSP>()
+                      .FromSqlInterpolated($"CALL Grin_Report")
+                      .ToList();
+
+            return results;
+        }
         public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string GrinNumber, string VendorName, string PONumber, string KPN, string MPN, string Warehouse, string Location)
         {
             {
@@ -110,17 +141,6 @@ namespace Tips.Grin.Api.Repository
                 return result;
             }
         }
-
-        public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReport()
-        {
-
-            var results = _tipsGrinDbContext.Set<Grin_ReportSP>()
-                      .FromSqlInterpolated($"CALL Grin_Report")
-                      .ToList();
-
-            return results;
-        }
-
         public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsGrinDbContext.Set<Grin_ReportSP>()
@@ -224,15 +244,21 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<IEnumerable<GrinNoForIqcAndBinning>> GetAllGrinNumberForIqc()
         {
-            IEnumerable<GrinNoForIqcAndBinning> grinNoForIqc = await _tipsGrinDbContext.Grins
-                .Where(x => x.IsGrinCompleted == true && x.IsIqcCompleted == false && x.IsBinningCompleted == false)
-                                .Select(x => new GrinNoForIqcAndBinning()
-                                {
-                                    GrinNumber = x.GrinNumber,
-                                    GrinId = x.Id
-                                })
-                              .ToListAsync();
-
+            //IEnumerable<GrinNoForIqcAndBinning> grinNoForIqc = await _tipsGrinDbContext.Grins
+            //    .Where(x => x.IsGrinCompleted == true && x.IsIqcCompleted == false && x.IsBinningCompleted == false)
+            //                    .Select(x => new GrinNoForIqcAndBinning()
+            //                    {
+            //                        GrinNumber = x.GrinNumber,
+            //                        GrinId = x.Id
+            //                    })
+            //                  .ToListAsync();
+            var grinparts = await _tipsGrinDbContext.GrinParts.Where(x => x.IsIqcCompleted == false && x.IsBinningCompleted == false).Select(x => x.GrinsId).ToListAsync();
+            var gId = grinparts.Distinct().ToList();
+            List<GrinNoForIqcAndBinning> grinNoForIqc = await _tipsGrinDbContext.Grins.Where(x => gId.Contains(x.Id)).Select(x => new GrinNoForIqcAndBinning()
+            {
+                GrinNumber = x.GrinNumber,
+                GrinId = x.Id
+            }).ToListAsync();
             return grinNoForIqc;
         }
 

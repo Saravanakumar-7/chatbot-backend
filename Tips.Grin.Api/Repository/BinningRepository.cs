@@ -98,7 +98,7 @@ namespace Tips.Grin.Api.Repository
             var binningGrinNoList = await _tipsGrinDbContext.Binnings
                                     .Where(x => grinNumberList.Contains(x.GrinNumber))
                                     .Select(x => new { x.GrinNumber, x.Id })
-                                    .Distinct()  // Ensure unique pairs of GrinNumber-Id
+                                    .Distinct().OrderByDescending(x => x.Id) // Ensure unique pairs of GrinNumber-Id
                                     .ToListAsync();
 
             var grinNumbers = binningGrinNoList.Select(b => b.GrinNumber).ToList();
@@ -126,7 +126,7 @@ namespace Tips.Grin.Api.Repository
                 CreatedOn = grinNumber.CreatedOn,
                 LastModifiedBy = grinNumber.LastModifiedBy,
                 LastModifiedOn = grinNumber.LastModifiedOn
-            }).ToList();
+            }).OrderByDescending(x => x.Id).ToList();
 
             if (!string.IsNullOrWhiteSpace(searchParams.SearchValue))
             {

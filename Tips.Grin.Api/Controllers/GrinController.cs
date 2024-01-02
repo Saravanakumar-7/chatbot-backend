@@ -561,15 +561,32 @@ namespace Tips.Grin.Api.Controllers
                     grins.GrinNumber = grinNo;
                 }
                 var grinPartsDto = grinPostDto.GrinParts;
-
+                var grinCal = _mapper.Map<List<GrinPartscalculationofAvgcost>>(grinPartsDto);
                 List<GrinParts> grinPartsList = new List<GrinParts>();
                 //var grinPartsList = new List<GrinParts>();
                 var grinDocumentUploadDtoList = new List<DocumentUpload>();
                 var grinPartsDocumentUploadDtoList = new List<DocumentUpload>();
 
                 //// grin upload
-
-
+                var othercosttotal = grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.Transport;
+                decimal? conversionrate = 1;
+                if (grins.CurrencyConversion > 1) conversionrate = grins.CurrencyConversion;
+                foreach (var gPart in grinCal)
+                {
+                    decimal? EP = gPart.Qty * gPart.UnitPrice;
+                    decimal? Itemwithtax = gPart.SGST + gPart.IGST + gPart.CGST + gPart.UTGST + gPart.Duties;
+                    gPart.EPwithTax = (EP + (EP * (Itemwithtax / 100))) * conversionrate;
+                    gPart.EPforSingleQty = gPart.EPwithTax / gPart.Qty;
+                }
+                decimal? SumofEPwithtax = grinCal.Sum(x=>x.EPwithTax);
+                foreach (var gPart in grinCal)
+                {
+                    decimal? distriduteOthercostforitem = (gPart.EPwithTax / SumofEPwithtax) * othercosttotal;
+                    decimal? distriduteOthercostforitemsSingleQty = distriduteOthercostforitem / gPart.Qty;
+                    gPart.AverageCost= distriduteOthercostforitemsSingleQty +gPart.EPforSingleQty;
+                    GrinParts grinParts = _mapper.Map<GrinParts>(gPart);
+                    grinPartsList.Add(grinParts);
+                }
 
                 ////parts coc upload
 
@@ -619,34 +636,37 @@ namespace Tips.Grin.Api.Controllers
                 //}
 
                 //end cocupload
-                var totalGrinCost = (grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.Transport) * grins.CurrencyConversion;
-                if (grinPartsDto != null)//&& totalGrinCost != 0
-                {
-                    decimal? EP = 0;
-                    for (int i = 0; i < grinPartsDto.Count; i++)
-                    {
-                        decimal? a = (grinPartsDto[i].Qty * grinPartsDto[i].UnitPrice);
-                        EP += a;
-                    }
-                    for (int i = 0; i < grinPartsDto.Count; i++)
-                    {
-                        GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
-                        grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
-                        if (EP != 0)
-                        {
-                            decimal? a = (grinParts.Qty * grinParts.UnitPrice);
-                            decimal? b = (a / EP) * totalGrinCost;
-                            decimal? c = a + b;
-                            grinParts.AverageCost = c / grinParts.Qty;
-                        }
-                        else
-                        {
-                            grinParts.AverageCost = 0;
-                        }
-                        grinPartsList.Add(grinParts);
+                //var totalGrinCost = (grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.Transport) * grins.CurrencyConversion;
+                //if (grinPartsDto != null)//&& totalGrinCost != 0
+                //{
+                //    decimal? EP = 0;
+                //    for (int i = 0; i < grinPartsDto.Count; i++)
+                //    {
+                //        decimal? a = (grinPartsDto[i].Qty * grinPartsDto[i].UnitPrice);
+                //        EP += a;
+                //    }
+                //for (int i = 0; i < grinCal.Count; i++)
+                //{
+                //    GrinParts grinParts = _mapper.Map<GrinParts>(grinCal[i]);
+                //    //grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinCal[i].ProjectNumbers);
+                //    //if (EP != 0)
+                //    //{
+                //    //    decimal? a = (grinParts.Qty * grinParts.UnitPrice);
+                //    //    decimal? b = (a / EP) * totalGrinCost;
+                //    //    decimal? c = a + b;
+                //    //    grinParts.AverageCost = c / grinParts.Qty;
+                //    //}
+                //    //else
+                //    //{
+                //    //    grinParts.AverageCost = 0;
+                //    //}
+                //    grinPartsList.Add(grinParts);
 
-                    }
-                }
+                //}
+                //}
+
+
+
                 //if (grinPartsDto != null)
                 //{
                 //    decimal? sumOfTotal = 0;
@@ -1077,29 +1097,151 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-        [HttpGet()]
-        public async Task<IActionResult> GetGrinSPReportWithParam([FromQuery] string? GrinNumber,[FromQuery] string? VendorName,[FromQuery] string? PONumber,[FromQuery] string? KPN,[FromQuery] string? MPN,[FromQuery] string? Warehouse,[FromQuery] string? Location)
+        [HttpPost]
+        public async Task<IActionResult> GetGrinSPReportWithParam([FromBody] GrinReportWithParam grinReportWithParam)
         {
-            var products = await _repository.GetGrinSPReportWithParam(GrinNumber, VendorName, PONumber, KPN, MPN, Warehouse, Location);
-
-            return Ok(products);
+            ServiceResponse<IEnumerable<GrinReportWithParam>> serviceResponse = new ServiceResponse<IEnumerable<GrinReportWithParam>>();
+            try
+            {
+                var products = await _repository.GetGrinSPReportWithParam(grinReportWithParam.GrinNumber, grinReportWithParam.VendorName, grinReportWithParam.PONumber, grinReportWithParam.KPN, grinReportWithParam.MPN, grinReportWithParam.Warehouse, grinReportWithParam.Location);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Grin hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Grin hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var result = _mapper.Map<IEnumerable<GrinReportWithParam>>(products);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned Grin Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside Grin action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
         }
+
+        //[HttpGet()]
+        //public async Task<IActionResult> GetGrinSPReportWithParam([FromQuery] string? GrinNumber,[FromQuery] string? VendorName,[FromQuery] string? PONumber,[FromQuery] string? KPN,[FromQuery] string? MPN,[FromQuery] string? Warehouse,[FromQuery] string? Location)
+        //{
+        //    ServiceResponse<IEnumerable<Grin_ReportSP>> serviceResponse = new ServiceResponse<IEnumerable<Grin_ReportSP>>();
+        //    try
+        //    {
+        //        var products = await _repository.GetGrinSPReportWithParam(GrinNumber, VendorName, PONumber, KPN, MPN, Warehouse, Location);
+        //        if (products == null)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"Grin hasn't been found.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            _logger.LogError($"Grin hasn't been found in db.");
+        //            return NotFound(serviceResponse);
+        //        }
+        //        else
+        //        {
+        //            serviceResponse.Data = products;
+        //            serviceResponse.Message = "Returned Grin Details";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(serviceResponse);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong inside Grin action";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    } 
+        //}
 
         [HttpGet]
         public async Task<IActionResult> GetGrinSPReport()
         {
-            var products = await _repository.GetGrinSPReport();
-
-            return Ok(products);
+            ServiceResponse<IEnumerable<Grin_ReportSP>> serviceResponse = new ServiceResponse<IEnumerable<Grin_ReportSP>>();
+            try
+            {
+                var products = await _repository.GetGrinSPReport();
+            if (products == null)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Grin hasn't been found.";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                _logger.LogError($"Grin hasn't been found in db.");
+                return NotFound(serviceResponse);
+            }
+            else
+            {
+                serviceResponse.Data = products;
+                serviceResponse.Message = "Returned Grin Details";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+        }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside Grin action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+    } 
         }
 
         [HttpGet()] // Adjust your route as needed
         public async Task<IActionResult> GetGrinSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            var products = await _repository.GetGrinSPReportWithDate(FromDate, ToDate);
+            ServiceResponse<IEnumerable<Grin_ReportSP>> serviceResponse = new ServiceResponse<IEnumerable<Grin_ReportSP>>();
+            try
+            {
+                var products = await _repository.GetGrinSPReportWithDate(FromDate, ToDate);
 
-            return Ok(products);
+            if (products == null)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Grin hasn't been found.";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                _logger.LogError($"Grin hasn't been found in db.");
+                return NotFound(serviceResponse);
+            }
+            else
+            {
+                serviceResponse.Data = products;
+                serviceResponse.Message = "Returned Grin Details";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
         }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside Grin action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+    }
+}
 
         //get all grin number based bining is completed
 

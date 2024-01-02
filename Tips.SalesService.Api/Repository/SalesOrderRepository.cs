@@ -1,4 +1,5 @@
 ﻿using AutoMapper.Internal;
+using Contracts;
 using Entities;
 using Entities.DTOs;
 using Entities.Helper;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Mysqlx.Crud;
+using NuGet.Protocol.Core.Types;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Tls.Crypto.Impl.BC;
 using System.Collections.Generic;
@@ -66,15 +68,17 @@ namespace Tips.SalesService.Api.Repository
                 return results;
             }
         }
-        public async Task<IEnumerable<SalesOrderSPResport>> GetSalesOrderSPResport()
+         
+        public async Task<PagedList<SalesOrderSPResport>> GetSalesOrderSPResport(PagingParameter pagingParameter)
         {
             var results = _tipsSalesServiceDbContext.Set<SalesOrderSPResport>()
                       .FromSqlInterpolated($"CALL Sales_Order_without_parameter_Report")
                       .ToList();
 
-            return results;
-        }
+            return PagedList<SalesOrderSPResport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
 
+
+        }
         public async Task<IEnumerable<SalesOrderSPResport>> GetSalesorderReportWithParam(string CustomerName, string SalesOrderNumber, string PartNumber)
         {
             {

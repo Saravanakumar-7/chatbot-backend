@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Repository;
 using System.Configuration;
 using System.Text;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace Tips.Master.Api.Extensions
 {
@@ -111,7 +112,32 @@ namespace Tips.Master.Api.Extensions
                 };
             });
         }
+        //public static void ConfigureServices(IServiceCollection services)
+        //{
+        //    // ...
 
+        //    // Increase the request limit for form data and request body
+        //    services.Configure<FormOptions>(options =>
+        //    {
+        //        options.ValueCountLimit = int.MaxValue;
+        //        options.ValueLengthLimit = int.MaxValue;
+        //        options.MultipartBodyLengthLimit = long.MaxValue;
+        //        options.MultipartHeadersLengthLimit = int.MaxValue;
+        //    });
+
+        //    // ...
+        //}
+        //public static void ConfigureServices(IServiceCollection services)
+        //{
+        //    services.Configure<FormOptions>(options =>
+        //    {
+        //        options.ValueLengthLimit = int.MaxValue;
+        //        options.MultipartBodyLengthLimit = int.MaxValue;
+        //        options.MultipartHeadersLengthLimit = int.MaxValue;
+        //    });
+
+        //    // Other configurations...
+        //} 
         public static void ConfigureRepositoryWrapper(this IServiceCollection services)
         {
             services.AddScoped<IRepositoryWrapperForMaster, RepositoryWrapperForMaster>();

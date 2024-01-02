@@ -15,6 +15,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal ShopOrderQty { get; set; }
         public List<OQCBinningLocationDto>? oQCBinningLocations { get; set; }
         public string? Unit { get; set; }
+        public string? SerialNo { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -28,6 +29,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ShopOrderNumber { get; set; }
         [Precision(13, 3)]
         public decimal ShopOrderQty { get; set; }
+        public string? SerialNo { get; set; }
         public List<OQCBinningLocationPostDto>? oQCBinningLocations { get; set; }
     }
     public class OQCBinningUpdateDto 
@@ -39,6 +41,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ShopOrderNumber { get; set; }
         [Precision(13, 3)]
         public decimal ShopOrderQty { get; set; }
+        public string? SerialNo { get; set; }
         public List<OQCBinningLocationUpdateDto>? oQCBinningLocations { get; set; }
 
     }

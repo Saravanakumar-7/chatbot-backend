@@ -96,37 +96,161 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> DeliveryOrderSPReport()
         {
-            var products = await _repository.DeliveryOrderSPReport();
+            ServiceResponse<IEnumerable<DeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderSPReport>>();
+            try
+            {
+                var products = await _repository.DeliveryOrderSPReport();
 
-            return Ok(products);
+            if (products == null)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"DeliveryOrder hasn't been found.";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                _logger.LogError($"DeliveryOrder hasn't been found in db.");
+                return NotFound(serviceResponse);
+            }
+            else
+            {
+                serviceResponse.Data = products;
+                serviceResponse.Message = "Returned DeliveryOrder Details";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
         }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside DeliveryOrder action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+    }
+}
         [HttpGet("DeliveryOrderSPReportdate")] // Adjust your route as needed
         public async Task<IActionResult> DeliveryOrderSPReportdate([FromQuery] DateTime? FromDate,[FromQuery] DateTime? ToDate)
         {
-            var products = await _repository.DeliveryOrderSPReportdate(FromDate, ToDate);
+    ServiceResponse<IEnumerable<DeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderSPReport>>();
+    try
+    {
+        var products = await _repository.DeliveryOrderSPReportdate(FromDate, ToDate);
 
-            return Ok(products);
+    if (products == null)
+    {
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"DeliveryOrder hasn't been found.";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        _logger.LogError($"DeliveryOrder hasn't been found in db.");
+        return NotFound(serviceResponse);
+    }
+    else
+    {
+        serviceResponse.Data = products;
+        serviceResponse.Message = "Returned DeliveryOrder Details";
+        serviceResponse.Success = true;
+        serviceResponse.StatusCode = HttpStatusCode.OK;
+        return Ok(serviceResponse);
+    }
+}
+            catch (Exception ex)
+            {
+    _logger.LogError(ex.Message);
+    serviceResponse.Data = null;
+    serviceResponse.Message = $"Something went wrong inside DeliveryOrder action";
+    serviceResponse.Success = false;
+    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+    return StatusCode(500, serviceResponse);
+}
         }
-        [HttpGet("GetDeliveryOrderSPReports")] // Adjust your route as needed
-        public async Task<IActionResult> GetDeliveryOrderSPReports(
-    [FromQuery] string? DONumber,
-    [FromQuery] string? CustomerName,
-    [FromQuery] string? CustomerAliasName,
-    [FromQuery] string? CustomerID,
-    [FromQuery] string? SalesOrderNumber,
-    [FromQuery] string? ProductType,
-    [FromQuery] string? Warehouse,
-    [FromQuery] string? Location,
-    [FromQuery] string? KPN,
-    [FromQuery] string? MPN
-    )
+        //        [HttpGet("GetDeliveryOrderSPReports")] // Adjust your route as needed
+        //        public async Task<IActionResult> GetDeliveryOrderSPReports(
+        //    [FromQuery] string? DONumber,
+        //    [FromQuery] string? CustomerName,
+        //    [FromQuery] string? CustomerAliasName,
+        //    [FromQuery] string? CustomerID,
+        //    [FromQuery] string? SalesOrderNumber,
+        //    [FromQuery] string? ProductType,
+        //    [FromQuery] string? Warehouse,
+        //    [FromQuery] string? Location,
+        //    [FromQuery] string? KPN,
+        //    [FromQuery] string? MPN
+        //    )
+        //        {
+        //    ServiceResponse<IEnumerable<DeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderSPReport>>();
+        //    try
+        //    {
+        //        var products = await _repository.GetDeliveryOrderSPReports(DONumber, CustomerName, CustomerAliasName, CustomerID, SalesOrderNumber, ProductType, Warehouse, Location, KPN, MPN);
+
+        //    if (products == null)
+        //    {
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"DeliveryOrder hasn't been found.";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //        _logger.LogError($"DeliveryOrder hasn't been found in db.");
+        //        return NotFound(serviceResponse);
+        //    }
+        //    else
+        //    {
+        //        serviceResponse.Data = products;
+        //        serviceResponse.Message = "Returned DeliveryOrder Details";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //}
+        //            catch (Exception ex)
+        //            {
+        //    _logger.LogError(ex.Message);
+        //    serviceResponse.Data = null;
+        //    serviceResponse.Message = $"Something went wrong inside DeliveryOrder action";
+        //    serviceResponse.Success = false;
+        //    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //    return StatusCode(500, serviceResponse);
+        //}
+        //}
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetDeliveryOrderSPReports([FromBody] DeliveryOrderSPReportDTO deliveryOrderSPReport)
         {
-            var products = await _repository.GetDeliveryOrderSPReports(DONumber, CustomerName, CustomerAliasName, CustomerID, SalesOrderNumber, ProductType, Warehouse, Location, KPN, MPN);
+            ServiceResponse<IEnumerable<DeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderSPReport>>();
+            try
+            {
+                var products = await _repository.GetDeliveryOrderSPReports(deliveryOrderSPReport.DoNumber, deliveryOrderSPReport.CustomerName, deliveryOrderSPReport.CustomerAliasName, deliveryOrderSPReport.CustomerId, deliveryOrderSPReport.SalesOrderNumber, deliveryOrderSPReport.ProductType, deliveryOrderSPReport.Warehouse, deliveryOrderSPReport.Location, deliveryOrderSPReport.KPN, deliveryOrderSPReport.MPN);
 
-            return Ok(products);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DeliveryOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"DeliveryOrder hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var result = _mapper.Map<IEnumerable<DeliveryOrderSPReport>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned DeliveryOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside DeliveryOrder action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
         }
-
-        [HttpGet("{id}")]
+            [HttpGet("{id}")]
         public async Task<IActionResult> GetBTODeliveryOrderById(int id)
         {
             ServiceResponse<BTODeliveryOrderDto> serviceResponse = new ServiceResponse<BTODeliveryOrderDto>();
