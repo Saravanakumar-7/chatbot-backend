@@ -471,7 +471,7 @@ namespace Tips.Grin.Api.Controllers
                         grinPartsItemMasterEnggDto.IsRohsItem = inventoryObject.isRohsItem;
                         grinPartsItemMasterEnggDto.IsShelfLife = inventoryObject.isShelfLife;
                         grinPartsItemMasterEnggDto.IsReachItem = inventoryObject.isReachItem;
-                        grinPartsItemMasterEnggDto.FileUpload = inventoryObject.fileUpload.ToObject<List<DocumentUpload>>();
+                        //grinPartsItemMasterEnggDto.FileUpload = inventoryObject.fileUpload.ToObject<List<DocumentUpload>>();
 
                         grinPartsItemMasterEnggList.Add(grinPartsItemMasterEnggDto);
                         //}
