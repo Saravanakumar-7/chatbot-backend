@@ -1062,11 +1062,11 @@ namespace Tips.Master.Api.Controllers
                     Guid guids = Guid.NewGuid();
                     byte[] fileContent = Convert.FromBase64String(FileUploadDetail.FileByte);
                     //var itemNumber = fileUploadPostDtos.ItemNumber;
-                    string fileName = FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
+                    string fileName = guids.ToString() + "_" + FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
                     //Guid guids = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload",guids.ToString() + "_" + fileName);
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileName);
                     using (MemoryStream ms = new MemoryStream(fileContent))
                     {
                         ms.Position = 0;
