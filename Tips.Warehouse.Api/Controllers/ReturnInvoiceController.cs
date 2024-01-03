@@ -747,5 +747,116 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetReturnInvoiceSPResport([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<ReturnInvoiceSPResport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceSPResport>>();
+
+            try
+            {
+                var products = await _returnInvoiceRepository.GetReturnInvoiceSPResport(pagingParameter);
+
+                var metadata = new
+                {
+                    products.TotalCount,
+                    products.PageSize,
+                    products.CurrentPage,
+                    products.HasNext,
+                    products.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
+                _logger.LogInfo("Returned all ReturnInvoiceSPResport");
+                var result = _mapper.Map<IEnumerable<ReturnInvoiceSPResport>>(products);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ReturnInvoiceSPResport Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> ReturnInvoiceSPReportDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<ReturnInvoiceSPResport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceSPResport>>();
+            try
+            {
+                var products = await _returnInvoiceRepository.ReturnInvoiceSPReportDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ReturnInvoiceSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ReturnInvoiceSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ReturnInvoiceSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside Invoice action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> ReturnInvoiceSPReportWithParameter([FromBody] ReturnInvoiceSPReportDTO returnInvoiceSPReportDTO)
+        {
+            ServiceResponse<IEnumerable<ReturnInvoiceSPResport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceSPResport>>();
+            try
+            {
+                var products = await _returnInvoiceRepository.ReturnInvoiceSPReportWithParameter(returnInvoiceSPReportDTO.InvoiceNumber, returnInvoiceSPReportDTO.DoNumber, returnInvoiceSPReportDTO.CustomerName, returnInvoiceSPReportDTO.CustomerAliasName, returnInvoiceSPReportDTO.SalesOrderNumber, returnInvoiceSPReportDTO.Location, returnInvoiceSPReportDTO.Warehouse, returnInvoiceSPReportDTO.KPN, returnInvoiceSPReportDTO.MPN, returnInvoiceSPReportDTO.IssuedTo);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ReturnInvoiceSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ReturnInvoiceSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var result = _mapper.Map<IEnumerable<ReturnInvoiceSPResport>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ReturnInvoiceSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside ReturnInvoiceSPReport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

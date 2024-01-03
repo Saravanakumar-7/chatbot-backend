@@ -773,5 +773,117 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetReturnOpenDeliveryOrderSPResport([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResport>>();
+
+            try
+            {
+                var products = await _repository.GetReturnOpenDeliveryOrderSPResport(pagingParameter);
+
+                var metadata = new
+                {
+                    products.TotalCount,
+                    products.PageSize,
+                    products.CurrentPage,
+                    products.HasNext,
+                    products.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
+                _logger.LogInfo("Returned all ReturnOpenDeliveryOrderSPResport");
+                var result = _mapper.Map<IEnumerable<ReturnOpenDeliveryOrderSPResport>>(products);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ReturnOpenDeliveryOrderSPResport Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> ReturnOpenDeliveryOrderSPReportDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResport>>();
+            try
+            {
+                var products = await _repository.ReturnOpenDeliveryOrderSPReportDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ReturnOpenDeliveryOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ReturnOpenDeliveryOrderSPReportDate hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ReturnOpenDeliveryOrderSPReportDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside Invoice action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> ReturnOpenDeliveryOrderSPReportWithParam([FromBody] ReturnOpenDeliveryOrderSPReportDTO returnOpenDeliveryOrder)
+        {
+            ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResport>>();
+            try
+            {
+                var products = await _repository.ReturnOpenDeliveryOrderSPReportWithParam(returnOpenDeliveryOrder.ODONumber, returnOpenDeliveryOrder.CustomerName, returnOpenDeliveryOrder.CustomerAliasName, returnOpenDeliveryOrder.LeadId, returnOpenDeliveryOrder.IssuedTo, returnOpenDeliveryOrder.Location, returnOpenDeliveryOrder.Warehouse, returnOpenDeliveryOrder.KPN, returnOpenDeliveryOrder.MPN, returnOpenDeliveryOrder.IssuedTo);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ReturnOpenDeliveryOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ReturnOpenDeliveryOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var result = _mapper.Map<IEnumerable<ReturnOpenDeliveryOrderSPResport>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ReturnOpenDeliveryOrderSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside ReturnOpenDeliveryOrderSPReport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }
