@@ -64,7 +64,35 @@ namespace Tips.Warehouse.Api.Repository
 
             return returODODetailsById;
         }
+        public async Task<IEnumerable<ReturnOpenDeliveryOrderSPResport>> ReturnOpenDeliveryOrderSPReportDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<ReturnOpenDeliveryOrderSPResport>()
+                        .FromSqlInterpolated($"CALL Return_Open_DeliveryOrder_Report_withdate({FromDate},{ToDate})")
+                        .ToList();
 
+            return results;
+        }
+
+        public async Task<IEnumerable<ReturnOpenDeliveryOrderSPResport>> ReturnOpenDeliveryOrderSPReportWithParam(string? ODONumber, string? CustomerName, string? CustomerAliasName, string? LeadId, string? IssuedTo, string? KPN, string? MPN, string? Warehouse, string? Location, string? ODOType)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<ReturnOpenDeliveryOrderSPResport>()
+            .FromSqlInterpolated($"CALL Return_Open_DeliveryOrder_Report_withparameters({ODONumber},{CustomerName},{CustomerAliasName},{LeadId},{IssuedTo},{KPN},{MPN},{Location},{Warehouse},{ODOType})")
+            .ToList();
+
+            return result;
+
+        }
+        public async Task<PagedList<ReturnOpenDeliveryOrderSPResport>> GetReturnOpenDeliveryOrderSPResport(PagingParameter pagingParameter)
+        {
+            var results = _tipsWarehouseDbContext.Set<ReturnOpenDeliveryOrderSPResport>()
+                      .FromSqlInterpolated($"CALL Return_Open_DeliveryOrder_Report")
+                      .ToList();
+
+            return PagedList<ReturnOpenDeliveryOrderSPResport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+
+
+        }
         public async Task<string> UpdateReturnOpenDeliveryOrder(ReturnOpenDeliveryOrder returnOpenDeliveryOrder)
         {
             returnOpenDeliveryOrder.LastModifiedBy = _createdBy;

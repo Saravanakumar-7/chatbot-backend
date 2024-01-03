@@ -27,14 +27,40 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<int?> CreateReturnBtoDeliveryOrder(ReturnBtoDeliveryOrder returnBtoDeliveryOrder)
         {
+
             returnBtoDeliveryOrder.CreatedBy = _createdBy;
             returnBtoDeliveryOrder.CreatedOn = DateTime.Now;
-            returnBtoDeliveryOrder.Unit =_unitname;
+            returnBtoDeliveryOrder.Unit = _unitname;
             var result = await Create(returnBtoDeliveryOrder);
             return result.Id;
         }
+        public async Task<IEnumerable<ReturnDOSPReport>> ReturnDeliveryOrderSPReportDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<ReturnDOSPReport>()
+                     .FromSqlInterpolated($"CALL Return_DeliveryOrder_Report_withDate({FromDate},{ToDate})")
+                     .ToList();
 
+            return results;
+        }
+        public async Task<IEnumerable<ReturnDOSPReport>> ReturnDOSPReportWithParam(string? DoNumber, string? CustomerName, string? CustomerAliasName, string? LeadId, string? SalesOrderNumber, string? Location, string? Warehouse, string? ProductType, string? TypeOfSolution, string? KPN, string? MPN)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<ReturnDOSPReport>()
+            .FromSqlInterpolated($"CALL Return_DeliveryOrder_Report_withparameter({DoNumber},{CustomerName},{CustomerAliasName},{LeadId},{SalesOrderNumber},{Location},{Warehouse},{ProductType},{TypeOfSolution},{KPN},{MPN})")
+            .ToList();
 
+            return result;
+        }
+        public async Task<PagedList<ReturnDOSPReport>> ReturnDeliveryOrderSPReport(PagingParameter pagingParameter)
+        {
+
+            var results = _tipsWarehouseDbContext.Set<ReturnDOSPReport>()
+                     .FromSqlInterpolated($"CALL Return_DeliveryOrder_Report")
+                     .ToList();
+
+            return PagedList<ReturnDOSPReport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+
+        }
         public async Task<PagedList<ReturnBtoDeliveryOrder>> GetAllReturnBtoDeliveryOrderDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
 
@@ -52,7 +78,7 @@ namespace Tips.Warehouse.Api.Repository
             Delete(returnBtoDeliveryOrder);
             string result = $"DeleteReturnBtoDeliveryOrder details of {returnBtoDeliveryOrder.Id} is deleted successfully!";
             return result;
-        }       
+        }
 
         public async Task<ReturnBtoDeliveryOrder> GetReturnBtoDeliveryOrderById(int id)
         {
@@ -65,7 +91,7 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<int?> GetReturnBtoDeliveryOrderByBtoNo(string BTONumber)
         {
-            var getReturnBtoDeliveryOrderByBtoNo =  _tipsWarehouseDbContext.ReturnBtoDeliveryOrders
+            var getReturnBtoDeliveryOrderByBtoNo = _tipsWarehouseDbContext.ReturnBtoDeliveryOrders
                     .Where(x => x.BTONumber == BTONumber).Count();
             return getReturnBtoDeliveryOrderByBtoNo;
         }

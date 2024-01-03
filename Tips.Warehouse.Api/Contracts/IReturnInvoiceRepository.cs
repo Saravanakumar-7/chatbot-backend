@@ -13,8 +13,9 @@ namespace Tips.Warehouse.Api.Contracts
         Task<string> DeleteReturnInvoice(ReturnInvoice returnInvoice);
 
         Task<string> GetReturnInvoiceByInvoiceNo(string InvoiceNumber);
-
-
+        Task<PagedList<ReturnInvoiceSPResport>> GetReturnInvoiceSPResport(PagingParameter pagingParameter);
+        Task<IEnumerable<ReturnInvoiceSPResport>> ReturnInvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<ReturnInvoiceSPResport>> ReturnInvoiceSPReportWithParameter(string InvoiceNumber, string DoNumber, string CustomerName,string CustomerAliasName, string SalesOrderNumber, string Location, string Warehouse, string KPN, string MPN, string IssuedTo);
         Task<ReturnInvoice> GetReturnInvoiceById(int id);
     }
 }

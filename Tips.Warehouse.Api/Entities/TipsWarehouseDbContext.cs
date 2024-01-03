@@ -50,7 +50,9 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<LocationTransferSPReport> RecievableLocationTransfers { get; set; }
         public DbSet<OpenDeliveryOrderSPReport> RecievableODOs { get; set; }
         public DbSet<DailyDOReport> DailyDOReports { get; set; }
-
+        public DbSet<ReturnInvoiceSPResport> ReturnInvoiceSPResports { get; set; }
+        public DbSet<ReturnOpenDeliveryOrderSPResport> ReturnOpenDeliveryOrderSPResports { get; set; }
+        public DbSet<ReturnDOSPReport> ReturnDOSPReports { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ConsumptionReport>().HasNoKey();
@@ -58,6 +60,10 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<InvoiceSPReport>().HasNoKey();
             modelBuilder.Entity<LocationTransferSPReport>().HasNoKey();
             modelBuilder.Entity<OpenDeliveryOrderSPReport>().HasNoKey();
+            modelBuilder.Entity<ReturnInvoiceSPResport>().HasNoKey();
+            modelBuilder.Entity<ReturnOpenDeliveryOrderSPResport>().HasNoKey();
+            modelBuilder.Entity<ReturnDOSPReport>().HasNoKey();
+            
             // Other entity configurations can be added here
             modelBuilder.Entity<DailyDOReport>().HasNoKey();
             base.OnModelCreating(modelBuilder);

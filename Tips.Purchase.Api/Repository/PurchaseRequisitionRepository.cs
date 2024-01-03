@@ -346,7 +346,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
             IQueryable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIList =  _tipsPurchaseDbContext.PurchaseRequisitions
-           .Where(x => x.PrApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed)
+           .Where(x => x.PrApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed).OrderByDescending(x=>x.Id)
            .Select(pr => new PurchaseRequisitionIdNameListDto()
            {
                Id = pr.Id,
@@ -386,7 +386,7 @@ namespace Tips.Purchase.Api.Repository
                         item.PrApprovedIBy.ToLower().Contains(searchValue) ||
                         item.PrApprovedIIBy.ToLower().Contains(searchValue) ||
                         item.ProcurementType.ToLower().Contains(searchValue)
-                    );
+                    ).OrderByDescending(x=>x.Id);
             }
 
             int totalCount = await pendingPRApprovalIList.CountAsync();
@@ -401,7 +401,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
             IQueryable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIIList =  _tipsPurchaseDbContext.PurchaseRequisitions
-           .Where(x => x.PrApprovalI == true && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed)
+           .Where(x => x.PrApprovalI == true && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed).OrderByDescending(x=>x.Id)
            .Select(pr => new PurchaseRequisitionIdNameListDto()
            {
                Id = pr.Id,
@@ -441,7 +441,7 @@ namespace Tips.Purchase.Api.Repository
                         item.PrApprovedIBy.ToLower().Contains(searchValue) ||
                         item.PrApprovedIIBy.ToLower().Contains(searchValue) ||
                         item.ProcurementType.ToLower().Contains(searchValue)
-                    );
+                    ).OrderByDescending(x=>x.Id);
             }
 
             int totalCount = await pendingPRApprovalIIList.CountAsync();

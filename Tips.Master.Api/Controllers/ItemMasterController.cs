@@ -392,12 +392,32 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> GetDownloadUrlDetailsforItemFiles(string fileids)
         {
             ServiceResponse<List<FileUploadDto>> serviceResponse = new ServiceResponse<List<FileUploadDto>>();
             try
             {
+                string serverKey = GetServerKey();
                 var itemsFiles = await _fileUploadRepository.GetDownloadUrlDetails(fileids);
                 if (itemsFiles == null)
                 {
@@ -423,8 +443,16 @@ namespace Tips.Master.Api.Controllers
                     foreach (var fileUploadDetails in itemsFiles)
                     {
                         FileUploadDto fileUploadDto = _mapper.Map<FileUploadDto>(fileUploadDetails);
-                        var baseUrl = $"{Request.Scheme}://{_config["ItemMasterBaseUrl"]}";
-                        fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                        }
+                        else
+                        {                            
+                            var baseUrl = $"{Request.Scheme}://{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                        }
 
                         //fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileUploadDto.FileName);
                         fileUploads.Add(fileUploadDto);
@@ -1031,13 +1059,14 @@ namespace Tips.Master.Api.Controllers
                 var FileUploadDetails = fileUploadPostDtos;
                 foreach (var FileUploadDetail in FileUploadDetails)
                 {
+                    Guid guids = Guid.NewGuid();
                     byte[] fileContent = Convert.FromBase64String(FileUploadDetail.FileByte);
                     //var itemNumber = fileUploadPostDtos.ItemNumber;
-                    string fileName = FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
+                    string fileName = guids.ToString() + "_" + FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
                     //Guid guids = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload",/*guids.ToString() + "_" +*/ fileName);
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileName);
                     using (MemoryStream ms = new MemoryStream(fileContent))
                     {
                         ms.Position = 0;

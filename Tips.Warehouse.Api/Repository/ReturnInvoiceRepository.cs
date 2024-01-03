@@ -22,7 +22,34 @@ namespace Tips.Warehouse.Api.Repository
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
+        public async Task<IEnumerable<ReturnInvoiceSPResport>> ReturnInvoiceSPReportWithParameter(string InvoiceNumber, string DoNumber, string CustomerName, string CustomerAliasName, string SalesOrderNumber, string Location, string Warehouse, string KPN, string MPN, string IssuedTo)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<ReturnInvoiceSPResport>()
+            .FromSqlInterpolated($"CALL Return_Invoice_Report_withParameter({InvoiceNumber},{DoNumber},{CustomerName},{SalesOrderNumber},{CustomerAliasName},{Location},{Warehouse},{KPN},{MPN},{IssuedTo})")
+            .ToList();
 
+            return result;
+        }
+
+        public async Task<IEnumerable<ReturnInvoiceSPResport>> ReturnInvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<ReturnInvoiceSPResport>()
+                        .FromSqlInterpolated($"CALL Return_Invoice_Report_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+        }
+        public async Task<PagedList<ReturnInvoiceSPResport>> GetReturnInvoiceSPResport(PagingParameter pagingParameter)
+        {
+            var results = _tipsWarehouseDbContext.Set<ReturnInvoiceSPResport>()
+                      .FromSqlInterpolated($"CALL Return_Invoice_Report")
+                      .ToList();
+
+            return PagedList<ReturnInvoiceSPResport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+
+
+        }
         public async Task<long?> CreateReturnInvoice(ReturnInvoice returnInvoice)
         {
             returnInvoice.CreatedBy = _createdBy;
