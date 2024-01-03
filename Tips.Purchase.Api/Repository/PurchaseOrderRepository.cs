@@ -602,7 +602,7 @@ namespace Tips.Purchase.Api.Repository
         {
 
             IQueryable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList =  _tipsPurchaseDbContext.PurchaseOrders
-            .Where(x => x.POApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed)
+            .Where(x => x.POApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed).OrderByDescending(x=>x.Id)
             .Select(g => new PurchaseOrderIdNameListDto()
             {
                 Id = g.Id,
@@ -659,7 +659,7 @@ namespace Tips.Purchase.Api.Repository
                         item.POApprovedIBy.ToLower().Contains(searchValue) ||
                         item.POApprovedIIBy.ToLower().Contains(searchValue) ||
                         item.ProcurementType.ToLower().Contains(searchValue)
-                    );
+                    ).OrderByDescending(x => x.Id);
             }
 
             int totalCount = await pendingPOApprovalINameList.CountAsync();
@@ -706,7 +706,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
             IQueryable<PurchaseOrderIdNameListDto> pendingPOApprovalIINameList =  _tipsPurchaseDbContext.PurchaseOrders
-            .Where(x => x.POApprovalI == true && x.POApprovalII == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed)
+            .Where(x => x.POApprovalI == true && x.POApprovalII == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed).OrderByDescending(x=>x.Id)
             .Select(g => new PurchaseOrderIdNameListDto()
             {
                 Id = g.Id,
@@ -764,7 +764,7 @@ namespace Tips.Purchase.Api.Repository
                         item.POApprovedIBy.ToLower().Contains(searchValue) ||
                         item.POApprovedIIBy.ToLower().Contains(searchValue) ||
                         item.ProcurementType.ToLower().Contains(searchValue)
-                    );
+                    ).OrderByDescending(x => x.Id);
             }
         
 
