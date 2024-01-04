@@ -42,7 +42,7 @@ namespace Tips.Master.Api.Controllers
             _fileUploadRepository = fileUploadRepository;
             _imageUploadRepository = imageUploadRepository;
             _mapper = mapper;
-        } 
+        }
         // GET: api/<ItemMasterController>
         [HttpGet]
         public async Task<IActionResult> GetAllItemMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
@@ -449,8 +449,8 @@ namespace Tips.Master.Api.Controllers
                             fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
                         }
                         else
-                        {                            
-                            var baseUrl = $"{Request.Scheme}://{_config["ItemMasterBaseUrl"]}";
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
                             fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
                         }
 
