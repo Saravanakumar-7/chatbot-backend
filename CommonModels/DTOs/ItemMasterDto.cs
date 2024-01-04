@@ -344,6 +344,7 @@ namespace Entities.DTOs
         public long id { get; set; }
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
+        public string? Uom { get; set; }
     }
     public class ItemMasterMtrPartNoDto
     {

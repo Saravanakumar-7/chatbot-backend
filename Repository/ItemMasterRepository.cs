@@ -383,7 +383,7 @@ namespace Repository
                                     id = c.Id,
                                     ItemNumber = c.ItemNumber,
                                     Description = c.Description,
-
+                                    Uom=c.Uom
                                 })
                               .ToListAsync();
 

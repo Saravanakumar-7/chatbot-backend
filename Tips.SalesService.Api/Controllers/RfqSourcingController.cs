@@ -358,27 +358,30 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     RfqSourcingPPdetails rfqSourcingPPdetails = new RfqSourcingPPdetails();
                     rfqSourcingPPdetails.PPItemNumber = ppinsource.ItemNumber;
-                    foreach (var ppvendor in ppinsource.RfqSourcingVendors)
+                    if (ppinsource.RfqSourcingVendors != null)
                     {
-                        if (ppvendor.Primary == true)
+                        foreach (var ppvendor in ppinsource.RfqSourcingVendors)
                         {
-                            if (ppvendor.Currency!= "INR")
+                            if (ppvendor.Primary == true)
                             {
-                                var httpClientHandler = new HttpClientHandler();
-                                httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-                                var httpClient = new HttpClient(httpClientHandler);                                
-                                var rfqApiUrl = _config["ConvertionrateAPI"];
-                                var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={ppvendor.Currency}");
-                                var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
-                                var vendorUOC = JsonConvert.DeserializeObject<RfqSourcingConvertionrateDto>(rfqCustomerIdString);
-                                ppvendor.LandingPrice=ppvendor.LandingPrice * vendorUOC.Data.ConvertionRate;
-                                ppvendor.MoqCost= ppvendor.MoqCost* vendorUOC.Data.ConvertionRate;
+                                if (ppvendor.Currency != "INR")
+                                {
+                                    var httpClientHandler = new HttpClientHandler();
+                                    httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                                    var httpClient = new HttpClient(httpClientHandler);
+                                    var rfqApiUrl = _config["ConvertionrateAPI"];
+                                    var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={ppvendor.Currency}");
+                                    var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
+                                    var vendorUOC = JsonConvert.DeserializeObject<RfqSourcingConvertionrateDto>(rfqCustomerIdString);
+                                    ppvendor.LandingPrice = ppvendor.LandingPrice * vendorUOC.Data.ConvertionRate;
+                                    ppvendor.MoqCost = ppvendor.MoqCost * vendorUOC.Data.ConvertionRate;
+                                }
+                                rfqSourcingPPdetails.VLandindPrice = ppvendor.LandingPrice;
+                                rfqSourcingPPdetails.VMoqcost = ppvendor.MoqCost;
                             }
-                            rfqSourcingPPdetails.VLandindPrice = ppvendor.LandingPrice;
-                            rfqSourcingPPdetails.VMoqcost = ppvendor.MoqCost;
                         }
+                        rfqSourcingPPdetailsList.Add(rfqSourcingPPdetails);
                     }
-                    rfqSourcingPPdetailsList.Add(rfqSourcingPPdetails);
                 }
                 //Getting the FG's of that RFQ
                 List<RfqEnggItem> listofFgs = await _rfqEnggItemRepository.GetRfqEnggItemsbyRfqId(rfqId);
