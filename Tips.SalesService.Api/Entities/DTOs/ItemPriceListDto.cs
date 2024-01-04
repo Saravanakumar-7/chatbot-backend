@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
         public string? UOC { get; set; }
+        public string? UOM { get; set; }
         public decimal? LeastCost { get; set; }
 
         [Precision(18, 3)]
@@ -50,6 +51,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
         public string? UOC { get; set; }
+        public string? UOM { get; set; }
         public decimal? LeastCost { get; set; }
 
         [Precision(18, 3)]
@@ -81,6 +83,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
         public string? UOC { get; set; }
+        public string? UOM { get; set; }
         public decimal? LeastCost { get; set; }
 
         [Precision(18, 3)]

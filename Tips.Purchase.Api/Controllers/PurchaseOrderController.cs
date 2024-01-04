@@ -1474,23 +1474,29 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError("Invalid PurchaseOrder UploadDocument sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
+                List<GetDownloadUrlDto> downloadUrls = new List<GetDownloadUrlDto>();
+                if (getDownloadDetailByPoNumber != null)
                 {
-                    if (serverKey == "avision")
+                    foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
                     {
-                        var baseUrl = $"{_config["PurchaseBaseUrl"]}";
-                        getDownloadUrlByFilename.DownloadUrl = $"{baseUrl}/apigateway/tips/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
-                    }
-                    else
-                    {
-                        var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
-                        getDownloadUrlByFilename.DownloadUrl = $"{baseUrl}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+                        GetDownloadUrlDto downloadUrlDto = _mapper.Map<GetDownloadUrlDto>(getDownloadUrlByFilename);
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["PurchaseBaseUrl"]}";
+                            downloadUrlDto.DownloadUrl = $"{baseUrl}/apigateway/tips/PurchaseOrder/DownloadFile?Filename={downloadUrlDto.FileName}";
+                        }
+                        else
+                        {
+                            var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
+                            downloadUrlDto.DownloadUrl = $"{baseUrl}/api/PurchaseOrder/DownloadFile?Filename={downloadUrlDto.FileName}";
 
+                        }
+                        downloadUrls.Add(downloadUrlDto);
                     }
-                } 
-                    _logger.LogInfo($"Returned DownloadDetail with id: {poNumber}");
-                    var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(getDownloadDetailByPoNumber);
-                    serviceResponse.Data = result;
+                }
+                _logger.LogInfo($"Returned DownloadDetail with id: {poNumber}");
+                //var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(getDownloadDetailByPoNumber);
+                    serviceResponse.Data = downloadUrls;
                     serviceResponse.Message = "Success";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -1499,7 +1505,7 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside PoFiles action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
@@ -1508,8 +1514,6 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-
-         
 
         [HttpPut]
         public async Task<IActionResult> UpdatePurchaseOrder([FromBody] PurchaseOrderUpdateDto purchaseOrderUpdateDto)

@@ -870,9 +870,9 @@ namespace Tips.Purchase.Api.Controllers
             {
                 string serverKey = GetServerKey();
 
-                var getDownloadDetailByPoNumber = await _repository.GetDownloadUrlDetails(prNumber, prItemNumber);
+                var getDownloadDetailByPrNumber = await _repository.GetDownloadUrlDetails(prNumber, prItemNumber);
 
-                if (getDownloadDetailByPoNumber.Count() == 0)
+                if (getDownloadDetailByPrNumber.Count() == 0)
                 {
                     _logger.LogError($"DownloadDetail with id: {prItemNumber}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -890,22 +890,28 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError("Invalid PurchaseRequisition UploadDocument sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
+                List<GetDownloadUrlDto> downloadUrls = new List<GetDownloadUrlDto>();
+                if (getDownloadDetailByPrNumber != null)
                 {
-                    if (serverKey == "avision")
+                    foreach (var getDownloadUrlByFilename in getDownloadDetailByPrNumber)
                     {
-                        var baseUrl = $"{_config["PurchaseBaseUrl"]}";
-                        getDownloadUrlByFilename.DownloadUrl = $"{baseUrl}/apigateway/tips/PurchaseRequisition/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
-                    }
-                    else
-                    {
-                        var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
-                        getDownloadUrlByFilename.DownloadUrl = $"{baseUrl}/api/PurchaseRequisition/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
+                        GetDownloadUrlDto downloadUrlDto = _mapper.Map<GetDownloadUrlDto>(getDownloadUrlByFilename);
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["PurchaseBaseUrl"]}";
+                            downloadUrlDto.DownloadUrl = $"{baseUrl}/apigateway/tips/PurchaseRequisition/DownloadFile?Filename={downloadUrlDto.FileName}";
+                        }
+                        else
+                        {
+                            var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
+                            downloadUrlDto.DownloadUrl = $"{baseUrl}/api/PurchaseRequisition/DownloadFile?Filename={downloadUrlDto.FileName}";
+                        }
+                        downloadUrls.Add(downloadUrlDto);
                     }
                 }
-                _logger.LogInfo($"Returned DownloadDetail with id: {prItemNumber}");
-                var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(getDownloadDetailByPoNumber);
-                serviceResponse.Data = result;
+                _logger.LogInfo($"Returned DownloadDetail with id: {prNumber}");
+                //var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(getDownloadDetailByPoNumber);
+                serviceResponse.Data = downloadUrls;
                 serviceResponse.Message = "Success";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -914,7 +920,7 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside PRDetail action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside PRFiles action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
