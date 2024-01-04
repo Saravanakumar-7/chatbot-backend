@@ -2079,8 +2079,8 @@ namespace Tips.Warehouse.Api.Controllers
                 serviceResponse.Message = "Inventory Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-
-                return Created("GetInventoryById", serviceResponse);
+                return Ok(serviceResponse);
+                //return Created("GetInventoryById", serviceResponse);
             }
             catch (Exception ex)
             {

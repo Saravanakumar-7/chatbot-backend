@@ -555,7 +555,8 @@ namespace Tips.Production.Api.Controllers
                             materialIssueItem.ProjectNumber = projectNo;
                             materialIssueItem.PartType = bom.partType;
                             materialIssueItem.UOM = bom.uom;
-                            materialIssueItem.RequiredQty = (bom.quantity * shopOrder.TotalSOReleaseQty);
+                            // materialIssueItem.RequiredQty = (bom.quantity * shopOrder.TotalSOReleaseQty);
+                            materialIssueItem.RequiredQty = (bom.quantity * shopOrder.ShopOrderItems[i].ReleaseQty);
                             materialIssueItem.IssuedQty = 0;
                             materialIssueItem.MaterialIssuedStatus = IssuedStatus.Open;
                             materialIssueItemList.Add(materialIssueItem);
