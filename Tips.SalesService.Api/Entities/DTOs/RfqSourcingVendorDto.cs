@@ -72,7 +72,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqSourcingVendorUpdateDto
     {
-       
+        public int? Id { get; set; }
         [StringLength(500, ErrorMessage = "Vendor can't be longer than 500 characters")]
         public string? Vendor { get; set; }
 

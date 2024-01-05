@@ -517,7 +517,8 @@ namespace Repository
                                     Id = x.Id,
                                     FileName = x.FileName,
                                     FileExtension = x.FileExtension,
-                                    FilePath = x.FilePath
+                                    FilePath = x.FilePath,
+                                    FileByte=x.FileByte
                                 }).FirstOrDefaultAsync();
                     if (getDownloadDetails != null)
                     fileUploads.Add(getDownloadDetails);

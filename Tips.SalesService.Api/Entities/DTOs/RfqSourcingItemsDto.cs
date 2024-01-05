@@ -41,7 +41,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqSourcingItemsUpdateDto
     {
-       
+        public int? Id { get; set; }
         [StringLength(500, ErrorMessage = "ItemNumber can't be longer than 100 characters")]
         public string? ItemNumber { get; set; }
 
