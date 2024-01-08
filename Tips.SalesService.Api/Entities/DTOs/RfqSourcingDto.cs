@@ -42,12 +42,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public int RFQId { get; set; }
-
         [StringLength(500, ErrorMessage = "RFQNumber can't be longer than 100 characters")]
         public string? RFQNumber { get; set; }
 
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
-        public string? CustomerName { get; set; }      
+        public string? CustomerName { get; set; }
 
         [Required]
         public string Unit { get; set; }

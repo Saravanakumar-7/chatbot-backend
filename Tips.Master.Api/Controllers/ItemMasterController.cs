@@ -344,13 +344,13 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDownloadUrlDetailsforItemImage(int imageid)
         {
-            ServiceResponse<IEnumerable<GetDownloadUrlDtos>> serviceResponse = new ServiceResponse<IEnumerable<GetDownloadUrlDtos>>();
+            ServiceResponse<GetDownloadUrlDtos> serviceResponse = new ServiceResponse<GetDownloadUrlDtos>();
 
             try
             {
                 var getDownloadDetailByPoNumber = await _repository.ItemMasterRepository.GetDownloadUrlDetails(imageid);
 
-                if (getDownloadDetailByPoNumber.Count() == 0)
+                if (getDownloadDetailByPoNumber == null)
                 {
                     _logger.LogError($"DownloadDetail with id: {imageid}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -368,13 +368,12 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid Itemmaster UploadDocument sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
-                {
+               
                     var baseUrl = $"{Request.Scheme}://{_config["ItemMasterBaseUrl"]}";
-                    getDownloadUrlByFilename.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
-                }
+                    getDownloadDetailByPoNumber.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={getDownloadDetailByPoNumber.FileName}";
+                
                 _logger.LogInfo($"Returned DownloadDetail with id: {imageid}");
-                var result = _mapper.Map<IEnumerable<GetDownloadUrlDtos>>(getDownloadDetailByPoNumber);
+                var result = _mapper.Map<GetDownloadUrlDtos>(getDownloadDetailByPoNumber);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Success";
                 serviceResponse.Success = true;

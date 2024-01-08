@@ -8,6 +8,7 @@ using Org.BouncyCastle.Ocsp;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Text;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.DTOs;
@@ -203,6 +204,29 @@ namespace Tips.SalesService.Api.Repository
                     }
                     if (itemPriceList != null)
                     {
+                        var itemdetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
+                            $"GetItemMasterByItemNumber?ItemNumber={rfqItem.ItemNumber}"));
+
+                        var inventoryObjectString = await itemdetails.Content.ReadAsStringAsync();
+                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        dynamic itemobject = inventoryObjectData.data;
+
+                        int? Imageid = itemobject.imageUpload;
+                        string? imgbyte=null;
+                        if(Imageid != null)
+                        {
+                            var itemimage = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
+                           $"GetDownloadUrlDetailsforItemImage?imageid={Imageid}"));
+
+                            var inventoryObjectStrin = await itemimage.Content.ReadAsStringAsync();
+                            var inventoryObjectDat = JsonConvert.DeserializeObject<GetitemImageDetailDto>(inventoryObjectStrin);
+                            var imagy = inventoryObjectDat.data;
+                            //byte[]? fileBytes = Convert.FromBase64String(imagy.fileByte);  // Use appropriate conversion method
+
+                            //// Convert byte array to string using UTF-8 encoding
+                            //string? fileString = Encoding.UTF8.GetString(fileBytes);
+                            imgbyte = imagy.fileByte;
+                        } 
                         var itemDetails = new CsItemDetailsForQuoteDto
                         {
                             LeadId = rfqDetail.LeadId,
@@ -223,7 +247,8 @@ namespace Tips.SalesService.Api.Repository
                             DiscountPlus = itemPriceList.DiscountPlus,
                             Markup = itemPriceList.Markup,
                             CreatedOn = itemPriceList.CreatedOn,
-                            IsDiscountApplicable = itemPriceList.IsDiscountApplicable
+                            IsDiscountApplicable = itemPriceList.IsDiscountApplicable,
+                            ImageByte= imgbyte
                         };
 
                         postdata.Add(itemDetails);
@@ -353,7 +378,7 @@ namespace Tips.SalesService.Api.Repository
                     //    .Where(d => d.RLpItemNo == rfqItem.ItemNumber)
                     //    .OrderByDescending(d => d.CreatedOn)
                     //    .FirstOrDefault();
-
+                    //
                     var itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
                         .Where(d => d.ItemNumber == rfqItem.ItemNumber)
                         .OrderByDescending(d => d.CreatedOn)
@@ -361,6 +386,25 @@ namespace Tips.SalesService.Api.Repository
 
                     if (itemPriceList != null)
                     {
+                        var itemdetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
+                            $"GetItemMasterByItemNumber?ItemNumber={rfqItem.ItemNumber}"));
+
+                        var inventoryObjectString = await itemdetails.Content.ReadAsStringAsync();
+                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        dynamic itemobject = inventoryObjectData.data;
+
+                        int? Imageid = itemobject.imageUpload;
+                        string? imgbyte = null;
+                        if (Imageid != null)
+                        {
+                            var itemimage = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
+                           $"GetDownloadUrlDetailsforItemImage?imageid={Imageid}"));
+
+                            var inventoryObjectStrin = await itemimage.Content.ReadAsStringAsync();
+                            var inventoryObjectDat = JsonConvert.DeserializeObject<GetitemImageDetailDto>(inventoryObjectStrin);
+                            var imagy = inventoryObjectDat.data;                            
+                            imgbyte = imagy.fileByte;
+                        }
                         var itemDetails = new rfqEnggItemDetailsForQuoteDto
                         {
                             RfqNumber = rfqDetail.RfqNumber,
@@ -383,7 +427,8 @@ namespace Tips.SalesService.Api.Repository
                             Markup = itemPriceList.Markup,
                             PriceListName = itemPriceList.PriceListName,
                             ValidThrough = itemPriceList.ValidThrough,
-                            IsDiscountApplicable = itemPriceList.IsDiscountApplicable
+                            IsDiscountApplicable = itemPriceList.IsDiscountApplicable,
+                            ImageByte = imgbyte
                         };
 
                         postdata.Add(itemDetails);

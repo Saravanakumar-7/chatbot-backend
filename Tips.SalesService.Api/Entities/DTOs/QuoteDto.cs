@@ -98,12 +98,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
 
         [Precision(13, 3)]
-        public decimal? GeneralDiscount { get; set; } 
+        public decimal? GeneralDiscount { get; set; }
         public List<QuoteGeneralPostDto>? QuoteGeneralPostDtos { get; set; }
         public List<QuoteAdditionalChargesPostDto>? QuoteAdditionalChargesPostDtos { get; set; }
         public List<QuoteRFQNotesPostDto>? QuoteRFQNotesPostDtos { get; set; }
         public List<QuoteOtherTermsPostDto>? QuoteOtherTermsPostDtos { get; set; }
-        public List<QuoteSpecialTermsPostDto>? QuoteSpecialTermsPostDtos {get; set; } 
+        public List<QuoteSpecialTermsPostDto>? QuoteSpecialTermsPostDtos { get; set; }
     }
     public class QuoteUpdateDto
     {
@@ -117,7 +117,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerId { get; set; }
         public string? RoomName { get; set; }
         public string? ReasonForModification { get; set; }
- 
+
         public string? QuoteRef { get; set; }
 
         [Precision(18, 3)]
@@ -140,7 +140,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? InstallationCharges { get; set; }
         [Precision(13, 3)]
-        public decimal? TotalAmountWithInstallationCharges { get; set; }        
+        public decimal? TotalAmountWithInstallationCharges { get; set; }
 
         [Precision(13, 3)]
         public decimal? GeneralDiscount { get; set; }
@@ -155,7 +155,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class CsItemDetailsForQuoteDto
     {
-        public string? LeadId { get; set; } 
+        public string? LeadId { get; set; }
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
@@ -169,7 +169,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? Qty { get; set; }
 
         [Precision(18, 3)]
-        public decimal? UnitPrice { get; set; } 
+        public decimal? UnitPrice { get; set; }
         public decimal? LeastCostPlus { get; set; }
 
         [Precision(18, 3)]
@@ -190,7 +190,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? ValidThrough { get; set; }
         public bool? IsDiscountApplicable { get; set; }
         public DateTime? CreatedOn { get; set; }
-
+        public string? ImageByte { get; set; }
 
     }
     public class rfqEnggItemDetailsForQuoteDto
@@ -235,6 +235,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? PriceListName { get; set; }
         public DateTime? ValidThrough { get; set; }
         public bool? IsDiscountApplicable { get; set; }
+        public string? ImageByte { get; set; }
     }
     // To allow short closed
     public class ShortClosedDto
@@ -242,4 +243,23 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? QuoteNumber { get; set; }
         public string? ShortClosedRemarks { get; set; }
     }
+
+    public class GetitemImageDetailDto
+    {
+        public Datum data { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
+        public int statusCode { get; set; }
+    }
+
+    public class Datum
+    {
+        public int id { get; set; }
+        public string fileName { get; set; }
+        public string fileExtension { get; set; }
+        public string filePath { get; set; }
+        public string? fileByte { get; set; }
+        public string downloadUrl { get; set; }
+    }
+
 }
