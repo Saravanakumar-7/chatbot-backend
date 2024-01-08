@@ -25,7 +25,7 @@ namespace Entities
         public DateTime? ApprovalDate { get; set; }
         public string? ApprovalBy { get; set; }
 
-        public List<CompanyFileUpload>? Upload { get; set; }
+        //public List<CompanyFileUpload>? Upload { get; set; }
 
         public bool ReAudit { get; set; } = true;
 

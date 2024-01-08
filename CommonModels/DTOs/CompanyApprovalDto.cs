@@ -23,7 +23,7 @@ namespace Entities.DTOs
         public DateTime? ApprovalDate { get; set; }
         public string? ApprovalBy { get; set; }
 
-        public List<CompanyFileUploadDto>? Upload { get; set; }
+        //public List<CompanyFileUploadDto>? Upload { get; set; }
 
         public bool ReAudit { get; set; } = true;
 
@@ -45,7 +45,7 @@ namespace Entities.DTOs
         public DateTime? ApprovalDate { get; set; }
         public string? ApprovalBy { get; set; }
 
-        public List<CompanyFileUploadPostDto>? Upload { get; set; }
+        //public List<CompanyFileUploadPostDto>? Upload { get; set; }
 
         public bool ReAudit { get; set; } = true;
 
@@ -68,7 +68,7 @@ namespace Entities.DTOs
         public DateTime? ApprovalDate { get; set; }
         public string? ApprovalBy { get; set; }
 
-        public List<CompanyFileUploadUpdateDto>? Upload { get; set; }
+       // public List<CompanyFileUploadUpdateDto>? Upload { get; set; }
 
         public bool ReAudit { get; set; } = true;
 
