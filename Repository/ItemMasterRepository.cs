@@ -41,19 +41,26 @@ namespace Repository
             
             return result.Id;
         }
-        public async Task<IEnumerable<GetDownloadUrlDtos>> GetDownloadUrlDetails(long itemMasterId)
-        { 
-            IEnumerable<GetDownloadUrlDtos> getDownloadDetails = await TipsMasterDbContext.imageUploads
-                                .Where(b => b.Id == itemMasterId)
-                                .Select(x => new GetDownloadUrlDtos()
-                                {
-                                    Id = x.Id,
-                                    FileName = x.FileName,
-                                    FileExtension = x.FileExtension,
-                                    FilePath = x.FilePath,
-                                    FileByte=x.FileByte
-                                })
-                              .ToListAsync();
+        public async Task<GetDownloadUrlDtos> GetDownloadUrlDetails(long itemMasterId)
+        {
+            GetDownloadUrlDtos? getDownloadDetails = await TipsMasterDbContext.imageUploads.Where(b => b.Id == itemMasterId)
+                                 .Select(x => new GetDownloadUrlDtos()
+                                 {
+                                     Id = x.Id,
+                                     FileName = x.FileName,
+                                     FileExtension = x.FileExtension,
+                                     FilePath = x.FilePath,
+                                     FileByte = x.FileByte
+                                 }).FirstOrDefaultAsync();
+
+            //.Select(x => new GetDownloadUrlDtos()
+            //{
+            //    Id = x.Id,
+            //    FileName = x.FileName,
+            //    FileExtension = x.FileExtension,
+            //    FilePath = x.FilePath,
+            //    FileByte=x.FileByte
+            //});
 
             return getDownloadDetails;
         }

@@ -89,10 +89,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "LeadTime can't be longer than 500 characters")]
         public string? LeadTime { get; set; }
-
         [Precision(13, 3)]
         public decimal? Freight { get; set; }
-
         [Precision(13, 3)]
         public decimal? Duties { get; set; }
 
@@ -103,7 +101,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? MoqCost { get; set; }
         public DateTime? QuoteDate { get; set; }
-        public DateTime? QuoteValidity { get; set; }        
+        public DateTime? QuoteValidity { get; set; }
+        public bool Primary { get; set; } = true;
     }
     public class RfqSourcingConvertionrateDto
     {
