@@ -813,7 +813,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<List<Inventory>> GetInventoryByItemNo(string itemNumber)
         {
             var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber
-            && x.IsStockAvailable == true)
+           /* && x.IsStockAvailable == true*/)
                           .ToListAsync();
             return inventoryDetail;
         }
