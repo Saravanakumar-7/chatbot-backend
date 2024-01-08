@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Entities.Migrations;
 using System.Net;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -18,12 +19,16 @@ namespace Tips.Master.Api.Controllers
         private IRepositoryWrapperForMaster _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
+        private IConfiguration _config;
+        private IFileUploadRepository _fileUploadRepository;
 
-        public CompanyMasterController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        public CompanyMasterController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper, IConfiguration config, IFileUploadRepository fileUploadRepository)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _config = config;
+            _fileUploadRepository = fileUploadRepository;
         }
 
         // GET: api/<CompanyMasterController>
@@ -206,6 +211,185 @@ namespace Tips.Master.Api.Controllers
                 }
                 companyMaster.CompanyApprovals[i].Upload = companyFileUploadDtoList;
             }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateCompanyMasterFileUpload([FromBody] List<FileUploadPostDto> fileUploadPostDtos)
+        {
+            ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
+            try
+            {
+                if (fileUploadPostDtos is null)
+                {
+                    _logger.LogError("CompanyMasterFile object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "CompanyMaster object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid CompanyMasterFile object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                // var fileUploadDtoList = new List<FileUpload>();
+
+                ////multiple file upload
+
+                List<string>? id_s = new List<string>();
+                var FileUploadDetails = fileUploadPostDtos;
+                foreach (var FileUploadDetail in FileUploadDetails)
+                {
+                    Guid guids = Guid.NewGuid();
+                    byte[] fileContent = Convert.FromBase64String(FileUploadDetail.FileByte);
+                    //var itemNumber = fileUploadPostDtos.ItemNumber;
+                    string fileName = guids.ToString() + "_" + FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                    //Guid guids = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileName);
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                        var uploadedFile = new FileUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            ParentId = "Company Master",
+                            DocumentFrom = "CompanyMaster File Document",
+                            FileByte = FileUploadDetail.FileByte
+                        };
+                        _repository.FileUploadRepository.CreateFileUploadDocument(uploadedFile);
+                        _repository.SaveAsync();
+                        id_s.Add(uploadedFile.Id.ToString());
+
+                    }
+                }
+                serviceResponse.Data = id_s;
+                serviceResponse.Message = " CompanyMasterFile Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CompanyMasterFile action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetDownloadUrlDetailsforCompanyFiles(string fileids)
+        {
+            ServiceResponse<List<FileUploadDto>> serviceResponse = new ServiceResponse<List<FileUploadDto>>();
+            try
+            {
+                string serverKey = GetServerKey();
+                var comapanyFiles = await _fileUploadRepository.GetDownloadUrlDetails(fileids);
+                if (comapanyFiles == null)
+                {
+                    _logger.LogError($"DownloadDetail with id: {fileids}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {fileids}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Companymaster UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Companymaster UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<FileUploadDto> fileUploads = new List<FileUploadDto>();
+                if (comapanyFiles != null)
+                {
+                    foreach (var fileUploadDetails in comapanyFiles)
+                    {
+                        FileUploadDto fileUploadDto = _mapper.Map<FileUploadDto>(fileUploadDetails);
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/CompanyMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                        }
+                        else
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/CompanyMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                        }
+
+                        //fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileUploadDto.FileName);
+                        fileUploads.Add(fileUploadDto);
+                    }
+                }
+                _logger.LogInfo($"Returned DownloadDetail with id: {fileids}");
+                //var result = _mapper.Map<IEnumerable<GetDownloadUrlDtos>>(getDownloadDetailByPoNumber);
+                serviceResponse.Data = fileUploads;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CompanymasterFiles action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> DownloadFile(string Filename)
+        {
+            ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", Filename);
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out var ContentType))
+            {
+                ContentType = "application/octet-stream";
+            }
+            var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+
+            return File(bytes, ContentType, Path.GetFileName(filePath));
         }
 
         // PUT api/<CompanyMasterController>/5
