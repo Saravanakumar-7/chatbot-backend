@@ -9,6 +9,7 @@ using Entities.Migrations;
 using System.Net;
 using Newtonsoft.Json;
 using static Org.BouncyCastle.Math.EC.ECCurve;
+using Microsoft.AspNetCore.StaticFiles;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,13 +23,15 @@ namespace Tips.Master.Api.Controllers
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IConfiguration _config;
+        private IFileUploadRepository _fileUploadRepository;
 
-        public VendorController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper, IConfiguration config)
+        public VendorController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper, IConfiguration config, IFileUploadRepository fileUploadRepository)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _config = config;
+            _fileUploadRepository = fileUploadRepository;
         }
 
         // GET: api/<VendorController>
@@ -186,6 +189,86 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateVendorMasterFileUpload([FromBody] List<FileUploadPostDto> fileUploadPostDtos)
+        {
+            ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
+            try
+            {
+                if (fileUploadPostDtos is null)
+                {
+                    _logger.LogError("VendorMasterFile object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "VendorMaster object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid VendorMasterFile object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                // var fileUploadDtoList = new List<FileUpload>();
+
+                ////multiple file upload
+
+                List<string>? id_s = new List<string>();
+                var FileUploadDetails = fileUploadPostDtos;
+                foreach (var FileUploadDetail in FileUploadDetails)
+                {
+                    Guid guids = Guid.NewGuid();
+                    byte[] fileContent = Convert.FromBase64String(FileUploadDetail.FileByte);
+                    //var itemNumber = fileUploadPostDtos.ItemNumber;
+                    string fileName = guids.ToString() + "_" + FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                    //Guid guids = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileName);
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                        var uploadedFile = new FileUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            ParentId = "Vendor Master",
+                            DocumentFrom = "VendorMaster File Document",
+                            FileByte = FileUploadDetail.FileByte
+                        };
+                        _repository.FileUploadRepository.CreateFileUploadDocument(uploadedFile);
+                        _repository.SaveAsync();
+                        id_s.Add(uploadedFile.Id.ToString());
+
+                    }
+                }
+                serviceResponse.Data = id_s;
+                serviceResponse.Message = " VendorMasterFile Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside VendorMasterFile action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         private string GetServerKey()
         {
             var serverName = Environment.MachineName;
@@ -205,6 +288,89 @@ namespace Tips.Master.Api.Controllers
                 return "trasccon";
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDownloadUrlDetailsforVendorFiles(string fileids)
+        {
+            ServiceResponse<List<FileUploadDto>> serviceResponse = new ServiceResponse<List<FileUploadDto>>();
+            try
+            {
+                string serverKey = GetServerKey();
+                var vendorFiles = await _fileUploadRepository.GetDownloadUrlDetails(fileids);
+                if (vendorFiles == null)
+                {
+                    _logger.LogError($"DownloadDetail with id: {fileids}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {fileids}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid VendorMaster UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid VendorMaster UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<FileUploadDto> fileUploads = new List<FileUploadDto>();
+                if (vendorFiles != null)
+                {
+                    foreach (var fileUploadDetails in vendorFiles)
+                    {
+                        FileUploadDto fileUploadDto = _mapper.Map<FileUploadDto>(fileUploadDetails);
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/VendorMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                        }
+                        else
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/VendorMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                        }
+
+                        //fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileUploadDto.FileName);
+                        fileUploads.Add(fileUploadDto);
+                    }
+                }
+                _logger.LogInfo($"Returned DownloadDetail with id: {fileids}");
+                //var result = _mapper.Map<IEnumerable<GetDownloadUrlDtos>>(getDownloadDetailByPoNumber);
+                serviceResponse.Data = fileUploads;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside VendorMasterFiles action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> DownloadFile(string Filename)
+        {
+            ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", Filename);
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out var ContentType))
+            {
+                ContentType = "application/octet-stream";
+            }
+            var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+
+            return File(bytes, ContentType, Path.GetFileName(filePath));
+        }
+
         // PUT api/<VendorController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateVendorMaster(int id, [FromBody] VendorMasterUpdateDto vendorMasterUpdateDto)
