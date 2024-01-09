@@ -348,6 +348,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
                 var getDownloadDetailByPoNumber = await _repository.ItemMasterRepository.GetDownloadUrlDetails(imageid);
 
                 if (getDownloadDetailByPoNumber == null)
@@ -368,9 +369,20 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid Itemmaster UploadDocument sent from client.");
                     return BadRequest(serviceResponse);
                 }
-               
-                    var baseUrl = $"{Request.Scheme}://{_config["ItemMasterBaseUrl"]}";
+                if (serverKey == "avision")
+                {
+                    var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                   // fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                    getDownloadDetailByPoNumber.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadFile?Filename={getDownloadDetailByPoNumber.FileName}";
+                }
+                else
+                {
+                    var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                   // fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
                     getDownloadDetailByPoNumber.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={getDownloadDetailByPoNumber.FileName}";
+                }
+                //var baseUrl = $"{Request.Scheme}://{_config["ItemMasterBaseUrl"]}";
+                //    getDownloadDetailByPoNumber.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={getDownloadDetailByPoNumber.FileName}";
                 
                 _logger.LogInfo($"Returned DownloadDetail with id: {imageid}");
                 var result = _mapper.Map<GetDownloadUrlDtos>(getDownloadDetailByPoNumber);

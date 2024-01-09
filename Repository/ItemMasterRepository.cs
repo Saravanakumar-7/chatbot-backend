@@ -50,7 +50,7 @@ namespace Repository
                                      FileName = x.FileName,
                                      FileExtension = x.FileExtension,
                                      FilePath = x.FilePath,
-                                     FileByte = x.FileByte
+                                     //FileByte = x.FileByte
                                  }).FirstOrDefaultAsync();
 
             //.Select(x => new GetDownloadUrlDtos()

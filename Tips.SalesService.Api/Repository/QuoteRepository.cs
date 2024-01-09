@@ -225,7 +225,7 @@ namespace Tips.SalesService.Api.Repository
 
                             //// Convert byte array to string using UTF-8 encoding
                             //string? fileString = Encoding.UTF8.GetString(fileBytes);
-                            imgbyte = imagy.fileByte;
+                            imgbyte = imagy.downloadUrl;
                         } 
                         var itemDetails = new CsItemDetailsForQuoteDto
                         {
@@ -248,7 +248,7 @@ namespace Tips.SalesService.Api.Repository
                             Markup = itemPriceList.Markup,
                             CreatedOn = itemPriceList.CreatedOn,
                             IsDiscountApplicable = itemPriceList.IsDiscountApplicable,
-                            ImageByte= imgbyte
+                            ImageURL = imgbyte
                         };
 
                         postdata.Add(itemDetails);
@@ -403,7 +403,7 @@ namespace Tips.SalesService.Api.Repository
                             var inventoryObjectStrin = await itemimage.Content.ReadAsStringAsync();
                             var inventoryObjectDat = JsonConvert.DeserializeObject<GetitemImageDetailDto>(inventoryObjectStrin);
                             var imagy = inventoryObjectDat.data;                            
-                            imgbyte = imagy.fileByte;
+                            imgbyte = imagy.downloadUrl;
                         }
                         var itemDetails = new rfqEnggItemDetailsForQuoteDto
                         {
@@ -428,7 +428,7 @@ namespace Tips.SalesService.Api.Repository
                             PriceListName = itemPriceList.PriceListName,
                             ValidThrough = itemPriceList.ValidThrough,
                             IsDiscountApplicable = itemPriceList.IsDiscountApplicable,
-                            ImageByte = imgbyte
+                            ImageURL = imgbyte
                         };
 
                         postdata.Add(itemDetails);

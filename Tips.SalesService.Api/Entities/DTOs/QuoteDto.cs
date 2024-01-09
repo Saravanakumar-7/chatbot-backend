@@ -190,7 +190,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? ValidThrough { get; set; }
         public bool? IsDiscountApplicable { get; set; }
         public DateTime? CreatedOn { get; set; }
-        public string? ImageByte { get; set; }
+        public string? ImageURL { get; set; }
 
     }
     public class rfqEnggItemDetailsForQuoteDto
@@ -235,7 +235,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? PriceListName { get; set; }
         public DateTime? ValidThrough { get; set; }
         public bool? IsDiscountApplicable { get; set; }
-        public string? ImageByte { get; set; }
+        public string? ImageURL { get; set; }
     }
     // To allow short closed
     public class ShortClosedDto
