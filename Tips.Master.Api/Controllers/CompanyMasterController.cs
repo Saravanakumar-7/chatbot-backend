@@ -21,7 +21,7 @@ namespace Tips.Master.Api.Controllers
         private IMapper _mapper;
         private IConfiguration _config;
         private IFileUploadRepository _fileUploadRepository;
-
+        
         public CompanyMasterController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper, IConfiguration config, IFileUploadRepository fileUploadRepository)
         {
             _repository = repository;
@@ -109,7 +109,44 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetCompanyMasterOtherUploadsbyCompanyId(int CompanyId)
+        {
+            ServiceResponse<CompanyOtherUploadsDto> serviceResponse = new ServiceResponse<CompanyOtherUploadsDto>();
+            try
+            {
+                var otherUploads=_repository.CompanyMasterOtherUploads.GetCompanyMasterOtherUploadsbyCompanyId(CompanyId);
+                if (otherUploads == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CompanyMasterOtherUploads with Companyid hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CompanyMasterOtherUploads with id: {CompanyId}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned CompanyMasterOtherUploads with Companyid: {CompanyId}");
+                    var result = _mapper.Map<CompanyOtherUploadsDto>(otherUploads);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned CompanyMasterOtherUploads Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateCompanyMaster action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         // POST api/<CompanyMasterController>
         [HttpPost]
         public async Task<IActionResult> CreateCompanyMaster([FromBody] CompanyMasterDtoPost companyMasterDtoPost)
@@ -212,7 +249,49 @@ namespace Tips.Master.Api.Controllers
         //        companyMaster.CompanyApprovals[i].Upload = companyFileUploadDtoList;
         //    }
         //}
-
+        [HttpPost]
+        public async Task<IActionResult> CreateCompanyMasterOtherUploads([FromBody] CompanyOtherUploadsPostDto companyOtherUploads)
+        {
+            ServiceResponse<CompanyOtherUploadsDto> serviceResponse = new ServiceResponse<CompanyOtherUploadsDto>();
+            try
+            {
+                if (companyOtherUploads is null)
+                {
+                    _logger.LogError("CompanyMasterOtherUploads object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "CompanyMaster object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid CompanyMasterOtherUploads object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                var otherUploads = _mapper.Map<CompanyOtherUploads>(companyOtherUploads);
+                await _repository.CompanyMasterOtherUploads.CreateCompanyOtherUploads(otherUploads);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = " CompanyOtherUploads Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CompanyMasterOtherUploads action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> CreateCompanyMasterFileUpload([FromBody] List<FileUploadPostDto> fileUploadPostDtos)
         {

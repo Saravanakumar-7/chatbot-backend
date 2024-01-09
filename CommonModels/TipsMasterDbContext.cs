@@ -42,7 +42,7 @@ namespace Entities
         public DbSet<Process> Processes { get; set; }
         public DbSet<VendorHeadCounting>? HeadCountings { get; set; }
         public DbSet<CompanyMasterHeadCounting>? CompanyMasterHeadCountings { get; set; }
-
+        public DbSet<CompanyOtherUploads>? CompanyOtherUploads { get; set; }
         public DbSet<CustomerMasterHeadCounting>? CustomerMasterHeadCountings { get; set; }
         public DbSet<UOM> Uom { get; set; }
         public DbSet<UOC> Uoc { get; set; }

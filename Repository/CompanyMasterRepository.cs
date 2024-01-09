@@ -148,4 +148,33 @@ namespace Repository
             return result;
         }
     }
+
+    public class CompanyMasterOtherUploadsRepository : RepositoryBase<CompanyOtherUploads>, ICompanyMasterOtherUploadsRepository
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public CompanyMasterOtherUploadsRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+        }
+        public async Task<int?> CreateCompanyOtherUploads(CompanyOtherUploads companyOtherUploads)
+        {
+            companyOtherUploads.CreatedBy = _createdBy;
+            companyOtherUploads.CreatedOn = DateTime.Now;
+            companyOtherUploads.Unit = _unitname;
+            var result = await Create(companyOtherUploads);
+
+            return result.Id;
+        }
+        public async Task<CompanyOtherUploads> GetCompanyMasterOtherUploadsbyCompanyId(int Id)
+        {
+            var otherUploads = await TipsMasterDbContext.CompanyOtherUploads.Where(x => x.CompanyId == Id).FirstOrDefaultAsync();
+            return otherUploads;
+        }
+    }
 }

@@ -1620,7 +1620,7 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> ShortClosePrItemSatusByPrItemId(int prItemId)
+        public async Task<IActionResult> ShortClosePrItemSatusByPrItemId(int prItemId,string? ReasonforShortClose)
         {
             ServiceResponse<PrItemsDto> serviceResponse = new ServiceResponse<PrItemsDto>();
 
@@ -1636,7 +1636,8 @@ namespace Tips.Purchase.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-
+                string? reasonforShortClose = ReasonforShortClose;
+                prItemDetailByPrItemId.ReasonforShortClose = reasonforShortClose;
                 prItemDetailByPrItemId.PrStatus = PrStatus.ShortClosed;
                 string result = await _prItemRepository.UpdatePrItem(prItemDetailByPrItemId);
                 _prItemRepository.SaveAsync();
