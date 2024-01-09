@@ -103,13 +103,13 @@ namespace Tips.Purchase.Api.Repository
         public async Task<List<OpenPurchaseOrderDetailsDto>> GetOpenPODetailsByVendorId(string vendorId)
         {
 
-            var purchaseOrderTotalValue = _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.VendorId == vendorId).Sum(s => s.TotalAmount);
+            var purchaseOrderTotalValue = _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.VendorNumber == vendorId).Sum(s => s.TotalAmount);
 
             var poBreakDownDetails = _tipsPurchaseDbContext.POBreakDowns.Where(x => x.VendorId ==vendorId).Select(x => x.AmountAgainstPO).Count();
             if (poBreakDownDetails != 0)
             {
                 var PODetails = from e in _tipsPurchaseDbContext.PurchaseOrders
-                                where e.VendorId == vendorId
+                                where e.VendorNumber == vendorId
                                 join d in _tipsPurchaseDbContext.POBreakDowns on e.PONumber equals d.PONumber into dept
                                 from POBreakDown in dept.DefaultIfEmpty()
                                 group new { e, POBreakDown } by new { e.Id, e.PONumber, e.TotalAmount } into g
@@ -160,7 +160,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<POCollectionTrackerDetailsDto> GetPOCollectionTrackerByVendorId(string vendorId)
         {
             var purchaseOrderTotalValue = _tipsPurchaseDbContext.PurchaseOrders
-                     .Where(x => x.VendorId == vendorId)
+                     .Where(x => x.VendorNumber == vendorId)
                          .Sum(s => s.TotalAmount);
 
             var pocollectionDetails = _tipsPurchaseDbContext.POCollectionTrackers
