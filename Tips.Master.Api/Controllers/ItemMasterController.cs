@@ -982,9 +982,10 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
+                Guid guids = Guid.NewGuid();
                 byte[] imageContent = Convert.FromBase64String(imageUploadPostDto.FileByte);
                 //var itemNumbers = imageUploadPostDto.ItemNumber;
-                string imageName = imageUploadPostDto.FileName + "." + imageUploadPostDto.FileExtension;
+                string imageName = guids.ToString() + "_" + imageUploadPostDto.FileName + "." + imageUploadPostDto.FileExtension;
                 string imageExt = Path.GetExtension(imageName).ToUpper();
                 if (imageExt == ".PNG" || imageExt == ".JPG" || imageExt == ".JPEG" || imageExt == ".GIF")
                 {
